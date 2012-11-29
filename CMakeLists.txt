@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
-option(BUILD_FORTRAN_WRAPPER "Generate the wrapper library for using mutation++ with Fortran" ON)
-option(BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" ON)
+option(BUILD_FORTRAN_WRAPPER "Generate the wrapper library for using mutation++ with Fortran" OFF)
+option(BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" OFF)
 
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
 endif()
 
-set (CMAKE_BUILD_TYPE Debug)
+set (CMAKE_BUILD_TYPE Release)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     #set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wold-style-cast")
-    set (CMAKE_CXX_FLAGS "-g -O0")
+    set (CMAKE_CXX_FLAGS "-g")
 endif ()
 
 if (BUILD_FORTRAN_WRAPPER)
