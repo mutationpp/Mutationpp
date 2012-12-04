@@ -30,7 +30,7 @@
     <!-- Argon ion -->
     <species name="Ar+">
         <stoichiometry>
-            Ar: 1
+            Ar: 1,
             e-: -1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -82,7 +82,7 @@
     <!-- Carbon ion -->
     <species name="C+">
         <stoichiometry>
-            C: 1
+            C: 1,
             e-: -1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -160,7 +160,7 @@
     <!-- No comments -->
     <species name="C2H">
         <stoichiometry>
-            C: 2
+            C: 2,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -192,7 +192,7 @@
     <!-- Acetylene -->
     <species name="C2H2">
         <stoichiometry>
-            C : 2
+            C : 2,
             H : 2
         </stoichiometry>
         <thermodynamics type="NASA-7" db_name="C2H2 acetylene" />
@@ -232,7 +232,7 @@
     <!-- Ethylene -->
     <species name="C2H4">
         <stoichiometry>
-            C: 2
+            C: 2,
             H: 4
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -271,7 +271,7 @@
     <!-- Ethane -->
     <species name="C2H6">
         <stoichiometry>
-            C: 2
+            C: 2,
             H: 6
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -355,7 +355,7 @@
     <!-- No comments -->
     <species name="C3H">
         <stoichiometry>
-            C: 3
+            C: 3,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -388,7 +388,7 @@
     <!-- No comments -->
     <species name="C3H2">
         <stoichiometry>
-            C: 3
+            C: 3,
             H: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -424,7 +424,7 @@
     <!-- Allenylium -->
     <species name="C3H3">
         <stoichiometry>
-            C: 3
+            C: 3,
             H: 3
         </stoichiometry>
         <thermodynamics type="NASA-9" db_name="C3H3(1-propynl" />
@@ -504,7 +504,7 @@
     <!-- No comments -->
     <species name="C4H">
         <stoichiometry>
-            C: 4
+            C: 4,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -577,7 +577,7 @@
     <!-- No comments -->
     <species name="C5H">
         <stoichiometry>
-            C: 5
+            C: 5,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -617,7 +617,7 @@
     <!-- No comments -->
     <species name="C5H5">
         <stoichiometry>
-            C: 5
+            C: 5,
             H: 5
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -668,7 +668,7 @@
     <!-- No comments -->
     <species name="C5H6">
         <stoichiometry>
-            C: 5
+            C: 5,
             H: 6
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -722,8 +722,8 @@
     <!-- Phenoxy radical -->
     <species name="C6H5O">
         <stoichiometry>
-            C: 6
-            H: 5
+            C: 6,
+            H: 5,
             O: 1
         </stoichiometry>
         <thermodynamics type="NASA-9" db_name="C6H5O(phenoxy" />
@@ -781,7 +781,7 @@
     <!-- Benzene -->
     <species name="C6H6">
         <stoichiometry>
-            C: 6
+            C: 6,
             H: 6
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -838,8 +838,8 @@
     <!-- Phenol -->
     <species name="C6H5OH">
         <stoichiometry>
-            C: 6
-            H: 6
+            C: 6,
+            H: 6,
             O: 1
         </stoichiometry>
         <thermodynamics type="NASA-9" db_name="C6H5OH(phenol" />
@@ -876,7 +876,7 @@
     <!-- Methylidne radical -->
     <species name="CH">
         <stoichiometry>
-            C: 1
+            C: 1,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -908,7 +908,7 @@
     <!-- Methylene -->
     <species name="CH2">
         <stoichiometry>
-            C: 1
+            C: 1,
             H: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -938,8 +938,8 @@
     <!-- Formaldehyde -->
     <species name="CH2O">
         <stoichiometry>
-            C: 1
-            H: 2
+            C: 1,
+            H: 2,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -972,7 +972,7 @@
     <!-- Methene -->
     <species name="CH3">
         <stoichiometry>
-            C: 1
+            C: 1,
             H: 3
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1005,7 +1005,7 @@
     <!-- Methane -->
     <species name="CH4">
         <stoichiometry>
-            C: 1
+            C: 1,
             H: 4
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1041,7 +1041,7 @@
     <!-- Cyanide radical -->
     <species name="CN">
         <stoichiometry>
-            C: 1
+            C: 1,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1086,8 +1086,8 @@
     <!-- Cyanide cation -->
     <species name="CN+">
         <stoichiometry>
-            C: 1
-            e-: -1
+            C: 1,
+            e-: -1,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1121,7 +1121,7 @@
     <!-- Carbon monoxide -->
     <species name="CO">
         <stoichiometry>
-            C: 1
+            C: 1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1158,8 +1158,8 @@
     <!-- Carbon monoxide cation -->
     <species name="CO+">
         <stoichiometry>
-            C: 1
-            e-: -1
+            C: 1,
+            e-: -1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1190,7 +1190,7 @@
     <!-- Carbon dioxide -->
     <species name="CO2">
         <stoichiometry>
-            C: 1
+            C: 1,
             O: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1256,7 +1256,7 @@
     <!-- Hydrogen ion -->
     <species name="H+">
         <stoichiometry>
-            e-: -1
+            e-: -1,
             H: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1301,7 +1301,7 @@
     <!-- Water -->
     <species name="H2O">
         <stoichiometry>
-            H: 2
+            H: 2,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1331,7 +1331,7 @@
     <!-- Isomer C3H2 multiplicity1 -->
     <species name="HCCCH">
         <stoichiometry>
-            C: 3
+            C: 3,
             H: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1367,8 +1367,8 @@
     <!-- Hydrogen cyanide -->
     <species name="HCN">
         <stoichiometry>
-            C: 1
-            H: 1
+            C: 1,
+            H: 1,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1459,7 +1459,7 @@
     <!-- Nytrogen ion -->
     <species name="N+">
         <stoichiometry>
-            e-: -1
+            e-: -1,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1523,7 +1523,7 @@
     <!-- Diatomic Nytrogen ion -->
     <species name="N2+">
         <stoichiometry>
-            e-: -1
+            e-: -1,
             N: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1559,7 +1559,7 @@
     <!-- Imidogen -->
     <species name="NH">
         <stoichiometry>
-            H: 1
+            H: 1,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1591,7 +1591,7 @@
     <!-- No comments -->
     <species name="NH3">
         <stoichiometry>
-            H: 3
+            H: 3,
             N: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1624,7 +1624,7 @@
     <!-- Nitric Oxyde -->
     <species name="NO">
         <stoichiometry>
-            N: 1
+            N: 1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1655,8 +1655,8 @@
     <!-- Nitrosyl Ion -->
     <species name="NO+">
         <stoichiometry>
-            e-: -1
-            N: 1
+            e-: -1,
+            N: 1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1745,7 +1745,7 @@
     <!-- Oxygen cation -->
     <species name="O+">
         <stoichiometry>
-            e-: -1
+            e-: -1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1765,7 +1765,7 @@
     <!-- Oxygen anion -->
     <species name="O-">
         <stoichiometry>
-            e-: 1
+            e-: 1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1815,7 +1815,7 @@
     <!-- Diatomic oxygen cation -->
     <species name="O2+">
         <stoichiometry>
-            e-: -1
+            e-: -1,
             O : 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1847,7 +1847,7 @@
     <!-- Diatomic oxygen anion -->
     <species name="O2-">
         <stoichiometry>
-            e-: 1
+            e-: 1,
             O: 2
         </stoichiometry>
         <thermodynamics type="RRHO">
@@ -1875,7 +1875,7 @@
     <!-- Hydroxil radical -->
     <species name="OH">
         <stoichiometry>
-            H: 1
+            H: 1,
             O: 1
         </stoichiometry>
         <thermodynamics type="RRHO">

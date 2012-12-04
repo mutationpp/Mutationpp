@@ -141,13 +141,17 @@ void Species::loadStoichiometry(
     // Split up the string in the format "A:a, B:b, ..." into a vector of
     // strings matching ["A", "a", "B", "b", ... ]
     vector<string> stoichiometry_tokens;
-    utils::StringUtils::tokenize(stoichiometry, stoichiometry_tokens, " :,\n");
+    utils::StringUtils::tokenize(
+        utils::StringUtils::removeWhiteSpace(stoichiometry), 
+        stoichiometry_tokens, ":,");
     
     // Check that the vector has an even number of tokens (otherwise there must
     // be an error in the syntax)
     if (stoichiometry_tokens.size() % 2 != 0) {
         cerr << "Error in species \"" << name() << "\" stoichiometry "
              << "definition, invalid syntax!" << endl;
+        for (int i = 0; i < stoichiometry_tokens.size(); ++i)
+            cerr << "\"" << stoichiometry_tokens[i] << "\"" << endl;
         exit(1); 
     }
     

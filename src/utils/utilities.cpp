@@ -69,6 +69,19 @@ string StringUtils::trim(const string &str, const string &to_erase)
         return string();
 }
 
+std::string StringUtils::removeWhiteSpace(const std::string& str)
+{
+    std::string::size_type pos = str.find_first_of(" \f\v\t\r\n");
+    std::string to_return = str;
+    
+    while (pos != string::npos) {
+        to_return.erase(pos, 1);
+        pos = to_return.find_first_of(" \f\v\t\r\n", pos);
+    }
+    
+    return to_return;
+}
+
 string StringUtils::toUpperCase(const string &str)
 {
     std::string new_str;        

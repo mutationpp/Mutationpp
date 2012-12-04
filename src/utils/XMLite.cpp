@@ -109,7 +109,7 @@ bool XmlElement::parse(
         
         switch (state) {
             case initial:
-                if ( !(c == ' ' || c == '\t' || c == '\n') ) {
+                if ( !(c == ' ' || c == '\t' || c == '\n' || c == '\r') ) {
                     m_line_number = line;
                     if (c == '<')
                         state = el_name;
@@ -127,7 +127,7 @@ bool XmlElement::parse(
                     name.clear();
                     break;
                 }
-                if (c == ' ' || c == '\t' || c == '\n') {
+                if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
                     if (name.empty()) {
                         _parseError(mp_document, line, 
                             string("element names must begin directly after") +
@@ -146,7 +146,7 @@ bool XmlElement::parse(
                 }
                 break;
             case attributes:
-                if (!(c == ' ' || c == '\t' || c == '=' || c == '\n')) {
+                if (!(c == ' ' || c == '\t' || c == '=' || c == '\n' || c == '\r')) {
                     if (c == '/') {
                         state = done;
                         is.get();

@@ -52,6 +52,12 @@ public:
     static std::string trim(
         const std::string& str, const std::string &to_erase = " \t\f\v\n\r");
     
+    /**
+     * Removes all characters belonging to the set {' ', '\t', '\f', '\v', '\r',
+     * '\n'}.
+     */
+    static std::string removeWhiteSpace(const std::string& str);
+    
     static std::string toUpperCase(const std::string& str);
     
     static std::string toLowerCase(const std::string& str);

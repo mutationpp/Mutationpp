@@ -9,7 +9,8 @@ if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
 endif()
 
-set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_BUILD_TYPE      "Release")
+set (CMAKE_INSTALL_PREFIX  "../install")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     #set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wold-style-cast")
