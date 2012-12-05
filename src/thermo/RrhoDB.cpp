@@ -536,13 +536,16 @@ private:
         int ilevel = 0;
         LOOP_HEAVY(
             sum1 = sum2 = 0.0;
-            for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                fac = mp_elec_levels[ilevel].g * 
-                    std::exp(-mp_elec_levels[ilevel].theta / T);
-                sum1 += fac;
-                sum2 += fac * mp_elec_levels[ilevel].theta;
-            }
-            op(h[j], sum2 / sum1);
+            if (mp_nelec[i] > 0) {
+                for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
+                    fac = mp_elec_levels[ilevel].g * 
+                        std::exp(-mp_elec_levels[ilevel].theta / T);
+                    sum1 += fac;
+                    sum2 += fac * mp_elec_levels[ilevel].theta;
+                }
+                op(h[j], sum2 / sum1);
+            } else
+                op(h[j], 0.0);
         )
     }
     
@@ -606,13 +609,16 @@ private:
         LOOP_HEAVY(
             sum1 = 0.0;
             sum2 = 0.0;
-            for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                fac = mp_elec_levels[ilevel].g * 
-                    std::exp(-mp_elec_levels[ilevel].theta / T);
-                sum1 += fac;
-                sum2 += mp_elec_levels[ilevel].theta * fac;
-            }
-            op(s[j], (sum2 / (sum1 * T) + std::log(sum1)));
+            if (mp_nelec[i] > 0) {
+                for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
+                    fac = mp_elec_levels[ilevel].g * 
+                        std::exp(-mp_elec_levels[ilevel].theta / T);
+                    sum1 += fac;
+                    sum2 += mp_elec_levels[ilevel].theta * fac;
+                }
+                op(s[j], (sum2 / (sum1 * T) + std::log(sum1)));
+            } else
+                op(s[j], 0.0);
         )
     }
 
