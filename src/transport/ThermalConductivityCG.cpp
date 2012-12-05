@@ -67,6 +67,6 @@ private:
 };
 
 // Register the algorithm
-ObjectProvider<ThermalConductivityCG, ThermalConductivityAlgorithm>
+Utilities::ObjectProvider<ThermalConductivityCG, ThermalConductivityAlgorithm>
     lambdaCG("CG");
 

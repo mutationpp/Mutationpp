@@ -84,7 +84,7 @@ public:
 };
 
 // Register this algorithm with the other ViscosityAlgorithm types
-ObjectProvider<ViscosityCG, ViscosityAlgorithm> viscosityCG("CG");
+Utilities::ObjectProvider<ViscosityCG, ViscosityAlgorithm> viscosityCG("CG");
 
 
 /**
@@ -115,6 +115,6 @@ private:
 };
 
 // Register this algorithm with the other ViscosityAlgorithm types
-ObjectProvider<ViscosityLDLT, ViscosityAlgorithm> viscosityLDLT("LDLT");
+Utilities::ObjectProvider<ViscosityLDLT, ViscosityAlgorithm> viscosityLDLT("LDLT");
 
 

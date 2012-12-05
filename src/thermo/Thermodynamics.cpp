@@ -22,7 +22,7 @@ Thermodynamics::Thermodynamics(
     loadSpeciesFromList(species_names);
     
     // Now we can load the relevant thermodynamic database
-    mp_thermodb = Factory<ThermoDB>::create(thermo_db, m_species);
+    mp_thermodb = Utilities::Factory<ThermoDB>::create(thermo_db, m_species);
     
     // Build the composition matrix
     m_element_matrix = RealMatrix(nSpecies(), nElements());
@@ -51,7 +51,7 @@ Thermodynamics::Thermodynamics(
     mp_equil = new GfcEquilSolver(*this);
     
     // Allocate a new state model
-    mp_state = Factory<StateModel>::create(state_model, nSpecies());
+    mp_state = Utilities::Factory<StateModel>::create(state_model, nSpecies());
 }
 
 Thermodynamics::~Thermodynamics()

@@ -34,6 +34,6 @@ public:
 };
 
 // Register the algorithm
-ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
+Utilities::ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
     lambdaWilke("Wilke");
 

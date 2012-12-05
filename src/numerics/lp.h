@@ -297,6 +297,13 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     // Recast the tableau into a two dimensional array with appropriate sizes
     Real (*const a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
     
+    /*for (int i = 0; i < m+2; ++i) {
+        for (int j = 0; j < n+1; ++j)
+            cout << setw(10) << a[i][j];
+        cout << endl;
+    }
+    cout << endl;*/
+    
     // Declare other variables
     Real bmax;
     int l1[n], nl1, kp, ip, i, j, is;

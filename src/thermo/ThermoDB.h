@@ -3,10 +3,6 @@
 
 #include <vector>
 
-// Forward declare the Provider<> class for self registration.
-template <typename T>
-class Provider;
-
 // Forward declare the species class.
 class Species;
 
@@ -26,12 +22,6 @@ public:
      * ThermoDB.
      */
     typedef const std::vector<Species>& ARGS;
-    
-    /**
-     * Object provider type for ThermoDB objects.  Necessary for self
-     * registration.
-     */
-    typedef Provider<ThermoDB> PROVIDER;
     
     /**
      * Desctructor.

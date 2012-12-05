@@ -30,7 +30,7 @@ void StateModel::init()
 }
 
 // Register the basic state model
-ObjectProvider<StateModel, StateModel> tpModel("T");
+Utilities::ObjectProvider<StateModel, StateModel> tpModel("T");
 
 
 /**
@@ -71,4 +71,4 @@ protected:
 }; // class TTvStateModel
 
 // Register the T,Tv model
-ObjectProvider<TTvStateModel, StateModel> ttvModel("T,Tv");
+Utilities::ObjectProvider<TTvStateModel, StateModel> ttvModel("T,Tv");

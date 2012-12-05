@@ -192,7 +192,7 @@ char nasa7[] = "nasa7.dat";
 char nasa9[] = "nasa9.dat";
 
 // Register the NASA-7 and NASA-9 thermodynamic databases as ThermoDB types
-ObjectProvider<NasaDB<Nasa7Polynomial, nasa7>, ThermoDB> nasa7DB("NASA-7");
-ObjectProvider<NasaDB<Nasa9Polynomial, nasa9>, ThermoDB> nasa9DB("NASA-9");
+Utilities::ObjectProvider<NasaDB<Nasa7Polynomial, nasa7>, ThermoDB> nasa7DB("NASA-7");
+Utilities::ObjectProvider<NasaDB<Nasa9Polynomial, nasa9>, ThermoDB> nasa9DB("NASA-9");
 
 

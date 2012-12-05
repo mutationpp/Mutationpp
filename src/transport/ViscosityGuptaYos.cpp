@@ -53,7 +53,7 @@ private:
     RealVector A;
 };
 
-ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 
+Utilities::ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 
     viscosityGuptaYos("Gupta-Yos");
     
     

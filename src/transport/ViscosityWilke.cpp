@@ -30,6 +30,6 @@ public:
        
 };
 
-ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
+Utilities::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
 
 

@@ -36,7 +36,7 @@ ParticleRRHO::ParticleRRHO(XmlElement& xml_element)
         }
         else if (iter->tag() == "vibrational_temperatures") {
             std::vector<std::string> tokens;
-            StringUtils::tokenize(iter->text(), tokens, " ,\t\n");
+            StringUtils::tokenize(iter->text(), tokens, " ,\t\n\r\f\v");
             
             std::vector<std::string>::const_iterator t_iter = tokens.begin();
             for ( ; t_iter != tokens.end(); ++t_iter)

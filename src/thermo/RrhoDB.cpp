@@ -643,5 +643,5 @@ private:
 #undef LOOP_MOLECULES
 
 // Register the RRHO model with the other thermodynamic databases
-ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
+Utilities::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
 

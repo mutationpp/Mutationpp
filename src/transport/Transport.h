@@ -6,6 +6,7 @@
 #include "ViscosityAlgorithm.h"
 #include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
+#include "AutoRegistration.h"
 
 /**
  * Manages the computation of transport properties.  The class is templated to 
@@ -25,9 +26,9 @@ public:
         : m_thermo(thermo), m_collisions(thermo)
     { 
         mp_viscosity = 
-            Factory<ViscosityAlgorithm>::create(viscosity, m_collisions);
+            Utilities::Factory<ViscosityAlgorithm>::create(viscosity, m_collisions);
         mp_thermal_conductivity = 
-            Factory<ThermalConductivityAlgorithm>::create(lambda, m_collisions);
+            Utilities::Factory<ThermalConductivityAlgorithm>::create(lambda, m_collisions);
         mp_diffusion_matrix =
             new Ramshaw(thermo, m_collisions);
     }
@@ -44,7 +45,7 @@ public:
      */
     void setViscosityAlgo(const std::string& algo) {
         delete mp_viscosity;
-        mp_viscosity = Factory<ViscosityAlgorithm>::create(algo, m_collisions);
+        mp_viscosity = Utilities::Factory<ViscosityAlgorithm>::create(algo, m_collisions);
     }
     
     /**
@@ -53,7 +54,7 @@ public:
     void setThermalConductivityAlgo(const std::string& algo) {
         delete mp_thermal_conductivity;
         mp_thermal_conductivity = 
-            Factory<ThermalConductivityAlgorithm>::create(algo, m_collisions);
+            Utilities::Factory<ThermalConductivityAlgorithm>::create(algo, m_collisions);
     }
     
     /**

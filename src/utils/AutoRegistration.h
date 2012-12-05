@@ -18,6 +18,8 @@
 #include <map>
 #include <string>
 
+namespace Utilities {
+
 template <class PTYPE> class Provider;
 
 /**
@@ -47,14 +49,14 @@ public:
     /**
      * Get the provider corresponding to the given key.
      */
-    typename PTYPE::PROVIDER* getProvider(const std::string& key)
+    Provider<PTYPE>* getProvider(const std::string& key)
     {    
         if (m_providers.count(key) == 0) {
             std::cout << "Provider < " <<  key << " > is not registered" 
                       << std::endl;
         }
         
-        return dynamic_cast<typename PTYPE::PROVIDER*>(
+        return dynamic_cast<Provider<PTYPE>*>(
             m_providers.find(key)->second);
     }
   
@@ -170,7 +172,7 @@ public:
  * @author Andrea Lani
  */
 template <class CTYPE, class PTYPE>
-class ObjectProvider : public PTYPE::PROVIDER 
+class ObjectProvider : public Provider<PTYPE>
 {
 public:
   
@@ -178,7 +180,7 @@ public:
      * Constructor.
      */
     ObjectProvider(const std::string& name) 
-        : PTYPE::PROVIDER(name) 
+        : Provider<PTYPE>(name) 
     { }
   
     /**
@@ -195,6 +197,8 @@ public:
     }
   
 }; // class ObjectProvider
+
+} // namespace Utilities
 
 #endif // AUTO_REGISTRATION_H
 

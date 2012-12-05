@@ -12,13 +12,19 @@ class ViscosityAlgorithm
 {
 public:
     
+    // Required for self registering viscosity algorithms
     typedef CollisionDB& ARGS;
-    typedef Provider<ViscosityAlgorithm> PROVIDER;
     
+    /**
+     * Constructor taking a CollisionDB object.
+     */
     ViscosityAlgorithm(ARGS collisions)
         : m_collisions(collisions)
     { }
     
+    /**
+     * Destructor.
+     */
     virtual ~ViscosityAlgorithm() { }
     
     /**

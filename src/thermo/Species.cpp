@@ -84,7 +84,7 @@ Species::Species(
         }
     }
     
-    /*cout << m_name << endl;
+    cout << m_name << endl;
     ParticleType ptype = type();
     cout << (ptype == ELECTRON ? "ELECTRON" : 
         (ptype == ATOM ? "ATOM" : "MOLECULE")) << endl;
@@ -104,7 +104,7 @@ Species::Species(
                      << mp_rrho_model->electronicEnergy(i).second << endl;
         case ELECTRON:
             cout << "hf: " << mp_rrho_model->formationEnthalpy() << endl;
-    }*/
+    }
     
     // Now use the elemental composition and elements list to determine the
     // molecular weight and charge of this species (ensures mass and charge

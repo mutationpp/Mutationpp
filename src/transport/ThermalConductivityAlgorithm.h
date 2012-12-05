@@ -13,7 +13,7 @@ class ThermalConductivityAlgorithm
 public:
 
     typedef CollisionDB& ARGS;
-    typedef Provider<ThermalConductivityAlgorithm> PROVIDER;
+    typedef Utilities::Provider<ThermalConductivityAlgorithm> PROVIDER;
 
     ThermalConductivityAlgorithm(ARGS collisions)
         : m_collisions(collisions)
