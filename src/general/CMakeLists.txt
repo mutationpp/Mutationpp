@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
-    Mixture.cpp
+    MixtureOptions.cpp
 )
 
 # Build the checkmix code
@@ -50,6 +50,7 @@ endif()
 # Install the header files
 install(FILES mutation++.h DESTINATION include/mutation++)
 install(FILES Mixture.h DESTINATION include/mutation++)
+install(FILES MixtureOptions.h DESTINATION include/mutation++)
 install(FILES Constants.h DESTINATION include/mutation++)
 
 

@@ -22,8 +22,11 @@ template<typename POLYNOMIAL, char* DBNAME>
 class NasaDB : public ThermoDB
 {
 public:
+
+    using ThermoDB::m_ns;
+
     NasaDB(const std::vector<Species>& species)
-        : m_ns(species.size()), ThermoDB()
+        : ThermoDB(species)
     {
          // Open the database file
         std::string thermo_directory = 
@@ -182,7 +185,6 @@ private:
    
     typedef std::vector<std::pair<int, POLYNOMIAL> > PolynomialList;
     
-    const int m_ns;
     PolynomialList m_polynomials;
     double mp_params[8];
 };

@@ -10,6 +10,7 @@ add_sources(mutation++
     Species.cpp
     StateModel.cpp
     Thermodynamics.cpp
+    ThermoDB.cpp
 )
 
 install(FILES GfcEquilSolver.h DESTINATION include/mutation++)

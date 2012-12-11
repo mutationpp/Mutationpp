@@ -1,9 +1,7 @@
 
-#include "Mixture.h"
+#include "MixtureOptions.h"
 #include "utilities.h"
 #include "XMLite.h"
-
-#include <string>
 
 using namespace std;
 using namespace utils;
@@ -109,5 +107,3 @@ void MixtureOptions::loadFromFile(const string& mixture)
         }
     }
 }
-
-

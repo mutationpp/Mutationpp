@@ -1,9 +1,6 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-template <typename T>
-class Provider;
-
 /**
  * Base class for all state models.  A mixture state is completely determined
  * when enough thermodynamic values are combined with the mixture composition
@@ -23,7 +20,6 @@ class StateModel
 public:
 
     typedef int ARGS;
-    typedef Provider<StateModel> PROVIDER;
     
     /**
      * Constructor.

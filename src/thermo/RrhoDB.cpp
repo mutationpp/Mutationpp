@@ -59,6 +59,8 @@ typedef struct {
 class RrhoDB : public ThermoDB
 {
 public:
+
+    using ThermoDB::m_ns;
     
     /**
      * Initializes the database from a list of species objects.  All species
@@ -66,7 +68,7 @@ public:
      * presented to the user and the program exits.
      */
     RrhoDB(ThermoDB::ARGS species)
-        : m_ns(species.size()), m_na(0), m_nm(0), 
+        : ThermoDB(species), m_na(0), m_nm(0), 
           m_has_electron(species[0].type() == ELECTRON)
     {    
         // First make sure that every species contains an RRHO model
@@ -624,7 +626,6 @@ private:
 
 private:
     
-    int m_ns;
     int m_na;
     int m_nm;
     

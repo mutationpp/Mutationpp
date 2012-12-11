@@ -58,6 +58,14 @@ public:
         
         // Finally compute the dot product of alpha and X
         return dot(x(1,ns), m_alpha);
+        // lambda = dot(x(1,ns), m_alpha) / nd;
+        
+        // Apply the Euken corrections
+        //m_alpha = nDij(1,ns,0,ns) * x(1,ns);
+        //m_thermo.speciesCvOverR()...
+        //for (int i = 1; i < ns; ++i)
+        //    lambda += x(i) * RU / alpha(i-1) * (cvr(i) + cvv(i) + cve(i));
+        //return lambda * nd;
     }
     
 private:

@@ -298,6 +298,14 @@ public:
     void speciesCpOverR(double *const p_cp) const;
     
     /**
+     * Returns the unitless vector of species specific heats at constant volume
+     * \f$ C_{v,i} / R_u \f$.
+     */
+    void speciesCvOverR(
+        double *const p_cv, double *const p_cvt, double *const p_cvr,
+        double *const p_cvv, double *const p_cvel) const;
+    
+    /**
      * Returns the frozen mixture averaged specific heat at constant pressure in
      * J/mol-K.
      */

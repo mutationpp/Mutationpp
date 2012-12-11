@@ -319,6 +319,41 @@ void Thermodynamics::speciesCpOverR(double *const p_cp) const
         mp_state->Tel(), p_cp, NULL, NULL, NULL, NULL);
 }
 
+void Thermodynamics::speciesCvOverR(
+    double *const p_cv = NULL, double *const p_cvt = NULL, 
+    double *const p_cvr = NULL, double *const p_cvv = NULL, 
+    double *const p_cvel = NULL) const
+{
+    mp_thermodb->cp(
+        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
+        mp_state->Tel(), p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
+    
+    if (p_cv != NULL) {
+        for (int i = 0; i < nSpecies(); ++i)
+            p_cv[i] -= 1.0;
+    }
+    
+    if (p_cvt != NULL) {
+        for (int i = 0; i < nSpecies(); ++i)
+            p_cvt[i] -= 1.0;
+    }
+    
+    if (p_cvr != NULL) {
+        for (int i = 0; i < nSpecies(); ++i)
+            p_cvr[i] -= 1.0;
+    }
+    
+    if (p_cvv != NULL) {
+        for (int i = 0; i < nSpecies(); ++i)
+            p_cvv[i] -= 1.0;
+    }
+    
+    if (p_cvel != NULL) {
+        for (int i = 0; i < nSpecies(); ++i)
+            p_cvel[i] -= 1.0;
+    }
+}
+
 double Thermodynamics::mixtureFrozenCpMole() const
 {
     double cp = 0.0;
