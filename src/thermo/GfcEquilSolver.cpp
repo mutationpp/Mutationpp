@@ -228,7 +228,7 @@ pair<int, int> GfcEquilSolver::equilibrate(
         p_sv[m_species_order[i]] = zd(i);
     for (int i = 0; i < m_nsu; ++i)
         p_sv[m_species_order[i+m_nsd]] = zu(i);
-    
+
     return stats;
 } 
 

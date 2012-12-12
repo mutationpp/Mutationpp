@@ -20,7 +20,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 31
+#define NMIXTURE 36
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -51,8 +51,13 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Hv", "J/kg", "vibrational enthalpy"),
     OutputQuantity("Hel", "J/kg", "electronic enthalpy"),
     OutputQuantity("Hf", "J/kg", "formation enthalpy"),
+    OutputQuantity("e", "J/mol", "mixture energy"),
+    OutputQuantity("e", "J/kg", "mixture energy"),
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
-    OutputQuantity("lambda", "?", "thermal conductivity")
+    OutputQuantity("lambda", "W/m-K", "thermal conductivity"),
+    OutputQuantity("a_f", "m/s", "frozen speed of sound"),
+    OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
 };
 
 // List of all species output quantities
@@ -428,7 +433,7 @@ int main(int argc, char** argv)
                     value = mix.mixtureFrozenGamma();
                 else if (name == "mu")
                     value = mix.eta();
-                else if (name == "labmda")
+                else if (name == "lambda")
                     value = mix.lambda();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
@@ -466,7 +471,17 @@ int main(int argc, char** argv)
                         value += species_values[i] * RU * T * mix.X()[i];
                     if (units == "J/kg")
                         value /= mix.mixtureMw();
-                }
+                } else if (name == "e") {
+                    if (units == "J/mol")
+                        value = mix.mixtureEnergyMole();
+                    else if (units == "J/kg")
+                        value = mix.mixtureEnergyMass();
+                } else if (name == "a_f")
+                    value = mix.frozenSoundSpeed();
+                else if (name == "a_eq")
+                    value = mix.equilibriumSoundSpeed();
+                else if (name == "drho/dP")
+                    value = mix.dRhodP();
                 
                 cout << setw(column_widths[cw++]) << value;
             }

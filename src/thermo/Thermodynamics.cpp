@@ -12,6 +12,8 @@
 using namespace std;
 using namespace Numerics;
 
+//==============================================================================
+
 Thermodynamics::Thermodynamics(
     const vector<string> &species_names, const string& thermo_db,
     const string& state_model )
@@ -40,6 +42,7 @@ Thermodynamics::Thermodynamics(
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];
     mp_work2 = new double [nSpecies()];
+    mp_y     = new double [nSpecies()];
     
     // Default composition (every element has equal parts)
     mp_default_composition = new double [nElements()];
@@ -54,15 +57,20 @@ Thermodynamics::Thermodynamics(
     mp_state = Utilities::Factory<StateModel>::create(state_model, nSpecies());
 }
 
+//==============================================================================
+
 Thermodynamics::~Thermodynamics()
 {
     delete [] mp_work1;
     delete [] mp_work2;
     delete [] mp_default_composition;
+    delete [] mp_y;
     
     delete mp_thermodb;
     delete mp_equil;
 }
+
+//==============================================================================
 
 void Thermodynamics::loadSpeciesFromList(
     const std::vector<std::string> &species_names)
@@ -160,6 +168,8 @@ void Thermodynamics::loadSpeciesFromList(
         m_species_indices[m_species[i].name()] = i;
 }
 
+//==============================================================================
+
 
 void Thermodynamics::setDefaultComposition(
         const std::vector<std::pair<std::string, double> >& composition)
@@ -205,69 +215,108 @@ void Thermodynamics::setDefaultComposition(
     wrapper = wrapper / wrapper.sum();
 }
 
+//==============================================================================
+
 void Thermodynamics::setStateTPX(
     const double* const T, const double* const P, const double* const X)
 {
     mp_state->setStateTPX(T, P, X);
+    convert<X_TO_Y>(X, mp_y);
 }
+
+//==============================================================================
 
 void Thermodynamics::setStateTPY(
         const double* const T, const double* const P, const double* const Y)
 {
+    std::copy(Y, Y+nSpecies(), mp_y);
     convert<Y_TO_X>(Y, mp_work1);
     mp_state->setStateTPX(T, P, mp_work1);
 }
+
+//==============================================================================
 
 double Thermodynamics::T() const {
     return mp_state->T();
 }
 
+//==============================================================================
+
 double Thermodynamics::Tr() const {
     return mp_state->Tr();
 }
+
+//==============================================================================
 
 double Thermodynamics::Tv() const {
     return mp_state->Tv();
 }
 
+//==============================================================================
+
 double Thermodynamics::Te() const {
     return mp_state->Te();
 }
+
+//==============================================================================
 
 double Thermodynamics::Tel() const {
     return mp_state->Tel();
 }
 
+//==============================================================================
+
 double Thermodynamics::P() const {
     return mp_state->P();
 }
+
+//==============================================================================
 
 const double* const Thermodynamics::X() const {
     return mp_state->X();
 }
 
+//==============================================================================
+
+const double* const Thermodynamics::Y() const {
+    return mp_y;
+}
+
+//==============================================================================
+
 double Thermodynamics::standardStateT() const {
     return mp_thermodb->standardTemperature();
 }
+
+//==============================================================================
 
 double Thermodynamics::standardStateP() const {
     return mp_thermodb->standardPressure();
 }
 
-double Thermodynamics::mixtureMw() const {
+//==============================================================================
+
+double Thermodynamics::mixtureMw() const 
+{
     return (Numerics::asVector(mp_state->X(), nSpecies()) * 
         m_species_mw).sum();
 }
+
+//==============================================================================
 
 void Thermodynamics::equilibrate(
     double T, double P, const double* const p_c, double* const p_X, 
     bool set_state) const
 {
-    //mp_state->setStateTPX(T, P, p_X);
     mp_equil->equilibrate(T, P, p_c, p_X);
     convert<CONC_TO_X>(p_X, p_X);
-    if (set_state) mp_state->setStateTPX(T, P, p_X);
+    if (set_state) {
+        convert<X_TO_Y>(p_X, mp_y);
+        mp_state->setStateTPX(T, P, p_X);
+    }
 }
+
+//==============================================================================
 
 void Thermodynamics::equilibrate(double T, double P) const
 {
@@ -281,11 +330,16 @@ double Thermodynamics::numberDensity(const double T, const double P) const
     return P / (KB * T);
 }
 
-double Thermodynamics::numberDensity() const {
+//==============================================================================
+
+double Thermodynamics::numberDensity() const 
+{
     double Xe = (hasElectrons() ? mp_state->X()[1] : 0.0);
     return mp_state->P() / KB * 
         ((1.0 - Xe) / mp_state->T() + Xe / mp_state->Te());
 }
+
+//==============================================================================
 
 double Thermodynamics::pressure(
     const double T, const double rho, const double *const Y) const
@@ -296,6 +350,8 @@ double Thermodynamics::pressure(
     pressure *= rho * T * RU;
     return pressure;
 }
+
+//==============================================================================
     
 double Thermodynamics::density(
     const double T, const double P, const double *const X) const
@@ -307,10 +363,14 @@ double Thermodynamics::density(
     return density;
 }
 
+//==============================================================================
+
 double Thermodynamics::density() const
 {
     return numberDensity() * mixtureMw() / NA;
 }
+
+//==============================================================================
 
 void Thermodynamics::speciesCpOverR(double *const p_cp) const
 {
@@ -319,14 +379,25 @@ void Thermodynamics::speciesCpOverR(double *const p_cp) const
         mp_state->Tel(), p_cp, NULL, NULL, NULL, NULL);
 }
 
-void Thermodynamics::speciesCvOverR(
-    double *const p_cv = NULL, double *const p_cvt = NULL, 
-    double *const p_cvr = NULL, double *const p_cvv = NULL, 
-    double *const p_cvel = NULL) const
+//==============================================================================
+
+void Thermodynamics::speciesCpOverR(
+    double Th, double Te, double Tr, double Tv, double Tel, double *const p_cp, 
+    double *const p_cpt, double *const p_cpr, double *const p_cpv, 
+    double *const p_cpel) const
 {
     mp_thermodb->cp(
-        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
+        Th, Te, Tr, Tv, Tel, p_cp, p_cpt, p_cpr, p_cpv, p_cpel);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesCvOverR(
+    double Th, double Te, double Tr, double Tv, double Tel, double *const p_cv, 
+    double *const p_cvt, double *const p_cvr, double *const p_cvv, 
+    double *const p_cvel) const
+{
+    mp_thermodb->cp(Th, Te, Tr, Tv, Tel, p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
     
     if (p_cv != NULL) {
         for (int i = 0; i < nSpecies(); ++i)
@@ -354,6 +425,8 @@ void Thermodynamics::speciesCvOverR(
     }
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureFrozenCpMole() const
 {
     double cp = 0.0;
@@ -363,9 +436,14 @@ double Thermodynamics::mixtureFrozenCpMole() const
     return (cp * RU);
 }
 
-double Thermodynamics::mixtureFrozenCpMass() const {
+//==============================================================================
+
+double Thermodynamics::mixtureFrozenCpMass() const 
+{
     return mixtureFrozenCpMole() / mixtureMw();
 }
+
+//==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCpMole(
     double T, double P, const double* const Xeq) const
@@ -389,15 +467,41 @@ double Thermodynamics::mixtureEquilibriumCpMole(
     return cp / eps * RU + mixtureFrozenCpMole();
 }
 
+//==============================================================================
+
+double Thermodynamics::dRhodP(
+    double T, double P, const double* const Xeq) const
+{
+    const double eps = 1.0e-6;
+    
+    // Compute the current elemental fraction
+    elementFractions(Xeq, mp_work1);
+    
+    // Compute equilibrium mole fractions at a perturbed pressure
+    equilibrate(T, P*(1.0+eps), mp_work1, mp_work2, false);
+    
+    // Compute drho/dP
+    double drhodp = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        drhodp += speciesMw(i) * ((1.0 + eps) * mp_work2[i] - Xeq[i]);
+    return (drhodp / (RU * T * eps));
+}
+
+//==============================================================================
+
 double Thermodynamics::mixtureEquilibriumCpMole() const
 {
     return mixtureEquilibriumCpMole(T(), P(), X());
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureEquilibriumCpMass() const
 {
     return mixtureEquilibriumCpMole() / mixtureMw();
-}   
+}
+
+//============================================================================== 
 
 double Thermodynamics::mixtureEquilibriumCpMass(
     double T, double P, const double* const X) const 
@@ -405,15 +509,21 @@ double Thermodynamics::mixtureEquilibriumCpMass(
     return mixtureEquilibriumCpMole(T, P, X) / mixtureMwMole(X);
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureFrozenCvMole() const
 {
     return mixtureFrozenCpMole() - RU;
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureFrozenCvMass() const 
 {
     return (mixtureFrozenCpMole() - RU) / mixtureMw();
 }
+
+//==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCvMole(
     double T, double P, const double* const X) const
@@ -421,10 +531,14 @@ double Thermodynamics::mixtureEquilibriumCvMole(
     return mixtureEquilibriumCpMole(T, P, X) - RU;
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureEquilibriumCvMole() const
 {
     return mixtureEquilibriumCpMole() - RU;
 }
+
+//==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCvMass(
     double T, double P, const double* const X) const 
@@ -432,16 +546,22 @@ double Thermodynamics::mixtureEquilibriumCvMass(
     return (mixtureEquilibriumCpMole(T, P, X) - RU) / mixtureMwMole(X);
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureEquilibriumCvMass() const
 {
     return (mixtureEquilibriumCpMole() - RU) / mixtureMw();
 }
+
+//==============================================================================
     
 double Thermodynamics::mixtureFrozenGamma() const 
 {
     double cp = mixtureFrozenCpMole();
     return (cp / (cp - RU));
 }
+
+//==============================================================================
 
 double Thermodynamics::mixtureEquilibriumGamma(
     double T, double P, const double* const X) const 
@@ -450,11 +570,15 @@ double Thermodynamics::mixtureEquilibriumGamma(
     return (cp / (cp - RU));
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureEquilibriumGamma() const
 {
     double cp = mixtureEquilibriumCpMole();
     return (cp / (cp - RU));
 }
+
+//==============================================================================
 
 void Thermodynamics::speciesHOverRT(
     double* const h, double* const ht, double* const hr, double* const hv,
@@ -465,6 +589,8 @@ void Thermodynamics::speciesHOverRT(
         mp_state->Tel(), h, ht, hr, hv, hel, hf);
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureHMole() const
 {
     double h = 0.0;
@@ -474,10 +600,14 @@ double Thermodynamics::mixtureHMole() const
     return (h * RU * mp_state->T());
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureHMass() const 
 {
     return mixtureHMole() / mixtureMw();
 }
+
+//==============================================================================
 
 void Thermodynamics::speciesSOverR(double *const p_s) const
 {
@@ -485,6 +615,8 @@ void Thermodynamics::speciesSOverR(double *const p_s) const
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
         mp_state->Tel(), mp_state->P(), p_s, NULL, NULL, NULL, NULL);
 }
+
+//==============================================================================
 
 double Thermodynamics::mixtureSMole() const 
 {
@@ -495,9 +627,13 @@ double Thermodynamics::mixtureSMole() const
     return (s * RU);
 }
 
+//==============================================================================
+
 double Thermodynamics::mixtureSMass() const {
     return mixtureSMole() / mixtureMw();
 }
+
+//==============================================================================
 
 void Thermodynamics::speciesGOverRT(double* const p_g) const
 {
@@ -506,10 +642,14 @@ void Thermodynamics::speciesGOverRT(double* const p_g) const
         mp_state->Tel(), mp_state->P(), p_g, NULL, NULL, NULL, NULL);
 }
 
+//==============================================================================
+
 void Thermodynamics::speciesGOverRT(double T, double P, double* const p_g) const
 {
     mp_thermodb->gibbs(T, T, T, T, T, P, p_g, NULL, NULL, NULL, NULL);
 }
+
+//==============================================================================
 
 void Thermodynamics::elementMoles(
     const double *const species_N, double *const element_N) const
@@ -517,6 +657,8 @@ void Thermodynamics::elementMoles(
     asVector(element_N, nElements()) = 
         asVector(species_N, nSpecies()) * m_element_matrix;
 }
+
+//==============================================================================
 
 void Thermodynamics::elementFractions(
     const double* const Xs, double* const Xe) const
@@ -526,4 +668,9 @@ void Thermodynamics::elementFractions(
     double sum = wrapper.sum();
     for (int i = 0; i < nElements(); ++i)
         Xe[i] /= sum;
+    //wrapper = wrapper / wrapper.sum();
 }
+
+//==============================================================================
+
+

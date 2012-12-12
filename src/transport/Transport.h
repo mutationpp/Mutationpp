@@ -28,7 +28,9 @@ public:
         mp_viscosity = 
             Utilities::Factory<ViscosityAlgorithm>::create(viscosity, m_collisions);
         mp_thermal_conductivity = 
-            Utilities::Factory<ThermalConductivityAlgorithm>::create(lambda, m_collisions);
+            Utilities::Factory<ThermalConductivityAlgorithm>::create(
+                lambda, std::pair<Thermodynamics&, CollisionDB&>(
+                    const_cast<Thermodynamics&>(m_thermo), m_collisions));
         mp_diffusion_matrix =
             new Ramshaw(thermo, m_collisions);
     }
@@ -54,7 +56,9 @@ public:
     void setThermalConductivityAlgo(const std::string& algo) {
         delete mp_thermal_conductivity;
         mp_thermal_conductivity = 
-            Utilities::Factory<ThermalConductivityAlgorithm>::create(algo, m_collisions);
+            Utilities::Factory<ThermalConductivityAlgorithm>::create(
+                algo, std::pair<Thermodynamics&, CollisionDB&>(
+                    const_cast<Thermodynamics&>(m_thermo), m_collisions));
     }
     
     /**
@@ -84,15 +88,17 @@ public:
      * Returns the mixture translational thermal conductivity.
      */
     double lambda(const double T, const double nd, double *const p_x) {
-        return mp_thermal_conductivity->conductivity(T, nd, p_x);
+        return mp_thermal_conductivity->thermalConductivity(
+            T, T, T, T, T, nd, p_x);
     }
     
     /**
      * Returns the mixture translational thermal conductivity.
      */
     double lambda() {
-        return mp_thermal_conductivity->conductivity(
-            m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
+        return mp_thermal_conductivity->thermalConductivity(
+            m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(),
+            m_thermo.Tel(), m_thermo.numberDensity(), m_thermo.X());
     }
     
     /**

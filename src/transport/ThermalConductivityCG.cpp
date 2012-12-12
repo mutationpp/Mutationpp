@@ -2,6 +2,8 @@
 #include "ThermalConductivityAlgorithm.h"
 #include "Constants.h"
 #include "Numerics.h"
+#include "CollisionDB.h"
+#include "AutoRegistration.h"
 
 using namespace Numerics;
 
@@ -13,21 +15,24 @@ class ThermalConductivityCG : public ThermalConductivityAlgorithm
 {
 public:
 
-    ThermalConductivityCG(CollisionDB& collisions)
-        : ThermalConductivityAlgorithm(collisions), 
-          m_sys(collisions.nSpecies()-1), m_alpha(collisions.nSpecies()-1)
+    /**
+     * Constructor.
+     */
+    ThermalConductivityCG(ThermalConductivityAlgorithm::ARGS arguments)
+        : ThermalConductivityAlgorithm(arguments), 
+          m_sys(m_collisions.nSpecies()-1), m_alpha(m_collisions.nSpecies()-1)
     { }
 
-    double conductivity(
-        const double T, const double nd, const double *const p_x)
+    double elasticThermalConductivity(
+        double Th, double Te, double nd, const double *const p_x)
     {
         const int ns = m_collisions.nSpecies();
     
-        const RealVector& mi   = m_collisions.mass();
-        const RealSymMat Astar = m_collisions.Astar(T, T, nd, p_x);
-        const RealSymMat Bstar = m_collisions.Bstar(T, T, nd, p_x);
-        const RealSymMat nDij  = m_collisions.nDij(T, T, nd, p_x);
-        const RealVector etai  = m_collisions.etai(T, T, nd, p_x);
+        const RealVector& mi    = m_collisions.mass();
+        const RealSymMat& Astar = m_collisions.Astar(Th, Te, nd, p_x);
+        const RealSymMat& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
+        const RealSymMat& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
+        const RealVector& etai  = m_collisions.etai(Th, Te, nd, p_x);
         
         const VectorWrapper<double> x = asVector(p_x, ns);
         
@@ -58,14 +63,6 @@ public:
         
         // Finally compute the dot product of alpha and X
         return dot(x(1,ns), m_alpha);
-        // lambda = dot(x(1,ns), m_alpha) / nd;
-        
-        // Apply the Euken corrections
-        //m_alpha = nDij(1,ns,0,ns) * x(1,ns);
-        //m_thermo.speciesCvOverR()...
-        //for (int i = 1; i < ns; ++i)
-        //    lambda += x(i) * RU / alpha(i-1) * (cvr(i) + cvv(i) + cve(i));
-        //return lambda * nd;
     }
     
 private:

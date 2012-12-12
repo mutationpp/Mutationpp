@@ -32,6 +32,10 @@ enum ConversionType {
     // Elemental quantities
     XE_TO_YE,    ///< elemental mole fraction to mass fraction
     YE_TO_XE,    ///< elemental mass fraction to mole fraction
+    
+    // Mixed quantities
+    Y_TO_XE,     ///< species mass fractions to elemental mole fractions
+    X_TO_XE,     ///< species mole fractions to elemental mole fractions
 };
 
 // Forward declaration of GfcEquilSolver
@@ -192,9 +196,14 @@ public:
     double P() const;
     
     /**
-     * Returns the current species mass fractions.
+     * Returns the current species mole fractions.
      */
     const double* const X() const;
+    
+    /**
+     * Returns the current species mass fractions.
+     */
+    const double* const Y() const;
     
     /**
      * Returns the standard state temperature for the thermodynamic database 
@@ -297,13 +306,27 @@ public:
      */
     void speciesCpOverR(double *const p_cp) const;
     
+    void speciesCpOverR(
+        double Th, double Te, double Tr, double Tv, double Tel,
+        double *const p_cp, double *const p_cpt, double *const p_cpr,
+        double *const p_cpv, double *const p_cpel) const;
+    
     /**
      * Returns the unitless vector of species specific heats at constant volume
      * \f$ C_{v,i} / R_u \f$.
      */
     void speciesCvOverR(
+        double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cv, double *const p_cvt, double *const p_cvr,
         double *const p_cvv, double *const p_cvel) const;
+    
+    void speciesCvOverR(
+        double *const p_cv, double *const p_cvt, double *const p_cvr,
+        double *const p_cvv, double *const p_cvel) const
+    {
+        speciesCvOverR(
+            T(), Te(), Tr(), Tv(), Tel(), p_cv, p_cvt, p_cvr, p_cvv, p_cvel);        
+    }
     
     /**
      * Returns the frozen mixture averaged specific heat at constant pressure in
@@ -394,6 +417,10 @@ public:
     /**
      * Returns the equilibrium ratio of mixture averaged specific heats which is
      * a unitless quantity.
+     *
+     * T   - equilibrium temperature in K
+     * P   - equilibrium pressure in Pa
+     * Xeq - equilibrium species mole fractions
      */
     double mixtureEquilibriumGamma(
         double T, double P, const double* const Xeq) const;
@@ -403,6 +430,24 @@ public:
      * which is a unitless quantity.
      */
     double mixtureEquilibriumGamma() const;
+    
+    /**
+     * Returns the density derivative with respect to pressure for the given
+     * equilibrium mixture.
+     *
+     * T   - equilibrium temperature in K
+     * P   - equilibrium pressure in Pa
+     * Xeq - equilibrium species mole fractions
+     */
+    double dRhodP(double T, double P, const double* const Xeq) const;
+    
+    /**
+     * Returns the density derivative with respect to pressure for the current
+     * equilibrium state.
+     */
+    double dRhodP() const {
+        return dRhodP(T(), P(), X());
+    }
     
     /**
      * Returns the unitless vector of species enthalpies \f$ H_i / R_u T \f$.
@@ -421,6 +466,34 @@ public:
      * Returns the mixture averaged enthalpy in J/kg.
      */
     double mixtureHMass() const;
+    
+    /**
+     * Returns the mixture energy in J/mol.
+     */
+    double mixtureEnergyMole() const {
+        return mixtureHMole() - P() / density() * mixtureMw();
+    }
+    
+    /**
+     * Returns the mixture energy in J/kg.
+     */
+    double mixtureEnergyMass() const {
+        return mixtureHMass() - P() / density();
+    }
+    
+    /**
+     * Returns the frozen sound speed of the mixture in m/s.
+     */
+    double frozenSoundSpeed() const {
+        return std::sqrt(mixtureFrozenGamma() * P() / density());
+    }
+    
+    /**
+     * Returns the current equilibrium sound speed of the mixture in m/s.
+     */
+    double equilibriumSoundSpeed() const {
+        return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
+    }
     
     /**
      * Returns the unitless vector of species entropies \f$ S_i / R_u \f$.
@@ -492,6 +565,7 @@ private:
     
     double* mp_work1;
     double* mp_work2;
+    double* mp_y;
     double* mp_default_composition;
     
     bool m_has_electrons;
@@ -573,6 +647,12 @@ inline void Thermodynamics::convert<YE_TO_XE>(
     const double sum = std::accumulate(b, b + nElements(), 0.0);
     for (int i = 0; i < nElements(); ++i)
         b[i] /= sum;
+}
+
+template <>
+inline void Thermodynamics::convert<Y_TO_XE>(
+    const double *const a, double *const b) const {
+       
 }
 /// @endcond
 

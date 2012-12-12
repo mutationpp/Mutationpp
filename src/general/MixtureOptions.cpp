@@ -83,7 +83,7 @@ void MixtureOptions::loadFromFile(const string& mixture)
         // class that uses this information
         } else if (iter->tag() == "default_element_fractions") {
             vector<string> element_strings;
-            StringUtils::tokenize(iter->text(), element_strings, ":, \n");
+            StringUtils::tokenize(iter->text(), element_strings, ":, \n\r\t\f");
             
             if (element_strings.size() % 2 != 0) {
                 iter->parseError(

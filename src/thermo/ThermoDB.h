@@ -155,7 +155,7 @@ public:
     
 protected:
 
-    bool m_ns;
+    int m_ns;
     
 }; // class ThermoDB
 

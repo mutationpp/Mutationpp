@@ -1,8 +1,10 @@
 #ifndef TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 #define TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 
-#include "AutoRegistration.h"
-#include "CollisionDB.h"
+#include <utility>
+
+class Thermodynamics;
+class CollisionDB;
 
 /**
  * Abstract base class for all thermal conductivity algorithms which allows for 
@@ -12,25 +14,51 @@ class ThermalConductivityAlgorithm
 {
 public:
 
-    typedef CollisionDB& ARGS;
-    typedef Utilities::Provider<ThermalConductivityAlgorithm> PROVIDER;
+    /// All ThermalConductivityAlgorithms must provide a constructor taking
+    /// these arguements.
+    typedef std::pair<Thermodynamics&, CollisionDB&> ARGS;
 
-    ThermalConductivityAlgorithm(ARGS collisions)
-        : m_collisions(collisions)
-    { }
-    
-    virtual ~ThermalConductivityAlgorithm() { }
+    /**
+     * Constructor.
+     */
+    ThermalConductivityAlgorithm(ARGS arguments);
     
     /**
-     * Returns the mixture thermal conductivity.s
+     * Destructor.
      */
-    virtual double conductivity(
-        const double T, const double nd, const double *const p_x) = 0;
+    virtual ~ThermalConductivityAlgorithm();
+    
+    /**
+     * Returns the mixture thermal conductivity in W/m-K using the algorithm 
+     * defined in the derived type and applying the Euken corrections for 
+     * internal energy.
+     */
+    virtual double thermalConductivity(
+        double Th, double Te, double Tr, double Tv, double Tel, double n, 
+        const double* const p_x);
 
 protected:
     
+    /**
+     * Computes the thermal conductivity using the algorithm implemented in the
+     * derived type.  Note this should not include the application of Euken's
+     * correction for inelastic collisions.
+     */
+    virtual double elasticThermalConductivity(
+        double Th, double Te, double nd, const double* const p_x) = 0;
+    
+
+protected:
+    
+    Thermodynamics& m_thermo;
     CollisionDB& m_collisions;
 
-}; // 
+private:
+    
+    double* mp_cvr;
+    double* mp_cvv;
+    double* mp_cvel;
+
+}; // class ThermalConductivityAlgorithm
 
 #endif // TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H

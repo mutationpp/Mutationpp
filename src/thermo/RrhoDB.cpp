@@ -60,8 +60,6 @@ class RrhoDB : public ThermoDB
 {
 public:
 
-    using ThermoDB::m_ns;
-    
     /**
      * Initializes the database from a list of species objects.  All species
      * should have been given a ParticleRRHO model, otherwise an error is 
@@ -225,7 +223,9 @@ public:
         double deltaT = Th * 1.0E-6;
     
         // Special case if we only want total Cp
-        if (cpt == NULL && cpr == NULL && cpv == NULL && cpel == NULL) {
+        if (cp != NULL && cpt == NULL && cpr == NULL && cpv == NULL && 
+            cpel == NULL)
+        {
             hT(Th + deltaT, Te + deltaT, cp, Eq());
             hT(Th, Te, cp, MinusEq());
             
@@ -245,52 +245,65 @@ public:
         // Otherwise we have to compute each component directly.
         // Translation
         if (cpt == NULL) {
-            hT(Th + deltaT, Te + deltaT, cp, Eq());
-            hT(Th, Te, cp, MinusEq());
+            if (cp != NULL) {
+                hT(Th + deltaT, Te + deltaT, cp, Eq());
+                hT(Th, Te, cp, MinusEq());
+            }
         } else {
             hT(Th + deltaT, Te + deltaT, cpt, Eq());
             hT(Th, Te, cpt, MinusEq());
-            LOOP(cp[i] += cpt[i]);
+            if (cp != NULL) 
+                LOOP(cp[i] += cpt[i]);
             LOOP(cpt[i] /= deltaT);
         }
         
         // Rotation
         if (cpr == NULL) {
-            hR(Tr + deltaT, cp, PlusEq());
-            hR(Tr, cp, MinusEq());
+            if (cp != NULL) {
+                hR(Tr + deltaT, cp, PlusEq());
+                hR(Tr, cp, MinusEq());
+            }
         } else {
             LOOP(cpr[i] = 0.0);
             hR(Tr + deltaT, cpr, Eq());
             hR(Tr, cpr, MinusEq());
-            LOOP_MOLECULES(cp[j] += cpr[j]);
+            if (cp != NULL) 
+                LOOP_MOLECULES(cp[j] += cpr[j]);
             LOOP_MOLECULES(cpr[j] /= deltaT);
         }
         
         // Vibration
         if (cpv == NULL) {
-            hV(Tv + deltaT, cp, PlusEq());
-            hV(Tv, cp, MinusEq());
+            if (cp != NULL) {
+                hV(Tv + deltaT, cp, PlusEq());
+                hV(Tv, cp, MinusEq());
+            }
         } else {
             LOOP(cpv[i] = 0.0);
             hV(Tv + deltaT, cpv, Eq());
             hV(Tv, cpv, MinusEq());
-            LOOP_MOLECULES(cp[j] += cpv[j]);
+            if (cp != NULL) 
+                LOOP_MOLECULES(cp[j] += cpv[j]);
             LOOP_MOLECULES(cpv[j] /= deltaT);
         }
         
         // Electronic
         if (cpel == NULL) {
-            hE(Tel + deltaT, cp, PlusEq());
-            hE(Tel, cp, MinusEq());
+            if (cp != NULL) {
+                hE(Tel + deltaT, cp, PlusEq());
+                hE(Tel, cp, MinusEq());
+            }
         } else {
             LOOP(cpel[i] = 0.0);
             hE(Tr + deltaT, cpel, Eq());
             hE(Tr, cpel, MinusEq());
-            LOOP(cp[i] += cpel[i]);
+            if (cp != NULL) 
+                LOOP(cp[i] += cpel[i]);
             LOOP(cpel[i] /= deltaT);
         }
         
-        LOOP(cp[i] /= deltaT);
+        if (cp != NULL) 
+            LOOP(cp[i] /= deltaT);
     }
     
     /**
