@@ -141,7 +141,7 @@ public:
         
         for (int i = 1; i < m_thermo.nSpecies(); ++i) {
             fac = X[i] * Q11(i);
-            lam00 += 8.0 * fac;
+            lam00 += fac * 8.0;
             lam01 += fac * (20.0 - 24.0 * Cei(i));
             lam11 += fac * (50.0 - 24.0 * B(i));
         }
