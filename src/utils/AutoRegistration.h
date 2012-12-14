@@ -38,7 +38,6 @@ public:
      */
     void add(Provider<PTYPE>* ptr)
     {
-        std::cout << "Registered the " << ptr->getName() << " type." << std::endl;
         if (m_providers.count(ptr->getName()) == 0) {
             m_providers[ptr->getName()] = ptr;
         } else {

@@ -20,7 +20,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 36
+#define NMIXTURE 37
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -55,6 +55,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("e", "J/kg", "mixture energy"),
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
     OutputQuantity("lambda", "W/m-K", "thermal conductivity"),
+    OutputQuantity("sigma", "S/m", "electric conductivity"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
@@ -369,11 +370,11 @@ int main(int argc, char** argv)
     double* sjac_fd        = new double [mix.nSpecies()*mix.nSpecies()];
     double* temp2          = new double [mix.nSpecies()];
     
-    ofstream jac_file("jac.dat");
+    /*ofstream jac_file("jac.dat");
     
     for (int i = 0; i < mix.nSpecies(); ++i)
         jac_file << setw(15) << mix.speciesName(i);
-    jac_file << endl;
+    jac_file << endl;*/
     
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {
@@ -435,6 +436,8 @@ int main(int argc, char** argv)
                     value = mix.eta();
                 else if (name == "lambda")
                     value = mix.lambda();
+                else if (name == "sigma")
+                    value = mix.sigma();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
                     value = 0.0;

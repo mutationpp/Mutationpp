@@ -310,6 +310,17 @@ public:
     }
     
     /**
+     * Returns the dimensionless ratio \f$ (Q_{ei}^{(1,2)} / Q_{ei}^{(1,1)} \f$.
+     */
+    const Numerics::RealVector& Cstei(
+        const double Th, const double Te, const double nd, 
+        const double *const p_x)
+    {
+        updateCollisionData(Th, Te, nd, p_x, CSTAR);
+        return m_Cst;
+    }
+    
+    /**
      * Returns the pure species shear viscosities.
      */
     const Numerics::RealVector& etai(
@@ -348,6 +359,7 @@ private:
         Q22IJ,
         ASTAR,
         BSTAR,
+        CSTAR,
         ETAI,
         NDIJ,
         DATA_SIZE
@@ -395,6 +407,8 @@ private:
     static const CollisionFunc5 sm_Q22_rep;
     static const CollisionFunc5 sm_Bst_att;
     static const CollisionFunc5 sm_Bst_rep;
+    static const CollisionFunc5 sm_Cst_att;
+    static const CollisionFunc5 sm_Cst_rep;
     
     // Mass quantities
     Numerics::RealVector m_mass;
@@ -407,6 +421,7 @@ private:
     Numerics::RealSymMat m_Q22;
     Numerics::RealSymMat m_Ast;
     Numerics::RealSymMat m_Bst;
+    Numerics::RealVector m_Cst;
     Numerics::RealVector m_eta;
     Numerics::RealSymMat m_Dij;
     

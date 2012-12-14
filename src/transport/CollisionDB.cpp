@@ -30,11 +30,18 @@ const CollisionFunc5 CollisionDB::sm_Bst_att(
 const CollisionFunc5 CollisionDB::sm_Bst_rep(
     3.2606973e-01,-2.3742462e-02,-9.6987749e-03,1.7799200e-03,-8.3938754e-05);
 
+const CollisionFunc5 CollisionDB::sm_Cst_att(
+    -6.4672764e-01,-1.0737242e-01,1.7962157e-02,-1.8653043e-03,8.0134495e-05);
+
+const CollisionFunc5 CollisionDB::sm_Cst_rep(
+    -5.0077127e-01,-1.0639836e-01,-1.1478149e-03,1.8355926e-03,-1.1830337e-04);
+
+
 CollisionDB::CollisionDB(const Thermodynamics& thermo)
     : m_ns(thermo.nSpecies()), m_ncollisions((m_ns*(m_ns + 1))/2), 
       m_mass(m_ns), m_mass_sum(m_ns), m_mass_prod(m_ns), m_red_mass(m_ns),
       m_em_index(thermo.speciesIndex("e-")), m_Q11(m_ns), m_Q22(m_ns), 
-      m_Ast(m_ns), m_Bst(m_ns), m_eta(m_ns), m_Dij(m_ns)
+      m_Ast(m_ns), m_Bst(m_ns), m_Cst(m_ns), m_eta(m_ns), m_Dij(m_ns)
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
@@ -288,6 +295,29 @@ void CollisionDB::updateCollisionData(
             const double Bst_att = hfac * sm_Bst_att(lnTsth);
             for (int i = 0; i < na; ++i)
                 m_Bst(m_attract_indices[i]) = Bst_att;
+            } break;
+            
+        case CSTAR: {        
+            // Neutral-electron collisions are treated as 1 for now
+            m_Cst = 1.0;
+            
+            // Ion-electron (repulsive) interactions
+            int index = 0;
+            int j = m_repulse_indices[index];
+            const double Cst_rep = hfac * sm_Cst_rep(lnTsth);
+            while (j < m_ns) {
+                m_Cst(j) = Cst_rep;
+                j = m_repulse_indices[++index];
+            }
+            
+            // Ion-electron (attractive) interactions
+            index = 0;
+            j = m_attract_indices[index];
+            const double Cst_att = hfac * sm_Cst_rep(lnTsth);
+            while (j < m_ns) {
+                m_Cst(j) = Cst_att;
+                j = m_attract_indices[++index];
+            }
             } break;
         
         case ETAI: {
