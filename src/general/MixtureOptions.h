@@ -105,28 +105,30 @@ public:
     /**
      * Gets the viscosity algorithm to use.
      */
-    const std::string& getViscosityAlgo() const {
+    const std::string& getViscosityAlgorithm() const {
         return m_viscosity;
     }
     
     /**
      * Sets which viscosity algorithm to use.
      */
-    void setViscosityAlgo(const std::string& viscosity) {
+    void setViscosityAlgorithm(const std::string& viscosity) {
         m_viscosity = viscosity;
     }
     
     /**
      * Gets the thermal conductivity algorithm to use.
      */
-    const std::string& getThermalConductivityAlgo() const {
+    const std::string& getThermalConductivityAlgorithm() const {
         return m_thermal_conductivity;
     }
     
     /**
      * Sets the thermal conductivity algorithm to use.
      */
-    void setThermalConductivityAlgo(const std::string& thermal_conductivity) {
+    void setThermalConductivityAlgorithm(
+        const std::string& thermal_conductivity) 
+    {
         m_thermal_conductivity = thermal_conductivity;
     }
     

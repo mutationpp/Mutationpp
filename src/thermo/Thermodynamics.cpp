@@ -334,7 +334,7 @@ double Thermodynamics::numberDensity(const double T, const double P) const
 
 double Thermodynamics::numberDensity() const 
 {
-    double Xe = (hasElectrons() ? mp_state->X()[1] : 0.0);
+    double Xe = (hasElectrons() ? mp_state->X()[0] : 0.0);
     return mp_state->P() / KB * 
         ((1.0 - Xe) / mp_state->T() + Xe / mp_state->Te());
 }
@@ -467,6 +467,54 @@ double Thermodynamics::mixtureEquilibriumCpMole(
     return cp / eps * RU + mixtureFrozenCpMole();
 }
 
+/*double Thermodynamics::mixtureFrozenCpMass(
+    double T, double P, const double* const Yeq) const
+{
+    
+}*/
+
+//==============================================================================
+
+double Thermodynamics::mixtureEquilibriumCpMass(
+    double T, double P, const double* const Yeq) const
+{
+    const double eps = 1.0e-6;
+    
+    // Compute the current elemental fraction
+    convert<Y_TO_X>(Yeq, mp_work2);
+    elementFractions(mp_work2, mp_work1);
+    
+    // Compute the equilibrium mass fractions at a perturbed temperature
+    equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
+    convert<X_TO_Y>(mp_work2, mp_work1);
+    
+    // Compute the species H/RT
+    speciesHOverRT(mp_work2);
+    
+    double cp = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += (mp_work1[i] - Yeq[i]) * mp_work2[i] / speciesMw(i);
+    
+    return (cp / eps * RU + mixtureFrozenCpMass());
+}
+
+//==============================================================================
+
+void Thermodynamics::dXidT(
+    double T, double P, const double* const Xeq, double* const dxdt) const
+{
+    const double eps = 1.0e-6;
+    
+    // Compute the current elemental fraction
+    elementFractions(Xeq, mp_work1);
+    
+    // Compute equilibrium mole fractions at a perturbed temperature
+    equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
+    
+    for (int i = 0; i < nSpecies(); ++i)
+        dxdt[i] = (mp_work2[i] - Xeq[i]) / (T * eps);
+}
+
 //==============================================================================
 
 double Thermodynamics::dRhodP(
@@ -498,15 +546,7 @@ double Thermodynamics::mixtureEquilibriumCpMole() const
 
 double Thermodynamics::mixtureEquilibriumCpMass() const
 {
-    return mixtureEquilibriumCpMole() / mixtureMw();
-}
-
-//============================================================================== 
-
-double Thermodynamics::mixtureEquilibriumCpMass(
-    double T, double P, const double* const X) const 
-{    
-    return mixtureEquilibriumCpMole(T, P, X) / mixtureMwMole(X);
+    return mixtureEquilibriumCpMass(T(), P(), Y());
 }
 
 //==============================================================================
@@ -541,16 +581,18 @@ double Thermodynamics::mixtureEquilibriumCvMole() const
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCvMass(
-    double T, double P, const double* const X) const 
+    double T, double P, const double* const Y) const 
 {
-    return (mixtureEquilibriumCpMole(T, P, X) - RU) / mixtureMwMole(X);
+    /// @todo
+    return 0.0;
+    
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCvMass() const
 {
-    return (mixtureEquilibriumCpMole() - RU) / mixtureMw();
+    return mixtureEquilibriumCpMass() - RU / mixtureMw();
 }
 
 //==============================================================================
@@ -564,18 +606,18 @@ double Thermodynamics::mixtureFrozenGamma() const
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumGamma(
-    double T, double P, const double* const X) const 
+    double T, double P, const double* const Y) const 
 {
-    double cp = mixtureEquilibriumCpMole(T, P, X);
-    return (cp / (cp - RU));
+    double cp = mixtureEquilibriumCpMass(T, P, Y);
+    return (cp / (cp - RU / mixtureMw()));
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumGamma() const
 {
-    double cp = mixtureEquilibriumCpMole();
-    return (cp / (cp - RU));
+    double cp = mixtureEquilibriumCpMass();
+    return (cp / (cp - RU / mixtureMw()));
 }
 
 //==============================================================================

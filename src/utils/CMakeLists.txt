@@ -11,5 +11,6 @@ install(FILES IteratorWrapper.h DESTINATION include/mutation++)
 install(FILES LookupTable.h DESTINATION include/mutation++)
 install(FILES ReferenceServer.h DESTINATION include/mutation++)
 install(FILES Units.h DESTINATION include/mutation++)
+install(FILES utilities.h DESTINATION include/mutation++)
 install(FILES XMLite.h DESTINATION include/mutation++)
 

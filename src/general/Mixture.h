@@ -36,8 +36,8 @@ public:
              options.getStateModel()),
           Transport(
              static_cast<const Thermodynamics&>(*this), 
-             options.getViscosityAlgo(),
-             options.getThermalConductivityAlgo()),
+             options.getViscosityAlgorithm(),
+             options.getThermalConductivityAlgorithm()),
           Kinetics(
              static_cast<const Thermodynamics&>(*this),
              options.getMechanism())

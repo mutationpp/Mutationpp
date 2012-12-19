@@ -15,20 +15,20 @@ public:
     { }
     
     /**
-     * Computes the binary diffusion coefficient matrix.
+     * Computes the multicomponent diffusion coefficient matrix.
      *
      * @todo This method currently breaks the symmetry property of the diffusion
      * matrix.  It should be reformulated to return a symmetric matrix which
      * would be faster to compute and use.
      */
-    const RealMatrix& diffusionMatrix(
+    const Numerics::RealMatrix& diffusionMatrix(
         const double T, const double nd, const double *const p_x)
     {
         const int ns = m_thermo.nSpecies();
     
         // First step is to compute nDij and Y
         const Numerics::RealSymMat nDij = m_collisions.nDij(T, T, nd, p_x);
-        double *Y = new double [ns];
+        double* Y = new double [ns];
         m_thermo.convert<X_TO_Y>(p_x, Y);
         
         // Now we can compute the mixture averaged diffusion coefficient for the
