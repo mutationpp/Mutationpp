@@ -19,7 +19,7 @@
 int main()
 {
     // Generate the default options for the air11 mixture
-    MixtureOptions opts("air11");
+    Mutation::MixtureOptions opts("air11");
     
     // Override composition in mixture file
     opts.setDefaultComposition()
@@ -32,7 +32,7 @@ int main()
     opts.setThermodynamicDatabase("NASA-9");
     
     // Load the mixture with the new options
-    Mixture mix(opts);
+    Mutation::Mixture mix(opts);
     
     // Write a header line for the table
     std::cout << std::setw(15) << "T[K]";

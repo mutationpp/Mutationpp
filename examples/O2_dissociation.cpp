@@ -20,12 +20,15 @@
 #include <iostream>
 #include <cmath>
 
+using std::setw;
+
 /**
  * Solves the total energy equation for temperature given species mass
  * mass fractions and the total energy which remains constant for this process.
  */
 double newton(
-    const Mixture& mix, const double* const pY, const double etot, double T)
+    const Mutation::Mixture& mix, const double* const pY, const double etot, 
+    double T)
 {
     const int ns = mix.nSpecies();
     double* pCp = new double [ns];
@@ -69,9 +72,9 @@ double newton(
  */
 int main()
 {
-    MixtureOptions opts("O2");
+    Mutation::MixtureOptions opts("O2");
     opts.setThermodynamicDatabase("NASA-7");
-    Mixture mix(opts);
+    Mutation::Mixture mix(opts);
     
     // Useful to know the species indices
     const int ns  = mix.nSpecies();
