@@ -9,11 +9,10 @@
 #include "Functors.h"
 #include "ReferenceServer.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
 
-using std::max;
-using std::min;
-using std::sqrt;
+
 
 template<typename T, typename E> class MatExpr;
 
@@ -374,7 +373,7 @@ public:
      */
     VectorSlice<T, Vector<T> >& operator()(
         const size_t start, const size_t end) {
-        return ReferenceServer<
+        return Mutation::Utilities::ReferenceServer<
             VectorSlice<T, Vector<T> >, 5>::serve().setSlice(this, start, end);
     }
     
@@ -384,7 +383,7 @@ public:
      */
     const VectorSlice<T, Vector<T> >& operator()(
         const size_t start, const size_t end) const {
-        return ReferenceServer<
+        return Mutation::Utilities::ReferenceServer<
             VectorSlice<T, Vector<T> >, 5>::serve().setSlice(
                 const_cast<Vector<T>*>(this), start, end);
     }
@@ -754,7 +753,7 @@ public:
     }
     const VectorSlice<T, VectorWrapper<T> >& operator()(
         const size_t start, const size_t end) const {
-        return ReferenceServer<
+        return Mutation::Utilities::ReferenceServer<
             VectorSlice<T, VectorWrapper<T> >, 5>::serve().setSlice(
                 const_cast<VectorWrapper<T>*>(this), start, end);
     }
@@ -858,6 +857,7 @@ std::ostream& operator<<(std::ostream& os, const VecExpr<T, E>& v)
     return os;
 }
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_VECTOR_H

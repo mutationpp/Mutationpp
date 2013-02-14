@@ -17,5 +17,6 @@ const double C0     = 299792458.0;     // Speed of light in vacuum (m/s)
 const double EPS0   = 1.0/(MU0*C0*C0); // Vacuum permittivity (F/m)
 const double QE     = 1.602176565E-19; // Elementary positive charge (C)
 const double ONEATM = 101325.0;        // 1 atm in Pa
+const double SQRT2  = std::sqrt(2.0);  // square root of 2
 
 #endif // GENERAL_CONSTANTS_H

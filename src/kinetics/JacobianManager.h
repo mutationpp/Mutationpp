@@ -379,7 +379,7 @@ public:
             std::copy(alpha, alpha+ns, mp_alpha);
         else {
             std::cout << "Error allocating storage for ThirdbodyReactionStoich"
-                      << "::m_alpha!" << endl;
+                      << "::m_alpha!" << std::endl;
             exit(1);
         }
     }
@@ -445,7 +445,7 @@ public:
     /**
      * Constructor.
      */
-    JacobianManager(const Thermodynamics& thermo)
+    JacobianManager(const Mutation::Thermodynamics::Thermodynamics& thermo)
         : m_thermo(thermo)
     {
         mp_work = new double [m_thermo.nSpecies()];
@@ -500,7 +500,7 @@ private:
     
 private:
 
-    const Thermodynamics& m_thermo;
+    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     double* mp_work;    
     std::vector<ReactionStoichBase*> m_reactions;
 

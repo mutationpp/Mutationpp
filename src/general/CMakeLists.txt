@@ -29,10 +29,6 @@ endif()
 # Build and install the test codes
 option(BUILD_TEST_CODES "Build test executables" ON)
 if (BUILD_TEST_CODES)
-    # test
-    add_executable(test test.cpp)
-    target_link_libraries(test mutation++)
-    install(TARGETS test DESTINATION bin)
     
     # profiling
     #add_executable(profiling profiling.cpp)

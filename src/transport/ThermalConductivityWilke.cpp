@@ -4,9 +4,10 @@
 #include "Constants.h"
 #include "Numerics.h"
 #include "CollisionDB.h"
-#include "AutoRegistration.h"
+#include "Utilities.h"
 
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 /**
  * Computes the translational thermal conductivity of a mixture using the Wilke 
@@ -21,7 +22,7 @@ public:
         : ThermalConductivityAlgorithm(arguments)
     { }
     
-    double elasticThermalConductivity(
+    double thermalConductivity(
         double Th, double Te, double nd, const double* const p_x) 
     {
         const size_t ns = m_collisions.nSpecies();
@@ -34,6 +35,6 @@ public:
 };
 
 // Register the algorithm
-Utilities::ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
+Config::ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
     lambdaWilke("Wilke");
 

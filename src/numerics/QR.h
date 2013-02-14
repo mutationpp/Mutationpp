@@ -20,9 +20,9 @@
 #include "NumConst.h"
 #include "Matrix.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
 
-using std::sqrt;
 
 /**
  * Computes the QR decomposition of a MxN matrix A where M >= N using 
@@ -427,6 +427,7 @@ void QRP<Real>::solveATA(Vector<Real> &x, Vector<Real>&b) const
     pivot(x);
 }
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_QR_H

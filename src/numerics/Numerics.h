@@ -8,7 +8,9 @@
 #include "cg.h"
 #include "LDLT.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 typedef Vector<double>           RealVector;
 typedef VectorWrapper<double>    RealVecWrapper;
@@ -17,6 +19,7 @@ typedef SymmetricMatrix<double>  RealSymMat;
 
 typedef NumConst<double>         RealConsts;
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_NUMERICS_H

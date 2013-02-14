@@ -8,8 +8,6 @@
 #include "Units.h"
 #include "XMLite.h"
 
-using namespace utils;
-
 /**
  * Abstract base class for all rate laws which allows owners such as class 
  * Reaction to store any rate law polymorphically.
@@ -29,9 +27,9 @@ class Arrhenius : public RateLaw
 {
 public:
 
-    static void setUnits(XmlElement& node);
+    static void setUnits(Mutation::Utilities::IO::XmlElement& node);
     
-    Arrhenius(XmlElement& node, const int order);
+    Arrhenius(Mutation::Utilities::IO::XmlElement& node, const int order);
     
     Arrhenius(const Arrhenius& to_copy)
         : m_lnA(to_copy.m_lnA), m_n(to_copy.m_n), m_temp(to_copy.m_temp)
@@ -61,8 +59,8 @@ public:
     
 private:
 
-    static std::vector<Units> sm_aunits;    
-    static std::vector<Units> sm_eunits;
+    static std::vector<Mutation::Utilities::Units> sm_aunits;    
+    static std::vector<Mutation::Utilities::Units> sm_eunits;
 
     double m_lnA;
     double m_n;

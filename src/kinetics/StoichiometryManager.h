@@ -47,7 +47,9 @@ public:
      * for species i in reaction j.
      */
     inline void multReaction(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const {
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const 
+    {
         for (int i = 0; i < N; ++i)
             r(m_rxn) *= s(m_sps[i]);
     }
@@ -62,7 +64,9 @@ public:
      * for species i in reaction j.
      */
     inline void incrReaction(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const {
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const 
+    {
         for (int i = 0; i < N; ++i)
             r(m_rxn) += s(m_sps[i]);
     }
@@ -77,7 +81,9 @@ public:
      * for species i in reaction j.
      */
     inline void decrReaction(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const {
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const 
+    {
         for (int i = 0; i < N; ++i)
             r(m_rxn) -= s(m_sps[i]);
     }
@@ -92,7 +98,9 @@ public:
      * for species i in reaction j.
      */
     inline void incrSpecies(
-        const Numerics::RealVector& r, Numerics::RealVector& s) const {
+        const Mutation::Numerics::RealVector& r, 
+        Mutation::Numerics::RealVector& s) const 
+    {
         for (int i = 0; i < N; ++i)
             s(m_sps[i]) += r(m_rxn);
     }
@@ -107,7 +115,9 @@ public:
      * for species i in reaction j.
      */
     inline void decrSpecies(
-        const Numerics::RealVector& r, Numerics::RealVector& s) const {
+        const Mutation::Numerics::RealVector& r, 
+        Mutation::Numerics::RealVector& s) const 
+    {
         for (int i = 0; i < N; ++i)
             s(m_sps[i]) -= r(m_rxn);
     }
@@ -200,19 +210,24 @@ public:
     void addReaction(const int rxn, const std::vector<size_t> &sps);
     
     void multReactions(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const;
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const;
     
     void incrReactions(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const;
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const;
     
     void decrReactions(
-        const Numerics::RealVector& s, Numerics::RealVector& r) const;
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const;
     
     void incrSpecies(
-        const Numerics::RealVector& r, Numerics::RealVector& s) const;
+        const Mutation::Numerics::RealVector& r, 
+        Mutation::Numerics::RealVector& s) const;
     
     void decrSpecies(
-        const Numerics::RealVector& r, Numerics::RealVector& s) const;
+        const Mutation::Numerics::RealVector& r, 
+        Mutation::Numerics::RealVector& s) const;
 
 private:
 

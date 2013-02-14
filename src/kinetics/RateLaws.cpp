@@ -5,7 +5,8 @@
 #include "Constants.h"
 
 using namespace std;
-using namespace utils;
+using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::IO;
 
 void Arrhenius::setUnits(XmlElement& node)
 {

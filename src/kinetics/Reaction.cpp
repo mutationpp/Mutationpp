@@ -3,7 +3,9 @@
 #include <cassert>
 
 #include "Reaction.h"
-#include "utilities.h"
+#include "Utilities.h"
+
+using namespace Mutation::Utilities;
 
 void swap(Reaction& left, Reaction& right) {
     using std::swap;
@@ -16,7 +18,7 @@ void swap(Reaction& left, Reaction& right) {
     swap(left.mp_rate,       right.mp_rate);
 }
 
-Reaction::Reaction(XmlElement& node)
+Reaction::Reaction(IO::XmlElement& node)
     : m_thirdbody(false), m_reversible(true), mp_rate(NULL)
 {
     // Make sure this is a reaction type XML element
@@ -32,14 +34,14 @@ Reaction::Reaction(XmlElement& node)
     
     // Now loop through the children of this node to determine the other 
     // attributes of the reaction
-    XmlElement::Iterator iter = node.begin();
+    IO::XmlElement::Iterator iter = node.begin();
     for ( ; iter != node.end(); ++iter) {
         if (iter->tag() == "arrhenius") {
             mp_rate = new Arrhenius(*iter, order());
         } else if (iter->tag() == "M") {
             if (m_thirdbody) {
                 std::vector<std::string> tokens;
-                StringUtils::tokenize(iter->text(), tokens, ":, ");
+                String::tokenize(iter->text(), tokens, ":, ");
                 for (int i = 0; i < tokens.size(); i+=2)
                     m_thirdbodies.push_back(
                         make_pair(tokens[i], atof(tokens[i+1].c_str())));
@@ -56,7 +58,7 @@ Reaction::Reaction(XmlElement& node)
         node.parseError("A rate law must be supplied with this reaction!");
 }
 
-void Reaction::parseFormula(XmlElement& node)
+void Reaction::parseFormula(IO::XmlElement& node)
 {
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction
@@ -98,7 +100,7 @@ void Reaction::parseSpecies(
     ParseState state = coefficient;
     
     // Remove all spaces to simplify the state machine logic
-    StringUtils::eraseAll(str, " ");
+    String::eraseAll(str, " ");
     
     // Loop over every character
     while (c != str.size()) {

@@ -632,7 +632,7 @@
 				2990.460
 			</vibrational_temperatures>
 			<electronic_levels units="1/cm">
-				<level degeneracy="1" energy="0.0" />
+				<level degeneracy="1" energy="    0.0" />
 				<level degeneracy="6" energy="14000.0" />
 				<level degeneracy="6" energy="21500.0" />
 				<level degeneracy="3" energy="23800.0" />
@@ -1211,6 +1211,9 @@
 			H: 6,
 			O: 1
 		</stoichiometry>
+		
+		<thermodynamics type="NASA-9" dbname="C6H5OH(phenol" />
+		
 		<thermodynamics type="RRHO">
 			<linear>
 				no

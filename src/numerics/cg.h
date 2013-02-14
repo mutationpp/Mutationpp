@@ -3,7 +3,8 @@
 
 #include "Preconditioner.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
 
 /**
  * Solves the linear system Ax = b using the Preconditioned Conjugate Gradient 
@@ -51,6 +52,7 @@ void cg(const SymMatExpr<T, E1>& A, Vector<T>& x, const VecExpr<T, E2>& b,
     } 
 }
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_CG_H

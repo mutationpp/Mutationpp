@@ -9,7 +9,9 @@ class Ramshaw
 {
 public:
     
-    Ramshaw(const Thermodynamics& thermo, CollisionDB& collisions)
+    Ramshaw(
+        const Mutation::Thermodynamics::Thermodynamics& thermo, 
+        CollisionDB& collisions)
         : m_thermo(thermo), m_collisions(collisions), 
           m_Di(thermo.nSpecies()), m_D(thermo.nSpecies(), thermo.nSpecies())
     { }
@@ -21,15 +23,16 @@ public:
      * matrix.  It should be reformulated to return a symmetric matrix which
      * would be faster to compute and use.
      */
-    const Numerics::RealMatrix& diffusionMatrix(
+    const Mutation::Numerics::RealMatrix& diffusionMatrix(
         const double T, const double nd, const double *const p_x)
     {
         const int ns = m_thermo.nSpecies();
     
         // First step is to compute nDij and Y
-        const Numerics::RealSymMat nDij = m_collisions.nDij(T, T, nd, p_x);
+        const Mutation::Numerics::RealSymMat& nDij = 
+            m_collisions.nDij(T, T, nd, p_x);
         double* Y = new double [ns];
-        m_thermo.convert<X_TO_Y>(p_x, Y);
+        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(p_x, Y);
         
         // Now we can compute the mixture averaged diffusion coefficient for the
         // ith species
@@ -58,10 +61,10 @@ public:
     
 private:
 
-    const Thermodynamics& m_thermo;
+    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB& m_collisions;
-    Numerics::RealVector m_Di;
-    Numerics::RealMatrix m_D;
+    Mutation::Numerics::RealVector m_Di;
+    Mutation::Numerics::RealMatrix m_D;
         
 }; // class Ramshaw
 

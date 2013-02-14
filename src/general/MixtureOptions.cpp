@@ -1,10 +1,11 @@
 
 #include "MixtureOptions.h"
-#include "utilities.h"
-#include "XMLite.h"
+#include "Utilities.h"
 
 using namespace std;
-using namespace utils;
+using namespace Mutation::Utilities;
+
+namespace Mutation {
 
 MixtureOptions::MixtureOptions()
     : m_composition_setter(m_default_composition),
@@ -48,8 +49,8 @@ void MixtureOptions::loadFromFile(const string& mixture)
         mixture + ".xml";
         
     // Now load the XML file
-    XmlDocument mixture_doc(mixture_path);
-    XmlElement root = mixture_doc.root();
+    IO::XmlDocument mixture_doc(mixture_path);
+    IO::XmlElement root = mixture_doc.root();
     
     // Make sure this is a mixture element
     if (root.tag() != "mixture")
@@ -73,17 +74,18 @@ void MixtureOptions::loadFromFile(const string& mixture)
     root.getAttribute("state_model", m_state_model, m_state_model);
     
     // Loop over all of the mixture child elements
-    for (XmlElement::Iterator iter = root.begin(); iter != root.end(); ++iter) {
+    IO::XmlElement::Iterator iter;
+    for (iter = root.begin(); iter != root.end(); ++iter) {
         // Load the species list
         if (iter->tag() == "species") {
-            StringUtils::tokenize(iter->text(), m_species_names, ", \n");
+            String::tokenize(iter->text(), m_species_names, ", \n");
         
         // Load the default element fractions, note that we only check for valid
         // format, not for valid elements or fractions, this is left up to the
         // class that uses this information
         } else if (iter->tag() == "default_element_fractions") {
             vector<string> element_strings;
-            StringUtils::tokenize(iter->text(), element_strings, ":, \n\r\t\f");
+            String::tokenize(iter->text(), element_strings, ":, \n\r\t\f");
             
             if (element_strings.size() % 2 != 0) {
                 iter->parseError(
@@ -93,7 +95,7 @@ void MixtureOptions::loadFromFile(const string& mixture)
             
             m_default_composition.clear();
             for (int i = 0; i < element_strings.size(); i+=2) {
-                if (isNumeric(element_strings[i+1])) {            
+                if (String::isNumeric(element_strings[i+1])) {            
                     m_default_composition.push_back(
                         make_pair(element_strings[i], 
                         atof(element_strings[i+1].c_str())));
@@ -107,3 +109,6 @@ void MixtureOptions::loadFromFile(const string& mixture)
         }
     }
 }
+
+} // namespace Mutation
+

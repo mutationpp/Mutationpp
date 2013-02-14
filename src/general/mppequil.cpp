@@ -1,9 +1,13 @@
 #include "mutation++.h"
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 using std::cout;
 using std::endl;
+using std::setw;
+
+using namespace Mutation::Utilities;
 
 #define COLUMN_WIDTH 14
 
@@ -20,7 +24,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 37
+#define NMIXTURE 40
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -30,7 +34,6 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Cp_eq", "J/mol-K", "equilibrium specific heat at constant pressure"),
     OutputQuantity("H", "J/mol", "enthalpy"),
     OutputQuantity("S", "J/mol-K", "entropy"),
-    OutputQuantity("Cv_eq", "J/mol-K", "equilibirum specific heat at constant volume"),
     OutputQuantity("Cp_eq", "J/kg-K", "equilibrium specific heat at constant pressure"),
     OutputQuantity("H", "J/kg", "enthalpy"),
     OutputQuantity("S", "J/kg-K", "entropy"),
@@ -54,7 +57,11 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("e", "J/mol", "mixture energy"),
     OutputQuantity("e", "J/kg", "mixture energy"),
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
-    OutputQuantity("lambda", "W/m-K", "thermal conductivity"),
+    OutputQuantity("lambda", "W/m-K", "mixture equilibrium thermal conductivity"),
+    OutputQuantity("lam_reac", "W/m-K", "reactive thermal conductivity"),
+    OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
+    OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
+    OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
     OutputQuantity("sigma", "S/m", "electric conductivity"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
@@ -94,7 +101,7 @@ typedef struct {
     
     bool verbose;
     
-    MixtureOptions* p_mixture_opts;
+    Mutation::MixtureOptions* p_mixture_opts;
 } Options;
 
 // Checks if an option is present
@@ -142,7 +149,7 @@ void printHelpMessage(const char* const name)
     cout << "Mixture values (example format: \"1-3,7,9-11\"):" << endl;
     
     for (int i = 0; i < NMIXTURE; ++i)
-        cout << tab << setw(2) << i << ": " << setw(7)
+        cout << tab << setw(2) << i << ": " << setw(10)
              << mixture_quantities[i].name << setw(12)
              << (mixture_quantities[i].units == "" ? "[-]" : 
                 "[" + mixture_quantities[i].units + "]") 
@@ -152,7 +159,7 @@ void printHelpMessage(const char* const name)
     cout << "Species values (same format as mixture values):" << endl;
     
     for (int i = 0; i < NSPECIES; ++i)
-        cout << tab << setw(2) << i << ": " << setw(7)
+        cout << tab << setw(2) << i << ": " << setw(10)
              << species_quantities[i].name << setw(12)
              << (species_quantities[i].units == "" ? "[-]" : 
                 "[" + species_quantities[i].units + "]") 
@@ -170,9 +177,9 @@ void printHelpMessage(const char* const name)
 bool parseRange(const std::string& range, double& x1, double& x2, double& dx)
 {
     std::vector<std::string> tokens;
-    utils::StringUtils::tokenize(range, tokens, ":");
+    String::tokenize(range, tokens, ":");
     
-    if (!isNumeric(tokens))
+    if (!String::isNumeric(tokens))
         return false;
     
     switch (tokens.size()) {
@@ -205,14 +212,14 @@ bool parseIndices(const std::string& list, std::vector<int>& indices, int max)
     
     std::vector<std::string> ranges;
     std::vector<std::string> bounds;
-    utils::StringUtils::tokenize(list, ranges, ",");
+    String::tokenize(list, ranges, ",");
     
     std::vector<std::string>::const_iterator iter = ranges.begin();
     for ( ; iter != ranges.end(); ++iter) {
         bounds.clear();
-        utils::StringUtils::tokenize(*iter, bounds, "-");
+        String::tokenize(*iter, bounds, "-");
         
-        if (!isNumeric(bounds))
+        if (!String::isNumeric(bounds))
             return false;
         
         switch (bounds.size()) {
@@ -259,13 +266,12 @@ Options parseOptions(int argc, char** argv)
     // The mixture name is given as the only argument (unless --species option
     // is present)
     if (optionExists(argc, argv, "--species_list")) {
-        opts.p_mixture_opts = new MixtureOptions();
+        opts.p_mixture_opts = new Mutation::MixtureOptions();
         std::vector<std::string> tokens;
-        utils::StringUtils::tokenize(
-            getOption(argc, argv, "--species_list"), tokens, ",");
+        String::tokenize(getOption(argc, argv, "--species_list"), tokens, ",");
         opts.p_mixture_opts->setSpeciesNames(tokens);
     } else {
-        opts.p_mixture_opts = new MixtureOptions(argv[argc-1]);
+        opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
     }
     
     // Get the temperature range
@@ -319,7 +325,8 @@ Options parseOptions(int argc, char** argv)
 
 // Write out the column headers
 void writeHeader(
-    const Options& opts, const Mixture& mix, std::vector<int>& column_widths)
+    const Options& opts, const Mutation::Mixture& mix, 
+    std::vector<int>& column_widths)
 {
     std::string name;
     
@@ -352,7 +359,7 @@ int main(int argc, char** argv)
 {
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
-    Mixture mix(*opts.p_mixture_opts);
+    Mutation::Mixture mix(*opts.p_mixture_opts);
     
     // Write out the column headers (and compute the column sizes)
     std::vector<int> column_widths;
@@ -424,18 +431,23 @@ int main(int argc, char** argv)
                     else if (units == "J/kg-K")
                         value = mix.mixtureFrozenCvMass();
                 } else if (name == "Cv_eq") {
-                    if (units == "J/mol-K")
-                        value = mix.mixtureEquilibriumCvMole();
-                    else if (units == "J/kg-K")
-                        value = mix.mixtureEquilibriumCvMass();
+                    value = mix.mixtureEquilibriumCvMass();
                 } else if (name == "gam_eq")
                     value = mix.mixtureEquilibriumGamma();
                 else if (name == "gamma")
                     value = mix.mixtureFrozenGamma();
                 else if (name == "mu")
-                    value = mix.eta();
+                    value = mix.viscosity();
                 else if (name == "lambda")
-                    value = mix.lambda();
+                    value = mix.equilibriumThermalConductivity();
+                else if (name == "lam_reac")
+                    value = mix.reactiveThermalConductivity();
+                else if (name == "lam_int")
+                    value = mix.internalThermalConductivity();
+                else if (name == "lam_h")
+                    value = mix.heavyThermalConductivity();
+                else if (name == "lam_e")
+                    value = mix.electronThermalConductivity();
                 else if (name == "sigma")
                     value = mix.sigma();
                 else if (name == "Ht") {
@@ -498,9 +510,9 @@ int main(int argc, char** argv)
                 if (name == "X")
                     std::copy(mix.X(), mix.X()+mix.nSpecies(), species_values);
                 else if (name == "Y")
-                    mix.convert<X_TO_Y>(mix.X(), species_values);
+                    std::copy(mix.Y(), mix.Y()+mix.nSpecies(), species_values);
                 else if (name == "rho") {
-                    mix.convert<X_TO_Y>(mix.X(), species_values);
+                    std::copy(mix.Y(), mix.Y()+mix.nSpecies(), species_values);
                     for (int i = 0; i < mix.nSpecies(); ++i)
                         species_values[i] *= mix.density();
                 } else if (name == "conc") {

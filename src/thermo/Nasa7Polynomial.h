@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 
 /**
  * Base class for NASA thermodynamic polynomial types.  Impliments polynomial
@@ -167,4 +170,7 @@ public:
  */
 std::istream &operator>>(std::istream &in, Nasa7Polynomial &n7);
 
-#endif
+} // namespace Thermodynamics
+} // namespace Mutation
+
+#endif // NASA_7_POLYNOMIAL_H

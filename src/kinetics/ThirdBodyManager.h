@@ -20,8 +20,9 @@ public:
     { }
     
     inline void multiplyEfficiencies(
-        double sum, const Numerics::RealVector& s, 
-        Numerics::RealVector& r) const {
+        double sum, const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) const 
+    {
         std::vector<std::pair<size_t, double> >::const_iterator iter;
         for (iter = m_effs.begin(); iter != m_effs.end(); ++iter)
             sum += s(iter->first) * iter->second;
@@ -70,7 +71,9 @@ public:
      * concentrations vector.
      */
     void multiplyThirdbodies(
-        const Numerics::RealVector& s, Numerics::RealVector& r) {
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r) 
+    {
         const double sum = s.sum();
         std::vector<PartialThirdbodyEffs>::const_iterator iter = m_effs.begin();
         for ( ; iter != m_effs.end(); ++iter)

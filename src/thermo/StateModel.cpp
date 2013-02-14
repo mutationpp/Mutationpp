@@ -1,6 +1,9 @@
 #include "StateModel.h"
-#include "AutoRegistration.h"
+#include "Utilities.h"
 #include <algorithm>
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 void StateModel::setStateTPX(
     const double* const T, const double* const P, const double* const X)
@@ -30,7 +33,7 @@ void StateModel::init()
 }
 
 // Register the basic state model
-Utilities::ObjectProvider<StateModel, StateModel> tpModel("T");
+Utilities::Config::ObjectProvider<StateModel, StateModel> tpModel("T");
 
 
 /**
@@ -71,5 +74,9 @@ protected:
 }; // class TTvStateModel
 
 // Register the T,Tv model
-Utilities::ObjectProvider<TTvStateModel, StateModel> ttvModel("T,Tv");
+Utilities::Config::ObjectProvider<TTvStateModel, StateModel> ttvModel("T,Tv");
+
+    } // namespace Thermodynamics
+} // namespace Mutation
+
 

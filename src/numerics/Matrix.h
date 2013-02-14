@@ -4,14 +4,11 @@
 #include <iostream>
 #include <iomanip>
 
-using std::cout;
-using std::endl;
-
 #include "Vector.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
 
-using namespace std;
 
 #define ASSERT_IN_RANGE(__low__,__index__,__high__)\
     assert( __index__ < __high__ );
@@ -510,7 +507,8 @@ public:
 
 private:
 
-    typedef ReferenceServer<MatrixSlice<T, Matrix<T> >, 5> SliceServer;
+    typedef Mutation::Utilities::ReferenceServer<
+        MatrixSlice<T, Matrix<T> >, 5> SliceServer;
 
     size_t m_rows;
     size_t m_cols;
@@ -714,7 +712,8 @@ public:
     
 private:
 
-    typedef ReferenceServer<MatrixSlice<T, Matrix<T> >, 5> SliceServer;
+    typedef Mutation::Utilities::ReferenceServer<
+        MatrixSlice<T, Matrix<T> >, 5> SliceServer;
 
     size_t m_cols;
     std::vector<T> m_data;
@@ -1028,6 +1027,7 @@ std::ostream& operator<<(std::ostream& os, const MatExpr<T, E>& mat)
 
 #undef ASSERT_IN_RANGE
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_MATRIX_H

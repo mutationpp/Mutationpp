@@ -6,8 +6,6 @@
 #include "RateLaws.h"
 #include "Numerics.h"
 
-using namespace Numerics;
-
 /**
  * Manages the efficient computation of forward rate coefficients.
  *
@@ -40,7 +38,8 @@ public:
      * @param T   temperature in Kelvin
      * @param kf  on return, filled with \f$ k_{f,j}(T) \f$
      */
-    void forwardRateCoefficients(const double T, RealVector& kf) const;
+    void forwardRateCoefficients(
+        const double T, Mutation::Numerics::RealVector& kf) const;
     
     /**
      * Returns the natural logarithm of the forward rate coefficients
@@ -50,7 +49,8 @@ public:
      * @param T   temperature in Kelvin
      * @param kf  on return, filled with \f$ \ln k_{f,j}(T) \f$
      */
-    void lnForwardRateCoefficients(const double T, RealVector& lnkf) const;
+    void lnForwardRateCoefficients(
+        const double T, Mutation::Numerics::RealVector& lnkf) const;
     
 private:
 

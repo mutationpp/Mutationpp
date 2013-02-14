@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 /**
  * Implements the NASA 9-coefficient polynomial model for a single species
  * thermodynamic properties.
@@ -124,5 +127,8 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9);
  * Swaps one Nasa9Polynomial object with another.
  */
 void swap(Nasa9Polynomial& left, Nasa9Polynomial& right);
+
+} // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_NASA_9_POLYNOMIAL_H

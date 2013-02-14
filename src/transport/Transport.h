@@ -6,7 +6,7 @@
 #include "ViscosityAlgorithm.h"
 #include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
-#include "AutoRegistration.h"
+#include "Utilities.h"
 
 /**
  * Manages the computation of transport properties.
@@ -19,8 +19,8 @@ public:
      * Constructs a Transport object given a Thermodynamics reference.
      */
     Transport(
-        const Thermodynamics& thermo, const std::string& viscosity,
-        const std::string& lambda);
+        Mutation::Thermodynamics::Thermodynamics& thermo, 
+        const std::string& viscosity, const std::string& lambda);
     
     /**
      * Destructor.
@@ -32,7 +32,8 @@ public:
      */
     void setViscosityAlgo(const std::string& algo) {
         delete mp_viscosity;
-        mp_viscosity = Utilities::Factory<ViscosityAlgorithm>::create(algo, m_collisions);
+        mp_viscosity = Mutation::Utilities::Config::Factory<
+            ViscosityAlgorithm>::create(algo, m_collisions);
     }
     
     /**
@@ -40,10 +41,8 @@ public:
      */
     void setThermalConductivityAlgo(const std::string& algo) {
         delete mp_thermal_conductivity;
-        mp_thermal_conductivity = 
-            Utilities::Factory<ThermalConductivityAlgorithm>::create(
-                algo, std::pair<Thermodynamics&, CollisionDB&>(
-                    const_cast<Thermodynamics&>(m_thermo), m_collisions));
+        mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
+            ThermalConductivityAlgorithm>::create(algo, m_collisions);
     }
     
     /**
@@ -57,53 +56,62 @@ public:
     /**
      * Returns the mixture viscosity.
      */
-    double eta(const double T, const double nd, double *const p_x) {
-        return mp_viscosity->viscosity(T, nd, p_x);
-    }
-    
-    /**
-     * Returns the mixture viscosity.
-     */
-    double eta() {
+    double viscosity() {
         return mp_viscosity->viscosity(
             m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
     }
     
     /**
-     * Returns the mixture translational thermal conductivity.
+     * Returns the mixture thermal conductivity for a frozen mixture.
      */
-    double lambda(const double T, const double nd, double *const p_x) {
-        return mp_thermal_conductivity->thermalConductivity(
-            T, T, T, T, T, nd, p_x) + reactiveThermalConductivity();
+    double frozenThermalConductivity() {
+        return (
+            heavyThermalConductivity() + 
+            electronThermalConductivity() +
+            internalThermalConductivity()
+        );
     }
     
     /**
-     * Returns the mixture translational thermal conductivity.
+     * Returns the mixture thermal conductivity for a mixture in thermochemical
+     * equilibrium.
      */
-    double lambda() {
-        return mp_thermal_conductivity->thermalConductivity(
-            m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(),
-            m_thermo.Tel(), m_thermo.numberDensity(), m_thermo.X())
-            + reactiveThermalConductivity();
+    double equilibriumThermalConductivity() {
+        return (
+            frozenThermalConductivity() +
+            reactiveThermalConductivity()
+        );
     }
     
     /**
-     * Returns the reactive thermal conductivity.
+     * Returns the heavy particle translational thermal conductivity using the 
+     * set algorithm.
+     */
+    double heavyThermalConductivity() {
+        return mp_thermal_conductivity->thermalConductivity(
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+    }
+    
+    /**
+     * Returns the electron translational thermal conductivity.
+     */
+    double electronThermalConductivity();
+    
+    /**
+     * Returns the internal energy thermal conductivity using Euken's formulas.
+     */
+    double internalThermalConductivity();
+    
+    /**
+     * Returns the reactive thermal conductivity which accounts for reactions
+     * for mixtures in thermochemical equilibrium.
      */
     double reactiveThermalConductivity();
     
     /**
      * Returns the binary diffusion coefficient matrix.
      */
-    const Numerics::RealMatrix& diffusionMatrix(
-        const double T, const double nd, const double *const p_x) {
-        return mp_diffusion_matrix->diffusionMatrix(T, nd, p_x);
-    }
-    
-    /**
-     * Returns the binary diffusion coefficient matrix.
-     */
-    const Numerics::RealMatrix& diffusionMatrix() {
+    const Mutation::Numerics::RealMatrix& diffusionMatrix() {
         return mp_diffusion_matrix->diffusionMatrix(
             m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
     }
@@ -115,15 +123,16 @@ public:
     
 private:
 
-    const Thermodynamics& m_thermo;
+    Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB m_collisions;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;
     Ramshaw* mp_diffusion_matrix;
     
-    double* mp_work1;
-    double* mp_work2;
+    double* mp_wrk1;
+    double* mp_wrk2;
+    double* mp_wrk3;
 };
 
 #endif // TRANSPORT_TRANSPORT_H

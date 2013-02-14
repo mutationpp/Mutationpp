@@ -3,7 +3,8 @@
 #include "Wilke.h"
 #include "Numerics.h"
 
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 /**
  * Computes the viscosity of a mixture in Pa-s using the Wilke mixture rule.
@@ -30,6 +31,6 @@ public:
        
 };
 
-Utilities::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
+Config::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
 
 

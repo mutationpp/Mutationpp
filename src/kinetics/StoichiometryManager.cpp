@@ -3,8 +3,8 @@
 
 #include "StoichiometryManager.h"
 
-using namespace Numerics;
 using namespace std;
+using namespace Mutation::Numerics;
 
 void StoichiometryManager::addReaction(const int rxn, const vector<size_t> &sps)
 {

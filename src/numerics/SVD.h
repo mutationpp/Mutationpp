@@ -19,10 +19,10 @@
 #include "NumConst.h"
 #include "Matrix.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
 
-using std::min;
-using std::max;
+
 
 /**
  * Represents the singular value decomposition of a real MxN matrix A = U*S*V',
@@ -149,10 +149,10 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
     const int m   = A.rows();           // number of rows in A
     const int n   = A.cols();           // number of columns in A
     //const int nu  = min(m,n);           // number of columns in U
-    const int nct = min(m-1,n);         // number of column x-forms for bidiag
-    const int nrt = max(0, min(n-2,m)); // number of row x-forms for bidiag
+    const int nct = std::min(m-1,n);         // number of column x-forms for bidiag
+    const int nrt = std::max(0, std::min(n-2,m)); // number of row x-forms for bidiag
         
-    m_s = Vector<Real>(min(m+1,n));
+    m_s = Vector<Real>(std::min(m+1,n));
     m_U = Matrix<Real>(m, m);
     m_V = Matrix<Real>(n, n);
 
@@ -163,7 +163,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
 
     // Reduce A to bidiagonal form, storing the diagonal elements
     // in s and the super-diagonal elements in e.
-    for (k = 0; k < max(nct,nrt); k++) {
+    for (k = 0; k < std::max(nct,nrt); k++) {
         if (k < nct) {
             // Compute the transformation for the k-th column and
             // place the k-th diagonal in m_s(k).
@@ -254,7 +254,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
     }
 
     // Set up the final bidiagonal matrix of order p.
-    int p = min(n,m+1);
+    int p = std::min(n,m+1);
     if (nct < n)   m_s(nct) = m_A(nct,nct);        
     if (m < p)     m_s(p-1) = NumConst<Real>::zero;
     if (nrt+1 < p) e(nrt)   = m_A(nrt,p-1);
@@ -341,7 +341,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
             if (k == -1) 
                 break;
             
-            if (abs(e(k)) <= eps*(abs(m_s(k)) + abs(m_s(k+1)))) {
+            if (std::abs(e(k)) <= eps*(std::abs(m_s(k)) + std::abs(m_s(k+1)))) {
                e(k) = NumConst<Real>::zero;
                break;
             }
@@ -429,7 +429,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
             // Perform one qr step.
             case 3: {
                 // Calculate the shift.   
-                Real scale = max(max(max(max(
+                Real scale = std::max(std::max(std::max(std::max(
                                abs(m_s(p-1)),abs(m_s(p-2))),abs(e(p-2))), 
                                abs(m_s(k))),abs(e(k)));
                 Real sp = m_s(p-1) / scale;
@@ -548,7 +548,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
     
     // Now determine and store the rank
     Real tol = m_s.size() * m_s(0) * NumConst<Real>::eps;
-    m_rank = min(m,n);
+    m_rank = std::min(m,n);
         
     while (m_s(m_rank-1) < tol)
         m_rank--;
@@ -580,6 +580,7 @@ void SVD<Real>::solveATA(Vector<Real> &x, Vector<Real> &b)
     x = m_V * b;
 }
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_SVD_H

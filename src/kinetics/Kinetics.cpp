@@ -1,23 +1,29 @@
 #include "Kinetics.h"
 #include "Constants.h"
-#include "utilities.h"
+#include "Utilities.h"
 
-using namespace utils;
 using namespace std;
+using namespace Mutation::Numerics;
+using namespace Mutation::Thermodynamics;
+using namespace Mutation::Utilities;
 
-Kinetics::Kinetics(const Thermodynamics& thermo, string mechanism)
-        : m_num_rxns(0), m_thermo(thermo), m_jacobian(thermo), mp_g(NULL)
+//==============================================================================
+
+Kinetics::Kinetics(
+    const Thermodynamics& thermo, string mechanism)
+    : m_num_rxns(0), m_thermo(thermo), m_jacobian(thermo), mp_g(NULL),
+      m_T_last(-1.0)
 {
     if (mechanism == "none")
         return;
     
     mechanism = 
-        utils::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/mechanisms/" +
+        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/mechanisms/" +
         mechanism + ".xml";
 
     // Open the mechanism file as an XML document
-    XmlDocument doc(mechanism);        
-    XmlElement root = doc.root();
+    IO::XmlDocument doc(mechanism);        
+    IO::XmlElement root = doc.root();
     
     if (root.tag() != "mechanism") {
         cout << "Root element in mechanism file " << mechanism
@@ -27,7 +33,7 @@ Kinetics::Kinetics(const Thermodynamics& thermo, string mechanism)
     
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
-    XmlElement::Iterator iter = root.begin();
+    IO::XmlElement::Iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {        
         if (iter->tag() == "reaction")
             addReaction(*iter);
@@ -38,6 +44,8 @@ Kinetics::Kinetics(const Thermodynamics& thermo, string mechanism)
     // Finally close the reaction mechanism
     closeReactions(true);
 }
+
+//==============================================================================
 
 void Kinetics::addReaction(const Reaction& reaction)
 {
@@ -70,6 +78,8 @@ void Kinetics::addReaction(const Reaction& reaction)
     m_num_rxns++;
 }
 
+//==============================================================================
+
 void Kinetics::closeReactions(const bool validate_mechanism) 
 {
     const size_t ns = m_thermo.nSpecies();
@@ -78,7 +88,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     // Validate the mechanism
     if (validate_mechanism) {
         bool is_valid = true;
-        cout << "Validating reaction mechanism..." << endl;
+        //cout << "Validating reaction mechanism..." << endl;
         // Check that every species in each reaction exists in the species list
         multiset<string>::const_iterator iter;
         vector<pair<string, double> >::const_iterator tbiter;
@@ -183,6 +193,8 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     
 }
 
+//==============================================================================
+
 void Kinetics::getReactionDelta(const RealVector& s, RealVector& r)
 {
     r = 0.0;
@@ -190,6 +202,8 @@ void Kinetics::getReactionDelta(const RealVector& s, RealVector& r)
     m_rev_prods.incrReactions(s, r);
     m_irr_prods.incrReactions(s, r);
 }
+
+//==============================================================================
 
 vector<size_t> Kinetics::speciesIndices(
     const multiset<string>& set)
@@ -203,6 +217,8 @@ vector<size_t> Kinetics::speciesIndices(
     return indices;
 }
 
+//==============================================================================
+
 vector<pair<size_t, double> > Kinetics::thirdbodyEffs(
     const vector<pair<string, double> >& string_effs)
 {
@@ -215,6 +231,8 @@ vector<pair<size_t, double> > Kinetics::thirdbodyEffs(
     
     return effs;
 }
+
+//==============================================================================
 
 void Kinetics::updateT(const double T)
 {
@@ -236,6 +254,8 @@ void Kinetics::updateT(const double T)
     
     m_T_last = T;
 }
+
+//==============================================================================
     
 void Kinetics::equilibriumConstants(const double T, RealVector& keq)
 {      
@@ -243,17 +263,23 @@ void Kinetics::equilibriumConstants(const double T, RealVector& keq)
     keq = exp(m_lnkeq);       
 }
 
+//==============================================================================
+
 void Kinetics::forwardRateCoefficients(const double T, RealVector& kf)
 {
     updateT(T);
     kf = exp(m_lnkf);
 }
 
+//==============================================================================
+
 void Kinetics::backwardRateCoefficients(const double T, RealVector& kb)
 {
     updateT(T);
     kb = exp(m_lnkf - m_lnkeq);
 }
+
+//==============================================================================
 
 void Kinetics::forwardRatesOfProgress(
     const double T, const RealVector& conc, RealVector& ropf)
@@ -263,6 +289,8 @@ void Kinetics::forwardRatesOfProgress(
     m_thirdbodies.multiplyThirdbodies(conc, ropf);
 }
 
+//==============================================================================
+
 void Kinetics::backwardRatesOfProgress(
     const double T, const RealVector& conc, RealVector& ropb)
 {
@@ -270,6 +298,8 @@ void Kinetics::backwardRatesOfProgress(
     m_rev_prods.multReactions(conc, ropb);
     m_thirdbodies.multiplyThirdbodies(conc, ropb);
 }
+
+//==============================================================================
 
 void Kinetics::netRatesOfProgress(
     const double T, const RealVector& conc, RealVector& rop)
@@ -280,6 +310,8 @@ void Kinetics::netRatesOfProgress(
     m_rev_prods.multReactions(conc, m_ropb);        
     m_thirdbodies.multiplyThirdbodies(conc, rop = (m_ropf - m_ropb));
 }
+
+//==============================================================================
 
 void Kinetics::netProductionRates(
     const double T, const double* const p_conc, double* const p_wdot)
@@ -296,6 +328,29 @@ void Kinetics::netProductionRates(
         p_wdot[i] = wdot(i) * m_thermo.speciesMw(i);
 }
 
+//==============================================================================
+
+void Kinetics::netProductionRates(double* const p_wdot)
+{
+    RealVector conc(m_thermo.nSpecies());
+    const double rho = m_thermo.density();
+    const double T   = m_thermo.T();
+    
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        conc(i) = m_thermo.Y()[i] * rho / m_thermo.speciesMw(i);
+    
+    RealVector wdot(p_wdot, m_thermo.nSpecies());
+    
+    netRatesOfProgress(T, conc, m_rop);
+    m_reactants.decrSpecies(m_rop, wdot = 0.0);
+    m_rev_prods.incrSpecies(m_rop, wdot);
+    m_irr_prods.incrSpecies(m_rop, wdot);
+    
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        p_wdot[i] = wdot(i) * m_thermo.speciesMw(i);
+}
+
+//==============================================================================
 
 void Kinetics::jacobianRho(
     const double T, const double* const p_conc, double* const p_jac)

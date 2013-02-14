@@ -7,10 +7,9 @@
 #include <iostream>
 #include <cstdlib>
 
-using std::cerr;
-using std::endl;
+namespace Mutation {
+    namespace Numerics {
 
-namespace Numerics {
 
 /**
  * Performs the LDLT decomposition of an NxN symmetric positive definite
@@ -79,7 +78,7 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
             m_L(i,i) -= work(j) * m_L(i,j);
         
         if (m_L(i,i) == static_cast<T>(0)) {
-            cerr << "Calling LDLT decomposition with singular matrix!" << endl;
+            std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
             exit(1);
         }
         
@@ -117,6 +116,7 @@ void LDLT<T>::solve(Vector<T>& x, const Vector<T>& b) const
     }
 }
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_LDLT_H

@@ -1,6 +1,9 @@
 #ifndef ITERATOR_BASE_H
 #define ITERATOR_BASE_H
 
+namespace Mutation {
+    namespace Utilities {
+
 /**
  * Simple class that acts to wrap a predefined iterator class.  
  * 
@@ -101,5 +104,8 @@ public:
 protected:
     Iterator m_iter;
 };
+
+    } // namespace Utilities
+} // namespace Mutation
 
 #endif // ITERATOR_BASE_H

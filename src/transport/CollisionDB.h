@@ -7,8 +7,11 @@
 #include <iostream>
 
 #include "Thermodynamics.h"
-#include "utilities.h"
+#include "Utilities.h"
 #include "Numerics.h"
+
+//#define USE_COLLISION_INTEGRAL_TABLES
+
 
 /**
  * Implements the function exp(A + B*ln(x) + C*ln(x)^2 + ... ) for an arbitrary
@@ -97,8 +100,8 @@ public:
         std::vector<std::string> tokens;
         std::string str = pair;
         
-        utils::StringUtils::eraseAll(str, ".");
-        utils::StringUtils::tokenize(str, tokens, "-");
+        Mutation::Utilities::String::eraseAll(str, ".");
+        Mutation::Utilities::String::tokenize(str, tokens, "-");
         
         initialize(tokens[0], tokens[1]);
         m_charge = 0;
@@ -107,7 +110,9 @@ public:
     /**
      * Constructs a collision pair given two species objects.
      */
-    CollisionPair(const Species& s1, const Species& s2) 
+    CollisionPair(
+        const Mutation::Thermodynamics::Species& s1, 
+        const Mutation::Thermodynamics::Species& s2) 
     {
         initialize(s1.name(), s2.name());
         m_charge = s1.charge() * s2.charge();
@@ -210,12 +215,21 @@ public:
      * Construct a CollisionDB object for a given list of species.  Note that
      * all possible species pair interactions will be loaded.
      */
-    explicit CollisionDB(const Thermodynamics& thermo);
+    explicit CollisionDB(
+        const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**
      * Destructor.
      */
-    ~CollisionDB() {}
+    ~CollisionDB() 
+    {
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+        delete mp_Q11_table;
+        delete mp_Q22_table;
+        delete mp_Bst_table;
+        delete [] mp_work;
+#endif
+    }
     
     /**
      * Returns the number of species in the database.
@@ -236,7 +250,7 @@ public:
      * Returns the mass of a single atom/molecule of each species as a NS 
      * dimensional Vector.
      */
-    const Numerics::RealVector& mass() const {
+    const Mutation::Numerics::RealVector& mass() const {
         return m_mass; 
     }
     
@@ -244,7 +258,7 @@ public:
      * Returns the symmetric matrix \f$ A_{ij} = m_i + m_j \f$ where \f$ m_i \f$
      * is the mass of one molecule of species i.  
      */
-    const Numerics::RealSymMat& massSum() const {
+    const Mutation::Numerics::RealSymMat& massSum() const {
         return m_mass_sum; 
     }
     
@@ -252,14 +266,14 @@ public:
      * Returns the symmetric matrix \f$ A_{ij} = m_i * m_j \f$ where \f$ m_i \f$
      * is the mass of one molecule of species i.
      */
-    const Numerics::RealSymMat& massProd() const {
+    const Mutation::Numerics::RealSymMat& massProd() const {
         return m_mass_prod; 
     }
     
     /**
      * Returns the reduced molecular mass as a symmetric matrix in kg/molecule.
      */
-    const Numerics::RealSymMat& reducedMass() const {
+    const Mutation::Numerics::RealSymMat& reducedMass() const {
         return m_red_mass;
     }
     
@@ -268,7 +282,7 @@ public:
      * determined by the constructor based on the order of the species listed in
      * the species vector. 
      */
-    const Numerics::RealSymMat& Q11(
+    const Mutation::Numerics::RealSymMat& Q11(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, Q11IJ);
@@ -280,7 +294,7 @@ public:
      * determined by the constructor based on the order of the species listed in
      * the species vector. 
      */
-    const Numerics::RealSymMat& Q22(
+    const Mutation::Numerics::RealSymMat& Q22(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, Q22IJ);
@@ -291,7 +305,7 @@ public:
      * Returns the dimensionless ratio \f$ Q_{ij}^{(2,2)} / Q_{ij}^{(1,1)} \f$
      * as a symmetric matrix.
      */
-    const Numerics::RealSymMat& Astar(
+    const Mutation::Numerics::RealSymMat& Astar(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, ASTAR);
@@ -302,7 +316,7 @@ public:
      * Returns the dimensionless ratio \f$ (5Q_{ij}^{(1,2)} - 4Q_{ij}^{(1,3)}) /
      * Q_{ij}^{(1,1)} \f$ as a symmetric matrix.
      */
-    const Numerics::RealSymMat& Bstar(
+    const Mutation::Numerics::RealSymMat& Bstar(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, BSTAR);
@@ -312,7 +326,7 @@ public:
     /**
      * Returns the dimensionless ratio \f$ (Q_{ei}^{(1,2)} / Q_{ei}^{(1,1)} \f$.
      */
-    const Numerics::RealVector& Cstei(
+    const Mutation::Numerics::RealVector& Cstei(
         const double Th, const double Te, const double nd, 
         const double *const p_x)
     {
@@ -323,17 +337,75 @@ public:
     /**
      * Returns the pure species shear viscosities.
      */
-    const Numerics::RealVector& etai(
-        const double Th, const double Te, const double nd, 
-        const double *const p_x) {
-        updateCollisionData(Th, Te, nd, p_x, ETAI);
+    const Mutation::Numerics::RealVector& etai(
+        double Th, double Te, double nd, const double *const X) 
+    {
+        updateCollisionData(Th, Te, nd, X, ETAI);
         return m_eta;
+    }
+    
+    /**
+     * Returns the Q(1,2)_ei collision integral array.
+     */
+    const Mutation::Numerics::RealVector& Q12ei(
+        double Th, double Te, double nd, const double *const X) 
+    {
+        updateCollisionData(Th, Te, nd, X, Q12EI);
+        return m_Q12ei;
+    }
+    
+    /**
+     * Returns the Q(1,3)_ei collision integral array.
+     */
+    const Mutation::Numerics::RealVector& Q13ei(
+        double Th, double Te, double nd, const double *const X) 
+    {
+        updateCollisionData(Th, Te, nd, X, Q13EI);
+        return m_Q13ei;
+    }
+    
+    /**
+     * Returns the Q(1,4)_ei collision integral array.
+     */
+    const Mutation::Numerics::RealVector& Q14ei(
+        double Th, double Te, double nd, const double *const X) 
+    {
+        updateCollisionData(Th, Te, nd, X, Q14EI);
+        return m_Q14ei;
+    }
+    
+    /**
+     * Returns the Q(1,5)_ei collision integral array.
+     */
+    const Mutation::Numerics::RealVector& Q15ei(
+        double Th, double Te, double nd, const double *const X) 
+    {
+        updateCollisionData(Th, Te, nd, X, Q15EI);
+        return m_Q15ei;
+    }
+    
+    /**
+     * Returns the Q(2,3)_ee collision integral.
+     */
+    double Q23ee(double Th, double Te, double nd, const double *const X)
+    {
+        updateCollisionData(Th, Te, nd, X, Q23EE);
+        return m_Q23ee;
+    }
+    
+    /**
+     * Returns the Q(2,4)_ee collision integral.
+     */
+    double Q24ee(double Th, double Te, double nd, const double *const X)
+    {
+        updateCollisionData(Th, Te, nd, X, Q24EE);
+        return m_Q24ee;
     }
     
     /**
      * Returns binary diffusion coefficients.
      */
-    const Numerics::RealSymMat& nDij(
+    const Mutation::Numerics::RealSymMat& nDij(
         const double Th, const double Te, const double nd,
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, NDIJ);
@@ -344,19 +416,53 @@ public:
     
 private:
 
-    /*static void computeQ11(const double& T, double* const p_Q11, void* p_data) {
-        CollisionDB& collisions = 
-            static_cast<CollisionDB&>(*(CollisionDB*)(p_data));
-        const int ns = collisions.nSpecies();
-        const int nc = collisions.nCollisionPairs();
-        
-        std::cout << "compute Q11" << ns << nc << std::endl;       
-        
-    }*/
+    /**
+     * Implements the ability to tabulate collision integrals in m^2 versus the
+     * natural logarithm of temperature.
+     */
+    class QijTableFunction
+    {
+    public:
+        typedef std::vector<CollisionFunc4> DataProvider;
 
+        void operator () (
+            double lnT, double* pQij, DataProvider& funcs) const
+        {
+            for (int i = 0; i < funcs.size(); ++i)
+                pQij[i] = 1.0e-20 * funcs[i](lnT);
+        }
+    };
+    
+    /**
+     * Implements the ability to tabulate collision integral ratios versus the 
+     * natural logarithm of temperature.
+     */
+    class QRatioTableFunction
+    {
+    public:
+        typedef std::vector<CollisionFunc4> DataProvider;
+
+        void operator () (
+            double lnT, double* pQij, DataProvider& funcs) const
+        {
+            for (int i = 0; i < funcs.size(); ++i)
+                pQij[i] = funcs[i](lnT);
+        }
+    };
+
+
+    /**
+     * Enumerates different types of collision data which can be computed.
+     */
     enum CollisionData {
         Q11IJ = 0,
+        Q12EI,
+        Q13EI,
+        Q14EI,
+        Q15EI,
         Q22IJ,
+        Q23EE,
+        Q24EE,
         ASTAR,
         BSTAR,
         CSTAR,
@@ -368,7 +474,8 @@ private:
     /**
      * Loads the heavy particle collision pairs.
      */
-    void loadCollisionIntegrals(const std::vector<Species>& species);
+    void loadCollisionIntegrals(
+        const std::vector<Mutation::Thermodynamics::Species>& species);
 
     /**
      * Checks to see if a string represents a collision pair (ie: ".Ar-H.")
@@ -393,37 +500,58 @@ private:
     std::vector<int> m_neutral_indices;
     std::vector<int> m_attract_indices;
     std::vector<int> m_repulse_indices;
-    
+
+#ifdef USE_COLLISION_INTEGRAL_TABLES    
+    // Lookup Tables for collision integral functions
+    LookupTable<double, double, QijTableFunction>*    mp_Q11_table;
+    LookupTable<double, double, QijTableFunction>*    mp_Q22_table;
+    LookupTable<double, double, QRatioTableFunction>* mp_Bst_table;
+    double* mp_work;
+#else
     // Storage for neutral-neutral and neutral-charge collision integral 
     // functions
     std::vector<CollisionFunc4> m_Q11_funcs;
     std::vector<CollisionFunc4> m_Q22_funcs;
     std::vector<CollisionFunc4> m_Bst_funcs;
+#endif
     
     // Charge-charge collision integrals (defined in .cpp file)
     static const CollisionFunc5 sm_Q11_att;
     static const CollisionFunc5 sm_Q11_rep;
+    static const CollisionFunc5 sm_Q14_att;
+    static const CollisionFunc5 sm_Q14_rep;
+    static const CollisionFunc5 sm_Q15_att;
+    static const CollisionFunc5 sm_Q15_rep;
     static const CollisionFunc5 sm_Q22_att;
     static const CollisionFunc5 sm_Q22_rep;
-    static const CollisionFunc5 sm_Bst_att;
+    static const CollisionFunc5 sm_Q24_rep;
+    static const CollisionFunc5 sm_Bst_att; // (5Q(1,2)-4Q(1,3))/Q(1,1)
     static const CollisionFunc5 sm_Bst_rep;
-    static const CollisionFunc5 sm_Cst_att;
+    static const CollisionFunc5 sm_Cst_att; // Q(1,2)/Q(1,1)
     static const CollisionFunc5 sm_Cst_rep;
+    static const CollisionFunc5 sm_Est_att; // Q(2,3)/Q(2,2)
+    static const CollisionFunc5 sm_Est_rep;
     
     // Mass quantities
-    Numerics::RealVector m_mass;
-    Numerics::RealSymMat m_mass_sum;
-    Numerics::RealSymMat m_mass_prod;
-    Numerics::RealSymMat m_red_mass;
+    Mutation::Numerics::RealVector m_mass;
+    Mutation::Numerics::RealSymMat m_mass_sum;
+    Mutation::Numerics::RealSymMat m_mass_prod;
+    Mutation::Numerics::RealSymMat m_red_mass;
     
     // Stores the last computed collision integral data    
-    Numerics::RealSymMat m_Q11;
-    Numerics::RealSymMat m_Q22;
-    Numerics::RealSymMat m_Ast;
-    Numerics::RealSymMat m_Bst;
-    Numerics::RealVector m_Cst;
-    Numerics::RealVector m_eta;
-    Numerics::RealSymMat m_Dij;
+    Mutation::Numerics::RealSymMat m_Q11;
+    Mutation::Numerics::RealVector m_Q12ei;
+    Mutation::Numerics::RealVector m_Q13ei;
+    Mutation::Numerics::RealVector m_Q14ei;
+    Mutation::Numerics::RealVector m_Q15ei;
+    Mutation::Numerics::RealSymMat m_Q22;
+    double               m_Q23ee;
+    double               m_Q24ee;
+    Mutation::Numerics::RealSymMat m_Ast;
+    Mutation::Numerics::RealSymMat m_Bst;
+    Mutation::Numerics::RealVector m_Cst;
+    Mutation::Numerics::RealVector m_eta;
+    Mutation::Numerics::RealSymMat m_Dij;
     
     // Keeps track of last temperature a particular set of collision data values
     // was updated

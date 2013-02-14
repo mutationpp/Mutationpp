@@ -1,7 +1,10 @@
 #include "GfcEquilSolver.h"
 
 using namespace std;
-using namespace Numerics;
+using namespace Mutation::Numerics;
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 //#define OUTPUT_CONVERGENCE_STATISTICS
 #ifdef OUTPUT_CONVERGENCE_STATISTICS
@@ -12,7 +15,7 @@ static int step_count   = 0;
 // Provide values of the tuneable variables
 const double GfcEquilSolver::sm_max_min_frac = 0.01;
 const double GfcEquilSolver::sm_logy_lim     = 120.0;
-const double GfcEquilSolver::sm_res_tol      = 1.0E-9;
+const double GfcEquilSolver::sm_res_tol      = 1.0E-10;
 const double GfcEquilSolver::sm_ds_inc       = 3.0;
 const double GfcEquilSolver::sm_ds_dec       = 0.25;
 const double GfcEquilSolver::sm_dec_min      = 0.75;
@@ -581,6 +584,7 @@ bool GfcEquilSolver::formy(
     return true;
 }
 
-
+} // namespace Thermodynamics
+} // namespace Mutation
 
 

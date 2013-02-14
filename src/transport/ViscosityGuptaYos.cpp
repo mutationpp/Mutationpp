@@ -3,7 +3,8 @@
 #include "GuptaYos.h"
 #include "Numerics.h"
 
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 /**
  * Uses the Gupta-Yos formula to compute viscosity.
@@ -53,7 +54,7 @@ private:
     RealVector A;
 };
 
-Utilities::ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 
+Config::ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 
     viscosityGuptaYos("Gupta-Yos");
     
     

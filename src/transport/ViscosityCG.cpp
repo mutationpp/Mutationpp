@@ -5,7 +5,8 @@
 #include "ViscosityAlgorithm.h"
 #include "Numerics.h"
 
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 template <typename Implementation>
 class ViscositySPD : public ViscosityAlgorithm
@@ -84,7 +85,7 @@ public:
 };
 
 // Register this algorithm with the other ViscosityAlgorithm types
-Utilities::ObjectProvider<ViscosityCG, ViscosityAlgorithm> viscosityCG("CG");
+Config::ObjectProvider<ViscosityCG, ViscosityAlgorithm> viscosityCG("CG");
 
 
 /**
@@ -115,6 +116,6 @@ private:
 };
 
 // Register this algorithm with the other ViscosityAlgorithm types
-Utilities::ObjectProvider<ViscosityLDLT, ViscosityAlgorithm> viscosityLDLT("LDLT");
+Config::ObjectProvider<ViscosityLDLT, ViscosityAlgorithm> viscosityLDLT("LDLT");
 
 

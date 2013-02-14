@@ -3,7 +3,9 @@
 
 #include <cmath>
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 #define UNARY_FUNCTOR(__name__,__op__) \
 template <typename T> \
@@ -122,6 +124,7 @@ private:
 };
 
 
-} // namespace Numerics 
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_FUNCTORS

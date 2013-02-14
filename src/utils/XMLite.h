@@ -17,6 +17,10 @@
 #include <sstream>
 #include <vector>
 
+namespace Mutation {
+    namespace Utilities {
+        namespace IO {
+
 // Forward declaration of XmlDocument
 class XmlDocument;
 
@@ -103,7 +107,8 @@ public:
      * Children iterator class.
      */
     class Iterator 
-        : public IteratorWrapper<XmlElement, std::vector<XmlElement>::iterator>
+        : public Mutation::Utilities::IteratorWrapper<
+            XmlElement, std::vector<XmlElement>::iterator>
     {
         friend class XmlElement;
     };
@@ -196,4 +201,9 @@ private:
     Iterator                m_iterator;
 };
 
+        } // namespace IO
+    } // namespace Utilities
+} // namespace Mutation
+
 #endif // XMLITE_H
+

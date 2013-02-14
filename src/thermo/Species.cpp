@@ -4,21 +4,24 @@
 #include <iomanip>
 
 #include "Species.h"
-#include "XMLite.h"
-#include "utilities.h"
 #include "ParticleRRHO.h"
+#include "Utilities.h"
 
 using namespace std;
+using namespace Mutation::Utilities;
 
-Element::Element(XmlElement &xml_element)
+namespace Mutation {
+    namespace Thermodynamics {
+
+Element::Element(IO::XmlElement &xml_element)
 {
     xml_element.getAttribute("name", m_name, 
         "Element must have a name attribute!");
     
     xml_element.getAttribute("charge", m_charge, 0);
     
-    XmlElement::Iterator child_iter = xml_element.begin();
-    XmlElement::Iterator child_end  = xml_element.end();
+    IO::XmlElement::Iterator child_iter = xml_element.begin();
+    IO::XmlElement::Iterator child_end  = xml_element.end();
     
     for ( ; child_iter != child_end; ++child_iter) {
         if (child_iter->tag() == "mw")
@@ -40,7 +43,7 @@ Species::Species(const Species& to_copy)
 { }
 
 Species::Species(
-    XmlElement &xml_element, const vector<Element> &elements, 
+    IO::XmlElement &xml_element, const vector<Element> &elements, 
     set<int> &used_elements)
     : mp_rrho_model(NULL)
 {
@@ -51,7 +54,7 @@ Species::Species(
     
     string phase;
     xml_element.getAttribute("phase", phase, string("gas"));
-    phase = utils::StringUtils::toLowerCase(phase);
+    phase = String::toLowerCase(phase);
     
     if (phase == "gas")
         m_phase = GAS;
@@ -66,8 +69,8 @@ Species::Species(
     }
     
     // Load information stored in child elements
-    XmlElement::Iterator child_iter = xml_element.begin();
-    XmlElement::Iterator child_end  = xml_element.end();
+    IO::XmlElement::Iterator child_iter = xml_element.begin();
+    IO::XmlElement::Iterator child_end  = xml_element.end();
     
     for ( ; child_iter != child_end; ++child_iter) {
         if (child_iter->tag() == "stoichiometry")
@@ -141,8 +144,8 @@ void Species::loadStoichiometry(
     // Split up the string in the format "A:a, B:b, ..." into a vector of
     // strings matching ["A", "a", "B", "b", ... ]
     vector<string> stoichiometry_tokens;
-    utils::StringUtils::tokenize(
-        utils::StringUtils::removeWhiteSpace(stoichiometry), 
+    String::tokenize(
+        String::removeWhiteSpace(stoichiometry), 
         stoichiometry_tokens, ":,");
     
     // Check that the vector has an even number of tokens (otherwise there must
@@ -402,5 +405,8 @@ void swap(Species& s1, Species& s2)
     std::swap(s1.m_phase, s2.m_phase);
     std::swap(s1.m_stoichiometry, s2.m_stoichiometry);
 }
+
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 

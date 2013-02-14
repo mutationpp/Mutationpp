@@ -1,5 +1,4 @@
-#include "Units.h"
-#include "utilities.h"
+#include "Utilities.h" // includes Units.h
 #include "Constants.h"
 
 #include <map>
@@ -9,9 +8,8 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace utils {
-
-using namespace std;
+namespace Mutation {
+    namespace Utilities {
 
 /**
  * Defines all of the defined units that can be used by the user.  Units are
@@ -42,6 +40,7 @@ std::map<std::string, Units> _initializeUnits()
     
     // quantity of substance
     units["mol"]  = Units(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    units["kmol"] = units["mol"] * 1000.0;
     units["molecule"] = units["mol"] * NA;
     
     // force
@@ -64,7 +63,7 @@ std::map<std::string, Units> _defined_units = _initializeUnits();
 
 std::vector<Units> Units::split(const std::string str) {
     std::vector<std::string> tokens;
-    StringUtils::tokenize(str, tokens, ",");
+    String::tokenize(str, tokens, ",");
     std::vector<Units> units;
     for (int i = 0; i < tokens.size(); ++i)
         units.push_back(Units(tokens[i]));
@@ -157,10 +156,10 @@ void Units::initializeFromString(const std::string& str)
     operator=(Units());
     
     std::vector<std::string> tokens1;
-    StringUtils::tokenize(str, tokens1, "/ ");
+    String::tokenize(str, tokens1, "/ ");
     
     std::vector<std::string> tokens2;
-    StringUtils::tokenize(tokens1[0], tokens2, "- ");
+    String::tokenize(tokens1[0], tokens2, "- ");
     
     Units units;
     
@@ -169,20 +168,20 @@ void Units::initializeFromString(const std::string& str)
         if (_defined_units.find(*iter) != _defined_units.end())
             operator=(*this * _defined_units[*iter]);
         else {
-            cerr << *iter << " is not a defined unit!" << endl;
+            std::cerr << *iter << " is not a defined unit!" << std::endl;
             exit(1);
         }
     }
     
     if (tokens1.size() == 2) {
         std::vector<std::string> tokens3;
-        StringUtils::tokenize(tokens1[1], tokens3, "- ");
+        String::tokenize(tokens1[1], tokens3, "- ");
         
         for (iter = tokens3.begin(); iter != tokens3.end(); ++iter) {
             if (_defined_units.find(*iter) != _defined_units.end())
                 operator=(*this / _defined_units[*iter]);
             else {
-                cerr << *iter << " is not a defined unit!" << endl;
+                std::cerr << *iter << " is not a defined unit!" << std::endl;
                 exit(1);
             }
         }
@@ -203,5 +202,7 @@ double Units::convertTo(const double number, const std::string& units) {
     return convertTo(number, Units(units));
 }
 
-} // namespace utils
+    } // namespace Utilities
+} // namespace Mutation
+
 

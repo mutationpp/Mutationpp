@@ -6,6 +6,9 @@
 
 #include <utility>
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 /**
  * Equilibrium solver which uses the Gibbs function continuation method by
  * S. B. Pope.  This solver is guaranteed to work for all well posed problems
@@ -148,5 +151,8 @@ private:
     static const double sm_eps_s;
     
 };
+
+} // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_GFC_EQUIL_SOLVER

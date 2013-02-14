@@ -10,11 +10,10 @@
 #include <cstdlib>
 
 using namespace std;
-using Numerics::Equals;
-using Numerics::PlusEquals;
-using Numerics::MinusEquals;
-using Numerics::EqualsYDivAlpha;
-using Numerics::PlusEqualsYDivAlpha;
+using namespace Mutation::Numerics;
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 // Simple for loop over the species just to make life a little easier
 #define LOOP(__op__)\
@@ -663,5 +662,9 @@ private:
 #undef LOOP_MOLECULES
 
 // Register the RRHO model with the other thermodynamic databases
-Utilities::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
+Utilities::Config::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
+
+    } // namespace Thermodynamics
+} // namespace Mutation
+
 

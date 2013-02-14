@@ -11,7 +11,12 @@
 #include "Nasa9Polynomial.h"
 #include "ThermoDB.h"
 #include "Species.h"
-#include "utilities.h"
+#include "Utilities.h"
+
+using namespace Mutation::Utilities;
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 /**
  * Template for a thermodynamic database which uses a set of NASA polynomials.
@@ -30,7 +35,7 @@ public:
     {
          // Open the database file
         std::string thermo_directory = 
-            utils::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
+            getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
         std::string db_path = thermo_directory + "/" + std::string(DBNAME);
         std::ifstream file(db_path.c_str());
         
@@ -194,7 +199,10 @@ char nasa7[] = "nasa7.dat";
 char nasa9[] = "nasa9.dat";
 
 // Register the NASA-7 and NASA-9 thermodynamic databases as ThermoDB types
-Utilities::ObjectProvider<NasaDB<Nasa7Polynomial, nasa7>, ThermoDB> nasa7DB("NASA-7");
-Utilities::ObjectProvider<NasaDB<Nasa9Polynomial, nasa9>, ThermoDB> nasa9DB("NASA-9");
+Config::ObjectProvider<NasaDB<Nasa7Polynomial, nasa7>, ThermoDB> nasa7DB("NASA-7");
+Config::ObjectProvider<NasaDB<Nasa9Polynomial, nasa9>, ThermoDB> nasa9DB("NASA-9");
+
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 

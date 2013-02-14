@@ -6,6 +6,7 @@
 #include "Transport.h"
 #include "MixtureOptions.h"
 
+namespace Mutation {
 
 /**
  * Packages all of the Mutation++ functionality pertaining to a mixture into a
@@ -18,7 +19,7 @@
  * @see Kinetics
  */
 class Mixture
-    : public Thermodynamics, public Transport, public Kinetics
+    : public Thermodynamics::Thermodynamics, public Transport, public Kinetics
 {
 public:
 
@@ -30,12 +31,12 @@ public:
      * @see MixtureOptions
      */
     Mixture(const MixtureOptions& options)
-        : Thermodynamics(
+        : Thermodynamics::Thermodynamics(
              options.getSpeciesNames(), 
              options.getThermodynamicDatabase(),
              options.getStateModel()),
           Transport(
-             static_cast<const Thermodynamics&>(*this), 
+             *this, 
              options.getViscosityAlgorithm(),
              options.getThermalConductivityAlgorithm()),
           Kinetics(
@@ -52,6 +53,8 @@ public:
     ~Mixture() {}
     
 }; // class Mixture
+
+} // namespace Mutation
 
 #endif // MUTATION_MIXTURE_H
 

@@ -4,6 +4,9 @@
 
 #include <algorithm>
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 //==============================================================================
 
 ThermoDB::ThermoDB(ThermoDB::ARGS species)
@@ -34,3 +37,7 @@ void ThermoDB::cv(
 }
 
 //==============================================================================
+
+} // namespace Thermodynamics
+} // namespace Mutation
+

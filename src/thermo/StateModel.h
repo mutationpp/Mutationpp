@@ -1,6 +1,9 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 /**
  * Base class for all state models.  A mixture state is completely determined
  * when enough thermodynamic values are combined with the mixture composition
@@ -139,6 +142,8 @@ protected:
     
 }; // class StateModel
 
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_STATE_MODEL_H
 

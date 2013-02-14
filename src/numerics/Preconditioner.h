@@ -4,7 +4,9 @@
 #include "Vector.h"
 #include "Matrix.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 template <typename T>
 class DiagonalPreconditioner
@@ -38,7 +40,8 @@ public:
     }
 };
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 
 #endif // NUMERICS_PRECONDITIONER_H

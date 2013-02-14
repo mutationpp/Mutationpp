@@ -4,7 +4,8 @@
 #include <vector>
 #include <string>
 
-namespace utils {
+namespace Mutation {
+    namespace Utilities {
 
 class Units
 {
@@ -43,6 +44,7 @@ private:
     double m_exponent[7];
 };
 
-};
+    } // namespace Utilities
+} // namespace Mutation
 
 #endif // UTILS_UNITS_H

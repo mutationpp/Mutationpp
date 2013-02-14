@@ -8,7 +8,12 @@
 
 #include "Species.h"
 #include "Numerics.h"
+#include "Constants.h"
 
+namespace Mutation {
+    namespace Thermodynamics {
+
+class GfcEquilSolver;
 class ThermoDB;
 class StateModel;
 
@@ -38,8 +43,7 @@ enum ConversionType {
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
 };
 
-// Forward declaration of GfcEquilSolver
-class GfcEquilSolver;
+
 
 /**
  * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
@@ -129,6 +133,13 @@ public:
     }
     
     /**
+     * Returns the charge of the species with the given index.
+     */
+    double speciesCharge(const int &index) const {
+        return m_species[index].charge()*QE;
+    }
+    
+    /**
      * Returns the name of the element with the given index in the element
      * array.
      */
@@ -156,14 +167,13 @@ public:
      */
     void equilibrate(
         double T, double P, const double* const p_c, double* const p_X,
-        bool set_state = true)
-        const;
+        bool set_state = true);
     
     /**
-     * Computes the equilibrium mole fractions of the mixture using the default
-     * elemental composition.
+     * Equilibrates the mixture to a given temperature and pressure using the 
+     * default elemental composition.
      */
-    void equilibrate(double T, double P) const;
+    void equilibrate(double T, double P);
     
     /**
      * Returns the mixture translational temperature.
@@ -306,6 +316,8 @@ public:
      */
     void speciesCpOverR(double *const p_cp) const;
     
+    void speciesCpOverR(double T, double* const p_cp) const;
+    
     void speciesCpOverR(
         double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cp, double *const p_cpt, double *const p_cpr,
@@ -346,14 +358,14 @@ public:
      * fractions.
      */
     double mixtureEquilibriumCpMole(
-        double T, double P, const double* const Xeq) const;
+        double T, double P, const double* const Xeq);
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
      * constant pressure in J/mol-K.  This method assumes that the current state
      * of the mixture was already set using the equilibrate() method.
      */
-    double mixtureEquilibriumCpMole() const;
+    double mixtureEquilibriumCpMole();
     
     /**
      * Returns the equilibrium mixture averaged specific heat at constant
@@ -361,14 +373,14 @@ public:
      * fractions.
      */
     double mixtureEquilibriumCpMass(
-        double T, double P, const double* const Xeq) const;
+        double T, double P, const double* const Xeq);
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
      * constant pressure in J/kg-K.  This method assumes that the current state
      * of the mixture was already set using the equilibrate() method.
      */
-    double mixtureEquilibriumCpMass() const;
+    double mixtureEquilibriumCpMass();
     
     /**
      * Returns the mixture averaged specific heat at constant volume in J/mol-K.
@@ -384,29 +396,29 @@ public:
      * Returns the equilibrium mixture averaged specific heat at constant
      * volume in J/mol-K.
      */
-    double mixtureEquilibriumCvMole(
-        double T, double P, const double* const Xeq) const;
+    //double mixtureEquilibriumCvMole(
+    //    double T, double P, const double* const Xeq) const;
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
      * constant volume in J/mol-K.  This method assumes that the current state of
      * the mixture was already set using the equilibrate() method.
      */
-    double mixtureEquilibriumCvMole() const;
+    //double mixtureEquilibriumCvMole() const;
     
     /**
      * Returns the equilibrium mixture averaged specific heat at constant
      * volume in J/kg-K.
      */
-    double mixtureEquilibriumCvMass(
-        double T, double P, const double* const Xeq) const;
+    //double mixtureEquilibriumCvMass(
+    //    double T, double P, const double* const Xeq) const;
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
      * constant volume in J/kg-K.  This method assumes that the current state of
      * the mixture was already set using the equilibrate() method.
      */
-    double mixtureEquilibriumCvMass() const;
+    double mixtureEquilibriumCvMass();
     
     /**
      * Returns the ratio of mixture averaged specific heats which is a unitless
@@ -423,13 +435,13 @@ public:
      * Xeq - equilibrium species mole fractions
      */
     double mixtureEquilibriumGamma(
-        double T, double P, const double* const Xeq) const;
+        double T, double P, const double* const Xeq);
     
     /**
      * Returns the current equilibrium ratio of mixture averaged specific heats
      * which is a unitless quantity.
      */
-    double mixtureEquilibriumGamma() const;
+    double mixtureEquilibriumGamma();
     
     /**
      * Returns the derivative of mole fraction w.t.r temperature for the given
@@ -443,7 +455,7 @@ public:
      * dxdt - on return, the dX_i/dT derivatives
      */
     void dXidT(
-        double T, double P, const double* const Xeq, double* const dxdt) const;
+        double T, double P, const double* const Xeq, double* const dxdt);
     
     /**
      * Returns the density derivative with respect to pressure for the given
@@ -453,19 +465,21 @@ public:
      * P   - equilibrium pressure in Pa
      * Xeq - equilibrium species mole fractions
      */
-    double dRhodP(double T, double P, const double* const Xeq) const;
+    double dRhodP(double T, double P, const double* const Xeq);
     
     /**
      * Returns the density derivative with respect to pressure for the current
      * equilibrium state.
      */
-    double dRhodP() const {
+    double dRhodP() {
         return dRhodP(T(), P(), X());
     }
     
     /**
      * Returns the unitless vector of species enthalpies \f$ H_i / R_u T \f$.
      */
+    void speciesHOverRT(double T, double* const h) const; 
+     
     void speciesHOverRT(
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,
@@ -505,7 +519,7 @@ public:
     /**
      * Returns the current equilibrium sound speed of the mixture in m/s.
      */
-    double equilibriumSoundSpeed() const {
+    double equilibriumSoundSpeed() {
         return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
     }
     
@@ -515,12 +529,14 @@ public:
     void speciesSOverR(double* const p_s) const;
     
     /**
-     * Returns the mixture averaged entropy in J/mol-K.
+     * Returns the mixture averaged entropy in J/mol-K including the entropy of
+     * mixing.
      */
     double mixtureSMole() const;
     
     /**
-     * Returns the mixture averaged entropy in J/kg-K.
+     * Returns the mixture averaged entropy in J/kg-K including the entropy of
+     * mixing.
      */
     double mixtureSMass() const;
     
@@ -670,4 +686,8 @@ inline void Thermodynamics::convert<Y_TO_XE>(
 }
 /// @endcond
 
+    } // namespace Thermodynamics
+} // namespace Mutation
+
 #endif // THERMO_THERMODYNAMICS_H
+

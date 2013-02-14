@@ -5,6 +5,9 @@
 
 using namespace std;
 
+namespace Mutation {
+namespace Thermodynamics {
+
 Nasa9Polynomial::Nasa9Polynomial()
     : m_nr(0), m_nc(0), mp_coefficients(NULL), mp_tbounds(NULL)
 { }
@@ -291,4 +294,6 @@ void swap(Nasa9Polynomial& left, Nasa9Polynomial& right)
     swap(left.mp_tbounds, right.mp_tbounds);
 }
 
+} // namespace Thermodynamics
+} // namespace Mutation
 

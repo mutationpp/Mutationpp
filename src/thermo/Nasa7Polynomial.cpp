@@ -1,10 +1,12 @@
 #include <cmath>
 
 #include "Nasa7Polynomial.h"
-#include "utilities.h"
+#include "Utilities.h"
 
 using namespace std;
-using namespace utils;
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 Nasa7Polynomial::Nasa7Polynomial(const Nasa7Polynomial &to_copy)
 {
@@ -154,3 +156,7 @@ std::istream &operator>>(istream &in, Nasa7Polynomial &n7)
     }
     in.getline(temp, 100);
 }
+
+} // namespace Thermodynamics
+} // namespace Mutation
+

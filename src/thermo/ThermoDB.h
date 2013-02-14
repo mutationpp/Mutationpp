@@ -3,6 +3,9 @@
 
 #include <vector>
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 // Forward declare the species class.
 class Species;
 
@@ -158,6 +161,9 @@ protected:
     int m_ns;
     
 }; // class ThermoDB
+
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_THERMODB_H
 

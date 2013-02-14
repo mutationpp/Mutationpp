@@ -8,6 +8,9 @@
 #ifndef REFERENCE_SERVER_H
 #define REFERENCE_SERVER_H
 
+namespace Mutation {
+    namespace Utilities {
+
 /**
  * Non-instantiable class which serves up revolving references to objects of 
  * class T.  At start up, an array of size elements is created using the 
@@ -38,5 +41,8 @@ int ReferenceServer<T, size>::m_current = 0;
 template <typename T, int size>
 T ReferenceServer<T, size>::m_refs [size];
 
+    } // namespace Utilities
+} // namespace Mutation
 
 #endif // REFERENCE_SERVER_H
+

@@ -7,9 +7,7 @@
 #include "JacobianManager.h"
 #include "Reaction.h"
 #include "Thermodynamics.h"
-
 #include "Numerics.h"
-using namespace Numerics;
 
 /**
  * Manages the computation of chemical source terms for an entire reaction
@@ -23,7 +21,9 @@ public:
      * Constructor which takes a reference to a Thermodynamics object and the
      * the full file name path to the mechanism data file.
      */
-    Kinetics(const Thermodynamics& thermo, std::string mechanism);
+    Kinetics(
+        const Mutation::Thermodynamics::Thermodynamics& thermo, 
+        std::string mechanism);
     
     ~Kinetics()
     {
@@ -53,7 +53,8 @@ public:
      * @param T    the temperature in K
      * @param keq  on return, \f$ K_{C,j}(T) \f$
      */
-    void equilibriumConstants(const double T, RealVector& keq);
+    void equilibriumConstants(
+        const double T, Mutation::Numerics::RealVector& keq);
     
     /**
      * Fills the vector kf with the forward rate coefficients \f$ k_{f,j} \f$
@@ -63,7 +64,8 @@ public:
      * @param T   the temperature in K
      * @param kf  on return, \f$ k_{f,j}(T) \f$
      */
-    void forwardRateCoefficients(const double T, RealVector& kf);
+    void forwardRateCoefficients(
+        const double T, Mutation::Numerics::RealVector& kf);
     
     /**
      * Fills the vector kb with the backward rate coefficients 
@@ -72,7 +74,8 @@ public:
      * @param T   the temperature in K
      * @param kb  on return, \f$ k_{b,j}(T) \f$
      */
-    void backwardRateCoefficients(const double T, RealVector& kb);
+    void backwardRateCoefficients(
+        const double T, Mutation::Numerics::RealVector& kb);
     
     /**
      * Fills the vector ropf with the forward rate of progress variables for
@@ -83,7 +86,8 @@ public:
      * @param ropf  on return, the forward rates of progress in mol/m^3-s
      */
     void forwardRatesOfProgress(
-        const double T, const RealVector& conc, RealVector& ropf);
+        const double T, const Mutation::Numerics::RealVector& conc, 
+        Mutation::Numerics::RealVector& ropf);
     
     /**
      * Fills the vector ropb with the backward rates of progress variables for
@@ -94,7 +98,8 @@ public:
      * @param ropb  on return, the backward rates of progress in mol/m^3-s
      */
     void backwardRatesOfProgress(
-        const double T, const RealVector& conc, RealVector& ropb);
+        const double T, const Mutation::Numerics::RealVector& conc, 
+        Mutation::Numerics::RealVector& ropb);
     
     /**
      * Fills the vector rop with the net rates of progress for each reaction
@@ -106,7 +111,8 @@ public:
      * @param rop   on return, the net rates of progress in mol/m^3-s
      */
     void netRatesOfProgress(
-        const double T, const RealVector& conc, RealVector& rop);
+        const double T, const Mutation::Numerics::RealVector& conc, 
+        Mutation::Numerics::RealVector& rop);
     
     /**
      * Fills the vector wdot with the net species production rates due to the
@@ -123,6 +129,8 @@ public:
      */
     void netProductionRates(
         const double T, const double* const conc, double* const wdot);
+        
+    void netProductionRates(double* const wdot);
 
     /**
      * Fills the matrix p_jac with the species production rate jacobian matrix
@@ -140,7 +148,9 @@ public:
     /**
      * Returns the change in some species quantity across each reaction.
      */
-    void getReactionDelta(const RealVector& s, RealVector& r);
+    void getReactionDelta(
+        const Mutation::Numerics::RealVector& s, 
+        Mutation::Numerics::RealVector& r);
     
 
 private:
@@ -180,7 +190,7 @@ private:
 private:
 
     size_t m_num_rxns;
-    const Thermodynamics& m_thermo;
+    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     
     std::vector<Reaction> m_reactions;
 
@@ -192,13 +202,13 @@ private:
     ThirdbodyManager m_thirdbodies;
     JacobianManager m_jacobian;
     
-    RealVector m_dnu;
+    Mutation::Numerics::RealVector m_dnu;
     double* mp_g;
-    RealVector m_lnkf;
-    RealVector m_lnkeq;
-    RealVector m_ropf;
-    RealVector m_ropb;
-    RealVector m_rop;
+    Mutation::Numerics::RealVector m_lnkf;
+    Mutation::Numerics::RealVector m_lnkeq;
+    Mutation::Numerics::RealVector m_ropf;
+    Mutation::Numerics::RealVector m_ropb;
+    Mutation::Numerics::RealVector m_rop;
     
     double m_T_last;
 };

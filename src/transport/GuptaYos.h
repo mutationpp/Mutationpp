@@ -15,8 +15,9 @@ protected:
     
     template <typename T, typename E1, typename E2, typename E3>
     double guptaYos(
-        const Numerics::MatExpr<T, E1>& a, const Numerics::VecExpr<T, E2>& A, 
-        const Numerics::VecExpr<T, E3>& x)
+        const Mutation::Numerics::MatExpr<T, E1>& a, 
+        const Mutation::Numerics::VecExpr<T, E2>& A, 
+        const Mutation::Numerics::VecExpr<T, E3>& x)
     {
         const int ns = x.size();
     
@@ -48,7 +49,7 @@ protected:
 
 private:
     
-    Numerics::RealVector quotient;
+    Mutation::Numerics::RealVector quotient;
     
 }; // class GuptaYos
 

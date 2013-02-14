@@ -1,16 +1,18 @@
 #include "Thermodynamics.h"
-#include "utilities.h"
-#include "XMLite.h"
 #include "Constants.h"
 #include "GfcEquilSolver.h"
-#include "AutoRegistration.h"
 #include "ThermoDB.h"
 #include "StateModel.h"
+#include "Utilities.h"
 
 #include <set>
 
 using namespace std;
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 //==============================================================================
 
@@ -24,7 +26,7 @@ Thermodynamics::Thermodynamics(
     loadSpeciesFromList(species_names);
     
     // Now we can load the relevant thermodynamic database
-    mp_thermodb = Utilities::Factory<ThermoDB>::create(thermo_db, m_species);
+    mp_thermodb = Config::Factory<ThermoDB>::create(thermo_db, m_species);
     
     // Build the composition matrix
     m_element_matrix = RealMatrix(nSpecies(), nElements());
@@ -54,7 +56,7 @@ Thermodynamics::Thermodynamics(
     mp_equil = new GfcEquilSolver(*this);
     
     // Allocate a new state model
-    mp_state = Utilities::Factory<StateModel>::create(state_model, nSpecies());
+    mp_state = Config::Factory<StateModel>::create(state_model, nSpecies());
 }
 
 //==============================================================================
@@ -68,6 +70,7 @@ Thermodynamics::~Thermodynamics()
     
     delete mp_thermodb;
     delete mp_equil;
+    delete mp_state;
 }
 
 //==============================================================================
@@ -77,16 +80,16 @@ void Thermodynamics::loadSpeciesFromList(
 {
     // Determine file paths
     string thermo_directory = 
-        utils::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
+        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
     string elements_path    = thermo_directory + "/elements.xml";
     string species_path     = thermo_directory + "/species.xml";
     
     // First we need to load the entire element database for use in constructing
     // our species list
-    XmlDocument element_doc(elements_path);
+    IO::XmlDocument element_doc(elements_path);
     
-    XmlElement::Iterator element_iter = element_doc.root().begin();
-    XmlElement::Iterator element_end  = element_doc.root().end();
+    IO::XmlElement::Iterator element_iter = element_doc.root().begin();
+    IO::XmlElement::Iterator element_end  = element_doc.root().end();
     
     vector<Element> elements;
     
@@ -94,7 +97,7 @@ void Thermodynamics::loadSpeciesFromList(
         elements.push_back(Element(*element_iter));
     
     // Load the species XML database
-    XmlDocument species_doc(species_path);    
+    IO::XmlDocument species_doc(species_path);    
     string species_name;
     
     // Use a set for the species names to ensure that species are listed only
@@ -104,8 +107,8 @@ void Thermodynamics::loadSpeciesFromList(
     
     // Iterate over all species in the database and pull out the ones that are
     // needed from the list
-    XmlElement::Iterator species_iter = species_doc.root().begin();
-    XmlElement::Iterator species_end  = species_doc.root().end();
+    IO::XmlElement::Iterator species_iter = species_doc.root().begin();
+    IO::XmlElement::Iterator species_end  = species_doc.root().end();
     
     for ( ; species_iter != species_end; ++species_iter) {
         // Get the name of current species
@@ -306,22 +309,29 @@ double Thermodynamics::mixtureMw() const
 
 void Thermodynamics::equilibrate(
     double T, double P, const double* const p_c, double* const p_X, 
-    bool set_state) const
+    bool set_state)
 {
+    
+    /// @todo Add an internal mp_X array in EquilibriumSolver class instead of
+    /// needing the work array on the outside (dangerous to need work array's
+    /// because other functions could be using them and they get clobbered when
+    /// equilibrate is called.
+    
     mp_equil->equilibrate(T, P, p_c, p_X);
     convert<CONC_TO_X>(p_X, p_X);
+    
     if (set_state) {
         convert<X_TO_Y>(p_X, mp_y);
         mp_state->setStateTPX(T, P, p_X);
     }
+
+    
 }
 
 //==============================================================================
 
-void Thermodynamics::equilibrate(double T, double P) const
+void Thermodynamics::equilibrate(double T, double P)
 {
-    //for (int i = 0; i < nElements(); ++i)
-    //    cout << elementName(i) << " " << mp_default_composition[i] << endl;
     equilibrate(T, P, mp_default_composition, mp_work1);
 }
 
@@ -377,6 +387,14 @@ void Thermodynamics::speciesCpOverR(double *const p_cp) const
     mp_thermodb->cp(
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
         mp_state->Tel(), p_cp, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesCpOverR(double T, double* const p_cp) const
+{
+    mp_thermodb->cp(
+        T, T, T, T, T, p_cp, NULL, NULL, NULL, NULL);
 }
 
 //==============================================================================
@@ -446,7 +464,7 @@ double Thermodynamics::mixtureFrozenCpMass() const
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCpMole(
-    double T, double P, const double* const Xeq) const
+    double T, double P, const double* const Xeq)
 {
     const double eps = 1.0e-6;
 
@@ -476,7 +494,7 @@ double Thermodynamics::mixtureEquilibriumCpMole(
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCpMass(
-    double T, double P, const double* const Yeq) const
+    double T, double P, const double* const Yeq)
 {
     const double eps = 1.0e-6;
     
@@ -501,7 +519,7 @@ double Thermodynamics::mixtureEquilibriumCpMass(
 //==============================================================================
 
 void Thermodynamics::dXidT(
-    double T, double P, const double* const Xeq, double* const dxdt) const
+    double T, double P, const double* const Xeq, double* const dxdt)
 {
     const double eps = 1.0e-6;
     
@@ -518,7 +536,7 @@ void Thermodynamics::dXidT(
 //==============================================================================
 
 double Thermodynamics::dRhodP(
-    double T, double P, const double* const Xeq) const
+    double T, double P, const double* const Xeq)
 {
     const double eps = 1.0e-6;
     
@@ -537,14 +555,14 @@ double Thermodynamics::dRhodP(
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCpMole() const
+double Thermodynamics::mixtureEquilibriumCpMole()
 {
     return mixtureEquilibriumCpMole(T(), P(), X());
 }
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCpMass() const
+double Thermodynamics::mixtureEquilibriumCpMass()
 {
     return mixtureEquilibriumCpMass(T(), P(), Y());
 }
@@ -558,41 +576,55 @@ double Thermodynamics::mixtureFrozenCvMole() const
 
 //==============================================================================
 
-double Thermodynamics::mixtureFrozenCvMass() const 
+double Thermodynamics::mixtureFrozenCvMass() const
 {
     return (mixtureFrozenCpMole() - RU) / mixtureMw();
 }
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCvMole(
-    double T, double P, const double* const X) const
+double Thermodynamics::mixtureEquilibriumCvMass() 
 {
-    return mixtureEquilibriumCpMole(T, P, X) - RU;
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumCvMole() const
-{
-    return mixtureEquilibriumCpMole() - RU;
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumCvMass(
-    double T, double P, const double* const Y) const 
-{
-    /// @todo
-    return 0.0;
+    // We assume that Y is already in equilibrium at T and P
+    // Need to perturb current equilibrium conditions and compute dh/dT, dh/dP,
+    // drho/T and drho/P
     
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumCvMass() const
-{
-    return mixtureEquilibriumCpMass() - RU / mixtureMw();
+    double rho, rhoP, rhoT, T, P;
+    double e, eP, eT, dT, dP;
+    double drhodt, drhodp, dedt, dedp;
+    
+    // Get current mixture properties
+    rho = density();
+    e = mixtureEnergyMass();
+    T = this->T();
+    P = this->P();
+    elementFractions(X(), mp_work2);
+    
+    // Perturb pressure
+    dP = 1.0e-6*P;
+    equilibrate(T, P+dP, mp_work2, mp_work1);
+    rhoP = density();
+    eP   = mixtureEnergyMass();
+    
+    // Perturb temperature
+    dT = 1.0e-6*T;
+    equilibrate(T+dT, P, mp_work2, mp_work1);
+    rhoT  = density();
+    eT    = mixtureEnergyMass();
+    
+    // Return to current state
+    equilibrate(T, P, mp_work2, mp_work1);
+    drhodt = (rhoT-rho)/dT;
+    drhodp = (rhoP-rho)/dP;
+    dedt = (eT-e)/dT;
+    dedp = (eP-e)/dP;
+    
+    //cout << endl;
+    //cout << T << " " << dT << " " << P << " " << dP << endl;
+    //cout << drhodt << " " << drhodp << " " << dedt << " " << dedp << endl;
+    
+    // Compute Cv
+    return dedt - dedp*drhodt/drhodp;
 }
 
 //==============================================================================
@@ -605,19 +637,9 @@ double Thermodynamics::mixtureFrozenGamma() const
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumGamma(
-    double T, double P, const double* const Y) const 
+double Thermodynamics::mixtureEquilibriumGamma()
 {
-    double cp = mixtureEquilibriumCpMass(T, P, Y);
-    return (cp / (cp - RU / mixtureMw()));
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumGamma() const
-{
-    double cp = mixtureEquilibriumCpMass();
-    return (cp / (cp - RU / mixtureMw()));
+    return mixtureEquilibriumCpMass() / mixtureEquilibriumCvMass();
 }
 
 //==============================================================================
@@ -629,6 +651,14 @@ void Thermodynamics::speciesHOverRT(
     mp_thermodb->enthalpy(
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
         mp_state->Tel(), h, ht, hr, hv, hel, hf);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesHOverRT(double T, double* const h) const 
+{
+    mp_thermodb->enthalpy(
+        T, T, T, T ,T, h, NULL, NULL, NULL, NULL, NULL);
 }
 
 //==============================================================================
@@ -665,7 +695,7 @@ double Thermodynamics::mixtureSMole() const
     double s = 0;
     speciesSOverR(mp_work1);
     for (int i = 0; i < nSpecies(); ++i)
-        s += mp_work1[i] * X()[i];
+        s += (mp_work1[i] - std::log(X()[i])) * X()[i];
     return (s * RU);
 }
 
@@ -714,5 +744,9 @@ void Thermodynamics::elementFractions(
 }
 
 //==============================================================================
+
+
+} // namespace Thermodynamics
+} // namespace Mutation
 
 

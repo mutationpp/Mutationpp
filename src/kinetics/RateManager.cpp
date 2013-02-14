@@ -4,6 +4,10 @@
 
 #include "RateManager.h"
 
+using namespace Mutation::Numerics;
+
+//==============================================================================
+
 void RateManager::addRateCoefficient(
     const size_t rxn, const RateLaw *const p_rate)
 {   
@@ -12,11 +16,13 @@ void RateManager::addRateCoefficient(
         m_arrhenius.push_back(
             std::make_pair(rxn, *static_cast<const Arrhenius *const>(p_rate)));
     } else {
-        cerr << "Rate law " << typeid(*p_rate).name() 
-             << " not implemented in RateCoefficientManager!" << endl;
+        std::cerr << "Rate law " << typeid(*p_rate).name() 
+             << " not implemented in RateCoefficientManager!" << std::endl;
         exit(1);
     }
 }
+
+//==============================================================================
 
 void RateManager::forwardRateCoefficients(const double T, RealVector& kf) const
 {
@@ -36,3 +42,6 @@ void RateManager::lnForwardRateCoefficients(
     for (iter = m_arrhenius.begin(); iter != m_arrhenius.end(); ++iter)
         lnkf(iter->first) = iter->second.getLnRate(lnT, invT); 
 }
+
+//==============================================================================
+

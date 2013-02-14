@@ -7,8 +7,6 @@
 
 #include "RateLaws.h"
 
-using namespace utils;
-
 /**
  * Stores information that defines a complete reaction (reactants, products,
  * reversibility, thirdbody efficiencies, rate law, and rate coefficients).  The
@@ -22,7 +20,7 @@ public:
     /**
      * Constructs a reaction object from a "reaction" XML element.
      */
-    Reaction(XmlElement& node);
+    Reaction(Mutation::Utilities::IO::XmlElement& node);
     
     /**
      * Copy constructor.
@@ -154,7 +152,7 @@ private:
      * reversible reaction while '=>' could be used to denote a irreversible
      * forward reaction.
      */
-    void parseFormula(XmlElement& node);
+    void parseFormula(Mutation::Utilities::IO::XmlElement& node);
     
     /**
      * Enumerates the states used in the state machine which parses the

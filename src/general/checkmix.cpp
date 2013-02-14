@@ -2,12 +2,14 @@
 #include <iomanip>
 #include <typeinfo>
 
+#include "mutation++.h"
+
 using std::cout;
 using std::endl;
 using std::string;
 using std::setw;
-
-#include "mutation++.h"
+using std::vector;
+using std::pair;
 
 int main(int argc, char** argv)
 {
@@ -27,7 +29,7 @@ int main(int argc, char** argv)
     
     std::string mix(argv[argc-1]);
     cout << "Loading mixture file " << mix << " ..." << endl;
-    Mixture mixture(mix);
+    Mutation::Mixture mixture(mix);
         
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();
@@ -56,9 +58,9 @@ int main(int argc, char** argv)
         cout << setw(12) << mixture.speciesMw(i) * 1000.0
              << setw(10) << mixture.species()[i].charge();
         
-        PhaseType phase = mixture.species()[i].phase();
-        cout << setw(12) << (phase == GAS ? "gas" : 
-            (phase == LIQUID ? "liquid" : "solid")) << endl;
+        Mutation::Thermodynamics::PhaseType phase = mixture.species()[i].phase();
+        cout << setw(12) << (phase == Mutation::Thermodynamics::GAS ? "gas" : 
+            (phase == Mutation::Thermodynamics::LIQUID ? "liquid" : "solid")) << endl;
     }
     
     cout << endl;

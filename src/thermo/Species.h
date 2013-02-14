@@ -6,8 +6,18 @@
 #include <set>
 #include <vector>
 
-class XmlElement;
-class ParticleRRHO;
+// Forward declaration of the XmlElement Class
+namespace Mutation {
+namespace Utilities {
+namespace IO {
+    class XmlElement;
+} } }
+     
+
+namespace Mutation {
+    namespace Thermodynamics {
+    
+class ParticleRRHO; 
 
 /**
  * Responsible for loading element data from the elements.xml file.
@@ -19,7 +29,7 @@ public:
     /**
      * Loads an element from an "element" XmlElement node.
      */
-    Element(XmlElement &xml_element);
+    Element(Mutation::Utilities::IO::XmlElement& xml_element);
     
     /**
      * Returns the name of the element.
@@ -79,8 +89,8 @@ public:
      * Load species data from a "species" XmlElement node.
      */
     Species(
-        XmlElement &xml_element, const std::vector<Element> &elements, 
-        std::set<int> &used_elements);
+        Mutation::Utilities::IO::XmlElement &xml_element, 
+        const std::vector<Element> &elements, std::set<int> &used_elements);
     
     /**
      * Copy constructor.
@@ -237,6 +247,9 @@ private:
  * Swaps the contents of one Species object with another.
  */
 void swap(Species& s1, Species& s2);
+
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_SPECIES_H
 

@@ -3,7 +3,9 @@
 
 #include <limits>
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 /**
  * Stores numeric constants for a template type which are used throughout the
@@ -31,6 +33,8 @@ const T NumConst<T>::two  = static_cast<T>(2);
 template <typename T>
 const T NumConst<T>::eps  = std::numeric_limits<T>::epsilon();
 
-}
+
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_NUMCONST_H

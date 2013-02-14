@@ -19,6 +19,10 @@
 
 using namespace std;
 
+namespace Mutation {
+    namespace Utilities {
+        namespace IO {
+
 //==============================================================================
 //  XmlDocument member definitions
 //==============================================================================
@@ -254,3 +258,7 @@ bool XmlElement::parse(
         
     return true;
 }
+
+        } // namespace IO
+    } // namespace Utilities
+} // namespace Mutation

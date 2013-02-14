@@ -1,6 +1,9 @@
 #include "Numerics.h"
 #include "Thermodynamics.h"
 
+namespace Mutation {
+    namespace Thermodynamics {
+
 class BPrimeProvider
 {
 public:
@@ -216,3 +219,7 @@ private:
     int    m_ce_index;
     int    m_cs_index;
 };
+
+} // namespace Thermodynamics
+} // namespace Mutation
+

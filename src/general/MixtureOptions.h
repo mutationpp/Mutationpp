@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace Mutation {
+
 /**
  * Keeps track of the set of mixture options in a convient way.  Also, enforces
  * the default options so that a user will not have to set any options unless
@@ -233,6 +235,8 @@ private:
     std::string m_thermal_conductivity;
 
 }; // class MixtureOptions
+
+} // namespace Mutation
 
 #endif // GENERAL_MIXTURE_OPTIONS_H
 

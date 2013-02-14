@@ -17,9 +17,9 @@ protected:
 
     template <typename E1, typename E2, typename E3>
     double wilke(
-        const Numerics::VecExpr<double, E1>& vals, 
-        const Numerics::VecExpr<double, E2>& mass,
-        const Numerics::VecExpr<double, E3>& x)
+        const Mutation::Numerics::VecExpr<double, E1>& vals, 
+        const Mutation::Numerics::VecExpr<double, E2>& mass,
+        const Mutation::Numerics::VecExpr<double, E3>& x)
     {
         const int ns = vals.size();
 

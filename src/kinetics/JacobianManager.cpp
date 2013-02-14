@@ -1,13 +1,15 @@
 #include "JacobianManager.h"
 #include "Reaction.h"
 #include "Functors.h"
-#include <iomanip>
-using std::setw;
 
-typedef Numerics::Equals<double>            Equals;
-typedef Numerics::MinusEquals<double>       MinusEquals;
-typedef Numerics::PlusEqualsTimes<double>   PlusEqualsTimes;
-typedef Numerics::MinusEqualsTimes<double>  MinusEqualsTimes;
+#include <iomanip>
+
+typedef Mutation::Numerics::Equals<double>            Equals;
+typedef Mutation::Numerics::MinusEquals<double>       MinusEquals;
+typedef Mutation::Numerics::PlusEqualsTimes<double>   PlusEqualsTimes;
+typedef Mutation::Numerics::MinusEqualsTimes<double>  MinusEqualsTimes;
+
+//==============================================================================
 
 template <typename Reactants, typename Products>
 void swap(
@@ -20,6 +22,7 @@ void swap(
     std::swap(left.m_ns,     right.m_ns);
 }
 
+//==============================================================================
 
 template <typename Reactants, typename Products>
 void ReactionStoich<Reactants, Products>::contributeToJacobian(
@@ -57,6 +60,8 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
     }
 }
 
+//==============================================================================
+
 template <typename Reactants, typename Products>
 void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
     const double kf, const double kb, const double* const conc, 
@@ -72,32 +77,33 @@ void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
         tb += mp_alpha[i] * conc[i];
     }
     
-    cout << "kf: " << kf << endl;
+    /*cout << "kf: " << kf << endl;
     cout << "kb: " << kb << endl;
     cout << "RRf: " << rrf << endl;
     cout << "RRb: " << rrb << endl;
     cout << "RR: " << rr << endl;
-    cout << "TB: " << tb << endl;
+    cout << "TB: " << tb << endl;*/
 
     m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
     m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
     
-    cout << "reactants: ";
+    //cout << "reactants: ";
     for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        cout << setw(3) << m_reacs(i);
+        //cout << setw(3) << m_reacs(i);
         for (int j = 0; j < ns; ++j)
             sjac[m_reacs(i)*ns + j] -= m_reacs[i] * work[j];
     }
     
-    cout << endl << "products: ";
+    //cout << endl << "products: ";
     for (int i = 0; i < Products::nSpecies(); ++i) {
-        cout << setw(3) << m_prods(i);
+        //cout << setw(3) << m_prods(i);
         for (int j = 0; j < ns; ++j)
             sjac[m_prods(i)*ns + j] += m_prods[i] * work[j];
     }
-    cout << endl;
+    //cout << endl;
 }
 
+//==============================================================================
 
 template <typename Reactants>
 void JacobianManager::addReactionStoich(
@@ -182,6 +188,7 @@ void JacobianManager::addReactionStoich(
     }
 }
 
+//==============================================================================
 
 bool JacobianManager::getJacStoich(
     const std::multiset<std::string>& stoich_set, JacStoichBase** p_stoich, 
@@ -245,6 +252,7 @@ bool JacobianManager::getJacStoich(
     }
 }
 
+//==============================================================================
 
 void JacobianManager::addReaction(const Reaction& reaction)
 {
@@ -256,14 +264,14 @@ void JacobianManager::addReaction(const Reaction& reaction)
     StoichType prodsType;
     
     if (!getJacStoich(reaction.reactants(), &p_reacs, reacsType)) {
-        cout << "Error: reactants' stoichiometry is invalid for reaction"
-             << "\"" << reaction.formula() << "\"!" << endl;
+        std::cout << "Error: reactants' stoichiometry is invalid for reaction"
+             << "\"" << reaction.formula() << "\"!" << std::endl;
         exit(1);
     }
     
     if (!getJacStoich(reaction.products(), &p_prods, prodsType)) {
-        cout << "Error: products' stoichiometry is invalid for reaction"
-             << "\"" << reaction.formula() << "\"!" << endl;
+        std::cout << "Error: products' stoichiometry is invalid for reaction"
+             << "\"" << reaction.formula() << "\"!" << std::endl;
         exit(1);
     }
     
@@ -298,6 +306,7 @@ void JacobianManager::addReaction(const Reaction& reaction)
     delete p_prods;
 }
 
+//==============================================================================
 
 void JacobianManager::computeJacobian(
     const double* const kf, const double* const kb, const double* const conc, 
@@ -324,4 +333,6 @@ void JacobianManager::computeJacobian(
             sjac[index] *= mp_work[i] / mp_work[j];
     }
 }
+
+//==============================================================================
 

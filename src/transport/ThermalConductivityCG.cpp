@@ -3,9 +3,10 @@
 #include "Constants.h"
 #include "Numerics.h"
 #include "CollisionDB.h"
-#include "AutoRegistration.h"
+#include "Utilities.h"
 
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 /**
  * Computes the mixture thermal conductivity using the conjugate-gradient
@@ -23,7 +24,7 @@ public:
           m_sys(m_collisions.nSpecies()-1), m_alpha(m_collisions.nSpecies()-1)
     { }
 
-    double elasticThermalConductivity(
+    double thermalConductivity(
         double Th, double Te, double nd, const double *const p_x)
     {
         const int ns = m_collisions.nSpecies();
@@ -72,6 +73,6 @@ private:
 };
 
 // Register the algorithm
-Utilities::ObjectProvider<ThermalConductivityCG, ThermalConductivityAlgorithm>
-    lambdaCG("CG");
+Config::ObjectProvider<
+    ThermalConductivityCG, ThermalConductivityAlgorithm> lambdaCG("CG");
 

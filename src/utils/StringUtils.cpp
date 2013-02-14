@@ -1,14 +1,17 @@
 
-#include <iostream>
 #include <algorithm>
+#include "StringUtils.h"
 
-#include "utilities.h"
+using std::string;
+using std::vector;
 
-using namespace std;
+namespace Mutation {
+    namespace Utilities {
+        namespace String {
 
-namespace utils {
+//==============================================================================
 
-void StringUtils::tokenize(
+void tokenize(
     const string &str, vector<string> &tokens, const string &delim,
     const bool multi_delim)
 {
@@ -47,7 +50,9 @@ void StringUtils::tokenize(
     }        
 }
 
-string& StringUtils::eraseAll(string &str, const string &to_erase)
+//==============================================================================
+
+string& eraseAll(string& str, const string& to_erase)
 {
     string::size_type pos = str.find(to_erase);
     
@@ -59,7 +64,9 @@ string& StringUtils::eraseAll(string &str, const string &to_erase)
     return str;
 }
 
-string StringUtils::trim(const string &str, const string &to_erase)
+//==============================================================================
+
+string trim(const string& str, const string& to_erase)
 {
     size_t i1 = str.find_first_not_of(to_erase);
     
@@ -69,10 +76,12 @@ string StringUtils::trim(const string &str, const string &to_erase)
         return string();
 }
 
-std::string StringUtils::removeWhiteSpace(const std::string& str)
+//==============================================================================
+
+std::string removeWhiteSpace(const string& str)
 {
-    std::string::size_type pos = str.find_first_of(" \f\v\t\r\n");
-    std::string to_return = str;
+    string::size_type pos = str.find_first_of(" \f\v\t\r\n");
+    string to_return = str;
     
     while (pos != string::npos) {
         to_return.erase(pos, 1);
@@ -82,22 +91,50 @@ std::string StringUtils::removeWhiteSpace(const std::string& str)
     return to_return;
 }
 
-string StringUtils::toUpperCase(const string &str)
+//==============================================================================
+
+string toUpperCase(const string &str)
 {
-    std::string new_str;        
+    string new_str;        
     std::transform(str.begin(), str.end(), std::back_inserter(new_str),
         static_cast<int(*)(int)>(toupper));
     return new_str;
 }
 
-string StringUtils::toLowerCase(const string &str)
+//==============================================================================
+
+string toLowerCase(const string &str)
 {
-    std::string new_str;        
+    string new_str;        
     std::transform(str.begin(), str.end(), std::back_inserter(new_str),
         static_cast<int(*)(int)>(tolower));
     return new_str;
 }
 
-} // namespace utils
+//==============================================================================
 
+bool isNumeric(const string& input, int number_base)
+{
+	const string base = "0123456789ABCDEF";
+ 
+	return (
+	    input.find_first_not_of(
+	        base.substr(0, number_base) + ".+-Ee") == 
+	    string::npos);
+}
+
+//==============================================================================
+
+bool isNumeric(
+    const vector<string>& array, int number_base)
+{
+    for (int i = 0; i < array.size(); ++i)
+        if (!isNumeric(array[0], number_base)) return false;
+    
+    return true;
+}
+
+        } // namespace String
+    } // namespace Utilities
+} // namespace Mutation
 

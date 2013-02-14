@@ -20,6 +20,9 @@
 #include <list>
 #include <cmath>
 
+namespace Mutation {
+    namespace Utilities {
+
 /**
  * Enumerates possible interpolation schemes that can be used in the
  * LookupTable::lookup() function.
@@ -33,7 +36,7 @@ enum InterpolationScheme {
 };
 
 /**
- * An efficient lookup table.
+ * An efficient lookup table abstract base class.
  *
  * A lookup table consists of a set of one or more functions tabulated against
  * a set of indices (independent value).  A lookup table can be used to tabulate
@@ -60,9 +63,11 @@ enum InterpolationScheme {
  *
  * @see LookupTable::lookup()
  */
-template<typename IndexType, typename DataType> class LookupTable
+template<typename IndexType, typename DataType, typename FunctionType> 
+class LookupTable
 {
 public:
+
     /**
      * Constructs a LookupTable using data loaded from a file.
      *
@@ -79,9 +84,6 @@ public:
      *
      * @param low        the low index for the table range
      * @param high       the high index for the table range
-     * @param func       the lookup function
-     * @param p_data     can be any data structure that may be needed by func
-     * @param nfuncs     the number of functions returned by func
      * @param max_error  the allowed error tolerance associated with scheme
      *                   where 
      *                   \f[ error = \max_i |\frac{interp_i}{exact_i} - 1| \f]
@@ -89,13 +91,12 @@ public:
      *                   maximum error in the table
      */
     LookupTable(
-        const IndexType &low, const IndexType &high,
-        void (*func)(const IndexType&, DataType *const, void*), void* p_data, 
-        int nfuncs, double max_error = 0.01, 
-        InterpolationScheme scheme = LINEAR);
+        IndexType low, IndexType high, int nfuncs, 
+        typename FunctionType::DataProvider& provider, 
+        double max_error = 0.01, InterpolationScheme scheme = LINEAR);
     
     /**
-     * Constructs a LookupTable using a prescribed function and number of rows.
+     * Constructs a LookupTable using a prescribed number of rows.
      *
      * Given the number of rows to include in the table and the index range,
      * the table is generated using constant spacing between rows.
@@ -103,17 +104,15 @@ public:
      * @param low     the low index for the table range
      * @param high    the high index for the table range
      * @param nrows   the number of rows to include in the table
-     * @param func    the lookup function
-     * @param nfuncs  the number of functions returned by func
      */
     LookupTable(
-        const IndexType &low, const IndexType &high, int nrows,
-        void (*func)(const IndexType&, DataType *const), int nfuncs);
+        IndexType low, IndexType high, int nrows, int nfuncs,
+        typename FunctionType::DataProvider& provider);
     
     /**
      * Destructor.
      */
-    ~LookupTable();
+    virtual ~LookupTable();
     
     /**
      * Interpolates table data between two table entries nearest a search index.
@@ -146,7 +145,7 @@ public:
      * @see InterpolationScheme
      */
     void lookup(const IndexType &index, DataType * const p_values, 
-                const InterpolationScheme scheme = NEAREST_INDEX) const;
+                const InterpolationScheme scheme = LINEAR) const;
     
     /**
      * Saves the lookup table to a file.
@@ -158,22 +157,37 @@ public:
     /**
      * Returns number of indices (rows) in the table.
      */
-    unsigned int nIndices() const { return m_num_indices; };
+    unsigned int nIndices() const { return m_num_indices; }
     
     /**
      * Returns number of functions (columns) in the table.
      */
-    unsigned int nFunctions() const { return m_num_functions; };
+    unsigned int nFunctions() const { return m_num_functions; }
     
     /**
      * Returns the first (minimum) index value in the table.
      */
-    IndexType minIndex() const { return mp_indices[0]; };
+    IndexType minIndex() const { return mp_indices[0]; }
     
     /**
      * Returns the last (maximum) index value in the table.
      */
-    IndexType maxIndex() const { return mp_indices[m_num_indices-1]; };
+    IndexType maxIndex() const { return mp_indices[m_num_indices-1]; }
+
+    /**
+     * Computes the exact value of each function in this table using the given
+     * index value.
+     */
+    //virtual void tableFunction(IndexType, DataType*) const = 0;
+
+protected:
+    
+    /**
+     * Returns a reference to the data provider for this table.
+     */
+    typename FunctionType::DataProvider& provider() const { 
+        return m_data_provider; 
+    }
 
 private:
     
@@ -217,10 +231,11 @@ private:
     void populateTable(
         std::list< std::pair<IndexType, DataType *> > &table,
         typename std::list< std::pair<IndexType, DataType *> >::iterator &high,
-        void (*func)(const IndexType&, DataType* const, void*), void* p_data,
         int nfuncs, double max_error, InterpolationScheme scheme) const;
 
 private:
+
+    typename FunctionType::DataProvider& m_data_provider;
 
     unsigned int m_num_indices;
     unsigned int m_num_functions;
@@ -234,6 +249,7 @@ private:
     
 }; // class LookupTable
 
+//==============================================================================
 
 template<typename DataType>
 inline static void _interpolateNearestIndex(
@@ -243,6 +259,8 @@ inline static void _interpolateNearestIndex(
     memcpy(p_out, ratio < 0.5 ? p_y1 : p_y2, sizeof(DataType) * length);
 }
 
+//==============================================================================
+
 template<typename DataType>
 inline static void _interpolateLinear(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
@@ -251,6 +269,8 @@ inline static void _interpolateLinear(
     for (int i = 0; i < length; ++i)
         p_out[i] = p_y1[i] + ratio * (p_y2[i] - p_y1[i]);
 }
+
+//==============================================================================
 
 template<typename DataType>
 inline static void _interpolateExponential(
@@ -265,18 +285,23 @@ inline static void _interpolateExponential(
     }
 }
 
+//==============================================================================
 
-template<typename IndexType, typename DataType>
-LookupTable<IndexType, DataType>::LookupTable(const std::string &file_name)
+template<typename IndexType, typename DataType, typename FunctionType>
+LookupTable<IndexType, DataType, FunctionType>::LookupTable(
+    const std::string &file_name)
 {
     loadTable(file_name);
 }
 
-template<typename IndexType, typename DataType>
-LookupTable<IndexType, DataType>::LookupTable(
-    const IndexType &low, const IndexType &high,
-    void (*func)(const IndexType&, DataType *const, void*), void* p_data, 
-    int nfuncs, double max_error, InterpolationScheme scheme)
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+LookupTable<IndexType, DataType, FunctionType>::LookupTable(
+    IndexType low, IndexType high, int nfuncs, 
+    typename FunctionType::DataProvider& provider, double max_error, 
+    InterpolationScheme scheme)
+    : m_data_provider(provider)
 {
     std::list< std::pair<IndexType, DataType *> > points;
     
@@ -284,15 +309,19 @@ LookupTable<IndexType, DataType>::LookupTable(
     DataType *p_first = new DataType [nfuncs];
     DataType *p_last  = new DataType [nfuncs];
     
-    (*func)(low, p_first, p_data);
+    FunctionType function;
+    
+    //tableFunction(low, p_first);
+    function(low, p_first, provider);
     points.push_back(std::pair<IndexType, DataType *>(low, p_first));
     
-    (*func)(high, p_last, p_data);
+    //tableFunction(high, p_last);
+    function(high, p_last, provider);
     points.push_back(std::pair<IndexType, DataType *>(high, p_last));
     
     // Now add points to the table in order to recursively reduce error
     populateTable(
-        points, --points.end(), func, p_data, nfuncs, max_error, scheme);
+        points, --points.end(), nfuncs, max_error, scheme);
     
     // Now we finally have all the points as a list, copy the data into the
     // class members
@@ -315,10 +344,13 @@ LookupTable<IndexType, DataType>::LookupTable(
     
 }
 
-template<typename IndexType, typename DataType>
-LookupTable<IndexType, DataType>::LookupTable(
-    const IndexType &low, const IndexType &high, int nrows,
-    void (*func)(const IndexType&, DataType *const), int nfuncs)
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+LookupTable<IndexType, DataType, FunctionType>::LookupTable(
+    IndexType low, IndexType high, int nrows, int nfuncs, 
+    typename FunctionType::DataProvider& provider)
+    : m_data_provider(provider)
 {
     // Initialize table memory
     initialize(nrows, nfuncs);
@@ -328,14 +360,19 @@ LookupTable<IndexType, DataType>::LookupTable(
     const IndexType delta = (high - low) / static_cast<IndexType>(nrows - 1);
     
     // Fill the table
+    FunctionType function;
+    
     for (int i = 0; i < m_num_indices; ++i) {
         mp_indices[i] = low + delta * static_cast<IndexType>(i);
-        (*func)(mp_indices[i], mp_data + i * m_num_functions);
+        //tableFunction(mp_indices[i], mp_data + i * m_num_functions);
+        function(mp_indices[i], mp_data + i * m_num_functions, provider);
     }
 }
 
-template<typename IndexType, typename DataType>
-LookupTable<IndexType, DataType>::~LookupTable() 
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+LookupTable<IndexType, DataType, FunctionType>::~LookupTable() 
 {
     delete [] mp_indices;
     delete [] mp_data;
@@ -344,8 +381,11 @@ LookupTable<IndexType, DataType>::~LookupTable()
     mp_data    = NULL;
 }
 
-template<typename IndexType, typename DataType>
-void LookupTable<IndexType, DataType>::initialize(int nrows, int nfuncs)
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+void LookupTable<IndexType, DataType, FunctionType>::initialize(
+    int nrows, int nfuncs)
 {
     m_num_indices   = nrows;
     m_num_functions = nfuncs;
@@ -366,14 +406,17 @@ void LookupTable<IndexType, DataType>::initialize(int nrows, int nfuncs)
         mp_data[i] = static_cast<DataType>(0);
 } // initialize()
 
-template<typename IndexType, typename DataType>
-void LookupTable<IndexType, DataType>::loadTable(const std::string &file_name) 
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+void LookupTable<IndexType, DataType, FunctionType>::loadTable(
+    const std::string &file_name) 
 {
     // Open file for reading
     std::ifstream file(file_name.c_str(), std::ios::in);
     
     if (!file) {
-        std::cerr << "Could not open file " + file_name + "!\n" << endl;
+        std::cerr << "Could not open file " + file_name + "!\n" << std::endl;
         std::exit(1);
     }
     
@@ -393,9 +436,9 @@ void LookupTable<IndexType, DataType>::loadTable(const std::string &file_name)
         
         // Ensure that indices are ordered in ascending order and do not repeat
         if (i > 0 && mp_indices[i] <= mp_indices[i-1]) {
-            cerr << "Lookup table " + file_name + " is not ordered!\n";
-            cerr << "Index of row " << i+1 << " is <= to row " << i << ".";
-            cerr << endl;
+            std::cerr << "Lookup table " + file_name + " is not ordered!\n";
+            std::cerr << "Index of row " << i+1 << " is <= to row " << i << ".";
+            std::cerr << std::endl;
             exit(1);
         }
         
@@ -422,15 +465,16 @@ void LookupTable<IndexType, DataType>::loadTable(const std::string &file_name)
     std::cout << "  min index      ~ " << minIndex() << std::endl;
     std::cout << "  max index      ~ " << maxIndex() << std::endl;
     std::cout << "  constant delta ~ " << 
-        (m_is_constant_delta ? "True" : "False") << endl;
+        (m_is_constant_delta ? "True" : "False") << std::endl;
     std::cout << std::endl;
 } // loadTable()
 
-template<typename IndexType, typename DataType>
-void LookupTable<IndexType, DataType>::populateTable(
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+void LookupTable<IndexType, DataType, FunctionType>::populateTable(
     std::list< std::pair<IndexType, DataType *> > &table,
     typename std::list< std::pair<IndexType, DataType *> >::iterator &high,
-    void (*func)(const IndexType &, DataType *const, void*), void* p_data,
     int nfuncs, double error_tolerance, InterpolationScheme scheme) const
 {
     const int num_points = 100;
@@ -452,12 +496,15 @@ void LookupTable<IndexType, DataType>::populateTable(
     DataType *p_exact_values  = new DataType [nfuncs];
     DataType *p_interp_values = new DataType [nfuncs];
     
+    FunctionType function;
+    
     for (int i = 1; i <= num_points; ++i) {
         // Compute index of this point
         index = low->first + delta * static_cast<IndexType>(i);
         
         // Compute exact values
-        (*func)(index, p_exact_values, p_data);
+        //tableFunction(index, p_exact_values);
+        function(index, p_exact_values, provider());
         
         // Now interpolated values
         ratio = static_cast<double>(index - low->first) / 
@@ -502,7 +549,7 @@ void LookupTable<IndexType, DataType>::populateTable(
     if (max_error > error_tolerance) {
         index = max_error_index;
         
-        (*func)(index, p_exact_values, p_data);
+        function(index, p_exact_values, provider());
         table.insert(
             high, std::pair<IndexType, DataType *>(index, p_exact_values));
         
@@ -511,16 +558,19 @@ void LookupTable<IndexType, DataType>::populateTable(
         mid--;
 
         populateTable(
-            table, mid, func, p_data, nfuncs, error_tolerance, scheme);
+            table, mid, nfuncs, error_tolerance, scheme);
         populateTable(
-            table, high, func, p_data, nfuncs, error_tolerance, scheme);
+            table, high, nfuncs, error_tolerance, scheme);
     } else {
         delete [] p_exact_values;
     }
 } // populateTable()
 
-template<typename IndexType, typename DataType>
-void LookupTable<IndexType, DataType>::save(const std::string &file_name) const
+//==============================================================================
+
+template<typename IndexType, typename DataType, typename FunctionType>
+void LookupTable<IndexType, DataType, FunctionType>::save(
+    const std::string &file_name) const
 {
     // Open file for writing
     std::ofstream file(file_name.c_str(), std::ios::out);
@@ -536,7 +586,7 @@ void LookupTable<IndexType, DataType>::save(const std::string &file_name) const
     
     // Write out the table size dimensions
     file << std::setw(15) << m_num_indices;
-    file << std::setw(15) << m_num_functions << endl;
+    file << std::setw(15) << m_num_functions << std::endl;
     
     // Now write out all of the data
     for (int i = 0; i < m_num_indices; ++i) {
@@ -554,10 +604,9 @@ void LookupTable<IndexType, DataType>::save(const std::string &file_name) const
     file.close();
 } // save()
 
-template<typename IndexType, typename DataType>
-void LookupTable<IndexType, DataType>::lookup(
-    const IndexType &index, 
-    DataType * const p_values, 
+template<typename IndexType, typename DataType, typename FunctionType>
+void LookupTable<IndexType, DataType, FunctionType>::lookup(
+    const IndexType &index, DataType * const p_values, 
     InterpolationScheme scheme) const 
 {    
     unsigned int lower_row = 0;
@@ -610,4 +659,8 @@ void LookupTable<IndexType, DataType>::lookup(
     }
 } // lookup()
 
+    } // namespace Utilities
+} // namespace Mutation
+
 #endif // LOOKUPTABLE_H
+

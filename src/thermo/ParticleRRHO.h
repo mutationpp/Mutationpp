@@ -3,7 +3,17 @@
 
 #include <vector>
 
+// Forward declartion of XmlElement
+namespace Mutation { 
+    namespace Utilities {
+        namespace IO {
 class XmlElement;
+        }
+    }
+}
+
+namespace Mutation {
+    namespace Thermodynamics {
 
 /**
  * Stores the model parameters for a particle using the Rigid-Rotator Harmonic-
@@ -21,7 +31,7 @@ public:
      * @todo Implement error checking, units conversion, and ParticleType
      * checking.
      */
-    ParticleRRHO(XmlElement& xml_element);
+    ParticleRRHO(Mutation::Utilities::IO::XmlElement& xml_element);
     
     /**
      * Returns the formation enthalpy in J/mol.
@@ -91,6 +101,9 @@ private:
     std::vector<double> m_vibrational_energies;
     
 }; // class ParticleRRHO
+
+    } // namespace Thermodynamics
+} // namespace Mutation
 
 #endif // THERMO_PARTICLE_RRHO_H
 

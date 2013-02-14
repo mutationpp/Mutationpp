@@ -18,7 +18,9 @@
 #include <map>
 #include <string>
 
-namespace Utilities {
+namespace Mutation {
+    namespace Utilities {
+        namespace Config {
 
 template <class PTYPE> class Provider;
 
@@ -198,7 +200,9 @@ public:
   
 }; // class ObjectProvider
 
-} // namespace Utilities
+        } // namespace Config
+    } // namespace Utilities
+} // namespace Mutation
 
 #endif // AUTO_REGISTRATION_H
 

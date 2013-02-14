@@ -6,10 +6,11 @@
 
 #include "Constants.h"
 #include "CollisionDB.h"
-#include "LookupTable.h"
 
 using namespace std;
-using namespace Numerics;
+using namespace Mutation::Numerics;
+using namespace Mutation::Thermodynamics;
+using namespace Mutation::Utilities;
 
 // Charge-charge collision functions
 const CollisionFunc5 CollisionDB::sm_Q11_att(
@@ -18,11 +19,26 @@ const CollisionFunc5 CollisionDB::sm_Q11_att(
 const CollisionFunc5 CollisionDB::sm_Q11_rep(
     -1.3980752e+00,8.0482070e-01,-9.4801647e-02,5.2812176e-03,-8.2652059e-05);
 
+const CollisionFunc5 CollisionDB::sm_Q14_att(
+    -2.3064366e+00,3.9187956e-01,-5.0541034e-02,4.9996677e-03,-2.1443795e-04);
+
+const CollisionFunc5 CollisionDB::sm_Q14_rep(
+    -2.6061028e+00,5.7602188e-01,-8.9813364e-02,8.4176238e-03,-3.1611961e-04);
+
+const CollisionFunc5 CollisionDB::sm_Q15_att(
+    -2.6207402e+00,3.6889858e-01,-4.5983762e-02,4.4531740e-03,-1.8883719e-04);
+
+const CollisionFunc5 CollisionDB::sm_Q15_rep(
+    -2.8756074e+00,5.3793608e-01,-8.6195947e-02,8.5216824e-03,-3.3719465e-04);
+
 const CollisionFunc5 CollisionDB::sm_Q22_att(
     -8.1145738e-01,7.0419264e-01,-1.2219724e-01,1.3234707e-02,-5.6994085e-04);
 
 const CollisionFunc5 CollisionDB::sm_Q22_rep(
     -1.1089170e+00,7.7460857e-01,-1.0168153e-01,6.7600878e-03,-1.5622212e-04);
+
+const CollisionFunc5 CollisionDB::sm_Q24_rep(
+    -1.7664116e+00,6.4675076e-01,-9.8071543e-02,8.6280547e-03,-3.0256691e-04);
 
 const CollisionFunc5 CollisionDB::sm_Bst_att(
     2.8616335e-01,-4.8858107e-02,1.3372770e-03,5.6686310e-04,-4.4964175e-05);
@@ -36,18 +52,22 @@ const CollisionFunc5 CollisionDB::sm_Cst_att(
 const CollisionFunc5 CollisionDB::sm_Cst_rep(
     -5.0077127e-01,-1.0639836e-01,-1.1478149e-03,1.8355926e-03,-1.1830337e-04);
 
+const CollisionFunc5 CollisionDB::sm_Est_att(
+    -3.8922959e-01,-8.5334423e-02,8.7430000e-03,1.3038899e-04,-4.3583770e-05);
+    
+const CollisionFunc5 CollisionDB::sm_Est_rep(
+    -3.6035379e-01,-7.3192205e-02,1.3517297e-03,1.1249000e-03,-8.3717249e-05);
+
 
 CollisionDB::CollisionDB(const Thermodynamics& thermo)
     : m_ns(thermo.nSpecies()), m_ncollisions((m_ns*(m_ns + 1))/2), 
       m_mass(m_ns), m_mass_sum(m_ns), m_mass_prod(m_ns), m_red_mass(m_ns),
       m_em_index(thermo.speciesIndex("e-")), m_Q11(m_ns), m_Q22(m_ns), 
-      m_Ast(m_ns), m_Bst(m_ns), m_Cst(m_ns), m_eta(m_ns), m_Dij(m_ns)
+      m_Ast(m_ns), m_Bst(m_ns), m_Cst(m_ns), m_eta(m_ns), m_Dij(m_ns),
+      m_Q12ei(m_ns), m_Q13ei(m_ns), m_Q14ei(m_ns), m_Q15ei(m_ns)
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
-    
-    //LookupTable<double, double> table(
-    //    200.0, 20000.0, CollisionDB::computeQ11, this, m_ncollisions);
     
     // Next, compute the mass quantities
     for (int i = 0; i < m_ns; ++i)
@@ -67,6 +87,16 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
 
 void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
 {
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+    std::vector<CollisionFunc4> Q11_funcs;
+    std::vector<CollisionFunc4> Q22_funcs;
+    std::vector<CollisionFunc4> Bst_funcs;
+#else
+    std::vector<CollisionFunc4>& Q11_funcs = m_Q11_funcs;
+    std::vector<CollisionFunc4>& Q22_funcs = m_Q22_funcs;
+    std::vector<CollisionFunc4>& Bst_funcs = m_Bst_funcs;
+#endif
+    
     // First step is to determine all of the collision pairs that are needed and
     // what index they belong to in the collision function lists
     map<CollisionPair, int> collision_map;
@@ -82,7 +112,7 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     // With the collision map generated, look through the database and load all
     // collisions that are found in the map
     string transport_dir = 
-        utils::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/transport";
+        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/transport";
     string heavy_path = transport_dir + "/heavy.dat";
     ifstream file(heavy_path.c_str(), ios::in);
     
@@ -105,13 +135,13 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
             if ((iter = collision_map.find(str)) != collision_map.end()) {
                 // Load Q11, Q22, and B* functions
                 file >> func;
-                m_Q11_funcs.push_back(func);
+                Q11_funcs.push_back(func);
                 
                 file >> func;
-                m_Q22_funcs.push_back(func);
+                Q22_funcs.push_back(func);
                 
                 file >> func;
-                m_Bst_funcs.push_back(func);
+                Bst_funcs.push_back(func);
                 
                 // Add the collision to the list of found indices
                 m_neutral_indices.push_back(iter->second);
@@ -156,9 +186,9 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
         iter = collision_map.begin();
         for ( ; iter != collision_map.end(); ++iter) {
             cout << "\t" << iter->first.name() << endl;
-            m_Q11_funcs.push_back(m_Q11_funcs[0]); // they are not evaluated as
-            m_Q22_funcs.push_back(m_Q22_funcs[0]); // zero anymore...
-            m_Bst_funcs.push_back(m_Bst_funcs[0]);
+            Q11_funcs.push_back(Q11_funcs[0]); // they are not evaluated as
+            Q22_funcs.push_back(Q22_funcs[0]); // zero anymore...
+            Bst_funcs.push_back(Bst_funcs[0]);
             m_neutral_indices.push_back(iter->second);
         }
         cout << "They will be evaluated as the first integral..." << endl;
@@ -176,6 +206,17 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
             
         }
     }*/
+    
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+    // Tabulate the collision integral functions with a maximum error of 0.1%
+    mp_Q11_table = new LookupTable<double, double, QijTableFunction>(
+        std::log(100.0), std::log(20100.0), Q11_funcs.size(), Q11_funcs, 0.000001, LINEAR);
+    mp_Q22_table = new LookupTable<double, double, QijTableFunction>(
+        std::log(100.0), std::log(20100.0), Q22_funcs.size(), Q22_funcs, 0.000001, LINEAR);
+    mp_Bst_table = new LookupTable<double, double, QRatioTableFunction>(
+        std::log(100.0), std::log(20100.0), Bst_funcs.size(), Bst_funcs, 0.000001, LINEAR);
+    mp_work = new double [Q11_funcs.size()];
+#endif
 }
 
 bool CollisionDB::isValidCollisionString(const std::string &str)
@@ -212,7 +253,7 @@ void CollisionDB::updateCollisionData(
     //if (mp_last_T[data] > 0.0) return;
     
     // Update the needed values
-    const double lnT = log(Th);
+    const double lnT = std::log(Th);
     
     const size_t nn = m_neutral_indices.size();
     const size_t na = m_attract_indices.size();
@@ -247,8 +288,14 @@ void CollisionDB::updateCollisionData(
         
         case Q11IJ: {
             // Neutral collisions
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+            mp_Q11_table->lookup(lnT, mp_work, LINEAR);
+            for (int i = 0; i < nn; ++i)
+                m_Q11(m_neutral_indices[i]) = mp_work[i];
+#else
             for (int i = 0; i < nn; ++i)
                 m_Q11(m_neutral_indices[i]) = 1.0E-20 * m_Q11_funcs[i](lnT);
+#endif
                 
             // Charged collisions
             const double Q11_rep = hfac * sm_Q11_rep(lnTsth);
@@ -260,9 +307,77 @@ void CollisionDB::updateCollisionData(
                 m_Q11(m_attract_indices[i]) = Q11_att;
             } break;
         
+        case Q12EI: {
+            updateCollisionData(Th, Te, nd, p_x, Q11IJ);
+            updateCollisionData(Th, Te, nd, p_x, CSTAR);
+            for (int i = 0; i < m_ns; ++i)
+                m_Q12ei(i) = m_Q11(i)*m_Cst(i);
+            } break;
+            
+        case Q13EI: {
+            updateCollisionData(Th, Te, nd, p_x, Q12EI);
+            updateCollisionData(Th, Te, nd, p_x, BSTAR);
+            for (int i = 0; i < m_ns; ++i)
+                m_Q13ei(i) = 1.25*m_Q12ei(i) - 0.25*m_Q11(i)*m_Bst(i);
+            } break;
+        
+        case Q14EI: {
+            // Neutral-electron collisions take value of Q(1,3)
+            updateCollisionData(Th, Te, nd, p_x, Q13EI);
+            m_Q14ei = m_Q13ei;
+            
+            // Ion-electron (repulsive) interactions
+            int index = 0;
+            int j = m_repulse_indices[index];
+            const double rep = efac * sm_Q14_rep(lnTste);
+            while (j < m_ns) {
+                m_Q14ei(j) = rep;
+                j = m_repulse_indices[++index];
+            }
+            
+            // Ion-electron (attractive) interactions
+            index = 0;
+            j = m_attract_indices[index];
+            const double att = efac * sm_Q14_att(lnTste);
+            while (j < m_ns) {
+                m_Q14ei(j) = att;
+                j = m_attract_indices[++index];
+            }
+            } break;
+            
+        case Q15EI: {
+            // Neutral-electron collisions take value of Q(1,3)
+            updateCollisionData(Th, Te, nd, p_x, Q13EI);
+            m_Q15ei = m_Q13ei;
+            
+            // Ion-electron (repulsive) interactions
+            int index = 0;
+            int j = m_repulse_indices[index];
+            const double rep = efac * sm_Q15_rep(lnTste);
+            while (j < m_ns) {
+                m_Q15ei(j) = rep;
+                j = m_repulse_indices[++index];
+            }
+            
+            // Ion-electron (attractive) interactions
+            index = 0;
+            j = m_attract_indices[index];
+            const double att = efac * sm_Q15_att(lnTste);
+            while (j < m_ns) {
+                m_Q15ei(j) = att;
+                j = m_attract_indices[++index];
+            }
+            } break;
+        
         case Q22IJ: {
-            for (int i = 0 ; i < nn; ++i)
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+            mp_Q22_table->lookup(lnT, mp_work, LINEAR);
+            for (int i = 0; i < nn; ++i)
+                m_Q22(m_neutral_indices[i]) = mp_work[i];
+#else
+            for (int i = 0; i < nn; ++i)
                 m_Q22(m_neutral_indices[i]) = 1.0E-20 * m_Q22_funcs[i](lnT);
+#endif
             
             // Charged collisions
             const double Q22_rep = hfac * sm_Q22_rep(lnTsth);
@@ -273,6 +388,15 @@ void CollisionDB::updateCollisionData(
             for (int i = 0; i < na; ++i)
                 m_Q22(m_attract_indices[i]) = Q22_att;
             } break;
+        
+        case Q23EE: {
+            updateCollisionData(Th, Te, nd, p_x, Q22IJ);
+            m_Q23ee = m_Q22(0) * sm_Est_rep(lnTste);
+            } break;
+        
+        case Q24EE: {
+            m_Q24ee = efac * sm_Q24_rep(lnTste);
+            } break;
             
         case ASTAR:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
@@ -282,17 +406,23 @@ void CollisionDB::updateCollisionData(
             break;
                 
         case BSTAR: {
+#ifdef USE_COLLISION_INTEGRAL_TABLES
+            mp_Bst_table->lookup(lnT, mp_work, LINEAR);
+            for (int i = 0; i < nn; ++i)
+                m_Bst(m_neutral_indices[i]) = mp_work[i];
+#else
             // Neutral collisions from the database
             for (int i = 0; i < nn; ++i)
                 m_Bst(m_neutral_indices[i]) = m_Bst_funcs[i](lnT);
+#endif
             
             // Repulsive collisions
-            const double Bst_rep = hfac * sm_Bst_rep(lnTsth);
+            const double Bst_rep = sm_Bst_rep(lnTsth);
             for (int i = 0; i < nr; ++i)
                 m_Bst(m_repulse_indices[i]) = Bst_rep;
             
             // Attractive collisions
-            const double Bst_att = hfac * sm_Bst_att(lnTsth);
+            const double Bst_att = sm_Bst_att(lnTsth);
             for (int i = 0; i < na; ++i)
                 m_Bst(m_attract_indices[i]) = Bst_att;
             } break;
@@ -304,7 +434,7 @@ void CollisionDB::updateCollisionData(
             // Ion-electron (repulsive) interactions
             int index = 0;
             int j = m_repulse_indices[index];
-            const double Cst_rep = hfac * sm_Cst_rep(lnTsth);
+            const double Cst_rep = sm_Cst_rep(lnTste);
             while (j < m_ns) {
                 m_Cst(j) = Cst_rep;
                 j = m_repulse_indices[++index];
@@ -313,7 +443,7 @@ void CollisionDB::updateCollisionData(
             // Ion-electron (attractive) interactions
             index = 0;
             j = m_attract_indices[index];
-            const double Cst_att = hfac * sm_Cst_rep(lnTsth);
+            const double Cst_att = sm_Cst_att(lnTste);
             while (j < m_ns) {
                 m_Cst(j) = Cst_att;
                 j = m_attract_indices[++index];

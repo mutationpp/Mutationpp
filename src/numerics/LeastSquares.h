@@ -17,13 +17,12 @@
 #include <cassert>
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
 #include "QR.h"
 #include "SVD.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 /**
  * Computes the minimum-norm least-squares solution to an overdetermined system 
@@ -112,6 +111,7 @@ private:
     bool m_full_rank;
 };
 
-} // namespace Numerics
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_LEASTSQUARES_H

@@ -25,7 +25,9 @@
 #include "Vector.h"
 #include "Matrix.h"
 
-namespace Numerics {
+namespace Mutation {
+    namespace Numerics {
+
 
 /**
  * Enumerates possible outcomes of the lp function for solving linear
@@ -555,7 +557,8 @@ void simp3(Real *const tableau, const int n, const int i1, const int k1,
     a[ip+1][kp+1] = piv;
 } // simp3
  
-} // namespace Numerics 
+    } // namespace Numerics
+} // namespace Mutation
 
 #endif // NUMERICS_LP_H
 
