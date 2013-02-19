@@ -27,7 +27,7 @@ if (BUILD_FORTRAN_WRAPPER)
 endif()
 
 # Build and install the test codes
-option(BUILD_TEST_CODES "Build test executables" ON)
+option(BUILD_TEST_CODES "Build test executables" OFF)
 if (BUILD_TEST_CODES)
     
     # profiling
