@@ -8,6 +8,9 @@
 #include "Ramshaw.h"
 #include "Utilities.h"
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Manages the computation of transport properties.
  */
@@ -134,5 +137,8 @@ private:
     double* mp_wrk2;
     double* mp_wrk3;
 };
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_TRANSPORT_H

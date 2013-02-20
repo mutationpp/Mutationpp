@@ -1,13 +1,17 @@
 #include "JacobianManager.h"
 #include "Reaction.h"
-#include "Functors.h"
+#include "Numerics.h"
 
 #include <iomanip>
+#include <iostream>
 
 typedef Mutation::Numerics::Equals<double>            Equals;
 typedef Mutation::Numerics::MinusEquals<double>       MinusEquals;
 typedef Mutation::Numerics::PlusEqualsTimes<double>   PlusEqualsTimes;
 typedef Mutation::Numerics::MinusEqualsTimes<double>  MinusEqualsTimes;
+
+namespace Mutation {
+    namespace Kinetics {
 
 //==============================================================================
 
@@ -335,4 +339,7 @@ void JacobianManager::computeJacobian(
 }
 
 //==============================================================================
+
+    } // namespace Kinetics
+} // namespace Mutation
 

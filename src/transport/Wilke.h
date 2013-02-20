@@ -3,6 +3,9 @@
 
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Base class for class that compute transport properties using the Wilke 
  * formulas.
@@ -49,5 +52,8 @@ protected:
     
 }; // class Wilke
 
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_WILKE_H

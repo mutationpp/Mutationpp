@@ -30,7 +30,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/numerics
     ${CMAKE_CURRENT_SOURCE_DIR}/thermo
     ${CMAKE_CURRENT_SOURCE_DIR}/transport
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
 add_subdirectory(general)
@@ -38,8 +38,8 @@ add_subdirectory(kinetics)
 add_subdirectory(numerics)
 add_subdirectory(thermo)
 add_subdirectory(transport)
-add_subdirectory(utils)
+add_subdirectory(utilities)
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
-add_library(mutation++ STATIC ${mutation++_SRCS})
+add_library(mutation++ SHARED ${mutation++_SRCS})
 install(TARGETS mutation++ DESTINATION lib)

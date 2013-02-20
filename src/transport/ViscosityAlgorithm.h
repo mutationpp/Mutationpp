@@ -4,6 +4,9 @@
 #include "AutoRegistration.h"
 #include "CollisionDB.h"
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Abstract base class for all viscosity algorithms which allows for self 
  * registration of concrete types.
@@ -38,5 +41,8 @@ protected:
     CollisionDB& m_collisions;
     
 }; // class ViscosityAlgorithm
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_VISCOSITY_ALGORITHM_H

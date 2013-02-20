@@ -10,6 +10,9 @@
 #include "Utilities.h"
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Transport {
+
 //#define USE_COLLISION_INTEGRAL_TABLES
 
 
@@ -557,5 +560,8 @@ private:
     // was updated
     double mp_last_T [DATA_SIZE];
 };
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_COLLISIONDB_H

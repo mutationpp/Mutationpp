@@ -6,6 +6,9 @@
 
 using namespace Mutation::Numerics;
 
+namespace Mutation {
+    namespace Kinetics {
+
 //==============================================================================
 
 void RateManager::addRateCoefficient(
@@ -44,4 +47,7 @@ void RateManager::lnForwardRateCoefficients(
 }
 
 //==============================================================================
+
+    } // namespace Kinetics
+} // namespace Mutation
 

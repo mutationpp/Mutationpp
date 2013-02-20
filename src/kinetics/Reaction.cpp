@@ -7,6 +7,9 @@
 
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Kinetics {
+
 void swap(Reaction& left, Reaction& right) {
     using std::swap;
     swap(left.m_formula,     right.m_formula);
@@ -149,3 +152,7 @@ void Reaction::parseSpecies(
         c++;
     }
 }
+
+    } // namespace Kinetics
+} // namespace Mutation
+

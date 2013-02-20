@@ -6,6 +6,9 @@
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Uses the Gupta-Yos formula to compute viscosity.
  */
@@ -57,5 +60,8 @@ private:
 Config::ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 
     viscosityGuptaYos("Gupta-Yos");
     
-    
+
+    } // namespace Transport
+} // namespace Mutation
+
 

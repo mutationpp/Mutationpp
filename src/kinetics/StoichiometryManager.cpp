@@ -6,6 +6,9 @@
 using namespace std;
 using namespace Mutation::Numerics;
 
+namespace Mutation {
+    namespace Kinetics {
+
 void StoichiometryManager::addReaction(const int rxn, const vector<size_t> &sps)
 {
     switch (sps.size()) {
@@ -49,3 +52,8 @@ STOICH_MGR_APPLY_FUNC(incrSpecies, incrSpecies, r, s)
 STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies, r, s)
 
 #undef STOICH_MGR_APPLY_FUNC
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+

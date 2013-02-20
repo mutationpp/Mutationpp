@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     cout << "Reaction info:" << endl;
     cout << "--------------" << endl;
     for (int i = 0; i < nr; ++i) {
-        const Reaction& r = mixture.reactions()[i];
+        const Mutation::Kinetics::Reaction& r = mixture.reactions()[i];
         
         // Print reaction formula and number
         cout.setf(std::ios::right, std::ios::adjustfield);
@@ -90,9 +90,9 @@ int main(int argc, char** argv)
         cout << setw(20) << r.formula();
         
         // Print out rate constants
-        if (typeid(*(r.rateLaw())) == typeid(Arrhenius)) {
-            const Arrhenius& rate = 
-                dynamic_cast<const Arrhenius&>(*(r.rateLaw()));
+        if (typeid(*(r.rateLaw())) == typeid(Mutation::Kinetics::Arrhenius)) {
+            const Mutation::Kinetics::Arrhenius& rate = 
+                dynamic_cast<const Mutation::Kinetics::Arrhenius&>(*(r.rateLaw()));
             cout << setw(12) << "Arrhenius: ";
             
             cout.setf(std::ios::right, std::ios::adjustfield);

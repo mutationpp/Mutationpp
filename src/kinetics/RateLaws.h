@@ -5,8 +5,10 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "Units.h"
-#include "XMLite.h"
+#include "Utilities.h"
+
+namespace Mutation {
+    namespace Kinetics {
 
 /**
  * Abstract base class for all rate laws which allows owners such as class 
@@ -66,6 +68,11 @@ private:
     double m_n;
     double m_temp;
 };
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+
 
 
 #endif // RATELAW_HPP

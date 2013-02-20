@@ -7,6 +7,12 @@ using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
+
+namespace Mutation {
+    namespace Kinetics {
+
+using Mutation::Thermodynamics::Thermodynamics;
+
 //==============================================================================
 
 Kinetics::Kinetics(
@@ -369,4 +375,7 @@ void Kinetics::jacobianRho(
     delete [] p_kf;
     delete [] p_kb;
 }
+
+    } // namespace Kinetics
+} // namespace Mutation
 

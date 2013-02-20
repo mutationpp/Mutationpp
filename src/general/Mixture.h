@@ -19,7 +19,9 @@ namespace Mutation {
  * @see Kinetics
  */
 class Mixture
-    : public Thermodynamics::Thermodynamics, public Transport, public Kinetics
+    : public Thermodynamics::Thermodynamics, 
+      public Transport::Transport, 
+      public Kinetics::Kinetics
 {
 public:
 

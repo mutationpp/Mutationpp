@@ -11,6 +11,9 @@
 #include <vector>
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 
 /**
  * Represents a single reaction's stoichiometry.
@@ -236,5 +239,10 @@ private:
     std::vector<Stoich3> m_stoich3_vec;
 
 }; // class StoichiometryManager
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+
 
 #endif // STOICHIOMETRYMANAGER_H

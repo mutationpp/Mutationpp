@@ -8,6 +8,9 @@
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Computes the mixture thermal conductivity using the conjugate-gradient
  * algorithm to solve the linear transport system.
@@ -75,4 +78,7 @@ private:
 // Register the algorithm
 Config::ObjectProvider<
     ThermalConductivityCG, ThermalConductivityAlgorithm> lambdaCG("CG");
+
+    } // namespace Transport
+} // namespace Mutation
 

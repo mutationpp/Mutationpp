@@ -9,6 +9,9 @@
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Computes the translational thermal conductivity of a mixture using the Wilke 
  * mixture rule and Eucken's relation.
@@ -37,4 +40,7 @@ public:
 // Register the algorithm
 Config::ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
     lambdaWilke("Wilke");
+
+    } // namespace Transport
+} // namespace Mutation
 

@@ -6,6 +6,9 @@
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Computes the viscosity of a mixture in Pa-s using the Wilke mixture rule.
  */
@@ -33,4 +36,6 @@ public:
 
 Config::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
 
+    } // namespace Transport
+} // namespace Mutation
 

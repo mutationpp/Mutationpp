@@ -8,6 +8,9 @@ using namespace std;
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
+namespace Mutation {
+    namespace Kinetics {
+
 void Arrhenius::setUnits(XmlElement& node)
 {
     assert( node.tag() == "arrhenius_units" );
@@ -74,3 +77,7 @@ Arrhenius::Arrhenius(XmlElement& node, const int order)
         node.parseError("Arrhenius rate law must define coefficient Ea or T!");
     }
 }
+
+    } // namespace Kinetics
+} // namespace Mutation
+

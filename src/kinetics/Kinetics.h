@@ -9,6 +9,9 @@
 #include "Thermodynamics.h"
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 /**
  * Manages the computation of chemical source terms for an entire reaction
  * mechanism.
@@ -212,5 +215,10 @@ private:
     
     double m_T_last;
 };
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+
 
 #endif // KINETICS_H

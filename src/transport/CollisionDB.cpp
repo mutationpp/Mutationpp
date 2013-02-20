@@ -12,6 +12,11 @@ using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
+using Mutation::Thermodynamics::Thermodynamics;
+
 // Charge-charge collision functions
 const CollisionFunc5 CollisionDB::sm_Q11_att(
     -7.9270465e-01,5.8867723e-01,-8.7607125e-02,9.3018130e-03,-4.1315208e-04);
@@ -482,5 +487,8 @@ void CollisionDB::updateCollisionData(
     
     mp_last_T[data] = Th;
 }
+
+    } // namespace Transport
+} // namespace Mutation
 
 

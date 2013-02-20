@@ -8,6 +8,9 @@
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
 template <typename Implementation>
 class ViscositySPD : public ViscosityAlgorithm
 {
@@ -118,4 +121,7 @@ private:
 // Register this algorithm with the other ViscosityAlgorithm types
 Config::ObjectProvider<ViscosityLDLT, ViscosityAlgorithm> viscosityLDLT("LDLT");
 
+
+    } // namespace Transport
+} // namespace Mutation
 

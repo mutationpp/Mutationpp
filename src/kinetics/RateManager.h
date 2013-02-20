@@ -6,6 +6,9 @@
 #include "RateLaws.h"
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 /**
  * Manages the efficient computation of forward rate coefficients.
  *
@@ -57,5 +60,10 @@ private:
     std::vector<std::pair<size_t, Arrhenius> > m_arrhenius;
 
 }; // class RateManager
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+
 
 #endif // KINETICS_RATEMANAGER_H

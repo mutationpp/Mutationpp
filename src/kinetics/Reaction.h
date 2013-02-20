@@ -7,6 +7,9 @@
 
 #include "RateLaws.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 /**
  * Stores information that defines a complete reaction (reactants, products,
  * reversibility, thirdbody efficiencies, rate law, and rate coefficients).  The
@@ -197,6 +200,10 @@ private:
  * Swaps one reaction for the other and vice-versa.
  */
 void swap(Reaction& left, Reaction& right);
+
+
+    } // namespace Kinetics
+} // namespace Mutation
 
 
 #endif // KINETICS_REACTION_H

@@ -3,6 +3,9 @@
 
 #include "Thermodynamics.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 class Reaction;
 
 /**
@@ -505,6 +508,9 @@ private:
     std::vector<ReactionStoichBase*> m_reactions;
 
 };
+
+    } // namespace Kinetics
+} // namespace Mutation
 
 #endif // JACOBIAN_MANAGER_H
 

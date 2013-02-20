@@ -1,6 +1,9 @@
 #ifndef TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 #define TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 
+namespace Mutation {
+    namespace Transport {
+
 class CollisionDB;
 
 /**
@@ -40,5 +43,8 @@ protected:
     CollisionDB& m_collisions;
 
 }; // class ThermalConductivityAlgorithm
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H

@@ -5,6 +5,9 @@
 #include "Thermodynamics.h"
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Transport {
+
 class Ramshaw
 {
 public:
@@ -67,6 +70,9 @@ private:
     Mutation::Numerics::RealMatrix m_D;
         
 }; // class Ramshaw
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_RANSHAW_H
 

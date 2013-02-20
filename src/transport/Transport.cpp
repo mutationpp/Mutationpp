@@ -7,6 +7,11 @@ using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
+namespace Mutation {
+    namespace Transport {
+
+using Mutation::Thermodynamics::Thermodynamics;
+
 //==============================================================================
 
 Transport::Transport(
@@ -220,4 +225,7 @@ double Transport::sigma()
 }
 
 //==============================================================================
+
+    } // namespace Transport
+} // namespace Mutation
 

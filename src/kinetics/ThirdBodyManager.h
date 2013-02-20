@@ -6,6 +6,9 @@
 
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Kinetics {
+
 /**
  * Small helper class for class ThirdbodyManager which a thirdbody update on a
  * single reaction.
@@ -85,5 +88,10 @@ private:
     std::vector<PartialThirdbodyEffs> m_effs;
     
 }; // class ThirdbodyManager
+
+
+    } // namespace Kinetics
+} // namespace Mutation
+
 
 #endif // KINETICS_THIRDBODYMANAGER_H

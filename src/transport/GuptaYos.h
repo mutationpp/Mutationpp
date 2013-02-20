@@ -4,6 +4,9 @@
 #include "Constants.h"
 #include "Numerics.h"
 
+namespace Mutation {
+    namespace Transport {
+
 /**
  * Provides the Gupta-Yos formula as a protected member function.  This class is
  * meant to be extended by classes which compute a property using the Gupta-Yos
@@ -52,6 +55,9 @@ private:
     Mutation::Numerics::RealVector quotient;
     
 }; // class GuptaYos
+
+    } // namespace Transport
+} // namespace Mutation
 
 #endif // TRANSPORT_GUPTAYOS_H
 
