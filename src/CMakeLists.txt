@@ -41,5 +41,5 @@ add_subdirectory(transport)
 add_subdirectory(utils)
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
-add_library(mutation++ SHARED ${mutation++_SRCS})
+add_library(mutation++ STATIC ${mutation++_SRCS})
 install(TARGETS mutation++ DESTINATION lib)
