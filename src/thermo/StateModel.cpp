@@ -5,7 +5,7 @@
 namespace Mutation {
     namespace Thermodynamics {
 
-void StateModel::setStateTPX(
+void StateModel::stateModelTPX(
     const double* const T, const double* const P, const double* const X)
 {
     std::copy(T, T+nT(), mp_T);
@@ -13,7 +13,7 @@ void StateModel::setStateTPX(
     std::copy(X, X+m_ns, mp_X);
 }
 
-void StateModel::setStateTPX(
+void StateModel::stateModelTPX(
     const double T, const double P, const double* const X)
 {
     std::fill(mp_T, mp_T+nT(), T);
@@ -31,6 +31,15 @@ void StateModel::init()
     std::fill(mp_P, mp_P+nP(), 0.0);
     std::fill(mp_X, mp_X+m_ns, 0.0);
 }
+
+void StateModel::notifyHandlers()
+{
+    std::vector<StateModelUpdateHandler*>::iterator iter = 
+        m_updateHandlers.begin();
+    for ( ; iter != m_updateHandlers.end(); ++iter)
+        (*iter)->stateUpdated();
+}
+
 
 // Register the basic state model
 Utilities::Config::ObjectProvider<StateModel, StateModel> tpModel("T");
