@@ -105,7 +105,7 @@ INLINE_INHERITED_MEMB  = YES
 # path before files name in the file list and in the header files. If set
 # to NO the shortest path that makes the file name unique will be used.
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 # If the FULL_PATH_NAMES tag is set to YES then the STRIP_FROM_PATH tag
 # can be used to strip a user-defined part of the path. Stripping is
@@ -591,7 +591,7 @@ INPUT_ENCODING         = UTF-8
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
 
-FILE_PATTERNS          = *.c++ *.h
+FILE_PATTERNS          = *.cpp *.h
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
 # should be searched for input files as well. Possible values are YES and NO.
@@ -768,8 +768,6 @@ IGNORE_PREFIX          =
 # generate HTML output.
 
 GENERATE_HTML          = YES
-
-HTML_EXTRA_FILES       = docs/manual/latex/manual.pdf
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put.
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
@@ -1022,7 +1020,7 @@ SERVER_BASED_SEARCH    = NO
 # If the GENERATE_LATEX tag is set to YES (the default) Doxygen will
 # generate Latex output.
 
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 
 # The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put.
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
@@ -1372,7 +1370,7 @@ PERL_PATH              = /usr/bin/perl
 # fallback. It is recommended to install and use dot, since it yields more
 # powerful graphs.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see
@@ -1394,7 +1392,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT               = YES
+HAVE_DOT               = NO
 
 # By default doxygen will write a font called FreeSans.ttf to the output
 # directory and reference it in all dot files that doxygen generates. This
@@ -1424,7 +1422,7 @@ DOT_FONTPATH           =
 # indirect inheritance relations. Setting this tag to YES will force the
 # the CLASS_DIAGRAMS tag to NO.
 
-CLASS_GRAPH            = YES
+CLASS_GRAPH            = NO
 
 # If the COLLABORATION_GRAPH and HAVE_DOT tags are set to YES then doxygen
 # will generate a graph for each documented class showing the direct and
