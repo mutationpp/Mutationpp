@@ -21,6 +21,8 @@
 #include <cmath>
 
 using std::setw;
+using std::cout;
+using std::endl;
 
 /**
  * Solves the total energy equation for temperature given species mass

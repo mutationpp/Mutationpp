@@ -57,7 +57,7 @@ int main()
         
         // Species mole fractions
         for (int j = 0; j < mix.nSpecies(); ++j)
-            cout << std::setw(15) << mix.X()[j];
+            std::cout << std::setw(15) << mix.X()[j];
         
         // Other properties
         std::cout << std::setw(15) << mix.mixtureFrozenCpMass(); // Cp [J/kg-K]
