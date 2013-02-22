@@ -214,9 +214,9 @@ void Thermodynamics::setDefaultComposition(
         }
     }
     
-    cout << "Default Composition Set:" << endl;
-    for (int i = 0; i < nElements(); ++i)
-        cout << elementName(i) << " " << mp_default_composition[i] << endl;
+    //cout << "Default Composition Set:" << endl;
+    //for (int i = 0; i < nElements(); ++i)
+    //    cout << elementName(i) << " " << mp_default_composition[i] << endl;
         
     
     // Scale the fractions to sum to one
@@ -325,6 +325,11 @@ void Thermodynamics::equilibrate(
     
     mp_equil->equilibrate(T, P, p_c, p_X);
     convert<CONC_TO_X>(p_X, p_X);
+    
+    //cout << "After Return:" << endl;
+    //for (int i = 0; i < nSpecies(); ++i)
+    //    cout << setw(14) << p_X[i];
+    //cout << endl;
     
     if (set_state) {
         convert<X_TO_Y>(p_X, mp_y);

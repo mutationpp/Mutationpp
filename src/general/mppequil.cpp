@@ -145,7 +145,8 @@ void printHelpMessage(const char* const name)
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
-    cout << tab << "    --species_list  instead of mixture name, use this to list species in mixture" << endl;
+    cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
+    cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
     cout << endl;
     cout << "Mixture values (example format: \"1-3,7,9-11\"):" << endl;
@@ -267,13 +268,19 @@ Options parseOptions(int argc, char** argv)
     
     // The mixture name is given as the only argument (unless --species option
     // is present)
-    if (optionExists(argc, argv, "--species_list")) {
+    if (optionExists(argc, argv, "--species-list")) {
         opts.p_mixture_opts = new Mutation::MixtureOptions();
         std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--species_list"), tokens, ",");
+        String::tokenize(getOption(argc, argv, "--species-list"), tokens, ",");
         opts.p_mixture_opts->setSpeciesNames(tokens);
     } else {
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
+    }
+    
+    // Thermodynamic database
+    if (optionExists(argc, argv, "--thermo-db")) {
+        opts.p_mixture_opts->setThermodynamicDatabase(
+            getOption(argc, argv, "--thermo-db"));
     }
     
     // Get the temperature range
@@ -364,6 +371,7 @@ int main(int argc, char** argv)
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);
+    delete opts.p_mixture_opts;
     
     // Write out the column headers (and compute the column sizes)
     std::vector<int> column_widths;

@@ -156,6 +156,9 @@ GfcEquilSolver::GfcEquilSolver(const Thermodynamics& thermo)
                 m_A(i,k) = 0.0;
     }
     
+    cout << "A" << endl;
+    cout << m_A << endl;
+    
     // Compute number of atoms in each molecule of undetermined species
     m_au = m_B_r * RealVector(m_nrc, 1.0);
 }
@@ -185,8 +188,8 @@ pair<int, int> GfcEquilSolver::equilibrate(
     static RealVector nmm(m_nsu);
     static RealVector Q(m_nsu);
     
-    for (int i = 0; i < m_ne; ++i)
-        cout << i << " " << p_ev[i] << endl;
+    //for (int i = 0; i < m_ne; ++i)
+    //    cout << i << " " << p_ev[i] << endl;
     
     // Initialize constraint dependent quantities if the constraints are
     // different from the last call
@@ -234,6 +237,11 @@ pair<int, int> GfcEquilSolver::equilibrate(
         p_sv[m_species_order[i]] = zd(i);
     for (int i = 0; i < m_nsu; ++i)
         p_sv[m_species_order[i+m_nsd]] = zu(i);
+
+    //cout << "Before returning:" << endl;
+    //for (int i = 0; i < m_ns; ++i)
+    //    cout << setw(14) << p_sv[i];
+    //cout << endl;
 
     return stats;
 } 

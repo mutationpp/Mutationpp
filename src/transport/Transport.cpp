@@ -139,6 +139,11 @@ double Transport::internalThermalConductivity()
 
 double Transport::reactiveThermalConductivity()
 {
+    ///
+    /// @todo This function fails if there is no electric field.  Does not take
+    /// into account what happens when there are no electrons.
+    ///
+
     // Compute dX_i/dT
     m_thermo.dXidT(m_thermo.T(), m_thermo.P(), m_thermo.X(), mp_wrk1);
     
@@ -154,15 +159,6 @@ double Transport::reactiveThermalConductivity()
         mp_wrk3[i] = m_thermo.speciesCharge(i);
         q += mp_wrk3[i] * X[i];
     }
-    
-    /*cout << "\nDij" << endl;
-    cout.precision(3);
-    for (int i = 0; i < ns; ++i) {
-        for (int j = 0; j < ns; ++j)
-            cout << setw(11) << Dij(i,j);
-        cout << endl;
-    }
-    cout << endl;*/
     
     for (int i = 0; i < ns; ++i) {
         mp_wrk2[i] = 0.0;
