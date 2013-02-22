@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "StateModel.h"
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
@@ -15,7 +16,6 @@ namespace Mutation {
 
 class GfcEquilSolver;
 class ThermoDB;
-class StateModel;
 
 /**
  * Possible conversion methods that can be used with the 
@@ -48,7 +48,7 @@ enum ConversionType {
 /**
  * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
  */
-class Thermodynamics
+class Thermodynamics : public StateModelUpdateHandler
 {
 public:
     
@@ -65,6 +65,12 @@ public:
      * Destructor.
      */
     ~Thermodynamics();
+    
+    void stateUpdated() {
+        std::cout << "stateUpdated: Thermodynamics" << std::endl;
+    }
+    
+    StateModel* stateModel() { return mp_state; }
     
     /**
      * Returns the number of species considered in the mixture.

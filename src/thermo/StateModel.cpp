@@ -46,8 +46,8 @@ Utilities::Config::ObjectProvider<StateModel, StateModel> tpModel("T");
 
 
 /**
- * Represents a mixture using two temperatures: \f$T_1 = T = T_e = T_{el}\f$ and 
- * \f$T_2 = T_v = T_r\f$.  
+ * Represents a mixture using two temperatures: \f$T_1 = T = T_r\f$ and 
+ * \f$T_2 = T_v = T_e = T_{el}\f$.  
  */
 class TTvStateModel : public StateModel
 {
@@ -68,9 +68,16 @@ public:
     }
     
     /**
-     * Returns the mixture rotational temperature.
+     * Returns the mixture electron temperature.
      */
-    virtual double Tr() const {
+    virtual double Te() const {
+        return mp_T[1];
+    }
+    
+    /**
+     * Returns the mixture electronic temperature.
+     */
+    virtual double Tel() const {
         return mp_T[1];
     }
     

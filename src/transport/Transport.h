@@ -14,7 +14,7 @@ namespace Mutation {
 /**
  * Manages the computation of transport properties.
  */
-class Transport
+class Transport : public Mutation::Thermodynamics::StateModelUpdateHandler
 {
 public:
     
@@ -29,6 +29,10 @@ public:
      * Destructor.
      */
     ~Transport();
+    
+    void stateUpdated() {
+        std::cout << "stateUpdated: Transport" << std::endl;
+    }
     
     /**
      * Sets the algorithm to use when computing viscosity.

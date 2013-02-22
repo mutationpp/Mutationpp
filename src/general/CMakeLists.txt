@@ -6,12 +6,12 @@ add_sources(mutation++
 
 # Build the checkmix code
 add_executable(checkmix checkmix.cpp)
-target_link_libraries(checkmix mutation++ profiler)
+target_link_libraries(checkmix mutation++)
 install(TARGETS checkmix DESTINATION bin)
 
 # Build the mppequil code
 add_executable(mppequil mppequil.cpp)
-target_link_libraries(mppequil mutation++ profiler)
+target_link_libraries(mppequil mutation++)
 install(TARGETS mppequil DESTINATION bin)
 
 #add_executable(bprime bprime.cpp)

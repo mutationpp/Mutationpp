@@ -36,6 +36,8 @@ Transport::Transport(
     mp_wrk1 = new double [m_thermo.nSpecies()];
     mp_wrk2 = new double [m_thermo.nSpecies()];
     mp_wrk3 = new double [m_thermo.nSpecies()];
+    
+    thermo.stateModel()->notifyOnUpdate(this);
 }
     
 //==============================================================================

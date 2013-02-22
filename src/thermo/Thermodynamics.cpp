@@ -57,6 +57,7 @@ Thermodynamics::Thermodynamics(
     
     // Allocate a new state model
     mp_state = Config::Factory<StateModel>::create(state_model, nSpecies());
+    mp_state->notifyOnUpdate(this);
 }
 
 //==============================================================================
@@ -212,6 +213,11 @@ void Thermodynamics::setDefaultComposition(
             exit(1);
         }
     }
+    
+    cout << "Default Composition Set:" << endl;
+    for (int i = 0; i < nElements(); ++i)
+        cout << elementName(i) << " " << mp_default_composition[i] << endl;
+        
     
     // Scale the fractions to sum to one
     RealVecWrapper wrapper(mp_default_composition, nElements());

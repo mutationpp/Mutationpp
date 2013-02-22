@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iomanip>
 
+#include <fenv.h>
+
 using std::cout;
 using std::endl;
 using std::setw;
@@ -357,6 +359,8 @@ void writeHeader(
 
 int main(int argc, char** argv)
 {
+    feenableexcept(FE_DIVBYZERO | FE_INVALID);
+    
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);

@@ -185,6 +185,9 @@ pair<int, int> GfcEquilSolver::equilibrate(
     static RealVector nmm(m_nsu);
     static RealVector Q(m_nsu);
     
+    for (int i = 0; i < m_ne; ++i)
+        cout << i << " " << p_ev[i] << endl;
+    
     // Initialize constraint dependent quantities if the constraints are
     // different from the last call
     if (cb != asVector(p_ev, m_ne)) {

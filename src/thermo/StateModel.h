@@ -75,7 +75,7 @@ public:
         stateModelTPX(T, P, X);
         
         // Notify update handlers that the state has been updated
-        notifyHandlers();
+        //notifyHandlers();
     }
     
     /**
@@ -88,7 +88,7 @@ public:
         stateModelTPX(T, P, X);
         
         // Notify update handlers that the state has been updated
-        notifyHandlers();
+        //notifyHandlers();
     }
     
     /**
