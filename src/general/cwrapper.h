@@ -94,7 +94,7 @@ extern "C" {
  * called once before calling any other function.
  */
 void NAME_MANGLE(initialize)(
-    char* mixture, size_t mixture_length);
+    char* mixture, int mixture_length);
 
 /**
  * Deallocates all data associated with the mutation++ library.  Should be
@@ -121,7 +121,7 @@ int NAME_MANGLE(nreactions)();
  * Returns the index of the element with the given name.
  */
 int NAME_MANGLE(element_index)(
-    char* element, size_t element_length);
+    char* element, int element_length);
 
 /**
  * Returns the index of the species with the given name or -1 if the species
@@ -130,7 +130,7 @@ int NAME_MANGLE(element_index)(
  * @param species - name of the species
  */
 int NAME_MANGLE(species_index)(
-    char* species, size_t species_length);
+    char* species, int species_length);
 
 /**
  * Returns the name of the species with the given index.
@@ -140,27 +140,12 @@ int NAME_MANGLE(species_index)(
  * @param species - the name of the species on return
  */
 void NAME_MANGLE(species_name)(
-    int* index, char* species, size_t species_length);
+    int* index, char* species, int species_length);
 
 /**
- * Returns the mixture molecular weight in kg/mol given the species mass 
- * fractions.
- *
- * @param Y  - the species mass fraction vector
- * @param Mw - the mixture molecular weight on return
+ * Returns the mixture molecular weight in kg/mol.
  */
-void NAME_MANGLE(mixture_mw_mass)(
-    const double *const Y, double *const Mw);
-
-/**
- * Returns the mixture molecular weight in kg/mol given the species mole 
- * fractions.
- * 
- * @param X  - the species mole fraction vector
- * @param Mw - the mixture molecular weight on return
- */
-void NAME_MANGLE(mixture_mw_mole)(
-    const double *const X, double *const Mw);
+double NAME_MANGLE(mixture_mw)();
 
 /**
  * Returns the array of species molecular weights in kg/mol.
@@ -198,41 +183,27 @@ void NAME_MANGLE(element_moles)(
     const double *const species_N, double *const element_N);
 
 /**
+ * Returns the mole fractions for the current mixture state.
+ */
+void NAME_MANGLE(x)(double* const X);
+
+/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
- *
- * @param T - mixture temperature
- * @param P - mixture pressure
- * @param n - mixture number density on return
  */
-void NAME_MANGLE(number_density)(
-    const double *const T, const double *const P, double *const n);
+double NAME_MANGLE(number_density)();
 
 /**
  * Returns the pressure of the mixture given the mixture temperature and
  * density and species mass fractions.
- *
- * @param T   - mixture temperature
- * @param rho - mixture density
- * @param Y   - species mass fractions
- * @param P   - mixture pressure on return 
  */
-void NAME_MANGLE(pressure)(
-    const double *const T, const double *const rho, const double *const Y, 
-    double *const P);
+double NAME_MANGLE(pressure)();
 
 /**
  * Returns the density of the mixture given the mixture temperature and
  * pressure and species mole fractions.
- *
- * @param T   - mixture temperature
- * @param P   - mixture pressure
- * @param X   - species mole fractions
- * @param rho - mixture density on return
  */
-void NAME_MANGLE(density)(
-    const double *const T, const double *const P, const double *const X,
-    double *const rho);
+double NAME_MANGLE(density)();
 
 /**
  * Returns the equilibrium composition of the mixture in species mass fractions
@@ -243,93 +214,51 @@ void NAME_MANGLE(density)(
  * @param element_y - element densities or mass fractions
  * @param species_y - species mass fractions on return
  */
-void NAME_MANGLE(equilibrate_mass)(
-    double* T, double* P, double* element_y, double* species_y);
-
-/**
- * Returns the equilibrium composition of the mixture in species mole fractions
- * given the temperature, pressure, and elemental mole fractions.
- *
- * @param T         - mixture temperature
- * @param P         - mixture pressure
- * @param element_x - element moles or mole fractions
- * @param species_x - species mole fractions on return
- */
-void NAME_MANGLE(equilibrate_mole)(
-    double* T, double* P, double* element_x, double* species_x);
+void NAME_MANGLE(equilibrate)(
+    double* T, double* P);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the
  * mixture temperature.
  */
-void NAME_MANGLE(species_cp_mass)(
-    const double* const T, double* const cp);
+void NAME_MANGLE(species_cp_mass)(double* const cp);
 
 /**
  * Returns the mixture specific heat at constant pressure in J/kg-K given the
  * mixture temperature and species mass fractions.
- *
- * @param T  - mixture temperature
- * @param Y  - species mass fractions
- * @param cp - mixture specific heat on return
  */
-void NAME_MANGLE(mixture_frozen_cp_mass)(
-    const double *const T, const double *const Y, double *const cp);
+double NAME_MANGLE(mixture_frozen_cp_mass)();
 
 /**
  * Returns the mixture specific heat at constant volume in J/kg-K given the
  * mixture temperature and species mass fractions.
- *
- * @param T  - mixture temperature
- * @param Y  - species mass fractions
- * @param cv - mixture specific heat on return
  */
-void NAME_MANGLE(mixture_frozen_cv_mass)(
-    const double *const T, const double *const Y, double *const cv);
+double NAME_MANGLE(mixture_frozen_cv_mass)();
 
 /**
  * Returns the mixture ratio of specific heats \f$C_p/C_v\f$ which is a unitless 
  * quantity.
- *
- * @param T     - mixture temperature
- * @param Y     - species mass fractions
- * @param gamma - mixture specific heat ratio on return
  */
-void NAME_MANGLE(mixture_frozen_gamma)(
-    const double *const T, const double *const Y, double *const gamma);
+double NAME_MANGLE(mixture_frozen_gamma)();
 
 /**
  * Returns the species enthalpies in J/kg.
  *
- * @param T - mixture temperature
  * @param h - species enthalpies on return
  */
-void NAME_MANGLE(species_h_mass)(
-    const double *const T, double *const h);
+void NAME_MANGLE(species_h_mass)(double *const h);
 
 /**
  * Returns the mixture enthalpy in J/kg given the mixture temperature and
  * species mass fractions.
- *
- * @param T - mixture temperature
- * @param Y - species mass fractions
- * @param h - mixture enthalpy on return
  */
-void NAME_MANGLE(mixture_h_mass)(
-    const double *const T, const double *const Y, double *const h);
+double NAME_MANGLE(mixture_h_mass)();
 
 /**
  * Return the mixture total energy in J/kg given temperature, density, and mass
  * fractions.
- *
- * @param T   - mixture temperature
- * @param rho - mixture density
- * @param Y   - species mass fractions
- * @param e   - mixture energy on return
  */
-void NAME_MANGLE(mixture_e_mass)(
-    const double *const T, const double *const rho, const double *const Y, 
-    double *const e);
+double NAME_MANGLE(mixture_e_mass)();
 
 /**
  * Fills the vector wdot with the net species production rates due to the
@@ -340,12 +269,9 @@ void NAME_MANGLE(mixture_e_mass)(
  *    C_i^{\nu_{ij}^"} \right] \Theta_{TB}
  * \f]
  *
- * @param T     the temperature in K
- * @param conc  the species concentration vector in mol/m^3
  * @param wdot  on return, the species production rates in kg/m^3-s
  */
-void NAME_MANGLE(net_production_rates)(
-    const double* const T, const double* const conc, double* const wdot); 
+void NAME_MANGLE(net_production_rates)(double* const wdot); 
 
 /**
  * @}
