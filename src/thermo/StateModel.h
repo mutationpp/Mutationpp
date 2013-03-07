@@ -1,13 +1,8 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-#include <vector>
-#include <cstdlib>
-
 namespace Mutation {
     namespace Thermodynamics {
-
-class StateModelUpdateHandler;
 
 /**
  * Base class for all state models.  A mixture state is completely determined
@@ -20,7 +15,7 @@ class StateModelUpdateHandler;
  * A state model describes how a particular mixture is to be modelled.  For
  * example, a mixture could be modelled using a single temperature or multiple
  * temperatures that represent the various energy modes in the mixture.  This
- * base class provides the framework for defining new state models beyond the 
+ * base class provides the framework for defining new state models above the 
  * simple T,P model.
  */
 class StateModel
@@ -51,16 +46,6 @@ public:
     }
     
     /**
-     * Registers a StateModelUpdateHandler object with this state model so
-     * that it will be notified when the mixture state is updated.
-     */
-    void notifyOnUpdate(StateModelUpdateHandler* p_handler) 
-    {
-        if (p_handler != NULL)
-            m_updateHandlers.push_back(p_handler);
-    }
-    
-    /**
      * Sets the current mixture state via temperature(s), pressure(s), and 
      * species mole fractions.
      *
@@ -68,28 +53,14 @@ public:
      * @param P - pressure array
      * @param X - species mole fraction array
      */
-    void setStateTPX(
-        const double* const T, const double* const P, const double* const X)
-    {
-        // Update the state based on the state model
-        stateModelTPX(T, P, X);
-        
-        // Notify update handlers that the state has been updated
-        //notifyHandlers();
-    }
+    virtual void setStateTPX(
+        const double* const T, const double* const P, const double* const X);
     
     /**
      * Sets the current mixture state using thermal equilibrium (ie: all the 
      * temperatures are equal.
      */
-    void setStateTPX(const double T, const double P, const double* X)
-    {
-        // Update the state based on the state model
-        stateModelTPX(T, P, X);
-        
-        // Notify update handlers that the state has been updated
-        //notifyHandlers();
-    }
+    void setStateTPX(const double T, const double P, const double* X);
     
     /**
      * Returns the mixture translational temperature.
@@ -148,18 +119,6 @@ protected:
     virtual void init();
     
     /**
-     * Applies this state model to set the state.
-     */
-    virtual void stateModelTPX(
-        const double* const T, const double* const P, const double* const X);
-    
-    /**
-     * Applies this state model to set the state.
-     */
-    virtual void stateModelTPX(
-        const double T, const double P, const double* const X);
-    
-    /**
      * Returns the number of temperatures used in this model.
      */
     virtual int nT() const {
@@ -180,37 +139,8 @@ protected:
     double* mp_T;
     double* mp_P;
     double* mp_X;
-
-private:
-
-    void notifyHandlers();
-    
-private:
-    
-    std::vector<StateModelUpdateHandler*> m_updateHandlers;
     
 }; // class StateModel
-
-
-/**
- * Interface class which should be implemented when a user class wishes
- * to be told when the StateModel has had its state updated.
- */
-class StateModelUpdateHandler
-{
-public:
-    
-    /**
-     * Destructor.
-     */
-    virtual ~StateModelUpdateHandler() {};
-    
-    /**
-     * This method is called by the StateModel when the mixture state has been
-     * changed.
-     */
-    virtual void stateUpdated() = 0;
-};
 
     } // namespace Thermodynamics
 } // namespace Mutation

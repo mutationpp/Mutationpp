@@ -14,7 +14,7 @@ namespace Mutation {
 /**
  * Manages the computation of transport properties.
  */
-class Transport : public Mutation::Thermodynamics::StateModelUpdateHandler
+class Transport //: public Mutation::Thermodynamics::StateModelUpdateHandler
 {
 public:
     
@@ -123,6 +123,13 @@ public:
             m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
     }
     
+    /**
+     * Computes the species diffusion velocities and ambipolar electric field 
+     * using the Ramshaw approximation of the generalized Stefan-Maxwell 
+     * equations and the supplied modified driving forces.
+     */
+    void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
+        
     /**
      * Returns the electric conductivity.
      */

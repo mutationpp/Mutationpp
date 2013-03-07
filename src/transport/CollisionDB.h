@@ -430,9 +430,11 @@ private:
 
         void operator () (
             double lnT, double* pQij, DataProvider& funcs) const
+//            double T, double* pQij, DataProvider& funcs) const
         {
             for (int i = 0; i < funcs.size(); ++i)
                 pQij[i] = 1.0e-20 * funcs[i](lnT);
+//                pQij[i] = funcs[i](std::log(T));
         }
     };
     
@@ -506,9 +508,9 @@ private:
 
 #ifdef USE_COLLISION_INTEGRAL_TABLES    
     // Lookup Tables for collision integral functions
-    LookupTable<double, double, QijTableFunction>*    mp_Q11_table;
-    LookupTable<double, double, QijTableFunction>*    mp_Q22_table;
-    LookupTable<double, double, QRatioTableFunction>* mp_Bst_table;
+    Mutation::Utilities::LookupTable<double, double, QijTableFunction>*    mp_Q11_table;
+    Mutation::Utilities::LookupTable<double, double, QijTableFunction>*    mp_Q22_table;
+    Mutation::Utilities::LookupTable<double, double, QRatioTableFunction>* mp_Bst_table;
     double* mp_work;
 #else
     // Storage for neutral-neutral and neutral-charge collision integral 

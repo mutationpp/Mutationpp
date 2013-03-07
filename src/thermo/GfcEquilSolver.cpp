@@ -156,8 +156,8 @@ GfcEquilSolver::GfcEquilSolver(const Thermodynamics& thermo)
                 m_A(i,k) = 0.0;
     }
     
-    cout << "A" << endl;
-    cout << m_A << endl;
+    //cout << "A" << endl;
+    //cout << m_A << endl;
     
     // Compute number of atoms in each molecule of undetermined species
     m_au = m_B_r * RealVector(m_nrc, 1.0);

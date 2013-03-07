@@ -57,7 +57,7 @@ Thermodynamics::Thermodynamics(
     
     // Allocate a new state model
     mp_state = Config::Factory<StateModel>::create(state_model, nSpecies());
-    mp_state->notifyOnUpdate(this);
+    //mp_state->notifyOnUpdate(this);
 }
 
 //==============================================================================

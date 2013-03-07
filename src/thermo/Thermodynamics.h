@@ -48,7 +48,7 @@ enum ConversionType {
 /**
  * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
  */
-class Thermodynamics : public StateModelUpdateHandler
+class Thermodynamics //: public StateModelUpdateHandler
 {
 public:
     
@@ -70,7 +70,7 @@ public:
         std::cout << "stateUpdated: Thermodynamics" << std::endl;
     }
     
-    StateModel* stateModel() { return mp_state; }
+    StateModel* const stateModel() const { return mp_state; }
     
     /**
      * Returns the number of species considered in the mixture.

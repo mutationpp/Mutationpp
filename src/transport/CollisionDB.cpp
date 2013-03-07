@@ -213,14 +213,15 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     }*/
     
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-    // Tabulate the collision integral functions with a maximum error of 0.1%
+    // Tabulate the collision integral functions using 10 data points
     mp_Q11_table = new LookupTable<double, double, QijTableFunction>(
-        std::log(100.0), std::log(20100.0), Q11_funcs.size(), Q11_funcs, 0.000001, LINEAR);
+        std::log(200.0), std::log(20100.0), 10, Q11_funcs.size(), Q11_funcs);//, 0.000001, LINEAR);
     mp_Q22_table = new LookupTable<double, double, QijTableFunction>(
-        std::log(100.0), std::log(20100.0), Q22_funcs.size(), Q22_funcs, 0.000001, LINEAR);
+        std::log(200.0), std::log(20100.0), 10, Q22_funcs.size(), Q22_funcs);//, 0.000001, LINEAR);
     mp_Bst_table = new LookupTable<double, double, QRatioTableFunction>(
-        std::log(100.0), std::log(20100.0), Bst_funcs.size(), Bst_funcs, 0.000001, LINEAR);
+        std::log(200.0), std::log(20100.0), 10, Bst_funcs.size(), Bst_funcs);//, 0.000001, LINEAR);
     mp_work = new double [Q11_funcs.size()];
+    mp_Q11_table->save("Q11Table.dat");
 #endif
 }
 

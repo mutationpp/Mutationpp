@@ -3,6 +3,8 @@
 #include "Constants.h"
 #include "Numerics.h"
 
+#include <iostream>
+
 using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -37,7 +39,7 @@ Transport::Transport(
     mp_wrk2 = new double [m_thermo.nSpecies()];
     mp_wrk3 = new double [m_thermo.nSpecies()];
     
-    thermo.stateModel()->notifyOnUpdate(this);
+    //thermo.stateModel()->notifyOnUpdate(this);
 }
     
 //==============================================================================
@@ -137,7 +139,7 @@ double Transport::internalThermalConductivity()
 
 //==============================================================================
 
-double Transport::reactiveThermalConductivity()
+/*double Transport::reactiveThermalConductivity()
 {
     ///
     /// @todo This function fails if there is no electric field.  Does not take
@@ -176,6 +178,105 @@ double Transport::reactiveThermalConductivity()
         lambda += mp_wrk1[i] * mp_wrk2[i] * X[i];
     
     return (m_thermo.P()*lambda);
+}*/
+
+double Transport::reactiveThermalConductivity()
+{
+    // Compute dX_i/dT
+    m_thermo.dXidT(m_thermo.T(), m_thermo.P(), m_thermo.X(), mp_wrk1);
+    
+    // Compute the diffusion velocities
+    double E;
+    stefanMaxwell(mp_wrk1, mp_wrk2, E);
+    
+    // Unitless enthalpies
+    m_thermo.speciesHOverRT(mp_wrk1);
+    
+    double lambda = 0.0;
+    //const double* const X = m_thermo.X();
+    const double rho = m_thermo.density();
+    const double* const Y = m_thermo.Y();
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        lambda -= mp_wrk1[i] / m_thermo.speciesMw(i) * mp_wrk2[i] * Y[i] * rho;
+    
+    return (RU * m_thermo.T() * lambda);
+}
+
+//==============================================================================
+
+void Transport::stefanMaxwell(
+    const double* const p_dp, double* const p_V, double& E)
+{
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double* const Y = m_thermo.Y();
+    const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, X);
+    
+    double a = 0.0;
+    for (int i = 1; i < nDij.size(); ++i)
+        a += nDij(i);
+    a /= ((double)nDij.size()*nd);
+    a = 1.0/a;
+    
+    if (m_thermo.hasElectrons()) {
+        // Compute the diffusion transport system
+        RealSymMat G(ns-1);
+        double temp;
+        for (int i = 1; i < ns; ++i) {
+            G(i-1,i-1) = 0.0;
+            
+            for (int j = 1; j < i; ++j)
+                G(i-1,i-1) -= G(j-1,i-1);
+                
+            for (int j = i+1; j < ns; ++j) {
+                temp = X[i]*X[j]/nDij(i,j)*nd;
+                G(i-1,i-1) += temp;
+                G(i-1,j-1) = -temp;
+            }
+        }
+        
+        for (int i = 1; i < ns; ++i)
+            for (int j = i; j < ns; ++j)
+                G(i-1,j-1) += a*Y[i]*Y[j];
+        
+        //std::cout << "G" << std::endl;
+        //std::cout << G << std::endl;
+        
+        // Compute mixture charge
+        double q = 0.0;
+        for (int i = 0; i < ns; ++i) {
+            mp_wrk3[i] = m_thermo.speciesCharge(i);
+            q += mp_wrk3[i] * X[i];
+        }
+        
+        // Electric field
+        const double kappae = X[0]*mp_wrk3[0]-Y[0]*q;
+        E = p_dp[0] / kappae * KB * Th;
+        
+        // Right-hand side
+        RealVector b(ns-1);
+        for (int i = 1; i < ns; ++i)
+            b(i-1) = -p_dp[i] + p_dp[0]*(X[i]*mp_wrk3[i]-Y[i]*q)/kappae;
+        
+        // Solve the linear system
+        LDLT<double> ldlt(G);
+        RealVector V(ns-1);
+        ldlt.solve(V, b);
+        asVector(p_V+1, ns-1) = V;
+        
+        // Compute the electron diffusion velocity
+        p_V[0] = 0.0;
+        for (int i = 1; i < ns; ++i)
+            p_V[0] -= X[i]*mp_wrk3[i]*p_V[i];
+        p_V[0] /= (X[0]*mp_wrk3[0]);
+    } else {
+        std::cout << "Stefan-Maxwell is not yet supported for mixtures without electrons!" << std::endl;
+        std::exit(1);
+    }
+    
 }
 
 //==============================================================================
@@ -185,7 +286,7 @@ double Transport::sigma()
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
         return 0.0;
 
-    const double ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();

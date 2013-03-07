@@ -61,6 +61,16 @@ public:
      */
     operator const E&() const { return static_cast<const E&>(*this); }
     
+    /**
+     * Returns the maximum element in this matrix.
+     */
+    T max() const {
+        T maxval = (*this)(0);
+        for (size_t i = 1; i < size(); ++i)
+            maxval = std::max(maxval, (*this)(i));
+        return maxval;
+    }
+    
 }; // class MatExpr
 
 /**

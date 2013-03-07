@@ -5,7 +5,7 @@
 namespace Mutation {
     namespace Thermodynamics {
 
-void StateModel::stateModelTPX(
+void StateModel::setStateTPX(
     const double* const T, const double* const P, const double* const X)
 {
     std::copy(T, T+nT(), mp_T);
@@ -13,7 +13,7 @@ void StateModel::stateModelTPX(
     std::copy(X, X+m_ns, mp_X);
 }
 
-void StateModel::stateModelTPX(
+void StateModel::setStateTPX(
     const double T, const double P, const double* const X)
 {
     std::fill(mp_T, mp_T+nT(), T);
@@ -32,22 +32,13 @@ void StateModel::init()
     std::fill(mp_X, mp_X+m_ns, 0.0);
 }
 
-void StateModel::notifyHandlers()
-{
-    std::vector<StateModelUpdateHandler*>::iterator iter = 
-        m_updateHandlers.begin();
-    for ( ; iter != m_updateHandlers.end(); ++iter)
-        (*iter)->stateUpdated();
-}
-
-
 // Register the basic state model
 Utilities::Config::ObjectProvider<StateModel, StateModel> tpModel("T");
 
 
 /**
- * Represents a mixture using two temperatures: \f$T_1 = T = T_r\f$ and 
- * \f$T_2 = T_v = T_e = T_{el}\f$.  
+ * Represents a mixture using two temperatures: \f$T_1 = T = T_e = T_{el}\f$ and 
+ * \f$T_2 = T_v = T_r\f$.  
  */
 class TTvStateModel : public StateModel
 {
@@ -68,16 +59,9 @@ public:
     }
     
     /**
-     * Returns the mixture electron temperature.
+     * Returns the mixture rotational temperature.
      */
-    virtual double Te() const {
-        return mp_T[1];
-    }
-    
-    /**
-     * Returns the mixture electronic temperature.
-     */
-    virtual double Tel() const {
+    virtual double Tr() const {
         return mp_T[1];
     }
     

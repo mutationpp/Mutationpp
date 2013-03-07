@@ -26,7 +26,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 40
+#define NMIXTURE 41
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -34,10 +34,10 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("nd", "1/m^3", "number density"),
     OutputQuantity("Mw", "kg/mol", "molecular weight"),
     OutputQuantity("Cp_eq", "J/mol-K", "equilibrium specific heat at constant pressure"),
-    OutputQuantity("H", "J/mol", "enthalpy"),
+    OutputQuantity("H", "J/mol", "mixture enthalpy"),
     OutputQuantity("S", "J/mol-K", "entropy"),
     OutputQuantity("Cp_eq", "J/kg-K", "equilibrium specific heat at constant pressure"),
-    OutputQuantity("H", "J/kg", "enthalpy"),
+    OutputQuantity("H", "J/kg", "mixture enthalpy"),
     OutputQuantity("S", "J/kg-K", "entropy"),
     OutputQuantity("Cv_eq", "J/kg-K", "equilibrium specific heat at constant volume"),
     OutputQuantity("Cp", "J/mol-K", "frozen specific heat at constant pressure"),
@@ -67,11 +67,12 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("sigma", "S/m", "electric conductivity"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
+    OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
     OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
 };
 
 // List of all species output quantities
-#define NSPECIES 13
+#define NSPECIES 14
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
     OutputQuantity("Y", "", "mass fractions"),
@@ -85,6 +86,7 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("H", "J/kg", "enthalpies"),
     OutputQuantity("S", "J/kg-K", "entropies"),
     OutputQuantity("G", "J/kg", "Gibbs free energies"),
+    OutputQuantity("J", "kg/m^2-s", "Species diffusion fluxes (SM Ramshaw)"),
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions")
 };
 
@@ -507,7 +509,10 @@ int main(int argc, char** argv)
                     value = mix.frozenSoundSpeed();
                 else if (name == "a_eq")
                     value = mix.equilibriumSoundSpeed();
-                else if (name == "drho/dP")
+                else if (name == "Eam") {
+                    mix.dXidT(mix.T(), mix.P(), mix.X(), temp);
+                    mix.stefanMaxwell(temp, temp2, value);
+                } else if (name == "drho/dP")
                     value = mix.dRhodP();
                 
                 cout << setw(column_widths[cw++]) << value;
@@ -563,6 +568,13 @@ int main(int argc, char** argv)
                     else if (units == "J/kg")
                         for (int i = 0; i < mix.nSpecies(); ++i)
                             species_values[i] *= (RU * T / mix.speciesMw(i));
+                } else if (name == "J") {
+                    double E, rho;
+                    mix.dXidT(mix.T(), mix.P(), mix.X(), temp);
+                    mix.stefanMaxwell(temp, species_values, E);
+                    rho = mix.density();
+                    for (int i = 0; i < mix.nSpecies(); ++i)
+                        species_values[i] *= rho * mix.Y()[i];
                 } else if (name == "omega") {
                     double conc = mix.density() / mix.mixtureMw();
                     for (int i = 0; i < mix.nSpecies(); ++i)
