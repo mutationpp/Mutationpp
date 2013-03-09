@@ -40,6 +40,10 @@ add_subdirectory(thermo)
 add_subdirectory(transport)
 add_subdirectory(utilities)
 
+if (BUILD_FORTRAN_WRAPPER)
+    add_subdirectory(fortran)
+endif()
+
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
 install(TARGETS mutation++ DESTINATION lib)

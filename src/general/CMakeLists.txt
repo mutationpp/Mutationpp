@@ -18,14 +18,6 @@ install(TARGETS mppequil DESTINATION bin)
 #target_link_libraries(bprime mutation++)
 #install(TARGETS bprime DESTINATION bin)
 
-# Build the fortran wrapper library
-if (BUILD_FORTRAN_WRAPPER)
-    add_library(mutation++_fortran STATIC cwrapper.cpp cwrapper_interface.f90)
-    target_link_libraries(mutation++_fortran mutation++)
-    install(TARGETS mutation++_fortran DESTINATION lib)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod DESTINATION include/mutation++)
-endif()
-
 # Build and install the test codes
 option(BUILD_TEST_CODES "Build test executables" OFF)
 if (BUILD_TEST_CODES)
@@ -34,13 +26,7 @@ if (BUILD_TEST_CODES)
     #add_executable(profiling profiling.cpp)
     #target_link_libraries(profiling mutation++ rt)
     #install(TARGETS profiling DESTINATION bin)
-    
-    if (BUILD_FORTRAN_WRAPPER)
-        add_executable(wrapper_test wrapper_test.f90)
-        target_link_libraries(wrapper_test mutation++_fortran)
-        set_target_properties(wrapper_test PROPERTIES LINKER_LANGUAGE Fortran)
-        install(TARGETS wrapper_test DESTINATION bin)
-    endif()
+
 endif()
 
 # Install the header files

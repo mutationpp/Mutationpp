@@ -142,15 +142,48 @@ double NAME_MANGLE(density)()
 }
 
 //==============================================================================
+void NAME_MANGLE(species_densities)(double* const rhoi)
+{
+    double rho = p_mix->density();
+    for (int i = 0; i < p_mix->nSpecies(); ++i)
+        rhoi[i] = rho * p_mix->Y()[i];
+}
+
+//==============================================================================
 void NAME_MANGLE(equilibrate)(double* T, double* P)
 {
     p_mix->equilibrate(*T, *P);
 }
 
 //==============================================================================
+void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi)
+{
+    double rho = 0.0;
+    for (int i = 0; i < p_mix->nSpecies(); ++i)
+        rho += rhoi[i];
+    
+    double P = 0.0;
+    for (int i = 0; i < p_mix->nSpecies(); ++i) {
+        p_work_species[i] = rhoi[i] / rho;
+        P += rhoi[i] / p_mix->speciesMw(i);
+    }
+    
+    P *= RU * (*T);
+    p_mix->setStateTPY(T, &P, p_work_species);
+}
+
+//==============================================================================
 void NAME_MANGLE(x)(double *const X)
 {
     std::copy(p_mix->X(), p_mix->X()+p_mix->nSpecies(), X);
+}
+
+//==============================================================================
+void NAME_MANGLE(y)(double *const Y)
+{
+    //std::copy(p_mix->Y(), p_mix->Y()+p_mix->nSpecies(), Y);
+    for (int i = 0; i < p_mix->nSpecies(); ++i)
+        Y[i] = p_mix->Y()[i];
 }
 
 //==============================================================================

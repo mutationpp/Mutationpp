@@ -36,6 +36,9 @@ module mutationpp
         real function mpp_mixture_frozen_cv_mass();
         end function
         
+        real function mpp_mixture_frozen_gamma();
+        end function
+        
         real function mpp_mixture_h_mass()
         end function
         

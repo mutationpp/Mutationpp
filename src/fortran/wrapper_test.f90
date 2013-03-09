@@ -6,7 +6,7 @@ program main
     integer :: i, j, ne, ns, nr
     
     real :: T, P, rho, n, cp, cv, h, mw, e
-    real, dimension(:), allocatable :: species_x
+    real, dimension(:), allocatable :: species_x, wdot, species_y
     real, dimension(:), allocatable :: mwi
     
     mixture = "air11"
@@ -19,6 +19,8 @@ program main
     write(*,*) "ne: ", ne, "ns: ", ns, "nr: ", nr
     
     allocate(species_x(ns))
+    allocate(species_y(ns))
+    allocate(wdot(ns))
     allocate(mwi(ns))
     
     P = 101325.0
@@ -47,9 +49,9 @@ program main
         call mpp_x(species_x)
             
         write(*,'(E12.4)',advance='no') T
-        do j = 1,ns
-            write(*,'(E12.4)',advance='no') species_x(j)
-        end do
+        !do j = 1,ns
+        !    write(*,'(E12.4)',advance='no') species_x(j)
+        !end do
              
         n   = mpp_number_density()
         rho = mpp_density()
@@ -57,10 +59,17 @@ program main
         cp  = mpp_mixture_frozen_cp_mass()
         cv  = mpp_mixture_frozen_cv_mass()
         h   = mpp_mixture_h_mass()
-        e   = mpp_mixture_e_mass()        
+        e   = mpp_mixture_e_mass()
         
-        write(*,'(8E12.4)',advance='no') P, rho, n, mw, cp, cv, h, e
-        write(*,*)
+        call mpp_y(species_y);
+        species_y = species_y * rho
+        
+        call mpp_set_state_t_rhoi(T, species_y)
+        call mpp_net_production_rates(wdot);   
+        
+        !write(*,'(8E12.4)',advance='no') P, rho, n, mw, cp, cv, h, e
+        !write(*,*)
+        write(*,'(100E12.4)') wdot
     end do
     
     ! Clean up the memory stored in the mutation++ library

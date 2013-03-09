@@ -188,6 +188,11 @@ void NAME_MANGLE(element_moles)(
 void NAME_MANGLE(x)(double* const X);
 
 /**
+ * Returns the mass fractions for the current mixture state.
+ */
+void NAME_MANGLE(y)(double* const Y);
+
+/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -206,6 +211,12 @@ double NAME_MANGLE(pressure)();
 double NAME_MANGLE(density)();
 
 /**
+ * Returns the current species densities.
+ */
+void NAME_MANGLE(species_densities)(
+    double* const rhoi);
+
+/**
  * Returns the equilibrium composition of the mixture in species mass fractions
  * given the temperature, pressure, and elemental mass fractions.
  *
@@ -216,6 +227,12 @@ double NAME_MANGLE(density)();
  */
 void NAME_MANGLE(equilibrate)(
     double* T, double* P);
+    
+/**
+ * Sets the current state of the mixture using temperature and species 
+ * densities.
+ */
+void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the
@@ -224,14 +241,12 @@ void NAME_MANGLE(equilibrate)(
 void NAME_MANGLE(species_cp_mass)(double* const cp);
 
 /**
- * Returns the mixture specific heat at constant pressure in J/kg-K given the
- * mixture temperature and species mass fractions.
+ * Returns the mixture specific heat at constant pressure in J/kg-K.
  */
 double NAME_MANGLE(mixture_frozen_cp_mass)();
 
 /**
- * Returns the mixture specific heat at constant volume in J/kg-K given the
- * mixture temperature and species mass fractions.
+ * Returns the mixture specific heat at constant volume in J/kg-K.
  */
 double NAME_MANGLE(mixture_frozen_cv_mass)();
 
