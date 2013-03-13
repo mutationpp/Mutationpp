@@ -1,0 +1,21 @@
+Start testing: Mar 13 08:10 PDT
+----------------------------------------------------------
+1/1 Testing: test_main_name_displayed
+1/1 Test: test_main_name_displayed
+Command: "/home/didi/mutation++/branches/dinesh/sampleTests/test/test_class_Position"
+Directory: /home/didi/mutation++/branches/dinesh/sampleTests/test
+"test_main_name_displayed" start time: Mar 13 08:10 PDT
+Output:
+----------------------------------------------------------
+Running 1 test case...
+
+*** No errors detected
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"test_main_name_displayed" end time: Mar 13 08:10 PDT
+"test_main_name_displayed" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Mar 13 08:10 PDT
