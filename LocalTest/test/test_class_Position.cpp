@@ -16,19 +16,18 @@
 
 using namespace std;
 
+BOOST_AUTO_TEST_SUITE( test_class_position)
 
+BOOST_AUTO_TEST_CASE( sample_test) {
+	int pos = 12 ;
+	int somme= 14;
 
-int main() {
-	int pos = 0 ;
-	int somme;
-
-	cout << " pos == 12 " << (pos == 12) << endl;
-	cout << " ( pos + 12 ) == 12 " << (( pos + 12 ) == 12) << endl;
-	BOOST_CHECK(pos == 0);
+	BOOST_CHECK_EQUAL(pos, 12);
+	BOOST_CHECK(pos == 12);
 	BOOST_CHECK_EQUAL((pos+2), 14);
 
 }
 
 
-
+BOOST_AUTO_TEST_SUITE_END()
 

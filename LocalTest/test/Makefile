@@ -79,14 +79,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/didi/mutation++/branches/dinesh/sampleTests/CMakeFiles /home/didi/mutation++/branches/dinesh/sampleTests/CMakeFiles/progress.marks
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(CMAKE_COMMAND) -E cmake_progress_start /home/didi/mutation++/branches/dinesh/sampleTests/CMakeFiles /home/didi/mutation++/branches/dinesh/sampleTests/test/CMakeFiles/progress.marks
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f CMakeFiles/Makefile2 test/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/didi/mutation++/branches/dinesh/sampleTests/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f CMakeFiles/Makefile2 test/clean
 .PHONY : clean
 
 # The main clean target
@@ -95,31 +95,56 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f CMakeFiles/Makefile2 test/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f CMakeFiles/Makefile2 test/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named test_class_Position
+# Convenience name for target.
+test/CMakeFiles/test_class_Position.dir/rule:
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/test_class_Position.dir/rule
+.PHONY : test/CMakeFiles/test_class_Position.dir/rule
 
-# Build rule for target.
-test_class_Position: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_class_Position
+# Convenience name for target.
+test_class_Position: test/CMakeFiles/test_class_Position.dir/rule
 .PHONY : test_class_Position
 
 # fast build rule for target.
 test_class_Position/fast:
-	$(MAKE) -f test/CMakeFiles/test_class_Position.dir/build.make test/CMakeFiles/test_class_Position.dir/build
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f test/CMakeFiles/test_class_Position.dir/build.make test/CMakeFiles/test_class_Position.dir/build
 .PHONY : test_class_Position/fast
+
+test_class_Position.o: test_class_Position.cpp.o
+.PHONY : test_class_Position.o
+
+# target to build an object file
+test_class_Position.cpp.o:
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f test/CMakeFiles/test_class_Position.dir/build.make test/CMakeFiles/test_class_Position.dir/test_class_Position.cpp.o
+.PHONY : test_class_Position.cpp.o
+
+test_class_Position.i: test_class_Position.cpp.i
+.PHONY : test_class_Position.i
+
+# target to preprocess a source file
+test_class_Position.cpp.i:
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f test/CMakeFiles/test_class_Position.dir/build.make test/CMakeFiles/test_class_Position.dir/test_class_Position.cpp.i
+.PHONY : test_class_Position.cpp.i
+
+test_class_Position.s: test_class_Position.cpp.s
+.PHONY : test_class_Position.s
+
+# target to generate assembly for a file
+test_class_Position.cpp.s:
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(MAKE) -f test/CMakeFiles/test_class_Position.dir/build.make test/CMakeFiles/test_class_Position.dir/test_class_Position.cpp.s
+.PHONY : test_class_Position.cpp.s
 
 # Help Target
 help:
@@ -131,6 +156,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... test_class_Position"
+	@echo "... test_class_Position.o"
+	@echo "... test_class_Position.i"
+	@echo "... test_class_Position.s"
 .PHONY : help
 
 
@@ -142,6 +170,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/didi/mutation++/branches/dinesh/sampleTests && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
