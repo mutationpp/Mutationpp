@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( test_class_position)
 
 BOOST_AUTO_TEST_CASE( sample_test) {
 	int pos = 12 ;
-	int somme;
+	int somme= 14;
 
 	BOOST_CHECK_EQUAL(pos, 12);
 	BOOST_CHECK(pos == 12);
