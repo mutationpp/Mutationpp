@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ctest -S CTestConfigNightly.cmake
+
