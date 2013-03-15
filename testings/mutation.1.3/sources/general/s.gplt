@@ -1,0 +1,7 @@
+set terminal postscript enhanced color
+set output "s.eps"
+set key bottom right
+set xlabel "Temperature [K]" font "Helvetica,20"
+set ylabel "Energy [MJ/kg]" font "Helvetica,20"
+plot "mutation_air11.dat" u 1:11 w l lw 2 lt -1 lc rgb "blue" t "Mutation", \
+     "s.dat"          every 4 u 1:2 w p pt 6 lw 3 lc rgb "red" t "Mutation++"

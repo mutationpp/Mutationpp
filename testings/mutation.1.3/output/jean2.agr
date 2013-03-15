@@ -1,0 +1,3668 @@
+# Grace project file
+#
+@version 50122
+@page size 457, 469
+@page scroll 5%
+@page inout 5%
+@link page off
+@map font 0 to "Times-Roman", "Times-Roman"
+@map font 1 to "Times-Italic", "Times-Italic"
+@map font 2 to "Times-Bold", "Times-Bold"
+@map font 3 to "Times-BoldItalic", "Times-BoldItalic"
+@map font 4 to "Helvetica", "Helvetica"
+@map font 5 to "Helvetica-Oblique", "Helvetica-Oblique"
+@map font 6 to "Helvetica-Bold", "Helvetica-Bold"
+@map font 7 to "Helvetica-BoldOblique", "Helvetica-BoldOblique"
+@map font 8 to "Courier", "Courier"
+@map font 9 to "Courier-Oblique", "Courier-Oblique"
+@map font 10 to "Courier-Bold", "Courier-Bold"
+@map font 11 to "Courier-BoldOblique", "Courier-BoldOblique"
+@map font 12 to "Symbol", "Symbol"
+@map font 13 to "ZapfDingbats", "ZapfDingbats"
+@map color 0 to (255, 255, 255), "white"
+@map color 1 to (0, 0, 0), "black"
+@map color 2 to (255, 0, 0), "red"
+@map color 3 to (0, 255, 0), "green"
+@map color 4 to (0, 0, 255), "blue"
+@map color 5 to (255, 255, 0), "yellow"
+@map color 6 to (188, 143, 143), "brown"
+@map color 7 to (220, 220, 220), "grey"
+@map color 8 to (148, 0, 211), "violet"
+@map color 9 to (0, 255, 255), "cyan"
+@map color 10 to (255, 0, 255), "magenta"
+@map color 11 to (255, 165, 0), "orange"
+@map color 12 to (114, 33, 188), "indigo"
+@map color 13 to (103, 7, 72), "maroon"
+@map color 14 to (64, 224, 208), "turquoise"
+@map color 15 to (0, 139, 0), "green4"
+@reference date 0
+@date wrap off
+@date wrap year 1950
+@default linewidth 1.0
+@default linestyle 1
+@default color 1
+@default pattern 1
+@default font 0
+@default char size 1.000000
+@default symbol size 1.000000
+@default sformat "%.8g"
+@background color 0
+@page background fill on
+@timestamp off
+@timestamp 0.03, 0.03
+@timestamp color 1
+@timestamp rot 0
+@timestamp font 0
+@timestamp char size 1.000000
+@timestamp def "Tue Dec  1 23:15:27 2009"
+@with string
+@    string on
+@    string loctype view
+@    string 0.532786885246, 0.796721311475
+@    string color 12
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "H\s2"
+@with string
+@    string on
+@    string loctype view
+@    string 0.539344262295, 0.472131147541
+@    string color 14
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "CO"
+@with string
+@    string on
+@    string loctype view
+@    string 0.159016393443, 0.3
+@    string color 15
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "CO\s2"
+@with string
+@    string on
+@    string loctype view
+@    string 0.18524590164, 0.559016393443
+@    string color 13
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "H\s2\NO"
+@with string
+@    string on
+@    string loctype view
+@    string 0.216393442623, 0.652459016393
+@    string color 4
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "CH\s4"
+@with string
+@    string on
+@    string loctype view
+@    string 0.896721311475, 0.185245901639
+@    string color 11
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "OH"
+@with string
+@    string on
+@    string loctype view
+@    string 0.814754098361, 0.247540983606
+@    string color 3
+@    string rot 0
+@    string font 0
+@    string just 0
+@    string char size 1.000000
+@    string def "H"
+@r0 off
+@link r0 to g0
+@r0 type above
+@r0 linestyle 1
+@r0 linewidth 1.0
+@r0 color 1
+@r0 line 0, 0, 0, 0
+@r1 off
+@link r1 to g0
+@r1 type above
+@r1 linestyle 1
+@r1 linewidth 1.0
+@r1 color 1
+@r1 line 0, 0, 0, 0
+@r2 off
+@link r2 to g0
+@r2 type above
+@r2 linestyle 1
+@r2 linewidth 1.0
+@r2 color 1
+@r2 line 0, 0, 0, 0
+@r3 off
+@link r3 to g0
+@r3 type above
+@r3 linestyle 1
+@r3 linewidth 1.0
+@r3 color 1
+@r3 line 0, 0, 0, 0
+@r4 off
+@link r4 to g0
+@r4 type above
+@r4 linestyle 1
+@r4 linewidth 1.0
+@r4 color 1
+@r4 line 0, 0, 0, 0
+@g0 on
+@g0 hidden false
+@g0 type XY
+@g0 stacked false
+@g0 bar hgap 0.000000
+@g0 fixedpoint off
+@g0 fixedpoint type 0
+@g0 fixedpoint xy 0.000000, 0.000000
+@g0 fixedpoint format general general
+@g0 fixedpoint prec 6, 6
+@with g0
+@    world 0, 0, 3000, 0.7
+@    stack world 0, 0, 0, 0
+@    znorm 1
+@    view 0.115909, 0.153939, 0.888636, 0.872319
+@    title "Composition at 1 atm"
+@    title font 0
+@    title size 1.500000
+@    title color 1
+@    subtitle "C:H:O=0.14603:0.68546:0.16852"
+@    subtitle font 0
+@    subtitle size 1.000000
+@    subtitle color 1
+@    xaxes scale Normal
+@    yaxes scale Normal
+@    xaxes invert off
+@    yaxes invert off
+@    xaxis  on
+@    xaxis  type zero false
+@    xaxis  offset 0.000000 , 0.000000
+@    xaxis  bar on
+@    xaxis  bar color 1
+@    xaxis  bar linestyle 1
+@    xaxis  bar linewidth 1.0
+@    xaxis  label "Temperature [ K ]"
+@    xaxis  label layout para
+@    xaxis  label place auto
+@    xaxis  label char size 1.250000
+@    xaxis  label font 0
+@    xaxis  label color 1
+@    xaxis  label place normal
+@    xaxis  tick on
+@    xaxis  tick major 500
+@    xaxis  tick minor ticks 1
+@    xaxis  tick default 6
+@    xaxis  tick place rounded true
+@    xaxis  tick out
+@    xaxis  tick major size 1.000000
+@    xaxis  tick major color 1
+@    xaxis  tick major linewidth 1.0
+@    xaxis  tick major linestyle 1
+@    xaxis  tick major grid off
+@    xaxis  tick minor color 1
+@    xaxis  tick minor linewidth 1.0
+@    xaxis  tick minor linestyle 1
+@    xaxis  tick minor grid off
+@    xaxis  tick minor size 0.500000
+@    xaxis  ticklabel on
+@    xaxis  ticklabel format general
+@    xaxis  ticklabel prec 5
+@    xaxis  ticklabel formula ""
+@    xaxis  ticklabel append ""
+@    xaxis  ticklabel prepend ""
+@    xaxis  ticklabel angle 0
+@    xaxis  ticklabel skip 0
+@    xaxis  ticklabel stagger 0
+@    xaxis  ticklabel place normal
+@    xaxis  ticklabel offset auto
+@    xaxis  ticklabel offset 0.000000 , 0.010000
+@    xaxis  ticklabel start type auto
+@    xaxis  ticklabel start 0.000000
+@    xaxis  ticklabel stop type auto
+@    xaxis  ticklabel stop 0.000000
+@    xaxis  ticklabel char size 1.000000
+@    xaxis  ticklabel font 0
+@    xaxis  ticklabel color 1
+@    xaxis  tick place normal
+@    xaxis  tick spec type none
+@    yaxis  on
+@    yaxis  type zero false
+@    yaxis  offset 0.000000 , 0.000000
+@    yaxis  bar on
+@    yaxis  bar color 1
+@    yaxis  bar linestyle 1
+@    yaxis  bar linewidth 1.0
+@    yaxis  label "Mole fractions [ - ]"
+@    yaxis  label layout para
+@    yaxis  label place auto
+@    yaxis  label char size 1.250000
+@    yaxis  label font 0
+@    yaxis  label color 1
+@    yaxis  label place normal
+@    yaxis  tick on
+@    yaxis  tick major 0.1
+@    yaxis  tick minor ticks 1
+@    yaxis  tick default 6
+@    yaxis  tick place rounded true
+@    yaxis  tick out
+@    yaxis  tick major size 1.000000
+@    yaxis  tick major color 1
+@    yaxis  tick major linewidth 1.0
+@    yaxis  tick major linestyle 1
+@    yaxis  tick major grid off
+@    yaxis  tick minor color 1
+@    yaxis  tick minor linewidth 1.0
+@    yaxis  tick minor linestyle 1
+@    yaxis  tick minor grid off
+@    yaxis  tick minor size 0.500000
+@    yaxis  ticklabel on
+@    yaxis  ticklabel format general
+@    yaxis  ticklabel prec 5
+@    yaxis  ticklabel formula ""
+@    yaxis  ticklabel append ""
+@    yaxis  ticklabel prepend ""
+@    yaxis  ticklabel angle 0
+@    yaxis  ticklabel skip 0
+@    yaxis  ticklabel stagger 0
+@    yaxis  ticklabel place normal
+@    yaxis  ticklabel offset auto
+@    yaxis  ticklabel offset 0.000000 , 0.010000
+@    yaxis  ticklabel start type auto
+@    yaxis  ticklabel start 0.000000
+@    yaxis  ticklabel stop type auto
+@    yaxis  ticklabel stop 0.000000
+@    yaxis  ticklabel char size 1.000000
+@    yaxis  ticklabel font 0
+@    yaxis  ticklabel color 1
+@    yaxis  tick place normal
+@    yaxis  tick spec type none
+@    altxaxis  off
+@    altyaxis  off
+@    legend on
+@    legend loctype view
+@    legend 0.656818182, 0.821006565
+@    legend box color 1
+@    legend box pattern 1
+@    legend box linewidth 1.0
+@    legend box linestyle 1
+@    legend box fill color 0
+@    legend box fill pattern 1
+@    legend font 0
+@    legend char size 1.000000
+@    legend color 1
+@    legend length 4
+@    legend vgap 1
+@    legend hgap 1
+@    legend invert false
+@    frame type 0
+@    frame linestyle 1
+@    frame linewidth 1.0
+@    frame color 1
+@    frame pattern 1
+@    frame background color 0
+@    frame background pattern 0
+@    s0 hidden false
+@    s0 type xy
+@    s0 symbol 0
+@    s0 symbol size 1.000000
+@    s0 symbol color 1
+@    s0 symbol pattern 1
+@    s0 symbol fill color 1
+@    s0 symbol fill pattern 0
+@    s0 symbol linewidth 1.0
+@    s0 symbol linestyle 1
+@    s0 symbol char 65
+@    s0 symbol char font 0
+@    s0 symbol skip 0
+@    s0 line type 1
+@    s0 line linestyle 1
+@    s0 line linewidth 1.0
+@    s0 line color 1
+@    s0 line pattern 1
+@    s0 baseline type 0
+@    s0 baseline off
+@    s0 dropline off
+@    s0 fill type 0
+@    s0 fill rule 0
+@    s0 fill color 1
+@    s0 fill pattern 1
+@    s0 avalue off
+@    s0 avalue type 2
+@    s0 avalue char size 1.000000
+@    s0 avalue font 0
+@    s0 avalue color 1
+@    s0 avalue rot 0
+@    s0 avalue format general
+@    s0 avalue prec 3
+@    s0 avalue prepend ""
+@    s0 avalue append ""
+@    s0 avalue offset 0.000000 , 0.000000
+@    s0 errorbar on
+@    s0 errorbar place both
+@    s0 errorbar color 1
+@    s0 errorbar pattern 1
+@    s0 errorbar size 1.000000
+@    s0 errorbar linewidth 1.0
+@    s0 errorbar linestyle 1
+@    s0 errorbar riser linewidth 1.0
+@    s0 errorbar riser linestyle 1
+@    s0 errorbar riser clip off
+@    s0 errorbar riser clip length 0.100000
+@    s0 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s0 legend  ""
+@    s1 hidden false
+@    s1 type xy
+@    s1 symbol 0
+@    s1 symbol size 1.000000
+@    s1 symbol color 2
+@    s1 symbol pattern 1
+@    s1 symbol fill color 2
+@    s1 symbol fill pattern 0
+@    s1 symbol linewidth 1.0
+@    s1 symbol linestyle 1
+@    s1 symbol char 65
+@    s1 symbol char font 0
+@    s1 symbol skip 0
+@    s1 line type 1
+@    s1 line linestyle 1
+@    s1 line linewidth 1.0
+@    s1 line color 2
+@    s1 line pattern 1
+@    s1 baseline type 0
+@    s1 baseline off
+@    s1 dropline off
+@    s1 fill type 0
+@    s1 fill rule 0
+@    s1 fill color 1
+@    s1 fill pattern 1
+@    s1 avalue off
+@    s1 avalue type 2
+@    s1 avalue char size 1.000000
+@    s1 avalue font 0
+@    s1 avalue color 1
+@    s1 avalue rot 0
+@    s1 avalue format general
+@    s1 avalue prec 3
+@    s1 avalue prepend ""
+@    s1 avalue append ""
+@    s1 avalue offset 0.000000 , 0.000000
+@    s1 errorbar on
+@    s1 errorbar place both
+@    s1 errorbar color 2
+@    s1 errorbar pattern 1
+@    s1 errorbar size 1.000000
+@    s1 errorbar linewidth 1.0
+@    s1 errorbar linestyle 1
+@    s1 errorbar riser linewidth 1.0
+@    s1 errorbar riser linestyle 1
+@    s1 errorbar riser clip off
+@    s1 errorbar riser clip length 0.100000
+@    s1 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s1 legend  ""
+@    s2 hidden false
+@    s2 type xy
+@    s2 symbol 0
+@    s2 symbol size 1.000000
+@    s2 symbol color 3
+@    s2 symbol pattern 1
+@    s2 symbol fill color 3
+@    s2 symbol fill pattern 0
+@    s2 symbol linewidth 1.0
+@    s2 symbol linestyle 1
+@    s2 symbol char 65
+@    s2 symbol char font 0
+@    s2 symbol skip 0
+@    s2 line type 1
+@    s2 line linestyle 1
+@    s2 line linewidth 2.0
+@    s2 line color 3
+@    s2 line pattern 1
+@    s2 baseline type 0
+@    s2 baseline off
+@    s2 dropline off
+@    s2 fill type 0
+@    s2 fill rule 0
+@    s2 fill color 1
+@    s2 fill pattern 1
+@    s2 avalue off
+@    s2 avalue type 2
+@    s2 avalue char size 1.000000
+@    s2 avalue font 0
+@    s2 avalue color 1
+@    s2 avalue rot 0
+@    s2 avalue format general
+@    s2 avalue prec 3
+@    s2 avalue prepend ""
+@    s2 avalue append ""
+@    s2 avalue offset 0.000000 , 0.000000
+@    s2 errorbar on
+@    s2 errorbar place both
+@    s2 errorbar color 3
+@    s2 errorbar pattern 1
+@    s2 errorbar size 1.000000
+@    s2 errorbar linewidth 1.0
+@    s2 errorbar linestyle 1
+@    s2 errorbar riser linewidth 1.0
+@    s2 errorbar riser linestyle 1
+@    s2 errorbar riser clip off
+@    s2 errorbar riser clip length 0.100000
+@    s2 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s2 legend  ""
+@    s3 hidden false
+@    s3 type xy
+@    s3 symbol 0
+@    s3 symbol size 1.000000
+@    s3 symbol color 4
+@    s3 symbol pattern 1
+@    s3 symbol fill color 4
+@    s3 symbol fill pattern 0
+@    s3 symbol linewidth 1.0
+@    s3 symbol linestyle 1
+@    s3 symbol char 65
+@    s3 symbol char font 0
+@    s3 symbol skip 0
+@    s3 line type 1
+@    s3 line linestyle 1
+@    s3 line linewidth 1.0
+@    s3 line color 4
+@    s3 line pattern 1
+@    s3 baseline type 0
+@    s3 baseline off
+@    s3 dropline off
+@    s3 fill type 0
+@    s3 fill rule 0
+@    s3 fill color 1
+@    s3 fill pattern 1
+@    s3 avalue off
+@    s3 avalue type 2
+@    s3 avalue char size 1.000000
+@    s3 avalue font 0
+@    s3 avalue color 1
+@    s3 avalue rot 0
+@    s3 avalue format general
+@    s3 avalue prec 3
+@    s3 avalue prepend ""
+@    s3 avalue append ""
+@    s3 avalue offset 0.000000 , 0.000000
+@    s3 errorbar on
+@    s3 errorbar place both
+@    s3 errorbar color 4
+@    s3 errorbar pattern 1
+@    s3 errorbar size 1.000000
+@    s3 errorbar linewidth 1.0
+@    s3 errorbar linestyle 1
+@    s3 errorbar riser linewidth 1.0
+@    s3 errorbar riser linestyle 1
+@    s3 errorbar riser clip off
+@    s3 errorbar riser clip length 0.100000
+@    s3 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s3 legend  ""
+@    s4 hidden false
+@    s4 type xy
+@    s4 symbol 0
+@    s4 symbol size 1.000000
+@    s4 symbol color 5
+@    s4 symbol pattern 1
+@    s4 symbol fill color 5
+@    s4 symbol fill pattern 0
+@    s4 symbol linewidth 1.0
+@    s4 symbol linestyle 1
+@    s4 symbol char 65
+@    s4 symbol char font 0
+@    s4 symbol skip 0
+@    s4 line type 1
+@    s4 line linestyle 1
+@    s4 line linewidth 1.0
+@    s4 line color 5
+@    s4 line pattern 1
+@    s4 baseline type 0
+@    s4 baseline off
+@    s4 dropline off
+@    s4 fill type 0
+@    s4 fill rule 0
+@    s4 fill color 1
+@    s4 fill pattern 1
+@    s4 avalue off
+@    s4 avalue type 2
+@    s4 avalue char size 1.000000
+@    s4 avalue font 0
+@    s4 avalue color 1
+@    s4 avalue rot 0
+@    s4 avalue format general
+@    s4 avalue prec 3
+@    s4 avalue prepend ""
+@    s4 avalue append ""
+@    s4 avalue offset 0.000000 , 0.000000
+@    s4 errorbar on
+@    s4 errorbar place both
+@    s4 errorbar color 5
+@    s4 errorbar pattern 1
+@    s4 errorbar size 1.000000
+@    s4 errorbar linewidth 1.0
+@    s4 errorbar linestyle 1
+@    s4 errorbar riser linewidth 1.0
+@    s4 errorbar riser linestyle 1
+@    s4 errorbar riser clip off
+@    s4 errorbar riser clip length 0.100000
+@    s4 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s4 legend  ""
+@    s5 hidden false
+@    s5 type xy
+@    s5 symbol 0
+@    s5 symbol size 1.000000
+@    s5 symbol color 6
+@    s5 symbol pattern 1
+@    s5 symbol fill color 6
+@    s5 symbol fill pattern 0
+@    s5 symbol linewidth 1.0
+@    s5 symbol linestyle 1
+@    s5 symbol char 65
+@    s5 symbol char font 0
+@    s5 symbol skip 0
+@    s5 line type 1
+@    s5 line linestyle 1
+@    s5 line linewidth 1.0
+@    s5 line color 6
+@    s5 line pattern 1
+@    s5 baseline type 0
+@    s5 baseline off
+@    s5 dropline off
+@    s5 fill type 0
+@    s5 fill rule 0
+@    s5 fill color 1
+@    s5 fill pattern 1
+@    s5 avalue off
+@    s5 avalue type 2
+@    s5 avalue char size 1.000000
+@    s5 avalue font 0
+@    s5 avalue color 1
+@    s5 avalue rot 0
+@    s5 avalue format general
+@    s5 avalue prec 3
+@    s5 avalue prepend ""
+@    s5 avalue append ""
+@    s5 avalue offset 0.000000 , 0.000000
+@    s5 errorbar on
+@    s5 errorbar place both
+@    s5 errorbar color 6
+@    s5 errorbar pattern 1
+@    s5 errorbar size 1.000000
+@    s5 errorbar linewidth 1.0
+@    s5 errorbar linestyle 1
+@    s5 errorbar riser linewidth 1.0
+@    s5 errorbar riser linestyle 1
+@    s5 errorbar riser clip off
+@    s5 errorbar riser clip length 0.100000
+@    s5 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s5 legend  ""
+@    s6 hidden false
+@    s6 type xy
+@    s6 symbol 0
+@    s6 symbol size 1.000000
+@    s6 symbol color 7
+@    s6 symbol pattern 1
+@    s6 symbol fill color 7
+@    s6 symbol fill pattern 0
+@    s6 symbol linewidth 1.0
+@    s6 symbol linestyle 1
+@    s6 symbol char 65
+@    s6 symbol char font 0
+@    s6 symbol skip 0
+@    s6 line type 1
+@    s6 line linestyle 1
+@    s6 line linewidth 1.0
+@    s6 line color 7
+@    s6 line pattern 1
+@    s6 baseline type 0
+@    s6 baseline off
+@    s6 dropline off
+@    s6 fill type 0
+@    s6 fill rule 0
+@    s6 fill color 1
+@    s6 fill pattern 1
+@    s6 avalue off
+@    s6 avalue type 2
+@    s6 avalue char size 1.000000
+@    s6 avalue font 0
+@    s6 avalue color 1
+@    s6 avalue rot 0
+@    s6 avalue format general
+@    s6 avalue prec 3
+@    s6 avalue prepend ""
+@    s6 avalue append ""
+@    s6 avalue offset 0.000000 , 0.000000
+@    s6 errorbar on
+@    s6 errorbar place both
+@    s6 errorbar color 7
+@    s6 errorbar pattern 1
+@    s6 errorbar size 1.000000
+@    s6 errorbar linewidth 1.0
+@    s6 errorbar linestyle 1
+@    s6 errorbar riser linewidth 1.0
+@    s6 errorbar riser linestyle 1
+@    s6 errorbar riser clip off
+@    s6 errorbar riser clip length 0.100000
+@    s6 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s6 legend  ""
+@    s7 hidden false
+@    s7 type xy
+@    s7 symbol 0
+@    s7 symbol size 1.000000
+@    s7 symbol color 8
+@    s7 symbol pattern 1
+@    s7 symbol fill color 8
+@    s7 symbol fill pattern 0
+@    s7 symbol linewidth 1.0
+@    s7 symbol linestyle 1
+@    s7 symbol char 65
+@    s7 symbol char font 0
+@    s7 symbol skip 0
+@    s7 line type 1
+@    s7 line linestyle 1
+@    s7 line linewidth 1.0
+@    s7 line color 8
+@    s7 line pattern 1
+@    s7 baseline type 0
+@    s7 baseline off
+@    s7 dropline off
+@    s7 fill type 0
+@    s7 fill rule 0
+@    s7 fill color 1
+@    s7 fill pattern 1
+@    s7 avalue off
+@    s7 avalue type 2
+@    s7 avalue char size 1.000000
+@    s7 avalue font 0
+@    s7 avalue color 1
+@    s7 avalue rot 0
+@    s7 avalue format general
+@    s7 avalue prec 3
+@    s7 avalue prepend ""
+@    s7 avalue append ""
+@    s7 avalue offset 0.000000 , 0.000000
+@    s7 errorbar on
+@    s7 errorbar place both
+@    s7 errorbar color 8
+@    s7 errorbar pattern 1
+@    s7 errorbar size 1.000000
+@    s7 errorbar linewidth 1.0
+@    s7 errorbar linestyle 1
+@    s7 errorbar riser linewidth 1.0
+@    s7 errorbar riser linestyle 1
+@    s7 errorbar riser clip off
+@    s7 errorbar riser clip length 0.100000
+@    s7 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s7 legend  ""
+@    s8 hidden false
+@    s8 type xy
+@    s8 symbol 0
+@    s8 symbol size 1.000000
+@    s8 symbol color 9
+@    s8 symbol pattern 1
+@    s8 symbol fill color 9
+@    s8 symbol fill pattern 0
+@    s8 symbol linewidth 1.0
+@    s8 symbol linestyle 1
+@    s8 symbol char 65
+@    s8 symbol char font 0
+@    s8 symbol skip 0
+@    s8 line type 1
+@    s8 line linestyle 1
+@    s8 line linewidth 1.0
+@    s8 line color 9
+@    s8 line pattern 1
+@    s8 baseline type 0
+@    s8 baseline off
+@    s8 dropline off
+@    s8 fill type 0
+@    s8 fill rule 0
+@    s8 fill color 1
+@    s8 fill pattern 1
+@    s8 avalue off
+@    s8 avalue type 2
+@    s8 avalue char size 1.000000
+@    s8 avalue font 0
+@    s8 avalue color 1
+@    s8 avalue rot 0
+@    s8 avalue format general
+@    s8 avalue prec 3
+@    s8 avalue prepend ""
+@    s8 avalue append ""
+@    s8 avalue offset 0.000000 , 0.000000
+@    s8 errorbar on
+@    s8 errorbar place both
+@    s8 errorbar color 9
+@    s8 errorbar pattern 1
+@    s8 errorbar size 1.000000
+@    s8 errorbar linewidth 1.0
+@    s8 errorbar linestyle 1
+@    s8 errorbar riser linewidth 1.0
+@    s8 errorbar riser linestyle 1
+@    s8 errorbar riser clip off
+@    s8 errorbar riser clip length 0.100000
+@    s8 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s8 legend  ""
+@    s9 hidden false
+@    s9 type xy
+@    s9 symbol 0
+@    s9 symbol size 1.000000
+@    s9 symbol color 10
+@    s9 symbol pattern 1
+@    s9 symbol fill color 10
+@    s9 symbol fill pattern 0
+@    s9 symbol linewidth 1.0
+@    s9 symbol linestyle 1
+@    s9 symbol char 65
+@    s9 symbol char font 0
+@    s9 symbol skip 0
+@    s9 line type 1
+@    s9 line linestyle 1
+@    s9 line linewidth 1.0
+@    s9 line color 10
+@    s9 line pattern 1
+@    s9 baseline type 0
+@    s9 baseline off
+@    s9 dropline off
+@    s9 fill type 0
+@    s9 fill rule 0
+@    s9 fill color 1
+@    s9 fill pattern 1
+@    s9 avalue off
+@    s9 avalue type 2
+@    s9 avalue char size 1.000000
+@    s9 avalue font 0
+@    s9 avalue color 1
+@    s9 avalue rot 0
+@    s9 avalue format general
+@    s9 avalue prec 3
+@    s9 avalue prepend ""
+@    s9 avalue append ""
+@    s9 avalue offset 0.000000 , 0.000000
+@    s9 errorbar on
+@    s9 errorbar place both
+@    s9 errorbar color 10
+@    s9 errorbar pattern 1
+@    s9 errorbar size 1.000000
+@    s9 errorbar linewidth 1.0
+@    s9 errorbar linestyle 1
+@    s9 errorbar riser linewidth 1.0
+@    s9 errorbar riser linestyle 1
+@    s9 errorbar riser clip off
+@    s9 errorbar riser clip length 0.100000
+@    s9 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s9 legend  ""
+@    s10 hidden false
+@    s10 type xy
+@    s10 symbol 0
+@    s10 symbol size 1.000000
+@    s10 symbol color 11
+@    s10 symbol pattern 1
+@    s10 symbol fill color 11
+@    s10 symbol fill pattern 0
+@    s10 symbol linewidth 1.0
+@    s10 symbol linestyle 1
+@    s10 symbol char 65
+@    s10 symbol char font 0
+@    s10 symbol skip 0
+@    s10 line type 1
+@    s10 line linestyle 1
+@    s10 line linewidth 1.0
+@    s10 line color 11
+@    s10 line pattern 1
+@    s10 baseline type 0
+@    s10 baseline off
+@    s10 dropline off
+@    s10 fill type 0
+@    s10 fill rule 0
+@    s10 fill color 1
+@    s10 fill pattern 1
+@    s10 avalue off
+@    s10 avalue type 2
+@    s10 avalue char size 1.000000
+@    s10 avalue font 0
+@    s10 avalue color 1
+@    s10 avalue rot 0
+@    s10 avalue format general
+@    s10 avalue prec 3
+@    s10 avalue prepend ""
+@    s10 avalue append ""
+@    s10 avalue offset 0.000000 , 0.000000
+@    s10 errorbar on
+@    s10 errorbar place both
+@    s10 errorbar color 11
+@    s10 errorbar pattern 1
+@    s10 errorbar size 1.000000
+@    s10 errorbar linewidth 1.0
+@    s10 errorbar linestyle 1
+@    s10 errorbar riser linewidth 1.0
+@    s10 errorbar riser linestyle 1
+@    s10 errorbar riser clip off
+@    s10 errorbar riser clip length 0.100000
+@    s10 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s10 legend  ""
+@    s11 hidden false
+@    s11 type xy
+@    s11 symbol 0
+@    s11 symbol size 1.000000
+@    s11 symbol color 4
+@    s11 symbol pattern 1
+@    s11 symbol fill color 4
+@    s11 symbol fill pattern 0
+@    s11 symbol linewidth 1.0
+@    s11 symbol linestyle 1
+@    s11 symbol char 65
+@    s11 symbol char font 0
+@    s11 symbol skip 0
+@    s11 line type 1
+@    s11 line linestyle 1
+@    s11 line linewidth 2.0
+@    s11 line color 4
+@    s11 line pattern 1
+@    s11 baseline type 0
+@    s11 baseline off
+@    s11 dropline off
+@    s11 fill type 0
+@    s11 fill rule 0
+@    s11 fill color 1
+@    s11 fill pattern 1
+@    s11 avalue off
+@    s11 avalue type 2
+@    s11 avalue char size 1.000000
+@    s11 avalue font 0
+@    s11 avalue color 1
+@    s11 avalue rot 0
+@    s11 avalue format general
+@    s11 avalue prec 3
+@    s11 avalue prepend ""
+@    s11 avalue append ""
+@    s11 avalue offset 0.000000 , 0.000000
+@    s11 errorbar on
+@    s11 errorbar place both
+@    s11 errorbar color 4
+@    s11 errorbar pattern 1
+@    s11 errorbar size 1.000000
+@    s11 errorbar linewidth 1.0
+@    s11 errorbar linestyle 1
+@    s11 errorbar riser linewidth 1.0
+@    s11 errorbar riser linestyle 1
+@    s11 errorbar riser clip off
+@    s11 errorbar riser clip length 0.100000
+@    s11 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s11 legend  ""
+@    s12 hidden false
+@    s12 type xy
+@    s12 symbol 0
+@    s12 symbol size 1.000000
+@    s12 symbol color 13
+@    s12 symbol pattern 1
+@    s12 symbol fill color 13
+@    s12 symbol fill pattern 0
+@    s12 symbol linewidth 1.0
+@    s12 symbol linestyle 1
+@    s12 symbol char 65
+@    s12 symbol char font 0
+@    s12 symbol skip 0
+@    s12 line type 1
+@    s12 line linestyle 1
+@    s12 line linewidth 1.0
+@    s12 line color 13
+@    s12 line pattern 1
+@    s12 baseline type 0
+@    s12 baseline off
+@    s12 dropline off
+@    s12 fill type 0
+@    s12 fill rule 0
+@    s12 fill color 1
+@    s12 fill pattern 1
+@    s12 avalue off
+@    s12 avalue type 2
+@    s12 avalue char size 1.000000
+@    s12 avalue font 0
+@    s12 avalue color 1
+@    s12 avalue rot 0
+@    s12 avalue format general
+@    s12 avalue prec 3
+@    s12 avalue prepend ""
+@    s12 avalue append ""
+@    s12 avalue offset 0.000000 , 0.000000
+@    s12 errorbar on
+@    s12 errorbar place both
+@    s12 errorbar color 13
+@    s12 errorbar pattern 1
+@    s12 errorbar size 1.000000
+@    s12 errorbar linewidth 1.0
+@    s12 errorbar linestyle 1
+@    s12 errorbar riser linewidth 1.0
+@    s12 errorbar riser linestyle 1
+@    s12 errorbar riser clip off
+@    s12 errorbar riser clip length 0.100000
+@    s12 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s12 legend  ""
+@    s13 hidden false
+@    s13 type xy
+@    s13 symbol 0
+@    s13 symbol size 1.000000
+@    s13 symbol color 14
+@    s13 symbol pattern 1
+@    s13 symbol fill color 14
+@    s13 symbol fill pattern 0
+@    s13 symbol linewidth 1.0
+@    s13 symbol linestyle 1
+@    s13 symbol char 65
+@    s13 symbol char font 0
+@    s13 symbol skip 0
+@    s13 line type 1
+@    s13 line linestyle 1
+@    s13 line linewidth 2.0
+@    s13 line color 14
+@    s13 line pattern 1
+@    s13 baseline type 0
+@    s13 baseline off
+@    s13 dropline off
+@    s13 fill type 0
+@    s13 fill rule 0
+@    s13 fill color 1
+@    s13 fill pattern 1
+@    s13 avalue off
+@    s13 avalue type 2
+@    s13 avalue char size 1.000000
+@    s13 avalue font 0
+@    s13 avalue color 1
+@    s13 avalue rot 0
+@    s13 avalue format general
+@    s13 avalue prec 3
+@    s13 avalue prepend ""
+@    s13 avalue append ""
+@    s13 avalue offset 0.000000 , 0.000000
+@    s13 errorbar on
+@    s13 errorbar place both
+@    s13 errorbar color 14
+@    s13 errorbar pattern 1
+@    s13 errorbar size 1.000000
+@    s13 errorbar linewidth 1.0
+@    s13 errorbar linestyle 1
+@    s13 errorbar riser linewidth 1.0
+@    s13 errorbar riser linestyle 1
+@    s13 errorbar riser clip off
+@    s13 errorbar riser clip length 0.100000
+@    s13 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s13 legend  ""
+@    s14 hidden false
+@    s14 type xy
+@    s14 symbol 0
+@    s14 symbol size 1.000000
+@    s14 symbol color 15
+@    s14 symbol pattern 1
+@    s14 symbol fill color 15
+@    s14 symbol fill pattern 0
+@    s14 symbol linewidth 1.0
+@    s14 symbol linestyle 1
+@    s14 symbol char 65
+@    s14 symbol char font 0
+@    s14 symbol skip 0
+@    s14 line type 1
+@    s14 line linestyle 1
+@    s14 line linewidth 2.0
+@    s14 line color 15
+@    s14 line pattern 1
+@    s14 baseline type 0
+@    s14 baseline off
+@    s14 dropline off
+@    s14 fill type 0
+@    s14 fill rule 0
+@    s14 fill color 1
+@    s14 fill pattern 1
+@    s14 avalue off
+@    s14 avalue type 2
+@    s14 avalue char size 1.000000
+@    s14 avalue font 0
+@    s14 avalue color 1
+@    s14 avalue rot 0
+@    s14 avalue format general
+@    s14 avalue prec 3
+@    s14 avalue prepend ""
+@    s14 avalue append ""
+@    s14 avalue offset 0.000000 , 0.000000
+@    s14 errorbar on
+@    s14 errorbar place both
+@    s14 errorbar color 15
+@    s14 errorbar pattern 1
+@    s14 errorbar size 1.000000
+@    s14 errorbar linewidth 1.0
+@    s14 errorbar linestyle 1
+@    s14 errorbar riser linewidth 1.0
+@    s14 errorbar riser linestyle 1
+@    s14 errorbar riser clip off
+@    s14 errorbar riser clip length 0.100000
+@    s14 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s14 legend  ""
+@    s15 hidden false
+@    s15 type xy
+@    s15 symbol 0
+@    s15 symbol size 1.000000
+@    s15 symbol color 1
+@    s15 symbol pattern 1
+@    s15 symbol fill color 1
+@    s15 symbol fill pattern 0
+@    s15 symbol linewidth 1.0
+@    s15 symbol linestyle 1
+@    s15 symbol char 65
+@    s15 symbol char font 0
+@    s15 symbol skip 0
+@    s15 line type 1
+@    s15 line linestyle 1
+@    s15 line linewidth 1.0
+@    s15 line color 1
+@    s15 line pattern 1
+@    s15 baseline type 0
+@    s15 baseline off
+@    s15 dropline off
+@    s15 fill type 0
+@    s15 fill rule 0
+@    s15 fill color 1
+@    s15 fill pattern 1
+@    s15 avalue off
+@    s15 avalue type 2
+@    s15 avalue char size 1.000000
+@    s15 avalue font 0
+@    s15 avalue color 1
+@    s15 avalue rot 0
+@    s15 avalue format general
+@    s15 avalue prec 3
+@    s15 avalue prepend ""
+@    s15 avalue append ""
+@    s15 avalue offset 0.000000 , 0.000000
+@    s15 errorbar on
+@    s15 errorbar place both
+@    s15 errorbar color 1
+@    s15 errorbar pattern 1
+@    s15 errorbar size 1.000000
+@    s15 errorbar linewidth 1.0
+@    s15 errorbar linestyle 1
+@    s15 errorbar riser linewidth 1.0
+@    s15 errorbar riser linestyle 1
+@    s15 errorbar riser clip off
+@    s15 errorbar riser clip length 0.100000
+@    s15 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s15 legend  ""
+@    s16 hidden false
+@    s16 type xy
+@    s16 symbol 0
+@    s16 symbol size 1.000000
+@    s16 symbol color 1
+@    s16 symbol pattern 1
+@    s16 symbol fill color 1
+@    s16 symbol fill pattern 0
+@    s16 symbol linewidth 1.0
+@    s16 symbol linestyle 1
+@    s16 symbol char 65
+@    s16 symbol char font 0
+@    s16 symbol skip 0
+@    s16 line type 1
+@    s16 line linestyle 1
+@    s16 line linewidth 1.0
+@    s16 line color 1
+@    s16 line pattern 1
+@    s16 baseline type 0
+@    s16 baseline off
+@    s16 dropline off
+@    s16 fill type 0
+@    s16 fill rule 0
+@    s16 fill color 1
+@    s16 fill pattern 1
+@    s16 avalue off
+@    s16 avalue type 2
+@    s16 avalue char size 1.000000
+@    s16 avalue font 0
+@    s16 avalue color 1
+@    s16 avalue rot 0
+@    s16 avalue format general
+@    s16 avalue prec 3
+@    s16 avalue prepend ""
+@    s16 avalue append ""
+@    s16 avalue offset 0.000000 , 0.000000
+@    s16 errorbar on
+@    s16 errorbar place both
+@    s16 errorbar color 1
+@    s16 errorbar pattern 1
+@    s16 errorbar size 1.000000
+@    s16 errorbar linewidth 1.0
+@    s16 errorbar linestyle 1
+@    s16 errorbar riser linewidth 1.0
+@    s16 errorbar riser linestyle 1
+@    s16 errorbar riser clip off
+@    s16 errorbar riser clip length 0.100000
+@    s16 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s16 legend  ""
+@    s17 hidden false
+@    s17 type xy
+@    s17 symbol 0
+@    s17 symbol size 1.000000
+@    s17 symbol color 1
+@    s17 symbol pattern 1
+@    s17 symbol fill color 1
+@    s17 symbol fill pattern 0
+@    s17 symbol linewidth 1.0
+@    s17 symbol linestyle 1
+@    s17 symbol char 65
+@    s17 symbol char font 0
+@    s17 symbol skip 0
+@    s17 line type 1
+@    s17 line linestyle 1
+@    s17 line linewidth 1.0
+@    s17 line color 1
+@    s17 line pattern 1
+@    s17 baseline type 0
+@    s17 baseline off
+@    s17 dropline off
+@    s17 fill type 0
+@    s17 fill rule 0
+@    s17 fill color 1
+@    s17 fill pattern 1
+@    s17 avalue off
+@    s17 avalue type 2
+@    s17 avalue char size 1.000000
+@    s17 avalue font 0
+@    s17 avalue color 1
+@    s17 avalue rot 0
+@    s17 avalue format general
+@    s17 avalue prec 3
+@    s17 avalue prepend ""
+@    s17 avalue append ""
+@    s17 avalue offset 0.000000 , 0.000000
+@    s17 errorbar on
+@    s17 errorbar place both
+@    s17 errorbar color 1
+@    s17 errorbar pattern 1
+@    s17 errorbar size 1.000000
+@    s17 errorbar linewidth 1.0
+@    s17 errorbar linestyle 1
+@    s17 errorbar riser linewidth 1.0
+@    s17 errorbar riser linestyle 1
+@    s17 errorbar riser clip off
+@    s17 errorbar riser clip length 0.100000
+@    s17 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s17 legend  ""
+@    s18 hidden false
+@    s18 type xy
+@    s18 symbol 0
+@    s18 symbol size 1.000000
+@    s18 symbol color 1
+@    s18 symbol pattern 1
+@    s18 symbol fill color 1
+@    s18 symbol fill pattern 0
+@    s18 symbol linewidth 1.0
+@    s18 symbol linestyle 1
+@    s18 symbol char 65
+@    s18 symbol char font 0
+@    s18 symbol skip 0
+@    s18 line type 1
+@    s18 line linestyle 1
+@    s18 line linewidth 1.0
+@    s18 line color 1
+@    s18 line pattern 1
+@    s18 baseline type 0
+@    s18 baseline off
+@    s18 dropline off
+@    s18 fill type 0
+@    s18 fill rule 0
+@    s18 fill color 1
+@    s18 fill pattern 1
+@    s18 avalue off
+@    s18 avalue type 2
+@    s18 avalue char size 1.000000
+@    s18 avalue font 0
+@    s18 avalue color 1
+@    s18 avalue rot 0
+@    s18 avalue format general
+@    s18 avalue prec 3
+@    s18 avalue prepend ""
+@    s18 avalue append ""
+@    s18 avalue offset 0.000000 , 0.000000
+@    s18 errorbar on
+@    s18 errorbar place both
+@    s18 errorbar color 1
+@    s18 errorbar pattern 1
+@    s18 errorbar size 1.000000
+@    s18 errorbar linewidth 1.0
+@    s18 errorbar linestyle 1
+@    s18 errorbar riser linewidth 1.0
+@    s18 errorbar riser linestyle 1
+@    s18 errorbar riser clip off
+@    s18 errorbar riser clip length 0.100000
+@    s18 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s18 legend  ""
+@    s19 hidden false
+@    s19 type xy
+@    s19 symbol 0
+@    s19 symbol size 1.000000
+@    s19 symbol color 2
+@    s19 symbol pattern 1
+@    s19 symbol fill color 2
+@    s19 symbol fill pattern 0
+@    s19 symbol linewidth 1.0
+@    s19 symbol linestyle 1
+@    s19 symbol char 65
+@    s19 symbol char font 0
+@    s19 symbol skip 0
+@    s19 line type 1
+@    s19 line linestyle 1
+@    s19 line linewidth 1.0
+@    s19 line color 2
+@    s19 line pattern 1
+@    s19 baseline type 0
+@    s19 baseline off
+@    s19 dropline off
+@    s19 fill type 0
+@    s19 fill rule 0
+@    s19 fill color 1
+@    s19 fill pattern 1
+@    s19 avalue off
+@    s19 avalue type 2
+@    s19 avalue char size 1.000000
+@    s19 avalue font 0
+@    s19 avalue color 1
+@    s19 avalue rot 0
+@    s19 avalue format general
+@    s19 avalue prec 3
+@    s19 avalue prepend ""
+@    s19 avalue append ""
+@    s19 avalue offset 0.000000 , 0.000000
+@    s19 errorbar on
+@    s19 errorbar place both
+@    s19 errorbar color 2
+@    s19 errorbar pattern 1
+@    s19 errorbar size 1.000000
+@    s19 errorbar linewidth 1.0
+@    s19 errorbar linestyle 1
+@    s19 errorbar riser linewidth 1.0
+@    s19 errorbar riser linestyle 1
+@    s19 errorbar riser clip off
+@    s19 errorbar riser clip length 0.100000
+@    s19 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s19 legend  ""
+@    s20 hidden false
+@    s20 type xy
+@    s20 symbol 0
+@    s20 symbol size 1.000000
+@    s20 symbol color 3
+@    s20 symbol pattern 1
+@    s20 symbol fill color 3
+@    s20 symbol fill pattern 0
+@    s20 symbol linewidth 1.0
+@    s20 symbol linestyle 1
+@    s20 symbol char 65
+@    s20 symbol char font 0
+@    s20 symbol skip 0
+@    s20 line type 1
+@    s20 line linestyle 1
+@    s20 line linewidth 1.0
+@    s20 line color 3
+@    s20 line pattern 1
+@    s20 baseline type 0
+@    s20 baseline off
+@    s20 dropline off
+@    s20 fill type 0
+@    s20 fill rule 0
+@    s20 fill color 1
+@    s20 fill pattern 1
+@    s20 avalue off
+@    s20 avalue type 2
+@    s20 avalue char size 1.000000
+@    s20 avalue font 0
+@    s20 avalue color 1
+@    s20 avalue rot 0
+@    s20 avalue format general
+@    s20 avalue prec 3
+@    s20 avalue prepend ""
+@    s20 avalue append ""
+@    s20 avalue offset 0.000000 , 0.000000
+@    s20 errorbar on
+@    s20 errorbar place both
+@    s20 errorbar color 3
+@    s20 errorbar pattern 1
+@    s20 errorbar size 1.000000
+@    s20 errorbar linewidth 1.0
+@    s20 errorbar linestyle 1
+@    s20 errorbar riser linewidth 1.0
+@    s20 errorbar riser linestyle 1
+@    s20 errorbar riser clip off
+@    s20 errorbar riser clip length 0.100000
+@    s20 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s20 legend  ""
+@    s21 hidden false
+@    s21 type xy
+@    s21 symbol 0
+@    s21 symbol size 1.000000
+@    s21 symbol color 4
+@    s21 symbol pattern 1
+@    s21 symbol fill color 4
+@    s21 symbol fill pattern 0
+@    s21 symbol linewidth 1.0
+@    s21 symbol linestyle 1
+@    s21 symbol char 65
+@    s21 symbol char font 0
+@    s21 symbol skip 0
+@    s21 line type 1
+@    s21 line linestyle 1
+@    s21 line linewidth 1.0
+@    s21 line color 4
+@    s21 line pattern 1
+@    s21 baseline type 0
+@    s21 baseline off
+@    s21 dropline off
+@    s21 fill type 0
+@    s21 fill rule 0
+@    s21 fill color 1
+@    s21 fill pattern 1
+@    s21 avalue off
+@    s21 avalue type 2
+@    s21 avalue char size 1.000000
+@    s21 avalue font 0
+@    s21 avalue color 1
+@    s21 avalue rot 0
+@    s21 avalue format general
+@    s21 avalue prec 3
+@    s21 avalue prepend ""
+@    s21 avalue append ""
+@    s21 avalue offset 0.000000 , 0.000000
+@    s21 errorbar on
+@    s21 errorbar place both
+@    s21 errorbar color 4
+@    s21 errorbar pattern 1
+@    s21 errorbar size 1.000000
+@    s21 errorbar linewidth 1.0
+@    s21 errorbar linestyle 1
+@    s21 errorbar riser linewidth 1.0
+@    s21 errorbar riser linestyle 1
+@    s21 errorbar riser clip off
+@    s21 errorbar riser clip length 0.100000
+@    s21 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s21 legend  ""
+@    s22 hidden false
+@    s22 type xy
+@    s22 symbol 0
+@    s22 symbol size 1.000000
+@    s22 symbol color 5
+@    s22 symbol pattern 1
+@    s22 symbol fill color 5
+@    s22 symbol fill pattern 0
+@    s22 symbol linewidth 1.0
+@    s22 symbol linestyle 1
+@    s22 symbol char 65
+@    s22 symbol char font 0
+@    s22 symbol skip 0
+@    s22 line type 1
+@    s22 line linestyle 1
+@    s22 line linewidth 1.0
+@    s22 line color 5
+@    s22 line pattern 1
+@    s22 baseline type 0
+@    s22 baseline off
+@    s22 dropline off
+@    s22 fill type 0
+@    s22 fill rule 0
+@    s22 fill color 1
+@    s22 fill pattern 1
+@    s22 avalue off
+@    s22 avalue type 2
+@    s22 avalue char size 1.000000
+@    s22 avalue font 0
+@    s22 avalue color 1
+@    s22 avalue rot 0
+@    s22 avalue format general
+@    s22 avalue prec 3
+@    s22 avalue prepend ""
+@    s22 avalue append ""
+@    s22 avalue offset 0.000000 , 0.000000
+@    s22 errorbar on
+@    s22 errorbar place both
+@    s22 errorbar color 5
+@    s22 errorbar pattern 1
+@    s22 errorbar size 1.000000
+@    s22 errorbar linewidth 1.0
+@    s22 errorbar linestyle 1
+@    s22 errorbar riser linewidth 1.0
+@    s22 errorbar riser linestyle 1
+@    s22 errorbar riser clip off
+@    s22 errorbar riser clip length 0.100000
+@    s22 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s22 legend  ""
+@    s23 hidden false
+@    s23 type xy
+@    s23 symbol 0
+@    s23 symbol size 1.000000
+@    s23 symbol color 6
+@    s23 symbol pattern 1
+@    s23 symbol fill color 6
+@    s23 symbol fill pattern 0
+@    s23 symbol linewidth 1.0
+@    s23 symbol linestyle 1
+@    s23 symbol char 65
+@    s23 symbol char font 0
+@    s23 symbol skip 0
+@    s23 line type 1
+@    s23 line linestyle 1
+@    s23 line linewidth 1.0
+@    s23 line color 6
+@    s23 line pattern 1
+@    s23 baseline type 0
+@    s23 baseline off
+@    s23 dropline off
+@    s23 fill type 0
+@    s23 fill rule 0
+@    s23 fill color 1
+@    s23 fill pattern 1
+@    s23 avalue off
+@    s23 avalue type 2
+@    s23 avalue char size 1.000000
+@    s23 avalue font 0
+@    s23 avalue color 1
+@    s23 avalue rot 0
+@    s23 avalue format general
+@    s23 avalue prec 3
+@    s23 avalue prepend ""
+@    s23 avalue append ""
+@    s23 avalue offset 0.000000 , 0.000000
+@    s23 errorbar on
+@    s23 errorbar place both
+@    s23 errorbar color 6
+@    s23 errorbar pattern 1
+@    s23 errorbar size 1.000000
+@    s23 errorbar linewidth 1.0
+@    s23 errorbar linestyle 1
+@    s23 errorbar riser linewidth 1.0
+@    s23 errorbar riser linestyle 1
+@    s23 errorbar riser clip off
+@    s23 errorbar riser clip length 0.100000
+@    s23 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s23 legend  ""
+@    s24 hidden false
+@    s24 type xy
+@    s24 symbol 0
+@    s24 symbol size 1.000000
+@    s24 symbol color 7
+@    s24 symbol pattern 1
+@    s24 symbol fill color 7
+@    s24 symbol fill pattern 0
+@    s24 symbol linewidth 1.0
+@    s24 symbol linestyle 1
+@    s24 symbol char 65
+@    s24 symbol char font 0
+@    s24 symbol skip 0
+@    s24 line type 1
+@    s24 line linestyle 1
+@    s24 line linewidth 1.0
+@    s24 line color 7
+@    s24 line pattern 1
+@    s24 baseline type 0
+@    s24 baseline off
+@    s24 dropline off
+@    s24 fill type 0
+@    s24 fill rule 0
+@    s24 fill color 1
+@    s24 fill pattern 1
+@    s24 avalue off
+@    s24 avalue type 2
+@    s24 avalue char size 1.000000
+@    s24 avalue font 0
+@    s24 avalue color 1
+@    s24 avalue rot 0
+@    s24 avalue format general
+@    s24 avalue prec 3
+@    s24 avalue prepend ""
+@    s24 avalue append ""
+@    s24 avalue offset 0.000000 , 0.000000
+@    s24 errorbar on
+@    s24 errorbar place both
+@    s24 errorbar color 7
+@    s24 errorbar pattern 1
+@    s24 errorbar size 1.000000
+@    s24 errorbar linewidth 1.0
+@    s24 errorbar linestyle 1
+@    s24 errorbar riser linewidth 1.0
+@    s24 errorbar riser linestyle 1
+@    s24 errorbar riser clip off
+@    s24 errorbar riser clip length 0.100000
+@    s24 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s24 legend  ""
+@    s25 hidden false
+@    s25 type xy
+@    s25 symbol 0
+@    s25 symbol size 1.000000
+@    s25 symbol color 8
+@    s25 symbol pattern 1
+@    s25 symbol fill color 8
+@    s25 symbol fill pattern 0
+@    s25 symbol linewidth 1.0
+@    s25 symbol linestyle 1
+@    s25 symbol char 65
+@    s25 symbol char font 0
+@    s25 symbol skip 0
+@    s25 line type 1
+@    s25 line linestyle 1
+@    s25 line linewidth 1.0
+@    s25 line color 8
+@    s25 line pattern 1
+@    s25 baseline type 0
+@    s25 baseline off
+@    s25 dropline off
+@    s25 fill type 0
+@    s25 fill rule 0
+@    s25 fill color 1
+@    s25 fill pattern 1
+@    s25 avalue off
+@    s25 avalue type 2
+@    s25 avalue char size 1.000000
+@    s25 avalue font 0
+@    s25 avalue color 1
+@    s25 avalue rot 0
+@    s25 avalue format general
+@    s25 avalue prec 3
+@    s25 avalue prepend ""
+@    s25 avalue append ""
+@    s25 avalue offset 0.000000 , 0.000000
+@    s25 errorbar on
+@    s25 errorbar place both
+@    s25 errorbar color 8
+@    s25 errorbar pattern 1
+@    s25 errorbar size 1.000000
+@    s25 errorbar linewidth 1.0
+@    s25 errorbar linestyle 1
+@    s25 errorbar riser linewidth 1.0
+@    s25 errorbar riser linestyle 1
+@    s25 errorbar riser clip off
+@    s25 errorbar riser clip length 0.100000
+@    s25 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s25 legend  ""
+@    s26 hidden false
+@    s26 type xy
+@    s26 symbol 0
+@    s26 symbol size 1.000000
+@    s26 symbol color 9
+@    s26 symbol pattern 1
+@    s26 symbol fill color 9
+@    s26 symbol fill pattern 0
+@    s26 symbol linewidth 1.0
+@    s26 symbol linestyle 1
+@    s26 symbol char 65
+@    s26 symbol char font 0
+@    s26 symbol skip 0
+@    s26 line type 1
+@    s26 line linestyle 1
+@    s26 line linewidth 1.0
+@    s26 line color 9
+@    s26 line pattern 1
+@    s26 baseline type 0
+@    s26 baseline off
+@    s26 dropline off
+@    s26 fill type 0
+@    s26 fill rule 0
+@    s26 fill color 1
+@    s26 fill pattern 1
+@    s26 avalue off
+@    s26 avalue type 2
+@    s26 avalue char size 1.000000
+@    s26 avalue font 0
+@    s26 avalue color 1
+@    s26 avalue rot 0
+@    s26 avalue format general
+@    s26 avalue prec 3
+@    s26 avalue prepend ""
+@    s26 avalue append ""
+@    s26 avalue offset 0.000000 , 0.000000
+@    s26 errorbar on
+@    s26 errorbar place both
+@    s26 errorbar color 9
+@    s26 errorbar pattern 1
+@    s26 errorbar size 1.000000
+@    s26 errorbar linewidth 1.0
+@    s26 errorbar linestyle 1
+@    s26 errorbar riser linewidth 1.0
+@    s26 errorbar riser linestyle 1
+@    s26 errorbar riser clip off
+@    s26 errorbar riser clip length 0.100000
+@    s26 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s26 legend  ""
+@    s27 hidden false
+@    s27 type xy
+@    s27 symbol 0
+@    s27 symbol size 1.000000
+@    s27 symbol color 10
+@    s27 symbol pattern 1
+@    s27 symbol fill color 10
+@    s27 symbol fill pattern 0
+@    s27 symbol linewidth 1.0
+@    s27 symbol linestyle 1
+@    s27 symbol char 65
+@    s27 symbol char font 0
+@    s27 symbol skip 0
+@    s27 line type 1
+@    s27 line linestyle 1
+@    s27 line linewidth 1.0
+@    s27 line color 10
+@    s27 line pattern 1
+@    s27 baseline type 0
+@    s27 baseline off
+@    s27 dropline off
+@    s27 fill type 0
+@    s27 fill rule 0
+@    s27 fill color 1
+@    s27 fill pattern 1
+@    s27 avalue off
+@    s27 avalue type 2
+@    s27 avalue char size 1.000000
+@    s27 avalue font 0
+@    s27 avalue color 1
+@    s27 avalue rot 0
+@    s27 avalue format general
+@    s27 avalue prec 3
+@    s27 avalue prepend ""
+@    s27 avalue append ""
+@    s27 avalue offset 0.000000 , 0.000000
+@    s27 errorbar on
+@    s27 errorbar place both
+@    s27 errorbar color 10
+@    s27 errorbar pattern 1
+@    s27 errorbar size 1.000000
+@    s27 errorbar linewidth 1.0
+@    s27 errorbar linestyle 1
+@    s27 errorbar riser linewidth 1.0
+@    s27 errorbar riser linestyle 1
+@    s27 errorbar riser clip off
+@    s27 errorbar riser clip length 0.100000
+@    s27 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s27 legend  ""
+@    s28 hidden false
+@    s28 type xy
+@    s28 symbol 0
+@    s28 symbol size 1.000000
+@    s28 symbol color 11
+@    s28 symbol pattern 1
+@    s28 symbol fill color 11
+@    s28 symbol fill pattern 0
+@    s28 symbol linewidth 1.0
+@    s28 symbol linestyle 1
+@    s28 symbol char 65
+@    s28 symbol char font 0
+@    s28 symbol skip 0
+@    s28 line type 1
+@    s28 line linestyle 1
+@    s28 line linewidth 1.0
+@    s28 line color 11
+@    s28 line pattern 1
+@    s28 baseline type 0
+@    s28 baseline off
+@    s28 dropline off
+@    s28 fill type 0
+@    s28 fill rule 0
+@    s28 fill color 1
+@    s28 fill pattern 1
+@    s28 avalue off
+@    s28 avalue type 2
+@    s28 avalue char size 1.000000
+@    s28 avalue font 0
+@    s28 avalue color 1
+@    s28 avalue rot 0
+@    s28 avalue format general
+@    s28 avalue prec 3
+@    s28 avalue prepend ""
+@    s28 avalue append ""
+@    s28 avalue offset 0.000000 , 0.000000
+@    s28 errorbar on
+@    s28 errorbar place both
+@    s28 errorbar color 11
+@    s28 errorbar pattern 1
+@    s28 errorbar size 1.000000
+@    s28 errorbar linewidth 1.0
+@    s28 errorbar linestyle 1
+@    s28 errorbar riser linewidth 1.0
+@    s28 errorbar riser linestyle 1
+@    s28 errorbar riser clip off
+@    s28 errorbar riser clip length 0.100000
+@    s28 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s28 legend  ""
+@    s29 hidden false
+@    s29 type xy
+@    s29 symbol 0
+@    s29 symbol size 1.000000
+@    s29 symbol color 12
+@    s29 symbol pattern 1
+@    s29 symbol fill color 12
+@    s29 symbol fill pattern 0
+@    s29 symbol linewidth 1.0
+@    s29 symbol linestyle 1
+@    s29 symbol char 65
+@    s29 symbol char font 0
+@    s29 symbol skip 0
+@    s29 line type 1
+@    s29 line linestyle 1
+@    s29 line linewidth 2.0
+@    s29 line color 12
+@    s29 line pattern 1
+@    s29 baseline type 0
+@    s29 baseline off
+@    s29 dropline off
+@    s29 fill type 0
+@    s29 fill rule 0
+@    s29 fill color 1
+@    s29 fill pattern 1
+@    s29 avalue off
+@    s29 avalue type 2
+@    s29 avalue char size 1.000000
+@    s29 avalue font 0
+@    s29 avalue color 1
+@    s29 avalue rot 0
+@    s29 avalue format general
+@    s29 avalue prec 3
+@    s29 avalue prepend ""
+@    s29 avalue append ""
+@    s29 avalue offset 0.000000 , 0.000000
+@    s29 errorbar on
+@    s29 errorbar place both
+@    s29 errorbar color 12
+@    s29 errorbar pattern 1
+@    s29 errorbar size 1.000000
+@    s29 errorbar linewidth 1.0
+@    s29 errorbar linestyle 1
+@    s29 errorbar riser linewidth 1.0
+@    s29 errorbar riser linestyle 1
+@    s29 errorbar riser clip off
+@    s29 errorbar riser clip length 0.100000
+@    s29 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s29 legend  ""
+@    s30 hidden false
+@    s30 type xy
+@    s30 symbol 0
+@    s30 symbol size 1.000000
+@    s30 symbol color 13
+@    s30 symbol pattern 1
+@    s30 symbol fill color 13
+@    s30 symbol fill pattern 0
+@    s30 symbol linewidth 1.0
+@    s30 symbol linestyle 1
+@    s30 symbol char 65
+@    s30 symbol char font 0
+@    s30 symbol skip 0
+@    s30 line type 1
+@    s30 line linestyle 1
+@    s30 line linewidth 2.0
+@    s30 line color 13
+@    s30 line pattern 1
+@    s30 baseline type 0
+@    s30 baseline off
+@    s30 dropline off
+@    s30 fill type 0
+@    s30 fill rule 0
+@    s30 fill color 1
+@    s30 fill pattern 1
+@    s30 avalue off
+@    s30 avalue type 2
+@    s30 avalue char size 1.000000
+@    s30 avalue font 0
+@    s30 avalue color 1
+@    s30 avalue rot 0
+@    s30 avalue format general
+@    s30 avalue prec 3
+@    s30 avalue prepend ""
+@    s30 avalue append ""
+@    s30 avalue offset 0.000000 , 0.000000
+@    s30 errorbar on
+@    s30 errorbar place both
+@    s30 errorbar color 13
+@    s30 errorbar pattern 1
+@    s30 errorbar size 1.000000
+@    s30 errorbar linewidth 1.0
+@    s30 errorbar linestyle 1
+@    s30 errorbar riser linewidth 1.0
+@    s30 errorbar riser linestyle 1
+@    s30 errorbar riser clip off
+@    s30 errorbar riser clip length 0.100000
+@    s30 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s30 legend  ""
+@    s31 hidden false
+@    s31 type xy
+@    s31 symbol 0
+@    s31 symbol size 1.000000
+@    s31 symbol color 14
+@    s31 symbol pattern 1
+@    s31 symbol fill color 14
+@    s31 symbol fill pattern 0
+@    s31 symbol linewidth 1.0
+@    s31 symbol linestyle 1
+@    s31 symbol char 65
+@    s31 symbol char font 0
+@    s31 symbol skip 0
+@    s31 line type 1
+@    s31 line linestyle 1
+@    s31 line linewidth 1.0
+@    s31 line color 14
+@    s31 line pattern 1
+@    s31 baseline type 0
+@    s31 baseline off
+@    s31 dropline off
+@    s31 fill type 0
+@    s31 fill rule 0
+@    s31 fill color 1
+@    s31 fill pattern 1
+@    s31 avalue off
+@    s31 avalue type 2
+@    s31 avalue char size 1.000000
+@    s31 avalue font 0
+@    s31 avalue color 1
+@    s31 avalue rot 0
+@    s31 avalue format general
+@    s31 avalue prec 3
+@    s31 avalue prepend ""
+@    s31 avalue append ""
+@    s31 avalue offset 0.000000 , 0.000000
+@    s31 errorbar on
+@    s31 errorbar place both
+@    s31 errorbar color 14
+@    s31 errorbar pattern 1
+@    s31 errorbar size 1.000000
+@    s31 errorbar linewidth 1.0
+@    s31 errorbar linestyle 1
+@    s31 errorbar riser linewidth 1.0
+@    s31 errorbar riser linestyle 1
+@    s31 errorbar riser clip off
+@    s31 errorbar riser clip length 0.100000
+@    s31 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s31 legend  ""
+@    s32 hidden false
+@    s32 type xy
+@    s32 symbol 0
+@    s32 symbol size 1.000000
+@    s32 symbol color 11
+@    s32 symbol pattern 1
+@    s32 symbol fill color 11
+@    s32 symbol fill pattern 0
+@    s32 symbol linewidth 1.0
+@    s32 symbol linestyle 1
+@    s32 symbol char 65
+@    s32 symbol char font 0
+@    s32 symbol skip 0
+@    s32 line type 1
+@    s32 line linestyle 1
+@    s32 line linewidth 2.0
+@    s32 line color 11
+@    s32 line pattern 1
+@    s32 baseline type 0
+@    s32 baseline off
+@    s32 dropline off
+@    s32 fill type 0
+@    s32 fill rule 0
+@    s32 fill color 1
+@    s32 fill pattern 1
+@    s32 avalue off
+@    s32 avalue type 2
+@    s32 avalue char size 1.000000
+@    s32 avalue font 0
+@    s32 avalue color 1
+@    s32 avalue rot 0
+@    s32 avalue format general
+@    s32 avalue prec 3
+@    s32 avalue prepend ""
+@    s32 avalue append ""
+@    s32 avalue offset 0.000000 , 0.000000
+@    s32 errorbar on
+@    s32 errorbar place both
+@    s32 errorbar color 11
+@    s32 errorbar pattern 1
+@    s32 errorbar size 1.000000
+@    s32 errorbar linewidth 1.0
+@    s32 errorbar linestyle 1
+@    s32 errorbar riser linewidth 1.0
+@    s32 errorbar riser linestyle 1
+@    s32 errorbar riser clip off
+@    s32 errorbar riser clip length 0.100000
+@    s32 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s32 legend  ""
+@    s33 hidden false
+@    s33 type xy
+@    s33 symbol 0
+@    s33 symbol size 1.000000
+@    s33 symbol color 1
+@    s33 symbol pattern 1
+@    s33 symbol fill color 1
+@    s33 symbol fill pattern 0
+@    s33 symbol linewidth 1.0
+@    s33 symbol linestyle 1
+@    s33 symbol char 65
+@    s33 symbol char font 0
+@    s33 symbol skip 0
+@    s33 line type 1
+@    s33 line linestyle 1
+@    s33 line linewidth 1.0
+@    s33 line color 1
+@    s33 line pattern 1
+@    s33 baseline type 0
+@    s33 baseline off
+@    s33 dropline off
+@    s33 fill type 0
+@    s33 fill rule 0
+@    s33 fill color 1
+@    s33 fill pattern 1
+@    s33 avalue off
+@    s33 avalue type 2
+@    s33 avalue char size 1.000000
+@    s33 avalue font 0
+@    s33 avalue color 1
+@    s33 avalue rot 0
+@    s33 avalue format general
+@    s33 avalue prec 3
+@    s33 avalue prepend ""
+@    s33 avalue append ""
+@    s33 avalue offset 0.000000 , 0.000000
+@    s33 errorbar on
+@    s33 errorbar place both
+@    s33 errorbar color 1
+@    s33 errorbar pattern 1
+@    s33 errorbar size 1.000000
+@    s33 errorbar linewidth 1.0
+@    s33 errorbar linestyle 1
+@    s33 errorbar riser linewidth 1.0
+@    s33 errorbar riser linestyle 1
+@    s33 errorbar riser clip off
+@    s33 errorbar riser clip length 0.100000
+@    s33 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s33 legend  ""
+@    s34 hidden false
+@    s34 type xy
+@    s34 symbol 0
+@    s34 symbol size 1.000000
+@    s34 symbol color 1
+@    s34 symbol pattern 1
+@    s34 symbol fill color 1
+@    s34 symbol fill pattern 0
+@    s34 symbol linewidth 1.0
+@    s34 symbol linestyle 1
+@    s34 symbol char 65
+@    s34 symbol char font 0
+@    s34 symbol skip 0
+@    s34 line type 1
+@    s34 line linestyle 1
+@    s34 line linewidth 1.0
+@    s34 line color 1
+@    s34 line pattern 1
+@    s34 baseline type 0
+@    s34 baseline off
+@    s34 dropline off
+@    s34 fill type 0
+@    s34 fill rule 0
+@    s34 fill color 1
+@    s34 fill pattern 1
+@    s34 avalue off
+@    s34 avalue type 2
+@    s34 avalue char size 1.000000
+@    s34 avalue font 0
+@    s34 avalue color 1
+@    s34 avalue rot 0
+@    s34 avalue format general
+@    s34 avalue prec 3
+@    s34 avalue prepend ""
+@    s34 avalue append ""
+@    s34 avalue offset 0.000000 , 0.000000
+@    s34 errorbar on
+@    s34 errorbar place both
+@    s34 errorbar color 1
+@    s34 errorbar pattern 1
+@    s34 errorbar size 1.000000
+@    s34 errorbar linewidth 1.0
+@    s34 errorbar linestyle 1
+@    s34 errorbar riser linewidth 1.0
+@    s34 errorbar riser linestyle 1
+@    s34 errorbar riser clip off
+@    s34 errorbar riser clip length 0.100000
+@    s34 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s34 legend  ""
+@    s35 hidden false
+@    s35 type xy
+@    s35 symbol 0
+@    s35 symbol size 1.000000
+@    s35 symbol color 1
+@    s35 symbol pattern 1
+@    s35 symbol fill color 1
+@    s35 symbol fill pattern 0
+@    s35 symbol linewidth 1.0
+@    s35 symbol linestyle 1
+@    s35 symbol char 65
+@    s35 symbol char font 0
+@    s35 symbol skip 0
+@    s35 line type 1
+@    s35 line linestyle 1
+@    s35 line linewidth 1.0
+@    s35 line color 1
+@    s35 line pattern 1
+@    s35 baseline type 0
+@    s35 baseline off
+@    s35 dropline off
+@    s35 fill type 0
+@    s35 fill rule 0
+@    s35 fill color 1
+@    s35 fill pattern 1
+@    s35 avalue off
+@    s35 avalue type 2
+@    s35 avalue char size 1.000000
+@    s35 avalue font 0
+@    s35 avalue color 1
+@    s35 avalue rot 0
+@    s35 avalue format general
+@    s35 avalue prec 3
+@    s35 avalue prepend ""
+@    s35 avalue append ""
+@    s35 avalue offset 0.000000 , 0.000000
+@    s35 errorbar on
+@    s35 errorbar place both
+@    s35 errorbar color 1
+@    s35 errorbar pattern 1
+@    s35 errorbar size 1.000000
+@    s35 errorbar linewidth 1.0
+@    s35 errorbar linestyle 1
+@    s35 errorbar riser linewidth 1.0
+@    s35 errorbar riser linestyle 1
+@    s35 errorbar riser clip off
+@    s35 errorbar riser clip length 0.100000
+@    s35 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s35 legend  ""
+@    s36 hidden false
+@    s36 type xy
+@    s36 symbol 0
+@    s36 symbol size 1.000000
+@    s36 symbol color 1
+@    s36 symbol pattern 1
+@    s36 symbol fill color 1
+@    s36 symbol fill pattern 0
+@    s36 symbol linewidth 1.0
+@    s36 symbol linestyle 1
+@    s36 symbol char 65
+@    s36 symbol char font 0
+@    s36 symbol skip 0
+@    s36 line type 1
+@    s36 line linestyle 1
+@    s36 line linewidth 1.0
+@    s36 line color 1
+@    s36 line pattern 1
+@    s36 baseline type 0
+@    s36 baseline off
+@    s36 dropline off
+@    s36 fill type 0
+@    s36 fill rule 0
+@    s36 fill color 1
+@    s36 fill pattern 1
+@    s36 avalue off
+@    s36 avalue type 2
+@    s36 avalue char size 1.000000
+@    s36 avalue font 0
+@    s36 avalue color 1
+@    s36 avalue rot 0
+@    s36 avalue format general
+@    s36 avalue prec 3
+@    s36 avalue prepend ""
+@    s36 avalue append ""
+@    s36 avalue offset 0.000000 , 0.000000
+@    s36 errorbar on
+@    s36 errorbar place both
+@    s36 errorbar color 1
+@    s36 errorbar pattern 1
+@    s36 errorbar size 1.000000
+@    s36 errorbar linewidth 1.0
+@    s36 errorbar linestyle 1
+@    s36 errorbar riser linewidth 1.0
+@    s36 errorbar riser linestyle 1
+@    s36 errorbar riser clip off
+@    s36 errorbar riser clip length 0.100000
+@    s36 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s36 legend  ""
+@    s37 hidden false
+@    s37 type xy
+@    s37 symbol 0
+@    s37 symbol size 1.000000
+@    s37 symbol color 1
+@    s37 symbol pattern 1
+@    s37 symbol fill color 1
+@    s37 symbol fill pattern 0
+@    s37 symbol linewidth 1.0
+@    s37 symbol linestyle 1
+@    s37 symbol char 65
+@    s37 symbol char font 0
+@    s37 symbol skip 0
+@    s37 line type 1
+@    s37 line linestyle 1
+@    s37 line linewidth 1.0
+@    s37 line color 1
+@    s37 line pattern 1
+@    s37 baseline type 0
+@    s37 baseline off
+@    s37 dropline off
+@    s37 fill type 0
+@    s37 fill rule 0
+@    s37 fill color 1
+@    s37 fill pattern 1
+@    s37 avalue off
+@    s37 avalue type 2
+@    s37 avalue char size 1.000000
+@    s37 avalue font 0
+@    s37 avalue color 1
+@    s37 avalue rot 0
+@    s37 avalue format general
+@    s37 avalue prec 3
+@    s37 avalue prepend ""
+@    s37 avalue append ""
+@    s37 avalue offset 0.000000 , 0.000000
+@    s37 errorbar on
+@    s37 errorbar place both
+@    s37 errorbar color 1
+@    s37 errorbar pattern 1
+@    s37 errorbar size 1.000000
+@    s37 errorbar linewidth 1.0
+@    s37 errorbar linestyle 1
+@    s37 errorbar riser linewidth 1.0
+@    s37 errorbar riser linestyle 1
+@    s37 errorbar riser clip off
+@    s37 errorbar riser clip length 0.100000
+@    s37 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s37 legend  ""
+@    s38 hidden false
+@    s38 type xy
+@    s38 symbol 0
+@    s38 symbol size 1.000000
+@    s38 symbol color 2
+@    s38 symbol pattern 1
+@    s38 symbol fill color 2
+@    s38 symbol fill pattern 0
+@    s38 symbol linewidth 1.0
+@    s38 symbol linestyle 1
+@    s38 symbol char 65
+@    s38 symbol char font 0
+@    s38 symbol skip 0
+@    s38 line type 1
+@    s38 line linestyle 1
+@    s38 line linewidth 1.0
+@    s38 line color 2
+@    s38 line pattern 1
+@    s38 baseline type 0
+@    s38 baseline off
+@    s38 dropline off
+@    s38 fill type 0
+@    s38 fill rule 0
+@    s38 fill color 1
+@    s38 fill pattern 1
+@    s38 avalue off
+@    s38 avalue type 2
+@    s38 avalue char size 1.000000
+@    s38 avalue font 0
+@    s38 avalue color 1
+@    s38 avalue rot 0
+@    s38 avalue format general
+@    s38 avalue prec 3
+@    s38 avalue prepend ""
+@    s38 avalue append ""
+@    s38 avalue offset 0.000000 , 0.000000
+@    s38 errorbar on
+@    s38 errorbar place both
+@    s38 errorbar color 2
+@    s38 errorbar pattern 1
+@    s38 errorbar size 1.000000
+@    s38 errorbar linewidth 1.0
+@    s38 errorbar linestyle 1
+@    s38 errorbar riser linewidth 1.0
+@    s38 errorbar riser linestyle 1
+@    s38 errorbar riser clip off
+@    s38 errorbar riser clip length 0.100000
+@    s38 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s38 legend  ""
+@    s39 hidden false
+@    s39 type xy
+@    s39 symbol 0
+@    s39 symbol size 1.000000
+@    s39 symbol color 3
+@    s39 symbol pattern 1
+@    s39 symbol fill color 3
+@    s39 symbol fill pattern 0
+@    s39 symbol linewidth 1.0
+@    s39 symbol linestyle 1
+@    s39 symbol char 65
+@    s39 symbol char font 0
+@    s39 symbol skip 0
+@    s39 line type 1
+@    s39 line linestyle 1
+@    s39 line linewidth 1.0
+@    s39 line color 3
+@    s39 line pattern 1
+@    s39 baseline type 0
+@    s39 baseline off
+@    s39 dropline off
+@    s39 fill type 0
+@    s39 fill rule 0
+@    s39 fill color 1
+@    s39 fill pattern 1
+@    s39 avalue off
+@    s39 avalue type 2
+@    s39 avalue char size 1.000000
+@    s39 avalue font 0
+@    s39 avalue color 1
+@    s39 avalue rot 0
+@    s39 avalue format general
+@    s39 avalue prec 3
+@    s39 avalue prepend ""
+@    s39 avalue append ""
+@    s39 avalue offset 0.000000 , 0.000000
+@    s39 errorbar on
+@    s39 errorbar place both
+@    s39 errorbar color 3
+@    s39 errorbar pattern 1
+@    s39 errorbar size 1.000000
+@    s39 errorbar linewidth 1.0
+@    s39 errorbar linestyle 1
+@    s39 errorbar riser linewidth 1.0
+@    s39 errorbar riser linestyle 1
+@    s39 errorbar riser clip off
+@    s39 errorbar riser clip length 0.100000
+@    s39 comment "/Users/thierry/Desktop/mutation.1.3/output/output.dat"
+@    s39 legend  ""
+@    s40 hidden false
+@    s40 type xy
+@    s40 symbol 9
+@    s40 symbol size 1.000000
+@    s40 symbol color 1
+@    s40 symbol pattern 1
+@    s40 symbol fill color 1
+@    s40 symbol fill pattern 0
+@    s40 symbol linewidth 2.0
+@    s40 symbol linestyle 1
+@    s40 symbol char 65
+@    s40 symbol char font 0
+@    s40 symbol skip 0
+@    s40 line type 0
+@    s40 line linestyle 1
+@    s40 line linewidth 1.0
+@    s40 line color 3
+@    s40 line pattern 1
+@    s40 baseline type 0
+@    s40 baseline off
+@    s40 dropline off
+@    s40 fill type 0
+@    s40 fill rule 0
+@    s40 fill color 1
+@    s40 fill pattern 1
+@    s40 avalue off
+@    s40 avalue type 2
+@    s40 avalue char size 1.000000
+@    s40 avalue font 0
+@    s40 avalue color 1
+@    s40 avalue rot 0
+@    s40 avalue format general
+@    s40 avalue prec 3
+@    s40 avalue prepend ""
+@    s40 avalue append ""
+@    s40 avalue offset 0.000000 , 0.000000
+@    s40 errorbar on
+@    s40 errorbar place both
+@    s40 errorbar color 1
+@    s40 errorbar pattern 1
+@    s40 errorbar size 1.000000
+@    s40 errorbar linewidth 1.0
+@    s40 errorbar linestyle 1
+@    s40 errorbar riser linewidth 1.0
+@    s40 errorbar riser linestyle 1
+@    s40 errorbar riser clip off
+@    s40 errorbar riser clip length 0.100000
+@    s40 comment "jean2.agr"
+@    s40 legend  ""
+@    s41 hidden false
+@    s41 type xy
+@    s41 symbol 9
+@    s41 symbol size 1.000000
+@    s41 symbol color 2
+@    s41 symbol pattern 1
+@    s41 symbol fill color 2
+@    s41 symbol fill pattern 0
+@    s41 symbol linewidth 2.0
+@    s41 symbol linestyle 1
+@    s41 symbol char 65
+@    s41 symbol char font 0
+@    s41 symbol skip 0
+@    s41 line type 0
+@    s41 line linestyle 1
+@    s41 line linewidth 1.0
+@    s41 line color 3
+@    s41 line pattern 1
+@    s41 baseline type 0
+@    s41 baseline off
+@    s41 dropline off
+@    s41 fill type 0
+@    s41 fill rule 0
+@    s41 fill color 1
+@    s41 fill pattern 1
+@    s41 avalue off
+@    s41 avalue type 2
+@    s41 avalue char size 1.000000
+@    s41 avalue font 0
+@    s41 avalue color 1
+@    s41 avalue rot 0
+@    s41 avalue format general
+@    s41 avalue prec 3
+@    s41 avalue prepend ""
+@    s41 avalue append ""
+@    s41 avalue offset 0.000000 , 0.000000
+@    s41 errorbar on
+@    s41 errorbar place both
+@    s41 errorbar color 2
+@    s41 errorbar pattern 1
+@    s41 errorbar size 1.000000
+@    s41 errorbar linewidth 1.0
+@    s41 errorbar linestyle 1
+@    s41 errorbar riser linewidth 1.0
+@    s41 errorbar riser linestyle 1
+@    s41 errorbar riser clip off
+@    s41 errorbar riser clip length 0.100000
+@    s41 comment "jean2.agr"
+@    s41 legend  ""
+@    s42 hidden false
+@    s42 type xy
+@    s42 symbol 9
+@    s42 symbol size 1.000000
+@    s42 symbol color 1
+@    s42 symbol pattern 1
+@    s42 symbol fill color 1
+@    s42 symbol fill pattern 0
+@    s42 symbol linewidth 2.0
+@    s42 symbol linestyle 1
+@    s42 symbol char 65
+@    s42 symbol char font 0
+@    s42 symbol skip 0
+@    s42 line type 0
+@    s42 line linestyle 1
+@    s42 line linewidth 1.0
+@    s42 line color 3
+@    s42 line pattern 1
+@    s42 baseline type 0
+@    s42 baseline off
+@    s42 dropline off
+@    s42 fill type 0
+@    s42 fill rule 0
+@    s42 fill color 1
+@    s42 fill pattern 1
+@    s42 avalue off
+@    s42 avalue type 2
+@    s42 avalue char size 1.000000
+@    s42 avalue font 0
+@    s42 avalue color 1
+@    s42 avalue rot 0
+@    s42 avalue format general
+@    s42 avalue prec 3
+@    s42 avalue prepend ""
+@    s42 avalue append ""
+@    s42 avalue offset 0.000000 , 0.000000
+@    s42 errorbar on
+@    s42 errorbar place both
+@    s42 errorbar color 1
+@    s42 errorbar pattern 1
+@    s42 errorbar size 1.000000
+@    s42 errorbar linewidth 1.0
+@    s42 errorbar linestyle 1
+@    s42 errorbar riser linewidth 1.0
+@    s42 errorbar riser linestyle 1
+@    s42 errorbar riser clip off
+@    s42 errorbar riser clip length 0.100000
+@    s42 comment "jean2.agr"
+@    s42 legend  ""
+@    s43 hidden false
+@    s43 type xy
+@    s43 symbol 9
+@    s43 symbol size 1.000000
+@    s43 symbol color 2
+@    s43 symbol pattern 1
+@    s43 symbol fill color 2
+@    s43 symbol fill pattern 0
+@    s43 symbol linewidth 2.0
+@    s43 symbol linestyle 1
+@    s43 symbol char 65
+@    s43 symbol char font 0
+@    s43 symbol skip 0
+@    s43 line type 0
+@    s43 line linestyle 1
+@    s43 line linewidth 1.0
+@    s43 line color 3
+@    s43 line pattern 1
+@    s43 baseline type 0
+@    s43 baseline off
+@    s43 dropline off
+@    s43 fill type 0
+@    s43 fill rule 0
+@    s43 fill color 1
+@    s43 fill pattern 1
+@    s43 avalue off
+@    s43 avalue type 2
+@    s43 avalue char size 1.000000
+@    s43 avalue font 0
+@    s43 avalue color 1
+@    s43 avalue rot 0
+@    s43 avalue format general
+@    s43 avalue prec 3
+@    s43 avalue prepend ""
+@    s43 avalue append ""
+@    s43 avalue offset 0.000000 , 0.000000
+@    s43 errorbar on
+@    s43 errorbar place both
+@    s43 errorbar color 2
+@    s43 errorbar pattern 1
+@    s43 errorbar size 1.000000
+@    s43 errorbar linewidth 1.0
+@    s43 errorbar linestyle 1
+@    s43 errorbar riser linewidth 1.0
+@    s43 errorbar riser linestyle 1
+@    s43 errorbar riser clip off
+@    s43 errorbar riser clip length 0.100000
+@    s43 comment "jean2.agr"
+@    s43 legend  ""
+@target G0.S0
+@type xy
+3000 1.76719e-11
+2900 1.01992e-11
+2800 3.47287e-12
+2700 1.10037e-12
+2600 3.21775e-13
+2500 8.59795e-14
+2400 2.07429e-14
+2300 4.45451e-15
+2200 8.37317e-16
+2100 1.35047e-16
+2000 1.82501e-17
+1900 2.00819e-18
+1800 1.73781e-19
+1700 1.13316e-20
+1600 5.27903e-22
+1500 1.64277e-23
+1400 3.13226e-25
+1300 3.26872e-27
+1200 1.60519e-29
+1100 3.0022e-32
+1000 1.54465e-35
+900 1.28137e-39
+800 7.73428e-45
+700 1.25241e-51
+600 1.1324e-60
+500 2.76665e-73
+&
+@target G0.S1
+@type xy
+3000 1.3427e-08
+2900 4.39052e-09
+2800 1.35573e-09
+2700 3.97933e-10
+2600 1.11945e-10
+2500 3.03778e-11
+2400 7.94699e-12
+2300 1.98106e-12
+2200 4.60255e-13
+2100 9.68323e-14
+2000 1.78793e-14
+1900 2.80477e-15
+1800 3.61152e-16
+1700 3.672e-17
+1600 2.81551e-18
+1500 1.53796e-19
+1400 5.56588e-21
+1300 1.21201e-22
+1200 1.37703e-24
+1100 6.06439e-27
+1000 5.47487e-30
+900 5.68561e-34
+800 3.71577e-39
+700 6.50639e-46
+600 7.2909e-55
+500 2.68047e-67
+&
+@target G0.S2
+@type xy
+3000 0.124644
+2900 0.0926835
+2800 0.067035
+2700 0.0470877
+2600 0.0320606
+2500 0.0211067
+2400 0.0133941
+2300 0.00816154
+2200 0.00475238
+2100 0.00262879
+2000 0.00137137
+1900 0.00066871
+1800 0.000301478
+1700 0.000123969
+1600 4.57126e-05
+1500 1.47937e-05
+1400 4.08715e-06
+1300 9.29694e-07
+1200 1.6582e-07
+1100 2.16083e-08
+1000 1.83378e-09
+900 8.46884e-11
+800 1.68108e-12
+700 1.02264e-14
+600 1.06192e-17
+500 6.80176e-22
+&
+@target G0.S3
+@type xy
+3000 4.8617e-05
+2900 3.32743e-05
+2800 2.15908e-05
+2700 1.30447e-05
+2600 7.18209e-06
+2500 3.52475e-06
+2400 1.51479e-06
+2300 5.64397e-07
+2200 1.81722e-07
+2100 5.04829e-08
+2000 1.20385e-08
+1900 2.43536e-09
+1800 4.09773e-10
+1700 5.57454e-11
+1600 5.90347e-12
+1500 4.63218e-13
+1400 2.52591e-14
+1300 8.81319e-16
+1200 1.78531e-17
+1100 2.01542e-19
+1000 1.4085e-21
+900 4.42854e-24
+800 3.01569e-27
+700 2.12705e-31
+600 5.52362e-37
+500 8.0924e-45
+&
+@target G0.S4
+@type xy
+3000 1.81564e-12
+2900 4.53339e-13
+2800 1.07197e-13
+2700 2.44864e-14
+2600 5.53528e-15
+2500 1.26559e-15
+2400 2.95373e-16
+2300 6.95946e-17
+2200 1.60646e-17
+2100 3.48917e-18
+2000 6.83638e-19
+1900 1.16087e-19
+1800 1.64377e-20
+1700 1.86471e-21
+1600 1.61983e-22
+1500 1.02031e-23
+1400 4.34925e-25
+1300 1.14316e-26
+1200 1.5907e-28
+1100 7.74964e-31
+1000 4.76196e-34
+900 1.67487e-38
+800 1.74603e-44
+700 2.31438e-52
+600 9.35781e-63
+500 4.03193e-77
+&
+@target G0.S5
+@type xy
+3000 3.09417e-14
+2900 6.7228e-15
+2800 1.40133e-15
+2700 2.89982e-16
+2600 6.20885e-17
+2500 1.42973e-17
+2400 3.61504e-18
+2300 9.953e-19
+2200 2.88032e-19
+2100 8.34256e-20
+2000 2.30205e-20
+1900 5.79565e-21
+1800 1.28255e-21
+1700 2.41002e-22
+1600 3.70954e-23
+1500 4.4871e-24
+1400 4.05034e-25
+1300 2.53938e-26
+1200 9.62865e-28
+1100 1.34307e-29
+1000 1.77011e-32
+900 8.63898e-37
+800 8.4393e-43
+700 8.30849e-51
+600 2.55392e-61
+500 9.10657e-76
+&
+@target G0.S6
+@type xy
+3000 5.64697e-23
+2900 8.17582e-24
+2800 1.12967e-24
+2700 1.56078e-25
+2600 2.28138e-26
+2500 3.71985e-27
+2400 6.96709e-28
+2300 1.4851e-28
+2200 3.44478e-29
+2100 8.16666e-30
+2000 1.85872e-30
+1900 3.84823e-31
+1800 6.92761e-32
+1700 1.04134e-32
+1600 1.25454e-33
+1500 1.15624e-34
+1400 7.69478e-36
+1300 3.40952e-37
+1200 8.52731e-39
+1100 6.36973e-41
+1000 2.40715e-44
+900 1.3919e-49
+800 5.87163e-57
+700 8.20112e-67
+600 9.79054e-80
+500 1.80077e-97
+&
+@target G0.S7
+@type xy
+3000 2.05335e-26
+2900 2.55508e-27
+2800 3.06809e-28
+2700 3.7782e-29
+2600 5.13495e-30
+2500 8.25753e-31
+2400 1.63628e-31
+2300 3.96793e-32
+2200 1.1195e-32
+2100 3.42051e-33
+2000 1.05496e-33
+1900 3.1003e-34
+1800 8.30353e-35
+1700 1.95538e-35
+1600 3.91823e-36
+1500 6.45339e-37
+1400 8.37784e-38
+1300 8.06026e-39
+1200 4.93005e-40
+1100 9.30287e-42
+1000 6.51537e-45
+900 4.40072e-50
+800 1.41634e-57
+700 1.14485e-67
+600 7.62543e-81
+500 7.82569e-99
+&
+@target G0.S8
+@type xy
+3000 4.38e-09
+2900 1.73993e-09
+2800 6.57261e-10
+2700 2.3821e-10
+2600 8.37225e-11
+2500 2.8796e-11
+2400 9.71434e-12
+2300 3.18709e-12
+2200 9.97986e-13
+2100 2.90933e-13
+2000 7.68644e-14
+1900 1.79107e-14
+1800 3.57878e-15
+1700 5.94453e-16
+1600 7.91482e-17
+1500 8.07667e-18
+1400 5.96561e-19
+1300 2.95515e-20
+1200 8.73752e-22
+1100 1.18185e-23
+1000 3.97485e-26
+900 1.91378e-29
+800 7.75163e-34
+700 1.29891e-39
+600 2.67422e-47
+500 5.30862e-58
+&
+@target G0.S9
+@type xy
+3000 2.87053e-09
+2900 1.57206e-09
+2800 8.31548e-10
+2700 4.3002e-10
+2600 2.20523e-10
+2500 1.13613e-10
+2400 5.91933e-11
+2300 3.10749e-11
+2200 1.62207e-11
+2100 8.26394e-12
+2000 4.03007e-12
+1900 1.84709e-12
+1800 7.81917e-13
+1700 3.00328e-13
+1600 1.02593e-13
+1500 3.0429e-14
+1400 7.60055e-15
+1300 1.53373e-15
+1200 2.32919e-16
+1100 2.16203e-17
+1000 7.1131e-19
+900 5.17134e-21
+800 5.68484e-24
+700 6.09091e-28
+600 2.89804e-33
+500 1.07228e-40
+&
+@target G0.S10
+@type xy
+3000 1.34976e-08
+2900 1.05152e-08
+2800 8.06359e-09
+2700 6.18366e-09
+2600 4.82945e-09
+2500 3.90896e-09
+2400 3.31717e-09
+2300 2.95714e-09
+2200 2.75028e-09
+2100 2.63894e-09
+2000 2.58436e-09
+1900 2.56279e-09
+1800 2.56117e-09
+1700 2.57361e-09
+1600 2.59868e-09
+1500 2.63782e-09
+1400 2.69397e-09
+1300 2.7664e-09
+1200 2.80814e-09
+1100 2.45239e-09
+1000 1.15805e-09
+900 2.04223e-10
+800 1.10891e-11
+700 1.65282e-13
+600 5.16915e-16
+500 1.55676e-19
+&
+@target G0.S11
+@type xy
+3000 6.44355e-09
+2900 6.96777e-09
+2800 7.54534e-09
+2700 8.34147e-09
+2600 9.62395e-09
+2500 1.18415e-08
+2400 1.5793e-08
+2300 2.29963e-08
+2200 3.65232e-08
+2100 6.29974e-08
+2000 1.17692e-07
+1900 2.38552e-07
+1800 5.28252e-07
+1700 1.29347e-06
+1600 3.56292e-06
+1500 1.12968e-05
+1400 4.24733e-05
+1300 0.000196483
+1200 0.00115514
+1100 0.00799917
+1000 0.044049
+900 0.145643
+800 0.281446
+700 0.379295
+600 0.432232
+500 0.451776
+&
+@target G0.S12
+@type xy
+3000 7.25228e-08
+2900 7.66862e-08
+2800 8.00026e-08
+2700 8.25437e-08
+2600 8.44186e-08
+2500 8.57529e-08
+2400 8.66753e-08
+2300 8.73109e-08
+2200 8.77787e-08
+2100 8.81879e-08
+2000 8.86358e-08
+1900 8.92075e-08
+1800 8.99804e-08
+1700 9.10289e-08
+1600 9.24303e-08
+1500 9.42708e-08
+1400 9.66476e-08
+1300 9.96444e-08
+1200 1.03097e-07
+1100 1.04628e-07
+1000 9.20556e-08
+900 5.02156e-08
+800 1.10833e-08
+700 8.92012e-10
+600 2.52724e-11
+500 1.67285e-13
+&
+@target G0.S13
+@type xy
+3000 0.274346
+2900 0.279237
+2800 0.283284
+2700 0.286578
+2600 0.289212
+2500 0.291254
+2400 0.292746
+2300 0.293739
+2200 0.294307
+2100 0.294546
+2000 0.294542
+1900 0.294363
+1800 0.294044
+1700 0.293595
+1600 0.293003
+1500 0.292229
+1400 0.291198
+1300 0.289746
+1200 0.28726
+1100 0.279742
+1000 0.247336
+900 0.155753
+800 0.0490584
+700 0.00734347
+600 0.000577178
+500 1.89257e-05
+&
+@target G0.S14
+@type xy
+3000 0.000350498
+2900 0.000507515
+2800 0.000732059
+2700 0.00103968
+2600 0.0014331
+2500 0.00189076
+2400 0.00236775
+2300 0.00281711
+2200 0.00321569
+2100 0.00357103
+2000 0.00391
+1900 0.00426537
+1800 0.0046698
+1700 0.00515644
+1600 0.00576336
+1500 0.00654053
+1400 0.00756108
+1300 0.00895073
+1200 0.011052
+1100 0.0158148
+1000 0.0337122
+900 0.0844089
+800 0.136449
+700 0.138785
+600 0.124248
+500 0.116941
+&
+@target G0.S15
+@type xy
+3000 4.99908e-11
+2900 1.80649e-11
+2800 6.31035e-12
+2700 2.18195e-12
+2600 7.68357e-13
+2500 2.82977e-13
+2400 1.10592e-13
+2300 4.56367e-14
+2200 1.94308e-14
+2100 8.26424e-15
+2000 3.39824e-15
+1900 1.31269e-15
+1800 4.6466e-16
+1700 1.47273e-16
+1600 4.0796e-17
+1500 9.6041e-18
+1400 1.85527e-18
+1300 2.80077e-19
+1200 3.00703e-20
+1100 1.63681e-21
+1000 1.77804e-23
+900 1.96039e-26
+800 1.39257e-30
+700 3.88404e-36
+600 1.78873e-43
+500 1.34439e-53
+&
+@target G0.S16
+@type xy
+3000 5.51689e-09
+2900 3.28373e-09
+2800 1.94425e-09
+2700 1.1781e-09
+2600 7.55563e-10
+2500 5.29763e-10
+2400 4.14752e-10
+2300 3.63471e-10
+2200 3.51417e-10
+2100 3.66561e-10
+2000 4.04012e-10
+1900 4.63734e-10
+1800 5.50182e-10
+1700 6.73491e-10
+1600 8.52755e-10
+1500 1.12328e-09
+1400 1.55221e-09
+1300 2.26803e-09
+1200 3.43767e-09
+1100 4.25054e-09
+1000 1.90513e-09
+900 1.84996e-10
+800 3.25243e-12
+700 1.00314e-14
+600 4.83114e-18
+500 1.42973e-22
+&
+@target G0.S17
+@type xy
+3000 3.10003e-13
+2900 2.46538e-13
+2800 1.96549e-13
+2700 1.62246e-13
+2600 1.44012e-13
+2500 1.42601e-13
+2400 1.61643e-13
+2300 2.11333e-13
+2200 3.15805e-13
+2100 5.30684e-13
+2000 9.88968e-13
+1900 2.03095e-12
+1800 4.6064e-12
+1700 1.16564e-11
+1600 3.34799e-11
+1500 1.11836e-10
+1400 4.48607e-10
+1300 2.24587e-09
+1200 1.43207e-08
+1100 9.56836e-08
+1000 3.06832e-07
+900 2.86677e-07
+800 7.12547e-08
+700 5.58135e-09
+600 1.63393e-10
+500 1.25338e-12
+&
+@target G0.S18
+@type xy
+3000 2.30995e-18
+2900 2.29995e-18
+2800 2.30407e-18
+2700 2.40716e-18
+2600 2.73359e-18
+2500 3.51414e-18
+2400 5.26888e-18
+2300 9.32271e-18
+2200 1.93785e-17
+2100 4.67875e-17
+2000 1.30129e-16
+1900 4.17e-16
+1800 1.55521e-15
+1700 6.88434e-15
+1600 3.7234e-14
+1500 2.55855e-13
+1400 2.35027e-12
+1300 3.07346e-11
+1200 6.02353e-10
+1100 1.50541e-08
+1000 2.22923e-07
+900 1.1787e-06
+800 2.145e-06
+700 1.84386e-06
+600 1.08213e-06
+500 4.61752e-07
+&
+@target G0.S19
+@type xy
+3000 8.09996e-16
+2900 2.14105e-16
+2800 5.46674e-17
+2700 1.3985e-17
+2600 3.74527e-18
+2500 1.09434e-18
+2400 3.57232e-19
+2300 1.29606e-19
+2200 5.06242e-20
+2100 2.03514e-20
+2000 8.05189e-21
+1900 3.0188e-21
+1800 1.04002e-21
+1700 3.20594e-22
+1600 8.61497e-23
+1500 1.96039e-23
+1400 3.64492e-24
+1300 5.26183e-25
+1200 5.27639e-26
+1100 2.30973e-27
+1000 1.16757e-29
+900 2.74926e-33
+800 1.75933e-38
+700 1.79316e-45
+600 1.13599e-54
+500 2.6039e-67
+&
+@target G0.S20
+@type xy
+3000 4.89861e-16
+2900 1.65865e-16
+2800 5.48765e-17
+2700 1.84531e-17
+2600 6.60977e-18
+2500 2.63728e-18
+2400 1.20465e-18
+2300 6.29253e-19
+2200 3.65792e-19
+2100 2.27409e-19
+2000 1.45474e-19
+1900 9.28781e-20
+1800 5.78995e-20
+1700 3.46929e-20
+1600 1.97321e-20
+1500 1.05274e-20
+1400 5.19637e-21
+1300 2.32062e-21
+1200 8.70991e-22
+1100 1.80986e-22
+1000 5.78828e-24
+900 1.21807e-26
+800 1.1098e-30
+700 3.20038e-36
+600 1.61154e-43
+500 1.59099e-53
+&
+@target G0.S21
+@type xy
+3000 1.53933e-16
+2900 7.00149e-17
+2800 3.15825e-17
+2700 1.47431e-17
+2600 7.49061e-18
+2500 4.34821e-18
+2400 2.9765e-18
+2300 2.41155e-18
+2200 2.26255e-18
+2100 2.37698e-18
+2000 2.70995e-18
+1900 3.28031e-18
+1800 4.16797e-18
+1700 5.54306e-18
+1600 7.74306e-18
+1500 1.14562e-17
+1400 1.81724e-17
+1300 3.1258e-17
+1200 5.66106e-17
+1100 7.52069e-17
+1000 2.16771e-17
+900 6.24922e-19
+800 1.37158e-21
+700 2.17246e-25
+600 2.06222e-30
+500 2.83431e-37
+&
+@target G0.S22
+@type xy
+3000 2.75417e-20
+2900 5.74634e-21
+2800 1.16514e-21
+2700 2.41407e-22
+2600 5.42839e-23
+2500 1.40284e-23
+2400 4.31086e-24
+2300 1.56911e-24
+2200 6.50821e-25
+2100 2.90965e-25
+2000 1.3281e-25
+1900 5.92339e-26
+1800 2.49777e-26
+1700 9.70745e-27
+1600 3.40066e-27
+1500 1.04959e-27
+1400 2.77736e-28
+1300 6.04586e-29
+1200 9.67327e-30
+1100 6.43887e-31
+1000 3.26569e-33
+900 4.21449e-37
+800 7.91248e-43
+700 1.34671e-50
+600 8.89279e-61
+500 1.05382e-74
+&
+@target G0.S23
+@type xy
+3000 3.43701e-27
+2900 5.20662e-28
+2800 7.6661e-29
+2700 1.16863e-29
+2600 1.98982e-30
+2500 4.06793e-31
+2400 1.0429e-31
+2300 3.34034e-32
+2200 1.27522e-32
+2100 5.42217e-33
+2000 2.40431e-33
+1900 1.05514e-33
+1800 4.41157e-34
+1700 1.70874e-34
+1600 5.99213e-35
+1500 1.86039e-35
+1400 4.98184e-36
+1300 1.10418e-36
+1200 1.78448e-37
+1100 1.05355e-38
+1000 2.81245e-41
+900 9.06312e-46
+800 1.87483e-52
+700 1.52017e-61
+600 1.97969e-73
+500 1.19333e-89
+&
+@target G0.S24
+@type xy
+3000 4.1934e-29
+2900 1.7136e-29
+2800 7.12712e-30
+2700 3.25041e-30
+2600 1.77524e-30
+2500 1.26496e-30
+2400 1.24653e-30
+2300 1.7204e-30
+2200 3.23151e-30
+2100 7.88333e-30
+2000 2.39693e-29
+1900 8.87615e-29
+1800 3.99264e-28
+1700 2.2155e-27
+1600 1.56448e-26
+1500 1.472e-25
+1400 1.9622e-24
+1300 3.98534e-23
+1200 1.26148e-21
+1100 3.7564e-20
+1000 1.58367e-19
+900 3.16573e-20
+800 2.5554e-22
+700 1.20773e-25
+600 5.26592e-30
+500 7.79651e-36
+&
+@target G0.S25
+@type xy
+3000 7.17956e-31
+2900 3.58231e-31
+2800 1.83393e-31
+2700 1.04033e-31
+2600 7.1605e-32
+2500 6.53326e-32
+2400 8.40185e-32
+2300 1.54752e-31
+2200 3.98195e-31
+2100 1.37172e-30
+2000 6.10098e-30
+1900 3.44357e-29
+1800 2.47736e-28
+1700 2.32693e-27
+1600 2.97535e-26
+1500 5.49601e-25
+1400 1.58651e-23
+1300 7.87063e-22
+1200 7.06591e-20
+1100 7.17786e-18
+1000 1.28313e-16
+900 1.39751e-16
+800 8.57509e-18
+700 5.04387e-20
+600 5.70976e-23
+500 7.29523e-27
+&
+@target G0.S26
+@type xy
+3000 1.17793e-36
+2900 5.35905e-37
+2800 2.49377e-37
+2700 1.28057e-37
+2600 7.93735e-38
+2500 6.48003e-38
+2400 7.39888e-38
+2300 1.19897e-37
+2200 2.68598e-37
+2100 7.96135e-37
+2000 3.00639e-36
+1900 1.41901e-35
+1800 8.38869e-35
+1700 6.34401e-34
+1600 6.37638e-33
+1500 8.99774e-32
+1400 1.91706e-30
+1300 6.72998e-29
+1200 4.05437e-27
+1100 2.56399e-25
+1000 2.46068e-24
+900 9.9513e-25
+800 1.10167e-26
+700 5.23228e-30
+600 2.29639e-34
+500 3.97854e-40
+&
+@target G0.S27
+@type xy
+3000 2.95988e-34
+2900 1.4016e-34
+2800 6.94166e-35
+2700 3.94246e-35
+2600 2.8628e-35
+2500 2.95608e-35
+2400 4.6741e-35
+2300 1.15459e-34
+2200 4.3296e-34
+2100 2.34598e-33
+2000 1.76251e-32
+1900 1.80358e-31
+1800 2.53615e-30
+1700 5.06706e-29
+1600 1.52108e-27
+1500 7.42169e-26
+1400 6.52967e-24
+1300 1.17575e-21
+1200 4.69112e-19
+1100 2.4303e-16
+1000 1.86083e-14
+900 6.53951e-14
+800 1.07778e-14
+700 1.81966e-16
+600 9.48069e-19
+500 1.24775e-21
+&
+@target G0.S28
+@type xy
+3000 4.21052e-37
+2900 2.42755e-37
+2800 1.44682e-37
+2700 9.64349e-38
+2600 7.88587e-38
+2500 8.66077e-38
+2400 1.36126e-37
+2300 3.11932e-37
+2200 1.01953e-36
+2100 4.5715e-36
+2000 2.72351e-35
+1900 2.12965e-34
+1800 2.20849e-33
+1700 3.13414e-32
+1600 6.40415e-31
+1500 2.02252e-29
+1400 1.08373e-27
+1300 1.10429e-25
+1200 2.30793e-23
+1100 6.32051e-21
+1000 3.42811e-19
+900 1.0754e-18
+800 1.41294e-19
+700 1.49163e-21
+600 3.73169e-24
+500 1.71898e-27
+&
+@target G0.S29
+@type xy
+3000 0.558704
+2900 0.584996
+2800 0.60594
+2700 0.622038
+2600 0.633965
+2500 0.642493
+2400 0.648409
+2300 0.652427
+2200 0.655119
+2100 0.656913
+2000 0.658121
+1900 0.658976
+1800 0.659649
+1700 0.660267
+1600 0.66093
+1500 0.661719
+1400 0.662695
+1300 0.663827
+1200 0.664309
+1100 0.657508
+1000 0.614496
+900 0.493538
+800 0.316126
+700 0.153139
+600 0.0491639
+500 0.00883661
+&
+@target G0.S30
+@type xy
+3000 0.00545569
+2900 0.00789294
+2800 0.0112576
+2700 0.0156616
+2600 0.0209687
+2500 0.0266659
+2400 0.0319618
+2300 0.0361548
+2200 0.0389685
+2100 0.0405546
+2000 0.0412577
+1900 0.041405
+1800 0.0412193
+1700 0.0408185
+1600 0.0402434
+1500 0.0394834
+1400 0.0384992
+1300 0.0372782
+1200 0.0362239
+1100 0.0389352
+1000 0.0604062
+900 0.120656
+800 0.216918
+700 0.321435
+600 0.393778
+500 0.422427
+&
+@target G0.S31
+@type xy
+3000 1.65767e-07
+2900 1.57767e-07
+2800 1.41909e-07
+2700 1.17011e-07
+2600 8.52548e-08
+2500 5.29098e-08
+2400 2.72264e-08
+2300 1.15031e-08
+2200 4.01204e-09
+2100 1.16806e-09
+2000 2.85816e-10
+1900 5.86066e-11
+1800 9.92761e-12
+1700 1.35426e-12
+1600 1.43386e-13
+1500 1.12135e-14
+1400 6.07059e-16
+1300 2.09479e-17
+1200 4.23521e-19
+1100 5.3706e-21
+1000 6.50273e-23
+900 5.37529e-25
+800 1.10685e-27
+700 2.64776e-31
+600 3.04402e-36
+500 3.33095e-43
+&
+@target G0.S32
+@type xy
+3000 0.0364507
+2900 0.0346493
+2800 0.0317296
+2700 0.0275813
+2600 0.0223531
+2500 0.0165868
+2400 0.0111193
+2300 0.00669999
+2200 0.00363701
+2100 0.00178722
+2000 0.000796895
+1900 0.000321488
+1800 0.000116301
+1700 3.7164e-05
+1600 1.02683e-05
+1500 2.38407e-06
+1400 4.48095e-07
+1300 6.49998e-08
+1200 6.91227e-09
+1100 5.48237e-10
+1000 3.84531e-11
+900 1.87839e-12
+800 3.58718e-14
+700 1.68322e-16
+600 1.06372e-19
+500 3.12874e-24
+&
+@target G0.S33
+@type xy
+3000 1.97927e-14
+2900 2.2954e-15
+2800 3.8157e-16
+2700 5.7326e-17
+2600 7.80292e-18
+2500 9.62445e-19
+2400 1.06765e-19
+2300 1.0445e-20
+2200 8.73148e-22
+2100 5.99221e-23
+2000 3.22761e-24
+1900 1.29913e-25
+1800 3.69853e-27
+1700 6.98435e-29
+1600 8.09229e-31
+1500 5.21814e-33
+1400 1.65282e-35
+1300 2.18136e-38
+1200 9.50321e-42
+1100 9.028e-46
+1000 8.64228e-51
+900 4.10698e-57
+800 4.33854e-65
+700 2.46197e-75
+600 6.36413e-89
+500 9.56881e-100
+&
+@target G0.S34
+@type xy
+3000 2.80901e-11
+2900 7.02158e-12
+2800 2.58693e-12
+2700 8.77752e-13
+2600 2.71897e-13
+2500 7.61384e-14
+2400 1.90573e-14
+2300 4.20802e-15
+2200 8.07134e-16
+2100 1.32023e-16
+2000 1.80091e-17
+1900 1.99343e-18
+1800 1.73116e-19
+1700 1.13107e-20
+1600 5.27473e-22
+1500 1.64224e-23
+1400 3.13191e-25
+1300 3.26861e-27
+1200 1.60518e-29
+1100 3.0022e-32
+1000 1.54465e-35
+900 1.28137e-39
+800 7.73428e-45
+700 1.25241e-51
+600 1.1324e-60
+500 2.76665e-73
+&
+@target G0.S35
+@type xy
+3000 1.6426e-11
+2900 3.16984e-12
+2800 8.83318e-13
+2700 2.21753e-13
+2600 4.96245e-14
+2500 9.7807e-15
+2400 1.67439e-15
+2300 2.4493e-16
+2200 3.00211e-17
+2100 3.01145e-18
+2000 2.40265e-19
+1900 1.47249e-20
+1800 6.6419e-22
+1700 2.09108e-23
+1600 4.29958e-25
+1500 5.30694e-27
+1400 3.52808e-29
+1300 1.09634e-31
+1200 1.31847e-34
+1100 4.75115e-38
+1000 3.63423e-42
+900 3.77491e-47
+800 2.80298e-53
+700 4.35983e-61
+600 1.64027e-71
+500 3.90227e-86
+&
+@target G0.S36
+@type xy
+3000 5.28124e-15
+2900 9.35668e-16
+2800 2.33273e-16
+2700 5.02213e-17
+2600 9.05878e-18
+2500 1.32636e-18
+2400 1.53192e-19
+2300 1.36461e-20
+2200 9.20725e-22
+2100 4.61563e-23
+2000 1.67425e-24
+1900 4.23147e-26
+1800 7.07619e-28
+1700 7.31567e-30
+1600 4.28397e-32
+1500 1.26993e-34
+1400 1.64836e-37
+1300 7.75924e-41
+1200 1.04444e-44
+1100 3.2047e-49
+1000 1.9773e-54
+900 1.36333e-60
+800 3.36462e-68
+700 5.82611e-78
+600 5.19214e-91
+500 9.56881e-100
+&
+@target G0.S37
+@type xy
+3000 1.58373e-14
+2900 4.81214e-15
+2800 2.0815e-15
+2700 7.78046e-16
+2600 2.40625e-16
+2500 5.89138e-17
+2400 1.10244e-17
+2300 1.54647e-18
+2200 1.61677e-19
+2100 1.25675e-20
+2000 7.19533e-22
+1900 2.96592e-23
+1800 8.46791e-25
+1700 1.58365e-26
+1600 1.80003e-28
+1500 1.12758e-30
+1400 3.42847e-33
+1300 4.29575e-36
+1200 1.83084e-39
+1100 2.46773e-43
+1000 1.35382e-47
+900 1.8093e-52
+800 1.63765e-58
+700 2.37455e-66
+600 6.71533e-77
+500 9.97545e-92
+&
+@target G0.S38
+@type xy
+3000 4.85662e-16
+2900 2.535e-16
+2800 7.52667e-17
+2700 1.97257e-17
+2600 4.43827e-18
+2500 8.32232e-19
+2400 1.26585e-19
+2300 1.52931e-20
+2200 1.44372e-21
+2100 1.04696e-22
+2000 5.69616e-24
+1900 2.24723e-25
+1800 6.13491e-27
+1700 1.08975e-28
+1600 1.1635e-30
+1500 6.74437e-33
+1400 1.86132e-35
+1300 2.06211e-38
+1200 7.39466e-42
+1100 6.9733e-46
+1000 1.47696e-50
+900 3.27385e-56
+800 1.88664e-63
+700 6.14725e-73
+600 1.18668e-85
+500 9.56881e-100
+&
+@target G0.S39
+@type xy
+3000 6.95077e-22
+2900 4.4022e-22
+2800 1.5653e-22
+2700 4.78343e-23
+2600 1.20203e-23
+2500 2.37254e-24
+2400 3.5415e-25
+2300 3.90752e-26
+2200 3.15506e-27
+2100 1.85087e-28
+2000 7.77113e-30
+1900 2.26788e-31
+1800 4.39221e-33
+1700 5.29052e-35
+1600 3.63699e-37
+1500 1.27631e-39
+1400 1.97855e-42
+1300 1.12406e-45
+1200 1.87061e-49
+1100 8.02193e-54
+1000 9.95528e-59
+900 1.5441e-64
+800 5.15371e-72
+700 6.82172e-82
+600 3.4559e-95
+500 9.56881e-100
+&
+@target G0.S40
+@type xy
+968.53 0.5874
+968.53 0.0518
+968.53 0
+968.53 0.0522
+968.53 0.2256
+968.53 0.0828
+&
+@target G0.S41
+@type xy
+904 0.5084
+904 0.1183
+904 0
+904 0.0896
+904 0.161
+904 0.122
+&
+@target G0.S42
+@type xy
+789.55 0.307
+789.55 0.2671
+789.55 0
+789.55 0.14841
+789.55 0.0428
+789.55 0.2345
+&
+@target G0.S43
+@type xy
+770.32 0.2714
+770.32 0.2902
+770.32 0
+770.32 0.1523
+770.32 0.032
+770.32 0.255
+&

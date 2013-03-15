@@ -1,0 +1,55 @@
+--------------
+|mutation.1.1|
+--------------
+12-10-2004 (Olivier Chazot)
+sources/general/mutation.f
+XTOL was used instead of X when calling the routines:
+  CALL COLLISION (WR1, LWR1, WR2, LWR2, TH, TE, ND, X)
+  CALL LAMBDAE (WR1, LWR1, WR2, LWR2, X, TE, LAMBDATE, 3)
+  CALL SIGMAE (WR1, LWR1, WR2, LWR2, X, TE, SIGMA, 2)
+yielding to wrong values of the electrical conductivity.
+----------
+12-16-2004 (Thierry Magin)
+sources/general/initialize.f
+sources/thermo/energy.f
+sources/thermo/enthalpy.f
+sources/thermo/entropy.f 
+sources/thermo/gibbs.f
+Allow for species without any electronic levels (if they are 
+neglected or in the case of the proton Hp). 
+----------
+12-16-2004 (Thierry Magin) 
+sources/general/length.f
+sources/general/initialize.f
+sources/thermo/energy.f
+sources/thermo/enthalpy.f
+sources/thermo/entropy.f 
+sources/thermo/gibbs.f
+Rotational d.o.f. of non linear polyatomic molecules.
+----------
+11-09-2006 (Janos Molnar and Marco Panesi)
+sources/chemistry/arrhenius.f
+The expression of the equilibrium constant has been corrected 
+(missing LOG(R) term).
+----------
+05-29-2007 (Thierry Magin)
+sources/chemistry/arrhenius.f
+The subroutine DTRANSLATE did not allow for the 3rd decimal to be
+read adequately.
+--------------
+|mutation.1.2|
+--------------
+11-10-2006 (Thierry Magin)
+sources/general/length.f
+sources/general/mutation.f
+sources/general/shock.f
+sources/thermo/enthalpy.f
+The number of vibrational temperatures is given by the routine length.
+The vibrational temperature become  a vector in the thermodynamic 
+routines. The mutation and shock programms are modified accordingly.
+----------
+10-01-2007 (Olaf Marxen)
+data/thermo/NO
+The degeneracy of NO(X^2\Pi_r) has been corrected (4 instead of
+2).
+----------

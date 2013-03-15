@@ -1,0 +1,15 @@
+#E. I. Asinovsky and A. V. Kirillin and E. P. Pakhomov and V. I Shabashov",
+#Experimental investigation of transport properties of low-temperature plasma by means of electric arc",
+#IEEE Proc, 1971, 59(4):592-601
+
+#T[K]     lambda[W.m^-1.K^-1]
+5941.      1.26
+6634.      4.41
+7921.      2.36
+8911.      1.75
+10000.     1.89
+11089.     2.44
+11881.     2.95
+12871.     3.03
+13861.     3.33
+

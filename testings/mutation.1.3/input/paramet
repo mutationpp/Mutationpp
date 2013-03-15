@@ -1,0 +1,55 @@
+---------------------------------------------------------------------
+Name of the mixture:
+phenol40
+-----------------------------------------------------------------------
+Pressure range    (minimum, maximum, interval):
+101325.D0
+101325.D0
+0.D0
+-----------------------------------------------------------------------
+Temperature range (minimum, maximum, interval):
+500.D0
+3000.D0
+100.D0
+-----------------------------------------------------------------------
+Tolerance for vanishing molar fraction:
+1.D-16
+-----------------------------------------------------------------------
+Method for heavy particle mixture property (cfr explanation below):
+1
+-----------------------------------------------------------------------
+Heavy Lagrange-Sonine polynomial order for Stefan-Maxwell:
+1
+-----------------------------------------------------------------------
+Electron Lagrange-Sonine polynomial order for Stefan-Maxwell:
+1
+-----------------------------------------------------------------------
+Velocity for total pressure computation:
+800.
+-----------------------------------------------------------------------
+Mixture output data (number):
+1
+Corresponding indices:
+1
+-----------------------------------------------------------------------
+Species output data (number):
+1
+Corresponding indices:
+1
+-----------------------------------------------------------------------
+STOP
+-----------------------------------------------------------------------
+DIRECT METHODS are used by default for the heavy particle mixture 
+properties. The user can specify 
+-> 1: DIRECT METHODS for all the properties.
+-> 2: KRYLOV METHODS for the viscosity, heavy particle thermal 
+      conductivity, heavy particle thermal diffusion ratios, Butler and 
+      Brokaw reactive thermal conductivity, and Stefan-Maxwell 
+      equations.
+-> 3: GUPTA-YOS MIXTURE RULES for the viscosity, heavy particle thermal 
+      conductivity, heavy particle thermal diffusion ratios, Butler, 
+      and Brokaw reactive thermal conductivity.
+-> 4: WILKE MIXTURE RULES for the viscosity and  heavy particle thermal
+      conductivity.
+-> 5: SUTTON ALGORITHM for the Stefan-Maxwell equations.
+-----------------------------------------------------------------------

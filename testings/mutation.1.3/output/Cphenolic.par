@@ -1,0 +1,2488 @@
+# Grace project file
+#
+version 50118
+page size 585, 600
+page scroll 5%
+page inout 5%
+link page off
+map font 0 to "Times-Roman", "Times-Roman"
+map font 1 to "Times-Italic", "Times-Italic"
+map font 2 to "Times-Bold", "Times-Bold"
+map font 3 to "Times-BoldItalic", "Times-BoldItalic"
+map font 4 to "Helvetica", "Helvetica"
+map font 5 to "Helvetica-Oblique", "Helvetica-Oblique"
+map font 6 to "Helvetica-Bold", "Helvetica-Bold"
+map font 7 to "Helvetica-BoldOblique", "Helvetica-BoldOblique"
+map font 8 to "Courier", "Courier"
+map font 9 to "Courier-Oblique", "Courier-Oblique"
+map font 10 to "Courier-Bold", "Courier-Bold"
+map font 11 to "Courier-BoldOblique", "Courier-BoldOblique"
+map font 12 to "Symbol", "Symbol"
+map font 13 to "ZapfDingbats", "ZapfDingbats"
+map color 0 to (255, 255, 255), "white"
+map color 1 to (0, 0, 0), "black"
+map color 2 to (255, 0, 0), "red"
+map color 3 to (0, 255, 0), "green"
+map color 4 to (0, 0, 255), "blue"
+map color 5 to (255, 255, 0), "yellow"
+map color 6 to (188, 143, 143), "brown"
+map color 7 to (220, 220, 220), "grey"
+map color 8 to (148, 0, 211), "violet"
+map color 9 to (0, 255, 255), "cyan"
+map color 10 to (255, 0, 255), "magenta"
+map color 11 to (255, 165, 0), "orange"
+map color 12 to (114, 33, 188), "indigo"
+map color 13 to (103, 7, 72), "maroon"
+map color 14 to (64, 224, 208), "turquoise"
+map color 15 to (0, 139, 0), "green4"
+reference date 0
+date wrap off
+date wrap year 1950
+default linewidth 1.0
+default linestyle 1
+default color 1
+default pattern 1
+default font 0
+default char size 1.000000
+default symbol size 1.000000
+default sformat "%.8g"
+background color 0
+page background fill on
+timestamp off
+timestamp 0.03, 0.03
+timestamp color 1
+timestamp rot 0
+timestamp font 0
+timestamp char size 1.000000
+timestamp def "Tue May 26 14:56:38 2009"
+with line
+    line on
+    line loctype view
+    line 0.2, 0.459016393442, 0.263934426229, 0.416393442623
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with line
+    line on
+    line loctype view
+    line 0.344262295082, 0.483606557377, 0.391803278689, 0.424590163935
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with line
+    line on
+    line loctype view
+    line 0.496721311475, 0.262295081967, 0.501639344262, 0.232786885246
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with line
+    line on
+    line loctype view
+    line 0.41475409836, 0.244262295082, 0.406557377049, 0.209836065574
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with line
+    line on
+    line loctype view
+    line 0.170491803279, 0.540983606557, 0.234426229508, 0.498360655738
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with line
+    line on
+    line loctype view
+    line 0.196721311476, 0.639344262295, 0.260655737705, 0.596721311476
+    line linewidth 2.0
+    line linestyle 1
+    line color 1
+    line arrow 2
+    line arrow type 0
+    line arrow length 1.000000
+    line arrow layout 1.000000, 1.000000
+line def
+with string
+    string on
+    string loctype view
+    string 0.308196721311, 0.770491803279
+    string color 11
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "CO"
+with string
+    string on
+    string loctype view
+    string 0.711475409836, 0.767213114754
+    string color 2
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C"
+with string
+    string on
+    string loctype view
+    string 0.67868852459, 0.847540983606
+    string color 4
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "H"
+with string
+    string on
+    string loctype view
+    string 0.686885245902, 0.703278688525
+    string color 1
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "O"
+with string
+    string on
+    string loctype view
+    string 0.760655737705, 0.626229508197
+    string color 1
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "e\S-"
+with string
+    string on
+    string loctype view
+    string 0.826229508197, 0.386885245902
+    string color 1
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "O\S+"
+with string
+    string on
+    string loctype view
+    string 0.777049180328, 0.470491803278
+    string color 4
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "H\S+"
+with string
+    string on
+    string loctype view
+    string 0.301639344262, 0.727868852459
+    string color 8
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s2\NH\s2"
+with string
+    string on
+    string loctype view
+    string 0.406557377049, 0.654098360656
+    string color 2
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s3"
+with string
+    string on
+    string loctype view
+    string 0.313114754098, 0.849180327868
+    string color 4
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "H\s2"
+with string
+    string on
+    string loctype view
+    string 0.447540983606, 0.47868852459
+    string color 2
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s2"
+with string
+    string on
+    string loctype view
+    string 0.477049180328, 0.275409836066
+    string color 12
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "CH"
+with string
+    string on
+    string loctype view
+    string 0.816393442623, 0.59344262295
+    string color 2
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\S+"
+with string
+    string on
+    string loctype view
+    string 0.581967213115, 0.390163934426
+    string color 15
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "OH"
+with string
+    string on
+    string loctype view
+    string 0.303278688525, 0.511475409836
+    string color 12
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s2\NH"
+with string
+    string on
+    string loctype view
+    string 0.206557377048, 0.852459016394
+    string color 12
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "CH\s4"
+with string
+    string on
+    string loctype view
+    string 0.400000000001, 0.255737704918
+    string color 12
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s3\NH"
+with string
+    string on
+    string loctype view
+    string 0.183606557377, 0.773770491804
+    string color 11
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "CO\s2"
+with string
+    string on
+    string loctype view
+    string 0.12131147541, 0.544262295082
+    string color 15
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "OH"
+with string
+    string on
+    string loctype view
+    string 0.118032786885, 0.459016393443
+    string color 8
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s2\NH\s2"
+with string
+    string on
+    string loctype view
+    string 0.116393442623, 0.644262295083
+    string color 12
+    string rot 0
+    string font 0
+    string just 0
+    string char size 1.000000
+    string def "C\s6\NH\s6"
+r0 off
+link r0 to g0
+r0 type above
+r0 linestyle 1
+r0 linewidth 1.0
+r0 color 1
+r0 line 0, 0, 0, 0
+r1 off
+link r1 to g0
+r1 type above
+r1 linestyle 1
+r1 linewidth 1.0
+r1 color 1
+r1 line 0, 0, 0, 0
+r2 off
+link r2 to g0
+r2 type above
+r2 linestyle 1
+r2 linewidth 1.0
+r2 color 1
+r2 line 0, 0, 0, 0
+r3 off
+link r3 to g0
+r3 type above
+r3 linestyle 1
+r3 linewidth 1.0
+r3 color 1
+r3 line 0, 0, 0, 0
+r4 off
+link r4 to g0
+r4 type above
+r4 linestyle 1
+r4 linewidth 1.0
+r4 color 1
+r4 line 0, 0, 0, 0
+g0 on
+g0 hidden false
+g0 type XY
+g0 stacked false
+g0 bar hgap 0.000000
+g0 fixedpoint off
+g0 fixedpoint type 0
+g0 fixedpoint xy 0.000000, 0.000000
+g0 fixedpoint format general general
+g0 fixedpoint prec 6, 6
+with g0
+    world 0, 0.0001, 10000, 1
+    stack world 0, 0, 0, 0
+    znorm 1
+    view 0.186885, 0.152459, 0.888636, 0.871795
+    title "Carbon phenolic at 0.1atm pressure"
+    title font 0
+    title size 1.250000
+    title color 1
+    subtitle "H:C:O=0.1285:0.5315:0.3400 (Mutation library)"
+    subtitle font 0
+    subtitle size 1.000000
+    subtitle color 1
+    xaxes scale Normal
+    yaxes scale Logarithmic
+    xaxes invert off
+    yaxes invert off
+    xaxis  on
+    xaxis  type zero false
+    xaxis  offset 0.000000 , 0.000000
+    xaxis  bar on
+    xaxis  bar color 1
+    xaxis  bar linestyle 1
+    xaxis  bar linewidth 1.0
+    xaxis  label "Temperature [ K ]"
+    xaxis  label layout para
+    xaxis  label place auto
+    xaxis  label char size 1.250000
+    xaxis  label font 0
+    xaxis  label color 1
+    xaxis  label place normal
+    xaxis  tick on
+    xaxis  tick major 1000
+    xaxis  tick minor ticks 4
+    xaxis  tick default 6
+    xaxis  tick place rounded true
+    xaxis  tick out
+    xaxis  tick major size 1.000000
+    xaxis  tick major color 1
+    xaxis  tick major linewidth 1.0
+    xaxis  tick major linestyle 1
+    xaxis  tick major grid off
+    xaxis  tick minor color 1
+    xaxis  tick minor linewidth 1.0
+    xaxis  tick minor linestyle 1
+    xaxis  tick minor grid off
+    xaxis  tick minor size 0.500000
+    xaxis  ticklabel on
+    xaxis  ticklabel format general
+    xaxis  ticklabel prec 5
+    xaxis  ticklabel formula ""
+    xaxis  ticklabel append ""
+    xaxis  ticklabel prepend ""
+    xaxis  ticklabel angle 0
+    xaxis  ticklabel skip 0
+    xaxis  ticklabel stagger 0
+    xaxis  ticklabel place normal
+    xaxis  ticklabel offset auto
+    xaxis  ticklabel offset 0.000000 , 0.010000
+    xaxis  ticklabel start type auto
+    xaxis  ticklabel start 0.000000
+    xaxis  ticklabel stop type auto
+    xaxis  ticklabel stop 0.000000
+    xaxis  ticklabel char size 1.000000
+    xaxis  ticklabel font 0
+    xaxis  ticklabel color 1
+    xaxis  tick place normal
+    xaxis  tick spec type none
+    yaxis  on
+    yaxis  type zero false
+    yaxis  offset 0.000000 , 0.000000
+    yaxis  bar on
+    yaxis  bar color 1
+    yaxis  bar linestyle 1
+    yaxis  bar linewidth 1.0
+    yaxis  label "Species mole fraction (LTE composition)"
+    yaxis  label layout para
+    yaxis  label place auto
+    yaxis  label char size 1.250000
+    yaxis  label font 0
+    yaxis  label color 1
+    yaxis  label place normal
+    yaxis  tick on
+    yaxis  tick major 10
+    yaxis  tick minor ticks 9
+    yaxis  tick default 6
+    yaxis  tick place rounded true
+    yaxis  tick in
+    yaxis  tick major size 1.000000
+    yaxis  tick major color 1
+    yaxis  tick major linewidth 1.0
+    yaxis  tick major linestyle 1
+    yaxis  tick major grid off
+    yaxis  tick minor color 1
+    yaxis  tick minor linewidth 1.0
+    yaxis  tick minor linestyle 1
+    yaxis  tick minor grid off
+    yaxis  tick minor size 0.500000
+    yaxis  ticklabel on
+    yaxis  ticklabel format general
+    yaxis  ticklabel prec 5
+    yaxis  ticklabel formula ""
+    yaxis  ticklabel append ""
+    yaxis  ticklabel prepend ""
+    yaxis  ticklabel angle 0
+    yaxis  ticklabel skip 0
+    yaxis  ticklabel stagger 0
+    yaxis  ticklabel place normal
+    yaxis  ticklabel offset auto
+    yaxis  ticklabel offset 0.000000 , 0.010000
+    yaxis  ticklabel start type auto
+    yaxis  ticklabel start 0.000000
+    yaxis  ticklabel stop type auto
+    yaxis  ticklabel stop 0.000000
+    yaxis  ticklabel char size 1.000000
+    yaxis  ticklabel font 0
+    yaxis  ticklabel color 1
+    yaxis  tick place both
+    yaxis  tick spec type none
+    altxaxis  off
+    altyaxis  off
+    legend on
+    legend loctype view
+    legend 0.656818182, 0.820512821
+    legend box color 1
+    legend box pattern 1
+    legend box linewidth 1.0
+    legend box linestyle 1
+    legend box fill color 0
+    legend box fill pattern 1
+    legend font 0
+    legend char size 1.000000
+    legend color 1
+    legend length 4
+    legend vgap 1
+    legend hgap 1
+    legend invert false
+    frame type 0
+    frame linestyle 1
+    frame linewidth 1.0
+    frame color 1
+    frame pattern 1
+    frame background color 0
+    frame background pattern 0
+    s0 hidden false
+    s0 type xy
+    s0 symbol 0
+    s0 symbol size 1.000000
+    s0 symbol color 1
+    s0 symbol pattern 1
+    s0 symbol fill color 1
+    s0 symbol fill pattern 0
+    s0 symbol linewidth 1.0
+    s0 symbol linestyle 1
+    s0 symbol char 65
+    s0 symbol char font 0
+    s0 symbol skip 0
+    s0 line type 1
+    s0 line linestyle 4
+    s0 line linewidth 2.0
+    s0 line color 1
+    s0 line pattern 1
+    s0 baseline type 0
+    s0 baseline off
+    s0 dropline off
+    s0 fill type 0
+    s0 fill rule 0
+    s0 fill color 1
+    s0 fill pattern 1
+    s0 avalue off
+    s0 avalue type 2
+    s0 avalue char size 1.000000
+    s0 avalue font 0
+    s0 avalue color 1
+    s0 avalue rot 0
+    s0 avalue format general
+    s0 avalue prec 3
+    s0 avalue prepend ""
+    s0 avalue append ""
+    s0 avalue offset 0.000000 , 0.000000
+    s0 errorbar on
+    s0 errorbar place both
+    s0 errorbar color 1
+    s0 errorbar pattern 1
+    s0 errorbar size 1.000000
+    s0 errorbar linewidth 1.0
+    s0 errorbar linestyle 1
+    s0 errorbar riser linewidth 1.0
+    s0 errorbar riser linestyle 1
+    s0 errorbar riser clip off
+    s0 errorbar riser clip length 0.100000
+    s0 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s0 legend  ""
+    s1 hidden false
+    s1 type xy
+    s1 symbol 0
+    s1 symbol size 1.000000
+    s1 symbol color 2
+    s1 symbol pattern 1
+    s1 symbol fill color 2
+    s1 symbol fill pattern 0
+    s1 symbol linewidth 1.0
+    s1 symbol linestyle 1
+    s1 symbol char 65
+    s1 symbol char font 0
+    s1 symbol skip 0
+    s1 line type 1
+    s1 line linestyle 4
+    s1 line linewidth 2.0
+    s1 line color 2
+    s1 line pattern 1
+    s1 baseline type 0
+    s1 baseline off
+    s1 dropline off
+    s1 fill type 0
+    s1 fill rule 0
+    s1 fill color 1
+    s1 fill pattern 1
+    s1 avalue off
+    s1 avalue type 2
+    s1 avalue char size 1.000000
+    s1 avalue font 0
+    s1 avalue color 1
+    s1 avalue rot 0
+    s1 avalue format general
+    s1 avalue prec 3
+    s1 avalue prepend ""
+    s1 avalue append ""
+    s1 avalue offset 0.000000 , 0.000000
+    s1 errorbar on
+    s1 errorbar place both
+    s1 errorbar color 2
+    s1 errorbar pattern 1
+    s1 errorbar size 1.000000
+    s1 errorbar linewidth 1.0
+    s1 errorbar linestyle 1
+    s1 errorbar riser linewidth 1.0
+    s1 errorbar riser linestyle 1
+    s1 errorbar riser clip off
+    s1 errorbar riser clip length 0.100000
+    s1 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s1 legend  ""
+    s2 hidden false
+    s2 type xy
+    s2 symbol 0
+    s2 symbol size 1.000000
+    s2 symbol color 4
+    s2 symbol pattern 1
+    s2 symbol fill color 4
+    s2 symbol fill pattern 0
+    s2 symbol linewidth 1.0
+    s2 symbol linestyle 1
+    s2 symbol char 65
+    s2 symbol char font 0
+    s2 symbol skip 0
+    s2 line type 1
+    s2 line linestyle 4
+    s2 line linewidth 2.0
+    s2 line color 4
+    s2 line pattern 1
+    s2 baseline type 0
+    s2 baseline off
+    s2 dropline off
+    s2 fill type 0
+    s2 fill rule 0
+    s2 fill color 1
+    s2 fill pattern 1
+    s2 avalue off
+    s2 avalue type 2
+    s2 avalue char size 1.000000
+    s2 avalue font 0
+    s2 avalue color 1
+    s2 avalue rot 0
+    s2 avalue format general
+    s2 avalue prec 3
+    s2 avalue prepend ""
+    s2 avalue append ""
+    s2 avalue offset 0.000000 , 0.000000
+    s2 errorbar on
+    s2 errorbar place both
+    s2 errorbar color 4
+    s2 errorbar pattern 1
+    s2 errorbar size 1.000000
+    s2 errorbar linewidth 1.0
+    s2 errorbar linestyle 1
+    s2 errorbar riser linewidth 1.0
+    s2 errorbar riser linestyle 1
+    s2 errorbar riser clip off
+    s2 errorbar riser clip length 0.100000
+    s2 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s2 legend  ""
+    s3 hidden false
+    s3 type xy
+    s3 symbol 8
+    s3 symbol size 0.160000
+    s3 symbol color 1
+    s3 symbol pattern 1
+    s3 symbol fill color 1
+    s3 symbol fill pattern 0
+    s3 symbol linewidth 1.0
+    s3 symbol linestyle 1
+    s3 symbol char 65
+    s3 symbol char font 0
+    s3 symbol skip 0
+    s3 line type 1
+    s3 line linestyle 4
+    s3 line linewidth 3.0
+    s3 line color 5
+    s3 line pattern 1
+    s3 baseline type 0
+    s3 baseline off
+    s3 dropline off
+    s3 fill type 0
+    s3 fill rule 0
+    s3 fill color 1
+    s3 fill pattern 1
+    s3 avalue off
+    s3 avalue type 2
+    s3 avalue char size 1.000000
+    s3 avalue font 0
+    s3 avalue color 1
+    s3 avalue rot 0
+    s3 avalue format general
+    s3 avalue prec 3
+    s3 avalue prepend ""
+    s3 avalue append ""
+    s3 avalue offset 0.000000 , 0.000000
+    s3 errorbar on
+    s3 errorbar place both
+    s3 errorbar color 1
+    s3 errorbar pattern 1
+    s3 errorbar size 1.000000
+    s3 errorbar linewidth 1.0
+    s3 errorbar linestyle 1
+    s3 errorbar riser linewidth 1.0
+    s3 errorbar riser linestyle 1
+    s3 errorbar riser clip off
+    s3 errorbar riser clip length 0.100000
+    s3 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s3 legend  ""
+    s4 hidden false
+    s4 type xy
+    s4 symbol 0
+    s4 symbol size 1.000000
+    s4 symbol color 2
+    s4 symbol pattern 1
+    s4 symbol fill color 2
+    s4 symbol fill pattern 0
+    s4 symbol linewidth 1.0
+    s4 symbol linestyle 1
+    s4 symbol char 65
+    s4 symbol char font 0
+    s4 symbol skip 0
+    s4 line type 1
+    s4 line linestyle 7
+    s4 line linewidth 2.0
+    s4 line color 2
+    s4 line pattern 1
+    s4 baseline type 0
+    s4 baseline off
+    s4 dropline off
+    s4 fill type 0
+    s4 fill rule 0
+    s4 fill color 1
+    s4 fill pattern 1
+    s4 avalue off
+    s4 avalue type 2
+    s4 avalue char size 1.000000
+    s4 avalue font 0
+    s4 avalue color 1
+    s4 avalue rot 0
+    s4 avalue format general
+    s4 avalue prec 3
+    s4 avalue prepend ""
+    s4 avalue append ""
+    s4 avalue offset 0.000000 , 0.000000
+    s4 errorbar on
+    s4 errorbar place both
+    s4 errorbar color 2
+    s4 errorbar pattern 1
+    s4 errorbar size 1.000000
+    s4 errorbar linewidth 1.0
+    s4 errorbar linestyle 1
+    s4 errorbar riser linewidth 1.0
+    s4 errorbar riser linestyle 1
+    s4 errorbar riser clip off
+    s4 errorbar riser clip length 0.100000
+    s4 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s4 legend  ""
+    s5 hidden false
+    s5 type xy
+    s5 symbol 0
+    s5 symbol size 1.000000
+    s5 symbol color 2
+    s5 symbol pattern 1
+    s5 symbol fill color 2
+    s5 symbol fill pattern 0
+    s5 symbol linewidth 1.0
+    s5 symbol linestyle 1
+    s5 symbol char 65
+    s5 symbol char font 0
+    s5 symbol skip 0
+    s5 line type 1
+    s5 line linestyle 5
+    s5 line linewidth 2.0
+    s5 line color 2
+    s5 line pattern 1
+    s5 baseline type 0
+    s5 baseline off
+    s5 dropline off
+    s5 fill type 0
+    s5 fill rule 0
+    s5 fill color 1
+    s5 fill pattern 1
+    s5 avalue off
+    s5 avalue type 2
+    s5 avalue char size 1.000000
+    s5 avalue font 0
+    s5 avalue color 1
+    s5 avalue rot 0
+    s5 avalue format general
+    s5 avalue prec 3
+    s5 avalue prepend ""
+    s5 avalue append ""
+    s5 avalue offset 0.000000 , 0.000000
+    s5 errorbar on
+    s5 errorbar place both
+    s5 errorbar color 2
+    s5 errorbar pattern 1
+    s5 errorbar size 1.000000
+    s5 errorbar linewidth 1.0
+    s5 errorbar linestyle 1
+    s5 errorbar riser linewidth 1.0
+    s5 errorbar riser linestyle 1
+    s5 errorbar riser clip off
+    s5 errorbar riser clip length 0.100000
+    s5 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s5 legend  ""
+    s6 hidden false
+    s6 type xy
+    s6 symbol 0
+    s6 symbol size 1.000000
+    s6 symbol color 1
+    s6 symbol pattern 1
+    s6 symbol fill color 1
+    s6 symbol fill pattern 0
+    s6 symbol linewidth 1.0
+    s6 symbol linestyle 1
+    s6 symbol char 65
+    s6 symbol char font 0
+    s6 symbol skip 0
+    s6 line type 1
+    s6 line linestyle 1
+    s6 line linewidth 2.0
+    s6 line color 1
+    s6 line pattern 1
+    s6 baseline type 0
+    s6 baseline off
+    s6 dropline off
+    s6 fill type 0
+    s6 fill rule 0
+    s6 fill color 1
+    s6 fill pattern 1
+    s6 avalue off
+    s6 avalue type 2
+    s6 avalue char size 1.000000
+    s6 avalue font 0
+    s6 avalue color 1
+    s6 avalue rot 0
+    s6 avalue format general
+    s6 avalue prec 3
+    s6 avalue prepend ""
+    s6 avalue append ""
+    s6 avalue offset 0.000000 , 0.000000
+    s6 errorbar on
+    s6 errorbar place both
+    s6 errorbar color 1
+    s6 errorbar pattern 1
+    s6 errorbar size 1.000000
+    s6 errorbar linewidth 1.0
+    s6 errorbar linestyle 1
+    s6 errorbar riser linewidth 1.0
+    s6 errorbar riser linestyle 1
+    s6 errorbar riser clip off
+    s6 errorbar riser clip length 0.100000
+    s6 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s6 legend  ""
+    s7 hidden false
+    s7 type xy
+    s7 symbol 0
+    s7 symbol size 1.000000
+    s7 symbol color 2
+    s7 symbol pattern 1
+    s7 symbol fill color 2
+    s7 symbol fill pattern 0
+    s7 symbol linewidth 1.0
+    s7 symbol linestyle 1
+    s7 symbol char 65
+    s7 symbol char font 0
+    s7 symbol skip 0
+    s7 line type 1
+    s7 line linestyle 8
+    s7 line linewidth 2.0
+    s7 line color 2
+    s7 line pattern 1
+    s7 baseline type 0
+    s7 baseline off
+    s7 dropline off
+    s7 fill type 0
+    s7 fill rule 0
+    s7 fill color 1
+    s7 fill pattern 1
+    s7 avalue off
+    s7 avalue type 2
+    s7 avalue char size 1.000000
+    s7 avalue font 0
+    s7 avalue color 1
+    s7 avalue rot 0
+    s7 avalue format general
+    s7 avalue prec 3
+    s7 avalue prepend ""
+    s7 avalue append ""
+    s7 avalue offset 0.000000 , 0.000000
+    s7 errorbar on
+    s7 errorbar place both
+    s7 errorbar color 2
+    s7 errorbar pattern 1
+    s7 errorbar size 1.000000
+    s7 errorbar linewidth 1.0
+    s7 errorbar linestyle 1
+    s7 errorbar riser linewidth 1.0
+    s7 errorbar riser linestyle 1
+    s7 errorbar riser clip off
+    s7 errorbar riser clip length 0.100000
+    s7 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s7 legend  ""
+    s8 hidden false
+    s8 type xy
+    s8 symbol 2
+    s8 symbol size 0.750000
+    s8 symbol color 12
+    s8 symbol pattern 1
+    s8 symbol fill color 12
+    s8 symbol fill pattern 0
+    s8 symbol linewidth 2.0
+    s8 symbol linestyle 1
+    s8 symbol char 65
+    s8 symbol char font 0
+    s8 symbol skip 2
+    s8 line type 1
+    s8 line linestyle 1
+    s8 line linewidth 2.0
+    s8 line color 12
+    s8 line pattern 1
+    s8 baseline type 0
+    s8 baseline off
+    s8 dropline off
+    s8 fill type 0
+    s8 fill rule 0
+    s8 fill color 1
+    s8 fill pattern 1
+    s8 avalue off
+    s8 avalue type 2
+    s8 avalue char size 1.000000
+    s8 avalue font 0
+    s8 avalue color 1
+    s8 avalue rot 0
+    s8 avalue format general
+    s8 avalue prec 3
+    s8 avalue prepend ""
+    s8 avalue append ""
+    s8 avalue offset 0.000000 , 0.000000
+    s8 errorbar on
+    s8 errorbar place both
+    s8 errorbar color 12
+    s8 errorbar pattern 1
+    s8 errorbar size 1.000000
+    s8 errorbar linewidth 1.0
+    s8 errorbar linestyle 1
+    s8 errorbar riser linewidth 1.0
+    s8 errorbar riser linestyle 1
+    s8 errorbar riser clip off
+    s8 errorbar riser clip length 0.100000
+    s8 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s8 legend  ""
+    s9 hidden false
+    s9 type xy
+    s9 symbol 0
+    s9 symbol size 1.000000
+    s9 symbol color 1
+    s9 symbol pattern 1
+    s9 symbol fill color 1
+    s9 symbol fill pattern 0
+    s9 symbol linewidth 1.0
+    s9 symbol linestyle 1
+    s9 symbol char 65
+    s9 symbol char font 0
+    s9 symbol skip 0
+    s9 line type 1
+    s9 line linestyle 1
+    s9 line linewidth 2.0
+    s9 line color 1
+    s9 line pattern 1
+    s9 baseline type 0
+    s9 baseline off
+    s9 dropline off
+    s9 fill type 0
+    s9 fill rule 0
+    s9 fill color 1
+    s9 fill pattern 1
+    s9 avalue off
+    s9 avalue type 2
+    s9 avalue char size 1.000000
+    s9 avalue font 0
+    s9 avalue color 1
+    s9 avalue rot 0
+    s9 avalue format general
+    s9 avalue prec 3
+    s9 avalue prepend ""
+    s9 avalue append ""
+    s9 avalue offset 0.000000 , 0.000000
+    s9 errorbar on
+    s9 errorbar place both
+    s9 errorbar color 1
+    s9 errorbar pattern 1
+    s9 errorbar size 1.000000
+    s9 errorbar linewidth 1.0
+    s9 errorbar linestyle 1
+    s9 errorbar riser linewidth 1.0
+    s9 errorbar riser linestyle 1
+    s9 errorbar riser clip off
+    s9 errorbar riser clip length 0.100000
+    s9 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s9 legend  ""
+    s10 hidden false
+    s10 type xy
+    s10 symbol 0
+    s10 symbol size 1.000000
+    s10 symbol color 1
+    s10 symbol pattern 1
+    s10 symbol fill color 1
+    s10 symbol fill pattern 0
+    s10 symbol linewidth 1.0
+    s10 symbol linestyle 1
+    s10 symbol char 65
+    s10 symbol char font 0
+    s10 symbol skip 0
+    s10 line type 1
+    s10 line linestyle 1
+    s10 line linewidth 2.0
+    s10 line color 1
+    s10 line pattern 1
+    s10 baseline type 0
+    s10 baseline off
+    s10 dropline off
+    s10 fill type 0
+    s10 fill rule 0
+    s10 fill color 1
+    s10 fill pattern 1
+    s10 avalue off
+    s10 avalue type 2
+    s10 avalue char size 1.000000
+    s10 avalue font 0
+    s10 avalue color 1
+    s10 avalue rot 0
+    s10 avalue format general
+    s10 avalue prec 3
+    s10 avalue prepend ""
+    s10 avalue append ""
+    s10 avalue offset 0.000000 , 0.000000
+    s10 errorbar on
+    s10 errorbar place both
+    s10 errorbar color 1
+    s10 errorbar pattern 1
+    s10 errorbar size 1.000000
+    s10 errorbar linewidth 1.0
+    s10 errorbar linestyle 1
+    s10 errorbar riser linewidth 1.0
+    s10 errorbar riser linestyle 1
+    s10 errorbar riser clip off
+    s10 errorbar riser clip length 0.100000
+    s10 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s10 legend  ""
+    s11 hidden false
+    s11 type xy
+    s11 symbol 0
+    s11 symbol size 1.000000
+    s11 symbol color 12
+    s11 symbol pattern 1
+    s11 symbol fill color 12
+    s11 symbol fill pattern 0
+    s11 symbol linewidth 1.0
+    s11 symbol linestyle 1
+    s11 symbol char 65
+    s11 symbol char font 0
+    s11 symbol skip 0
+    s11 line type 1
+    s11 line linestyle 1
+    s11 line linewidth 2.0
+    s11 line color 12
+    s11 line pattern 1
+    s11 baseline type 0
+    s11 baseline off
+    s11 dropline off
+    s11 fill type 0
+    s11 fill rule 0
+    s11 fill color 1
+    s11 fill pattern 1
+    s11 avalue off
+    s11 avalue type 2
+    s11 avalue char size 1.000000
+    s11 avalue font 0
+    s11 avalue color 1
+    s11 avalue rot 0
+    s11 avalue format general
+    s11 avalue prec 3
+    s11 avalue prepend ""
+    s11 avalue append ""
+    s11 avalue offset 0.000000 , 0.000000
+    s11 errorbar on
+    s11 errorbar place both
+    s11 errorbar color 12
+    s11 errorbar pattern 1
+    s11 errorbar size 1.000000
+    s11 errorbar linewidth 1.0
+    s11 errorbar linestyle 1
+    s11 errorbar riser linewidth 1.0
+    s11 errorbar riser linestyle 1
+    s11 errorbar riser clip off
+    s11 errorbar riser clip length 0.100000
+    s11 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s11 legend  ""
+    s12 hidden false
+    s12 type xy
+    s12 symbol 0
+    s12 symbol size 1.000000
+    s12 symbol color 1
+    s12 symbol pattern 1
+    s12 symbol fill color 1
+    s12 symbol fill pattern 0
+    s12 symbol linewidth 1.0
+    s12 symbol linestyle 1
+    s12 symbol char 65
+    s12 symbol char font 0
+    s12 symbol skip 0
+    s12 line type 1
+    s12 line linestyle 1
+    s12 line linewidth 2.0
+    s12 line color 1
+    s12 line pattern 1
+    s12 baseline type 0
+    s12 baseline off
+    s12 dropline off
+    s12 fill type 0
+    s12 fill rule 0
+    s12 fill color 1
+    s12 fill pattern 1
+    s12 avalue off
+    s12 avalue type 2
+    s12 avalue char size 1.000000
+    s12 avalue font 0
+    s12 avalue color 1
+    s12 avalue rot 0
+    s12 avalue format general
+    s12 avalue prec 3
+    s12 avalue prepend ""
+    s12 avalue append ""
+    s12 avalue offset 0.000000 , 0.000000
+    s12 errorbar on
+    s12 errorbar place both
+    s12 errorbar color 1
+    s12 errorbar pattern 1
+    s12 errorbar size 1.000000
+    s12 errorbar linewidth 1.0
+    s12 errorbar linestyle 1
+    s12 errorbar riser linewidth 1.0
+    s12 errorbar riser linestyle 1
+    s12 errorbar riser clip off
+    s12 errorbar riser clip length 0.100000
+    s12 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s12 legend  ""
+    s13 hidden false
+    s13 type xy
+    s13 symbol 0
+    s13 symbol size 1.000000
+    s13 symbol color 11
+    s13 symbol pattern 1
+    s13 symbol fill color 11
+    s13 symbol fill pattern 0
+    s13 symbol linewidth 1.0
+    s13 symbol linestyle 1
+    s13 symbol char 65
+    s13 symbol char font 0
+    s13 symbol skip 0
+    s13 line type 1
+    s13 line linestyle 8
+    s13 line linewidth 2.0
+    s13 line color 11
+    s13 line pattern 1
+    s13 baseline type 0
+    s13 baseline off
+    s13 dropline off
+    s13 fill type 0
+    s13 fill rule 0
+    s13 fill color 1
+    s13 fill pattern 1
+    s13 avalue off
+    s13 avalue type 2
+    s13 avalue char size 1.000000
+    s13 avalue font 0
+    s13 avalue color 1
+    s13 avalue rot 0
+    s13 avalue format general
+    s13 avalue prec 3
+    s13 avalue prepend ""
+    s13 avalue append ""
+    s13 avalue offset 0.000000 , 0.000000
+    s13 errorbar on
+    s13 errorbar place both
+    s13 errorbar color 11
+    s13 errorbar pattern 1
+    s13 errorbar size 1.000000
+    s13 errorbar linewidth 1.0
+    s13 errorbar linestyle 1
+    s13 errorbar riser linewidth 1.0
+    s13 errorbar riser linestyle 1
+    s13 errorbar riser clip off
+    s13 errorbar riser clip length 0.100000
+    s13 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s13 legend  ""
+    s14 hidden false
+    s14 type xy
+    s14 symbol 0
+    s14 symbol size 1.000000
+    s14 symbol color 11
+    s14 symbol pattern 1
+    s14 symbol fill color 11
+    s14 symbol fill pattern 0
+    s14 symbol linewidth 1.0
+    s14 symbol linestyle 1
+    s14 symbol char 65
+    s14 symbol char font 0
+    s14 symbol skip 0
+    s14 line type 1
+    s14 line linestyle 1
+    s14 line linewidth 2.0
+    s14 line color 11
+    s14 line pattern 1
+    s14 baseline type 0
+    s14 baseline off
+    s14 dropline off
+    s14 fill type 0
+    s14 fill rule 0
+    s14 fill color 1
+    s14 fill pattern 1
+    s14 avalue off
+    s14 avalue type 2
+    s14 avalue char size 1.000000
+    s14 avalue font 0
+    s14 avalue color 1
+    s14 avalue rot 0
+    s14 avalue format general
+    s14 avalue prec 3
+    s14 avalue prepend ""
+    s14 avalue append ""
+    s14 avalue offset 0.000000 , 0.000000
+    s14 errorbar on
+    s14 errorbar place both
+    s14 errorbar color 11
+    s14 errorbar pattern 1
+    s14 errorbar size 1.000000
+    s14 errorbar linewidth 1.0
+    s14 errorbar linestyle 1
+    s14 errorbar riser linewidth 1.0
+    s14 errorbar riser linestyle 1
+    s14 errorbar riser clip off
+    s14 errorbar riser clip length 0.100000
+    s14 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s14 legend  ""
+    s15 hidden false
+    s15 type xy
+    s15 symbol 10
+    s15 symbol size 0.750000
+    s15 symbol color 12
+    s15 symbol pattern 1
+    s15 symbol fill color 12
+    s15 symbol fill pattern 0
+    s15 symbol linewidth 2.0
+    s15 symbol linestyle 1
+    s15 symbol char 65
+    s15 symbol char font 0
+    s15 symbol skip 2
+    s15 line type 1
+    s15 line linestyle 1
+    s15 line linewidth 2.0
+    s15 line color 12
+    s15 line pattern 1
+    s15 baseline type 0
+    s15 baseline off
+    s15 dropline off
+    s15 fill type 0
+    s15 fill rule 0
+    s15 fill color 1
+    s15 fill pattern 1
+    s15 avalue off
+    s15 avalue type 2
+    s15 avalue char size 1.000000
+    s15 avalue font 0
+    s15 avalue color 1
+    s15 avalue rot 0
+    s15 avalue format general
+    s15 avalue prec 3
+    s15 avalue prepend ""
+    s15 avalue append ""
+    s15 avalue offset 0.000000 , 0.000000
+    s15 errorbar on
+    s15 errorbar place both
+    s15 errorbar color 12
+    s15 errorbar pattern 1
+    s15 errorbar size 1.000000
+    s15 errorbar linewidth 1.0
+    s15 errorbar linestyle 1
+    s15 errorbar riser linewidth 1.0
+    s15 errorbar riser linestyle 1
+    s15 errorbar riser clip off
+    s15 errorbar riser clip length 0.100000
+    s15 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s15 legend  ""
+    s16 hidden false
+    s16 type xy
+    s16 symbol 0
+    s16 symbol size 1.000000
+    s16 symbol color 12
+    s16 symbol pattern 1
+    s16 symbol fill color 12
+    s16 symbol fill pattern 0
+    s16 symbol linewidth 1.0
+    s16 symbol linestyle 1
+    s16 symbol char 65
+    s16 symbol char font 0
+    s16 symbol skip 0
+    s16 line type 1
+    s16 line linestyle 1
+    s16 line linewidth 2.0
+    s16 line color 12
+    s16 line pattern 1
+    s16 baseline type 0
+    s16 baseline off
+    s16 dropline off
+    s16 fill type 0
+    s16 fill rule 0
+    s16 fill color 1
+    s16 fill pattern 1
+    s16 avalue off
+    s16 avalue type 2
+    s16 avalue char size 1.000000
+    s16 avalue font 0
+    s16 avalue color 1
+    s16 avalue rot 0
+    s16 avalue format general
+    s16 avalue prec 3
+    s16 avalue prepend ""
+    s16 avalue append ""
+    s16 avalue offset 0.000000 , 0.000000
+    s16 errorbar on
+    s16 errorbar place both
+    s16 errorbar color 12
+    s16 errorbar pattern 1
+    s16 errorbar size 1.000000
+    s16 errorbar linewidth 1.0
+    s16 errorbar linestyle 1
+    s16 errorbar riser linewidth 1.0
+    s16 errorbar riser linestyle 1
+    s16 errorbar riser clip off
+    s16 errorbar riser clip length 0.100000
+    s16 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s16 legend  ""
+    s17 hidden false
+    s17 type xy
+    s17 symbol 8
+    s17 symbol size 0.750000
+    s17 symbol color 12
+    s17 symbol pattern 1
+    s17 symbol fill color 12
+    s17 symbol fill pattern 0
+    s17 symbol linewidth 2.0
+    s17 symbol linestyle 1
+    s17 symbol char 65
+    s17 symbol char font 0
+    s17 symbol skip 0
+    s17 line type 1
+    s17 line linestyle 1
+    s17 line linewidth 2.0
+    s17 line color 12
+    s17 line pattern 1
+    s17 baseline type 0
+    s17 baseline off
+    s17 dropline off
+    s17 fill type 0
+    s17 fill rule 0
+    s17 fill color 1
+    s17 fill pattern 1
+    s17 avalue off
+    s17 avalue type 2
+    s17 avalue char size 1.000000
+    s17 avalue font 0
+    s17 avalue color 1
+    s17 avalue rot 0
+    s17 avalue format general
+    s17 avalue prec 3
+    s17 avalue prepend ""
+    s17 avalue append ""
+    s17 avalue offset 0.000000 , 0.000000
+    s17 errorbar on
+    s17 errorbar place both
+    s17 errorbar color 12
+    s17 errorbar pattern 1
+    s17 errorbar size 1.000000
+    s17 errorbar linewidth 1.0
+    s17 errorbar linestyle 1
+    s17 errorbar riser linewidth 1.0
+    s17 errorbar riser linestyle 1
+    s17 errorbar riser clip off
+    s17 errorbar riser clip length 0.100000
+    s17 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s17 legend  ""
+    s18 hidden false
+    s18 type xy
+    s18 symbol 0
+    s18 symbol size 1.000000
+    s18 symbol color 1
+    s18 symbol pattern 1
+    s18 symbol fill color 1
+    s18 symbol fill pattern 0
+    s18 symbol linewidth 1.0
+    s18 symbol linestyle 1
+    s18 symbol char 65
+    s18 symbol char font 0
+    s18 symbol skip 0
+    s18 line type 1
+    s18 line linestyle 1
+    s18 line linewidth 2.0
+    s18 line color 1
+    s18 line pattern 1
+    s18 baseline type 0
+    s18 baseline off
+    s18 dropline off
+    s18 fill type 0
+    s18 fill rule 0
+    s18 fill color 1
+    s18 fill pattern 1
+    s18 avalue off
+    s18 avalue type 2
+    s18 avalue char size 1.000000
+    s18 avalue font 0
+    s18 avalue color 1
+    s18 avalue rot 0
+    s18 avalue format general
+    s18 avalue prec 3
+    s18 avalue prepend ""
+    s18 avalue append ""
+    s18 avalue offset 0.000000 , 0.000000
+    s18 errorbar on
+    s18 errorbar place both
+    s18 errorbar color 1
+    s18 errorbar pattern 1
+    s18 errorbar size 1.000000
+    s18 errorbar linewidth 1.0
+    s18 errorbar linestyle 1
+    s18 errorbar riser linewidth 1.0
+    s18 errorbar riser linestyle 1
+    s18 errorbar riser clip off
+    s18 errorbar riser clip length 0.100000
+    s18 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s18 legend  ""
+    s19 hidden false
+    s19 type xy
+    s19 symbol 1
+    s19 symbol size 0.750000
+    s19 symbol color 12
+    s19 symbol pattern 1
+    s19 symbol fill color 12
+    s19 symbol fill pattern 0
+    s19 symbol linewidth 2.0
+    s19 symbol linestyle 1
+    s19 symbol char 65
+    s19 symbol char font 0
+    s19 symbol skip 2
+    s19 line type 1
+    s19 line linestyle 1
+    s19 line linewidth 3.0
+    s19 line color 12
+    s19 line pattern 1
+    s19 baseline type 0
+    s19 baseline off
+    s19 dropline off
+    s19 fill type 0
+    s19 fill rule 0
+    s19 fill color 1
+    s19 fill pattern 1
+    s19 avalue off
+    s19 avalue type 2
+    s19 avalue char size 1.000000
+    s19 avalue font 0
+    s19 avalue color 1
+    s19 avalue rot 0
+    s19 avalue format general
+    s19 avalue prec 3
+    s19 avalue prepend ""
+    s19 avalue append ""
+    s19 avalue offset 0.000000 , 0.000000
+    s19 errorbar on
+    s19 errorbar place both
+    s19 errorbar color 12
+    s19 errorbar pattern 1
+    s19 errorbar size 1.000000
+    s19 errorbar linewidth 1.0
+    s19 errorbar linestyle 1
+    s19 errorbar riser linewidth 1.0
+    s19 errorbar riser linestyle 1
+    s19 errorbar riser clip off
+    s19 errorbar riser clip length 0.100000
+    s19 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s19 legend  ""
+    s20 hidden false
+    s20 type xy
+    s20 symbol 0
+    s20 symbol size 1.000000
+    s20 symbol color 1
+    s20 symbol pattern 1
+    s20 symbol fill color 1
+    s20 symbol fill pattern 0
+    s20 symbol linewidth 1.0
+    s20 symbol linestyle 1
+    s20 symbol char 65
+    s20 symbol char font 0
+    s20 symbol skip 0
+    s20 line type 1
+    s20 line linestyle 1
+    s20 line linewidth 2.0
+    s20 line color 1
+    s20 line pattern 1
+    s20 baseline type 0
+    s20 baseline off
+    s20 dropline off
+    s20 fill type 0
+    s20 fill rule 0
+    s20 fill color 1
+    s20 fill pattern 1
+    s20 avalue off
+    s20 avalue type 2
+    s20 avalue char size 1.000000
+    s20 avalue font 0
+    s20 avalue color 1
+    s20 avalue rot 0
+    s20 avalue format general
+    s20 avalue prec 3
+    s20 avalue prepend ""
+    s20 avalue append ""
+    s20 avalue offset 0.000000 , 0.000000
+    s20 errorbar on
+    s20 errorbar place both
+    s20 errorbar color 1
+    s20 errorbar pattern 1
+    s20 errorbar size 1.000000
+    s20 errorbar linewidth 1.0
+    s20 errorbar linestyle 1
+    s20 errorbar riser linewidth 1.0
+    s20 errorbar riser linestyle 1
+    s20 errorbar riser clip off
+    s20 errorbar riser clip length 0.100000
+    s20 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s20 legend  ""
+    s21 hidden false
+    s21 type xy
+    s21 symbol 0
+    s21 symbol size 1.000000
+    s21 symbol color 1
+    s21 symbol pattern 1
+    s21 symbol fill color 1
+    s21 symbol fill pattern 0
+    s21 symbol linewidth 1.0
+    s21 symbol linestyle 1
+    s21 symbol char 65
+    s21 symbol char font 0
+    s21 symbol skip 0
+    s21 line type 1
+    s21 line linestyle 1
+    s21 line linewidth 2.0
+    s21 line color 1
+    s21 line pattern 1
+    s21 baseline type 0
+    s21 baseline off
+    s21 dropline off
+    s21 fill type 0
+    s21 fill rule 0
+    s21 fill color 1
+    s21 fill pattern 1
+    s21 avalue off
+    s21 avalue type 2
+    s21 avalue char size 1.000000
+    s21 avalue font 0
+    s21 avalue color 1
+    s21 avalue rot 0
+    s21 avalue format general
+    s21 avalue prec 3
+    s21 avalue prepend ""
+    s21 avalue append ""
+    s21 avalue offset 0.000000 , 0.000000
+    s21 errorbar on
+    s21 errorbar place both
+    s21 errorbar color 1
+    s21 errorbar pattern 1
+    s21 errorbar size 1.000000
+    s21 errorbar linewidth 1.0
+    s21 errorbar linestyle 1
+    s21 errorbar riser linewidth 1.0
+    s21 errorbar riser linestyle 1
+    s21 errorbar riser clip off
+    s21 errorbar riser clip length 0.100000
+    s21 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s21 legend  ""
+    s22 hidden false
+    s22 type xy
+    s22 symbol 4
+    s22 symbol size 0.750000
+    s22 symbol color 12
+    s22 symbol pattern 1
+    s22 symbol fill color 12
+    s22 symbol fill pattern 0
+    s22 symbol linewidth 2.0
+    s22 symbol linestyle 1
+    s22 symbol char 65
+    s22 symbol char font 0
+    s22 symbol skip 1
+    s22 line type 1
+    s22 line linestyle 1
+    s22 line linewidth 2.0
+    s22 line color 12
+    s22 line pattern 1
+    s22 baseline type 0
+    s22 baseline off
+    s22 dropline off
+    s22 fill type 0
+    s22 fill rule 0
+    s22 fill color 1
+    s22 fill pattern 1
+    s22 avalue off
+    s22 avalue type 2
+    s22 avalue char size 1.000000
+    s22 avalue font 0
+    s22 avalue color 1
+    s22 avalue rot 0
+    s22 avalue format general
+    s22 avalue prec 3
+    s22 avalue prepend ""
+    s22 avalue append ""
+    s22 avalue offset 0.000000 , 0.000000
+    s22 errorbar on
+    s22 errorbar place both
+    s22 errorbar color 12
+    s22 errorbar pattern 1
+    s22 errorbar size 1.000000
+    s22 errorbar linewidth 1.0
+    s22 errorbar linestyle 1
+    s22 errorbar riser linewidth 1.0
+    s22 errorbar riser linestyle 1
+    s22 errorbar riser clip off
+    s22 errorbar riser clip length 0.100000
+    s22 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s22 legend  ""
+    s23 hidden false
+    s23 type xy
+    s23 symbol 9
+    s23 symbol size 0.750000
+    s23 symbol color 12
+    s23 symbol pattern 1
+    s23 symbol fill color 12
+    s23 symbol fill pattern 0
+    s23 symbol linewidth 2.0
+    s23 symbol linestyle 1
+    s23 symbol char 65
+    s23 symbol char font 0
+    s23 symbol skip 0
+    s23 line type 1
+    s23 line linestyle 1
+    s23 line linewidth 2.0
+    s23 line color 12
+    s23 line pattern 1
+    s23 baseline type 0
+    s23 baseline off
+    s23 dropline off
+    s23 fill type 0
+    s23 fill rule 0
+    s23 fill color 1
+    s23 fill pattern 1
+    s23 avalue off
+    s23 avalue type 2
+    s23 avalue char size 1.000000
+    s23 avalue font 0
+    s23 avalue color 1
+    s23 avalue rot 0
+    s23 avalue format general
+    s23 avalue prec 3
+    s23 avalue prepend ""
+    s23 avalue append ""
+    s23 avalue offset 0.000000 , 0.000000
+    s23 errorbar on
+    s23 errorbar place both
+    s23 errorbar color 12
+    s23 errorbar pattern 1
+    s23 errorbar size 1.000000
+    s23 errorbar linewidth 1.0
+    s23 errorbar linestyle 1
+    s23 errorbar riser linewidth 1.0
+    s23 errorbar riser linestyle 1
+    s23 errorbar riser clip off
+    s23 errorbar riser clip length 0.100000
+    s23 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s23 legend  ""
+    s24 hidden false
+    s24 type xy
+    s24 symbol 0
+    s24 symbol size 1.000000
+    s24 symbol color 1
+    s24 symbol pattern 1
+    s24 symbol fill color 1
+    s24 symbol fill pattern 0
+    s24 symbol linewidth 1.0
+    s24 symbol linestyle 1
+    s24 symbol char 65
+    s24 symbol char font 0
+    s24 symbol skip 0
+    s24 line type 1
+    s24 line linestyle 1
+    s24 line linewidth 2.0
+    s24 line color 1
+    s24 line pattern 1
+    s24 baseline type 0
+    s24 baseline off
+    s24 dropline off
+    s24 fill type 0
+    s24 fill rule 0
+    s24 fill color 1
+    s24 fill pattern 1
+    s24 avalue off
+    s24 avalue type 2
+    s24 avalue char size 1.000000
+    s24 avalue font 0
+    s24 avalue color 1
+    s24 avalue rot 0
+    s24 avalue format general
+    s24 avalue prec 3
+    s24 avalue prepend ""
+    s24 avalue append ""
+    s24 avalue offset 0.000000 , 0.000000
+    s24 errorbar on
+    s24 errorbar place both
+    s24 errorbar color 1
+    s24 errorbar pattern 1
+    s24 errorbar size 1.000000
+    s24 errorbar linewidth 1.0
+    s24 errorbar linestyle 1
+    s24 errorbar riser linewidth 1.0
+    s24 errorbar riser linestyle 1
+    s24 errorbar riser clip off
+    s24 errorbar riser clip length 0.100000
+    s24 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s24 legend  ""
+    s25 hidden false
+    s25 type xy
+    s25 symbol 0
+    s25 symbol size 1.000000
+    s25 symbol color 1
+    s25 symbol pattern 1
+    s25 symbol fill color 1
+    s25 symbol fill pattern 0
+    s25 symbol linewidth 1.0
+    s25 symbol linestyle 1
+    s25 symbol char 65
+    s25 symbol char font 0
+    s25 symbol skip 0
+    s25 line type 1
+    s25 line linestyle 1
+    s25 line linewidth 2.0
+    s25 line color 1
+    s25 line pattern 1
+    s25 baseline type 0
+    s25 baseline off
+    s25 dropline off
+    s25 fill type 0
+    s25 fill rule 0
+    s25 fill color 1
+    s25 fill pattern 1
+    s25 avalue off
+    s25 avalue type 2
+    s25 avalue char size 1.000000
+    s25 avalue font 0
+    s25 avalue color 1
+    s25 avalue rot 0
+    s25 avalue format general
+    s25 avalue prec 3
+    s25 avalue prepend ""
+    s25 avalue append ""
+    s25 avalue offset 0.000000 , 0.000000
+    s25 errorbar on
+    s25 errorbar place both
+    s25 errorbar color 1
+    s25 errorbar pattern 1
+    s25 errorbar size 1.000000
+    s25 errorbar linewidth 1.0
+    s25 errorbar linestyle 1
+    s25 errorbar riser linewidth 1.0
+    s25 errorbar riser linestyle 1
+    s25 errorbar riser clip off
+    s25 errorbar riser clip length 0.100000
+    s25 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s25 legend  ""
+    s26 hidden false
+    s26 type xy
+    s26 symbol 0
+    s26 symbol size 1.000000
+    s26 symbol color 1
+    s26 symbol pattern 1
+    s26 symbol fill color 1
+    s26 symbol fill pattern 0
+    s26 symbol linewidth 1.0
+    s26 symbol linestyle 1
+    s26 symbol char 65
+    s26 symbol char font 0
+    s26 symbol skip 0
+    s26 line type 1
+    s26 line linestyle 1
+    s26 line linewidth 2.0
+    s26 line color 1
+    s26 line pattern 1
+    s26 baseline type 0
+    s26 baseline off
+    s26 dropline off
+    s26 fill type 0
+    s26 fill rule 0
+    s26 fill color 1
+    s26 fill pattern 1
+    s26 avalue off
+    s26 avalue type 2
+    s26 avalue char size 1.000000
+    s26 avalue font 0
+    s26 avalue color 1
+    s26 avalue rot 0
+    s26 avalue format general
+    s26 avalue prec 3
+    s26 avalue prepend ""
+    s26 avalue append ""
+    s26 avalue offset 0.000000 , 0.000000
+    s26 errorbar on
+    s26 errorbar place both
+    s26 errorbar color 1
+    s26 errorbar pattern 1
+    s26 errorbar size 1.000000
+    s26 errorbar linewidth 1.0
+    s26 errorbar linestyle 1
+    s26 errorbar riser linewidth 1.0
+    s26 errorbar riser linestyle 1
+    s26 errorbar riser clip off
+    s26 errorbar riser clip length 0.100000
+    s26 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s26 legend  ""
+    s27 hidden false
+    s27 type xy
+    s27 symbol 0
+    s27 symbol size 1.000000
+    s27 symbol color 12
+    s27 symbol pattern 1
+    s27 symbol fill color 12
+    s27 symbol fill pattern 0
+    s27 symbol linewidth 1.0
+    s27 symbol linestyle 1
+    s27 symbol char 65
+    s27 symbol char font 0
+    s27 symbol skip 0
+    s27 line type 1
+    s27 line linestyle 3
+    s27 line linewidth 2.0
+    s27 line color 12
+    s27 line pattern 1
+    s27 baseline type 0
+    s27 baseline off
+    s27 dropline off
+    s27 fill type 0
+    s27 fill rule 0
+    s27 fill color 1
+    s27 fill pattern 1
+    s27 avalue off
+    s27 avalue type 2
+    s27 avalue char size 1.000000
+    s27 avalue font 0
+    s27 avalue color 1
+    s27 avalue rot 0
+    s27 avalue format general
+    s27 avalue prec 3
+    s27 avalue prepend ""
+    s27 avalue append ""
+    s27 avalue offset 0.000000 , 0.000000
+    s27 errorbar on
+    s27 errorbar place both
+    s27 errorbar color 12
+    s27 errorbar pattern 1
+    s27 errorbar size 1.000000
+    s27 errorbar linewidth 1.0
+    s27 errorbar linestyle 1
+    s27 errorbar riser linewidth 1.0
+    s27 errorbar riser linestyle 1
+    s27 errorbar riser clip off
+    s27 errorbar riser clip length 0.100000
+    s27 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s27 legend  ""
+    s28 hidden false
+    s28 type xy
+    s28 symbol 0
+    s28 symbol size 1.000000
+    s28 symbol color 1
+    s28 symbol pattern 1
+    s28 symbol fill color 1
+    s28 symbol fill pattern 0
+    s28 symbol linewidth 1.0
+    s28 symbol linestyle 1
+    s28 symbol char 65
+    s28 symbol char font 0
+    s28 symbol skip 0
+    s28 line type 1
+    s28 line linestyle 1
+    s28 line linewidth 2.0
+    s28 line color 1
+    s28 line pattern 1
+    s28 baseline type 0
+    s28 baseline off
+    s28 dropline off
+    s28 fill type 0
+    s28 fill rule 0
+    s28 fill color 1
+    s28 fill pattern 1
+    s28 avalue off
+    s28 avalue type 2
+    s28 avalue char size 1.000000
+    s28 avalue font 0
+    s28 avalue color 1
+    s28 avalue rot 0
+    s28 avalue format general
+    s28 avalue prec 3
+    s28 avalue prepend ""
+    s28 avalue append ""
+    s28 avalue offset 0.000000 , 0.000000
+    s28 errorbar on
+    s28 errorbar place both
+    s28 errorbar color 1
+    s28 errorbar pattern 1
+    s28 errorbar size 1.000000
+    s28 errorbar linewidth 1.0
+    s28 errorbar linestyle 1
+    s28 errorbar riser linewidth 1.0
+    s28 errorbar riser linestyle 1
+    s28 errorbar riser clip off
+    s28 errorbar riser clip length 0.100000
+    s28 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s28 legend  ""
+    s29 hidden false
+    s29 type xy
+    s29 symbol 0
+    s29 symbol size 1.000000
+    s29 symbol color 4
+    s29 symbol pattern 1
+    s29 symbol fill color 4
+    s29 symbol fill pattern 0
+    s29 symbol linewidth 1.0
+    s29 symbol linestyle 1
+    s29 symbol char 65
+    s29 symbol char font 0
+    s29 symbol skip 0
+    s29 line type 1
+    s29 line linestyle 1
+    s29 line linewidth 2.0
+    s29 line color 4
+    s29 line pattern 1
+    s29 baseline type 0
+    s29 baseline off
+    s29 dropline off
+    s29 fill type 0
+    s29 fill rule 0
+    s29 fill color 1
+    s29 fill pattern 1
+    s29 avalue off
+    s29 avalue type 2
+    s29 avalue char size 1.000000
+    s29 avalue font 0
+    s29 avalue color 1
+    s29 avalue rot 0
+    s29 avalue format general
+    s29 avalue prec 3
+    s29 avalue prepend ""
+    s29 avalue append ""
+    s29 avalue offset 0.000000 , 0.000000
+    s29 errorbar on
+    s29 errorbar place both
+    s29 errorbar color 4
+    s29 errorbar pattern 1
+    s29 errorbar size 1.000000
+    s29 errorbar linewidth 1.0
+    s29 errorbar linestyle 1
+    s29 errorbar riser linewidth 1.0
+    s29 errorbar riser linestyle 1
+    s29 errorbar riser clip off
+    s29 errorbar riser clip length 0.100000
+    s29 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s29 legend  ""
+    s30 hidden false
+    s30 type xy
+    s30 symbol 0
+    s30 symbol size 1.000000
+    s30 symbol color 15
+    s30 symbol pattern 1
+    s30 symbol fill color 15
+    s30 symbol fill pattern 0
+    s30 symbol linewidth 1.0
+    s30 symbol linestyle 1
+    s30 symbol char 65
+    s30 symbol char font 0
+    s30 symbol skip 0
+    s30 line type 1
+    s30 line linestyle 1
+    s30 line linewidth 2.0
+    s30 line color 15
+    s30 line pattern 1
+    s30 baseline type 0
+    s30 baseline off
+    s30 dropline off
+    s30 fill type 0
+    s30 fill rule 0
+    s30 fill color 1
+    s30 fill pattern 1
+    s30 avalue off
+    s30 avalue type 2
+    s30 avalue char size 1.000000
+    s30 avalue font 0
+    s30 avalue color 1
+    s30 avalue rot 0
+    s30 avalue format general
+    s30 avalue prec 3
+    s30 avalue prepend ""
+    s30 avalue append ""
+    s30 avalue offset 0.000000 , 0.000000
+    s30 errorbar on
+    s30 errorbar place both
+    s30 errorbar color 15
+    s30 errorbar pattern 1
+    s30 errorbar size 1.000000
+    s30 errorbar linewidth 1.0
+    s30 errorbar linestyle 1
+    s30 errorbar riser linewidth 1.0
+    s30 errorbar riser linestyle 1
+    s30 errorbar riser clip off
+    s30 errorbar riser clip length 0.100000
+    s30 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s30 legend  ""
+    s31 hidden false
+    s31 type xy
+    s31 symbol 0
+    s31 symbol size 1.000000
+    s31 symbol color 1
+    s31 symbol pattern 1
+    s31 symbol fill color 1
+    s31 symbol fill pattern 0
+    s31 symbol linewidth 1.0
+    s31 symbol linestyle 1
+    s31 symbol char 65
+    s31 symbol char font 0
+    s31 symbol skip 0
+    s31 line type 1
+    s31 line linestyle 1
+    s31 line linewidth 2.0
+    s31 line color 1
+    s31 line pattern 1
+    s31 baseline type 0
+    s31 baseline off
+    s31 dropline off
+    s31 fill type 0
+    s31 fill rule 0
+    s31 fill color 1
+    s31 fill pattern 1
+    s31 avalue off
+    s31 avalue type 2
+    s31 avalue char size 1.000000
+    s31 avalue font 0
+    s31 avalue color 1
+    s31 avalue rot 0
+    s31 avalue format general
+    s31 avalue prec 3
+    s31 avalue prepend ""
+    s31 avalue append ""
+    s31 avalue offset 0.000000 , 0.000000
+    s31 errorbar on
+    s31 errorbar place both
+    s31 errorbar color 1
+    s31 errorbar pattern 1
+    s31 errorbar size 1.000000
+    s31 errorbar linewidth 1.0
+    s31 errorbar linestyle 1
+    s31 errorbar riser linewidth 1.0
+    s31 errorbar riser linestyle 1
+    s31 errorbar riser clip off
+    s31 errorbar riser clip length 0.100000
+    s31 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s31 legend  ""
+    s32 hidden false
+    s32 type xy
+    s32 symbol 0
+    s32 symbol size 1.000000
+    s32 symbol color 15
+    s32 symbol pattern 1
+    s32 symbol fill color 15
+    s32 symbol fill pattern 0
+    s32 symbol linewidth 1.0
+    s32 symbol linestyle 1
+    s32 symbol char 65
+    s32 symbol char font 0
+    s32 symbol skip 0
+    s32 line type 1
+    s32 line linestyle 8
+    s32 line linewidth 2.0
+    s32 line color 15
+    s32 line pattern 1
+    s32 baseline type 0
+    s32 baseline off
+    s32 dropline off
+    s32 fill type 0
+    s32 fill rule 0
+    s32 fill color 1
+    s32 fill pattern 1
+    s32 avalue off
+    s32 avalue type 2
+    s32 avalue char size 1.000000
+    s32 avalue font 0
+    s32 avalue color 1
+    s32 avalue rot 0
+    s32 avalue format general
+    s32 avalue prec 3
+    s32 avalue prepend ""
+    s32 avalue append ""
+    s32 avalue offset 0.000000 , 0.000000
+    s32 errorbar on
+    s32 errorbar place both
+    s32 errorbar color 15
+    s32 errorbar pattern 1
+    s32 errorbar size 1.000000
+    s32 errorbar linewidth 1.0
+    s32 errorbar linestyle 1
+    s32 errorbar riser linewidth 1.0
+    s32 errorbar riser linestyle 1
+    s32 errorbar riser clip off
+    s32 errorbar riser clip length 0.100000
+    s32 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s32 legend  ""
+    s33 hidden false
+    s33 type xy
+    s33 symbol 0
+    s33 symbol size 1.000000
+    s33 symbol color 2
+    s33 symbol pattern 1
+    s33 symbol fill color 2
+    s33 symbol fill pattern 0
+    s33 symbol linewidth 1.0
+    s33 symbol linestyle 1
+    s33 symbol char 65
+    s33 symbol char font 0
+    s33 symbol skip 0
+    s33 line type 1
+    s33 line linestyle 2
+    s33 line linewidth 3.0
+    s33 line color 2
+    s33 line pattern 1
+    s33 baseline type 0
+    s33 baseline off
+    s33 dropline off
+    s33 fill type 0
+    s33 fill rule 0
+    s33 fill color 1
+    s33 fill pattern 1
+    s33 avalue off
+    s33 avalue type 2
+    s33 avalue char size 1.000000
+    s33 avalue font 0
+    s33 avalue color 1
+    s33 avalue rot 0
+    s33 avalue format general
+    s33 avalue prec 3
+    s33 avalue prepend ""
+    s33 avalue append ""
+    s33 avalue offset 0.000000 , 0.000000
+    s33 errorbar on
+    s33 errorbar place both
+    s33 errorbar color 2
+    s33 errorbar pattern 1
+    s33 errorbar size 1.000000
+    s33 errorbar linewidth 1.0
+    s33 errorbar linestyle 1
+    s33 errorbar riser linewidth 1.0
+    s33 errorbar riser linestyle 1
+    s33 errorbar riser clip off
+    s33 errorbar riser clip length 0.100000
+    s33 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s33 legend  ""
+    s34 hidden false
+    s34 type xy
+    s34 symbol 0
+    s34 symbol size 1.000000
+    s34 symbol color 1
+    s34 symbol pattern 1
+    s34 symbol fill color 1
+    s34 symbol fill pattern 0
+    s34 symbol linewidth 1.0
+    s34 symbol linestyle 1
+    s34 symbol char 65
+    s34 symbol char font 0
+    s34 symbol skip 0
+    s34 line type 1
+    s34 line linestyle 1
+    s34 line linewidth 2.0
+    s34 line color 1
+    s34 line pattern 1
+    s34 baseline type 0
+    s34 baseline off
+    s34 dropline off
+    s34 fill type 0
+    s34 fill rule 0
+    s34 fill color 1
+    s34 fill pattern 1
+    s34 avalue off
+    s34 avalue type 2
+    s34 avalue char size 1.000000
+    s34 avalue font 0
+    s34 avalue color 1
+    s34 avalue rot 0
+    s34 avalue format general
+    s34 avalue prec 3
+    s34 avalue prepend ""
+    s34 avalue append ""
+    s34 avalue offset 0.000000 , 0.000000
+    s34 errorbar on
+    s34 errorbar place both
+    s34 errorbar color 1
+    s34 errorbar pattern 1
+    s34 errorbar size 1.000000
+    s34 errorbar linewidth 1.0
+    s34 errorbar linestyle 1
+    s34 errorbar riser linewidth 1.0
+    s34 errorbar riser linestyle 1
+    s34 errorbar riser clip off
+    s34 errorbar riser clip length 0.100000
+    s34 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s34 legend  ""
+    s35 hidden false
+    s35 type xy
+    s35 symbol 0
+    s35 symbol size 1.000000
+    s35 symbol color 4
+    s35 symbol pattern 1
+    s35 symbol fill color 4
+    s35 symbol fill pattern 0
+    s35 symbol linewidth 1.0
+    s35 symbol linestyle 1
+    s35 symbol char 65
+    s35 symbol char font 0
+    s35 symbol skip 0
+    s35 line type 1
+    s35 line linestyle 2
+    s35 line linewidth 3.0
+    s35 line color 4
+    s35 line pattern 1
+    s35 baseline type 0
+    s35 baseline off
+    s35 dropline off
+    s35 fill type 0
+    s35 fill rule 0
+    s35 fill color 1
+    s35 fill pattern 1
+    s35 avalue off
+    s35 avalue type 2
+    s35 avalue char size 1.000000
+    s35 avalue font 0
+    s35 avalue color 1
+    s35 avalue rot 0
+    s35 avalue format general
+    s35 avalue prec 3
+    s35 avalue prepend ""
+    s35 avalue append ""
+    s35 avalue offset 0.000000 , 0.000000
+    s35 errorbar on
+    s35 errorbar place both
+    s35 errorbar color 4
+    s35 errorbar pattern 1
+    s35 errorbar size 1.000000
+    s35 errorbar linewidth 1.0
+    s35 errorbar linestyle 1
+    s35 errorbar riser linewidth 1.0
+    s35 errorbar riser linestyle 1
+    s35 errorbar riser clip off
+    s35 errorbar riser clip length 0.100000
+    s35 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s35 legend  ""
+    s36 hidden false
+    s36 type xy
+    s36 symbol 8
+    s36 symbol size 0.160000
+    s36 symbol color 1
+    s36 symbol pattern 1
+    s36 symbol fill color 1
+    s36 symbol fill pattern 0
+    s36 symbol linewidth 1.0
+    s36 symbol linestyle 1
+    s36 symbol char 65
+    s36 symbol char font 0
+    s36 symbol skip 0
+    s36 line type 1
+    s36 line linestyle 1
+    s36 line linewidth 4.0
+    s36 line color 5
+    s36 line pattern 1
+    s36 baseline type 0
+    s36 baseline off
+    s36 dropline off
+    s36 fill type 0
+    s36 fill rule 0
+    s36 fill color 1
+    s36 fill pattern 1
+    s36 avalue off
+    s36 avalue type 2
+    s36 avalue char size 1.000000
+    s36 avalue font 0
+    s36 avalue color 1
+    s36 avalue rot 0
+    s36 avalue format general
+    s36 avalue prec 3
+    s36 avalue prepend ""
+    s36 avalue append ""
+    s36 avalue offset 0.000000 , 0.000000
+    s36 errorbar on
+    s36 errorbar place both
+    s36 errorbar color 1
+    s36 errorbar pattern 1
+    s36 errorbar size 1.000000
+    s36 errorbar linewidth 1.0
+    s36 errorbar linestyle 1
+    s36 errorbar riser linewidth 1.0
+    s36 errorbar riser linestyle 1
+    s36 errorbar riser clip off
+    s36 errorbar riser clip length 0.100000
+    s36 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s36 legend  ""
+    s37 hidden false
+    s37 type xy
+    s37 symbol 0
+    s37 symbol size 1.000000
+    s37 symbol color 1
+    s37 symbol pattern 1
+    s37 symbol fill color 1
+    s37 symbol fill pattern 0
+    s37 symbol linewidth 1.0
+    s37 symbol linestyle 1
+    s37 symbol char 65
+    s37 symbol char font 0
+    s37 symbol skip 0
+    s37 line type 1
+    s37 line linestyle 1
+    s37 line linewidth 2.0
+    s37 line color 1
+    s37 line pattern 1
+    s37 baseline type 0
+    s37 baseline off
+    s37 dropline off
+    s37 fill type 0
+    s37 fill rule 0
+    s37 fill color 1
+    s37 fill pattern 1
+    s37 avalue off
+    s37 avalue type 2
+    s37 avalue char size 1.000000
+    s37 avalue font 0
+    s37 avalue color 1
+    s37 avalue rot 0
+    s37 avalue format general
+    s37 avalue prec 3
+    s37 avalue prepend ""
+    s37 avalue append ""
+    s37 avalue offset 0.000000 , 0.000000
+    s37 errorbar on
+    s37 errorbar place both
+    s37 errorbar color 1
+    s37 errorbar pattern 1
+    s37 errorbar size 1.000000
+    s37 errorbar linewidth 1.0
+    s37 errorbar linestyle 1
+    s37 errorbar riser linewidth 1.0
+    s37 errorbar riser linestyle 1
+    s37 errorbar riser clip off
+    s37 errorbar riser clip length 0.100000
+    s37 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s37 legend  ""
+    s38 hidden false
+    s38 type xy
+    s38 symbol 0
+    s38 symbol size 1.000000
+    s38 symbol color 1
+    s38 symbol pattern 1
+    s38 symbol fill color 1
+    s38 symbol fill pattern 0
+    s38 symbol linewidth 1.0
+    s38 symbol linestyle 1
+    s38 symbol char 65
+    s38 symbol char font 0
+    s38 symbol skip 0
+    s38 line type 1
+    s38 line linestyle 1
+    s38 line linewidth 2.0
+    s38 line color 1
+    s38 line pattern 1
+    s38 baseline type 0
+    s38 baseline off
+    s38 dropline off
+    s38 fill type 0
+    s38 fill rule 0
+    s38 fill color 1
+    s38 fill pattern 1
+    s38 avalue off
+    s38 avalue type 2
+    s38 avalue char size 1.000000
+    s38 avalue font 0
+    s38 avalue color 1
+    s38 avalue rot 0
+    s38 avalue format general
+    s38 avalue prec 3
+    s38 avalue prepend ""
+    s38 avalue append ""
+    s38 avalue offset 0.000000 , 0.000000
+    s38 errorbar on
+    s38 errorbar place both
+    s38 errorbar color 1
+    s38 errorbar pattern 1
+    s38 errorbar size 1.000000
+    s38 errorbar linewidth 1.0
+    s38 errorbar linestyle 1
+    s38 errorbar riser linewidth 1.0
+    s38 errorbar riser linestyle 1
+    s38 errorbar riser clip off
+    s38 errorbar riser clip length 0.100000
+    s38 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s38 legend  ""
+    s39 hidden false
+    s39 type xy
+    s39 symbol 0
+    s39 symbol size 1.000000
+    s39 symbol color 1
+    s39 symbol pattern 1
+    s39 symbol fill color 1
+    s39 symbol fill pattern 0
+    s39 symbol linewidth 1.0
+    s39 symbol linestyle 1
+    s39 symbol char 65
+    s39 symbol char font 0
+    s39 symbol skip 0
+    s39 line type 1
+    s39 line linestyle 1
+    s39 line linewidth 2.0
+    s39 line color 1
+    s39 line pattern 1
+    s39 baseline type 0
+    s39 baseline off
+    s39 dropline off
+    s39 fill type 0
+    s39 fill rule 0
+    s39 fill color 1
+    s39 fill pattern 1
+    s39 avalue off
+    s39 avalue type 2
+    s39 avalue char size 1.000000
+    s39 avalue font 0
+    s39 avalue color 1
+    s39 avalue rot 0
+    s39 avalue format general
+    s39 avalue prec 3
+    s39 avalue prepend ""
+    s39 avalue append ""
+    s39 avalue offset 0.000000 , 0.000000
+    s39 errorbar on
+    s39 errorbar place both
+    s39 errorbar color 1
+    s39 errorbar pattern 1
+    s39 errorbar size 1.000000
+    s39 errorbar linewidth 1.0
+    s39 errorbar linestyle 1
+    s39 errorbar riser linewidth 1.0
+    s39 errorbar riser linestyle 1
+    s39 errorbar riser clip off
+    s39 errorbar riser clip length 0.100000
+    s39 comment "/Users/HPCC/Desktop/mutation.1.3/output/output.dat"
+    s39 legend  ""
