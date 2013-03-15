@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
  
-project(myTests)
+#project(myTests)
 ENABLE_TESTING()
 
 set(BUILD_SHARED_LIBS ON)
