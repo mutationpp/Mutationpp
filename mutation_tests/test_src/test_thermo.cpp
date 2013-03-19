@@ -2,6 +2,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Thermo
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
 
 #include "MppTestFixture.h"
 using namespace std;
