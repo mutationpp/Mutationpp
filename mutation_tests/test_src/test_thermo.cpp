@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(SetState)
 
 BOOST_AUTO_TEST_CASE(MixtureCp)
 {
-    compareEquilibriumValues("air11/RRHO/cp.dat", cp, 2);
+    compareEquilibriumValues("/home/didi/mutation++/branches/dinesh/dinesh/mutation_tests/test_src/air11/RRHO/cp.dat", cp, 2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
