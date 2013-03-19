@@ -10,4 +10,4 @@ add_executable(test_thermo_class test_thermo.cpp  MppTestFixture.h)
 target_link_libraries( /home/didi/mutation++/trunk/install/include/mutation++ 
 			/home/didi/mutation++/trunk/install/lib/libmutation++.so ${Boost_LIBRARIES} ) 
  
-add_test(NAME Thermodynamics COMMAND $<TARGET_FILE:test_thermo_class> )
+add_test(NAME test_thermo_class  COMMAND $<TARGET_FILE:test_thermo_class> )
