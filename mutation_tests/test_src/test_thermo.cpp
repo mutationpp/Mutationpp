@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(MixtureCp)
     string path = boost::filesystem::current_path().generic_string();
 
 cout << endl << endl<< endl <<  "Path ==> " << path << endl << endl << endl; 
-    compareEquilibriumValues("/home/didi/mutation++/branches/dinesh/dinesh/mutation_tests/test_src/air11/RRHO/cp.dat", cp, 2);
+    compareEquilibriumValues("/home/didi/mytesting/mutation_test/src/test_src/air11/RRHO/cp.dat", cp, 2);
 }
 
 
