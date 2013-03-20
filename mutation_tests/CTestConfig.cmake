@@ -2,7 +2,7 @@
 ## Then modify the CMakeLists.txt file in the root directory of your
 ## project to incorporate the testing dashboard.
 
-set(CTEST_PROJECT_NAME "Mixtures") 
+set(CTEST_PROJECT_NAME "mutationtest") 
 set(CTEST_NIGHTLY_START_TIME "23:00:00 GMT")
 set(CTEST_DROP_METHOD "http")
 set(CTEST_DROP_SITE "localhost")
