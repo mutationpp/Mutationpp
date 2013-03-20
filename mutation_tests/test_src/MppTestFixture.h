@@ -78,7 +78,7 @@ public:
                 
                 // Compare
                 for (int i = 0; i < nvals; ++i)
-                    BOOST_CHECK_CLOSE(values[i], result[i], 1.0e-1);
+                    BOOST_CHECK_CLOSE(values[i], result[i], 1.0e-2);
             }
         }
         
