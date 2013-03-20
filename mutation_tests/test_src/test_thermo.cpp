@@ -34,13 +34,13 @@ BOOST_AUTO_TEST_CASE(SetState)
 {
     double T = 1000.0;
     double P = 101325.0;
-    
+    cout << "mix()->nSpecies() : " << mix()->nSpecies() << endl;
     std::fill(sp1(), sp1()+mix()->nSpecies(), 1.0 / mix()->nSpecies());
     mix()->setStateTPX(&T, &P, sp1());
     
     BOOST_CHECK(mix()->T() == 1000.0);
     BOOST_CHECK(mix()->P() == 101325.0);
-    cout << "mix()->nSpecies() : " << mix()->nSpecies() << endl;
+  
     for (int i = 0; i < mix()->nSpecies(); ++i)
         BOOST_CHECK_EQUAL(mix()->X()[i] , 1.0 / mix()->nSpecies());
 }
