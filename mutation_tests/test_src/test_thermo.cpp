@@ -23,7 +23,7 @@ BOOST_FIXTURE_TEST_SUITE(Thermodynamics, Air11RRHO)
 BOOST_AUTO_TEST_CASE(MixtureCp)
 {
     string path = boost::filesystem::current_path().generic_string();
-    path.apend("/../../");	
+    path.append("/../../");	
    cout << endl << endl<< endl <<  "Path ==> " << path << endl << endl << endl; 
     compareEquilibriumValues("/home/didi/mytesting/mutation_test/src/test_src/air11/RRHO/cp.dat", cp, 2);
 }
