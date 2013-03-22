@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(MixtureCp)
 {
     string path = boost::filesystem::current_path().generic_string();
     path.append("/../../src/test_src/");	
-   cout << endl << endl<< endl <<  "Path ==> " << path << endl << endl << endl; 
+//   cout << endl << endl<< endl <<  "Path ==> " << path << endl << endl << endl; 
     compareEquilibriumValues(path.append("air11/RRHO/cp.dat").c_str(), cp, 2);
 }
 
