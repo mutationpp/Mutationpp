@@ -106,6 +106,9 @@ typedef struct {
     bool verbose;
     
     Mutation::MixtureOptions* p_mixture_opts;
+    
+    bool use_scientific;
+    int  precision;
 } Options;
 
 // Checks if an option is present
@@ -149,6 +152,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-s                  list of species values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
+    cout << tab << "    --scientific    outputs in scientific format with given precision" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
     cout << endl;
     cout << "Mixture values (example format: \"1-3,7,9-11\"):" << endl;
@@ -294,7 +298,7 @@ Options parseOptions(int argc, char** argv)
         }      
     } else {
         opts.T1 = 300.0;
-        opts.T2 = 20000.0;
+        opts.T2 = 15000.0;
         opts.dT = 100.0;
     }
     
@@ -329,6 +333,15 @@ Options parseOptions(int argc, char** argv)
         }
     }
     
+    // Check for output format
+    if (optionExists(argc, argv, "--scientific")) {
+        opts.use_scientific = true;
+        opts.precision = atoi(getOption(argc, argv, "--scientific").c_str());
+    } else {
+        opts.use_scientific = false;
+        opts.precision      = 0;
+    }
+    
     // If 
     
     return opts;
@@ -340,6 +353,7 @@ void writeHeader(
     std::vector<int>& column_widths)
 {
     std::string name;
+    int width = (opts.use_scientific ? opts.precision + 8 : COLUMN_WIDTH);
     
     std::vector<int>::const_iterator iter = opts.mixture_indices.begin();
     for ( ; iter != opts.mixture_indices.end(); ++iter) {
@@ -347,7 +361,7 @@ void writeHeader(
             (mixture_quantities[*iter].units == "" ? 
                 "" : "[" + mixture_quantities[*iter].units + "]");
         column_widths.push_back(
-            std::max(COLUMN_WIDTH, static_cast<int>(name.length())+2));
+            std::max(width, static_cast<int>(name.length())+2));
         cout << setw(column_widths.back()) << name;
     }
     
@@ -358,7 +372,7 @@ void writeHeader(
                 (species_quantities[*iter].units == "" ? 
                     "" : "[" + species_quantities[*iter].units + "]");
             column_widths.push_back(
-                std::max(COLUMN_WIDTH, static_cast<int>(name.length())+2));
+                std::max(width, static_cast<int>(name.length())+2));
             cout << setw(column_widths.back()) << name;
         }
     }
@@ -396,6 +410,11 @@ int main(int argc, char** argv)
     for (int i = 0; i < mix.nSpecies(); ++i)
         jac_file << setw(15) << mix.speciesName(i);
     jac_file << endl;*/
+    
+    if (opts.use_scientific) {
+        cout.precision(opts.precision);
+        cout << std::scientific;
+    }
     
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {

@@ -216,7 +216,7 @@ void Transport::stefanMaxwell(
     const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, X);
     
     double a = 0.0;
-    for (int i = 1; i < nDij.size(); ++i)
+    for (int i = 0; i < nDij.size(); ++i)
         a += nDij(i);
     a /= ((double)nDij.size()*nd);
     a = 1.0/a;
@@ -241,9 +241,6 @@ void Transport::stefanMaxwell(
         for (int i = 1; i < ns; ++i)
             for (int j = i; j < ns; ++j)
                 G(i-1,j-1) += a*Y[i]*Y[j];
-        
-        //std::cout << "G" << std::endl;
-        //std::cout << G << std::endl;
         
         // Compute mixture charge
         double q = 0.0;
@@ -272,9 +269,42 @@ void Transport::stefanMaxwell(
         for (int i = 1; i < ns; ++i)
             p_V[0] -= X[i]*mp_wrk3[i]*p_V[i];
         p_V[0] /= (X[0]*mp_wrk3[0]);
+    
+    // No electrons!!
     } else {
-        std::cout << "Stefan-Maxwell is not yet supported for mixtures without electrons!" << std::endl;
-        std::exit(1);
+        // Compute the diffusion transport system
+        RealSymMat G(ns);
+        double temp;
+        for (int i = 0; i < ns; ++i) {
+            G(i,i) = 0.0;
+            
+            for (int j = 0; j < i; ++j)
+                G(i,i) -= G(j,i);
+                
+            for (int j = i+1; j < ns; ++j) {
+                temp = X[i]*X[j]/nDij(i,j)*nd;
+                G(i,i) += temp;
+                G(i,j) = -temp;
+            }
+        }
+        
+        for (int i = 0; i < ns; ++i)
+            for (int j = i; j < ns; ++j)
+                G(i,j) += a*Y[i]*Y[j];
+        
+        // Right-hand side
+        RealVector b(ns);
+        for (int i = 0; i < ns; ++i)
+            b(i) = -p_dp[i];
+        
+        // Solve the linear system
+        LDLT<double> ldlt(G);
+        RealVector V(ns);
+        ldlt.solve(V, b);
+        asVector(p_V, ns) = V;
+        
+        // Compute mixture charge
+        E = 0.0;
     }
     
 }
