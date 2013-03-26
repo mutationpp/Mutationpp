@@ -7,7 +7,7 @@
 # add_executable(test_class_Position test_class_Position.cpp)
 add_executable(test_thermo_class test_thermo.cpp  MppTestFixture.h)
 					
-target_link_libraries( test_thermo_class  ~/mutation++/trunk/install/lib/libmutation++.so
+target_link_libraries( test_thermo_class  mutation++
 			 ${Boost_LIBRARIES} ) 
  
 add_test(NAME test_thermo_class  COMMAND $<TARGET_FILE:test_thermo_class> )
