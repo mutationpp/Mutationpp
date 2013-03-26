@@ -1,5 +1,5 @@
 
-#include "~/mutation++/trunk/install/include/mutation++/mutation++.h" 
+#include "/home/dinesh/mutation++/trunk/install/include/mutation++/mutation++.h" 
 #include <iostream>
 #include <string>
 #include <fstream>
