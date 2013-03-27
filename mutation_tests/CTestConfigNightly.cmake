@@ -6,10 +6,10 @@
 set(MODEL Continuous)
 
 # source dir(<> dev directory)
-set(CTEST_SOURCE_DIRECTORY "/home/didi/mutation++/branches/dinesh/dinesh/mutation_tests/src")
+set(CTEST_SOURCE_DIRECTORY "/home/didi/mutation++/branches/dinesh/mutation_tests/src")
 
 # build dir
-set(CTEST_BINARY_DIRECTORY "/home/didi/mutation++/branches/dinesh/dinesh/mutation_tests/build")
+set(CTEST_BINARY_DIRECTORY "/home/didi/mutation++/branches/dinesh/mutation_tests/build")
 
 # Build and site identification
 set(CTEST_SITE "Dinesh-VM-Ubuntu12.04")
