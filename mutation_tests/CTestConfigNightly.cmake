@@ -12,7 +12,7 @@ set(CTEST_SOURCE_DIRECTORY "/home/didi/mutation++/branches/dinesh/dinesh/mutatio
 set(CTEST_BINARY_DIRECTORY "/home/didi/mutation++/branches/dinesh/dinesh/mutation_tests/build")
 
 # Build and site identification
-set(CTEST_SITE "VM-Ubuntu12.04")
+set(CTEST_SITE "Dinesh-VM-Ubuntu12.04")
 set(CTEST_BUILD_NAME "gcc4.6.3-Release-Main")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CF_BUILD_TYPE "Release")
