@@ -1,0 +1,37 @@
+<elementlist>
+    
+    <!-- Argon -->
+    <element name="Ar" charge="0">
+        <mw units="kg/mol">0.039948</mw>
+    </element>
+    
+    <!-- Carbon -->
+    <element name="C"  charge="0">
+        <mw units="kg/mol">0.012011</mw>
+    </element>
+    
+    <!-- Electron (treated as element in mutation++) -->
+    <element name="e-" charge="-1">
+        <mw units="kg/mol">0.00000055</mw>
+    </element>
+    
+    <!-- Hydrogen -->
+    <element name="H"  charge="0">
+        <mw units="kg/mol">0.0010079</mw>
+    </element>
+    
+    <element name="He" charge="0">
+        <mw units="kg/mol">0.0040026</mw>
+    </element>
+    
+    <!-- Nitrogen -->
+    <element name="N"  charge="0">
+        <mw units="kg/mol">0.0140067</mw>
+    </element>
+    
+    <!-- Oxygen -->
+    <element name="O"  charge="0">
+        <mw units="kg/mol">0.0159994</mw>
+    </element>
+    
+</elementlist>

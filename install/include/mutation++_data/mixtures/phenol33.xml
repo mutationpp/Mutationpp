@@ -1,0 +1,8 @@
+<mixture mechanism="none">
+    <species>
+        e-      C       H       O       C2      C3      C4      C5      CH
+        CH2     CH3     CH4     CO      CO2     C2H     C2H2    C2H4
+        C2H6    C3H3    C6H5O   C6H6    C6H5OH  H2      H2O     O2      OH
+        C+      CO+     H+      O+      O2+     O-      O2-
+    </species>
+</mixture>

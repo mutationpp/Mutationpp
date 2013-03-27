@@ -1,7 +1,8 @@
 #!/bin/sh
 
-#cd /home/didi/mutation++/branches/dinesh/build
-make /home/didi/mutation++/branches/dinesh/build
+cd /home/didi/mutation++/branches/dinesh/build
+make 
+cd /home/didi/mutation++/branches/dinesh/mutation_tests
 
 ctest -VV -S CTestConfigNightly.cmake
 #mppequil -P 101325 air5 > air5.dat

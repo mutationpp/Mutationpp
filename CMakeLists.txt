@@ -119,7 +119,7 @@ endif()
 ################################################################################
 # Descend into the src directory to build all targets and libraries
 add_subdirectory(src)
-add_subdirectory(mutation_tests)
+
 
 
 ################################################################################

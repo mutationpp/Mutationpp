@@ -1,0 +1,6 @@
+<mixture mechanism="none">
+    <species>
+        C, H, O, N, CH, CH4, CO, CO2, CN, C2, C2H, C2H2, C3, C4, C4H2, 
+        C5, HCN, H2, H2O, N2
+    </species>
+</mixture>

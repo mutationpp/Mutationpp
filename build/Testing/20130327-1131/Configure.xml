@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="gcc4.6.3-Release-Main"
+	BuildStamp="20130327-1131-Continuous"
+	Name="Dinesh_Ramanathan-VM-Ubuntu12.04"
+	Generator="ctest-2.8.10.2"
+	CompilerName=""
+	OSName="Linux"
+	Hostname="ubuntu"
+	OSRelease="3.2.0-39-generic-pae"
+	OSVersion="#62-Ubuntu SMP Wed Feb 27 22:25:11 UTC 2013"
+	OSPlatform="i686"
+	Is64Bits="0"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="37"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="4"
+	NumberOfPhysicalCPU="4"
+	TotalVirtualMemory="509"
+	TotalPhysicalMemory="1471"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2394.08"
+>
+<Configure>
+	<StartDateTime>Mar 27 04:31 PDT</StartDateTime>
+	<StartConfigureTime>1364383914</StartConfigureTime>
+1<ConfigureCommand>/usr/local/bin/cmake  -DCMAKE_BUILD_TYPE:STRING=Release "-GUnix Makefiles" "/home/didi/mutation++/branches/dinesh/src"</ConfigureCommand>
+<Log>CMake Error: The source &quot;/home/didi/mutation++/branches/dinesh/src/CMakeLists.txt&quot; does not match the source &quot;/home/didi/mutation++/branches/dinesh/CMakeLists.txt&quot; used to generate cache.  Re-run cmake with a different source directory.
+</Log>
+	<ConfigureStatus>1</ConfigureStatus>
+	<EndDateTime>Mar 27 04:31 PDT</EndDateTime>
+	<EndConfigureTime>1364383914</EndConfigureTime>
+<ElapsedMinutes>0</ElapsedMinutes></Configure>
+</Site>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Update mode="Client" Generator="ctest-2.8.10.2">
+	<Site>Dinesh_Ramanathan-VM-Ubuntu12.04</Site>
+	<BuildName>gcc4.6.3-Release-Main</BuildName>
+	<BuildStamp>20130327-1124-Continuous</BuildStamp>
+	<StartDateTime>Mar 27 04:24 PDT</StartDateTime>
+	<StartTime>1364383487</StartTime>
+	<UpdateCommand>"/usr/bin/svn" "update" "--non-interactive"</UpdateCommand>
+	<UpdateType>SVN</UpdateType>
+	<SVNPath></SVNPath>
+	<EndDateTime>Mar 27 04:24 PDT</EndDateTime>
+	<EndTime>1364383487</EndTime>
+<ElapsedMinutes>0</ElapsedMinutes>
+	<UpdateReturnStatus></UpdateReturnStatus>
+</Update>

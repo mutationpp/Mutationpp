@@ -1,0 +1,14 @@
+<!-- 
+   This is the species set listed in Appendix C of "Chemical Equilibrium of
+   Ablation Materials Including Condensed Species" by C. W. Stroud and Kay L.
+   Brinkley (NASA-TN-D-5391, August 1969) minus the silicon species (because we
+   don't care about those at the moment) and N2O2, HCO, and COH2 because we 
+   don't have data for them.
+-->
+<mixture name="phenolic-nylon" mechanism="none">
+    <species>
+        C C2 C3 CH CH2 CH3 CH4 C2H2 C2H4 CN C2N2 CO CO2 H H2 HCN H2O N N2
+        NH NH3 NO NO2 O O2 OH C(gr) C2H6 C3H8 CH3OH C3O2 H2O2 O3 C2H 
+        C4H2
+    </species>
+</mixture>

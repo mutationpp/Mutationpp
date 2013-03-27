@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="gcc4.6.3-Release-Main"
+	BuildStamp="20130327-1133-Continuous"
+	Name="Dinesh_Ramanathan-VM-Ubuntu12.04"
+	Generator="ctest-2.8.10.2"
+	CompilerName=""
+	OSName="Linux"
+	Hostname="ubuntu"
+	OSRelease="3.2.0-39-generic-pae"
+	OSVersion="#62-Ubuntu SMP Wed Feb 27 22:25:11 UTC 2013"
+	OSPlatform="i686"
+	Is64Bits="0"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="37"
+	ProcessorCacheSize="3072"
+	NumberOfLogicalCPU="4"
+	NumberOfPhysicalCPU="4"
+	TotalVirtualMemory="509"
+	TotalPhysicalMemory="1471"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2394.08"
+>
+<Configure>
+	<StartDateTime>Mar 27 04:33 PDT</StartDateTime>
+	<StartConfigureTime>1364384001</StartConfigureTime>
+<ConfigureCommand>/usr/local/bin/cmake  -DCMAKE_BUILD_TYPE:STRING=Release "-GUnix Makefiles" "/home/didi/mutation++/branches/dinesh/src"</ConfigureCommand>
+<Log>-- The C compiler identification is GNU 4.6.3
+-- The CXX compiler identification is GNU 4.6.3
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Boost version: 1.46.1
+-- Found the following Boost libraries:
+--   unit_test_framework
+--   filesystem
+--   system
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/didi/mutation++/branches/dinesh/build/src/tests
+</Log>
+	<ConfigureStatus>0</ConfigureStatus>
+	<EndDateTime>Mar 27 04:33 PDT</EndDateTime>
+	<EndConfigureTime>1364384002</EndConfigureTime>
+<ElapsedMinutes>0</ElapsedMinutes></Configure>
+</Site>

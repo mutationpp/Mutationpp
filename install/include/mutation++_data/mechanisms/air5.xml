@@ -1,0 +1,36 @@
+<!-- Park Air-5 Reaction Mechanism -->
+<mechanism name="air5">
+    
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+    
+    <!-- 1 -->
+    <reaction formula="N2+M=2N+M">
+        <arrhenius A="3.0E+22" n="-1.6" T="113200.0" />
+        <M>N2:0.2333, NO:0.2333, O2:0.2333</M>
+    </reaction>
+    
+    <!-- 2 -->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="1.0E+22" n="-1.5" T="59360.0" />
+        <M>N2:0.5, NO:0.5, O2:0.5</M>
+    </reaction>
+    
+    <!-- 3 -->
+    <reaction formula="NO+M=N+O+M">
+        <arrhenius A="5.0E15" n="+0.0" T="75500.0" />
+        <M>NO:20.0, N:20.0, O:20.0</M>
+    </reaction>
+    
+    <!-- 4 -->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="5.69E+12" n="+0.42" T="42938.0" />
+    </reaction>
+    
+    <!-- 5 -->
+    <reaction formula="O2+N=NO+O">
+        <arrhenius A="2.49E+09" n="+1.18" T="4005.5" />
+    </reaction>
+    
+</mechanism>
+
+

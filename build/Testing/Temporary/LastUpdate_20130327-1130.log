@@ -1,0 +1,51 @@
+--- Begin Cleanup ---
+"/usr/bin/svn" "cleanup" "--non-interactive"
+--- End Cleanup ---
+"/usr/bin/svn" "status" "--non-interactive"
+external-out> ?       tests
+external-out> ?       CTestConfig.cmake
+external-out> M       CMakeLists.txt
+"/usr/bin/svn" "info" "" "--non-interactive"
+info-out> Path: .
+info-out> URL: https://minarossa.vki.ac.be/svn/mutation/mutation++/branches/dinesh/src
+info-out> Repository Root: https://minarossa.vki.ac.be/svn/mutation
+info-out> Repository UUID: 23c094b9-acee-48e1-ac46-50a22cfb3cfb
+info-out> Revision: 112
+info-out> Node Kind: directory
+info-out> Schedule: normal
+info-out> Last Changed Author: ramanathan
+info-out> Last Changed Rev: 104
+info-out> Last Changed Date: 2013-03-26 08:36:43 -0700 (Tue, 26 Mar 2013)
+info-out> 
+Revision for repository '' before update: 112
+--- Begin Update ---
+"/usr/bin/svn" "update" "--non-interactive"
+up-err> svn: OPTIONS of 'https://minarossa.vki.ac.be/svn/mutation/mutation++/branches/dinesh/src': authorization failed: Could not authenticate to server: rejected Basic challenge (https://minarossa.vki.ac.be)
+--- End Update ---
+"/usr/bin/svn" "info" "" "--non-interactive"
+info-out> Path: .
+info-out> URL: https://minarossa.vki.ac.be/svn/mutation/mutation++/branches/dinesh/src
+info-out> Repository Root: https://minarossa.vki.ac.be/svn/mutation
+info-out> Repository UUID: 23c094b9-acee-48e1-ac46-50a22cfb3cfb
+info-out> Revision: 112
+info-out> Node Kind: directory
+info-out> Schedule: normal
+info-out> Last Changed Author: ramanathan
+info-out> Last Changed Rev: 104
+info-out> Last Changed Date: 2013-03-26 08:36:43 -0700 (Tue, 26 Mar 2013)
+info-out> 
+Revision for repository '' after update: 112
+Repository '' URL = https://minarossa.vki.ac.be/svn/mutation/mutation++/branches/dinesh/src
+Repository '' Root = https://minarossa.vki.ac.be/svn/mutation
+Repository '' Base = /mutation++/branches/dinesh/src/
+--- Begin Revisions ---
+"/usr/bin/svn" "log" "--xml" "-v" "-r112" "" "--non-interactive"
+log-out> <?xml version="1.0"?>
+log-out> <log>
+log-err> svn: OPTIONS of 'https://minarossa.vki.ac.be/svn/mutation/mutation++/branches/dinesh/src': authorization failed: Could not authenticate to server: rejected Basic challenge (https://minarossa.vki.ac.be)
+Error parsing svn log xml: no element found
+"/usr/bin/svn" "status" "--non-interactive"
+status-out> ?       tests
+status-out> ?       CTestConfig.cmake
+status-out> M       CMakeLists.txt
+--- End Revisions ---

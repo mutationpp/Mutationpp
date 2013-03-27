@@ -1,0 +1,11 @@
+Upload files:
+0	Build.xml
+1	Configure.xml
+2	Test.xml
+3	Update.xml
+Using drop method: http
+	Upload file: /home/didi/mutation++/branches/dinesh/build/src/tests/Testing/20130327-1133/Build.xml to Dinesh_Ramanathan-VM-Ubuntu12.04___gcc4.6.3-Release-Main___20130327-1133-Continuous___XML___Build.xml
+	Upload file: /home/didi/mutation++/branches/dinesh/build/src/tests/Testing/20130327-1133/Configure.xml to Dinesh_Ramanathan-VM-Ubuntu12.04___gcc4.6.3-Release-Main___20130327-1133-Continuous___XML___Configure.xml
+	Upload file: /home/didi/mutation++/branches/dinesh/build/src/tests/Testing/20130327-1133/Test.xml to Dinesh_Ramanathan-VM-Ubuntu12.04___gcc4.6.3-Release-Main___20130327-1133-Continuous___XML___Test.xml
+	Upload file: /home/didi/mutation++/branches/dinesh/build/src/tests/Testing/20130327-1133/Update.xml to Dinesh_Ramanathan-VM-Ubuntu12.04___gcc4.6.3-Release-Main___20130327-1133-Continuous___XML___Update.xml
+   Submission successful

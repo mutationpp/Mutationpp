@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Update mode="Client" Generator="ctest-2.8.10.2">
+	<Site>Dinesh_Ramanathan-VM-Ubuntu12.04</Site>
+	<BuildName>gcc4.6.3-Release-Main</BuildName>
+	<BuildStamp>20130327-1133-Continuous</BuildStamp>
+	<StartDateTime>Mar 27 04:33 PDT</StartDateTime>
+	<StartTime>1364384000</StartTime>
+	<UpdateCommand>"/usr/bin/svn" "update" "--non-interactive"</UpdateCommand>
+	<UpdateType>SVN</UpdateType>
+	<Revision>112</Revision>
+	<SVNPath>/mutation++/branches/dinesh/src/</SVNPath>
+	<Directory>
+		<Name></Name>
+		<Modified>
+			<File>CMakeLists.txt</File>
+			<Directory></Directory>
+			<FullName>CMakeLists.txt</FullName>
+			<CheckinDate>Unknown</CheckinDate>
+			<Author>Unknown</Author>
+			<Email></Email>
+			<Committer></Committer>
+			<CommitterEmail></CommitterEmail>
+			<CommitDate></CommitDate>
+			<Log></Log>
+			<Revision>Unknown</Revision>
+			<PriorRevision>112</PriorRevision>
+		</Modified>
+	</Directory>
+	<EndDateTime>Mar 27 04:33 PDT</EndDateTime>
+	<EndTime>1364384001</EndTime>
+<ElapsedMinutes>0</ElapsedMinutes>
+	<UpdateReturnStatus>Update error: There are modified or conflicting files in the repositoryUpdate command failed:
+"/usr/bin/svn" "update" "--non-interactive"</UpdateReturnStatus>
+</Update>
