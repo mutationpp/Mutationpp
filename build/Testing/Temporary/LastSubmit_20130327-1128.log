@@ -1,9 +1,0 @@
-Upload files:
-0	Configure.xml
-1	Test.xml
-2	Update.xml
-Using drop method: http
-	Upload file: /home/didi/mutation++/branches/dinesh/build/Testing/20130327-1128/Configure.xml to Dinesh_Ramanathan-VM-Ubuntu12.04___gcc4.6.3-Release-Main___20130327-1128-Continuous___XML___Configure.xml
-   Error when uploading file: /home/didi/mutation++/branches/dinesh/build/Testing/20130327-1128/Configure.xml
-   Error message was: Couldn't resolve host ''
-   Problems when submitting via HTTP

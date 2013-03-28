@@ -1,4 +1,0 @@
-/home/didi/mutation++/branches/dinesh/build/src/tests/general/CMakeFiles/checkmix.dir
-/home/didi/mutation++/branches/dinesh/build/src/tests/general/CMakeFiles/mppequil.dir
-/home/didi/mutation++/branches/dinesh/build/src/tests/CMakeFiles/mutation++.dir
-/home/didi/mutation++/branches/dinesh/build/src/tests/tests/CMakeFiles/test_thermo_class.dir

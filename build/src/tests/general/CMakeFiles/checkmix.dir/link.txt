@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG    CMakeFiles/checkmix.dir/checkmix.cpp.o  -o checkmix -rdynamic ../libmutation++.so -Wl,-rpath,/home/didi/mutation++/branches/dinesh/build/src/tests: 
