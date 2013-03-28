@@ -1,0 +1,3 @@
+
+add_definitions(-DTEST_DATA_DIRECTORY=${CMAKE_CURRENT_SOURCE_DIR}/data)
+
