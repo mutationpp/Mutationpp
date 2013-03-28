@@ -94,6 +94,15 @@ public:
     }
     
     /**
+     * Returns the species at index i.
+     */
+    const Species& species(int i) const {
+        assert(i >= 0);
+        assert(i < m_species.size());
+        return m_species[i];
+    } 
+    
+    /**
      * Sets the default elemental composition of the mixture from a given
      * vector of (element name, mole fraction) pairs.  Note that an error will
      * result if each element is not included exactly once in the list or if an

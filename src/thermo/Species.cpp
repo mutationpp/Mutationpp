@@ -13,6 +13,8 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace Thermodynamics {
 
+//==============================================================================
+
 Element::Element(IO::XmlElement &xml_element)
 {
     xml_element.getAttribute("name", m_name, 
@@ -29,6 +31,8 @@ Element::Element(IO::XmlElement &xml_element)
     }
 }
 
+//==============================================================================
+
 Species::Species(const Species& to_copy)
     : m_name(to_copy.m_name),
       m_nasa7_name(to_copy.m_nasa7_name),
@@ -41,6 +45,8 @@ Species::Species(const Species& to_copy)
       m_phase(to_copy.m_phase),
       m_stoichiometry(to_copy.m_stoichiometry)
 { }
+
+//==============================================================================
 
 Species::Species(
     IO::XmlElement &xml_element, const vector<Element> &elements, 
@@ -133,11 +139,15 @@ Species::Species(
     }
 }
 
+//==============================================================================
+
 Species::~Species()
 {
     if (mp_rrho_model != NULL)
         delete mp_rrho_model;
 }
+
+//==============================================================================
 
 void Species::loadStoichiometry(
     const string& stoichiometry, const vector<Element> &elements)
@@ -189,6 +199,8 @@ void Species::loadStoichiometry(
     // the given stoichiometry if the name is in "standard" form
     checkStoichiometryNameMatching(m_name, m_stoichiometry, elements);
 }
+
+//==============================================================================
 
 void Species::checkStoichiometryNameMatching(
     const string& name, map<string, int>& stoich, 
@@ -394,6 +406,7 @@ void Species::checkStoichiometryNameMatching(
     }
 }
 
+//==============================================================================
 
 void swap(Species& s1, Species& s2)
 {
@@ -406,6 +419,8 @@ void swap(Species& s1, Species& s2)
     std::swap(s1.m_phase, s2.m_phase);
     std::swap(s1.m_stoichiometry, s2.m_stoichiometry);
 }
+
+//==============================================================================
 
     } // namespace Thermodynamics
 } // namespace Mutation

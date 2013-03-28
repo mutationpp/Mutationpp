@@ -78,6 +78,13 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<species name="C(s)" phase="solid">
+	    <stoichiometry>
+	        C: 1
+	    </stoichiometry>
+	    <thermodynamics type="NASA-9" db_name="C(gr)"/>
+	</species>
  
 	<!-- Carbon cation -->
 	<species name="C+">
@@ -1212,7 +1219,7 @@
 			O: 1
 		</stoichiometry>
 		
-		<thermodynamics type="NASA-9" dbname="C6H5OH(phenol" />
+		<thermodynamics type="NASA-9" db_name="C6H5OH(phenol" />
 		
 		<thermodynamics type="RRHO">
 			<linear>

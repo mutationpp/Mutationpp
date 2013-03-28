@@ -528,12 +528,6 @@ void GfcEquilSolver::ming(
     // each species in the mechanism
     m_thermo.speciesGOverRT(T, m_thermo.standardStateP(), g);
     
-    // Store the standard state g's for the undetermined species and update to
-    // account for pressure
-    double logP = std::log(P / m_thermo.standardStateP());
-    for (int i = 0; i < m_nsu; ++i)
-        gu(i) = g[m_species_order[m_nsd + i]] + logP;
-    
     // Solve the linear programming problem
     LpResult lp_result =
         lp(gu, MINIMIZE, m_B_rt, cr, 0, 0, ng, g[0]);

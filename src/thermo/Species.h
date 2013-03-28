@@ -64,7 +64,7 @@ private:
  * Enumerates the different phase types that are possible.
  */
 enum PhaseType {
-    GAS,
+    GAS = 0,
     LIQUID,
     SOLID
 };

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     GfcEquilSolver.cpp
+    MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
     Nasa9Polynomial.cpp
     NasaDB.cpp
@@ -14,6 +15,7 @@ add_sources(mutation++
 )
 
 install(FILES GfcEquilSolver.h DESTINATION include/mutation++)
+install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES StateModel.h DESTINATION include/mutation++)
 install(FILES ThermoDB.h DESTINATION include/mutation++)
