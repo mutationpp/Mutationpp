@@ -1,12 +1,9 @@
 
-#include "mutation++.h" 
-#include <iostream>
+#include "mutation++.h"
+
 #include <string>
 #include <fstream>
 
-
-
-using namespace std;
 /**
  * Base class for all Mutation++ test fixtures.  This is used as a framework to
  * setup a testing fixture for use in Boost.Test.
@@ -36,64 +33,6 @@ public:
     }
     
     /**
-     * Compares results for equilibrium calculations to a given data file.
-     */
-    template <typename T>
-    void compareEquilibriumValues(std::string filename, T func, int nvals)
-    {
-        // Open file
-        std::ifstream file(filename.c_str());
-        BOOST_CHECK_MESSAGE(file.is_open(), 
-            "Input file '" + filename + "' could not be opened!");
-    
-        // Read number of temperatures and pressures from top of file
-        int nt = 0;
-        int np = 0;
-        
-        file >> nt;
-        file >> np;
-
-        double T, P;
-        
-        double values [nvals];
-        double result [nvals];
-        
-        // Now loop over each pressure and temperature to compare the results
-        for (int ip = 0; ip < np; ++ip) {
-            // Read the pressure
-            file >> P;
-       
-            for (int it = 0; it < nt; ++it) {
-                // Read the temperature and associated values
-                file >> T;
-	 
-                for (int i = 0; i < nvals; ++i)
- 		    file >> values[i];
-	            	
-                // Equilibrate
-                mix()->equilibrate(T, P);
-                
-                // Now compute the given values using the equilibrium mixture
-                func(mix(), result);
-                
-                // Compare
-                for (int i = 0; i < nvals; ++i)
-                    BOOST_CHECK_CLOSE(values[i], result[i], 1.0e-1);
-            }
-        }
-        
-        file.close();
-    }
-
-protected:
-
-    /**
-     * Should be overloaded by the child class to set the MixtureOptions which
-     * will be used to create a Mixture object suitable for this test fixture.
-     */
-    virtual Mutation::MixtureOptions mixtureOptions() const = 0;
-    
-    /**
      * Returns a pointer to an instantiated mixture object.
      */
     Mutation::Mixture* const mix() 
@@ -118,7 +57,63 @@ protected:
         
         return mp_sp1;
     }
+    
+    /**
+     * Compares results for equilibrium calculations to a given data file.
+     */
+    template <typename T>
+    void compareEquilibriumValues(std::string filename, T func, int nvals)
+    {
+        // Open file
+        std::ifstream file(filename.c_str());
+        BOOST_CHECK_MESSAGE(file.is_open(), 
+            "Input file '" + filename + "' could not be opened!");
+    
+        // Read number of temperatures and pressures from top of file
+        int nt = 0;
+        int np = 0;
+        
+        file >> nt;
+        file >> np;
+        
+        double T, P;
+        
+        double values [nvals];
+        double result [nvals];
+        
+        // Now loop over each pressure and temperature to compare the results
+        for (int ip = 0; ip < np; ++ip) {
+            // Read the pressure
+            file >> P;
+            
+            for (int it = 0; it < nt; ++it) {
+                // Read the temperature and associated values
+                file >> T;
+                for (int i = 0; i < nvals; ++i)
+                    file >> values[i];
+                
+                // Equilibrate
+                mix()->equilibrate(T, P);
+                
+                // Now compute the given values using the equilibrium mixture
+                func(this, result);
+                
+                // Compare
+                for (int i = 0; i < nvals; ++i)
+                    BOOST_CHECK_CLOSE(values[i], result[i], 1.0e-3);
+            }
+        }
+        
+        file.close();
+    }
 
+protected:
+
+    /**
+     * Should be overloaded by the child class to set the MixtureOptions which
+     * will be used to create a Mixture object suitable for this test fixture.
+     */
+    virtual Mutation::MixtureOptions mixtureOptions() const = 0;
 
 private:
 
@@ -131,6 +126,8 @@ private:
         mp_mix = new Mutation::Mixture(mixtureOptions());
         BOOST_CHECK_MESSAGE(mp_mix != NULL, "Mixture is NULL!");
     }
+
+private:
     
     Mutation::Mixture* mp_mix;
     double*            mp_sp1;
@@ -139,14 +136,13 @@ private:
 };
 
 
-
 /// Simple macro to simplify creating children of MppTest
-#define MPP_TEST_FIXTURE(__NAME__,__STRING__,__MIX__,__OPTIONS__)\
+#define MPP_TEST_FIXTURE(__NAME__,__MIX__,__OPTIONS__)\
 class __NAME__ : public MppTestFixture\
 {\
 public:\
     __NAME__ ()\
-        : MppTestFixture( __STRING__ )\
+        : MppTestFixture( #__NAME__ )\
     { }\
 protected:\
     Mutation::MixtureOptions mixtureOptions() const\
@@ -155,23 +151,6 @@ protected:\
         __OPTIONS__\
         return options;\
     }\
-};\
-
-
-
-/**
-class Air11RRHO: public MppTestFixture
-{
-public:
-   Air11RRHO()
-        : MppTestFixture("Air11-RRHO")  { }
-protected:
-    Mutation::MixtureOptions mixtureOptions() const
-    {
-        Mutation::MixtureOptions options("air11");
-         options.setThermodynamicDatabase("RRHO");
-        return options;
-    }
 };
 
-*/
+
