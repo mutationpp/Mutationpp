@@ -64,6 +64,9 @@ public:
     template <typename T>
     void compareEquilibriumValues(std::string filename, T func, int nvals)
     {
+
+
+	std::cout << std::endl << std::endl << "Reading Data File  ==> " << filename << std::endl << std::endl;
         // Open file
         std::ifstream file(filename.c_str());
         BOOST_CHECK_MESSAGE(file.is_open(), 
@@ -78,6 +81,9 @@ public:
         
         double T, P;
         
+	std::cout << "Number of Nvals ==> " << nvals << std::endl;
+
+
         double values [nvals];
         double result [nvals];
         
@@ -99,8 +105,10 @@ public:
                 func(this, result);
                 
                 // Compare
-                for (int i = 0; i < nvals; ++i)
+                for (int i = 0; i < nvals; ++i) {
+		
                     BOOST_CHECK_CLOSE(values[i], result[i], 1.0e-3);
+	} 	
             }
         }
         
