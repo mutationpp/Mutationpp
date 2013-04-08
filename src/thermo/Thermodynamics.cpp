@@ -1,6 +1,7 @@
 #include "Thermodynamics.h"
 #include "Constants.h"
 #include "GfcEquilSolver.h"
+#include "MultiPhaseEquilSolver.h"
 #include "ThermoDB.h"
 #include "StateModel.h"
 #include "Utilities.h"
@@ -53,7 +54,7 @@ Thermodynamics::Thermodynamics(
         1.0 / nElements());
     
     // Allocate a new equilibrium solver
-    mp_equil = new GfcEquilSolver(*this);
+    mp_equil = new MultiPhaseEquilSolver(*this);
     
     // Allocate a new state model
     mp_state = Config::Factory<StateModel>::create(state_model, nSpecies());

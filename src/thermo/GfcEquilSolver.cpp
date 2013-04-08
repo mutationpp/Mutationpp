@@ -526,7 +526,7 @@ void GfcEquilSolver::ming(
     
     // Compute the standard state normalized molar specific Gibbs energy for
     // each species in the mechanism
-    m_thermo.speciesGOverRT(T, m_thermo.standardStateP(), g);
+    m_thermo.speciesGOverRT(T, P, g);
     
     // Solve the linear programming problem
     LpResult lp_result =

@@ -15,6 +15,7 @@ namespace Mutation {
     namespace Thermodynamics {
 
 class GfcEquilSolver;
+class MultiPhaseEquilSolver;
 class ThermoDB;
 
 /**
@@ -596,7 +597,7 @@ private:
 private:
   
     ThermoDB* mp_thermodb;
-    GfcEquilSolver* mp_equil;
+    MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
     
     std::vector<Species> m_species;    

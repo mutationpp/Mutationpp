@@ -180,7 +180,7 @@ void house(VecExpr<T, E>& v, T& beta)
 
 template <typename Real>
 QR<Real>::QR(const Matrix<Real> &A, const bool do_nothing)
-    : m_A(A), m_betas(min(A.rows()-1,A.cols())), m_have_Q(false), 
+    : m_A(A), m_betas(std::min(A.rows()-1,A.cols())), m_have_Q(false), 
       m_have_R(false)
 {
     // This modification allows the QRP class to inherit QR functionality,
