@@ -17,7 +17,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "QR.h"
+#include "QRP.h"
 #include "SVD.h"
 
 namespace Mutation {
