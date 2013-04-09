@@ -53,6 +53,10 @@ enum LpObjective {
     MAXIMIZE   ///< max_x( f'*x )
 };
 
+template <typename Real>
+int simplex(Real *const tableau, const int m, const int n, const int m1, 
+            const int m2, int *const izrov, int *const iposv, const Real eps);
+
 
 /**
  * Solves a linear programming problem.
@@ -240,6 +244,20 @@ LpResult lp(const Vector<Real> &f, const LpObjective &objective,
     
     return SOLUTION_FOUND;
 } // lp
+
+
+template <typename Real>
+void simp1(const Real *const tableau, const int n, const int mm, 
+           const int *const ll, const int nll, const bool use_abs, 
+           int &kp, Real &bmax);
+           
+template <typename Real>
+void simp2(const Real *const tableau, const int m, const int n, int &ip, 
+           const int kp, const Real eps);
+           
+template <typename Real>
+void simp3(Real *const tableau, const int n, const int i1, const int k1, 
+           const int ip, const int kp);
 
 
 /**
