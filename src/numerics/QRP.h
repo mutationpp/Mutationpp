@@ -70,6 +70,7 @@ public:
     // members
     using QR<Real>::m_A;
     using QR<Real>::m_betas;
+    using QR<Real>::qTransposeB;
 
 private:
     
