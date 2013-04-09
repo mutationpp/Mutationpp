@@ -723,7 +723,7 @@ void Thermodynamics::speciesGOverRT(double* const p_g) const
 {
     mp_thermodb->gibbs(
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), mp_state->P(), p_g, NULL, NULL, NULL, NULL);
+        mp_state->Tel(), standardStateP(), p_g, NULL, NULL, NULL, NULL);
     
     double lnp = std::log(mp_state->P() / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
@@ -735,7 +735,7 @@ void Thermodynamics::speciesGOverRT(double* const p_g) const
 
 void Thermodynamics::speciesGOverRT(double T, double P, double* const p_g) const
 {
-    mp_thermodb->gibbs(T, T, T, T, T, P, p_g, NULL, NULL, NULL, NULL);
+    mp_thermodb->gibbs(T, T, T, T, T, standardStateP(), p_g, NULL, NULL, NULL, NULL);
     
     double lnp = std::log(P / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
