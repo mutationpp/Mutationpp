@@ -410,6 +410,7 @@ public:
         for (size_t i = 0; i < m_rows; ++i)
             for (size_t j = 0; j < m_cols; ++j)
                 (*this)(i,j) = static_cast<T>(m(i,j));
+        return *this;
     }
     
     #define MAT_EQ_SCALAR(__op__,__assertion__)\
