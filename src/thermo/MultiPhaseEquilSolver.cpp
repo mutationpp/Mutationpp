@@ -92,7 +92,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     dg = N - g;
     
     double s = 0.0;
-    double ds = 0.2;
+    double ds = 0.1;
     int iter = 0;
     int newt = 0;
     
@@ -123,7 +123,8 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         lambda += r(0,m_nc)*ds;
         Nbar *= exp(r(m_nc,m_nc+m_np)*ds);
         g += dg*ds;
-        s += ds; 
+        s += ds;
+        ds = std::min(ds*3.0, 1.0-s);
         
         computeSpeciesMoles(lambda, Nbar, g, N);
         computeResidual(c, Nbar, N, r);
@@ -254,22 +255,9 @@ void MultiPhaseEquilSolver::ming(
 void MultiPhaseEquilSolver::formSystemMatrix(
     const RealVector& N, RealSymMat& A) const
 {
-    // nc*nc*ns*3 + nc*ns*2 = nc*ns(2+3*nc)
-    // dW/dlambda
     A = 0.0;
-    /*for (int i = 0; i < m_nc; ++i)
-        for (int j = i; j < m_nc; ++j)
-            for (int k = 0; k < m_ns; ++k)
-                A(i,j) += m_B(k,i)*m_B(k,j)*N(k);
-    
-    // dW/dNbar
-    for (int i = 0; i < m_nc; ++i)
-        for (int k = 0; k < m_ns; ++k)
-            A(i,m_phase(k)+m_nc) += m_B(k,i)*N(k);*/
-            
-    
-    // nc*ns*(2+2*nc), saves nc*nc*ns operations
     double temp;
+    
     for (int i = 0; i < m_nc; ++i) {
         for (int k = 0; k < m_ns; ++k) {
             temp = m_B(k,i)*N(k);
