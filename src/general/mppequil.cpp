@@ -3,7 +3,9 @@
 #include <fstream>
 #include <iomanip>
 
+#ifdef __GNU__
 #include <fenv.h>
+#endif
 
 using std::cout;
 using std::endl;
@@ -382,7 +384,10 @@ void writeHeader(
 
 int main(int argc, char** argv)
 {
+#ifdef __GNU__
+    // Enable floating point exception handling
     feenableexcept(FE_DIVBYZERO | FE_INVALID);
+#endif
     
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
