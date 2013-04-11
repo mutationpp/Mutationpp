@@ -1,0 +1,261 @@
+#!/bin/bash
+#SCRIPT:  generateDataFiles
+#PURPOSE: for generate data files by mppequil programme for all Thermodynamic properties  
+
+
+
+####################################################################################################
+#	START OF DEFINING VARIABLES 
+####################################################################################################
+
+AIR5="air5"
+AIR11="air11"
+CO28="CO28"
+
+ARRAY_AIR=( AIR5
+	    AIR11 
+	    CO28 )
+
+
+RRHO="RRHO"
+NASA_7="NASA-7"
+NASA_9="NASA-9"
+
+ARRAY_DATABASE=(RRHO
+		NASA_7
+		NASA_9 )
+
+SPECIES="Species"
+MIXTURES="Mixtures"
+
+X=0
+Y=1
+H=9
+S=19
+G=11
+
+ARRAY_SPECIES=( X
+		Y
+		H
+		S
+		G )
+
+H=9
+HT=23
+HV=25
+HR=24
+HEL=26
+HF=27
+S=10
+E=29
+A_F=37
+A_EQ=38
+GAMMA=17
+GAM_EQ=16
+RHO=2
+CP=14
+CP_EQ=8
+CV=15
+CV_EQ=11
+
+ARRAY_MIXTURES=( H
+		HT
+		HV
+		HR
+		HEL
+		HF
+		S
+		E
+		A_F
+		A_EQ
+		GAMMA
+		GAM_EQ
+		RHO
+		CP
+		CP_EQ
+		CV
+		CV_EQ
+		)
+
+
+PRESSURE_IN_PASCAL=101325
+
+
+
+####################################################################################################
+#	END OF DEFINING VARIABLES 
+####################################################################################################
+
+
+
+
+
+
+####################################################################################################
+#	function that produces .dat files for the given parameters 
+#		$1 : air mixture ( air11 , air5 , CO28)
+#		$2 : database (RRHO,NASA-7,NASA-9)
+#		$3 : name of the propertiy (H,S,E,GAMMA,X,Y,..... )	
+#		$4 : specifies mixture or species ( Species , Mixture ) , species and mixtures are
+#		     treated differently ( special mixtures property: Translational enthalpy (HR) , Vibrational Enthalpy (HV) )	
+#		     			 ( special species property : species mass fraction (Y)
+#		$5 : Pressure in pascal 
+#		$6,$7 : Pressure in pascal if given 		
+####################################################################################################
+
+mppequil_function() {
+
+	
+	nb=5  # $nb points to the first pressure value given in parameters  
+
+	# construct the file name relative to the air mixture / database / property of species or mixture 
+	# species property starts with SPE_property_name.dat 
+	# mixture property starts with MIX__property_name.dat  
+	# this is becaus some species properties and mixture properties have the same names 
+	#
+
+	if [[ "$4" = "$SPECIES" ]];then
+		echo "SPECIES : ${!1} "
+		FILENAME=$(echo -e "$DIR/${!1}/${!2}/SPE_$3.dat")
+	else 
+		FILENAME=$(echo -e "$DIR/${!1}/${!2}/MIX_$3.dat")
+	fi
+
+	# generate .dat file for the given parameters in to the relative 
+	# directory also contructed by the relative parameters
+	
+
+	if [ "$4" = "$MIXTURES" ];then
+		NB_PRESSURE=0;
+#		echo -e "================================================"
+
+		# ${!3} : containes value numeric of the property 
+		# (ex : Mixture Enthalpy $3 == > H , ${!3} = 9 value related to the mixture )
+ 		
+		# create file with values for the firts pressure given 
+		# awk '{ if ( NR > 1  ) { print } }' : without the first line which containes   ( Th[K]     Property[J/kg-K] )
+
+		mppequil -m 0,${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} air11 | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
+		# remove blank lines
+		sed -i --in-place "/^$/d" $FILENAME
+		# count how many line the file containes 
+		local count=$(wc -l $FILENAME | awk "{print \$1}")
+	##	echo -e "\nTotal $count Lines read"
+		#write the first line with amount of line numbers and number of pressures ( for example : 3 pressures )
+		sed -i --in-place "1 i\\$count 1" $FILENAME
+		#write the second line with pressure 
+		sed -i --in-place "2 i\\${!nb}" $FILENAME
+			# loop over all pressures  but for moment don nothing , compute only for 1 pressure 
+			while [ $nb -le $# ]; do
+				TEST=${!nb}
+			#	echo -e "Pressure : $TEST and  $FILENAME and its value : ${!3} database : ${!2} air ==> ${!1}"
+				((nb++))
+			done 
+
+	else 
+
+		
+	#	NB_PRESSURE=0;
+		echo -e "================================================"
+		mppequil -m 0 -s ${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} air11 | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
+		sed -i --in-place "/^$/d" $FILENAME
+		local count=$(wc -l $FILENAME | awk "{print \$1}")
+		echo -e "\nTotal $count Lines read"
+		sed -i --in-place "1 i\\$count 1" $FILENAME
+		sed -i --in-place "2 i\\${!nb}" $FILENAME
+			# loop over all pressures  
+		echo -e "Pressure : ${!nb} and  $FILENAME and its value : ${!3} database : ${!2} air ==> ${!1}"
+	
+
+	fi
+
+	
+
+}
+
+
+
+
+
+
+####################################################################################################
+#	function that loops over all air mixtures , data bases , species and mixture properties 
+#	and call mppequil_function with relatived parameters for generate .dat file 	
+#	
+#	some species properties need specific parameters ( Species mass fraction ==> i atm , air11 and RRHO database )
+#	and some mixture properties also need specific parameters 
+#	(Translational enthalpy (HR) , Vibrational Enthalpy (HV) ==> only with RRHO database )	
+#		 
+####################################################################################################
+
+
+loop_function() {
+
+for (( AIR_IT=0;AIR_IT<${#ARRAY_AIR[@]};AIR_IT++)); do
+	for (( DB_IT=0;DB_IT<${#ARRAY_DATABASE[@]};DB_IT++)); do
+		for (( i=0;i<${#ARRAY_SPECIES[@]};i++)); do
+			if [ $i -eq $Y ] ; then
+				if [ ${!ARRAY_AIR[${AIR_IT}]} == $AIR11 ] && [ ${!ARRAY_DATABASE[${DB_IT}]} == $RRHO ]; then # && [[ $i -eq $Y ]]  
+				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_SPECIES[${i}]} \
+						 $SPECIES $PRESSURE_IN_PASCAL
+				fi		
+			else 
+				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_SPECIES[${i}]} $SPECIES \
+						 $PRESSURE_IN_PASCAL  				
+				#	 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+				
+				#	 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+			fi
+		done
+
+
+
+		for (( i=0;i<${#ARRAY_MIXTURES[@]};i++)); do
+
+
+			if [[ ${!ARRAY_MIXTURES[${i}]} -ge $HT ]] && [[ ${!ARRAY_MIXTURES[${i}]} -le $HF ]]; then
+			
+				if [ ${!ARRAY_DATABASE[${DB_IT}]} == $RRHO ]; then			
+				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_MIXTURES[${i}]} $MIXTURES\
+							 $PRESSURE_IN_PASCAL 				
+						#	 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+						 
+						#	 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+				fi
+			
+			else 
+
+				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_MIXTURES[${i}]} $MIXTURES\
+							 $PRESSURE_IN_PASCAL 						
+							# ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+						 
+							# ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+			
+			fi
+		done
+	   
+	done
+done
+
+}
+
+
+# create directories 
+
+DIR="data"
+mkdir -p $DIR/$AIR5/$RRHO
+mkdir -p $DIR/$AIR5/$NASA_7
+mkdir -p $DIR/$AIR5/$NASA_9
+
+mkdir -p $DIR/$AIR11/$RRHO
+mkdir -p $DIR/$AIR11/$NASA_7
+mkdir -p $DIR/$AIR11/$NASA_9
+
+mkdir -p $DIR/$CO28/$RRHO
+mkdir -p $DIR/$CO28/$NASA_7
+mkdir -p $DIR/$CO28/$NASA_9
+
+# call loop function 
+loop_function
+
+
