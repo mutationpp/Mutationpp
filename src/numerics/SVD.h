@@ -130,9 +130,9 @@ template <typename Real>
 Real hypot(const Real &a, const Real &b)
 {
     if (a == NumConst<Real>::zero)
-        return abs(b);
+        return std::abs(b);
     
-    if (abs(a) > abs(b)) {
+    if (std::abs(a) > std::abs(b)) {
         Real c = b / a;
         return std::abs(a) * std::sqrt(NumConst<Real>::one + c * c);
     } else {
@@ -354,10 +354,10 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
                 if (ks == k)
                     break;
                 
-                double t = (ks != p ? abs(e(ks)) : NumConst<Real>::zero) + 
-                           (ks != k+1 ? abs(e(ks-1)) : NumConst<Real>::zero);
+                double t = (ks != p ? std::abs(e(ks)) : NumConst<Real>::zero) + 
+                           (ks != k+1 ? std::abs(e(ks-1)) : NumConst<Real>::zero);
                
-                if (abs(m_s(ks)) <= eps * t)  {
+                if (std::abs(m_s(ks)) <= eps * t)  {
                     m_s(ks) = NumConst<Real>::zero;
                     break;
                 }
@@ -430,8 +430,8 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
             case 3: {
                 // Calculate the shift.   
                 Real scale = std::max(std::max(std::max(std::max(
-                               abs(m_s(p-1)),abs(m_s(p-2))),abs(e(p-2))), 
-                               abs(m_s(k))),abs(e(k)));
+                               std::abs(m_s(p-1)),std::abs(m_s(p-2))),std::abs(e(p-2))), 
+                               std::abs(m_s(k))),std::abs(e(k)));
                 Real sp = m_s(p-1) / scale;
                 Real spm1 = m_s(p-2) / scale;
                 Real epm1 = e(p-2) / scale;

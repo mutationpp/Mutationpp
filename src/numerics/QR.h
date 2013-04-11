@@ -103,7 +103,7 @@ void house(VecExpr<T, E>& v, T& beta)
     
     // Normalize v such that v(1) = 1    
     T v1 = v(0);
-    if (sigma <= NumConst<T>::eps * abs(v1)) {
+    if (sigma <= NumConst<T>::eps * std::abs(v1)) {
         v(0) = NumConst<T>::one;
         beta = NumConst<T>::zero;
     } else {

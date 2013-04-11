@@ -481,7 +481,7 @@ void simp1(const Real *const tableau, const int n, const int mm,
         
         for (int k = 1; k < nll; ++k) {
             if (use_abs)
-                test = abs(a[mm][ll[k]+1]) - abs(bmax);
+                test = std::abs(a[mm][ll[k]+1]) - std::abs(bmax);
             else
                 test = a[mm][ll[k]+1] - bmax;
             
