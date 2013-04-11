@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-
+ENABLE_TESTING()
 #- Add sources for a target
 #
 #  ADD_SOURCES(<target> <source1> [<source2> ...])

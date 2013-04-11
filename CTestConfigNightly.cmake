@@ -9,7 +9,7 @@ set(MODEL Continuous)
 set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # build dir
-set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src/tests")
+set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src")
 
 # Build and site identification
 set(CTEST_SITE "Dinesh_Ramanathan-VM-Ubuntu12.04")
@@ -18,7 +18,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CF_BUILD_TYPE "Release")
 
 # commands
-set(CTEST_CMAKE_COMMAND "/usr/local/bin/cmake")
+set(CTEST_CMAKE_COMMAND "/usr/bin/cmake")
 set(CTEST_UPDATE_COMMAND "/usr/bin/svn")
 
 
@@ -53,7 +53,7 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
  #ctest_update(RETURN_VALUE HAD_UPDATES)
 # if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
-  ctest_build()
+  ctest_build()		
   ctest_test()
   ctest_submit()
 # endif()
