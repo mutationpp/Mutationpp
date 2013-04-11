@@ -23,7 +23,7 @@ MPP_TEST_FIXTURE( Air11RRHO, "air11",
 //#define TEST_MIXTURE_CV_EQ 	// 148 fails
 //#define TEST_MIXTURE_CP_EQ 	// 148 fails 
 //#define TEST_MIXTURE_GAM_EQ  	// 54 Fails
-//#define TEST_MIXTURE_A_EQ  	// 47 fails 
+#define TEST_MIXTURE_A_EQ  	// 47 fails 
 
 
 
