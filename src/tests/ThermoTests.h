@@ -51,16 +51,43 @@ BOOST_AUTO_TEST_CASE(SetState)
 #endif
 
 
-//  8 : Cp_eq     [J/kg-K]    equilibrium specific heat at constant pressure
-// double Mutation::Thermodynamics::Thermodynamics::mixtureEquilibriumCpMass()
 //  14: Cp        [J/kg-K]    frozen specific heat at constant pressure
 // double Mutation::Thermodynamics::Thermodynamics::mixtureFrozenCpMass() const 	
 #ifdef TEST_MIXTURE_CP
-TEST_COMPARE_EQUILIBRIUM_VALUES(cp, 2, 
+TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_CP, 1, 
     values[0] = mix->mixtureFrozenCpMass();
+)
+#endif
+
+
+
+//  8 : Cp_eq     [J/kg-K]    equilibrium specific heat at constant pressure
+// double Mutation::Thermodynamics::Thermodynamics::mixtureEquilibriumCpMass()
+#ifdef TEST_MIXTURE_CP_EQ
+TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_CP_EQ, 1, 
     values[1] = mix->mixtureEquilibriumCpMass();
 )
 #endif
+
+
+
+//  8 : Cp_eq     [J/kg-K]    equilibrium specific heat at constant pressure
+// double Mutation::Thermodynamics::Thermodynamics::mixtureEquilibriumCpMass()
+#ifdef TEST_MIXTURE_CV
+TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_CV, 1, 
+    values[1] = mix->mixtureFrozenCvMass();
+)
+#endif
+
+
+//  8 : Cp_eq     [J/kg-K]    equilibrium specific heat at constant pressure
+// double Mutation::Thermodynamics::Thermodynamics::mixtureEquilibriumCpMass()
+#ifdef TEST_MIXTURE_CV_EQ
+TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_CV_EQ, 1, 
+    values[1] = mix->mixtureEquilibriumCvMass();
+)
+#endif
+
 
 
 
@@ -164,7 +191,29 @@ TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_GAM_EQ, 1,
 #endif
 
 
+#ifdef TEST_MIXTURE_RHO
+TEST_COMPARE_EQUILIBRIUM_VALUES(MIX_RHO, 1, 
+    values[0] = mix->density();
+)
+#endif
 
+
+
+
+#ifdef TEST_SPECIES_X
+TEST_COMPARE_EQUILIBRIUM_VALUES(SPE_X,  mix()->nSpecies(),
+    for (int i = 0; i < ns; ++i)
+        values[i] = mix->X()[i];
+)
+#endif
+
+
+#ifdef TEST_SPECIES_Y
+TEST_COMPARE_EQUILIBRIUM_VALUES(SPE_Y, mix()->nSpecies(),
+    for (int i = 0; i < ns; ++i)
+        values[i] = mix->Y()[i];
+)
+#endif
 
 
 

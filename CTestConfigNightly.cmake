@@ -12,7 +12,7 @@ set(CTEST_SOURCE_DIRECTORY "/home/didi/mutation++/branches/dinesh/src")
 set(CTEST_BINARY_DIRECTORY "/home/didi/mutation++/branches/dinesh/build/src/tests")
 
 # Build and site identification
-set(CTEST_SITE "VM-Ubuntu12.04")
+set(CTEST_SITE "Dinesh_Ramanathan-VM-Ubuntu12.04")
 set(CTEST_BUILD_NAME "gcc4.6.3-Release-Main")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CF_BUILD_TYPE "Release")
@@ -48,9 +48,9 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 
 
 #while (${CTEST_ELAPSED_TIME} LESS 72000)
- # set(START_TIME ${CTEST_ELAPSED_TIME})
+ set(START_TIME ${CTEST_ELAPSED_TIME})
  ctest_start (${MODEL})
- ctest_update(RETURN_VALUE HAD_UPDATES)
+ #ctest_update(RETURN_VALUE HAD_UPDATES)
 # if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
   ctest_build()

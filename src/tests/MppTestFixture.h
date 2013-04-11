@@ -66,7 +66,6 @@ public:
     {
 
 
-	std::cout << std::endl << std::endl << "Reading Data File  ==> " << filename << std::endl << std::endl;
         // Open file
         std::ifstream file(filename.c_str());
         BOOST_CHECK_MESSAGE(file.is_open(), 
@@ -80,10 +79,6 @@ public:
         file >> np;
         
         double T, P;
-        
-	std::cout << "Number of Nvals ==> " << nvals << std::endl;
-
-
         double values [nvals];
         double result [nvals];
         
