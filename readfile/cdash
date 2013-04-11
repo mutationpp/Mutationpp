@@ -1,6 +1,0 @@
-#!/bin/sh
-
-ctest -VV -S CTestConfigNightly.cmake
-#mppequil -P 101325 air5 > air5.dat
-#sed -i 's/CO28/air5/g' /home/didi/mytesting/readfile/src/mutation.1.3/input/parameters
-

@@ -6,10 +6,10 @@
 set(MODEL Continuous)
 
 # source dir(<> dev directory)
-set(CTEST_SOURCE_DIRECTORY "/home/didi/mutation++/branches/dinesh/src")
+set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # build dir
-set(CTEST_BINARY_DIRECTORY "/home/didi/mutation++/branches/dinesh/build/src/tests")
+set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src/tests")
 
 # Build and site identification
 set(CTEST_SITE "Dinesh_Ramanathan-VM-Ubuntu12.04")
