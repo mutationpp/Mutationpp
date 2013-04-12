@@ -75,7 +75,7 @@ double newton(
 int main()
 {
     Mutation::MixtureOptions opts("O2");
-    opts.setThermodynamicDatabase("NASA-7");
+    opts.setThermodynamicDatabase("RRHO");
     Mutation::Mixture mix(opts);
     
     // Useful to know the species indices
@@ -103,6 +103,7 @@ int main()
     cout << setw(15) << "Time (s)";
     cout << setw(15) << "T (K)";
     cout << setw(15) << "P (Pa)";
+    cout << setw(15) << "rho (kg/m^3)";
     cout << setw(15) << "Y_O";
     cout << setw(15) << "Y_O2";
     cout << endl;
@@ -112,7 +113,7 @@ int main()
     
     double dt   = 0.0;
     double time = 0.0;    
-    double tout = 0.001;
+    double tout = 0.0001;
     
     // Write time = 0 conditions
     cout << setw(15) << time;
@@ -122,12 +123,12 @@ int main()
     cout << setw(15) << pY[iO2];
     cout << endl;
     
-    while (time < 100.0) {
+    while (time < 200.0) {
         // Get species net production rates due to chemical reactions
         mix.netProductionRates(pWdot);
         
         // Compute a stable time step
-        dt = 1.0e-6 * std::abs(rho * pY[iO2] / pWdot[iO2]);
+        dt = 1.0e-7 * std::abs(rho * pY[iO2] / pWdot[iO2]);
         if (time+dt > tout)
             dt = tout-time;
         
@@ -153,11 +154,12 @@ int main()
             cout << setw(15) << pY[iO2];
             cout << endl;
             
-            if (tout > 9.9)         tout += 10.0;
-            else if (tout > 0.99)   tout += 1.0;
-            else if (tout > 0.099)  tout += 0.1;
-            else if (tout > 0.0099) tout += 0.01;
-            else                    tout += 0.001;
+            if (tout > 9.9)          tout += 10.0;
+            else if (tout > 0.99)    tout += 1.0;
+            else if (tout > 0.099)   tout += 0.1;
+            else if (tout > 0.0099)  tout += 0.01;
+            else if (tout > 0.00099) tout += 0.001;
+            else                     tout += 0.0001;
         }
     }
     

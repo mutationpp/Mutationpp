@@ -34,6 +34,11 @@ public:
      */
     std::pair<int,int> equilibrate(
         double T, double P, const double *const p_ev, double *const p_sv);
+    
+    /**
+     * Adds an additional linear constraint to the equilibrium solver.
+     */
+    void addConstraint(const double *const p_A, const double c);
 
 private:
 
@@ -45,9 +50,13 @@ private:
     void initPhases();
     
     void initialConditions(
-        const Numerics::RealVector& c, const Numerics::RealVector& gtp, 
+        const Numerics::RealVector& gtp, Numerics::RealVector& lambda, 
+        Numerics::RealVector& Nbar, Numerics::RealVector& g) const;
+        
+    int newton(
         Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 
-        Numerics::RealVector& g) const;
+        const Numerics::RealVector& g, Numerics::RealVector& N, 
+        Numerics::RealVector& r, Numerics::RealSymMat& A, const double tol);
         
     /**
      * Computes the max-min composition \f$N^{mm}\f$, for the undetermined 
@@ -96,8 +105,8 @@ private:
         const Numerics::RealVector& g, Numerics::RealVector& N) const;
         
     void computeResidual(
-        const Numerics::RealVector& c, const Numerics::RealVector& Nbar,
-        const Numerics::RealVector& N, Numerics::RealVector& r) const;
+        const Numerics::RealVector& Nbar, const Numerics::RealVector& N, 
+        Numerics::RealVector& r) const;
      
 private:
 
@@ -108,8 +117,11 @@ private:
     int m_nc;
     int m_np;
 
-    Mutation::Numerics::RealMatrix  m_B;
-    Mutation::Numerics::Vector<int> m_phase;
+    Numerics::RealMatrix  m_B;
+    Numerics::Vector<int> m_phase;
+    Numerics::Vector<double> m_c;
+    
+    std::vector<Numerics::RealVector> m_constraints;
 
 };
 
