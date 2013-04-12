@@ -1663,6 +1663,13 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="HO2">
+        <stoichiometry>
+            H: 1,
+            O: 2
+        </stoichiometry>
+    </species>
  
 	<!-- Hydrogen diatomic -->
 	<species name="H2">
@@ -1721,6 +1728,13 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="H2O2">
+        <stoichiometry>
+            H: 2,
+            O: 2
+        </stoichiometry>
+    </species>
  
 	<!-- Prop-2-Vinylidene Singlet -->
 	<species name="HCCCH">

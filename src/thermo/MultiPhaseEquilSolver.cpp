@@ -53,6 +53,17 @@ void MultiPhaseEquilSolver::addConstraint(
 }
 
 //==============================================================================
+        
+void MultiPhaseEquilSolver::clearConstraints()
+{
+    m_constraints.clear();
+    m_B = m_thermo.elementMatrix();
+    RealVector temp(m_ne);
+    m_c = temp;
+    m_nc = m_ne;
+}
+
+//==============================================================================
 
 void MultiPhaseEquilSolver::initPhases()
 {
@@ -113,7 +124,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     dg -= g;
     
     double s = 0.0;
-    double ds = 0.1;
+    double ds = 0.01;
     int iter = 0;
     int newt = 0;
     
@@ -145,7 +156,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         Nbar *= exp(r(m_nc,m_nc+m_np)*ds);
         g += dg*ds;
         s += ds;
-        ds = std::min(ds*3.0, 1.0-s);
+        ds = std::min(ds*1.1, 1.0-s);
         
         computeSpeciesMoles(lambda, Nbar, g, N);
         computeResidual(Nbar, N, r);
@@ -154,7 +165,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-8);
+    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-12);
     
     // Compute the species mole fractions
     double moles = N.sum();

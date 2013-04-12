@@ -2,8 +2,8 @@
 MUTATIONPP_INSTALL = ../install
 
 CXX       = g++
-CXX_FLAGS = -I$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g -pg
-CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
+CXX_FLAGS = -I$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g
+CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.dylib
 
 EXAMPLES  = \
 	equilibrium_air \

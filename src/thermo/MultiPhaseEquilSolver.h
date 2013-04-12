@@ -39,6 +39,11 @@ public:
      * Adds an additional linear constraint to the equilibrium solver.
      */
     void addConstraint(const double *const p_A, const double c);
+    
+    /**
+     * Removes all linear constraints from the equilibrium solver.
+     */
+    void clearConstraints();
 
 private:
 
