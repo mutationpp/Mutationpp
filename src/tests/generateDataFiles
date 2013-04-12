@@ -1,6 +1,6 @@
 #!/bin/bash
-#SCRIPT:  generateDataFiles
-#PURPOSE: for generate data files by mppequil programme for all Thermodynamic properties  
+#SCRIPT:  method2.sh
+#PURPOSE: Process a file line by line with redirected while-read loop.
 
 
 
@@ -105,7 +105,7 @@ PRESSURE_IN_PASCAL=101325
 
 mppequil_function() {
 
-	
+	nb_pressures=$(($# -4))
 	nb=5  # $nb points to the first pressure value given in parameters  
 
 	# construct the file name relative to the air mixture / database / property of species or mixture 
@@ -115,7 +115,6 @@ mppequil_function() {
 	#
 
 	if [[ "$4" = "$SPECIES" ]];then
-		echo "SPECIES : ${!1} "
 		FILENAME=$(echo -e "$DIR/${!1}/${!2}/SPE_$3.dat")
 	else 
 		FILENAME=$(echo -e "$DIR/${!1}/${!2}/MIX_$3.dat")
@@ -126,47 +125,49 @@ mppequil_function() {
 	
 
 	if [ "$4" = "$MIXTURES" ];then
-		NB_PRESSURE=0;
-#		echo -e "================================================"
-
 		# ${!3} : containes value numeric of the property 
 		# (ex : Mixture Enthalpy $3 == > H , ${!3} = 9 value related to the mixture )
  		
 		# create file with values for the firts pressure given 
 		# awk '{ if ( NR > 1  ) { print } }' : without the first line which containes   ( Th[K]     Property[J/kg-K] )
 
-		mppequil -m 0,${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} air11 | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
+		mppequil -m 0,${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} ${!1} | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
 		# remove blank lines
 		sed -i --in-place "/^$/d" $FILENAME
 		# count how many line the file containes 
 		local count=$(wc -l $FILENAME | awk "{print \$1}")
-	##	echo -e "\nTotal $count Lines read"
 		#write the first line with amount of line numbers and number of pressures ( for example : 3 pressures )
-		sed -i --in-place "1 i\\$count 1" $FILENAME
+		sed -i --in-place "1 i\\$count $nb_pressures" $FILENAME
 		#write the second line with pressure 
 		sed -i --in-place "2 i\\${!nb}" $FILENAME
 			# loop over all pressures  but for moment don nothing , compute only for 1 pressure 
+			((nb++))
 			while [ $nb -le $# ]; do
+				
 				TEST=${!nb}
+				echo -e "$TEST" >> $FILENAME
 			#	echo -e "Pressure : $TEST and  $FILENAME and its value : ${!3} database : ${!2} air ==> ${!1}"
+			#	echo -e "================================================"			
+				mppequil -m 0,${!3} -P $TEST --scientific 10 --thermo-db ${!2} ${!1} | awk '{ if ( NR > 1  ) { print } }'>> $FILENAME
 				((nb++))
 			done 
 
 	else 
-
-		
-	#	NB_PRESSURE=0;
-		echo -e "================================================"
-		mppequil -m 0 -s ${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} air11 | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
+		mppequil -m 0 -s ${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} ${!1} | awk '{ if ( NR > 1  ) { print } }' > $FILENAME
 		sed -i --in-place "/^$/d" $FILENAME
 		local count=$(wc -l $FILENAME | awk "{print \$1}")
-		echo -e "\nTotal $count Lines read"
-		sed -i --in-place "1 i\\$count 1" $FILENAME
+		sed -i --in-place "1 i\\$count $nb_pressures" $FILENAME
 		sed -i --in-place "2 i\\${!nb}" $FILENAME
 			# loop over all pressures  
-		echo -e "Pressure : ${!nb} and  $FILENAME and its value : ${!3} database : ${!2} air ==> ${!1}"
+		#	echo -e "Pressure : ${!nb} and  $FILENAME and its value : ${!3} database : ${!2} air ==> ${!1}"
 	
-
+		((nb++))
+		while [ $nb -le $# ]; do
+			TEST=${!nb}
+			echo -e "$TEST" >> $FILENAME
+			mppequil -m 0 -s ${!3} -P ${!nb} --scientific 10 --thermo-db ${!2} ${!1} | awk '{ if ( NR > 1  ) { print } }' >> $FILENAME
+			((nb++))
+		done 
 	fi
 
 	
@@ -195,41 +196,37 @@ for (( AIR_IT=0;AIR_IT<${#ARRAY_AIR[@]};AIR_IT++)); do
 	for (( DB_IT=0;DB_IT<${#ARRAY_DATABASE[@]};DB_IT++)); do
 		for (( i=0;i<${#ARRAY_SPECIES[@]};i++)); do
 			if [ $i -eq $Y ] ; then
-				if [ ${!ARRAY_AIR[${AIR_IT}]} == $AIR11 ] && [ ${!ARRAY_DATABASE[${DB_IT}]} == $RRHO ]; then # && [[ $i -eq $Y ]]  
-				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_SPECIES[${i}]} \
+				if [ ${!ARRAY_AIR[${AIR_IT}]} == $AIR11 ] && [ ${!ARRAY_DATABASE[${DB_IT}]} == $RRHO ]; then  
+					mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_SPECIES[${i}]} \
 						 $SPECIES $PRESSURE_IN_PASCAL
 				fi		
 			else 
 				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_SPECIES[${i}]} $SPECIES \
-						 $PRESSURE_IN_PASCAL  				
-				#	 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
-				
-				#	 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+					 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+					 $PRESSURE_IN_PASCAL \
+					 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
 			fi
 		done
 
 
 
 		for (( i=0;i<${#ARRAY_MIXTURES[@]};i++)); do
-
-
 			if [[ ${!ARRAY_MIXTURES[${i}]} -ge $HT ]] && [[ ${!ARRAY_MIXTURES[${i}]} -le $HF ]]; then
-			
 				if [ ${!ARRAY_DATABASE[${DB_IT}]} == $RRHO ]; then			
+				
 				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_MIXTURES[${i}]} $MIXTURES\
-							 $PRESSURE_IN_PASCAL 				
-						#	 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
-						 
-						#	 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+							 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+							 $PRESSURE_IN_PASCAL \
+							 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+			
 				fi
 			
 			else 
 
 				mppequil_function ${ARRAY_AIR[${AIR_IT}]} ${ARRAY_DATABASE[${DB_IT}]} ${ARRAY_MIXTURES[${i}]} $MIXTURES\
-							 $PRESSURE_IN_PASCAL 						
-							# ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
-						 
-							# ${PRE=$(($PRESSURE_IN_PASCAL*10))}
+							 ${PRESSURE=$(echo "scale=1;($PRESSURE_IN_PASCAL/10)" | bc)} \
+							 $PRESSURE_IN_PASCAL \
+							 ${PRE=$(($PRESSURE_IN_PASCAL*10))}
 			
 			fi
 		done
