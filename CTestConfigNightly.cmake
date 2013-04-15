@@ -12,13 +12,16 @@ set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src")
 
 # commande that containes information about machine and status 
+
+
 execute_process(COMMAND id -un  COMMAND tr -d "\n" OUTPUT_VARIABLE myName)
 execute_process(COMMAND cat /etc/issue.net  COMMAND tr -d "\n" OUTPUT_VARIABLE myMachine)
 execute_process(COMMAND echo "${myName}@${myMachine}" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_SITE)
 
 # to get the gcc version 
 set(CF_BUILD_TYPE "Release")
-execute_process(COMMAND gcc --version  COMMAND awk "/gcc/ {print \$4}"  COMMAND tr -d "\n" OUTPUT_VARIABLE compiler)
+execute_process(COMMAND gcc --version  COMMAND sed -rn "s/gcc[^[:digit:]]*([0-9.]*)/\\1/p"
+		COMMAND awk "{print $NF}"  COMMAND  sed -e "s/[^0-9.-]//g" OUTPUT_VARIABLE compiler)
 # execute_process(COMMAND echo "gcc-${compiler}-${CF_BUILD_TYPE}-Main" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_BUILD)
 execute_process(COMMAND awk "/define BOOST_LIB_VERSION/ {print \$3}" /usr/include/boost/version.hpp
 	        COMMAND  sed "s/\"//g" 
