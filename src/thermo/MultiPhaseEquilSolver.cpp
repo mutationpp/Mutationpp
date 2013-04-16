@@ -215,6 +215,11 @@ void MultiPhaseEquilSolver::initialConditions(
     double alpha = 0.999;
     N = alpha*Nmg + (1.0-alpha)*Nmm;
     
+    //cout << "Nmg" << endl;
+    //cout << Nmg << endl;
+    //cout << "Nmm" << endl;
+    //cout << Nmm << endl;
+    
     // Initial phase moles
     Nbar = 0.0;
     for (int i = 0; i < m_ns; ++i)

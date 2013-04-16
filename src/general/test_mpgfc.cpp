@@ -2,6 +2,10 @@
 #include "mutation++.h"
 #include "MultiPhaseEquilSolver.h"
 
+//#ifdef __GNU__
+#include <fenv.h>
+//#endif
+
 using namespace Mutation::Thermodynamics;
 using namespace std;
 
@@ -107,6 +111,10 @@ void bishnuTable5()
 
 int main()
 {
+//#ifdef __GNU__
+    feenableexcept(FE_DIVBYZERO | FE_INVALID);
+//#endif
+
     bishnuTable3();
     bishnuTable5();
 }
