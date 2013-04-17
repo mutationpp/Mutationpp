@@ -15,7 +15,8 @@ set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src")
 
 
 execute_process(COMMAND id -un  COMMAND tr -d "\n" OUTPUT_VARIABLE myName)
-execute_process(COMMAND cat /etc/issue.net  COMMAND tr -d "\n" OUTPUT_VARIABLE myMachine)
+#execute_process(COMMAND cat /etc/issue.net  COMMAND tr -d "\n" OUTPUT_VARIABLE myMachine)
+set(myMachine ${CMAKE_SYSTEM})
 execute_process(COMMAND echo "${myName}@${myMachine}" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_SITE)
 
 # to get the gcc version 
