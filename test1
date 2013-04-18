@@ -2,5 +2,5 @@
 #SCRIPT:  method2.sh
 #PURPOSE: Process a file line by line with redirected while-read loop.
 
-string=$( gcc --version ) #'This is a sample 123.123.12 text and some 987 numbers'
+string=$( gcc --version )
 echo "$string" | sed -rn 's/gcc[^[:digit:]]*([0-9.]*)/\1 /p' | awk '{print $NF}' |  sed -e 's/[^0-9.-]//g'

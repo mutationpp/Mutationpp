@@ -3,6 +3,8 @@
 ##########################################################################
 
 # Dashboard model (Continuous, Experimental, Nightly)
+#project()
+#execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS EVIRONMENT = $ENV{MY_GCC_VERSION}" )
 set(MODEL Continuous)
 
 # source dir(<> dev directory)
@@ -12,32 +14,26 @@ set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src")
 
 # commande that containes information about machine and status 
-
+ 
 
 execute_process(COMMAND id -un  COMMAND tr -d "\n" OUTPUT_VARIABLE myName)
-#execute_process(COMMAND cat /etc/issue.net  COMMAND tr -d "\n" OUTPUT_VARIABLE myMachine)
 set(myMachine ${CMAKE_SYSTEM})
 execute_process(COMMAND echo "${myName}@${myMachine}" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_SITE)
 
+#CMAKE_CXX_COMPILER_VERSION
 # to get the gcc version 
-set(CF_BUILD_TYPE "Release")
-execute_process(COMMAND gcc --version  COMMAND sed -rn "s/gcc[^[:digit:]]*([0-9.]*)/\\1/p"
-		COMMAND awk "{print $NF}"  COMMAND  sed -e "s/[^0-9.-]//g" OUTPUT_VARIABLE compiler)
-# execute_process(COMMAND echo "gcc-${compiler}-${CF_BUILD_TYPE}-Main" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_BUILD)
-execute_process(COMMAND awk "/define BOOST_LIB_VERSION/ {print \$3}" /usr/include/boost/version.hpp
-	        COMMAND  sed "s/\"//g" 
-		COMMAND	sed "s/_/./g"
-		OUTPUT_VARIABLE MY_BOOST)
-execute_process(COMMAND echo "gcc-${compiler}-${CF_BUILD_TYPE}-Main" 
-		COMMAND sed "s/ /_/g" 
-		OUTPUT_VARIABLE MY_COMPILER)
 
-execute_process(COMMAND echo "${MY_COMPILER}  BOOST VERSION ${MY_BOOST}" 
-		COMMAND tr -d "\n"
-		OUTPUT_VARIABLE MY_BUILD)
+set(CF_BUILD_TYPE "Release")
+
+
+execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+execute_process(COMMAND echo "gcc-${MY_GCC_VERSION}" OUTPUT_VARIABLE MY_BUILD)
+
+
+
 # Build and site identification
 set(CTEST_SITE "${MY_SITE}")
-set(CTEST_BUILD_NAME "${MY_BUILD}")
+set(CTEST_BUILD_NAME "gcc-${GCC_VERSION}")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 
 

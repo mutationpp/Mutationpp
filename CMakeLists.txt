@@ -9,8 +9,9 @@
 ################################################################################
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
-
-
+#set(MY_GCC_VERSION ${CMAKE_CXX_COMPILER_VERSION})
+set(ENV{MY_GCC_VERSION} ${CMAKE_CXX_COMPILER_VERSION})
+execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS $ENV{MY_GCC_VERSION}" )
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)

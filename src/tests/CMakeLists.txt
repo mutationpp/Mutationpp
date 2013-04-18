@@ -1,6 +1,6 @@
  cmake_minimum_required(VERSION 2.6)
 project(Testings)
-
+execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS ${MY_GCC_VERSION}" )
 
 set(BUILD_SHARED_LIBS ON)
 
