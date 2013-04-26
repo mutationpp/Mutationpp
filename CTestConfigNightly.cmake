@@ -2,20 +2,17 @@
 # Site-specific setup
 ##########################################################################
 
+execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS EVIRONMENT = $ENV{MY_GCC_VERSION}" )
 # Dashboard model (Continuous, Experimental, Nightly)
-#project()
-#execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS EVIRONMENT = $ENV{MY_GCC_VERSION}" )
 set(MODEL Continuous)
-
 # source dir(<> dev directory)
 set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
-
 # build dir
 set(CTEST_BINARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/src")
 
-# commande that containes information about machine and status 
- 
+set(MY_TEST_PATH ${CTEST_BINARY_DIRECTORY}/Testing/Temporary)
 
+# commande that containes information about machine and status 
 execute_process(COMMAND id -un  COMMAND tr -d "\n" OUTPUT_VARIABLE myName)
 set(myMachine ${CMAKE_SYSTEM})
 execute_process(COMMAND echo "${myName}@${myMachine}" COMMAND sed "s/ /_/g" OUTPUT_VARIABLE MY_SITE)
@@ -67,17 +64,16 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 #ctest_submit()				# envoyer au serveur
 
 
-#while (${CTEST_ELAPSED_TIME} LESS 72000)
  set(START_TIME ${CTEST_ELAPSED_TIME})
  ctest_start (${MODEL})
- #ctest_update(RETURN_VALUE HAD_UPDATES)
+#ctest_update(RETURN_VALUE HAD_UPDATES)
 # if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
   ctest_build()		
   ctest_test()
-  ctest_submit()
-# endif()
-# ctest_sleep( ${START_TIME} 60 ${CTEST_ELAPSED_TIME})
-#endwhile()
+ctest_submit()
+
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
+
 
 

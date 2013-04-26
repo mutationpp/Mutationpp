@@ -1,0 +1,37 @@
+#!/bin/bash
+#SCRIPT:  mailto
+#PURPOSE: for send alert mails when the regression test fails 
+
+
+
+
+####################################################################################################
+#	function that send alert mails when the regression test fails
+#		$1 : the directory where the result of last regression test was run
+#	             example its starts like  : build/src/Testing/Temporary/LastTest_20130426-1200.log 
+###################################################################################################
+
+#Testing/Temporary
+
+send_to_my_mail="dinesh.devi@yahoo.com" 
+delimiter=$(echo -e "\n ============================================================\n")
+subj=$(echo "There are some errors in last regression test") 
+directory=$1
+
+
+
+function_send_mail() {
+
+ERROR_FILE=$(ls -lat $1 | grep "LastTest_" | head -1 | awk "{print \$9}" ) #| grep ".*failure.*detected.*" )
+ERROR_RESULT=$(echo | egrep ".*failure.*detected.*" $1/$ERROR_FILE )
+
+if [ $? = 0 ]; then
+	echo -e "$delimiter $subj $delimiter $ERROR_RESULT" | mail -s "Error of testing " $send_to_my_mail
+else 
+	echo "There is no error in regression test "
+fi 
+
+}
+
+function_send_mail $directory
+

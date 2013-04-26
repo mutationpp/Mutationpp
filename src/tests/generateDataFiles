@@ -1,6 +1,6 @@
 #!/bin/bash
-#SCRIPT:  method2.sh
-#PURPOSE: Process a file line by line with redirected while-read loop.
+#SCRIPT:  generateDataFiles
+#PURPOSE: for genrate files for mutation++
 
 
 

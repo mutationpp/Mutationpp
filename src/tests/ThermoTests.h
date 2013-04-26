@@ -8,7 +8,7 @@
 #include <stdio.h>
 #define QUOTE(str) #str
 #define EXPAND_AND_QUOTE(str) QUOTE(str)
-#define TESTE EXPAND_AND_QUOTE (TEST_DATA_DIRECTORY)
+#define TESTE EXPAND_AND_QUOTE(TEST_DATA_DIRECTORY)
 
 
 #define VALUES_TO_COMPARE(__FUNC__,__VALUES__)\
