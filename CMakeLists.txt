@@ -22,10 +22,10 @@ endif()
 ################################################################################
 
 # Profile
-SET (CMAKE_CXX_FLAGS_PROFILE "-g -Wall -pg -O3 -DNDEBUG" CACHE STRING
+SET (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
     "Flags used by the C++ compiler during Profile builds."
     FORCE )
-SET (CMAKE_C_FLAGS_PROFILE "-g -Wall -pedantic -pg -O3 -DNDEBUG" CACHE STRING
+SET (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG" CACHE STRING
     "Flags used by the C compiler during Profile builds."
     FORCE )
 SET (CMAKE_EXE_LINKER_FLAGS_PROFILE

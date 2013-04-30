@@ -308,8 +308,7 @@ double Thermodynamics::standardStateP() const {
 
 double Thermodynamics::mixtureMw() const 
 {
-    return (Numerics::asVector(mp_state->X(), nSpecies()) * 
-        m_species_mw).sum();
+    return dot(Numerics::asVector(mp_state->X(), nSpecies()), m_species_mw);
 }
 
 //==============================================================================
@@ -325,7 +324,7 @@ void Thermodynamics::equilibrate(
     /// equilibrate is called.
     
     mp_equil->equilibrate(T, P, p_c, p_X);
-    convert<CONC_TO_X>(p_X, p_X);
+    //convert<CONC_TO_X>(p_X, p_X);
     
     //cout << "After Return:" << endl;
     //for (int i = 0; i < nSpecies(); ++i)
@@ -346,6 +345,8 @@ void Thermodynamics::equilibrate(double T, double P)
 {
     equilibrate(T, P, mp_default_composition, mp_work1);
 }
+
+//==============================================================================
 
 double Thermodynamics::numberDensity(const double T, const double P) const
 {
@@ -389,7 +390,8 @@ double Thermodynamics::density(
 
 double Thermodynamics::density() const
 {
-    return numberDensity() * mixtureMw() / NA;
+    //return numberDensity() * mixtureMw() / NA;
+    return density(mp_state->T(), mp_state->P(), mp_state->X());
 }
 
 //==============================================================================

@@ -126,7 +126,15 @@ public:
     /**
      * Computes the species diffusion velocities and ambipolar electric field 
      * using the Ramshaw approximation of the generalized Stefan-Maxwell 
-     * equations and the supplied modified driving forces.
+     * equations and the supplied modified driving forces
+     *
+     * \f[ d^{'}_i = \frac{\nabla p_i}{n k_B T_h} - \frac{y_i p}{n k_B T_h}
+     *     \nabla \ln p + k^h_{Ti} \nabla \ln T_h + k^e_{Ti} \frac{T_h}{T_e}
+     *     \nabla \ln T_e \f]
+     *
+     * @param p_dp - the vector of modified driving forces \f$ d^{'}_i \f$
+     * @param p_V  - on return, the vector of diffusion velocities
+     * @param E    - on return, the ambipolar electric field
      */
     void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
         

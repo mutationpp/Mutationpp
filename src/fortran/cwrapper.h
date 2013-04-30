@@ -286,7 +286,72 @@ double NAME_MANGLE(mixture_e_mass)();
  *
  * @param wdot  on return, the species production rates in kg/m^3-s
  */
-void NAME_MANGLE(net_production_rates)(double* const wdot); 
+void NAME_MANGLE(net_production_rates)(double* const wdot);
+
+/**
+ * Returns the total number of collision pairs accounted for in the 
+ * collision database.
+ */
+int NAME_MANGLE(ncollision_pairs)();
+
+/**
+ * Returns the mixture viscosity.
+ */
+double NAME_MANGLE(viscosity)();
+
+/**
+ * Returns the mixture thermal conductivity for a frozen mixture.
+ */
+double NAME_MANGLE(frozen_thermal_conductivity)();
+
+/**
+ * Returns the mixture thermal conductivity for a mixture in thermochemical
+ * equilibrium.
+ */
+double NAME_MANGLE(equilibrium_thermal_conductivity)();
+
+/**
+ * Returns the heavy particle translational thermal conductivity using the 
+ * set algorithm.
+ */
+double NAME_MANGLE(heavy_thermal_conductivity)();
+
+/**
+ * Returns the electron translational thermal conductivity.
+ */
+double NAME_MANGLE(electron_thermal_conductivity)();
+
+/**
+ * Returns the internal energy thermal conductivity using Euken's formulas.
+ */
+double NAME_MANGLE(internal_thermal_conductivity)();
+
+/**
+ * Returns the reactive thermal conductivity which accounts for reactions
+ * for mixtures in thermochemical equilibrium.
+ */
+double NAME_MANGLE(reactive_thermal_conductivity)();
+
+/**
+ * Computes the species diffusion velocities and ambipolar electric field 
+ * using the Ramshaw approximation of the generalized Stefan-Maxwell 
+ * equations and the supplied modified driving forces
+ *
+ * \f[ d^{'}_i = \frac{\nabla p_i}{n k_B T_h} - \frac{y_i p}{n k_B T_h}
+ *     \nabla \ln p + k^h_{Ti} \nabla \ln T_h + k^e_{Ti} \frac{T_h}{T_e}
+ *     \nabla \ln T_e \f]
+ *
+ * @param p_dp - the vector of modified driving forces \f$ d^{'}_i \f$
+ * @param p_V  - on return, the vector of diffusion velocities
+ * @param E    - on return, the ambipolar electric field
+ */
+void NAME_MANGLE(stefan_maxwell)
+    (const double* const p_dp, double* const p_V, double* const p_E);
+    
+/**
+ * Returns the electric conductivity.
+ */
+double NAME_MANGLE(sigma)();
 
 /**
  * @}

@@ -22,9 +22,9 @@ add_executable(mpgfc test_mpgfc.cpp)
 target_link_libraries(mpgfc mutation++)
 install(TARGETS mpgfc DESTINATION bin)
 
-#add_executable(bprime bprime.cpp)
-#target_link_libraries(bprime mutation++)
-#install(TARGETS bprime DESTINATION bin)
+add_executable(bprime bprime.cpp)
+target_link_libraries(bprime mutation++)
+install(TARGETS bprime DESTINATION bin)
 
 # Build and install the test codes
 option(BUILD_TEST_CODES "Build test executables" OFF)

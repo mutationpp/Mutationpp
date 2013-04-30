@@ -239,3 +239,68 @@ void NAME_MANGLE(net_production_rates)(double* const wdot)
     p_mix->netProductionRates(wdot);
 }
 
+//==============================================================================
+int NAME_MANGLE(ncollision_pairs)()
+{
+    return p_mix->nCollisionPairs();
+}
+
+
+//==============================================================================
+double NAME_MANGLE(viscosity)()
+{
+    return p_mix->viscosity();
+}
+
+//==============================================================================
+double NAME_MANGLE(frozen_thermal_conductivity)()
+{
+    return p_mix->frozenThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(equilibrium_thermal_conductivity)()
+{
+    return p_mix->equilibriumThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(heavy_thermal_conductivity)()
+{
+    return p_mix->heavyThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(electron_thermal_conductivity)()
+{
+    return p_mix->electronThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(internal_thermal_conductivity)()
+{
+    return p_mix->internalThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(reactive_thermal_conductivity)()
+{
+    return p_mix->reactiveThermalConductivity();
+}
+
+//==============================================================================
+void NAME_MANGLE(stefan_maxwell)
+    (const double* const p_dp, double* const p_V, double* const p_E)
+{
+    p_mix->stefanMaxwell(p_dp, p_V, *p_E);
+}
+    
+//==============================================================================
+double NAME_MANGLE(sigma)()
+{
+    return p_mix->sigma();
+}
+
+
+
+

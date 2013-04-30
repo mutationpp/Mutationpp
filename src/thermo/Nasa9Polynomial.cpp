@@ -206,7 +206,7 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         double t2 = atof(line.substr(11,11).c_str()); // T_{2,i}
         
         if (t2 <= t1) {
-            cout << "Error: T2 is less than T1" << endl;
+            cout << "Error: T2 (" << t2 << ") is less than T1 (" << t1 << ") for species " << name << endl;
             exit(1);
         }
         
@@ -216,7 +216,7 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         } else {
             if (t1 != n9.mp_tbounds[i]) {
                 cout << "Error: T1 of range " << i << " does not match T2 of "
-                     << "range " << i-1 << endl;
+                     << "range " << i-1 << " for species " << name << endl;
                 exit(1);
             }
             

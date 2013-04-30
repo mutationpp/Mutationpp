@@ -1,3 +1,7 @@
+!!
+!! Provides an explicit interface for all Mutation++ functions which have a 
+!! non-void return value which is need to compile user fortran codes.
+!!
 module mutationpp
 
     interface
@@ -18,32 +22,60 @@ module mutationpp
             character(len=*) :: species
         end function
         
-        real function mpp_number_density()
+        real(kind=8) function mpp_number_density()
         end function
         
-        real function mpp_density()
+        real(kind=8) function mpp_density()
         end function
         
-        real function mpp_pressure()
+        real(kind=8) function mpp_pressure()
         end function
         
-        real function mpp_mixture_mw()
+        real(kind=8) function mpp_mixture_mw()
         end function
         
-        real function mpp_mixture_frozen_cp_mass()
+        real(kind=8) function mpp_mixture_frozen_cp_mass()
         end function
         
-        real function mpp_mixture_frozen_cv_mass();
+        real(kind=8) function mpp_mixture_frozen_cv_mass();
         end function
         
-        real function mpp_mixture_frozen_gamma();
+        real(kind=8) function mpp_mixture_frozen_gamma();
         end function
         
-        real function mpp_mixture_h_mass()
+        real(kind=8) function mpp_mixture_h_mass()
         end function
         
-        real function mpp_mixture_e_mass()
+        real(kind=8) function mpp_mixture_e_mass()
         end function
+        
+        integer function mpp_ncollision_pairs()
+        end function
+        
+        real(kind=8) function mpp_viscosity()
+        end function
+
+        real(kind=8) function mpp_frozen_thermal_conductivity()
+        end function
+
+        real(kind=8) function mpp_equilibrium_thermal_conductivity()
+        end function
+        
+        real(kind=8) function mpp_heavy_thermal_conductivity()
+        end function
+
+        real(kind=8) function mpp_electron_thermal_conductivity()
+        end function
+
+        real(kind=8) function mpp_internal_thermal_conductivity()
+        end function
+
+        real(kind=8) function mpp_reactive_thermal_conductivity()
+        end function
+   
+        real(kind=8) function mpp_sigma()
+        end function
+   
     end interface
 
 end module mutationpp

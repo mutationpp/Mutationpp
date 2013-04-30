@@ -1367,6 +1367,14 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<species name="CH2OH">
+	    <stoichiometry>
+	        C: 1,
+	        H: 3,
+	        O: 1
+	    </stoichiometry>
+	</species>
  
 	<!-- Methene -->
 	<species name="CH3">
@@ -1514,6 +1522,20 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<species name="CNC">
+		<stoichiometry>
+			C: 2,
+			N: 1
+		</stoichiometry>
+    </species>
+    
+    <species name="CNN">
+		<stoichiometry>
+			C: 1,
+			N: 2
+		</stoichiometry>
+    </species>
  
 	<!-- Carbon monoxide -->
 	<species name="CO">
@@ -1801,6 +1823,14 @@
 				129290
 			</formation_enthalpy>
 		</thermodynamics>
+	</species>
+	
+	<species name="HNC">
+	    <stoichiometry>
+	        C: 1,
+	        H: 1,
+	        N: 1
+	    </stoichiometry>
 	</species>
  
 	<!-- Nitrogen -->

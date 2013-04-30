@@ -5,6 +5,8 @@
 #include <set>
 #include <utility>
 
+//#define VERBOSE
+
 using std::cout;
 using std::endl;
 
@@ -103,6 +105,13 @@ void MultiPhaseEquilSolver::initPhases()
 std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     double T, double P, const double *const p_cv, double *const p_sv)
 {
+#ifdef VERBOSE
+    std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
+    for (int i = 0; i < m_ne; ++i)
+        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
+    std::cout << std::endl;
+#endif
+
     static RealVector dg;
     static RealVector g;
     static RealVector N(m_ns);
@@ -116,15 +125,15 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     m_thermo.speciesGOverRT(T, P, p_sv);
     dg = asVector(p_sv, m_ns);
     
-    // Compute the maxmin composition
-    m_c(0,m_ne) = asVector(p_cv, m_ne);
+    // Perturb the elemental mole fractions away from zero
+    m_c(0,m_ne) = max(asVector(p_cv, m_ne), 1.0e-99);
 
     // Compute the initial conditions for the integration
     initialConditions(dg, lambda, Nbar, g);
     dg -= g;
     
     double s = 0.0;
-    double ds = 0.01;
+    double ds = 0.1;
     int iter = 0;
     int newt = 0;
     
@@ -133,6 +142,10 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     // Integrate quantities from s = 0 to s = 1
     while (s < 1.0) {
         iter++;
+        
+#ifdef VERBOSE
+        std::cout << "Step: iter = " << iter << "s = " << s << ", ds = " << ds << endl;
+#endif
         
         // Compute the system matrix
         formSystemMatrix(N, A);
@@ -156,7 +169,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         Nbar *= exp(r(m_nc,m_nc+m_np)*ds);
         g += dg*ds;
         s += ds;
-        ds = std::min(ds*1.1, 1.0-s);
+        ds = std::min(ds*1.5, 1.0-s);
         
         computeSpeciesMoles(lambda, Nbar, g, N);
         computeResidual(Nbar, N, r);
@@ -165,12 +178,18 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-12);
+    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-7);
     
     // Compute the species mole fractions
-    double moles = N.sum();
+    //double moles = N.sum();
+    //for (int i = 0; i < m_ns; ++i)
+    //    p_sv[i] = N(i) / moles;
+    N = max(N, 1.0e-99);
+    Nbar = 0.0;
     for (int i = 0; i < m_ns; ++i)
-        p_sv[i] = N(i) / moles;
+        Nbar(m_phase(i)) += N(i);
+    for (int i = 0; i < m_ns; ++i)
+        p_sv[i] = N(i) / Nbar(m_phase(i));
     
     return std::make_pair(iter, newt);
 }
@@ -182,14 +201,36 @@ int MultiPhaseEquilSolver::newton(
     RealVector& r, RealSymMat& A, const double tol)
 {
     int iterations = 0;
+    double rnorm;
     
-    while (r.norm2() > tol) {
+    while ((rnorm = r.norm2()) > tol) {
         iterations++;
+#ifdef VERBOSE
+        std::cout << "Newton: iter = " << iterations << ", r = " << rnorm << endl;
+#endif
         formSystemMatrix(N, A);
-        minres(A, r, -1.0*r);
+
+#ifdef VERBOSE
+        std::cout << "System Matrix:" << std::endl << A << std::endl;
+        std::cout << "RHS Vector:" << std::endl << -1.0*r << std::endl;
+#endif
+        std::pair<int, double> hist = minres(A, r, -1.0*r);
+        
+#ifdef VERBOSE
+        std::cout << "MINRES returned after " << hist.first << " iters (out of " << m_nc+m_np << ") with residual of " << hist.second << "." << std::endl;
+        std::cout << "computed step:" << std::endl;
+        std::cout << r << std::endl;
+#endif
         
         lambda += r(0,m_nc);
         Nbar *= exp(r(m_nc,m_nc+m_np));
+        
+#ifdef VERBOSE
+        std::cout << "lambda:" << std::endl;
+        std::cout << lambda << std::endl;
+        std::cout << "Nbar:" << std::endl;
+        std::cout << Nbar << std::endl;
+#endif 
         
         computeSpeciesMoles(lambda, Nbar, g, N);
         computeResidual(Nbar, N, r);
@@ -319,7 +360,11 @@ void MultiPhaseEquilSolver::computeSpeciesMoles(
     const RealVector& lambda, const RealVector& Nbar, const RealVector& g,
     RealVector& N) const
 {
+    // Try and protect against precision loss
     N = exp(m_B*lambda - g);
+    //cout << "N = " << endl;
+    //for (int i = 0; i < m_ns; ++i)
+    //    cout << N(i) << endl;
     for (int i = 0; i < m_ns; ++i)
         N(i) *= Nbar(m_phase(i));
 }
@@ -329,6 +374,8 @@ void MultiPhaseEquilSolver::computeSpeciesMoles(
 void MultiPhaseEquilSolver::computeResidual(
     const RealVector& Nbar, const RealVector& N, RealVector& r) const
 {
+    //cout << "N" << endl;
+    //cout << N << endl;
     r(0,m_nc) = N*m_B - m_c;
     r(m_nc,m_nc+m_np) = -1.0*Nbar;
     for (int i = 0; i < m_ns; ++i)
