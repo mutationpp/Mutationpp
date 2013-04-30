@@ -64,14 +64,14 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 #ctest_submit()				# envoyer au serveur
 
 
- set(START_TIME ${CTEST_ELAPSED_TIME})
+# set(START_TIME ${CTEST_ELAPSED_TIME})
  ctest_start (${MODEL})
  ctest_update(RETURN_VALUE HAD_UPDATES)
 # if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
   ctest_build()		
   ctest_test()
-ctest_submit()
+  ctest_submit()
 
 execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
 
