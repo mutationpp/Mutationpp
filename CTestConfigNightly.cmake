@@ -66,7 +66,7 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 
  set(START_TIME ${CTEST_ELAPSED_TIME})
  ctest_start (${MODEL})
-#ctest_update(RETURN_VALUE HAD_UPDATES)
+ ctest_update(RETURN_VALUE HAD_UPDATES)
 # if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
   ctest_build()		
