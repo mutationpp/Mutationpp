@@ -615,13 +615,13 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     elementFractions(X(), mp_work2);
     
     // Perturb pressure
-    dP = 1.0e-6*P;
+    dP = std::sqrt(NumConst<double>::eps)*P;
     equilibrate(T, P+dP, mp_work2, mp_work1);
     rhoP = density();
     eP   = mixtureEnergyMass();
     
     // Perturb temperature
-    dT = 1.0e-6*T;
+    dT = std::sqrt(NumConst<double>::eps)*T;
     equilibrate(T+dT, P, mp_work2, mp_work1);
     rhoT  = density();
     eT    = mixtureEnergyMass();

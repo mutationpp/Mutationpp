@@ -178,7 +178,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-7);
+    newt += newton(lambda, Nbar, g, N, r, A, 1.0e-12);
     
     // Compute the species mole fractions
     //double moles = N.sum();
