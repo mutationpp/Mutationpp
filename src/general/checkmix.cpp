@@ -110,22 +110,20 @@ int main(int argc, char** argv)
         
         // If this is a thirdbody reaction, print out thirdbody efficiency
         // factors
-        if (!r.isThirdbody()) continue;
-        
-        cout << setw(6) << "";
-        
-        vector<pair<string, double> >::const_iterator iter =
-            r.efficiencies().begin();
-        
-        cout.precision(2);
-        if (iter != r.efficiencies().end())
-            cout << iter->first << ": " << iter->second;
+        if (r.isThirdbody() && r.efficiencies().size() > 0) {
             
-        for (iter++ ; iter != r.efficiencies().end(); ++iter) {
-            cout << ", " << iter->first << ": " << iter->second;
-        }        
+            vector<pair<string, double> >::const_iterator iter =
+                r.efficiencies().begin();
+            
+            cout.precision(2);
+            cout << setw(6) << "" << iter->first << ": " << iter->second;
+                
+            for (iter++; iter != r.efficiencies().end(); ++iter) {
+                cout << ", " << iter->first << ": " << iter->second;
+            }        
         
-        cout << endl;
+            cout << endl;
+        }
     }
     
     cout << endl;
