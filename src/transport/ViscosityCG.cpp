@@ -82,7 +82,7 @@ public:
     void solve(const VecExpr<double, E>& x)
     {
         DiagonalPreconditioner<double> M(m_sys);
-        cg(m_sys, m_alpha, x, M, 1);
+        cg(m_sys, m_alpha, x, M, 5);
     }
 };
 
