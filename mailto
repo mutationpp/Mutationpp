@@ -9,7 +9,7 @@
 #	function that send alert mails when the regression test fails
 #		$1 : the directory where the result of last regression test was run
 #	             example its starts like  : build/src/Testing/Temporary/LastTest_20130426-1200.log 
-###################################################################################################
+####################################################################################################
 
 #Testing/Temporary
 
