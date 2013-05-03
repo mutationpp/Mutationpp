@@ -11,18 +11,14 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace Transport {
 
-/**
- * Computes the mixture thermal conductivity using the conjugate-gradient
- * algorithm to solve the linear transport system.
- */
-class ThermalConductivityCG : public ThermalConductivityAlgorithm
+template <typename Implementation>
+class ThermalConductivitySPD : public ThermalConductivityAlgorithm
 {
 public:
-
     /**
      * Constructor.
      */
-    ThermalConductivityCG(ThermalConductivityAlgorithm::ARGS arguments)
+    ThermalConductivitySPD(ThermalConductivityAlgorithm::ARGS arguments)
         : ThermalConductivityAlgorithm(arguments), 
           m_sys(m_collisions.nSpecies()-1), m_alpha(m_collisions.nSpecies()-1)
     { }
@@ -61,23 +57,80 @@ public:
             }
         }
         
-        // Now use the Conjugate-Gradient method to solve the linear system
-        DiagonalPreconditioner<double> M(m_sys);
-        cg(m_sys, m_alpha, x(1,ns), M, 2);
+        // Solve the linear system (this process is determined by the subclass)
+        static_cast<Implementation&>(*this).solve(x(1,ns));
         
         // Finally compute the dot product of alpha and X
         return dot(x(1,ns), m_alpha);
     }
     
-private:
+protected:
 
     RealSymMat m_sys;
     RealVector m_alpha;
+};    
+
+/**
+ * Computes the mixture thermal conductivity using the conjugate-gradient
+ * algorithm to solve the linear transport system.
+ */
+class ThermalConductivityCG : 
+    public ThermalConductivitySPD<ThermalConductivityCG>
+{
+    using ThermalConductivitySPD<ThermalConductivityCG>::m_alpha;
+    using ThermalConductivitySPD<ThermalConductivityCG>::m_sys;
+
+public:
+
+    ThermalConductivityCG(CollisionDB& collisions)
+        : ThermalConductivitySPD<ThermalConductivityCG>::
+            ThermalConductivitySPD(collisions)
+    { }
+
+    template <typename E>
+    void solve(const VecExpr<double, E>& x)
+    {
+        DiagonalPreconditioner<double> M(m_sys);
+        cg(m_sys, m_alpha, x, M, 5);
+    }
 };
 
-// Register the algorithm
+// Register the conjugate-gradient algorithm
 Config::ObjectProvider<
     ThermalConductivityCG, ThermalConductivityAlgorithm> lambdaCG("CG");
+
+/**
+ * Computes the mixture thermal conductivity using the LDL^T decomposition
+ * to solve the linear transport system.
+ */
+class ThermalConductivityLDLT : 
+    public ThermalConductivitySPD<ThermalConductivityLDLT>
+{
+    using ThermalConductivitySPD<ThermalConductivityLDLT>::m_alpha;
+    using ThermalConductivitySPD<ThermalConductivityLDLT>::m_sys;
+
+public:
+
+    ThermalConductivityLDLT(CollisionDB& collisions)
+        : ThermalConductivitySPD<ThermalConductivityLDLT>::
+            ThermalConductivitySPD(collisions)
+    { }
+
+    template <typename E>
+    void solve(const VecExpr<double, E>& x)
+    {
+        m_ldlt.setMatrix(m_sys);
+        m_ldlt.solve(m_alpha, x);
+    }
+
+private:
+
+    LDLT<double> m_ldlt;
+};
+
+// Register the direct solver
+Config::ObjectProvider<ThermalConductivityLDLT, ThermalConductivityAlgorithm> lambdaLDLT("LDLT");
+
 
     } // namespace Transport
 } // namespace Mutation

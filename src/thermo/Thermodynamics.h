@@ -586,6 +586,14 @@ public:
     template <ConversionType>
     inline void convert(const double *const a, double *const b) const { }
     
+    /**
+     * Solves the surface mass balance equation for a pure Carbon char and
+     * returns the non-dimensional ablation mass flux and wall enthalpy.
+     */
+    void surfaceMassBalance(
+        const double *const p_Yke, const double *const p_Ykg, const double T, 
+        const double P, const double Bg, double &Bc, double &hw);
+    
 private:
     
     /**

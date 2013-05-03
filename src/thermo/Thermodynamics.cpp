@@ -769,8 +769,78 @@ void Thermodynamics::elementFractions(
 
 //==============================================================================
 
+void Thermodynamics::surfaceMassBalance(
+    const double *const p_Yke, const double *const p_Ykg, const double T, 
+    const double P, const double Bg, double &Bc, double &hw)
+{
+    const int ne = nElements();
+    const int ns = nSpecies();
+    
+    double* p_Yw = new double [ne];
+    double* p_Xw = new double [ne];
+    double* p_X  = new double [ns];
+    double* p_h  = new double [ns]; 
+    
+    // Initialize the wall element fractions to be the pyrolysis gas fractions
+    double sum = 0.0;
+    for (int i = 0; i < ne; ++i) {
+        p_Yw[i] = p_Yke[i] + Bg*p_Ykg[i];
+        sum += p_Yw[i];
+    }
+    
+    // Use "large" amount of carbon to simulate infinite char
+    int ic = elementIndex("C");
+    double carbon = max(10.0, 100.0*Bg);
+    p_Yw[ic] += carbon;
+    sum += carbon;
+    
+    for (int i = 0; i < ne; ++i)
+        p_Yw[i] /= sum;
+    
+    // Compute equilibrium
+    convert<YE_TO_XE>(p_Yw, p_Xw);    
+    equilibrate(T, P, p_Xw, p_X, false);
+    
+    // Compute the gas mass fractions at the wall
+    double mwg = 0.0;
+    
+    for (int i = 0; i < ne; ++i)
+        p_Yw[i] = 0.0;
+    
+    for (int j = 0; j < ns; ++j) {
+        if (species(j).phase() == GAS) {
+            mwg += speciesMw(j) * p_X[j];
+            for (int i = 0; i < ne; ++i)
+                p_Yw[i] += elementMatrix()(j,i) * p_X[j];
+        }
+    }
+    
+    for (int i = 0; i < ne; ++i)
+        p_Yw[i] *= atomicMass(i) / mwg;
+    
+    // Compute char mass blowing rate
+    Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - p_Yw[ic]*(1.0 + Bg)) / (p_Yw[ic] - 1.0);
+    Bc = std::max(Bc, 0.0);
+    
+    // Compute the gas enthalpy
+    speciesHOverRT(T, p_h);
+    
+    hw = 0.0;
+    for (int i = 0; i < ns; ++i)
+        if (species(i).phase() == GAS)
+            hw += p_X[i] * p_h[i];
+    
+    hw *= RU * T / mwg;
+    
+    delete [] p_Yw;
+    delete [] p_Xw;
+    delete [] p_X;
+    delete [] p_h;
+}
 
-} // namespace Thermodynamics
+//==============================================================================
+
+    } // namespace Thermodynamics
 } // namespace Mutation
 
 

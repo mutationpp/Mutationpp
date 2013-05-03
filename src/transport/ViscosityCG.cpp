@@ -69,7 +69,6 @@ protected:
  */
 class ViscosityCG : public ViscositySPD<ViscosityCG>
 {
-
     using ViscositySPD<ViscosityCG>::m_alpha;
     using ViscositySPD<ViscosityCG>::m_sys;
 
