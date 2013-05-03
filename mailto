@@ -15,7 +15,7 @@
 
 send_to_my_mail="dinesh.devi@yahoo.com" 
 delimiter=$(echo -e "\n ============================================================\n")
-subj=$(echo "There are some errors in last regression test") 
+subj=$(echo "There are some errors in last regression test ") 
 directory=$1
 
 
@@ -26,7 +26,7 @@ ERROR_FILE=$(ls -lat $1 | grep "LastTest_" | head -1 | awk "{print \$9}" ) #| gr
 ERROR_RESULT=$(echo | egrep ".*failure.*detected.*" $1/$ERROR_FILE )
 
 if [ $? = 0 ]; then
-	echo -e "$delimiter $subj $delimiter $ERROR_RESULT" | mail -s "Error of testing " $send_to_my_mail
+	echo -e "\n $delimiter \n $subj $delimiter \n $ERROR_RESULT \n " | mail -s "Error on regression testing " $send_to_my_mail
 else 
 	echo "There is no error in regression test "
 fi 

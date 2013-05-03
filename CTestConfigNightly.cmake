@@ -67,13 +67,13 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 # set(START_TIME ${CTEST_ELAPSED_TIME})
  ctest_start (${MODEL})
  ctest_update(RETURN_VALUE HAD_UPDATES)
-# if(${HAD_UPDATES} GREATER 0)
+ if(${HAD_UPDATES} GREATER 0)
   ctest_configure()
   ctest_build()		
   ctest_test()
   ctest_submit()
-
-execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
-
-
+  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
+ else(${HAD_UPDATES} GREATER 0)
+	MESSAGE("There are no new updates since last regression test")	
+ endif(${HAD_UPDATES} GREATER 0)
 
