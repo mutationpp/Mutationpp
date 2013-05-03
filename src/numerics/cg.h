@@ -16,7 +16,7 @@ namespace Mutation {
 template <typename T, typename E1, typename E2, typename Preconditioner>
 void cg(const SymMatExpr<T, E1>& A, Vector<T>& x, const VecExpr<T, E2>& b, 
         const Preconditioner& M, const int max_iter = 100, 
-        const double tolerance = 1.0e-6)
+        const double tolerance = 1.0e-10)
 {
     T norm_b = b.norm2();
     T alpha, beta, rho0 = 0.0, rho1, resnorm;

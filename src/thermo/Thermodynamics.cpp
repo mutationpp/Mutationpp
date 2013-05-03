@@ -790,7 +790,7 @@ void Thermodynamics::surfaceMassBalance(
     
     // Use "large" amount of carbon to simulate infinite char
     int ic = elementIndex("C");
-    double carbon = max(10.0, 100.0*Bg);
+    double carbon = std::max(10.0, 100.0*Bg);
     p_Yw[ic] += carbon;
     sum += carbon;
     
