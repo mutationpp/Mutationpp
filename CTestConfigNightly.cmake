@@ -83,9 +83,9 @@ ctest_start (${MODEL})
 
 
  if(${HAD_UPDATES} GREATER 0)
- 	MESSAGE("There are some new updates since last regression test") 
+ 	MESSAGE("There are some new updates since last regression test ==> ${HAD_UPDATES} ") 
  else()
-       MESSAGE("There are no new updates since last regression test")  
+       MESSAGE("There are no new updates since last regression test ==> ${HAD_UPDATES}")  
  endif()
 
 
