@@ -168,6 +168,10 @@ public:
         if (sr != NULL) std::fill(sr, sr+m_ns, 0.0);
         if (sv != NULL) std::fill(sv, sv+m_ns, 0.0);
         if (sel != NULL) std::fill(sel, sel+m_ns, 0.0);
+        
+        double logP = std::log(P);
+        for (int i = 0; i < m_ns; ++i)
+            s[i] -= logP;
     }
 
     void gibbs(

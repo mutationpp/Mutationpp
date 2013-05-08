@@ -166,6 +166,15 @@ public:
                 mp_elec_levels[ilevel].theta = rrho->electronicEnergy(k).second;
             }
         )
+        
+        // Compute the contribution of the partition functions at the standard
+        // state temperature to the species enthalpies
+        mp_part_sst = new double [m_ns];
+        double Tss = standardTemperature();
+        hT(Tss, Tss, mp_part_sst, Eq());
+        hR(Tss, mp_part_sst, PlusEq());
+        hV(Tss, mp_part_sst, PlusEq());
+        hE(Tss, mp_part_sst, PlusEq());
     }
     
     /**
@@ -181,6 +190,7 @@ public:
         delete [] mp_vib_temps;
         delete [] mp_nelec;
         delete [] mp_elec_levels;
+        delete [] mp_part_sst;
     }
     
     /**
@@ -568,7 +578,7 @@ private:
      */
     template <typename OP>
     void hF(double* const h, const OP& op) {
-        LOOP(op(h[i], mp_hform[i]))
+        LOOP(op(h[i], mp_hform[i] - mp_part_sst[i]))
     }
     
     /**
@@ -645,6 +655,7 @@ private:
     
     double* mp_lnqtmw;
     double* mp_hform;
+    double* mp_part_sst;
     
     int*       mp_indices;
     RotData*   mp_rot_data;
