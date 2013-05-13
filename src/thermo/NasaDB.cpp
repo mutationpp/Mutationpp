@@ -188,6 +188,10 @@ public:
         if (gr != NULL) std::fill(gr, gr+m_ns, 0.0);
         if (gv != NULL) std::fill(gv, gv+m_ns, 0.0);
         if (gel != NULL) std::fill(gel, gel+m_ns, 0.0);
+        
+        double logP = std::log(P);
+        for (int i = 0; i < m_ns; ++i)
+            g[i] += logP;
     }
 
 private:
