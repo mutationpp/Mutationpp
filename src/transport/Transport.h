@@ -124,6 +124,14 @@ public:
     }
     
     /**
+     * Returns mixture averaged species diffusion coefficients which are defined
+     * as \f[ D_i = \frac{1 - X_i}{\sum_j X_j / \mathcal{D}_{ij}} \f] where 
+     * \f$\mathcal{D}_{ij}\f$ are the binary diffusion coefficients for each
+     * species pair.
+     */
+    void averageDiffusionCoeffs(double *const p_Di);
+    
+    /**
      * Computes the species diffusion velocities and ambipolar electric field 
      * using the Ramshaw approximation of the generalized Stefan-Maxwell 
      * equations and the supplied modified driving forces

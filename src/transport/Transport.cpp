@@ -204,6 +204,31 @@ double Transport::reactiveThermalConductivity()
 
 //==============================================================================
 
+void Transport::averageDiffusionCoeffs(double *const p_Di)
+{
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const p_X = m_thermo.X();
+    const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, p_X);
+    
+    for (int i = 0; i < ns; ++i)
+        p_Di[i] = 0.0;
+    
+    for (int i = 0, index = 1; i < ns; ++i, ++index) {
+        for (int j = i + 1; j < ns; ++j, ++index) {
+            p_Di[i] += p_X[j] / nDij(index);
+            p_Di[j] += p_X[i] / nDij(index);
+        }
+    }
+    
+    for (int i = 0; i < ns; ++i)
+        p_Di[i] = (1.0 - p_X[i]) / p_Di[i];
+}
+
+//==============================================================================
+
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
