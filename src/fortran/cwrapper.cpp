@@ -289,6 +289,12 @@ double NAME_MANGLE(reactive_thermal_conductivity)()
 }
 
 //==============================================================================
+void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di)
+{
+    p_mix->averageDiffusionCoeffs(p_Di);
+}
+
+//==============================================================================
 void NAME_MANGLE(stefan_maxwell)
     (const double* const p_dp, double* const p_V, double* const p_E)
 {

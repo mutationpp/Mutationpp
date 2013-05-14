@@ -332,6 +332,15 @@ double NAME_MANGLE(internal_thermal_conductivity)();
  */
 double NAME_MANGLE(reactive_thermal_conductivity)();
 
+
+/**
+ * Returns mixture averaged species diffusion coefficients which are defined
+ * as \f[ D_i = \frac{1 - X_i}{\sum_j X_j / \mathcal{D}_{ij}} \f] where 
+ * \f$\mathcal{D}_{ij}\f$ are the binary diffusion coefficients for each
+ * species pair.
+ */
+void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di);
+
 /**
  * Computes the species diffusion velocities and ambipolar electric field 
  * using the Ramshaw approximation of the generalized Stefan-Maxwell 
