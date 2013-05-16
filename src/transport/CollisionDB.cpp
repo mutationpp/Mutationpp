@@ -65,7 +65,7 @@ const CollisionFunc5 CollisionDB::sm_Est_rep(
 
 
 CollisionDB::CollisionDB(const Thermodynamics& thermo)
-    : m_ns(thermo.nSpecies()), m_ncollisions((m_ns*(m_ns + 1))/2), 
+    : m_ns(thermo.nSpecies()), m_nh(thermo.nHeavy()), m_ncollisions((m_ns*(m_ns + 1))/2), 
       m_mass(m_ns), m_mass_sum(m_ns), m_mass_prod(m_ns), m_red_mass(m_ns),
       m_em_index(thermo.speciesIndex("e-")), m_Q11(m_ns), m_Q22(m_ns), 
       m_Ast(m_ns), m_Bst(m_ns), m_Cst(m_ns), m_eta(m_ns), m_Dij(m_ns),
@@ -465,11 +465,12 @@ void CollisionDB::updateCollisionData(
         case ETAI: {
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
             
-            // electron does not contribute to viscosity
+            // Electron does not contribute to viscosity
+            int k = nSpecies() - nHeavy();
             m_eta(0) = 0.0;
             
-            // heavy species
-            for (int i = 1; i < m_ns; ++i)
+            // Heavy species
+            for (int i = k; i < m_ns; ++i)
                 m_eta(i) = 
                     5.0 / 16.0 * sqrt(PI * KB * Th * m_mass(i)) / m_Q22(i,i);
             } break;
@@ -477,16 +478,20 @@ void CollisionDB::updateCollisionData(
         case NDIJ: {
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             
-            // electron-electron
-            m_Dij(0) = 3.0 / 8.0 * sqrt(PI * KB * Te / m_mass(0)) / m_Q11(0);
+            int k = nSpecies() - nHeavy();
             
-            // electron-heavy interactions
-            for (int i = 1; i < m_ns; ++i)
-                m_Dij(i) = 
-                    3.0 / 16.0 * sqrt(TWOPI * KB * Te / m_mass(0)) / m_Q11(i);
+            if (k == 1) {
+                // Electron-Electron
+                m_Dij(0) = 3.0 / 8.0 * sqrt(PI * KB * Te / m_mass(0)) / m_Q11(0);
+                
+                // Electron-heavy interactions
+                for (int i = 1; i < m_ns; ++i)
+                    m_Dij(i) = 
+                        3.0 / 16.0 * sqrt(TWOPI * KB * Te / m_mass(0)) / m_Q11(i);
+            }
             
-            // heavy-heavy interactions
-            for (int i = m_ns; i < m_ncollisions; ++i)
+            // Heavy-heavy interactions
+            for (int i = k * m_ns; i < m_ncollisions; ++i)
                 m_Dij(i) = 3.0 / 16.0 * sqrt(TWOPI * KB * Th / 
                     m_red_mass(i)) / m_Q11(i);
             } break;

@@ -741,7 +741,7 @@ void Thermodynamics::speciesGOverRT(double T, double P, double* const p_g) const
     
     double lnp = std::log(P / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
-        if (m_species[i].phase() == GAS) 
+        if (m_species[i].phase() == GAS)
             p_g[i] += lnp;
 }
 
@@ -771,14 +771,14 @@ void Thermodynamics::elementFractions(
 
 void Thermodynamics::surfaceMassBalance(
     const double *const p_Yke, const double *const p_Ykg, const double T, 
-    const double P, const double Bg, double &Bc, double &hw)
+    const double P, const double Bg, double &Bc, double &hw, double *const p_Xs)
 {
     const int ne = nElements();
     const int ns = nSpecies();
     
     double* p_Yw = new double [ne];
     double* p_Xw = new double [ne];
-    double* p_X  = new double [ns];
+    double* p_X  = (p_Xs != NULL ? p_Xs : new double [ns]);
     double* p_h  = new double [ns]; 
     
     // Initialize the wall element fractions to be the pyrolysis gas fractions
@@ -834,7 +834,7 @@ void Thermodynamics::surfaceMassBalance(
     
     delete [] p_Yw;
     delete [] p_Xw;
-    delete [] p_X;
+    if (p_X != p_Xs) delete [] p_X;
     delete [] p_h;
 }
 

@@ -384,7 +384,7 @@ void writeHeader(
 
 int main(int argc, char** argv)
 {
-#ifdef __GNU__
+#ifdef __GNU_SOURCE
     // Enable floating point exception handling
     feenableexcept(FE_DIVBYZERO | FE_INVALID);
 #endif

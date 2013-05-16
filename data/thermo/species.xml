@@ -533,6 +533,7 @@
 				228320
 			</formation_enthalpy>
 		</thermodynamics>
+		<thermodynamics type="NASA-9" db_name="C2H2,acetylene" />
 	</species>
  
 	<!-- Ethylene -->
@@ -874,6 +875,7 @@
 				460365
 			</formation_enthalpy>
 		</thermodynamics>
+		<thermodynamics type="NASA-9" db_name="C4H2,butadiyne" />
 	</species>
  
 	<!-- No comments -->
@@ -1528,6 +1530,14 @@
 			C: 2,
 			N: 1
 		</stoichiometry>
+    </species>
+    
+    <species name="CNCOCN">
+        <stoichiometry>
+            C: 3,
+            N: 2,
+            O: 1
+        </stoichiometry>
     </species>
     
     <species name="CNN">

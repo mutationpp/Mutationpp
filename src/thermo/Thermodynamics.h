@@ -81,6 +81,13 @@ public:
     }
     
     /**
+     * Returns the number of heavy particles (non electrons) in the mixture.
+     */
+    int nHeavy() const {
+        return (hasElectrons() ? nSpecies() - 1 : nSpecies());
+    }
+    
+    /**
      * Returns the number of elements considered in the mixture.
      */
     int nElements() const {
@@ -592,7 +599,8 @@ public:
      */
     void surfaceMassBalance(
         const double *const p_Yke, const double *const p_Ykg, const double T, 
-        const double P, const double Bg, double &Bc, double &hw);
+        const double P, const double Bg, double &Bc, double &hw,
+        double *const p_Xs = NULL);
     
 private:
     

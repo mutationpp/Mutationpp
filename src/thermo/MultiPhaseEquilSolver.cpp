@@ -120,6 +120,9 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     RealSymMat A(m_nc+m_np);
     RealVector r(m_nc+m_np);
     
+    //SVD<double> svd(m_B);
+    //cout << "U: " << endl << svd.U() << endl;
+    
     // Compute the unitless Gibbs function for each species
     // (temporarily store in dg)
     m_thermo.speciesGOverRT(T, P, p_sv);
@@ -181,15 +184,16 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     newt += newton(lambda, Nbar, g, N, r, A, 1.0e-12);
     
     // Compute the species mole fractions
-    //double moles = N.sum();
-    //for (int i = 0; i < m_ns; ++i)
-    //    p_sv[i] = N(i) / moles;
-    N = max(N, 1.0e-99);
+    double moles = N.sum();
+    for (int i = 0; i < m_ns; ++i)
+        p_sv[i] = N(i) / moles;
+    
+    /*N = max(N, 1.0e-99);
     Nbar = 0.0;
     for (int i = 0; i < m_ns; ++i)
         Nbar(m_phase(i)) += N(i);
     for (int i = 0; i < m_ns; ++i)
-        p_sv[i] = N(i) / Nbar(m_phase(i));
+        p_sv[i] = N(i) / Nbar(m_phase(i));*/
     
     return std::make_pair(iter, newt);
 }

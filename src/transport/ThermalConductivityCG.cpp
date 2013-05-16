@@ -20,13 +20,14 @@ public:
      */
     ThermalConductivitySPD(ThermalConductivityAlgorithm::ARGS arguments)
         : ThermalConductivityAlgorithm(arguments), 
-          m_sys(m_collisions.nSpecies()-1), m_alpha(m_collisions.nSpecies()-1)
+          m_sys(m_collisions.nHeavy()), m_alpha(m_collisions.nHeavy())
     { }
 
     double thermalConductivity(
         double Th, double Te, double nd, const double *const p_x)
     {
         const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
     
         const RealVector& mi    = m_collisions.mass();
         const RealSymMat& Astar = m_collisions.Astar(Th, Te, nd, p_x);
@@ -38,30 +39,31 @@ public:
         
         // Compute the system matrix
         double fac = 4.0 / (15.0 * KB);
-        for (int i = 1; i < ns; ++i)
-            m_sys(i-1,i-1) = fac * std::max(x(i) * x(i), 1.0E-99) * mi(i) / etai(i);
+        int k = ns - nh;
+        for (int i = k; i < ns; ++i)
+            m_sys(i-k,i-k) = fac * std::max(x(i) * x(i), 1.0E-99) * mi(i) / etai(i);
         
         double miij;
         double mjij;
-        for (int i = 1; i < ns; ++i) {
+        for (int i = k; i < ns; ++i) {
             for (int j = i+1; j < ns; ++j) {
                 miij = mi(i) / (mi(i) + mi(j));
                 mjij = mi(j) / (mi(i) + mi(j));
                 fac  = std::max(x(i) * x(j), 1.0E-99) / (nDij(i,j) * 25.0 * KB);
-                m_sys(i-1,j-1) = fac * miij * mjij * 
+                m_sys(i-k,j-k) = fac * miij * mjij * 
                     (16.0 * Astar(i,j) + 12.0 * Bstar(i,j) - 55.0);
-                m_sys(i-1,i-1) += fac * (miij * (30.0 * miij + 16.0 * mjij * 
+                m_sys(i-k,i-k) += fac * (miij * (30.0 * miij + 16.0 * mjij * 
                     Astar(i,j)) + mjij * mjij * (25.0 - 12.0 * Bstar(i,j)));
-                m_sys(j-1,j-1) += fac * (mjij * (30.0 * mjij + 16.0 * miij *
+                m_sys(j-k,j-k) += fac * (mjij * (30.0 * mjij + 16.0 * miij *
                     Astar(i,j)) + miij * miij * (25.0 - 12.0 * Bstar(i,j)));
             }
         }
         
         // Solve the linear system (this process is determined by the subclass)
-        static_cast<Implementation&>(*this).solve(x(1,ns));
+        static_cast<Implementation&>(*this).solve(x(k,ns));
         
         // Finally compute the dot product of alpha and X
-        return dot(x(1,ns), m_alpha);
+        return dot(x(k,ns), m_alpha);
     }
     
 protected:

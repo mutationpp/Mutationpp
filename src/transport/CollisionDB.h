@@ -242,6 +242,13 @@ public:
     }
     
     /**
+     * Returns the number of heavy particles in the database.
+     */
+    int nHeavy() const {
+        return m_nh;
+    }
+    
+    /**
      * Returns the total number of collision pairs loaded from the species list
      * (including ones not found in the database, ie: NS * (NS + 1) / 2).
      */
@@ -498,6 +505,7 @@ private:
 
     // Sizing parameters
     int m_ns;
+    int m_nh;
     int m_ncollisions;
     int m_em_index;
     

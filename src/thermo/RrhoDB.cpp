@@ -586,7 +586,7 @@ private:
      */
     template <typename OP>
     void sT(double Th, double Te, double P, double* const s, const OP& op) {
-        double fac = 2.5 * (1.0 + std::log(Th)) - std::log(P);               
+        double fac = 2.5 * (1.0 + std::log(Th)) - std::log(P);
         if (m_has_electron)
             op(s[0], 2.5 * std::log(Te / Th) + fac + mp_lnqtmw[0]);        
         for (int i = (m_has_electron ? 1 : 0); i < m_ns; ++i)

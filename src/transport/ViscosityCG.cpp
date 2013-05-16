@@ -17,14 +17,15 @@ class ViscositySPD : public ViscosityAlgorithm
 public:
 
     ViscositySPD(CollisionDB& collisions)
-        : ViscosityAlgorithm(collisions), m_sys(collisions.nSpecies()-1),
-          m_alpha(collisions.nSpecies()-1)
+        : ViscosityAlgorithm(collisions), m_sys(collisions.nHeavy()),
+          m_alpha(collisions.nHeavy())
     { }
     
     double viscosity(
         const double T, const double nd, const double *const p_x) 
     {
         const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
         
         const RealVector& mi    = m_collisions.mass();
         const RealSymMat& Astar = m_collisions.Astar(T, T, nd, p_x);
@@ -35,24 +36,25 @@ public:
         double fac;
         
         // Form the symmetric positive definite system matrix
-        for (int i = 1; i < ns; ++i)
-            m_sys(i-1,i-1) = std::max(x(i) * x(i), 1.0E-99) / etai(i);
+        int k = ns-nh;
+        for (int i = k; i < ns; ++i)
+            m_sys(i-k,i-k) = std::max(x(i) * x(i), 1.0E-99) / etai(i);
             
-        for (int i = 1; i < ns; ++i) {
+        for (int i = k; i < ns; ++i) {
             for (int j = i+1; j < ns; ++j) {
                 fac = std::max(x(i) * x(j), 1.0E-99) / 
                     (nDij(i,j) * (mi(i) + mi(j)));
-                m_sys(i-1,j-1) =  fac * (1.2 * Astar(i,j) - 2.0);
-                m_sys(i-1,i-1) += fac * (1.2 * mi(j) / mi(i) * Astar(i,j) + 2.0);
-                m_sys(j-1,j-1) += fac * (1.2 * mi(i) / mi(j) * Astar(i,j) + 2.0);
+                m_sys(i-k,j-k) =  fac * (1.2 * Astar(i,j) - 2.0);
+                m_sys(i-k,i-k) += fac * (1.2 * mi(j) / mi(i) * Astar(i,j) + 2.0);
+                m_sys(j-k,j-k) += fac * (1.2 * mi(i) / mi(j) * Astar(i,j) + 2.0);
             }
         }
         
         // Solve the linear system (this process is determined by the subclass)
-        static_cast<Implementation&>(*this).solve(x(1,ns));
+        static_cast<Implementation&>(*this).solve(x(k,ns));
         
         // Finally compute the dot product of alpha and X
-        return dot(x(1,ns), m_alpha);
+        return dot(x(k,ns), m_alpha);
     }
 
 protected:

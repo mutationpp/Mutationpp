@@ -112,6 +112,7 @@ double Transport::electronThermalConductivity()
 double Transport::internalThermalConductivity()
 {
     const int ns     = m_thermo.nSpecies();
+    const int nh     = m_thermo.nHeavy();
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
     const double Tr  = m_thermo.Tr();
@@ -126,7 +127,7 @@ double Transport::internalThermalConductivity()
         Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
     
     double lambda = 0.0;
-    for (int i = 1; i < ns; ++i) {
+    for (int i = ns-nh; i < ns; ++i) {
         double sum = 0.0;
         for (int j = 0; j < ns; ++j)
             sum += X[j] / nDij(i,j);
