@@ -4,7 +4,7 @@
 
 #execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS EVIRONMENT = $ENV{MY_GCC_VERSION}" )
 # Dashboard model (Continuous, Experimental, Nightly)
-set(MODEL Continuous)
+set(MODEL Nightly)
 # source dir(<> dev directory)
 set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # build dir
