@@ -56,7 +56,7 @@ set(CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} \"${CTEST_SOURCE_DIRECTO
 # Run the dashboard
 ##########################################################################
 
-ctest_start (Nightly)			# demarrage
+ctest_start (${MODEL})                  # demarrage
 ctest_update(RETURN_VALUE HAD_UPDATES)	# svn update
 ctest_configure()			# cmake (...)
 ctest_build()				# make
