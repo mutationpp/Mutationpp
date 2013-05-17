@@ -699,7 +699,12 @@ void Thermodynamics::speciesSOverR(double *const p_s) const
 {
     mp_thermodb->entropy(
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), mp_state->P(), p_s, NULL, NULL, NULL, NULL);
+        mp_state->Tel(), standardStateP(), p_s, NULL, NULL, NULL, NULL);
+    
+    double lnp = std::log(mp_state->P() / standardStateP());
+    for (int i = 0; i < nSpecies(); ++i)
+        if (m_species[i].phase() == GAS) 
+            p_s[i] -= lnp;
 }
 
 //==============================================================================
