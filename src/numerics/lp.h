@@ -25,6 +25,11 @@
 #include "Vector.h"
 #include "Matrix.h"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+using std::setw;
+
 namespace Mutation {
     namespace Numerics {
 
@@ -38,8 +43,8 @@ namespace Mutation {
 enum LpResult {
     SOLUTION_FOUND,     ///< lp() returns with a correct solution
     UNBOUNDED_SOLUTION, ///< the solution to the LP problem is unbounded
-    NO_SOLUTION         ///< there is no feasible solution to the LP problem
-    //LINEARLY_DEPENDENT  ///< the contraints are linearly dependent, no solution
+    NO_SOLUTION,        ///< there is no feasible solution to the LP problem
+    LINEARLY_DEPENDENT  ///< the contraints are linearly dependent, no solution
 };
 
 /**
@@ -223,6 +228,14 @@ LpResult lp(const Vector<Real> &f, const LpObjective &objective,
     int icase = simplex(&tableau[0][0], m, n, m1-offset, m2+offset, 
                         izrov, iposv, eps);
     
+    //cout << "final tableau" << endl;
+    //for (int i = 0; i < m+2; ++i) {
+    //    for (int j = 0; j < n+1; ++j)
+    //        cout << setw(10) << tableau[i][j];
+    //    cout << endl;
+    //}
+    //cout << endl;
+    
     if (icase != 0) {
         if (icase > 0) 
             return UNBOUNDED_SOLUTION;
@@ -236,7 +249,9 @@ LpResult lp(const Vector<Real> &f, const LpObjective &objective,
         if (iposv[i] < n)
             x(iposv[i]) = tableau[i+1][0];
         //else
-        //    return LINEARLY_DEPENDENT;  << CEQ has this but I'm not sure why
+        //    x(iposv[i]) = static_cast<Real>(0.0);
+            
+            //return LINEARLY_DEPENDENT; // << CEQ has this but I'm not sure why
     }
     
     // Also return value of z = min/max(f'*x)
@@ -317,12 +332,13 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     // Recast the tableau into a two dimensional array with appropriate sizes
     Real (*const a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
     
-    /*for (int i = 0; i < m+2; ++i) {
-        for (int j = 0; j < n+1; ++j)
-            cout << setw(10) << a[i][j];
-        cout << endl;
-    }
-    cout << endl;*/
+    //cout << "simplex:" << endl << "initial tableau" << endl;
+    //for (int i = 0; i < m+2; ++i) {
+    //    for (int j = 0; j < n+1; ++j)
+    //        cout << setw(10) << a[i][j];
+    //    cout << endl;
+    //}
+    //cout << endl;
     
     // Declare other variables
     Real bmax;
@@ -456,6 +472,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
         izrov[kp] = iposv[ip];
         iposv[ip] = is;
     }
+    
 } // simplex
 
 /**

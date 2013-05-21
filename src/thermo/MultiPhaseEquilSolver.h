@@ -38,7 +38,7 @@ public:
     /**
      * Adds an additional linear constraint to the equilibrium solver.
      */
-    void addConstraint(const double *const p_A, const double c);
+    void addConstraint(const double *const p_A);
     
     /**
      * Removes all linear constraints from the equilibrium solver.
@@ -56,7 +56,9 @@ private:
     
     void initialConditions(
         const Numerics::RealVector& gtp, Numerics::RealVector& lambda, 
-        Numerics::RealVector& Nbar, Numerics::RealVector& g) const;
+        Numerics::RealVector& Nbar, Numerics::RealVector& g);
+    
+    void perturb(Numerics::RealVector& nmm);
         
     int newton(
         Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 

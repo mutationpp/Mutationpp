@@ -9,6 +9,7 @@
 
 using std::cout;
 using std::endl;
+using std::setw;
 
 using namespace Mutation::Numerics;
 
@@ -34,8 +35,7 @@ MultiPhaseEquilSolver::MultiPhaseEquilSolver(const Thermodynamics& thermo)
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::addConstraint(
-    const double *const p_A, const double c)
+void MultiPhaseEquilSolver::addConstraint(const double *const p_A)
 {
     // Save constraints
     m_constraints.push_back(asVector(p_A, m_ns));
@@ -46,12 +46,6 @@ void MultiPhaseEquilSolver::addConstraint(
     
     for (int i = 0; i < m_nc-m_ne; ++i)
         m_B.col(m_ne+i) = m_constraints[i];
-    
-    // Update the constraint vector
-    RealVector temp(m_nc);
-    temp(m_ne,m_nc-1) = m_c(m_ne,m_nc-1);
-    temp(m_nc-1) = c;
-    m_c = temp;
 }
 
 //==============================================================================
@@ -60,8 +54,6 @@ void MultiPhaseEquilSolver::clearConstraints()
 {
     m_constraints.clear();
     m_B = m_thermo.elementMatrix();
-    RealVector temp(m_ne);
-    m_c = temp;
     m_nc = m_ne;
 }
 
@@ -129,7 +121,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     dg = asVector(p_sv, m_ns);
     
     // Perturb the elemental mole fractions away from zero
-    m_c(0,m_ne) = max(asVector(p_cv, m_ne), 1.0e-99);
+    m_c = asVector(p_cv, m_nc);
 
     // Compute the initial conditions for the integration
     initialConditions(dg, lambda, Nbar, g);
@@ -246,19 +238,26 @@ int MultiPhaseEquilSolver::newton(
 //==============================================================================
 
 void MultiPhaseEquilSolver::initialConditions(
-    const RealVector& gtp, RealVector& lambda, RealVector& Nbar, RealVector& g) 
-    const
+    const RealVector& gtp, RealVector& lambda, RealVector& Nbar, RealVector& g)
 {
     static RealVector Nmm(m_ns);
     static RealVector Nmg(m_ns);
     static RealVector N(m_ns);
     
     // Initial conditions on N (N = a*Nmg + (1-a)*Nmm)
-    maxmin(m_c, Nmm);
+    perturb(Nmm);
+        
+    //cout << "c" << endl << m_c << endl;
+    //cout << "B" << endl << m_B << endl;
+    
+    //cout << "Nmm: " << endl;
+    //for (int i = 0; i < m_ns; ++i)
+    //    cout << setw(10) << m_thermo.speciesName(i) << setw(15) << Nmm(i) << endl;
+    
     ming(m_c, gtp, Nmg);
     
     double alpha = 0.999;
-    N = alpha*Nmg + (1.0-alpha)*Nmm;
+    N = max(alpha*Nmg + (1.0-alpha)*Nmm, 1.0e-200);
     
     //cout << "Nmg" << endl;
     //cout << Nmg << endl;
@@ -281,6 +280,34 @@ void MultiPhaseEquilSolver::initialConditions(
     
     // Initial g
     g = m_B*lambda - log(N);
+}
+
+void MultiPhaseEquilSolver::perturb(RealVector& nmm)
+{
+    // Possibly perturb the constraints
+    double ne_max = m_c.maxValue();
+    double ne_low = 1.0e-200 * ne_max;    
+    m_c = Numerics::max(m_c, ne_low);
+    
+    // Determine upper bound on moles of undetermined species (ie a species
+    // contains all the moles of a given element and thus cannot be any bigger)
+    RealVector nk_max(m_ns, 0.0);
+    for (int i = 0; i < m_ns; ++i) {
+        for (int j = 0; j < m_ne; ++j)
+            nk_max(i) = std::max(nk_max(i), (m_B(i,j) / m_c(j)));
+        nk_max(i) = 1.0 / nk_max(i);
+    }
+
+    // Compute the max-min composition of the undetermined species using the
+    // perturbed constraints
+    maxmin(m_c, nmm);
+    
+    // Compute a (possibly) perturbed vector of undetermined species moles
+    // (just storing in nk_max)
+    nk_max = max(nmm, nk_max * 1.0e-200);
+    
+    // Now back out the (possibly) perturbed constraint vector
+    //m_c = nk_max * m_B;
 }
 
 //==============================================================================
@@ -379,7 +406,8 @@ void MultiPhaseEquilSolver::computeResidual(
     const RealVector& Nbar, const RealVector& N, RealVector& r) const
 {
     //cout << "N" << endl;
-    //cout << N << endl;
+    //for (int i = 1; i < m_ns; ++i)
+    //    cout << N(i) << endl;
     r(0,m_nc) = N*m_B - m_c;
     r(m_nc,m_nc+m_np) = -1.0*Nbar;
     for (int i = 0; i < m_ns; ++i)

@@ -118,7 +118,7 @@ public:
      * databse (1 bar = 100,000 Pa).
      */
     double standardPressure() const {
-        return 100000.0;
+        return 1.0e5;
     }
     
     void cp(
