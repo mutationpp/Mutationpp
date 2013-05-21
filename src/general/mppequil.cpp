@@ -153,6 +153,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
+    cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
     cout << tab << "    --scientific    outputs in scientific format with given precision" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
@@ -279,10 +280,25 @@ Options parseOptions(int argc, char** argv)
     if (optionExists(argc, argv, "--species-list")) {
         opts.p_mixture_opts = new Mutation::MixtureOptions();
         std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--species-list"), tokens, ",");
+        String::tokenize(getOption(argc, argv, "--species-list"), tokens, ", ");
         opts.p_mixture_opts->setSpeciesNames(tokens);
     } else {
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
+    }
+    
+    // Elemental mole fractions
+    if (optionExists(argc, argv, "--elem-x")) {
+        std::vector<std::string> tokens;
+        String::tokenize(getOption(argc, argv, "--elem-x"), tokens, ":, ");
+        
+        if (tokens.size() % 2 == 0) {
+            for (int i = 0; i < tokens.size(); i += 2)
+                opts.p_mixture_opts->setDefaultComposition(
+                    tokens[i], std::atof(tokens[i+1].c_str()));
+        } else {
+            cout << "Bad format for element fractions!" << endl;
+            printHelpMessage(argv[0]);
+        }
     }
     
     // Thermodynamic database

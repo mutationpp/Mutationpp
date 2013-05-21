@@ -168,6 +168,16 @@ public:
         CompositionSetter& operator () (
             const std::string& element, const double X)
         {
+            // Just replace the current composition for this element if it has
+            // already been set once
+            for (int i = 0; i < m_composition.size(); ++i) {
+                if (m_composition[i].first == element) {
+                    m_composition[i].second = X;
+                    return *this;
+                }
+            }
+            
+            // Otherwise add this element to the default composition set
             m_composition.push_back(std::make_pair(element, X));
             return *this;
         }
