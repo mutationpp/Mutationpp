@@ -502,6 +502,7 @@
 			C: 2,
 			H: 2
 		</stoichiometry>
+		<thermodynamics type="NASA-9" db_name="C2H2,acetylene" />
 		<thermodynamics type="RRHO">
 			<linear>
 				yes
@@ -533,7 +534,6 @@
 				228320
 			</formation_enthalpy>
 		</thermodynamics>
-		<thermodynamics type="NASA-9" db_name="C2H2,acetylene" />
 	</species>
  
 	<!-- Ethylene -->
@@ -844,6 +844,8 @@
 			C: 4,
 			H: 2
 		</stoichiometry>
+		
+		<thermodynamics type="NASA-9" db_name="C4H2,butadiyne" />
 		<thermodynamics type="RRHO">
 			<linear>
 				yes
@@ -875,7 +877,6 @@
 				460365
 			</formation_enthalpy>
 		</thermodynamics>
-		<thermodynamics type="NASA-9" db_name="C4H2,butadiyne" />
 	</species>
  
 	<!-- No comments -->
@@ -1221,7 +1222,7 @@
 			O: 1
 		</stoichiometry>
 		
-		<thermodynamics type="NASA-9" db_name="C6H5OH(phenol" />
+		<thermodynamics type="NASA-9" db_name="C6H5OH,phenol" />
 		
 		<thermodynamics type="RRHO">
 			<linear>
@@ -1533,11 +1534,11 @@
     </species>
     
     <species name="CNCOCN">
-        <stoichiometry>
-            C: 3,
-            N: 2,
-            O: 1
-        </stoichiometry>
+		<stoichiometry>
+			C: 3,
+			N: 2,
+			O: 1
+		</stoichiometry>
     </species>
     
     <species name="CNN">
