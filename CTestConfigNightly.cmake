@@ -2,7 +2,6 @@
 # Site-specific setup
 ##########################################################################
 
-#execute_process(COMMAND echo "THE GCC OF THIS MACHINE IS EVIRONMENT = $ENV{MY_GCC_VERSION}" )
 # Dashboard model (Continuous, Experimental, Nightly)
 set(MODEL Continuous)
 # source dir(<> dev directory)
@@ -62,8 +61,11 @@ ctest_configure()			# cmake (...)
 ctest_build()				# make
 ctest_test()				# ctest = make test
 ctest_submit()				# envoyer au serveur
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})
 
-
+###############################################################################
+# this configuration is for continueous model 
+###############################################################################
 
 #ctest_start (${MODEL})
 # ctest_update(RETURN_VALUE HAD_UPDATES)
@@ -72,12 +74,11 @@ ctest_submit()				# envoyer au serveur
 #  ctest_build()		
 #  ctest_test()
  # ctest_submit()
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
 # else(${HAD_UPDATES} GREATER 0)
 #	MESSAGE("There are no new updates since last regression test")	
 # endif(${HAD_UPDATES} GREATER 0)
 
-#execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mailto ${MY_TEST_PATH})#${MY_MAIL_TO} )
+
 
 
 
