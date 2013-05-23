@@ -3,7 +3,7 @@
 ##########################################################################
 
 # Dashboard model (Continuous, Experimental, Nightly)
-set(MODEL Continuous)
+set(MODEL  Nightly)
 # source dir(<> dev directory)
 set(CTEST_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # build dir

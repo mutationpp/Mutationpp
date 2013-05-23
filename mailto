@@ -12,12 +12,13 @@
 #####################################################################################################
 
 #Testing/Temporary
+dinesh.ramanathan@vki.ac.be
 
-send_to_my_mail="dinesh.devi@yahoo.com" 
+send_to_my_mail="dinesh.ramanathan@vki.ac.be"
 delimiter=$(echo -e "\n ============================================================\n")
 subj=$(echo "There are some errors in last regression test ") 
 directory=$1
-
+echo  "Directory ==> $1"
 
 
 function_send_mail() {

@@ -1,8 +1,9 @@
 #!/bin/sh
 
-#MY_TEST_PATH=""
+#MY_TEST_PATH=
 
+export MPP_DATA_DIRECTORY=/home/dinesh/mutation++/trunk/install/include/mutation++_data
+cd /home/dinesh/mutation++/branches/dinesh/
+echo "MPP_DATA_DIRECTORY -> $MPP_DATA_DIRECTORY"
 ctest -VV -SP CTestConfigNightly.cmake
-#NBERRORS=$(cat Testing/Temporary/LastTest.log | grep ".*failure.*detected.*" | wc -l)
 
-#echo -e "NBERRORS ==> $CTEST_ENVIRONMENT "
