@@ -4,6 +4,5 @@
 
 export MPP_DATA_DIRECTORY=/home/dinesh/mutation++/trunk/install/include/mutation++_data
 cd /home/dinesh/mutation++/branches/dinesh/
-echo "MPP_DATA_DIRECTORY -> $MPP_DATA_DIRECTORY"
 ctest -VV -SP CTestConfigNightly.cmake
 

@@ -12,7 +12,6 @@
 #####################################################################################################
 
 #Testing/Temporary
-dinesh.ramanathan@vki.ac.be
 
 send_to_my_mail="dinesh.ramanathan@vki.ac.be"
 delimiter=$(echo -e "\n ============================================================\n")
