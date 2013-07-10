@@ -27,7 +27,7 @@ namespace Mutation {
 template <typename T, typename E1, typename E2>
 std::pair<int, double> minres(
     const SymMatExpr<T, E1>& A, Vector<T>& x, const VecExpr<T, E2>& b,
-    const int max_iter = 100, const double tol = 1.0e-6)
+    const double tol = 1.0e-6, const int max_iter = 100)
 {
     assert(A.rows() == A.cols());
     assert(A.cols() == x.size());

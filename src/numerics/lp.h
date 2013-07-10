@@ -44,7 +44,7 @@ enum LpResult {
     SOLUTION_FOUND,     ///< lp() returns with a correct solution
     UNBOUNDED_SOLUTION, ///< the solution to the LP problem is unbounded
     NO_SOLUTION,        ///< there is no feasible solution to the LP problem
-    LINEARLY_DEPENDENT  ///< the contraints are linearly dependent, no solution
+    LINEARLY_DEPENDENT  ///< solution exists but some contraints are lin. dep.
 };
 
 /**
@@ -144,7 +144,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
 template <typename Real>
 LpResult lp(const Vector<Real> &f, const LpObjective &objective, 
             const Matrix<Real> &A, const Vector<Real> &b, const int m1, 
-            const int m2, Vector<Real> &x, Real &z)
+            const int m2, Vector<Real> &x, Real &z, int** iposv_ret = NULL)
 {
     assert( f.size() == x.size() );
     assert( A.rows() == b.size() );
@@ -224,7 +224,8 @@ LpResult lp(const Vector<Real> &f, const LpObjective &objective,
         eps *= static_cast<Real>(1.0e-9) / static_cast<Real>(m);
     
     // Perform the simplex algorithm on the tableau
-    int izrov[n], iposv[m];
+    int izrov[n];
+    int* iposv = new int [m];
     int icase = simplex(&tableau[0][0], m, n, m1-offset, m2+offset, 
                         izrov, iposv, eps);
     
@@ -245,19 +246,23 @@ LpResult lp(const Vector<Real> &f, const LpObjective &objective,
     
     // Now unravel the solution from the modified tableau
     x = static_cast<Real>(0);
+    bool linind = false;
     for (int i = 0; i < m; ++i) {
         if (iposv[i] < n)
             x(iposv[i]) = tableau[i+1][0];
-        //else
-        //    x(iposv[i]) = static_cast<Real>(0.0);
-            
-            //return LINEARLY_DEPENDENT; // << CEQ has this but I'm not sure why
+        else
+            linind = true;
     }
+    
+    if (iposv_ret != NULL)
+        *iposv_ret = iposv;
+    else
+        delete [] iposv;
     
     // Also return value of z = min/max(f'*x)
     z = tableau[0][0];
     
-    return SOLUTION_FOUND;
+    return (linind ? LINEARLY_DEPENDENT : SOLUTION_FOUND);
 } // lp
 
 

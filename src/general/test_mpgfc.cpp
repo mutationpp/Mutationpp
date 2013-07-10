@@ -72,21 +72,30 @@ void bishnuTable5()
     double x[mix.nSpecies()];
     
     for (int i = 0; i < mix.nSpecies(); ++i)
-        x[i] = 1.0;
+        x[i] = static_cast<double>(1);
     equil.addConstraint(x);
     
-    c[mix.elementIndex("H")] = 4.0;
-    c[mix.elementIndex("O")] = 2.0;
+    c[mix.elementIndex("H")] = double(4);
+    c[mix.elementIndex("O")] = double(2);
     
     cout << endl;
     cout << "Bisnu et. al. Table 5:" << endl;
-    cout << setw(5) << "M" << setw(10) << "T (K)" << setw(10) << "P (atm)";
+    cout << setw(10) << "M" << setw(10) << "T (K)" << setw(10) << "P (atm)";
     for (int i = 0; i < mix.nSpecies(); ++i)
-        cout << setw(12) << "X_" + mix.speciesName(i);
+        cout << setw(14) << "X_" + mix.speciesName(i);
     cout << endl;
     
+    for (double m = 2.0; m < 6.0; m += 0.01) {
+        c[ne] = m;
+        equil.equilibrate(1500.0, ONEATM, c, x);
+        cout << setw(10) << m << setw(10) << 1500 << setw(10) << 1;
+        for (int i = 0; i < mix.nSpecies(); ++i)
+            cout << setw(14) << x[i];
+        cout << endl;
+    }
     
-    c[ne] = 2.0;
+    
+    /*c[ne] = double(2);
     equil.equilibrate(1500.0, ONEATM, c, x);
     cout << setw(5) << "2" << setw(10) << 1500 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
@@ -100,12 +109,12 @@ void bishnuTable5()
         cout << setw(14) << x[i];
     cout << endl;
     
-    c[ne] = 6.0;
+    c[ne] = 5.9999999999;
     equil.equilibrate(1500.0, ONEATM, c, x);
     cout << setw(5) << "6" << setw(10) << 1500 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
-    cout << endl << endl;
+    cout << endl << endl;*/
     
 }
 

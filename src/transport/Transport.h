@@ -116,7 +116,7 @@ public:
     double reactiveThermalConductivity();
     
     /**
-     * Returns the binary diffusion coefficient matrix.
+     * Returns the multicomponent diffusion coefficient matrix.
      */
     const Mutation::Numerics::RealMatrix& diffusionMatrix() {
         return mp_diffusion_matrix->diffusionMatrix(

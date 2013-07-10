@@ -656,6 +656,7 @@ __class__ <T, E> __name__ (const VecExpr<T, E>& u) {\
 VEC_APPLY_FUNC(square, VecSquared, m_u(i) * m_u(i))
 VEC_APPLY_FUNC(log, VecLog, std::log(m_u(i)))
 VEC_APPLY_FUNC(exp, VecExp, std::exp(m_u(i)))
+VEC_APPLY_FUNC(operator-, NegVec, -m_u(i))
 #undef VEC_APPLY_FUNC
 
 /*template <typename T>
@@ -686,7 +687,6 @@ template <typename T>
 ConstVec<T> ones(const size_t size) {
     return ConstVec<T>(static_cast<T>(1), size);
 }
-
 
 template <typename T, typename E1, typename E2>
 class MaxVec : public VecExpr<T, MaxVec<T, E1, E2> >

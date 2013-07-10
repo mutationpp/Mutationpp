@@ -136,7 +136,7 @@ QRP<Real>::QRP(const Matrix<Real> &A)
             c(i) -= m_A(m_rank,i) * m_A(m_rank,i);
         
         // Find the next pivot column
-        if (m_rank < n-1) {
+        if (m_rank < m_betas.size()-1) {
             max = c(m_rank+1,n).max();
             k   = max.index() + m_rank + 1;
             tau = max.value();

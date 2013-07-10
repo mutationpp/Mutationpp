@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iomanip>
 
-#ifdef __GNU__
+#ifdef _GNU_SOURCE
 #include <fenv.h>
 #endif
 
@@ -12,6 +12,7 @@ using std::endl;
 using std::setw;
 
 using namespace Mutation::Utilities;
+using namespace Mutation::Numerics;
 
 #define COLUMN_WIDTH 14
 
@@ -92,6 +93,12 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions")
 };
 
+// List of other output quantities
+#define NOTHER 1
+OutputQuantity other_quantities[NOTHER] = {
+    OutputQuantity("Dij", "?", "multicomponent diffusion coefficients")
+};
+
 // Simply stores the command line options
 typedef struct {
     double T1;
@@ -104,6 +111,7 @@ typedef struct {
     
     std::vector<int> mixture_indices;
     std::vector<int> species_indices;
+    std::vector<int> other_indices;
     
     bool verbose;
     
@@ -152,6 +160,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
+    cout << tab << "-o                  list of other values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
@@ -176,6 +185,16 @@ void printHelpMessage(const char* const name)
              << (species_quantities[i].units == "" ? "[-]" : 
                 "[" + species_quantities[i].units + "]") 
              << species_quantities[i].description << endl;
+    
+    cout << endl;
+    cout << "Other values (same format as mixture values):" << endl;
+    
+    for (int i = 0; i < NOTHER; ++i)
+        cout << tab << setw(2) << i << ": " << setw(10)
+             << other_quantities[i].name << setw(12)
+             << (other_quantities[i].units == "" ? "[-]" : 
+                "[" + other_quantities[i].units + "]") 
+             << other_quantities[i].description << endl;
     
     cout << endl;
     cout << "Example:" << endl;
@@ -351,6 +370,15 @@ Options parseOptions(int argc, char** argv)
         }
     }
     
+    // Get the other properties to print
+    if (optionExists(argc, argv, "-o")) {
+        if (!parseIndices(
+            getOption(argc, argv, "-o"), opts.other_indices, NOTHER-1)) {
+            cout << "Bad format for other value indices!" << endl;
+            printHelpMessage(argv[0]);
+        }
+    }
+    
     // Check for output format
     if (optionExists(argc, argv, "--scientific")) {
         opts.use_scientific = true;
@@ -395,14 +423,29 @@ void writeHeader(
         }
     }
     
+    iter = opts.other_indices.begin();
+    for ( ; iter != opts.other_indices.end(); ++iter) {
+        if (other_quantities[*iter].name == "Dij") {
+            for (int i = 0; i < mix.nSpecies(); ++i) {
+                for (int j = 0; j < mix.nSpecies(); ++j) {
+                    name = "D_{" + mix.speciesName(i) + "," + mix.speciesName(j) 
+                        + "}";
+                    column_widths.push_back(
+                        std::max(width, static_cast<int>(name.length())+2));
+                    cout << setw(column_widths.back()) << name;
+                }
+            }
+        }
+    }
+    
     cout << endl;
 }
 
 int main(int argc, char** argv)
 {
-#ifdef __GNU_SOURCE
+#ifdef _GNU_SOURCE
     // Enable floating point exception handling
-    feenableexcept(FE_DIVBYZERO | FE_INVALID);
+    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
     
     // Parse the command line options and load the mixture
@@ -624,6 +667,18 @@ int main(int argc, char** argv)
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
                     cout << setw(column_widths[cw++]) << species_values[i];
+            }
+            
+            // Other properties
+            iter = opts.other_indices.begin();
+            for ( ; iter < opts.other_indices.end(); ++iter) {
+                name  = other_quantities[*iter].name;
+                
+                if (name == "Dij") {
+                    const RealMatrix& Dij = mix.diffusionMatrix();
+                    for (int i = 0; i < Dij.size(); ++i)
+                        cout << setw(column_widths[cw++]) << Dij(i);
+                }
             }
             
             cout << endl;
