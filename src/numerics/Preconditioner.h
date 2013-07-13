@@ -21,7 +21,7 @@ public:
     }
     
     template <typename E>
-    inline VecMultVec<T, Vector<T>, E> solve(VecExpr<T, E>& rhs) const {
+    inline const VecMultVec<T, Vector<T>, E> solve(const VecExpr<T, E>& rhs) const {
         return rhs * m_vec;
     }
 private:
@@ -35,7 +35,7 @@ public:
     IdentityPreconditioner() { }
     
     template <typename E>
-    inline VecExpr<T,E>& solve(VecExpr<T, E>& rhs) const {
+    inline const VecExpr<T,E>& solve(const VecExpr<T, E>& rhs) const {
         return rhs;
     }
 };

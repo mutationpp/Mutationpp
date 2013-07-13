@@ -1,6 +1,7 @@
 
 #include "MultiPhaseEquilSolver.h"
 #include "minres.h"
+#include "gmres.h"
 
 #include <set>
 #include <utility>
@@ -141,7 +142,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     // Compute the initial conditions for the integration
     initialConditions(dg, lambda, Nbar, g0);
     dg -= g0;
-    updatePreConditioner();
+    //updatePreConditioner();
     
     RealSymMat A(m_ncr+m_np);
     RealVector r(m_ncr+m_np);
@@ -182,11 +183,12 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
 
             
             //minres(A, dx, r, 1.0e-12);
-            SVD<double> svd(m_P*A);
-            dx = m_P*r;
-            r = dx;
-            dx = 0.0;
-            svd.solve(dx, r);
+            LeastSquares<double> ls(A);
+            //dx = m_P*r;
+            //r = dx;
+            //dx = 0.0;
+            ls.solve(dx, r);
+            //gmres(m_P*A, dx, m_P*r, IdentityPreconditioner<double>());
             
          //std::cout << "dx" << endl << dx << endl;
         }
@@ -201,11 +203,11 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         computeResidual(Nbar_trial, N, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, g, N, r, A, 1.0e-8, 10);
+            newton(lambda_trial, Nbar_trial, g, N, r, A, 1.0e-3, 10);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over
-        if (res.second > 1.0e-8) {
+        if (res.second > 1.0e-3) {
 #ifdef VERBOSE
             std::cout << "Newton did not converge, reducing step size" << std::endl;
 #endif
@@ -221,7 +223,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         
         ds = std::min(ds*2.0, 1.0-s);
         if (ds == 0.0 && s < 1.0) {
-            std::cerr << "continuation step size dropped to zero in equil solver..." << endl;
+            std::cerr << "Continuation step size dropped to zero in equil solver!" << endl;
             std::exit(1);
         }
         
@@ -229,7 +231,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    std::pair<int,double> res = newton(lambda, Nbar, g, N, r, A, 1.0e-100, 100);
+    std::pair<int,double> res = newton(lambda, Nbar, g, N, r, A, 1.0e-16, 100);
     newt += res.first;
     
     // Compute the species mole fractions
@@ -272,10 +274,10 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
         std::cout << "Conditioned RHS:" << std::endl << -m_P*r << std::endl;
 #endif
         //std::pair<int, double> hist = minres(A, r, -r, 1.0e-10);
-        SVD<double> svd(m_P*A);
-        dx = -m_P*r;
-        r = dx;
-        svd.solve(dx, r);
+        LeastSquares<double> ls(A);
+        r = -r;
+        ls.solve(dx, r);
+        //std::pair<int,double> hist = gmres(m_P*A, dx, -m_P*r, IdentityPreconditioner<double>());
         
 #ifdef VERBOSE
         std::cout << "MINRES returned after " << hist.first << " iters (out of " << m_nc+m_np << ") with residual of " << hist.second << "." << std::endl;

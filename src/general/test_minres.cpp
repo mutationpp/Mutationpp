@@ -1,6 +1,7 @@
 
 #include "Numerics.h"
 #include "minres.h"
+#include "gmres.h"
 
 using namespace Mutation::Numerics;
 
@@ -15,7 +16,7 @@ int main()
     
     A(0,0) = 1.0;
     A(1,1) = 2.0;
-    A(2,2) = 0.0;
+    A(2,2) = 1.0;
     A(3,3) = 3.0;
     A(1,3) = 1.0;
     b(3) = 0.0;
@@ -28,7 +29,8 @@ int main()
     cout << "x:" << endl;
     cout << x << endl;
     
-    std::pair<int, double> conv = minres(A, x, b);
+    //std::pair<int, double> conv = minres(A, x, b);
+    std::pair<int, double> conv = gmres(A, x, b, IdentityPreconditioner<double>());
     cout << "Solution to Ax = b in " << conv.first << " iterations:" << endl;
     cout << "x:" << endl;
     cout << x << endl;
