@@ -14,14 +14,6 @@ add_executable(mppequil mppequil.cpp)
 target_link_libraries(mppequil mutation++)
 install(TARGETS mppequil DESTINATION bin)
 
-add_executable(minres test_minres.cpp)
-#target_link_libraries(minres mutation++)
-install(TARGETS minres DESTINATION bin)
-
-add_executable(mpgfc test_mpgfc.cpp)
-target_link_libraries(mpgfc mutation++)
-install(TARGETS mpgfc DESTINATION bin)
-
 add_executable(bprime bprime.cpp)
 target_link_libraries(bprime mutation++)
 install(TARGETS bprime DESTINATION bin)
@@ -34,6 +26,14 @@ if (BUILD_TEST_CODES)
     #add_executable(profiling profiling.cpp)
     #target_link_libraries(profiling mutation++ rt)
     #install(TARGETS profiling DESTINATION bin)
+    
+    add_executable(minres test_minres.cpp)
+    #target_link_libraries(minres mutation++)
+    install(TARGETS minres DESTINATION bin)
+
+    add_executable(mpgfc test_mpgfc.cpp)
+    target_link_libraries(mpgfc mutation++)
+    install(TARGETS mpgfc DESTINATION bin)
 
 endif()
 

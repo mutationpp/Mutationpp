@@ -1,7 +1,10 @@
 
 #include "mutation++.h"
-#include <fenv.h>
 #include <iostream>
+
+#ifdef _GNU_SOURCE
+#include <fenv.h>
+#endif
 
 using namespace std;
 using namespace Mutation;
@@ -10,7 +13,9 @@ using namespace Mutation;
 
 int main(int argc, char* argv[])
 {
+#ifdef _GNU_SOURCE
     feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+#endif
 
     Mixture mix(argv[6]);
     
