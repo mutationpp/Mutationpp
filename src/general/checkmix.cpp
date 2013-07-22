@@ -80,6 +80,16 @@ int main(int argc, char** argv)
     
     cout << "Reaction info:" << endl;
     cout << "--------------" << endl;
+    
+    // Reaction table header
+    cout << setw(4) << "#";
+    cout.setf(std::ios::left, std::ios::adjustfield);
+    cout << setw(22) << "  Formula";
+    cout << setw(12) << "Rate Law";
+    cout.setf(std::ios::right, std::ios::adjustfield);
+    cout << setw(12) << "A (m,s,mol)";
+    cout << setw(7) << "n";
+    cout << setw(10) << "Ta (K)" << endl;
     for (int i = 0; i < nr; ++i) {
         const Mutation::Kinetics::Reaction& r = mixture.reactions()[i];
         
@@ -98,7 +108,7 @@ int main(int argc, char** argv)
             cout.setf(std::ios::right, std::ios::adjustfield);
             cout.setf(std::ios::scientific, std::ios::floatfield);
             cout.precision(3);
-            cout << setw(10) << rate.A();
+            cout << setw(12) << rate.A();
             cout.setf(std::ios::fixed, std::ios::floatfield);
             cout.precision(2);
             cout << setw(7)  << rate.n();
