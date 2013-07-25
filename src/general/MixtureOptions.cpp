@@ -34,8 +34,8 @@ void MixtureOptions::setDefaultOptions()
     m_state_model = "T";
     m_thermo_db   = "RRHO";
     m_mechanism   = "none";
-    m_viscosity   = "CG";
-    m_thermal_conductivity = "CG";
+    m_viscosity   = "LDLT";
+    m_thermal_conductivity = "LDLT";
 }
 
 void MixtureOptions::loadFromFile(const string& mixture)

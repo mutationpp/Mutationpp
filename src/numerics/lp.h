@@ -523,8 +523,9 @@ void simp2(const Real *const tableau, const int m, const int n, int &ip,
            const int kp, const Real eps)
 {
     // Recast the tableau into a two dimensional array with appropriate sizes
-    const Real (*const a)[n+1] = 
+    const Real (*const a)[n+1] =
         reinterpret_cast<const Real (*const)[n+1]>(tableau);
+    //const Real* a;
     Real q, q0, q1, qp;
     
     int i;
@@ -536,6 +537,7 @@ void simp2(const Real *const tableau, const int m, const int n, int &ip,
         ip = -1;
         return;
     }
+    
     
     q1 = -a[i+1][0] / a[i+1][kp+1];
     ip = i;
