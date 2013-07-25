@@ -13,7 +13,7 @@ add_sources(mutation++
     ThermoDB.cpp
 )
 
-#install(FILES GfcEquilSolver.h DESTINATION include/mutation++)
+install(FILES GfcEquilSolver.h DESTINATION include/mutation++)
 install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES StateModel.h DESTINATION include/mutation++)
