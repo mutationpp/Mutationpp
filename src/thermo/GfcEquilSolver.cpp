@@ -461,7 +461,7 @@ void GfcEquilSolver::perturb(RealVector& cr, RealVector& nmm) const
     cr = Numerics::max(cr, ne_low);
     
     //cout << ne_max << endl;
-    //cout << ne_low << endl;
+    //cout << ne_low << endl; 
     //cout << cr << endl;
     
     // Determine upper bound on moles of undetermined species (ie a species

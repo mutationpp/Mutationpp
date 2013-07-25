@@ -3,6 +3,7 @@
 
 namespace Mutation {
     namespace Thermodynamics {
+        
 
 /**
  * Base class for all state models.  A mixture state is completely determined
@@ -141,6 +142,53 @@ protected:
     double* mp_X;
     
 }; // class StateModel
+
+
+/**
+ * Working on improving the StateModel class to remove virtual functions when
+ * possible.
+ */
+/*class StateModel
+{
+public:
+
+    StateModel()
+    {
+        INDEX_T   = 0;
+        INDEX_TR  = INDEX_T;
+        INDEX_TV  = INDEX_T;
+        INDEX_TEL = INDEX_T;
+        INDEX_TE  = INDEX_T;
+    }
+
+    double T() {
+        return m_state[INDEX_T];
+    }
+    
+    double Tr() {
+        return m_state[INDEX_TR];
+    }
+    
+    double Tv() {
+        return m_state[INDEX_TV];
+    }
+    
+    double Tel() {
+        return m_state[INDEX_TEL];
+    }
+    
+    double Te() {
+        return m_state[INDEX_TE];
+    }
+    
+    const double* const Y() {
+        return &m_state[INDEX_Y];
+    }
+
+protected:
+    
+    
+};*/
 
     } // namespace Thermodynamics
 } // namespace Mutation

@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+namespace Mutation {
+
 // Pi
 const double PI    = 4.0 * std::atan(1.0);
 const double TWOPI = 2.0 * PI;
@@ -18,5 +20,7 @@ const double EPS0   = 1.0/(MU0*C0*C0); // Vacuum permittivity (F/m)
 const double QE     = 1.602176565E-19; // Elementary positive charge (C)
 const double ONEATM = 101325.0;        // 1 atm in Pa
 const double SQRT2  = std::sqrt(2.0);  // square root of 2
+
+} // namespace Mutation
 
 #endif // GENERAL_CONSTANTS_H

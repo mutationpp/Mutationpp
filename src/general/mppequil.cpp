@@ -11,6 +11,7 @@ using std::cout;
 using std::endl;
 using std::setw;
 
+using namespace Mutation;
 using namespace Mutation::Utilities;
 using namespace Mutation::Numerics;
 

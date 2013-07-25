@@ -335,7 +335,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     const int m3 = m - m1 - m2;
 
     // Recast the tableau into a two dimensional array with appropriate sizes
-    Real (*const a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
+    Real (* a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
     
     //cout << "simplex:" << endl << "initial tableau" << endl;
     //for (int i = 0; i < m+2; ++i) {
@@ -491,7 +491,7 @@ void simp1(const Real *const tableau, const int n, const int mm,
            int &kp, Real &bmax)
 {    
     // Recast the tableau into a two dimensional array with appropriate sizes
-    const Real (*const a)[n+1] = 
+    const Real (* a)[n+1] = 
         reinterpret_cast<const Real (*const)[n+1]>(tableau);
     Real test;
     
