@@ -502,7 +502,11 @@ public:
      * Returns the unitless vector of species enthalpies \f$ H_i / R_u T \f$.
      */
     void speciesHOverRT(double T, double* const h) const; 
-     
+    
+    /**
+     * Computes the unitless species enthalpies and can optionally fill vectors
+     * for each energy mode.  
+     */
     void speciesHOverRT(
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,

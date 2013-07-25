@@ -233,6 +233,7 @@ void Transport::averageDiffusionCoeffs(double *const p_Di)
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
+    const double tol = 1.0e-30;
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
@@ -258,7 +259,7 @@ void Transport::stefanMaxwell(
                 G(i-1,i-1) -= G(j-1,i-1);
                 
             for (int j = i+1; j < ns; ++j) {
-                temp = X[i]*X[j]/nDij(i,j)*nd;
+                temp = std::max(tol,X[i]*X[j])/nDij(i,j)*nd;
                 G(i-1,i-1) += temp;
                 G(i-1,j-1) = -temp;
             }
@@ -308,7 +309,7 @@ void Transport::stefanMaxwell(
                 G(i,i) -= G(j,i);
                 
             for (int j = i+1; j < ns; ++j) {
-                temp = X[i]*X[j]/nDij(i,j)*nd;
+                temp = std::max(tol, X[i]*X[j])/nDij(i,j)*nd;
                 G(i,i) += temp;
                 G(i,j) = -temp;
             }

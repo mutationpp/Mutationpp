@@ -332,8 +332,8 @@ template <typename Real>
 int simplex(Real *const tableau, const int m, const int n, const int m1, 
             const int m2, int *const izrov, int *const iposv, const Real eps)
 {
-    const int m3 = m - m1 - m2;
-
+    const int m3   = m - m1 - m2;
+    
     // Recast the tableau into a two dimensional array with appropriate sizes
     Real (* a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
     
@@ -373,11 +373,11 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
             l3[i] = 1;
         
         // Compute the auxiliary objective function
-        for (j = 0; j < n+1; ++j) {
+        for (j = 0; j < n+1; ++j)
             a[m+1][j] = static_cast<Real>(0);
-            for (i = m1+1; i < m+1; ++i)
+        for (i = m1+1; i < m+1; ++i)
+            for (j = 0; j < n+1; ++j)
                 a[m+1][j] -= a[i][j];
-        }
         
         // Use simplex algorithm on auxiliary objective function
         while (true) {
@@ -490,26 +490,25 @@ void simp1(const Real *const tableau, const int n, const int mm,
            const int *const ll, const int nll, const bool use_abs, 
            int &kp, Real &bmax)
 {    
-    // Recast the tableau into a two dimensional array with appropriate sizes
-    const Real (* a)[n+1] = 
-        reinterpret_cast<const Real (*const)[n+1]>(tableau);
+    // Only need to access row mm of the tableau
+    const Real *const a = &tableau[mm*(n+1)];
     Real test;
     
     if (nll <= 0) {
         bmax = static_cast<Real>(0);
     } else {
         kp   = ll[0];
-        bmax = a[mm][kp+1];
+        bmax = a[kp+1];
         
         for (int k = 1; k < nll; ++k) {
             if (use_abs)
-                test = std::abs(a[mm][ll[k]+1]) - std::abs(bmax);
+                test = std::abs(a[ll[k]+1]) - std::abs(bmax);
             else
-                test = a[mm][ll[k]+1] - bmax;
+                test = a[ll[k]+1] - bmax;
             
             if (test > 0) {            
                 kp   = ll[k];
-                bmax = a[mm][kp+1];
+                bmax = a[kp+1];
             }                
         }        
     }
