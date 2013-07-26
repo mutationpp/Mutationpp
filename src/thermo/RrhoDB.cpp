@@ -96,6 +96,8 @@ public:
                 case MOLECULE:
                     molecule_indices.push_back(i);
                     break;
+                default:
+                    break;
             }
         )
         

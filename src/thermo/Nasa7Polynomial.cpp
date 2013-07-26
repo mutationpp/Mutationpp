@@ -155,8 +155,10 @@ std::istream &operator>>(istream &in, Nasa7Polynomial &n7)
         n7.mp_coefficients[0][i] = atof(temp);
     }
     in.getline(temp, 100);
+    
+    return in;
 }
 
-} // namespace Thermodynamics
+    } // namespace Thermodynamics
 } // namespace Mutation
 

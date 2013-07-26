@@ -106,8 +106,9 @@ bool XmlElement::parse(
     // Record the start line for error statements
     m_line_number = line;
     ParseState previous = state;
+    bool done = false;
   
-    while (state != done && is.get(c)) {        
+    while (!done && is.get(c)) {
         if (c == '\n')
             line++;
         
@@ -152,7 +153,7 @@ bool XmlElement::parse(
             case attributes:
                 if (!(c == ' ' || c == '\t' || c == '=' || c == '\n' || c == '\r')) {
                     if (c == '/') {
-                        state = done;
+                        done = true;
                         is.get();
                     } else if (c == '>') {
                         state = el_value;
@@ -205,7 +206,7 @@ bool XmlElement::parse(
                 } else if (c == '>') {
                     if (name[0] == '/') {
                         if (name == "/"+m_tag)
-                            state = done;
+                            done = true;
                         else
                             _parseError(mp_document, line,
                                 "expecting end-tag </"+m_tag+"> but instead "+
@@ -244,7 +245,7 @@ bool XmlElement::parse(
     // Make sure we ended where we thought we would
     // note we could be more descriptive with the error statement by seeing
     // what state actually is
-    if (state != done) {
+    if (!done) {
         if (m_tag.empty())
             return false;
         else

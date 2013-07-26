@@ -495,6 +495,9 @@ void CollisionDB::updateCollisionData(
                 m_Dij(i) = 3.0 / 16.0 * sqrt(TWOPI * KB * Th / 
                     m_red_mass(i)) / m_Q11(i);
             } break;
+        
+        default:
+            break;  // Will never get here
     }
     
     mp_last_T[data] = Th;

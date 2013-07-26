@@ -38,7 +38,6 @@ private:
 
     enum ParseState {
         initial,
-        prename,
         el_name,
         el_value,
         child_name,
@@ -48,7 +47,6 @@ private:
         comment,
         comment_end_1,
         comment_end_2,
-        done
     };
     
 public:

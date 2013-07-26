@@ -182,7 +182,7 @@ void Species::loadStoichiometry(
         // element in the element list that is loaded
         found = false;
         for (int j = 0; j < elements.size(); ++j)
-            if (found = (elements[j].name() == element_name)) break;
+            if ((found = (elements[j].name() == element_name))) break;
         if (!found) {
             cerr << "Error in species \"" << name() << "\" stoichiometry "
                  << "definition, element \"" << element_name
@@ -269,7 +269,7 @@ void Species::checkStoichiometryNameMatching(
                 if (i == length - 1) {
                     found = false;
                     for (int j = 0; j < elements.size(); ++j)
-                        if (found = (elements[j].name() == element)) break;
+                        if ((found = (elements[j].name() == element))) break;
                     if (found)
                         guess[element] = guess[element] + 1;
                     else
@@ -287,7 +287,7 @@ void Species::checkStoichiometryNameMatching(
                     // characters form an element name
                     found = false;
                     for (int j = 0; j < elements.size(); ++j)
-                        if (found = (elements[j].name() == element)) break;
+                        if ((found = (elements[j].name() == element))) break;
                     if (found) {
                         // If it does, then the next character is either part of 
                         // the stoichiometry coefficient or beginning of a new 
@@ -303,7 +303,7 @@ void Species::checkStoichiometryNameMatching(
                         element = element[0];
                         found = false;
                         for (int j = 0; j < elements.size(); ++j)
-                            if (found = (elements[j].name() == element)) break;
+                            if ((found = (elements[j].name() == element))) break;
                         if (found) {
                             // Add this element with a stoichiometry coefficient
                             // defaulting to 1
@@ -314,7 +314,7 @@ void Species::checkStoichiometryNameMatching(
                             if (i == length - 1) {
                                 found = false;
                                 for (int j = 0; j < elements.size(); ++j)
-                                    if (found = (elements[j].name() == element)) 
+                                    if ((found = (elements[j].name() == element)))
                                         break;
                                 if (found)
                                     guess[element] = guess[element] + 1;
@@ -334,7 +334,7 @@ void Species::checkStoichiometryNameMatching(
                     if (i == length - 1) {
                         found = false;
                         for (int j = 0; j < elements.size(); ++j)
-                            if (found = (elements[j].name() == element)) break;
+                            if ((found = (elements[j].name() == element))) break;
                         if (found)
                             guess[element] = guess[element] + 
                                 atoi(digits.c_str());
@@ -350,7 +350,7 @@ void Species::checkStoichiometryNameMatching(
                 if (isalpha(name[i])) {
                     found = false;
                     for (int j = 0; j < elements.size(); ++j)
-                        if (found = (elements[j].name() == element)) break;
+                        if ((found = (elements[j].name() == element))) break;
                     if (found)
                         guess[element] = guess[element] + 
                             atoi(digits.c_str());
@@ -361,7 +361,7 @@ void Species::checkStoichiometryNameMatching(
                     if (i == length - 1) {
                         found = false;
                         for (int j = 0; j < elements.size(); ++j)
-                            if (found = (elements[j].name() == element)) break;
+                            if ((found = (elements[j].name() == element))) break;
                         if (found)
                             guess[element] = guess[element] + 1;
                     } else {                        
@@ -373,7 +373,7 @@ void Species::checkStoichiometryNameMatching(
                     if (i == length - 1) {
                         found = false;
                         for (int j = 0; j < elements.size(); ++j)
-                            if (found = (elements[j].name() == element)) break;
+                            if ((found = (elements[j].name() == element))) break;
                         if (found)
                             guess[element] = guess[element] + 
                                 atoi(digits.c_str());
