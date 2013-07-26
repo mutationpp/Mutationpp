@@ -169,6 +169,10 @@ public:
             }
         )
         
+        // Allocate storage to keep electronic enthalpies because these are very
+        // expensive and we can save time if T_E has not changed between calls
+        mp_helec = new double [m_ns];
+        
         // Compute the contribution of the partition functions at the standard
         // state temperature to the species enthalpies
         mp_part_sst = new double [m_ns];
@@ -192,6 +196,7 @@ public:
         delete [] mp_vib_temps;
         delete [] mp_nelec;
         delete [] mp_elec_levels;
+        delete [] mp_helec;
         delete [] mp_part_sst;
     }
     
@@ -557,21 +562,31 @@ private:
      * value to the enthalpy array using the given operation.
      */
     template <typename OP>
-    void hE(double T, double* const h, const OP& op) {
+    void hE(double T, double* const h, const OP& op)
+    {
         double fac, sum1, sum2;
         int ilevel = 0;
+        static double T_last = 0.0;
+        
+        if (std::abs(T_last - T) > 1.0e-16) {
+            T_last = T;
+            LOOP_HEAVY(
+                sum1 = sum2 = 0.0;
+                if (mp_nelec[i] > 0) {
+                    for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
+                        fac = mp_elec_levels[ilevel].g *
+                            std::exp(-mp_elec_levels[ilevel].theta / T);
+                        sum1 += fac;
+                        sum2 += fac * mp_elec_levels[ilevel].theta;
+                    }
+                    mp_helec[j] = sum2 / sum1;
+                } else
+                    mp_helec[j] = 0.0;
+            )
+        }
+        
         LOOP_HEAVY(
-            sum1 = sum2 = 0.0;
-            if (mp_nelec[i] > 0) {
-                for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                    fac = mp_elec_levels[ilevel].g * 
-                        std::exp(-mp_elec_levels[ilevel].theta / T);
-                    sum1 += fac;
-                    sum2 += fac * mp_elec_levels[ilevel].theta;
-                }
-                op(h[j], sum2 / sum1);
-            } else
-                op(h[j], 0.0);
+            op(h[j], mp_helec[j])
         )
     }
     
@@ -667,6 +682,7 @@ private:
     
     int*       mp_nelec;
     ElecLevel* mp_elec_levels;
+    double*    mp_helec;
 
 }; // class RrhoDB
 
