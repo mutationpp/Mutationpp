@@ -228,8 +228,8 @@ private:
 
     std::string m_name;
     
-    std::string m_nasa9_name;
     std::string m_nasa7_name;
+    std::string m_nasa9_name;
     
     ParticleRRHO* mp_rrho_model;
     

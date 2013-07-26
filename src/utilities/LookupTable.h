@@ -626,7 +626,7 @@ void LookupTable<IndexType, DataType, FunctionType>::lookup(
         } else {
             // Otherwise do binary search for worst case O(log(n)) comparisons
             IndexType* p_upper_index = 
-                lower_bound(mp_indices, mp_indices + m_num_indices, index);
+                std::lower_bound(mp_indices, mp_indices + m_num_indices, index);
             
             upper_row = static_cast<unsigned int>(p_upper_index - mp_indices);
             lower_row = upper_row - 1;

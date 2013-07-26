@@ -253,8 +253,7 @@ void Species::checkStoichiometryNameMatching(
         second_char,
         number
     } state = first_char;
-    
-    int atoms;
+
     string element;
     string digits;
     bool found;

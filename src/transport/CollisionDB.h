@@ -13,7 +13,7 @@
 namespace Mutation {
     namespace Transport {
 
-//#define USE_COLLISION_INTEGRAL_TABLES
+#define USE_COLLISION_INTEGRAL_TABLES
 
 
 /**

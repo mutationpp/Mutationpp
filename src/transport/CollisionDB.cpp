@@ -65,11 +65,25 @@ const CollisionFunc5 CollisionDB::sm_Est_rep(
 
 
 CollisionDB::CollisionDB(const Thermodynamics& thermo)
-    : m_ns(thermo.nSpecies()), m_nh(thermo.nHeavy()), m_ncollisions((m_ns*(m_ns + 1))/2), 
-      m_mass(m_ns), m_mass_sum(m_ns), m_mass_prod(m_ns), m_red_mass(m_ns),
-      m_em_index(thermo.speciesIndex("e-")), m_Q11(m_ns), m_Q22(m_ns), 
-      m_Ast(m_ns), m_Bst(m_ns), m_Cst(m_ns), m_eta(m_ns), m_Dij(m_ns),
-      m_Q12ei(m_ns), m_Q13ei(m_ns), m_Q14ei(m_ns), m_Q15ei(m_ns)
+    : m_ns(thermo.nSpecies()),
+      m_nh(thermo.nHeavy()),
+      m_ncollisions((m_ns*(m_ns + 1))/2),
+      m_em_index(thermo.speciesIndex("e-")),
+      m_mass(m_ns),
+      m_mass_sum(m_ns),
+      m_mass_prod(m_ns),
+      m_red_mass(m_ns),
+      m_Q11(m_ns),
+      m_Q12ei(m_ns),
+      m_Q13ei(m_ns),
+      m_Q14ei(m_ns),
+      m_Q15ei(m_ns),
+      m_Q22(m_ns),
+      m_Ast(m_ns),
+      m_Bst(m_ns),
+      m_Cst(m_ns),
+      m_eta(m_ns),
+      m_Dij(m_ns)
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
@@ -129,7 +143,6 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     string str;    
     file >> str;
     
-    int ineutral = 0;
     CollisionFunc4 func;
     std::map<CollisionPair, int>::iterator iter;
     

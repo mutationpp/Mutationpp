@@ -22,7 +22,10 @@ void swap(Reaction& left, Reaction& right) {
 }
 
 Reaction::Reaction(IO::XmlElement& node)
-    : m_thirdbody(false), m_reversible(true), mp_rate(NULL)
+    : m_formula(""),
+      m_reversible(true),
+      m_thirdbody(false),
+      mp_rate(NULL)
 {
     // Make sure this is a reaction type XML element
     assert( node.tag() == "reaction" );

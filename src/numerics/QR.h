@@ -77,10 +77,10 @@ protected:
     Matrix<Real> m_R;
     Matrix<Real> m_Q;
     
+    Vector<Real> m_betas;
+    
     bool m_have_Q;
     bool m_have_R;
-    
-    Vector<Real> m_betas;
 };
 
 //==============================================================================
@@ -190,7 +190,6 @@ template <typename Real>
 void QR<Real>::qTransposeB(Vector<Real> &b) const
 {
     const size_t m = m_A.rows();
-    const size_t n = m_A.cols();
 
     Vector<Real> u(m);
     for (size_t i = 0; i < m_betas.size(); ++i) {
