@@ -33,7 +33,6 @@ using std::setw;
 namespace Mutation {
     namespace Numerics {
 
-
 /**
  * Enumerates possible outcomes of the lp function for solving linear
  * programming (LP) problems .
@@ -334,17 +333,6 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
 {
     const int m3   = m - m1 - m2;
     
-    // Recast the tableau into a two dimensional array with appropriate sizes
-    Real (* a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
-    
-    //cout << "simplex:" << endl << "initial tableau" << endl;
-    //for (int i = 0; i < m+2; ++i) {
-    //    for (int j = 0; j < n+1; ++j)
-    //        cout << setw(10) << a[i][j];
-    //    cout << endl;
-    //}
-    //cout << endl;
-    
     // Declare other variables
     Real bmax;
     int l1[n], nl1, kp, ip, i, j, is;
@@ -364,7 +352,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     
     // PHASE 1:
     // Use auxiliary objective function to compute initial solution, if there
-    // are no constraints then the origin is an initial solution
+    // are no >= or = constraints then the origin is an initial solution
     if (m2 + m3 != 0) {
         // Initialize the list of m2 constraints whose slack variables have
         // never been exchanged out of the initial basis
@@ -373,11 +361,11 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
             l3[i] = 1;
         
         // Compute the auxiliary objective function
-        for (j = 0; j < n+1; ++j)
-            a[m+1][j] = static_cast<Real>(0);
+        Real* a = &tableau[(m+1)*(n+1)];  // a points to row (m+1)
+        std::fill(a, a+(n+1), static_cast<Real>(0));
         for (i = m1+1; i < m+1; ++i)
             for (j = 0; j < n+1; ++j)
-                a[m+1][j] -= a[i][j];
+                a[j] -= tableau[i*(n+1)+j];
         
         // Use simplex algorithm on auxiliary objective function
         while (true) {
@@ -385,12 +373,12 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
 
             // If auxiliary function is negative and can't be improved then no
             // feasible solution exists
-            if (bmax <= eps && a[m+1][0] <= -eps)
+            if (bmax <= eps && a[0] <= -eps)
                 return -1;
                 
             // If auxiliary function is zero and can't be improved then we have
             // a feasible starting vector
-            if (bmax <= eps && a[m+1][0] <= eps) {
+            if (bmax <= eps && a[0] <= eps) {
                 need_exchange = false;
                 for (ip = m1+m2; ip < m; ++ip) {
                     if (iposv[ip] == n+ip) {
@@ -405,10 +393,11 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
                 if (!need_exchange) {
                     // Change sign of row for any m2 constraints still present
                     // from the initial basis
-                    for (i = m1; i < m1+m2; ++i) {
+                    a = &tableau[(n+1)*(m1+1)];
+                    for (i = m1; i < m1+m2; ++i, a += (n+1)) {
                         if (l3[i-m1] == 1) {
                             for (j = 0; j < n+1; ++j)
-                                a[i+1][j] = -a[i+1][j];
+                                a[j] = -a[j];
                         }
                     }
                     
@@ -441,9 +430,11 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
                 kh = iposv[ip] - m1 - n;
                 if (kh >= 0 && l3[kh] != 0) {
                     l3[kh] = 0;
-                    a[m+1][kp+1]++;
-                    for (i = 0; i < m+2; ++i)
-                        a[i][kp+1] = -a[i][kp+1];
+                    a[kp+1]++;
+                    a = &tableau[0];
+                    for (i = 0; i < m+2; ++i, a += (n+1))
+                        a[kp+1] = -a[kp+1];
+                    a -= (n+1);  // reset a to point to row (m+1)
                 }
             }
             
@@ -522,15 +513,12 @@ template <typename Real>
 void simp2(const Real *const tableau, const int m, const int n, int &ip, 
            const int kp, const Real eps)
 {
-    // Recast the tableau into a two dimensional array with appropriate sizes
-    const Real (*const a)[n+1] =
-        reinterpret_cast<const Real (*const)[n+1]>(tableau);
-    //const Real* a;
     Real q, q0, q1, qp;
     
     int i;
-    for (i = 0; i < m; ++i)
-        if (a[i+1][kp+1] < -eps) break;
+    const Real* a = &tableau[(n+1)];
+    for (i = 0; i < m; ++i, a += (n+1))
+        if (a[kp+1] < -eps) break;
     
     // If there are no possible pivots, return
     if (i == m) {
@@ -538,20 +526,21 @@ void simp2(const Real *const tableau, const int m, const int n, int &ip,
         return;
     }
     
-    
-    q1 = -a[i+1][0] / a[i+1][kp+1];
+    q1 = -a[0] / a[kp+1];
     ip = i;
     
-    for (i = ip+1; i < m; ++i) {
-        if (a[i+1][kp+1] < -eps) {
-            q = -a[i+1][0]/a[i+1][kp+1];
+    a = &tableau[(n+1)*(ip+2)];
+    for (i = ip+1; i < m; ++i, a += (n+1)) {
+        if (a[kp+1] < -eps) {
+            q = -a[0]/a[kp+1];
             if (q < q1) {
                 ip = i;
                 q1 = q;
             } else if (q == q1) {
+                const Real* ap = &tableau[(n+1)*(ip+1)];
                 for (int j = 0; j < n; ++j) {
-                    qp = -a[ip+1][j+1] / a[ip+1][kp+1];
-                    q0 = -a[i+1][j+1] / a[i+1][kp+1];
+                    qp = -ap[j+1] / ap[kp+1];
+                    q0 = -a[j+1] / a[kp+1];
                     if (q0 != qp) break;
                 }
                 if (q0 < qp) ip = i;
@@ -566,36 +555,33 @@ void simp2(const Real *const tableau, const int m, const int n, int &ip,
 template <typename Real>
 void simp3(Real *const tableau, const int n, const int i1, const int k1, 
            const int ip, const int kp)
-{    
-    // Recast the tableau into a two dimensional array with appropriate sizes
-    Real (*const a)[n+1] = reinterpret_cast<Real (*const)[n+1]>(tableau);
-    
-    Real piv = static_cast<Real>(1) / a[ip+1][kp+1];
+{
+    Real piv = static_cast<Real>(1) / tableau[(ip+1)*(n+1)+kp+1];
 
     // Update all elements except pivot row
-    for (int i = 0; i < i1+1; ++i) {
+    Real* a = &tableau[0];
+    for (int i = 0; i < i1+1; ++i, a += (n+1)) {
         if (i != ip+1) {
             // Pivot column
-            a[i][kp+1] *= piv;
+            a[kp+1] *= piv;
             
             // Non-pivot column
             for (int j = 0; j < k1+1; ++j) {
-                if (j != kp+1) {
-                    //cout << i << "," << j << endl;
-                    a[i][j] -= a[ip+1][j] * a[i][kp+1];
-                }
+                if (j != kp+1)
+                    a[j] -= tableau[(ip+1)*(n+1)+j] * a[kp+1];
             }
         }
     }
     
     // Update the pivot row
+    a = &tableau[(ip+1)*(n+1)];
     for (int j = 0; j < k1+1; ++j) {
         if (j != kp+1)
-            a[ip+1][j] *= -piv;
+            a[j] *= -piv;
     }
     
     // Update the pivot element
-    a[ip+1][kp+1] = piv;
+    a[kp+1] = piv;
 } // simp3
  
     } // namespace Numerics
