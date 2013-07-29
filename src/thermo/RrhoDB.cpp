@@ -236,7 +236,7 @@ public:
         double* const cp, double* const cpt, double* const cpr, 
         double* const cpv, double* const cpel)
     {
-        double deltaT = Th * 1.0E-6;
+        const double deltaT = Th * 1.0E-6;
     
         // Special case if we only want total Cp
         if (cp != NULL && cpt == NULL && cpr == NULL && cpv == NULL && 
@@ -251,8 +251,8 @@ public:
             hV(Tv + deltaT, cp, PlusEq());
             hV(Tv, cp, MinusEq());
             
-            hE(Tv + deltaT, cp, PlusEq());
-            hE(Tv, cp, MinusEq());
+            hE(Tel + deltaT, cp, PlusEq());
+            hE(Tel, cp, MinusEq());
             
             LOOP(cp[i] /= deltaT);
             return;
@@ -311,11 +311,11 @@ public:
             }
         } else {
             LOOP(cpel[i] = 0.0);
-            hE(Tr + deltaT, cpel, Eq());
-            hE(Tr, cpel, MinusEq());
+            hE(Tel + deltaT, cpel, Eq());
+            hE(Tel, cpel, MinusEq());
             if (cp != NULL) 
-                LOOP(cp[i] += cpel[i]);
-            LOOP(cpel[i] /= deltaT);
+                LOOP_HEAVY(cp[j] += cpel[j]);
+            LOOP_HEAVY(cpel[j] /= deltaT);
         }
         
         if (cp != NULL) 
@@ -566,9 +566,9 @@ private:
     {
         double fac, sum1, sum2;
         int ilevel = 0;
-        static double T_last = 0.0;
+        static double T_last = -1.0;
         
-        if (std::abs(T_last - T) > 1.0e-16) {
+        //if (T_last != T) {
             T_last = T;
             LOOP_HEAVY(
                 sum1 = sum2 = 0.0;
@@ -580,10 +580,11 @@ private:
                         sum2 += fac * mp_elec_levels[ilevel].theta;
                     }
                     mp_helec[j] = sum2 / sum1;
-                } else
+                } else {
                     mp_helec[j] = 0.0;
+                }
             )
-        }
+        //}
         
         LOOP_HEAVY(
             op(h[j], mp_helec[j])

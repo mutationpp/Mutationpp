@@ -1955,6 +1955,7 @@
 				<level degeneracy="1" energy="68152.7" />
 				<level degeneracy="2" energy="69283.0" />
 				<level degeneracy="2" energy="72097.6" />
+				<!-- removed to match old mutation library -->
 				<level degeneracy="5" energy="77600.0" />
 				<level degeneracy="1" energy="85200.0" />
 				<level degeneracy="6" energy="86800.0" />
@@ -1962,6 +1963,7 @@
 				<level degeneracy="10" energy="93000.0" />
 				<level degeneracy="6" energy="97603.0" />
 				<level degeneracy="6" energy="104600.0" />
+				<!-- -->
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				0.0
@@ -2091,8 +2093,10 @@
 			<electronic_levels units="1/cm">
 				<level degeneracy="4" energy="0.0" />
 				<level degeneracy="8" energy="38000.0" />
+				<!-- Comment out to match old mutation library -->
 				<level degeneracy="2" energy="43906.0" />
 				<level degeneracy="4" energy="45868.0" />
+				<!-- -->
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				91089
