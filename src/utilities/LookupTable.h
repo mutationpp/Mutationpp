@@ -527,9 +527,11 @@ void LookupTable<IndexType, DataType, FunctionType>::populateTable(
         
         // Compute error between interpolated and exact values
         for (int j = 0; j < nfuncs; ++j) {
-            error = abs(
-                static_cast<double>(p_interp_values[j]/p_exact_values[j]) - 1.0);
-                //static_cast<double>(p_interp_values[j]));
+            if (std::abs(p_exact_values[j]) < static_cast<DataType>(1.0e-30))
+                error = std::abs(p_interp_values[j]);
+            else 
+                error = std::abs(static_cast<double>(
+                    p_interp_values[j]/p_exact_values[j]) - 1.0);
             
             if (error > max_error) {
                 max_error = error;

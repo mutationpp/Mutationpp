@@ -5,9 +5,11 @@
 #include "ParticleRRHO.h"
 #include "AutoRegistration.h"
 #include "Functors.h"
+#include "LookupTable.h"
 
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -48,6 +50,13 @@ typedef struct {
     double g;           // degeneracy
     double theta;       // characteristic temperature
 } ElecLevel;
+
+typedef struct {
+    unsigned int offset;
+    unsigned int nheavy;
+    int* p_nelec;
+    ElecLevel* p_levels;
+} ElectronicData;
 
 
 /**
@@ -181,6 +190,17 @@ public:
         hR(Tss, mp_part_sst, PlusEq());
         hV(Tss, mp_part_sst, PlusEq());
         hE(Tss, mp_part_sst, PlusEq());
+        
+        
+        ElectronicData data;
+        data.offset = (m_has_electron ? 1 : 0);
+        data.nheavy = m_na + m_nm;
+        data.p_nelec = mp_nelec;
+        data.p_levels = mp_elec_levels;
+        mp_hel_table =
+            new Mutation::Utilities::LookupTable<double, double, HelComputer>(
+                100.0, 20000.0, m_ns, data);
+        mp_hel_table->save("hE.dat");
     }
     
     /**
@@ -522,6 +542,44 @@ private:
     typedef PlusEqualsYDivAlpha<double> PlusEqDiv;
     typedef PlusEquals<double> PlusEq;
     typedef MinusEquals<double> MinusEq;
+
+    class HelComputer
+    {
+    public:
+        typedef ElectronicData DataProvider;
+        
+        void operator() (double T, double* p_h, const DataProvider& data) const
+        {
+            (*this)(T, p_h, data, Equals<double>());
+        }
+        
+        template <typename OP>
+        void operator () (
+            double T, double* p_h, const DataProvider& data, const OP& op) const
+        {
+            double sum1, sum2, fac;
+            unsigned int ilevel = 0;
+            
+            p_h[0] = 0.0;
+            
+            for (unsigned int i = 0; i < data.nheavy; ++i) {
+                sum1 = sum2 = 0.0;
+                if (data.p_nelec[i] > 0) {
+                    for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
+                        fac = data.p_levels[ilevel].g *
+                            std::exp(-data.p_levels[ilevel].theta / T);
+                        sum1 += fac;
+                        sum2 += fac * data.p_levels[ilevel].theta;
+                    }
+                    op(p_h[i+data.offset], sum2 / sum1);
+                } else {
+                    op(p_h[i+data.offset], 0.0);
+                }
+            }
+        }
+    };
+
+private:
     
     /**
      * Computes the translational enthalpy of each species in K.
@@ -564,7 +622,7 @@ private:
     template <typename OP>
     void hE(double T, double* const h, const OP& op)
     {
-        double fac, sum1, sum2;
+        /*double fac, sum1, sum2;
         int ilevel = 0;
         static double T_last = -1.0;
         
@@ -587,8 +645,15 @@ private:
         //}
         
         LOOP_HEAVY(
-            op(h[j], mp_helec[j])
-        )
+            op(h[j], mp_helec[j]);
+        )*/
+        
+        ElectronicData data;
+        data.offset = (m_has_electron ? 1 : 0);
+        data.nheavy = m_na + m_nm;
+        data.p_nelec = mp_nelec;
+        data.p_levels = mp_elec_levels;
+        HelComputer()(T, h, data, op);
     }
     
     /**
@@ -684,6 +749,8 @@ private:
     int*       mp_nelec;
     ElecLevel* mp_elec_levels;
     double*    mp_helec;
+    
+    Mutation::Utilities::LookupTable<double, double, HelComputer>* mp_hel_table;
 
 }; // class RrhoDB
 
