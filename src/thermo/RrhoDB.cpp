@@ -74,8 +74,11 @@ public:
      * presented to the user and the program exits.
      */
     RrhoDB(ThermoDB::ARGS species)
-        : ThermoDB(species), m_na(0), m_nm(0), 
-          m_has_electron(species[0].type() == ELECTRON)
+        : ThermoDB(species), 
+          m_na(0), 
+          m_nm(0), 
+          m_has_electron(species[0].type() == ELECTRON),
+          m_use_tables(true)
     {    
         // First make sure that every species contains an RRHO model
         bool complete = true;
@@ -161,26 +164,34 @@ public:
         
         // Finally store the electronic energy levels in a compact form like the
         // vibrational energy levels
-        mp_nelec = new int [m_na + m_nm];
+        m_elec_data.p_nelec = new int [m_na + m_nm];
         int nelec = 0;
         LOOP_HEAVY(
-            mp_nelec[i] = species[j].getRRHOParameters()->nElectronicLevels();
+            m_elec_data.p_nelec[i] = 
+                species[j].getRRHOParameters()->nElectronicLevels();
             nelec += mp_nelec[i];
         )
         
-        mp_elec_levels = new ElecLevel [nelec];
+        m_elec_data.p_levels = new ElecLevel [nelec];
         int ilevel = 0;
         LOOP_HEAVY(
             const ParticleRRHO* rrho = species[j].getRRHOParameters();
             for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                mp_elec_levels[ilevel].g = rrho->electronicEnergy(k).first;
-                mp_elec_levels[ilevel].theta = rrho->electronicEnergy(k).second;
+                m_elec_data.p_levels[ilevel].g = 
+                    rrho->electronicEnergy(k).first;
+                m_elec_data.p_levels[ilevel].theta = 
+                    rrho->electronicEnergy(k).second;
             }
-        )
+        )        
         
-        // Allocate storage to keep electronic enthalpies because these are very
-        // expensive and we can save time if T_E has not changed between calls
-        mp_helec = new double [m_ns];
+        m_elec_data.offset = (m_has_electron ? 1 : 0);
+        m_elec_data.nheavy = m_na + m_nm;
+        
+        if (m_use_tables) {
+            mp_hel_table = new Mutation::Utilities::LookupTable
+                <double, double, HelComputer>(100.0, 20000.0, m_ns, m_elec_data);
+        }
+        //mp_hel_table->save("hE.dat");
         
         // Compute the contribution of the partition functions at the standard
         // state temperature to the species enthalpies
@@ -190,17 +201,6 @@ public:
         hR(Tss, mp_part_sst, PlusEq());
         hV(Tss, mp_part_sst, PlusEq());
         hE(Tss, mp_part_sst, PlusEq());
-        
-        
-        ElectronicData data;
-        data.offset = (m_has_electron ? 1 : 0);
-        data.nheavy = m_na + m_nm;
-        data.p_nelec = mp_nelec;
-        data.p_levels = mp_elec_levels;
-        mp_hel_table =
-            new Mutation::Utilities::LookupTable<double, double, HelComputer>(
-                100.0, 20000.0, m_ns, data);
-        mp_hel_table->save("hE.dat");
     }
     
     /**
@@ -214,10 +214,12 @@ public:
         delete [] mp_rot_data;
         delete [] mp_nvib;
         delete [] mp_vib_temps;
-        delete [] mp_nelec;
-        delete [] mp_elec_levels;
-        delete [] mp_helec;
+        
+        delete [] m_elec_data.p_nelec;
+        delete [] m_elec_data.p_levels;
         delete [] mp_part_sst;
+        
+        delete mp_hel_table;
     }
     
     /**
@@ -560,7 +562,7 @@ private:
             double sum1, sum2, fac;
             unsigned int ilevel = 0;
             
-            p_h[0] = 0.0;
+            op(p_h[0], 0.0);
             
             for (unsigned int i = 0; i < data.nheavy; ++i) {
                 sum1 = sum2 = 0.0;
@@ -622,38 +624,10 @@ private:
     template <typename OP>
     void hE(double T, double* const h, const OP& op)
     {
-        /*double fac, sum1, sum2;
-        int ilevel = 0;
-        static double T_last = -1.0;
-        
-        //if (T_last != T) {
-            T_last = T;
-            LOOP_HEAVY(
-                sum1 = sum2 = 0.0;
-                if (mp_nelec[i] > 0) {
-                    for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                        fac = mp_elec_levels[ilevel].g *
-                            std::exp(-mp_elec_levels[ilevel].theta / T);
-                        sum1 += fac;
-                        sum2 += fac * mp_elec_levels[ilevel].theta;
-                    }
-                    mp_helec[j] = sum2 / sum1;
-                } else {
-                    mp_helec[j] = 0.0;
-                }
-            )
-        //}
-        
-        LOOP_HEAVY(
-            op(h[j], mp_helec[j]);
-        )*/
-        
-        ElectronicData data;
-        data.offset = (m_has_electron ? 1 : 0);
-        data.nheavy = m_na + m_nm;
-        data.p_nelec = mp_nelec;
-        data.p_levels = mp_elec_levels;
-        HelComputer()(T, h, data, op);
+        if (m_use_tables)
+            mp_hel_table->lookup(T, h, op);
+        else
+            HelComputer()(T, h, m_elec_data, op);
     }
     
     /**
@@ -735,6 +709,7 @@ private:
     int m_nm;
     
     bool m_has_electron;
+    bool m_use_tables;
     
     double* mp_lnqtmw;
     double* mp_hform;
@@ -750,6 +725,7 @@ private:
     ElecLevel* mp_elec_levels;
     double*    mp_helec;
     
+    ElectronicData m_elec_data;
     Mutation::Utilities::LookupTable<double, double, HelComputer>* mp_hel_table;
 
 }; // class RrhoDB

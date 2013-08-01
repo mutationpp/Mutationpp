@@ -13,12 +13,15 @@
 #define LOOKUPTABLE_H
 
 #include <algorithm>
+#include <cstring>
 #include <string>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <list>
 #include <cmath>
+
+#include "Functors.h"
 
 namespace Mutation {
     namespace Utilities {
@@ -144,8 +147,18 @@ public:
      * 
      * @see InterpolationScheme
      */
-    void lookup(const IndexType &index, DataType * const p_values, 
-                const InterpolationScheme scheme = LINEAR) const;
+    void lookup(
+        const IndexType &index, DataType* const p_values, 
+        const InterpolationScheme scheme = LINEAR) const
+    {
+        lookup(index, p_values, Mutation::Numerics::Equals<DataType>(), scheme);
+    }
+    
+    template <typename OP>
+    void lookup(
+        const IndexType& index, DataType* const p_values,
+        const OP& op, const InterpolationScheme scheme = LINEAR) const;
+         
     
     /**
      * Saves the lookup table to a file.
@@ -251,37 +264,39 @@ private:
 
 //==============================================================================
 
-template<typename DataType>
+template<typename DataType, typename OP>
 inline static void _interpolateNearestIndex(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length)
+    DataType *const p_out, const int &length, const OP& op)
 {
-    memcpy(p_out, ratio < 0.5 ? p_y1 : p_y2, sizeof(DataType) * length);
+    const DataType* const p_values = (ratio < 0.5 ? p_y1 : p_y2);
+    for (int i = 0; i < length; ++i)
+        op(p_out[i], p_values[i]);
 }
 
 //==============================================================================
 
-template<typename DataType>
+template<typename DataType, typename OP>
 inline static void _interpolateLinear(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length)
+    DataType *const p_out, const int &length, const OP& op)
 {
     for (int i = 0; i < length; ++i)
-        p_out[i] = p_y1[i] + ratio * (p_y2[i] - p_y1[i]);
+        op(p_out[i], p_y1[i] + ratio * (p_y2[i] - p_y1[i]));
 }
 
 //==============================================================================
 
-template<typename DataType>
+template<typename DataType, typename OP>
 inline static void _interpolateExponential(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length)
+    DataType *const p_out, const int &length, const OP& op)
 {
     DataType log1;
     
     for (int i = 0; i < length; i++) {
-        log1 = log(p_y1[i]);
-        p_out[i] = exp(log1 + ratio * (log(p_y2[i]) - log1));
+        log1 = std::log(p_y1[i]);
+        op(p_out[i], exp(log1 + ratio * (std::log(p_y2[i]) - log1)));
     }
 }
 
@@ -513,21 +528,24 @@ void LookupTable<IndexType, DataType, FunctionType>::populateTable(
         switch(scheme) {
             case NEAREST_INDEX:
                 _interpolateNearestIndex(
-                    ratio, low->second, high->second, p_interp_values, nfuncs);
+                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    Mutation::Numerics::Equals<DataType>());
                 break;
             case LINEAR:
                 _interpolateLinear(
-                    ratio, low->second, high->second, p_interp_values, nfuncs);
+                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    Mutation::Numerics::Equals<DataType>());
                 break;
             case EXPONENTIAL:
                 _interpolateExponential(
-                    ratio, low->second, high->second, p_interp_values, nfuncs);
+                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    Mutation::Numerics::Equals<DataType>());
                 break;
         }
         
         // Compute error between interpolated and exact values
         for (int j = 0; j < nfuncs; ++j) {
-            if (std::abs(p_exact_values[j]) < static_cast<DataType>(1.0e-30))
+            if (std::abs(p_exact_values[j]) < static_cast<DataType>(1.0e-10))
                 error = std::abs(p_interp_values[j]);
             else 
                 error = std::abs(static_cast<double>(
@@ -607,9 +625,10 @@ void LookupTable<IndexType, DataType, FunctionType>::save(
 } // save()
 
 template<typename IndexType, typename DataType, typename FunctionType>
+template<typename OP>
 void LookupTable<IndexType, DataType, FunctionType>::lookup(
     const IndexType &index, DataType * const p_values, 
-    InterpolationScheme scheme) const 
+    const OP& op, InterpolationScheme scheme) const 
 {    
     unsigned int lower_row = 0;
     unsigned int upper_row = 1;
@@ -646,17 +665,17 @@ void LookupTable<IndexType, DataType, FunctionType>::lookup(
     switch (scheme) {    
         case NEAREST_INDEX:
             _interpolateNearestIndex(
-                ratio, p_y1, p_y2, p_values, m_num_functions);
+                ratio, p_y1, p_y2, p_values, m_num_functions, op);
             break;   
                  
         case LINEAR:
             _interpolateLinear(
-                ratio, p_y1, p_y2, p_values, m_num_functions);
+                ratio, p_y1, p_y2, p_values, m_num_functions, op);
             break;   
                  
         case EXPONENTIAL:
             _interpolateExponential(
-                ratio, p_y1, p_y2, p_values, m_num_functions);
+                ratio, p_y1, p_y2, p_values, m_num_functions, op);
             break;
     }
 } // lookup()
