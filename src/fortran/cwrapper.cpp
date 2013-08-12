@@ -168,7 +168,7 @@ void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi)
         P += rhoi[i] / p_mix->speciesMw(i);
     }
     
-    P *= RU * (*T);
+    P *= Mutation::RU * (*T);
     p_mix->setStateTPY(T, &P, p_work_species);
 }
 
@@ -191,7 +191,7 @@ void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
     p_mix->speciesCpOverR(cp);
     for (int i = 0; i < p_mix->nSpecies(); i++)
-        cp[i] *= RU / p_mix->speciesMw(i);
+        cp[i] *= Mutation::RU / p_mix->speciesMw(i);
 }
 
 //==============================================================================
@@ -218,7 +218,7 @@ void NAME_MANGLE(species_h_mass)(double *const h)
     p_mix->speciesHOverRT(h);
     double T = p_mix->T();
     for (int i = 0; i < p_mix->nSpecies(); i++)
-        h[i] *= (RU * T / p_mix->speciesMw(i));
+        h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
 }
 
 //==============================================================================
