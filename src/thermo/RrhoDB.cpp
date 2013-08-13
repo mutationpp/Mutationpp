@@ -169,14 +169,14 @@ public:
         LOOP_HEAVY(
             m_elec_data.p_nelec[i] = 
                 species[j].getRRHOParameters()->nElectronicLevels();
-            nelec += mp_nelec[i];
+            nelec += m_elec_data.p_nelec[i];
         )
         
         m_elec_data.p_levels = new ElecLevel [nelec];
         int ilevel = 0;
         LOOP_HEAVY(
             const ParticleRRHO* rrho = species[j].getRRHOParameters();
-            for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
+            for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
                 m_elec_data.p_levels[ilevel].g = 
                     rrho->electronicEnergy(k).first;
                 m_elec_data.p_levels[ilevel].theta = 
@@ -189,7 +189,8 @@ public:
         
         if (m_use_tables) {
             mp_hel_table = new Mutation::Utilities::LookupTable
-                <double, double, HelComputer>(100.0, 20000.0, m_ns, m_elec_data);
+                <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+            mp_hel_table->save("hel.dat");
         }
         //mp_hel_table->save("hE.dat");
         
@@ -219,7 +220,8 @@ public:
         delete [] m_elec_data.p_levels;
         delete [] mp_part_sst;
         
-        delete mp_hel_table;
+        if (m_use_tables)
+            delete mp_hel_table;
     }
     
     /**
@@ -273,10 +275,12 @@ public:
             hV(Tv + deltaT, cp, PlusEq());
             hV(Tv, cp, MinusEq());
             
-            hE(Tel + deltaT, cp, PlusEq());
-            hE(Tel, cp, MinusEq());
+            //hE(Tel + deltaT, cp, PlusEq());
+            //hE(Tel, cp, MinusEq());
             
             LOOP(cp[i] /= deltaT);
+            
+            CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
             return;
         }
         
@@ -326,7 +330,7 @@ public:
         }
         
         // Electronic
-        if (cpel == NULL) {
+        /*if (cpel == NULL) {
             if (cp != NULL) {
                 hE(Tel + deltaT, cp, PlusEq());
                 hE(Tel, cp, MinusEq());
@@ -338,10 +342,20 @@ public:
             if (cp != NULL) 
                 LOOP_HEAVY(cp[j] += cpel[j]);
             LOOP_HEAVY(cpel[j] /= deltaT);
-        }
+        }*/
         
         if (cp != NULL) 
             LOOP(cp[i] /= deltaT);
+        
+        // Electronic
+        if (cpel == NULL) {
+            if (cp != NULL)
+                CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
+        } else {
+            CpelFunctor()(Tel, cpel, m_elec_data, Eq());
+            if (cp != NULL)
+                LOOP_HEAVY(cp[j] += cpel[j]);
+        }
     }
     
     /**
@@ -545,7 +559,7 @@ private:
     typedef PlusEquals<double> PlusEq;
     typedef MinusEquals<double> MinusEq;
 
-    class HelComputer
+    class HelFunctor
     {
     public:
         typedef ElectronicData DataProvider;
@@ -576,6 +590,45 @@ private:
                     op(p_h[i+data.offset], sum2 / sum1);
                 } else {
                     op(p_h[i+data.offset], 0.0);
+                }
+            }
+        }
+    };
+    
+    class CpelFunctor
+    {
+    public:
+        typedef ElectronicData DataProvider;
+        
+        void operator() (double T, double* p_cp, const DataProvider& data) const
+        {
+            (*this)(T, p_cp, data, Equals<double>());
+        }
+        
+        template <typename OP>
+        void operator () (
+            double T, double* p_cp, const DataProvider& data, const OP& op) const
+        {
+            double sum1, sum2, sum3, fac;
+            unsigned int ilevel = 0;
+            
+            op(p_cp[0], 0.0);
+            
+            for (unsigned int i = 0; i < data.nheavy; ++i) {
+                sum1 = sum2 = sum3 = 0.0;
+                if (data.p_nelec[i] > 0) {
+                    for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
+                        fac = data.p_levels[ilevel].g *
+                            std::exp(-data.p_levels[ilevel].theta / T);
+                        sum1 += fac;
+                        sum2 += fac * data.p_levels[ilevel].theta;
+                        sum3 += fac * data.p_levels[ilevel].theta *
+                            data.p_levels[ilevel].theta;
+                    }
+                    op(p_cp[i+data.offset], 
+                        (sum3*sum1 - sum2*sum2) / (T*T*sum1*sum1));
+                } else {
+                    op(p_cp[i+data.offset], 0.0);
                 }
             }
         }
@@ -627,7 +680,7 @@ private:
         if (m_use_tables)
             mp_hel_table->lookup(T, h, op);
         else
-            HelComputer()(T, h, m_elec_data, op);
+            HelFunctor()(T, h, m_elec_data, op);
     }
     
     /**
@@ -690,12 +743,12 @@ private:
         LOOP_HEAVY(
             sum1 = 0.0;
             sum2 = 0.0;
-            if (mp_nelec[i] > 0) {
-                for (int k = 0; k < mp_nelec[i]; ++k, ilevel++) {
-                    fac = mp_elec_levels[ilevel].g * 
-                        std::exp(-mp_elec_levels[ilevel].theta / T);
+            if (m_elec_data.p_nelec[i] > 0) {
+                for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
+                    fac = m_elec_data.p_levels[ilevel].g * 
+                        std::exp(-m_elec_data.p_levels[ilevel].theta / T);
                     sum1 += fac;
-                    sum2 += mp_elec_levels[ilevel].theta * fac;
+                    sum2 += m_elec_data.p_levels[ilevel].theta * fac;
                 }
                 op(s[j], (sum2 / (sum1 * T) + std::log(sum1)));
             } else
@@ -721,12 +774,8 @@ private:
     int*       mp_nvib;
     double*    mp_vib_temps;
     
-    int*       mp_nelec;
-    ElecLevel* mp_elec_levels;
-    double*    mp_helec;
-    
     ElectronicData m_elec_data;
-    Mutation::Utilities::LookupTable<double, double, HelComputer>* mp_hel_table;
+    Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
 
 }; // class RrhoDB
 
