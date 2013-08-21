@@ -62,6 +62,51 @@ void MultiPhaseEquilSolver::clearConstraints()
 }
 
 //==============================================================================
+        
+void MultiPhaseEquilSolver::dXdT(double *const p_dxdt) const
+{
+    // Compute the dg/dT = [-H/RT]/T values
+    RealVector dgdt(m_nsr);
+    m_thermo.speciesHOverRT(m_T, p_dxdt);
+    for (int j = 0; j < m_nsr; ++j)
+        dgdt(j) = -p_dxdt[m_sjr(j)] / m_T;
+    
+    // RHS
+    double temp;
+    RealVector rhs(m_ncr+m_np, 0.0);
+    RealVector sol = rhs;
+    
+    for (int k = 0; k < m_nsr; k++) {
+        temp = m_N(k)*dgdt(k);
+        for (int i = 0; i < m_ncr; ++i)
+            rhs(i) += temp * m_Br(k,i);
+        rhs(m_ncr+m_phase(m_sjr(k))) += temp;
+    }
+    
+    // Now compute the system solution
+    RealSymMat A(m_ncr+m_np);
+    formSystemMatrix(A);
+    
+    // Solve the system for dlambda/dT
+    LeastSquares<double> ls(A);
+    ls.solve(sol, rhs);
+    
+    // Compute dXj/dT = Xj*[-dgj/dT + sum_i Bji dlambdai/dT]
+    RealVector Nbar(m_np, 0.0);
+    for (int j = 0; j < m_nsr; ++j)
+        Nbar(m_phase(m_sjr(j))) += m_N(j);
+    
+    std::fill(p_dxdt, p_dxdt+m_ns, 0.0);
+    
+    for (int j = 0; j < m_nsr; ++j) {
+        p_dxdt[m_sjr(j)] = -dgdt(j);
+        for (int i = 0; i < m_ncr; ++i)
+            p_dxdt[m_sjr(j)] += m_Br(j,i) * sol(i);
+        p_dxdt[m_sjr(j)] *= m_N(j) / Nbar(m_phase(m_sjr(j)));
+    }
+}
+
+//==============================================================================
 
 void MultiPhaseEquilSolver::initPhases()
 {
@@ -101,6 +146,9 @@ void MultiPhaseEquilSolver::initPhases()
 std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     double T, double P, const double *const p_cv, double *const p_sv)
 {
+    m_T = T;
+    m_P = P;
+
 #ifdef VERBOSE
     std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
     for (int i = 0; i < m_ne; ++i)
@@ -111,7 +159,6 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     static RealVector dg;
     static RealVector g;
     static RealVector g0;
-    static RealVector N;
     
     RealVector Nbar(m_np);
     RealVector Nbar_trial;
@@ -156,7 +203,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     
     bool update_dx = true;
     
-    computeSpeciesMoles(lambda, Nbar, g0, N);
+    updateSpeciesMoles(lambda, Nbar, g0);
     
     // Integrate quantities from s = 0 to s = 1
     while (s < 1.0) {
@@ -167,30 +214,20 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
 #endif
         if (update_dx) {
             // Compute the system matrix
-            formSystemMatrix(N, A);
+            formSystemMatrix(A);
             
             // Solve for dlambda/ds and dNbar/ds with given dg/ds
             double temp;
             r = 0.0;
             for (int k = 0; k < m_nsr; k++) {
-                temp = N(k)*dg(k);
-                
+                temp = m_N(k)*dg(k);
                 for (int i = 0; i < m_ncr; ++i)
                     r(i) += temp * m_Br(k,i);
-                
                 r(m_ncr+m_phase(m_sjr(k))) += temp;
             }
-
-            
-            //minres(A, dx, r, 1.0e-12);
+  
             LeastSquares<double> ls(A);
-            //dx = m_P*r;
-            //r = dx;
-            //dx = 0.0;
             ls.solve(dx, r);
-            //gmres(m_P*A, dx, m_P*r, IdentityPreconditioner<double>());
-            
-         //std::cout << "dx" << endl << dx << endl;
         }
         
         // Update trial values
@@ -199,11 +236,11 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         g            = g0 + dg*(s+ds);
 
         // Compute the 
-        computeSpeciesMoles(lambda_trial, Nbar_trial, g, N);
-        computeResidual(Nbar_trial, N, r);
+        updateSpeciesMoles(lambda_trial, Nbar_trial, g);
+        computeResidual(Nbar_trial, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, g, N, r, A, 1.0e-3, 10);
+            newton(lambda_trial, Nbar_trial, g, r, A, 1.0e-3, 10);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over
@@ -231,14 +268,14 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    std::pair<int,double> res = newton(lambda, Nbar, g, N, r, A, 1.0e-16, 100);
+    std::pair<int,double> res = newton(lambda, Nbar, g, r, A, 1.0e-16, 100);
     newt += res.first;
     
     // Compute the species mole fractions
-    double moles = N.sum();
+    double moles = m_N.sum();
     std::fill(p_sv, p_sv+m_ns, 0.0);
     for (int i = 0; i < m_nsr; ++i)
-        p_sv[m_sjr(i)] = N(i) / moles;
+        p_sv[m_sjr(i)] = m_N(i) / moles;
     
     /*N = max(N, 1.0e-99);
     Nbar = 0.0;
@@ -252,7 +289,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
 
 //==============================================================================
 std::pair<int,double> MultiPhaseEquilSolver::newton(
-    RealVector& lambda, RealVector& Nbar, const RealVector& g, RealVector& N, 
+    RealVector& lambda, RealVector& Nbar, const RealVector& g, 
     RealVector& r, RealSymMat& A, const double tol, const int max_iters)
 {
     
@@ -265,25 +302,12 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
 #ifdef VERBOSE
         std::cout << "Newton: iter = " << iterations << ", r = " << rnorm << endl;
 #endif
-        formSystemMatrix(N, A);
+        formSystemMatrix(A);
 
-#ifdef VERBOSE
-        std::cout << "System Matrix:" << std::endl << A << std::endl;
-        std::cout << "RHS Vector:" << std::endl << -r << std::endl;
-        std::cout << "Conditioned Matrix:" << std::endl << m_P*A << std::endl;
-        std::cout << "Conditioned RHS:" << std::endl << -m_P*r << std::endl;
-#endif
-        //std::pair<int, double> hist = minres(A, r, -r, 1.0e-10);
         LeastSquares<double> ls(A);
         r = -r;
         ls.solve(dx, r);
-        //std::pair<int,double> hist = gmres(m_P*A, dx, -m_P*r, IdentityPreconditioner<double>());
-        
-#ifdef VERBOSE
-        std::cout << "MINRES returned after " << hist.first << " iters (out of " << m_nc+m_np << ") with residual of " << hist.second << "." << std::endl;
-        std::cout << "computed step:" << std::endl;
-        std::cout << dx << std::endl;
-#endif
+
         // Return if the MINRES failed to converge
         //if (hist.second > 1.0e-10)
         //    return std::make_pair(iterations,rnorm);
@@ -299,10 +323,10 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
 #endif 
         
         //if (!
-        computeSpeciesMoles(lambda, Nbar, g, N);//)
+        updateSpeciesMoles(lambda, Nbar, g);//)
             //return std::make_pair(iterations, rnorm);
             
-        computeResidual(Nbar, N, r);
+        computeResidual(Nbar, r);
     }
     
     return std::make_pair(iterations, rnorm);
@@ -385,60 +409,36 @@ void MultiPhaseEquilSolver::reduceZeroSpecies()
 
 void MultiPhaseEquilSolver::initialConditions(
     const RealVector& gtp, RealVector& lambda, RealVector& Nbar, RealVector& g)
-{
-    //static RealVector Nmm(m_ns);
-    //static RealVector Nmg(m_ns);
-    //static RealVector N(m_ns);
-    
+{    
     RealVector Nmm(m_nsr);
     RealVector Nmg(m_nsr);
-    RealVector N(m_nsr);
+    m_N = ones<double>(m_nsr);
     
     // Initial conditions on N (N = a*Nmg + (1-a)*Nmm)
-        
-    //cout << "c" << endl << m_c << endl;
-    //cout << "B" << endl << m_B << endl;
-    
-    //cout << "Nmm: " << endl;
-    //for (int i = 0; i < m_ns; ++i)
-    //    cout << setw(10) << m_thermo.speciesName(i) << setw(15) << Nmm(i) << endl;
-    
     ming(m_cr, gtp, Nmg);
     perturb(Nmm);
     
     double alpha = 0.999;
-    N = max(alpha*Nmg + (1.0-alpha)*Nmm, 1.0e-200);
-    //N = Nmg;
+    m_N = max(alpha*Nmg + (1.0-alpha)*Nmm, 1.0e-200);
+
     
     // Initial phase moles
     Nbar = 0.0;
     for (int i = 0; i < m_nsr; ++i)
-        Nbar(m_phase(m_sjr(i))) += N(i);
+        Nbar(m_phase(m_sjr(i))) += m_N(i);
     
     // Mole fractions
     for (int i = 0; i < m_nsr; ++i)
-        N(i) /= Nbar(m_phase(m_sjr(i)));
-    
-    /*RealMatrix A(m_ncr, m_ncr);
-    RealVector b(m_ncr);
-    
-    for (int j = 0; j < m_ncr; ++j)
-        for (int i = 0; i < m_ncr; ++i)
-            A(j,i) = m_Br(m_base(j),i);
-    for (int i = 0; i < m_ncr; ++i)
-        b(i) = exp(N(m_base(i))) + gtp(m_base(j));
-    
-    QRP<double> qrp(A);
-    qrp.solve(lambda, b);*/
+        m_N(i) /= Nbar(m_phase(m_sjr(i)));
     
     // Initial lambda
     SVD<double> svd(m_Br);
-    g = log(N) + gtp;
+    g = log(m_N) + gtp;
     lambda = ones<double>(m_ncr);
     svd.solve(lambda, g);
     
     // Initial g
-    g = m_Br*lambda - log(N);
+    g = m_Br*lambda - log(m_N);
 }
 
 void MultiPhaseEquilSolver::perturb(RealVector& nmm)
@@ -447,14 +447,6 @@ void MultiPhaseEquilSolver::perturb(RealVector& nmm)
     double ne_max = m_cr.maxValue();
     double ne_low = 1.0e-200 * ne_max;    
     m_cr = Numerics::max(m_cr, ne_low);
-    
-    //SVD<double> svd(m_B);
-    //cout << "U" << endl;
-    //cout << svd.U() << endl;
-    
-    //QRP<double> qrp(m_B);
-    //cout << "rank" << endl;
-    //cout << qrp.rank() << endl;
     
     // Determine upper bound on moles of undetermined species (ie a species
     // contains all the moles of a given element and thus cannot be any bigger)
@@ -590,15 +582,14 @@ void MultiPhaseEquilSolver::ming(
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::formSystemMatrix(
-    const RealVector& N, RealSymMat& A) const
+void MultiPhaseEquilSolver::formSystemMatrix(RealSymMat& A) const
 {
     A = 0.0;
     double temp;
     
     for (int i = 0; i < m_ncr; ++i) {
         for (int k = 0; k < m_nsr; ++k) {
-            temp = m_Br(k,i)*N(k);
+            temp = m_Br(k,i)*m_N(k);
             
             for (int j = i; j < m_ncr; ++j)
                 A(i,j) += m_Br(k,j)*temp;
@@ -610,15 +601,14 @@ void MultiPhaseEquilSolver::formSystemMatrix(
 
 //==============================================================================
 
-bool MultiPhaseEquilSolver::computeSpeciesMoles(
-    const RealVector& lambda, const RealVector& Nbar, const RealVector& g,
-    RealVector& N) const
+bool MultiPhaseEquilSolver::updateSpeciesMoles(
+    const RealVector& lambda, const RealVector& Nbar, const RealVector& g)
 {
-    N = m_Br*lambda - g;
-    N.exp();
+    m_N = m_Br*lambda - g;
+    m_N.exp();
     
     for (int i = 0; i < m_nsr; ++i)
-        N(i) *= Nbar(m_phase(m_sjr(i)));
+        m_N(i) *= Nbar(m_phase(m_sjr(i)));
     
     return true;
 }
@@ -626,24 +616,24 @@ bool MultiPhaseEquilSolver::computeSpeciesMoles(
 //==============================================================================
 
 void MultiPhaseEquilSolver::computeResidual(
-    const RealVector& Nbar, const RealVector& N, RealVector& r) const
+    const RealVector& Nbar, RealVector& r) const
 {
     r(0,m_ncr) = -m_cr;
     for (int i = 0; i < m_nsr; ++i) {
-        if (N(i) > 0.0) {
+        if (m_N(i) > 0.0) {
             for (int j = 0; j < m_ncr; ++j)
-                r(j) += m_Br(i,j) * N(i);
+                r(j) += m_Br(i,j) * m_N(i);
         }
     }
     
     r(m_ncr,m_ncr+m_np) = -Nbar;
     for (int i = 0; i < m_nsr; ++i)
-        r(m_ncr+m_phase(m_sjr(i))) += N(i);
+        r(m_ncr+m_phase(m_sjr(i))) += m_N(i);
 }
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::updatePreConditioner()
+/*void MultiPhaseEquilSolver::updatePreConditioner()
 {    
     const int nb = m_base.size();
     
@@ -673,14 +663,14 @@ void MultiPhaseEquilSolver::updatePreConditioner()
                 (std::abs(x(k)) > NumConst<double>::eps*10.0 ? x(k) : 0.0);
     }
     
-    /*cout << "Base species" << endl;
-    for (int n = 0; n < nb; ++n)
-        cout << m_thermo.speciesName(m_sjr(m_base(n))) << endl;
+    //cout << "Base species" << endl;
+    //for (int n = 0; n < nb; ++n)
+    //    cout << m_thermo.speciesName(m_sjr(m_base(n))) << endl;
+    //
+    //cout << "Preconditioner" << endl;
+    //cout << m_P;
     
-    cout << "Preconditioner" << endl;
-    cout << m_P;*/
-    
-}
+}*/
 
 //==============================================================================
 

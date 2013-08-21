@@ -76,9 +76,10 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
 };
 
 // List of all species output quantities
-#define NSPECIES 14
+#define NSPECIES 15
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
+    OutputQuantity("dX/dT", "1/K", "partial of mole fraction w.r.t. temperature"),
     OutputQuantity("Y", "", "mass fractions"),
     OutputQuantity("rho", "kg/m^3", "mass densities"),
     OutputQuantity("conc", "mol/m^3", "molar concentrations"),
@@ -594,7 +595,7 @@ int main(int argc, char** argv)
                 else if (name == "a_eq")
                     value = mix.equilibriumSoundSpeed();
                 else if (name == "Eam") {
-                    mix.dXidT(mix.T(), mix.P(), mix.X(), temp);
+                    mix.dXidT(temp);
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
@@ -610,6 +611,8 @@ int main(int argc, char** argv)
                 
                 if (name == "X")
                     std::copy(mix.X(), mix.X()+mix.nSpecies(), species_values);
+                else if (name == "dX/dT")
+                    mix.dXidT(species_values);
                 else if (name == "Y")
                     std::copy(mix.Y(), mix.Y()+mix.nSpecies(), species_values);
                 else if (name == "rho") {
@@ -654,7 +657,7 @@ int main(int argc, char** argv)
                             species_values[i] *= (RU * T / mix.speciesMw(i));
                 } else if (name == "J") {
                     double E, rho;
-                    mix.dXidT(mix.T(), mix.P(), mix.X(), temp);
+                    mix.dXidT(temp);
                     mix.stefanMaxwell(temp, species_values, E);
                     rho = mix.density();
                     for (int i = 0; i < mix.nSpecies(); ++i)

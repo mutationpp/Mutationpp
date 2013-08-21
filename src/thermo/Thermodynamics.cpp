@@ -534,10 +534,9 @@ double Thermodynamics::mixtureEquilibriumCpMass(
 
 //==============================================================================
 
-void Thermodynamics::dXidT(
-    double T, double P, const double* const Xeq, double* const dxdt)
+void Thermodynamics::dXidT(double* const dxdt)
 {
-    const double eps = 1.0e-6;
+    /*const double eps = 1.0e-6;
     
     // Compute the current elemental fraction
     elementFractions(Xeq, mp_work1);
@@ -546,7 +545,9 @@ void Thermodynamics::dXidT(
     equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
     
     for (int i = 0; i < nSpecies(); ++i)
-        dxdt[i] = (mp_work2[i] - Xeq[i]) / (T * eps);
+        dxdt[i] = (mp_work2[i] - Xeq[i]) / (T * eps);*/
+    
+    mp_equil->dXdT(dxdt);
 }
 
 //==============================================================================

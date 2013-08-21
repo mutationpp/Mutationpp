@@ -44,6 +44,12 @@ public:
      * Removes all linear constraints from the equilibrium solver.
      */
     void clearConstraints();
+    
+    /**
+     * Returns the partial derivative of the equilibrium mole fractions with
+     * respect to temperature.
+     */
+    void dXdT(double* const p_dxdt) const;
 
 private:
 
@@ -62,8 +68,8 @@ private:
         
     std::pair<int, double> newton(
         Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 
-        const Numerics::RealVector& g, Numerics::RealVector& N, 
-        Numerics::RealVector& r, Numerics::RealSymMat& A, const double tol,
+        const Numerics::RealVector& g, Numerics::RealVector& r,
+        Numerics::RealSymMat& A, const double tol,
         const int max_iters = 10);
         
     /**
@@ -105,18 +111,16 @@ private:
         const Numerics::RealVector& c, const Numerics::RealVector& gu, 
         Numerics::RealVector& Nmg);   
     
-    void formSystemMatrix(
-        const Numerics::RealVector& N, Numerics::RealSymMat& A) const;
+    void formSystemMatrix(Numerics::RealSymMat& A) const;
     
-    bool computeSpeciesMoles(
+    bool updateSpeciesMoles(
         const Numerics::RealVector& lambda, const Numerics::RealVector& Nbar,
-        const Numerics::RealVector& g, Numerics::RealVector& N) const;
+        const Numerics::RealVector& g);
         
     void computeResidual(
-        const Numerics::RealVector& Nbar, const Numerics::RealVector& N, 
-        Numerics::RealVector& r) const;
+        const Numerics::RealVector& Nbar, Numerics::RealVector& r) const;
     
-    void updatePreConditioner();
+    //void updatePreConditioner();
     
     void reduceZeroSpecies();
      
@@ -131,10 +135,13 @@ private:
     
     int m_nsr;
     int m_ncr;
+    
+    double m_T;
+    double m_P;
 
     Numerics::RealMatrix  m_B;
     Numerics::RealMatrix  m_Br;
-    Numerics::RealMatrix  m_P;
+    //Numerics::RealMatrix  m_P;
     
     Numerics::Vector<int> m_phase;
     Numerics::Vector<int> m_base;
@@ -143,6 +150,7 @@ private:
     
     Numerics::Vector<double> m_c;
     Numerics::Vector<double> m_cr;
+    Numerics::Vector<double> m_N;
     
     std::vector<Numerics::RealVector> m_constraints;
 

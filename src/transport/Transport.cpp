@@ -184,7 +184,7 @@ double Transport::internalThermalConductivity()
 double Transport::reactiveThermalConductivity()
 {
     // Compute dX_i/dT
-    m_thermo.dXidT(m_thermo.T(), m_thermo.P(), m_thermo.X(), mp_wrk1);
+    m_thermo.dXidT(mp_wrk1);
     
     // Compute the diffusion velocities
     double E;

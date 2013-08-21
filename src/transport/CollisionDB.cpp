@@ -240,7 +240,7 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     mp_Bst_table = new LookupTable<double, double, QRatioTableFunction>(
         std::log(200.0), std::log(20100.0), 10, Bst_funcs.size(), Bst_funcs);//, 0.000001, LINEAR);
     mp_work = new double [Q11_funcs.size()];
-    mp_Q11_table->save("Q11Table.dat");
+    //mp_Q11_table->save("Q11Table.dat");
 #endif
 }
 
@@ -355,7 +355,7 @@ void CollisionDB::updateCollisionData(
             int index = 0;
             int j = m_repulse_indices[index];
             const double rep = efac * sm_Q14_rep(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < nr) {
                 m_Q14ei(j) = rep;
                 j = m_repulse_indices[++index];
             }
@@ -364,7 +364,7 @@ void CollisionDB::updateCollisionData(
             index = 0;
             j = m_attract_indices[index];
             const double att = efac * sm_Q14_att(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < na) {
                 m_Q14ei(j) = att;
                 j = m_attract_indices[++index];
             }
@@ -379,7 +379,7 @@ void CollisionDB::updateCollisionData(
             int index = 0;
             int j = m_repulse_indices[index];
             const double rep = efac * sm_Q15_rep(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < nr) {
                 m_Q15ei(j) = rep;
                 j = m_repulse_indices[++index];
             }
@@ -388,7 +388,7 @@ void CollisionDB::updateCollisionData(
             index = 0;
             j = m_attract_indices[index];
             const double att = efac * sm_Q15_att(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < na) {
                 m_Q15ei(j) = att;
                 j = m_attract_indices[++index];
             }
@@ -460,7 +460,7 @@ void CollisionDB::updateCollisionData(
             int index = 0;
             int j = m_repulse_indices[index];
             const double Cst_rep = sm_Cst_rep(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < nr) {
                 m_Cst(j) = Cst_rep;
                 j = m_repulse_indices[++index];
             }
@@ -469,7 +469,7 @@ void CollisionDB::updateCollisionData(
             index = 0;
             j = m_attract_indices[index];
             const double Cst_att = sm_Cst_att(lnTste);
-            while (j < m_ns) {
+            while (j < m_ns && index < na) {
                 m_Cst(j) = Cst_att;
                 j = m_attract_indices[++index];
             }

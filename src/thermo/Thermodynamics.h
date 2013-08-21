@@ -468,17 +468,10 @@ public:
     
     /**
      * Returns the derivative of mole fraction w.t.r temperature for the given
-     * equilibrium mixture.  Note that Xeq should be the equilibrium mole
-     * fractions for the mixture in equilibrium at the given temperature and
-     * pressure.
-     *
-     * T    - equilibrium temperature in K
-     * P    - equilibrium pressure in Pa
-     * Xeq  - equilibrium species mole fractions
+     * equilibrium mixture.
      * dxdt - on return, the dX_i/dT derivatives
      */
-    void dXidT(
-        double T, double P, const double* const Xeq, double* const dxdt);
+    void dXidT(double* const dxdt);
     
     /**
      * Returns the density derivative with respect to pressure for the given
