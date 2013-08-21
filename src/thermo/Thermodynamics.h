@@ -376,27 +376,11 @@ public:
     double mixtureFrozenCpMass() const;
     
     /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * pressure in J/mol-K given the temperature, pressure and equilibrium mole
-     * fractions.
-     */
-    double mixtureEquilibriumCpMole(
-        double T, double P, const double* const Xeq);
-    
-    /**
      * Returns the current equilibrium mixture averaged specific heat at
      * constant pressure in J/mol-K.  This method assumes that the current state
      * of the mixture was already set using the equilibrate() method.
      */
     double mixtureEquilibriumCpMole();
-    
-    /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * pressure in J/kg-K given the temperature, pressure and equilibrium mole
-     * fractions.
-     */
-    double mixtureEquilibriumCpMass(
-        double T, double P, const double* const Xeq);
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at

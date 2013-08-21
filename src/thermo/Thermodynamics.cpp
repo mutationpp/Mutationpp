@@ -479,57 +479,39 @@ double Thermodynamics::mixtureFrozenCpMass() const
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCpMole(
-    double T, double P, const double* const Xeq)
+double Thermodynamics::mixtureEquilibriumCpMole()
 {
-    const double eps = 1.0e-6;
-
-    // Compute the current elemental fraction
-    elementFractions(Xeq, mp_work1);
-    
-    // Compute equilibrium mole fractions at a perturbed temperature
-    equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
-    
-    // Compute the species H/RT
-    speciesHOverRT(mp_work1);
-    
-    // Update the frozen Cp with the dX_i/dT * h_i term
+    mp_equil->dXdT(mp_work1);
+    speciesHOverRT(mp_work2);
     double cp = 0.0;
     for (int i = 0; i < nSpecies(); i++)
-        cp += (mp_work2[i] - Xeq[i]) * mp_work1[i];
+        cp += mp_work1[i] * mp_work2[i];
     
-    return cp / eps * RU + mixtureFrozenCpMole();
+    return (cp * RU * T() + mixtureFrozenCpMole());
 }
-
-/*double Thermodynamics::mixtureFrozenCpMass(
-    double T, double P, const double* const Yeq) const
-{
-    
-}*/
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCpMass(
-    double T, double P, const double* const Yeq)
+double Thermodynamics::mixtureEquilibriumCpMass()
 {
-    const double eps = 1.0e-6;
+    mp_equil->dXdT(mp_work1);
+    double dMwdT = 0.0;
+    double Mwmix = 0.0;
+    for (int i = 0; i < nSpecies(); ++i) {
+        dMwdT += mp_work1[i] * speciesMw(i);
+        Mwmix += X()[i] * speciesMw(i);
+    }
     
-    // Compute the current elemental fraction
-    convert<Y_TO_X>(Yeq, mp_work2);
-    elementFractions(mp_work2, mp_work1);
-    
-    // Compute the equilibrium mass fractions at a perturbed temperature
-    equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
-    convert<X_TO_Y>(mp_work2, mp_work1);
-    
-    // Compute the species H/RT
-    speciesHOverRT(mp_work2);
-    
-    double cp = 0.0;
     for (int i = 0; i < nSpecies(); ++i)
-        cp += (mp_work1[i] - Yeq[i]) * mp_work2[i] / speciesMw(i);
+        mp_work2[i] = speciesMw(i)*(mp_work1[i]*Mwmix - X()[i]*dMwdT)/
+            (Mwmix*Mwmix);
+        
+    speciesHOverRT(mp_work1);
+    double cp = 0.0;
+    for (int i = 0; i < nSpecies(); i++)
+        cp += mp_work1[i] * mp_work2[i] / speciesMw(i);
     
-    return (cp / eps * RU + mixtureFrozenCpMass());
+    return (cp * RU * T() + mixtureFrozenCpMass());
 }
 
 //==============================================================================
@@ -568,20 +550,6 @@ double Thermodynamics::dRhodP(
     for (int i = 0; i < nSpecies(); ++i)
         drhodp += speciesMw(i) * ((1.0 + eps) * mp_work2[i] - Xeq[i]);
     return (drhodp / (RU * T * eps));
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumCpMole()
-{
-    return mixtureEquilibriumCpMole(T(), P(), X());
-}
-
-//==============================================================================
-
-double Thermodynamics::mixtureEquilibriumCpMass()
-{
-    return mixtureEquilibriumCpMass(T(), P(), Y());
 }
 
 //==============================================================================
