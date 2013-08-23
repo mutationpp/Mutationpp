@@ -494,24 +494,21 @@ double Thermodynamics::mixtureEquilibriumCpMole()
 
 double Thermodynamics::mixtureEquilibriumCpMass()
 {
-    mp_equil->dXdT(mp_work1);
-    double dMwdT = 0.0;
-    double Mwmix = 0.0;
-    for (int i = 0; i < nSpecies(); ++i) {
-        dMwdT += mp_work1[i] * speciesMw(i);
-        Mwmix += X()[i] * speciesMw(i);
-    }
-    
-    for (int i = 0; i < nSpecies(); ++i)
-        mp_work2[i] = speciesMw(i)*(mp_work1[i]*Mwmix - X()[i]*dMwdT)/
-            (Mwmix*Mwmix);
-        
+    const double Mwmix = mixtureMw();
+    const double* const p_X = X();
+
     speciesHOverRT(mp_work1);
+    mp_equil->dXdT(mp_work2);
+    
+    double dMwdT = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdT += mp_work2[i] * speciesMw(i);
+        
     double cp = 0.0;
     for (int i = 0; i < nSpecies(); i++)
-        cp += mp_work1[i] * mp_work2[i] / speciesMw(i);
+        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
     
-    return (cp * RU * T() + mixtureFrozenCpMass());
+    return (cp * RU * T() / (Mwmix*Mwmix) + mixtureFrozenCpMass());
 }
 
 //==============================================================================
@@ -534,22 +531,22 @@ void Thermodynamics::dXidT(double* const dxdt)
 
 //==============================================================================
 
-double Thermodynamics::dRhodP(
-    double T, double P, const double* const Xeq)
-{
-    const double eps = 1.0e-6;
+double Thermodynamics::dRhodP()
+{    
+    // Get rho, P, T
+    const double rho = density();
+    const double P = this->P();
+    const double Mwmix = mixtureMw();
+
+    // First compute dX/dT (work1) and dX/dP (work2)
+    mp_equil->dXdP(mp_work1);
     
-    // Compute the current elemental fraction
-    elementFractions(Xeq, mp_work1);
-    
-    // Compute equilibrium mole fractions at a perturbed pressure
-    equilibrate(T, P*(1.0+eps), mp_work1, mp_work2, false);
-    
-    // Compute drho/dP
-    double drhodp = 0.0;
+    // Compute dMw/dT
+    double dMwdP = 0.0;
     for (int i = 0; i < nSpecies(); ++i)
-        drhodp += speciesMw(i) * ((1.0 + eps) * mp_work2[i] - Xeq[i]);
-    return (drhodp / (RU * T * eps));
+        dMwdP += mp_work1[i] * speciesMw(i);
+
+    return (rho*(dMwdP/Mwmix+1.0/P));
 }
 
 //==============================================================================
@@ -568,7 +565,61 @@ double Thermodynamics::mixtureFrozenCvMass() const
 
 //==============================================================================
 
-double Thermodynamics::mixtureEquilibriumCvMass() 
+double Thermodynamics::mixtureEquilibriumCvMass()
+{
+    // Get rho, P, T
+    const double rho = density();
+    const double P = this->P();
+    const double T = this->T();
+    const double Mwmix = mixtureMw();
+    const double* const p_X = X();
+
+    // Store H/RT for each species in work1
+    speciesHOverRT(mp_work1);
+    
+    // Compute dX/dT (work2)
+    mp_equil->dXdT(mp_work2);
+    
+    // Compute dMw/dT
+    double dMwdT = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdT += mp_work2[i] * speciesMw(i);
+    
+    // Compute reactive Cp
+    double cp = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+    cp *= (T / Mwmix);
+    
+    // Add Frozen Cp
+    speciesCpOverR(mp_work2);
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work2[i] * p_X[i];
+    cp *= RU / Mwmix;
+    
+    // Compute dX/dP (work2)
+    mp_equil->dXdP(mp_work2);
+    
+    // Compute dMw/dP
+    double dMwdP = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdP += mp_work2[i] * speciesMw(i);
+
+    // Compute de/dP
+    double dedp = 0.0;
+    for (int i = 0; i < nSpecies(); i++)
+        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+    dedp *= (RU * T / (Mwmix*Mwmix));
+    
+    // Compute density and energy derivatives
+    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+    
+    return (cp + (P/rho - dedp/drdp)*drdt);
+}
+
+
+/*double Thermodynamics::mixtureEquilibriumCvMass()
 {
     // We assume that Y is already in equilibrium at T and P
     // Need to perturb current equilibrium conditions and compute dh/dT, dh/dP,
@@ -586,7 +637,7 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     elementFractions(X(), mp_work2);
     
     // Perturb pressure
-    dP = std::sqrt(NumConst<double>::eps)*P;
+    dP = 1.0e-3*P;//std::sqrt(NumConst<double>::eps)*P;
     equilibrate(T, P+dP, mp_work2, mp_work1);
     rhoP = density();
     eP   = mixtureEnergyMass();
@@ -604,13 +655,16 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     dedt = (eT-e)/dT;
     dedp = (eP-e)/dP;
     
+    //cout << endl << "de/dT: " << dedt << endl << "de/dP: " << dedp << endl;
+    //cout << "dr/dT: " << drhodt << endl << "dr/dP: " << drhodp << endl;
+    
     //cout << endl;
     //cout << T << " " << dT << " " << P << " " << dP << endl;
     //cout << drhodt << " " << drhodp << " " << dedt << " " << dedp << endl;
     
     // Compute Cv
-    return dedt - dedp*drhodt/drhodp;
-}
+    return (dedt - dedp*drhodt/drhodp);
+}*/
 
 //==============================================================================
     
@@ -624,7 +678,111 @@ double Thermodynamics::mixtureFrozenGamma() const
 
 double Thermodynamics::mixtureEquilibriumGamma()
 {
-    return mixtureEquilibriumCpMass() / mixtureEquilibriumCvMass();
+    // Get rho, P, T
+    const double rho = density();
+    const double P = this->P();
+    const double T = this->T();
+    const double Mwmix = mixtureMw();
+    const double* const p_X = X();
+
+    // Store H/RT for each species in work1
+    speciesHOverRT(mp_work1);
+    
+    // Compute dX/dT (work2)
+    mp_equil->dXdT(mp_work2);
+    
+    // Compute dMw/dT
+    double dMwdT = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdT += mp_work2[i] * speciesMw(i);
+    
+    // Compute reactive Cp
+    double cp = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+    cp *= (T / Mwmix);
+    
+    // Add Frozen Cp
+    speciesCpOverR(mp_work2);
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work2[i] * p_X[i];
+    cp *= RU / Mwmix;
+    
+    // Compute dX/dP (work2)
+    mp_equil->dXdP(mp_work2);
+    
+    // Compute dMw/dP
+    double dMwdP = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdP += mp_work2[i] * speciesMw(i);
+
+    // Compute de/dP
+    double dedp = 0.0;
+    for (int i = 0; i < nSpecies(); i++)
+        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+    dedp *= (RU * T / (Mwmix*Mwmix));
+    
+    // Compute density and energy derivatives
+    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+    
+    //return (dedt - dedp*drdt/drdp);
+    return cp / (cp + (P/rho - dedp/drdp)*drdt);
+}
+
+//==============================================================================
+
+double Thermodynamics::equilibriumSoundSpeed()
+{
+    // Get rho, P, T
+    const double rho = density();
+    const double P = this->P();
+    const double T = this->T();
+    const double Mwmix = mixtureMw();
+    const double* const p_X = X();
+
+    // Store H/RT for each species in work1
+    speciesHOverRT(mp_work1);
+    
+    // Compute dX/dT (work2)
+    mp_equil->dXdT(mp_work2);
+    
+    // Compute dMw/dT
+    double dMwdT = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdT += mp_work2[i] * speciesMw(i);
+    
+    // Compute reactive Cp
+    double cp = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+    cp *= (T / Mwmix);
+    
+    // Add Frozen Cp
+    speciesCpOverR(mp_work2);
+    for (int i = 0; i < nSpecies(); ++i)
+        cp += mp_work2[i] * p_X[i];
+    cp *= RU / Mwmix;
+    
+    // Compute dX/dP (work2)
+    mp_equil->dXdP(mp_work2);
+    
+    // Compute dMw/dP
+    double dMwdP = 0.0;
+    for (int i = 0; i < nSpecies(); ++i)
+        dMwdP += mp_work2[i] * speciesMw(i);
+
+    // Compute de/dP
+    double dedp = 0.0;
+    for (int i = 0; i < nSpecies(); i++)
+        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+    dedp *= (RU * T / (Mwmix*Mwmix));
+    
+    // Compute density and energy derivatives
+    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+    
+    return std::sqrt(cp / ((cp + (P/rho - dedp/drdp)*drdt) * rho * drdp));
 }
 
 //==============================================================================

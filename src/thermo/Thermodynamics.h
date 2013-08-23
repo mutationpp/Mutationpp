@@ -458,22 +458,10 @@ public:
     void dXidT(double* const dxdt);
     
     /**
-     * Returns the density derivative with respect to pressure for the given
-     * equilibrium mixture.
-     *
-     * T   - equilibrium temperature in K
-     * P   - equilibrium pressure in Pa
-     * Xeq - equilibrium species mole fractions
-     */
-    double dRhodP(double T, double P, const double* const Xeq);
-    
-    /**
      * Returns the density derivative with respect to pressure for the current
      * equilibrium state.
      */
-    double dRhodP() {
-        return dRhodP(T(), P(), X());
-    }
+    double dRhodP();
     
     /**
      * Returns the unitless vector of species enthalpies \f$ H_i / R_u T \f$.
@@ -523,9 +511,9 @@ public:
     /**
      * Returns the current equilibrium sound speed of the mixture in m/s.
      */
-    double equilibriumSoundSpeed() {
-        return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
-    }
+    double equilibriumSoundSpeed();// {
+    //    return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
+    //}
     
     /**
      * Returns the unitless vector of species entropies \f$ S_i / R_u \f$.

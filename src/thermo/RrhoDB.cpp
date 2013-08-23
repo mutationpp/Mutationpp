@@ -78,7 +78,7 @@ public:
           m_na(0), 
           m_nm(0), 
           m_has_electron(species[0].type() == ELECTRON),
-          m_use_tables(false)
+          m_use_tables(true)
     {    
         // First make sure that every species contains an RRHO model
         bool complete = true;
@@ -190,9 +190,9 @@ public:
         if (m_use_tables) {
             mp_hel_table = new Mutation::Utilities::LookupTable
                 <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
-            //mp_hel_table->save("hel.dat");
+            mp_cpel_table = new Mutation::Utilities::LookupTable<
+                double, double, CpelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
         }
-        //mp_hel_table->save("hE.dat");
         
         // Compute the contribution of the partition functions at the standard
         // state temperature to the species enthalpies
@@ -350,9 +350,11 @@ public:
         // Electronic
         if (cpel == NULL) {
             if (cp != NULL)
-                CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
+                //CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
+                cpE(Tel, cp, PlusEq());
         } else {
-            CpelFunctor()(Tel, cpel, m_elec_data, Eq());
+            //CpelFunctor()(Tel, cpel, m_elec_data, Eq());
+            cpE(Tel, cpel, Eq());
             if (cp != NULL)
                 LOOP_HEAVY(cp[j] += cpel[j]);
         }
@@ -525,15 +527,7 @@ public:
         double Th, double Te, double Tr, double Tv, double Tel, double P,
         double* const g, double* const gt, double* const gr, double* const gv,
         double* const gel)
-    {
-        //cout << Th << endl;
-        //cout << Te << endl;
-        //cout << Tr << endl;
-        //cout << Tv << endl;
-        //cout << Tel << endl;
-        //cout << P << endl;
-        //cout << endl;
-        
+    {        
         // First compute the non-dimensional enthalpy
         enthalpy(Th, Te, Tr, Tv, Tel, g, NULL, NULL, NULL, NULL, NULL);
         
@@ -546,9 +540,6 @@ public:
         // Account for spin of free electrons
         if (m_has_electron)
             g[0] -= std::log(2.0);
-        
-        //LOOP(cout << g[i] << endl;)
-        //exit(1);   
     }
 
 private:
@@ -684,6 +675,19 @@ private:
     }
     
     /**
+     * Computes the electronic specific heat of each species and applies the
+     * value to the enthalpy array using the given operation.
+     */
+    template <typename OP>
+    void cpE(double T, double* const cp, const OP& op)
+    {
+        if (m_use_tables)
+            mp_cpel_table->lookup(T, cp, op);
+        else
+            CpelFunctor()(T, cp, m_elec_data, op);
+    }
+    
+    /**
      * Computes the formation enthalpy of each species in K.
      */
     template <typename OP>
@@ -776,6 +780,7 @@ private:
     
     ElectronicData m_elec_data;
     Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
+    Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
 
 }; // class RrhoDB
 

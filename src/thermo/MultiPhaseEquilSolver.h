@@ -50,6 +50,13 @@ public:
      * respect to temperature.
      */
     void dXdT(double* const p_dxdt) const;
+    
+    /**
+     * Returns the partial derivative of the equilibrium mole fractions with
+     * respect to pressure.
+     */
+    void dXdP(double* const p_dxdp) const;
+
 
 private:
 
