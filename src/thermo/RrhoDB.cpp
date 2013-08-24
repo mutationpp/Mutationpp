@@ -220,8 +220,10 @@ public:
         delete [] m_elec_data.p_levels;
         delete [] mp_part_sst;
         
-        if (m_use_tables)
+        if (m_use_tables) {
             delete mp_hel_table;
+            delete mp_cpel_table;
+        }
     }
     
     /**
@@ -329,31 +331,14 @@ public:
             LOOP_MOLECULES(cpv[j] /= deltaT);
         }
         
-        // Electronic
-        /*if (cpel == NULL) {
-            if (cp != NULL) {
-                hE(Tel + deltaT, cp, PlusEq());
-                hE(Tel, cp, MinusEq());
-            }
-        } else {
-            LOOP(cpel[i] = 0.0);
-            hE(Tel + deltaT, cpel, Eq());
-            hE(Tel, cpel, MinusEq());
-            if (cp != NULL) 
-                LOOP_HEAVY(cp[j] += cpel[j]);
-            LOOP_HEAVY(cpel[j] /= deltaT);
-        }*/
-        
         if (cp != NULL) 
             LOOP(cp[i] /= deltaT);
         
         // Electronic
         if (cpel == NULL) {
             if (cp != NULL)
-                //CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
                 cpE(Tel, cp, PlusEq());
         } else {
-            //CpelFunctor()(Tel, cpel, m_elec_data, Eq());
             cpE(Tel, cpel, Eq());
             if (cp != NULL)
                 LOOP_HEAVY(cp[j] += cpel[j]);
