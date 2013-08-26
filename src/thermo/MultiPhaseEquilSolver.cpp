@@ -71,56 +71,35 @@ void MultiPhaseEquilSolver::dXdT(double *const p_dxdt) const
     for (int j = 0; j < m_nsr; ++j)
         dgdt(j) = -p_dxdt[m_sjr(j)] / m_T;
     
-    // RHS
-    double temp;
-    RealVector rhs(m_ncr+m_np, 0.0);
-    RealVector sol = rhs;
-    
-    for (int k = 0; k < m_nsr; k++) {
-        temp = m_N(k)*dgdt(k);
-        for (int i = 0; i < m_ncr; ++i)
-            rhs(i) += temp * m_Br(k,i);
-        rhs(m_ncr+m_phase(m_sjr(k))) += temp;
-    }
-    
-    // Now compute the system solution
-    RealSymMat A(m_ncr+m_np);
-    formSystemMatrix(A);
-    
-    // Solve the system for dlambda/dT
-    LeastSquares<double> ls(A);
-    ls.solve(sol, rhs);
-    
-    // Compute dXj/dT = Xj*[-dgj/dT + sum_i Bji dlambdai/dT]
-    RealVector Nbar(m_np, 0.0);
-    for (int j = 0; j < m_nsr; ++j)
-        Nbar(m_phase(m_sjr(j))) += m_N(j);
-    
-    std::fill(p_dxdt, p_dxdt+m_ns, 0.0);
-    
-    for (int j = 0; j < m_nsr; ++j) {
-        p_dxdt[m_sjr(j)] = -dgdt(j);
-        for (int i = 0; i < m_ncr; ++i)
-            p_dxdt[m_sjr(j)] += m_Br(j,i) * sol(i);
-        p_dxdt[m_sjr(j)] *= m_N(j) / Nbar(m_phase(m_sjr(j)));
-    }
+    partialOfX(dgdt, p_dxdt);
 }
+
+//==============================================================================
 
 void MultiPhaseEquilSolver::dXdP(double *const p_dxdp) const
 {
     // Compute the dg/dP = 1/P for gas species
-    //RealVector dgdt(m_nsr, 1.0 / m_P);
-    const double pinv = 1.0 / m_P;
-    //for (int j = 0; j < m_nsr; ++j)
-    //    dgdt = pinv;
+    RealVector dgdp(m_nsr, 1.0 / m_P);
     
+    // Zero for all other species
+    for (int j = 0; j < m_nsr; ++j)
+        if (m_phase(m_sjr(j)) > 0) dgdp(j) = 0.0;
+    
+    partialOfX(dgdp, p_dxdp);
+}
+
+//==============================================================================
+
+void MultiPhaseEquilSolver::partialOfX(
+    const RealVector& dg, double* const p_dx) const
+{
     // RHS
     double temp;
     RealVector rhs(m_ncr+m_np, 0.0);
     RealVector sol = rhs;
     
     for (int k = 0; k < m_nsr; k++) {
-        temp = m_N(k)*pinv;//dgdt(k);
+        temp = m_N(k)*dg(k);
         for (int i = 0; i < m_ncr; ++i)
             rhs(i) += temp * m_Br(k,i);
         rhs(m_ncr+m_phase(m_sjr(k))) += temp;
@@ -130,22 +109,22 @@ void MultiPhaseEquilSolver::dXdP(double *const p_dxdp) const
     RealSymMat A(m_ncr+m_np);
     formSystemMatrix(A);
     
-    // Solve the system for dlambda/dT
+    // Solve the system for dlambda/dalpha
     LeastSquares<double> ls(A);
     ls.solve(sol, rhs);
     
-    // Compute dXj/dT = Xj*[-dgj/dT + sum_i Bji dlambdai/dT]
+    // Compute dXj/dalpha = Xj*[-dgj/dalpha + sum_i Bji dlambdai/dalpha]
     RealVector Nbar(m_np, 0.0);
     for (int j = 0; j < m_nsr; ++j)
         Nbar(m_phase(m_sjr(j))) += m_N(j);
     
-    std::fill(p_dxdp, p_dxdp+m_ns, 0.0);
+    std::fill(p_dx, p_dx+m_ns, 0.0);
     
     for (int j = 0; j < m_nsr; ++j) {
-        p_dxdp[m_sjr(j)] = -pinv;//dgdt(j);
+        p_dx[m_sjr(j)] = -dg(j);
         for (int i = 0; i < m_ncr; ++i)
-            p_dxdp[m_sjr(j)] += m_Br(j,i) * sol(i);
-        p_dxdp[m_sjr(j)] *= m_N(j) / Nbar(m_phase(m_sjr(j)));
+            p_dx[m_sjr(j)] += m_Br(j,i) * sol(i);
+        p_dx[m_sjr(j)] *= m_N(j) / Nbar(m_phase(m_sjr(j)));
     }
 }
 

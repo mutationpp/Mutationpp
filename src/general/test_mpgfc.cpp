@@ -8,13 +8,13 @@
 
 using namespace Mutation::Thermodynamics;
 using namespace std;
+using Mutation::ONEATM;
 
 void bishnuTable3()
 {
     Mutation::MixtureOptions opts("water8");
     opts.setThermodynamicDatabase("NASA-9");
     Mutation::Mixture mix(opts);
-    MultiPhaseEquilSolver equil(mix);
     
     double c[mix.nElements()];
     double x[mix.nSpecies()];
@@ -30,31 +30,31 @@ void bishnuTable3()
     cout << endl;
     
     
-    equil.equilibrate(373.15, ONEATM, c, x);
+    mix.equilibrate(373.15, ONEATM, c, x);
     cout << setw(5) << "BP" << setw(10) << 373.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    equil.equilibrate(473.15, ONEATM, c, x);
+    mix.equilibrate(473.15, ONEATM, c, x);
     cout << setw(5) << "G1" << setw(10) << 473.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    equil.equilibrate(541.15, ONEATM, c, x);
+    mix.equilibrate(541.15, ONEATM, c, x);
     cout << setw(5) << "G2" << setw(10) << 541.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    equil.equilibrate(1500.0, ONEATM, c, x);
+    mix.equilibrate(1500.0, ONEATM, c, x);
     cout << setw(5) << "G3" << setw(10) << 1500.0 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    equil.equilibrate(647.25, 218.0*ONEATM, c, x);
+    mix.equilibrate(647.25, 218.0*ONEATM, c, x);
     cout << setw(5) << "CP" << setw(10) << 647.25 << setw(10) << 218;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
@@ -64,7 +64,6 @@ void bishnuTable3()
 void bishnuTable5()
 {
     Mutation::Mixture mix("water8");
-    MultiPhaseEquilSolver equil(mix);
     
     const int ne = mix.nElements();
     
@@ -73,7 +72,7 @@ void bishnuTable5()
     
     for (int i = 0; i < mix.nSpecies(); ++i)
         x[i] = static_cast<double>(1);
-    equil.addConstraint(x);
+    mix.addEquilibriumConstraint(x);
     
     c[mix.elementIndex("H")] = double(4);
     c[mix.elementIndex("O")] = double(2);
@@ -87,7 +86,7 @@ void bishnuTable5()
     
     for (double m = 2.0; m < 6.0; m += 0.01) {
         c[ne] = m;
-        equil.equilibrate(1500.0, ONEATM, c, x);
+        mix.equilibrate(1500.0, ONEATM, c, x);
         cout << setw(10) << m << setw(10) << 1500 << setw(10) << 1;
         for (int i = 0; i < mix.nSpecies(); ++i)
             cout << setw(14) << x[i];

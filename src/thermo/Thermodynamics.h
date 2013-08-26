@@ -199,6 +199,18 @@ public:
     void equilibrate(double T, double P);
     
     /**
+     * Adds a new set of linear constraints to the equilibrium solver.
+     * @see clearEquilibriumConstraints()
+     */
+    void addEquilibriumConstraint(const double* const p_A);
+    
+    /**
+     * Removes all of the equilibrium constraints.
+     * @see addEquilibriumConstraint()
+     */
+    void clearEquilibriumContraints();
+    
+    /**
      * Returns the mixture translational temperature.
      */
     double T() const;

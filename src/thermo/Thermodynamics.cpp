@@ -350,6 +350,20 @@ void Thermodynamics::equilibrate(double T, double P)
 
 //==============================================================================
 
+void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
+{
+    mp_equil->addConstraint(p_A);
+}
+    
+//==============================================================================
+
+void Thermodynamics::clearEquilibriumContraints()
+{
+    mp_equil->clearConstraints();
+}
+
+//==============================================================================
+
 double Thermodynamics::numberDensity(const double T, const double P) const
 {
     return P / (KB * T);

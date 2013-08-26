@@ -67,6 +67,14 @@ private:
      */
     void initPhases();
     
+    /**
+     * Computes the partial derivatives dX/dalpha given dg/dalpha.  This method
+     * is the common code used in dXdT() and dXdP().
+     * @see dXdP()
+     * @see dXdT()
+     */
+    void partialOfX(const Numerics::RealVector& dg, double* const p_dx) const;
+    
     void initialConditions(
         const Numerics::RealVector& gtp, Numerics::RealVector& lambda, 
         Numerics::RealVector& Nbar, Numerics::RealVector& g);
