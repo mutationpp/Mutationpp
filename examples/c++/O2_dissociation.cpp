@@ -24,6 +24,8 @@ using std::setw;
 using std::cout;
 using std::endl;
 
+using Mutation::RU;
+
 /**
  * Solves the total energy equation for temperature given species mass
  * mass fractions and the total energy which remains constant for this process.

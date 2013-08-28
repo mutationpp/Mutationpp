@@ -117,6 +117,61 @@ void bishnuTable5()
     
 }
 
+void dXdT()
+{
+    Mutation::Mixture mix("water8");
+    
+    const int ne = mix.nElements();
+    const int ns = mix.nSpecies();
+    
+    double c[ne];
+    double x[ns];
+    
+    c[mix.elementIndex("H")] = double(4);
+    c[mix.elementIndex("O")] = double(2);
+    
+    cout << setw(10) << "T(K)";
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << "X_" + mix.speciesName(i);
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << "dX/dT_" + mix.speciesName(i);
+    cout << setw(14) << "sum(dX/dT)";
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << "fddX/dT_" + mix.speciesName(i);
+    cout << setw(14) << "fdsum(dX/dT)" << endl;
+    
+    for (int i = 0; i < 115; ++i) {
+        double T = 300.0 + 50.0*double(i);
+        mix.equilibrate(T, ONEATM, c, x);
+        
+        cout << setw(10) << T;
+        for (int k = 0; k < ns; ++k)
+            cout << setw(14) << x[k];
+        
+        mix.dXidT(x);
+        double sum = 0.0;
+        for (int k = 0; k < ns; ++k) {
+            sum += x[k];
+            cout << setw(14) << x[k];
+        }
+        
+        cout << setw(14) << sum;
+        
+        double Teps = T*1.0E-8;
+        mix.equilibrate(T+Teps, ONEATM, c, x, false);
+        sum = 0.0;
+        for (int k = 0; k < ns; ++k) {
+            double dxdt = (x[k]-mix.X()[k])/Teps;
+            sum += dxdt;
+            cout << setw(14) << dxdt;
+        }
+        
+        cout << setw(14) << sum << endl;
+    }
+    
+    
+}
+
 int main()
 {
 #ifdef _GNU_SOURCE
@@ -125,4 +180,7 @@ int main()
 
     bishnuTable3();
     bishnuTable5();
+    
+    cout << endl;
+    dXdT();
 }

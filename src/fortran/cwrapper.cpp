@@ -307,6 +307,15 @@ double NAME_MANGLE(sigma)()
     return p_mix->sigma();
 }
 
+//==============================================================================
+void NAME_MANGLE(surface_mass_balance)
+    (const double *const p_Yke, const double *const p_Ykg, const double* const T,
+     const double* const P, const double* const Bg, double* const Bc,
+     double* const hw, double *const p_Xs)
+{
+    p_mix->surfaceMassBalance(p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
+}
+
 
 
 

@@ -16,6 +16,8 @@
 #include "mutation++.h"
 #include <iostream>
 
+using Mutation::ONEATM;
+
 int main()
 {
     // Generate the default options for the air11 mixture

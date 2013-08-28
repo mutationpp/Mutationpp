@@ -363,6 +363,14 @@ void NAME_MANGLE(stefan_maxwell)
 double NAME_MANGLE(sigma)();
 
 /**
+ * Solves the surface mass balance at an ablating surface.
+ */
+void NAME_MANGLE(surface_mass_balance)
+    (const double *const p_Yke, const double *const p_Ykg, const double* const T,
+     const double* const P, const double* const Bg, double* const Bc,
+     double* const hw, double *const p_Xs);
+
+/**
  * @}
  */
 
