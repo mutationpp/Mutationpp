@@ -8,6 +8,7 @@
 
 #include "Functors.h"
 #include "ReferenceServer.h"
+#include "NumConst.h"
 
 namespace Mutation {
     namespace Numerics {

@@ -7,6 +7,7 @@
 #include "lp.h"
 #include "cg.h"
 #include "LDLT.h"
+#include "NewtonSolver.h"
 
 namespace Mutation {
     namespace Numerics {

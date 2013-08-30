@@ -43,12 +43,26 @@ public:
     T operator()(const size_t i) const {
         return static_cast<const E&>(*this)(i); 
     }
+    
+    /**
+     * Returns derived matrix expression's operator(i).
+     */
+    T& operator()(const size_t i) {
+        return static_cast<E&>(*this)(i); 
+    }
 
     /**
      * Returns derived matrix expression's operator(i,j).
      */
     T operator()(const size_t i, const size_t j) const {
         return static_cast<const E&>(*this)(i, j); 
+    }
+    
+    /**
+     * Returns derived matrix expression's operator(i,j).
+     */
+    T& operator()(const size_t i, const size_t j) {
+        return static_cast<E&>(*this)(i, j); 
     }
     
     /**
@@ -327,6 +341,14 @@ public:
      * Returns the actual size of the underlying storage array.
      */
     size_t size() const { return m_data.size(); }
+    
+    /**
+     * Returns the element indexed at i in the underlying storage array.
+     */
+    T& operator()(const size_t i) {
+        ASSERT_IN_RANGE(0, i, m_data.size())
+        return m_data[i];
+    }
     
     /**
      * Returns the element indexed at i in the underlying storage array.
