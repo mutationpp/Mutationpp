@@ -364,6 +364,20 @@ void Thermodynamics::clearEquilibriumContraints()
 
 //==============================================================================
 
+void Thermodynamics::elementPotentials(double *const p_lambda)
+{
+    mp_equil->elementPotentials(p_lambda);
+}
+
+//==============================================================================
+
+void Thermodynamics::phaseMoles(double *const p_moles)
+{
+    mp_equil->phaseMoles(p_moles);
+}
+
+//==============================================================================
+
 double Thermodynamics::numberDensity(const double T, const double P) const
 {
     return P / (KB * T);
@@ -528,18 +542,7 @@ double Thermodynamics::mixtureEquilibriumCpMass()
 //==============================================================================
 
 void Thermodynamics::dXidT(double* const dxdt)
-{
-    /*const double eps = 1.0e-6;
-    
-    // Compute the current elemental fraction
-    elementFractions(Xeq, mp_work1);
-    
-    // Compute equilibrium mole fractions at a perturbed temperature
-    equilibrate(T*(1.0+eps), P, mp_work1, mp_work2, false);
-    
-    for (int i = 0; i < nSpecies(); ++i)
-        dxdt[i] = (mp_work2[i] - Xeq[i]) / (T * eps);*/
-    
+{   
     mp_equil->dXdT(dxdt);
 }
 

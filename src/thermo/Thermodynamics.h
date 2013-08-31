@@ -199,6 +199,18 @@ public:
     void equilibrate(double T, double P);
     
     /**
+     * Returns the element potentials calculated by the most recent call to 
+     * equilibrate().
+     */
+    void elementPotentials(double* const p_lambda);
+    
+    /**
+     * Returns the phase moles calculated by the most recent call to
+     * equilibrate().
+     */
+    void phaseMoles(double* const p_moles);
+    
+    /**
      * Adds a new set of linear constraints to the equilibrium solver.
      * @see clearEquilibriumConstraints()
      */

@@ -96,9 +96,11 @@ OutputQuantity species_quantities[NSPECIES] = {
 };
 
 // List of other output quantities
-#define NOTHER 1
+#define NOTHER 3
 OutputQuantity other_quantities[NOTHER] = {
-    OutputQuantity("Dij", "?", "multicomponent diffusion coefficients")
+    OutputQuantity("Dij", "?", "multicomponent diffusion coefficients"),
+    OutputQuantity("pi_i", "?", "element potentials"),
+    OutputQuantity("N_p", "mol", "phase moles")
 };
 
 // Simply stores the command line options
@@ -437,6 +439,18 @@ void writeHeader(
                     cout << setw(column_widths.back()) << name;
                 }
             }
+        } else if (other_quantities[*iter].name == "pi_i") {
+            for (int i = 0; i < mix.nElements(); ++i) {
+                name = "pi_" + mix.elementName(i);
+                column_widths.push_back(
+                    std::max(width, static_cast<int>(name.length())+2));
+                cout << setw(column_widths.back()) << name;
+            }
+        } else if (other_quantities[*iter].name == "N_p") {
+            name = "N_gas";
+            column_widths.push_back(
+                std::max(width, static_cast<int>(name.length())+2));
+            cout << setw(column_widths.back()) << name;
         }
     }
     
@@ -682,6 +696,14 @@ int main(int argc, char** argv)
                     const RealMatrix& Dij = mix.diffusionMatrix();
                     for (int i = 0; i < Dij.size(); ++i)
                         cout << setw(column_widths[cw++]) << Dij(i);
+                } else if (name == "pi_i") {
+                    mix.elementPotentials(species_values);
+                    for (int i = 0; i < mix.nElements(); ++i)
+                        cout << setw(column_widths[cw++]) << species_values[i];
+                } else if (name == "N_p") {
+                    mix.phaseMoles(species_values);
+                    for (int i = 0; i < 1; ++i)
+                        cout << setw(column_widths[cw++]) << species_values[i];
                 }
             }
             

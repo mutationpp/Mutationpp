@@ -56,6 +56,24 @@ public:
      * respect to pressure.
      */
     void dXdP(double* const p_dxdp) const;
+    
+    /**
+     * Returns the current element potentials as computed by the equilibrate
+     * function.
+     */
+    void elementPotentials(double* const p_lambda) const {
+        std::fill(p_lambda, p_lambda+m_nc, 0.0);
+        for (int i = 0; i < m_ncr; ++i)
+            p_lambda[i] = m_lambda(m_cir(i));
+    }
+    
+    /**
+     * Returns the current phase moles as computed by the equilibrate function.
+     */
+    void phaseMoles(double* const p_moles) const {
+        for (int i = 0; i < m_np; ++i)
+            p_moles[i] = m_Nbar(i);
+    }
 
 
 private:
@@ -166,6 +184,8 @@ private:
     Numerics::Vector<double> m_c;
     Numerics::Vector<double> m_cr;
     Numerics::Vector<double> m_N;
+    Numerics::Vector<double> m_lambda;
+    Numerics::Vector<double> m_Nbar;
     
     std::vector<Numerics::RealVector> m_constraints;
 

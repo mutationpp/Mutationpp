@@ -183,17 +183,12 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     static RealVector g;
     static RealVector g0;
     
-    RealVector Nbar(m_np);
+    //RealVector Nbar(m_np);
+    m_Nbar = ones<double>(m_np);
     RealVector Nbar_trial;
     
-    //RealVector lambda(m_nc);
-    //RealVector lambda_trial(m_nc);
-    
-    //RealSymMat A(m_nc+m_np);
-    //RealVector r(m_nc+m_np);
-    //RealVector dx(m_nc+m_np);
-    
-    RealVector lambda(m_ncr);
+    //RealVector lambda(m_ncr);
+    m_lambda = ones<double>(m_ncr);
     RealVector lambda_trial;
     
     // Begin by reducing zero species
@@ -210,7 +205,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         dg(i) = p_sv[m_sjr(i)];
 
     // Compute the initial conditions for the integration
-    initialConditions(dg, lambda, Nbar, g0);
+    initialConditions(dg, m_lambda, m_Nbar, g0);
     dg -= g0;
     //updatePreConditioner();
     
@@ -226,7 +221,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     
     bool update_dx = true;
     
-    updateSpeciesMoles(lambda, Nbar, g0);
+    updateSpeciesMoles(m_lambda, m_Nbar, g0);
     
     // Integrate quantities from s = 0 to s = 1
     while (s < 1.0) {
@@ -254,8 +249,8 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         }
         
         // Update trial values
-        lambda_trial = lambda + dx(0,m_ncr)*ds;
-        Nbar_trial   = Nbar * exp(dx(m_ncr,m_ncr+m_np)*ds);
+        lambda_trial = m_lambda + dx(0,m_ncr)*ds;
+        Nbar_trial   = m_Nbar * exp(dx(m_ncr,m_ncr+m_np)*ds);
         g            = g0 + dg*(s+ds);
 
         // Compute the 
@@ -277,8 +272,8 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         }
         
         // Update the system variables
-        lambda = lambda_trial;
-        Nbar   = Nbar_trial;
+        m_lambda = lambda_trial;
+        m_Nbar   = Nbar_trial;
         s += ds;
         
         ds = std::min(ds*2.0, 1.0-s);
@@ -291,7 +286,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    std::pair<int,double> res = newton(lambda, Nbar, g, r, A, 1.0e-16, 100);
+    std::pair<int,double> res = newton(m_lambda, m_Nbar, g, r, A, 1.0e-16, 100);
     newt += res.first;
     
     // Compute the species mole fractions
