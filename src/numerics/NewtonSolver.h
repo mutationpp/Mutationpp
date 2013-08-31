@@ -1,15 +1,8 @@
-//
-//  NewtonSolver.h
-//  Mutation++
-//
-//  Created by JB Scoggins on 8/29/13.
-//  Copyright (c) 2013 JB Scoggins. All rights reserved.
-//
-
 #ifndef _NUMERICS_NEWTON_SOLVER_
 #define _NUMERICS_NEWTON_SOLVER_
 
 #include <cassert>
+#include <typeinfo>
 #include <iostream>
 #include "Matrix.h"
 
@@ -21,7 +14,7 @@ namespace Mutation {
 /**
  * Implements the skeleton framework for Newton's method for solving a nonlinear
  * system of equations.  Classes should extend this class and provide the 
- * methods for computing f(x), J(x) = df/dx, and inv(J)*f.
+ * methods for computing f(x), J(x) = df/dx, inv(J)*f, and norm(f).
  */
 template <typename T, typename Solver>
 class NewtonSolver
@@ -39,9 +32,9 @@ public:
     virtual ~NewtonSolver() {}
     
     /**
-     * Uses Newton's method to compute the zero of f(x).
+     * Uses Newton's method to compute the zero of f(x) given an initial guess.
      */
-    void solve(T& x);
+    T& solve(T& x);
     
     /**
      * Set the residual norm tolerance.
@@ -96,21 +89,23 @@ NewtonSolver<T, Solver>::NewtonSolver()
 //==============================================================================
 
 template <typename T, typename Solver>
-void NewtonSolver<T, Solver>::solve(T& x)
+T& NewtonSolver<T, Solver>::solve(T& x)
 {
     using std::cout;
     using std::endl;
     
+    // Make sure jacobian is updated on first iteration
     unsigned int jac = m_jacobian_lag;
     
     // Compute the initial function value and its norm
     static_cast<Solver&>(*this).updateFunction(x);
-    //double f0_norm = f.norm2();
     double f0_norm = static_cast<Solver&>(*this).norm();
     double resnorm = 1.0;
     
+    // Let user know Newton's method is being called and print initial residual
     if (m_conv_hist) {
-        cout << "Newton: norm(f0) = " << f0_norm << endl;
+        cout << "Newton (" << typeid(Solver).name() << "): norm(f0) = "
+             << f0_norm << endl;
     }
     
     // Iterate until converged
@@ -127,7 +122,7 @@ void NewtonSolver<T, Solver>::solve(T& x)
         }
         
         // x -= inv(J)*f
-        x -= static_cast<Solver&>(*this).systemSolution();;
+        x -= static_cast<Solver&>(*this).systemSolution();
         
         // Recompute f and norm(f)
         static_cast<Solver&>(*this).updateFunction(x);
@@ -141,6 +136,8 @@ void NewtonSolver<T, Solver>::solve(T& x)
         cout << "Newton failed to converge after " << m_max_iter
              << " iterations with a relative residual of " << resnorm << endl;
     }
+    
+    return x;
 }
 
 //==============================================================================
