@@ -31,20 +31,18 @@ using namespace Mutation::Numerics;
  * This class implements Newton's method for solving the energy equation for
  * temperature given a fixed energy and species mass fractions.
  */
-class EnergyEqSolution : public NewtonSolver
+class EnergyEqSolution : public NewtonSolver<double, EnergyEqSolution>
 {
 public:
     
     EnergyEqSolution(const Mixture& mix, const double etot)
-        : NewtonSolver(1),
-          m_mix(mix),
+        : m_mix(mix),
           m_etot(etot),
           mp_work(new double [mix.nSpecies()]),
           mp_Y(NULL)
     {
-        setEpsilon(1.0e-8);
-        setMaxIterations(20);
-        setJacobianLag(1);
+        setEpsilon(1.e-7);
+        setJacobianLag(3);
     }
     
     virtual ~EnergyEqSolution() {
@@ -55,44 +53,48 @@ public:
         mp_Y = Y;
     }
 
-protected:
-
-    void computeFunction(const RealVector& x, RealVector& f)
+    void updateFunction(const double& T)
     {
         const int ns = m_mix.nSpecies();
-        m_mix.speciesHOverRT(x(0), mp_work);
+        m_mix.speciesHOverRT(T, mp_work);
         
-        f(0) = 0.0;
+        m_f = 0.0;
         for (int i = 0; i < ns; ++i)
-            f(0) += mp_Y[i] * (mp_work[i] - 1.0) / m_mix.speciesMw(i);
+            m_f += mp_Y[i] * (mp_work[i] - 1.0) / m_mix.speciesMw(i);
         
-        f(0) = f(0)*RU*x(0) - m_etot;
+        m_f = m_f*RU*T - m_etot;
     }
     
-    void computeJacobian(const RealVector& x, RealMatrix& J)
+    void updateJacobian(const double& T)
     {
         const int ns = m_mix.nSpecies();
-        m_mix.speciesCpOverR(x(0), mp_work);
+        m_mix.speciesCpOverR(T, mp_work);
         
-        J(0) = 0.0;
+        m_dfdT = 0.0;
         for (int i = 0; i < ns; ++i)
-            J(0) += mp_Y[i] * (mp_work[i] - 1.0) / m_mix.speciesMw(i);
+            m_dfdT += mp_Y[i] * (mp_work[i] - 1.0) / m_mix.speciesMw(i);
         
-        J(0) *= RU;
+        m_dfdT *= RU;
     }
     
-    void systemSolution(
-        RealVector& dx, const RealMatrix& J, RealVector& f)
-    {
-        dx(0) = f(0) / J(0);
+    const double systemSolution() {
+        return (m_f / m_dfdT);
+    }
+    
+    const double norm() {
+        return std::abs(m_f);
     }
 
 private:
     
     const Mutation::Mixture& m_mix;
-    const double m_etot;
+    
+    double m_f;
+    double m_dfdT;
+    
+    const double  m_etot;
     double* const mp_work;
-    double* mp_Y;
+    double*       mp_Y;
 };
 
 
@@ -116,22 +118,18 @@ int main()
     pY[iO]  = 0.0;
     
     // Initial temperature and density
-    //double T   = 4000.0;   // K
-    RealVector T(1, 4000.0);
+    double T   = 4000.0;   // K
     double rho = 2.85e-4;  // kg/m^3
     
     // Set the initial mixture state
-    double P = mix.pressure(T(0), rho, pY);
-    mix.setStateTPY(&T(0), &P, pY);
+    double P = mix.pressure(T, rho, pY);
+    mix.setStateTPY(&T, &P, pY);
     
     // Compute the total energy
     double etot = mix.mixtureEnergyMass();
     
     // Setup the Newton solver for solving the energy equation
     EnergyEqSolution tSolver(mix, etot);
-    tSolver.setEpsilon(1.0e-7);
-    tSolver.setMaxIterations(10);
-    tSolver.setJacobianLag(3);
     //tSolver.setWriteConvergenceHistory(true);
     
     // Write the table header
@@ -153,7 +151,7 @@ int main()
     
     // Write time = 0 conditions
     cout << setw(15) << time;
-    cout << setw(15) << T(0);
+    cout << setw(15) << T;
     cout << setw(15) << P;
     cout << setw(15) << mix.density();
     cout << setw(15) << mix.mixtureEnergyMass();
@@ -182,13 +180,13 @@ int main()
         tSolver.solve(T);
         
         // Finally set the mixture state
-        P = mix.pressure(T(0), rho, pY);
-        mix.setStateTPY(&T(0), &P, pY);
+        P = mix.pressure(T, rho, pY);
+        mix.setStateTPY(&T, &P, pY);
         
         // Print results
         if (std::abs(tout-time) < 1.0e-10) {
             cout << setw(15) << time;
-            cout << setw(15) << T(0);
+            cout << setw(15) << T;
             cout << setw(15) << P;
             cout << setw(15) << mix.density();
             cout << setw(15) << mix.mixtureEnergyMass();
@@ -206,9 +204,9 @@ int main()
     }
     
     // Output what the equilibrium values are at these conditions
-    mix.equilibrate(T(0), P);
+    mix.equilibrate(T, P);
     cout << "Equilibrium values: " << endl;
-    cout << setw(30) << T(0);
+    cout << setw(30) << T;
     cout << setw(15) << P;
     cout << setw(15) << mix.Y()[iO];
     cout << setw(15) << mix.Y()[iO2];

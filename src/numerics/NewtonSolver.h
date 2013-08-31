@@ -6,20 +6,24 @@
 //  Copyright (c) 2013 JB Scoggins. All rights reserved.
 //
 
-#ifndef __Mutation____NewtonSolver__
-#define __Mutation____NewtonSolver__
+#ifndef _NUMERICS_NEWTON_SOLVER_
+#define _NUMERICS_NEWTON_SOLVER_
 
 #include <cassert>
+#include <iostream>
 #include "Matrix.h"
 
 namespace Mutation {
     namespace Numerics {
+
+//==============================================================================
 
 /**
  * Implements the skeleton framework for Newton's method for solving a nonlinear
  * system of equations.  Classes should extend this class and provide the 
  * methods for computing f(x), J(x) = df/dx, and inv(J)*f.
  */
+template <typename T, typename Solver>
 class NewtonSolver
 {
 public:
@@ -27,7 +31,7 @@ public:
     /**
      * Constructor.
      */
-    NewtonSolver(unsigned int n);
+    NewtonSolver();
     
     /**
      * Destructor.
@@ -37,7 +41,7 @@ public:
     /**
      * Uses Newton's method to compute the zero of f(x).
      */
-    void solve(Vector<double>& x);
+    void solve(T& x);
     
     /**
      * Set the residual norm tolerance.
@@ -59,6 +63,7 @@ public:
      * Set the number of iterations to lag the Jacobian update.
      */
     void setJacobianLag(const unsigned int lag) {
+        assert(lag > 0);
         m_jacobian_lag = lag;
     }
     
@@ -69,42 +74,78 @@ public:
         m_conv_hist = hist;
     }
 
-protected:
-
-    /**
-     * Should be implemented by the user class to provide the function
-     * evaluation f(x).
-     */
-    virtual void computeFunction(
-        const Vector<double>& x, Vector<double>& f) = 0;
-    
-    /**
-     * Should be implemented by the user class to provide the Jacobian 
-     * evaluation J = df/dx.
-     */
-    virtual void computeJacobian(
-        const Vector<double>& x, Matrix<double>& f) = 0;
-    
-    /**
-     * Should be implemented by the user class to solve the linear system
-     * J*dx = f.
-     */
-    virtual void systemSolution(
-        Vector<double>& dx, const Matrix<double>& J, Vector<double>& f) = 0;
-
 private:
 
-    unsigned int m_n;
     unsigned int m_max_iter;
     unsigned int m_jacobian_lag;
-    
-    double m_epsilon;
-    
-    bool m_conv_hist;
+    double       m_epsilon;
+    bool         m_conv_hist;
     
 };
+
+//==============================================================================
+
+template <typename T, typename Solver>
+NewtonSolver<T, Solver>::NewtonSolver()
+    : m_max_iter(20),
+      m_jacobian_lag(1),
+      m_epsilon(1.0e-8),
+      m_conv_hist(false)
+{ }
+
+//==============================================================================
+
+template <typename T, typename Solver>
+void NewtonSolver<T, Solver>::solve(T& x)
+{
+    using std::cout;
+    using std::endl;
+    
+    unsigned int jac = m_jacobian_lag;
+    
+    // Compute the initial function value and its norm
+    static_cast<Solver&>(*this).updateFunction(x);
+    //double f0_norm = f.norm2();
+    double f0_norm = static_cast<Solver&>(*this).norm();
+    double resnorm = 1.0;
+    
+    if (m_conv_hist) {
+        cout << "Newton: norm(f0) = " << f0_norm << endl;
+    }
+    
+    // Iterate until converged
+    for (int i = 0; resnorm > m_epsilon && i < m_max_iter; ++i) {
+        if (m_conv_hist)
+            cout << "  iter = " << i + 1;
+        
+        // Update jacobian if needed
+        if (jac++ == m_jacobian_lag) {
+            if (m_conv_hist)
+                cout << ", update J";
+            static_cast<Solver&>(*this).updateJacobian(x);
+            jac = 1;
+        }
+        
+        // x -= inv(J)*f
+        x -= static_cast<Solver&>(*this).systemSolution();;
+        
+        // Recompute f and norm(f)
+        static_cast<Solver&>(*this).updateFunction(x);
+        resnorm = static_cast<Solver&>(*this).norm() / f0_norm;
+        
+        if (m_conv_hist)
+            cout << ", relative residual = " << resnorm << endl;
+    }
+    
+    if (resnorm > m_epsilon) {
+        cout << "Newton failed to converge after " << m_max_iter
+             << " iterations with a relative residual of " << resnorm << endl;
+    }
+}
+
+//==============================================================================
 
     } // namespace Numerics
 } // namespace Mutation
 
-#endif /* defined(__Mutation____NewtonSolver__) */
+#endif // _NUMERICS_NEWTON_SOLVER_

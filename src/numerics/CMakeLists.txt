@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_sources(mutation++
-    NewtonSolver.cpp
-)
-
 install(FILES Numerics.h DESTINATION include/mutation++)
 install(FILES NumConst.h DESTINATION include/mutation++)
 install(FILES Vector.h DESTINATION include/mutation++)
