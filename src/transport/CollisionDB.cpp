@@ -7,7 +7,7 @@
 #include "Constants.h"
 #include "CollisionDB.h"
 
-#define VERBOSE
+//#define VERBOSE
 
 using namespace std;
 using namespace Mutation::Numerics;

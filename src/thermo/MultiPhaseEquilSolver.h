@@ -30,6 +30,13 @@ public:
     ~MultiPhaseEquilSolver() {};
     
     /**
+     * Returns number of phases considered by the equilibrium solver.
+     */
+    int nPhases() const {
+        return m_np;
+    }
+    
+    /**
      * Computes the equilibrium composition of the mixture.
      */
     std::pair<int,int> equilibrate(
@@ -63,8 +70,9 @@ public:
      */
     void elementPotentials(double* const p_lambda) const {
         std::fill(p_lambda, p_lambda+m_nc, 0.0);
-        for (int i = 0; i < m_ncr; ++i)
-            p_lambda[i] = m_lambda(m_cir(i));
+        for (int i = 0; i < m_ncr; ++i) {
+            p_lambda[m_cir(i)] = m_lambda(i);
+        }
     }
     
     /**

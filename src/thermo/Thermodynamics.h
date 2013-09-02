@@ -95,6 +95,11 @@ public:
     }
     
     /**
+     * Returns the number of phases belonging to this mixture.
+     */
+    int nPhases() const;
+    
+    /**
      * Returns true if this mixture includes electrons, false otherwise.
      */
     bool hasElectrons() const {

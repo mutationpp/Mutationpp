@@ -229,6 +229,12 @@ void Thermodynamics::setDefaultComposition(
 
 //==============================================================================
 
+int Thermodynamics::nPhases() const {
+    return mp_equil->nPhases();
+}
+
+//==============================================================================
+
 void Thermodynamics::setStateTPX(
     const double* const T, const double* const P, const double* const X)
 {

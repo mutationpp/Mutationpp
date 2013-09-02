@@ -1,9 +1,17 @@
 <mixture mechanism="none" thermo_db="NASA-9">
     
+    <!--
     <default_element_fractions>
         C : 0.206,
         H : 0.679,
         O : 0.115,
+        N : 0.0
+    </default_element_fractions> -->
+    
+    <default_element_fractions>
+        C : 6,
+        H : 6,
+        O : 1,
         N : 0.0
     </default_element_fractions>
 

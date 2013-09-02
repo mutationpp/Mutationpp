@@ -290,17 +290,17 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     newt += res.first;
     
     // Compute the species mole fractions
-    double moles = m_N.sum();
+    //double moles = m_N.sum();
     std::fill(p_sv, p_sv+m_ns, 0.0);
-    for (int i = 0; i < m_nsr; ++i)
-        p_sv[m_sjr(i)] = m_N(i) / moles;
+    //for (int i = 0; i < m_nsr; ++i)
+    //    p_sv[m_sjr(i)] = m_N(i) / moles;
     
-    /*N = max(N, 1.0e-99);
-    Nbar = 0.0;
-    for (int i = 0; i < m_ns; ++i)
-        Nbar(m_phase(i)) += N(i);
-    for (int i = 0; i < m_ns; ++i)
-        p_sv[i] = N(i) / Nbar(m_phase(i));*/
+    m_N = max(m_N, 1.0e-99);
+    m_Nbar = 0.0;
+    for (int i = 0; i < m_nsr; ++i)
+        m_Nbar(m_phase(i)) += m_N(i);
+    for (int i = 0; i < m_nsr; ++i)
+        p_sv[m_sjr(i)] = m_N(i) / m_Nbar(m_phase(i));
     
     return std::make_pair(iter, newt);
 }

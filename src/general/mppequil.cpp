@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -447,10 +448,13 @@ void writeHeader(
                 cout << setw(column_widths.back()) << name;
             }
         } else if (other_quantities[*iter].name == "N_p") {
-            name = "N_gas";
-            column_widths.push_back(
-                std::max(width, static_cast<int>(name.length())+2));
-            cout << setw(column_widths.back()) << name;
+            for (int i = 0; i < mix.nPhases(); ++i) {
+                std::stringstream ss;
+                ss << "N_p" << i; ss >> name;
+                column_widths.push_back(
+                    std::max(width, static_cast<int>(name.length())+2));
+                cout << setw(column_widths.back()) << name;
+            }
         }
     }
     
@@ -702,7 +706,7 @@ int main(int argc, char** argv)
                         cout << setw(column_widths[cw++]) << species_values[i];
                 } else if (name == "N_p") {
                     mix.phaseMoles(species_values);
-                    for (int i = 0; i < 1; ++i)
+                    for (int i = 0; i < mix.nPhases(); ++i)
                         cout << setw(column_widths[cw++]) << species_values[i];
                 }
             }
