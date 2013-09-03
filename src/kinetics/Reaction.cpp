@@ -36,7 +36,7 @@ Reaction::Reaction(IO::XmlElement& node)
     
     // Parse the formula to determine which species are involved, whether or
     // not this is a third-body reaction, and reversibility of the reaction
-    parseFormula(node);
+    parseFormula(node); 
     
     // Now loop through the children of this node to determine the other 
     // attributes of the reaction
