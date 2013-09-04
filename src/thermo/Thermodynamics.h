@@ -113,7 +113,14 @@ public:
         assert(i >= 0);
         assert(i < m_species.size());
         return m_species[i];
-    } 
+    }
+    
+    /**
+     * Returns the species with a given name.
+     */
+    const Species& species(std::string name) const {
+        return species(speciesIndex(name));
+    }
     
     /**
      * Sets the default elemental composition of the mixture from a given

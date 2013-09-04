@@ -161,7 +161,7 @@ private:
     void computeResidual(
         const Numerics::RealVector& Nbar, Numerics::RealVector& r) const;
     
-    //void updatePreConditioner();
+    void updatePreConditioner();
     
     void reduceZeroSpecies();
      
@@ -182,7 +182,7 @@ private:
 
     Numerics::RealMatrix  m_B;
     Numerics::RealMatrix  m_Br;
-    //Numerics::RealMatrix  m_P;
+    Numerics::RealMatrix  m_M;
     
     Numerics::Vector<int> m_phase;
     Numerics::Vector<int> m_base;

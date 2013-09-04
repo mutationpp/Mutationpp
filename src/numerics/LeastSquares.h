@@ -69,6 +69,13 @@ public:
     }
     
     /**
+     * Returns the rank of the matrix A.
+     */
+    int rank() const {
+        return mp_qrp->rank();
+    }
+    
+    /**
      * Solves the overdetermined system Ax = b.  If A is full rank then the
      * solution is obtained via RP'x = Q'b where AP = QR.  If A is rank 
      * deficient, the solution is computed by USV'P'x = Q'b where R = USV' is
