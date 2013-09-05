@@ -3,12 +3,12 @@
 #include <cassert>
 
 #include "Reaction.h"
-#include "Utilities.h"
-
-using namespace Mutation::Utilities;
 
 namespace Mutation {
     namespace Kinetics {
+
+using namespace Mutation::Utilities;
+using namespace Mutation::Thermodynamics;
 
 void swap(Reaction& left, Reaction& right) {
     using std::swap;
@@ -21,7 +21,7 @@ void swap(Reaction& left, Reaction& right) {
     swap(left.mp_rate,       right.mp_rate);
 }
 
-Reaction::Reaction(IO::XmlElement& node)
+Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     : m_formula(""),
       m_reversible(true),
       m_thirdbody(false),
@@ -36,7 +36,7 @@ Reaction::Reaction(IO::XmlElement& node)
     
     // Parse the formula to determine which species are involved, whether or
     // not this is a third-body reaction, and reversibility of the reaction
-    parseFormula(node);
+    parseFormula(node, thermo);
     
     // Now loop through the children of this node to determine the other 
     // attributes of the reaction
@@ -48,14 +48,22 @@ Reaction::Reaction(IO::XmlElement& node)
             if (m_thirdbody) {
                 std::vector<std::string> tokens;
                 String::tokenize(iter->text(), tokens, ":, ");
-                for (int i = 0; i < tokens.size(); i+=2)
-                    m_thirdbodies.push_back(
-                        make_pair(tokens[i], atof(tokens[i+1].c_str())));
+                for (int i = 0; i < tokens.size(); i+=2) {
+                    int index = thermo.speciesIndex(tokens[i]);
+                    if (index >= 0) {
+                        m_thirdbodies.push_back(
+                            std::make_pair(index, atof(tokens[i+1].c_str())));
+                    } else {
+                        iter->parseError((
+                            std::string("Thirdbody species ") + tokens[i] +
+                            std::string(" is not in mixture list!")).c_str());
+                    }
+                }
             } else {
                 iter->parseError((
                     std::string("This reaction is not a thirdbody reaction") +
                     std::string(" but thirdbodies are given!")).c_str());
-            }                
+            }
         }
     }
     
@@ -64,7 +72,8 @@ Reaction::Reaction(IO::XmlElement& node)
         node.parseError("A rate law must be supplied with this reaction!");
 }
 
-void Reaction::parseFormula(IO::XmlElement& node)
+void Reaction::parseFormula(
+    IO::XmlElement& node, const class Thermodynamics& thermo)
 {
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction
@@ -87,16 +96,13 @@ void Reaction::parseFormula(IO::XmlElement& node)
     
     // Now that we have reactant and product strings, we can parse each 
     // separately using the same algorithm
-    parseSpecies(m_reactants, reactants);
-    parseSpecies(m_products,  products);
-    
-    // Check to see if this is a thirdbody reaction by the presence of the
-    // species M in the reactants and products
-    m_thirdbody = (m_reactants.erase("M") + m_products.erase("M") > 0);
+    parseSpecies(m_reactants, reactants, node, thermo);
+    parseSpecies(m_products,  products,  node, thermo);
 }
 
 void Reaction::parseSpecies(
-    std::multiset<std::string>& species, std::string& str)
+    std::vector<int>& species, std::string& str, const IO::XmlElement& node,
+    const class Thermodynamics& thermo)
 {
     size_t c = 0;
     size_t s = 0;
@@ -144,11 +150,20 @@ void Reaction::parseSpecies(
         }
         
         // If we found the start and end position of a species, add it to
-        // the list nu times
+        // the list nu times (unless it is the special case of 'M')
         if (add_species) {
-            for (int i = 0; i < nu; ++i)
-                species.insert(str.substr(s,e-s+1));
-            add_species = false;        
+            if (str.substr(s,e-s+1) == "M") {
+                m_thirdbody = true;
+            } else {
+                int index = thermo.speciesIndex(str.substr(s,e-s+1));
+                if (index >= 0)
+                    for (int i = 0; i < nu; ++i)
+                        species.push_back(index);
+                else
+                    node.parseError(("Species " + str.substr(s,e-s+1) +
+                        " is not in the mixture list!").c_str());
+            }
+            add_species = false;
         }
         
         // Move on to the next character

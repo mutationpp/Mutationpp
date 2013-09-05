@@ -18,7 +18,7 @@ class PartialThirdbodyEffs
 public:
 
     PartialThirdbodyEffs(
-        const size_t rxn, const std::vector<std::pair<size_t, double> >& effs)
+        const size_t rxn, const std::vector<std::pair<int, double> >& effs)
         : m_rxn(rxn), m_effs(effs)
     { }
     
@@ -26,7 +26,7 @@ public:
         double sum, const Mutation::Numerics::RealVector& s, 
         Mutation::Numerics::RealVector& r) const 
     {
-        std::vector<std::pair<size_t, double> >::const_iterator iter;
+        std::vector<std::pair<int, double> >::const_iterator iter;
         for (iter = m_effs.begin(); iter != m_effs.end(); ++iter)
             sum += s(iter->first) * iter->second;
         r(m_rxn) *= sum;
@@ -35,7 +35,7 @@ public:
 private:
     
     size_t m_rxn;
-    std::vector<std::pair<size_t, double> > m_effs;
+    std::vector<std::pair<int, double> > m_effs;
     
 }; // class PartialThirdbodyEffs
 
@@ -54,10 +54,10 @@ public:
      * Adds a new thirdbody reaction to be managed by this manager.
      */
     void addReaction(
-        const size_t rxn, const std::vector<std::pair<size_t, double> > effs)
+        const size_t rxn, const std::vector<std::pair<int, double> > effs)
     {
-        std::vector<std::pair<size_t, double> > partial_effs;
-        std::vector<std::pair<size_t, double> >::const_iterator iter;
+        std::vector<std::pair<int, double> > partial_effs;
+        std::vector<std::pair<int, double> >::const_iterator iter;
         
         for (iter = effs.begin(); iter != effs.end(); ++iter) {
             if (iter->second != 1.0)

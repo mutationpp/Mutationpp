@@ -49,7 +49,7 @@ XmlDocument::XmlDocument(const std::string &filename)
 //==============================================================================
 //  XmlElement member definitions
 //==============================================================================
-void XmlElement::parseError(const std::string& error_msg)
+void XmlElement::parseError(const std::string& error_msg) const
 {
     _parseError(document(), line(), error_msg);
 }

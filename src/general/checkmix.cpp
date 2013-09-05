@@ -122,14 +122,16 @@ int main(int argc, char** argv)
         // factors
         if (r.isThirdbody() && r.efficiencies().size() > 0) {
             
-            vector<pair<string, double> >::const_iterator iter =
+            vector<pair<int, double> >::const_iterator iter =
                 r.efficiencies().begin();
             
             cout.precision(2);
-            cout << setw(6) << "" << iter->first << ": " << iter->second;
+            cout << setw(6) << "" << mixture.speciesName(iter->first) << ": "
+                 << iter->second;
                 
             for (iter++; iter != r.efficiencies().end(); ++iter) {
-                cout << ", " << iter->first << ": " << iter->second;
+                cout << ", " << mixture.speciesName(iter->first) << ": "
+                     << iter->second;
             }        
         
             cout << endl;

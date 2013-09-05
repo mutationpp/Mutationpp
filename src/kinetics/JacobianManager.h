@@ -498,7 +498,7 @@ private:
      * otherwise.
      */
     bool getJacStoich(
-        const std::multiset<std::string>& stoich_set, JacStoichBase** p_stoich, 
+        const std::vector<int>& stoich_set, JacStoichBase** p_stoich,
         StoichType& type) const;
     
 private:

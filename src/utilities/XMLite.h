@@ -123,11 +123,11 @@ public:
         return m_iterator;
     }
     
-    void parseError(const char *const error_msg) {
+    void parseError(const char *const error_msg) const {
         parseError(std::string(error_msg));
     }
     
-    void parseError(const std::string& error_msg);
+    void parseError(const std::string& error_msg) const;
     
     friend class XmlDocument;
 

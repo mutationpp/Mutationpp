@@ -9,7 +9,7 @@ using namespace Mutation::Numerics;
 namespace Mutation {
     namespace Kinetics {
 
-void StoichiometryManager::addReaction(const int rxn, const vector<size_t> &sps)
+void StoichiometryManager::addReaction(const int rxn, const vector<int> &sps)
 {
     switch (sps.size()) {
         case 1:
