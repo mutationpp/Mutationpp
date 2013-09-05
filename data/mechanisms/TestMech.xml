@@ -1,0 +1,88 @@
+<!-- This is a testing mechanism for all reaction types -->
+
+<mechanism name="TestMech">
+
+	<arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+
+	<!-- 1F_mol: Dissociation (molecular) -->
+	<reaction formula="NO+M=N+O+M">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 1B_mol: Recombination (molecular) -->
+	<reaction formula="N+O+M=NO+M">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 1F_elec: Dissociation (electronic) -->
+	<reaction formula="NO+e-=N+O+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 1B_elec: Recombination (electronic) -->
+	<reaction formula="N+O+e-=NO+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 2F_mol: Ionization (molecular) -->
+	<reaction formula="N+M=N++M+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 2B_mol: Ion recombination (molecular) -->
+	<reaction formula="N++M+e-=N+M">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 2F_elec: Ionization (electronic) -->
+	<reaction formula="N+e-=N++e-+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 2B: Ion recombination(electronic) -->
+	<reaction formula="N++e-+e-=N+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 3F: Exchange (Zeldovich)-->
+	<reaction formula="N2+O2=2NO">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 3B: Exchange (Zeldovich) backward-->
+	<reaction formula="2NO=N2+O2">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 4F: Associative ionization -->
+	<reaction formula="N+O=NO++e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 4B: Dissociative recombination -->
+	<reaction formula="NO++e-=N+O">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 5F: Charge exchange -->
+	<reaction formula="N++O=N+O+">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 5B: Charge exchange backward -->
+	<reaction formula="N+O+=N++O">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+	<!-- 6F: Electron attachment -->
+	<reaction formula="NO+e-=N+O-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+	
+	<!-- 6B: Electron attachment -->
+	<reaction formula="N+O-=NO+e-">  
+		<arrhenius A="1.0E+5" n="1.0" T="10000."/>
+	</reaction>
+
+</mechanism>
+
