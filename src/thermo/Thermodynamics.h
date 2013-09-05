@@ -95,6 +95,11 @@ public:
     }
     
     /**
+     * Returns the number of phases belonging to this mixture.
+     */
+    int nPhases() const;
+    
+    /**
      * Returns true if this mixture includes electrons, false otherwise.
      */
     bool hasElectrons() const {
@@ -108,7 +113,14 @@ public:
         assert(i >= 0);
         assert(i < m_species.size());
         return m_species[i];
-    } 
+    }
+    
+    /**
+     * Returns the species with a given name.
+     */
+    const Species& species(std::string name) const {
+        return species(speciesIndex(name));
+    }
     
     /**
      * Sets the default elemental composition of the mixture from a given
@@ -129,7 +141,7 @@ public:
     
     /**
      * Returns the index in the species array assigned to the species with the
-     * given name.
+     * given name.  If no species exists with that name, then the index is < 0.
      */
     int speciesIndex(const std::string &name) const {
         std::map<std::string, int>::const_iterator iter = 
@@ -139,7 +151,7 @@ public:
     
     /**
      * Returns the index in the element array assigned to the element with the 
-     * given name.
+     * given name.  If no element exists with that name, then the index is < 0.
      */
     int elementIndex(const std::string &name) const {
         std::map<std::string, int>::const_iterator iter = 
@@ -152,6 +164,8 @@ public:
      * array.
      */
     const std::string &speciesName(const int &index) const {
+        assert(index > -1);
+        assert(indec < nSpecies());
         return m_species[index].name();
     }
     

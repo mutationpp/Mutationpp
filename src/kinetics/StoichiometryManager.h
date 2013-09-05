@@ -210,7 +210,7 @@ public:
 
     StoichiometryManager() { }
     
-    void addReaction(const int rxn, const std::vector<size_t> &sps);
+    void addReaction(const int rxn, const std::vector<int> &sps);
     
     void multReactions(
         const Mutation::Numerics::RealVector& s, 

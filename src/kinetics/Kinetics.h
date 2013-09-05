@@ -181,14 +181,14 @@ private:
     /**
      * Determins the species index of each species listed in the set of strings.
      */
-    std::vector<size_t> speciesIndices(const std::multiset<std::string>& set);
+    //std::vector<size_t> speciesIndices(const std::multiset<std::string>& set);
     
     /**
      * Converts the (species name, efficiency) pairs into (species index,
      * efficiency) pairs.
      */
-    std::vector<std::pair<size_t, double> > thirdbodyEffs(
-        const std::vector<std::pair<std::string, double> >& string_effs);
+    //std::vector<std::pair<size_t, double> > thirdbodyEffs(
+    //    const std::vector<std::pair<std::string, double> >& string_effs);
 
 private:
 

@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include <set>
 
+#include "Thermodynamics.h"
 #include "RateLaws.h"
 
 namespace Mutation {
@@ -23,7 +23,9 @@ public:
     /**
      * Constructs a reaction object from a "reaction" XML element.
      */
-    Reaction(Mutation::Utilities::IO::XmlElement& node);
+    Reaction(
+        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**
      * Copy constructor.
@@ -107,28 +109,34 @@ public:
     /**
      * Returns the reactant stoichiometric coefficient for the given species.
      */
-    int reactant(const std::string& species) const {
-        return m_reactants.count(species);
+    int reactant(int species) const {
+        int count = 0;
+        for (int i = 0; i < nReactants(); ++i)
+            count += (m_reactants[i] == species ? 1 : 0);
+        return count;
     }
     
     /**
      * Returns the multiset of species acting as reactants in this reaction.
      */
-    const std::multiset<std::string>& reactants() const {
+    const std::vector<int>& reactants() const {
         return m_reactants;
     }
     
     /**
      * Returns the product stoichiometric coefficient for the given species.
      */
-    int product(const std::string& species) const {
-        return m_products.count(species);
+    int product(int species) const {
+        int count = 0;
+        for (int i = 0; i < nReactants(); ++i)
+            count += (m_products[i] == species ? 1 : 0);
+        return count;
     }
     
     /**
      * Returns the multiset of species acting as products in this reaction.
      */
-    const std::multiset<std::string>& products() const {
+    const std::vector<int>& products() const {
         return m_products;
     }
     
@@ -137,7 +145,7 @@ public:
      * this reaction is not a thirdbody reaction then the vector will be empty.
      * Note that only species with non-default efficiencies are listed.
      */
-    const std::vector<std::pair<std::string, double> >& efficiencies() const {
+    const std::vector<std::pair<int, double> >& efficiencies() const {
         return m_thirdbodies;
     }
     
@@ -155,7 +163,9 @@ private:
      * reversible reaction while '=>' could be used to denote a irreversible
      * forward reaction.
      */
-    void parseFormula(Mutation::Utilities::IO::XmlElement& node);
+    void parseFormula(
+        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**
      * Enumerates the states used in the state machine which parses the
@@ -178,18 +188,21 @@ private:
      * of the species name.  For coefficients other than 1, the species is added 
      * multiple times to the species list. 
      */
-    void parseSpecies(std::multiset<std::string>& species, std::string& str);
+    void parseSpecies(
+        std::vector<int>& species, std::string& str,
+        const Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Thermodynamics::Thermodynamics& thermo);
 
 private:
 
     std::string m_formula;
-    std::multiset<std::string> m_reactants;
-    std::multiset<std::string> m_products;
+    std::vector<int> m_reactants;
+    std::vector<int> m_products;
     
     bool m_reversible;
     bool m_thirdbody;
     
-    std::vector<std::pair<std::string, double> > m_thirdbodies;
+    std::vector<std::pair<int, double> > m_thirdbodies;
     
     RateLaw* mp_rate;
 

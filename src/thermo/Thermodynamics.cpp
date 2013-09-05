@@ -229,6 +229,12 @@ void Thermodynamics::setDefaultComposition(
 
 //==============================================================================
 
+int Thermodynamics::nPhases() const {
+    return mp_equil->nPhases();
+}
+
+//==============================================================================
+
 void Thermodynamics::setStateTPX(
     const double* const T, const double* const P, const double* const X)
 {
@@ -942,7 +948,7 @@ void Thermodynamics::surfaceMassBalance(
     // Use "large" amount of carbon to simulate infinite char
     int ic = elementIndex("C");
     //double carbon = std::min(1000.0, std::max(100.0,1000.0*Bg));
-    double carbon = 10.0*Bg + 10.0;
+    double carbon = std::max(100.0*Bg, 200.0);
     p_Yw[ic] += carbon;
     sum += carbon;
     

@@ -5,6 +5,9 @@
 
 #include <set>
 #include <utility>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 //#define VERBOSE
 
@@ -227,9 +230,6 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     while (s < 1.0) {
         iter++;
         
-#ifdef VERBOSE
-        std::cout << "Step: iter = " << iter << ", s = " << s << ", ds = " << ds << ", newt = " << newt << endl;
-#endif
         if (update_dx) {
             // Compute the system matrix
             formSystemMatrix(A);
@@ -243,10 +243,75 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
                     r(i) += temp * m_Br(k,i);
                 r(m_ncr+m_phase(m_sjr(k))) += temp;
             }
-  
+            
+            // Solve the system
             LeastSquares<double> ls(A);
             ls.solve(dx, r);
+            
+            //cout << "continuation rank: " << ls.rank() << " (" << A.rows() << ")" << endl;
+            
+            // Use system solution to compute a trial ds value
+            g = m_Br*dx(0,m_ncr) - dg;
+            for (int j = 0; j < m_nsr; ++j)
+                g(j) += dx(m_ncr+m_phase(m_sjr(j)));
+            ds = g.max().value();
+            ds = std::min(1.0-s, 5.0/ds);
         }
+        
+#ifdef VERBOSE
+        std::cout << "Step: iter = " << iter << ", s = " << s << ", ds = " << ds << ", newt = " << newt << endl;
+#endif
+        
+        /*std::stringstream ss;
+        ss << "hist_" << iter << ".dat";
+        std::ofstream file(ss.str().c_str());
+        file << endl;
+        
+        RealVector exponent = m_Br*dx(0,m_ncr) - dg;
+        for (int j = 0; j < m_nsr; ++j)
+            exponent(j) += dx(m_phase(m_sjr(j)) + m_ncr);
+        file << (5.0/exponent.max().value()) << endl;
+        
+        double mds;
+        for (int i = 0; i < 101; ++i) {
+            updateSpeciesMoles(m_lambda, m_Nbar, g0+dg*s);
+            mds = (1.0-s)*double(i)/100.0;
+            lambda_trial = m_lambda + dx(0,m_ncr)*mds;
+            Nbar_trial   = m_Nbar * exp(dx(m_ncr,m_ncr+m_np)*mds);
+            g            = g0 + dg*(s+mds);
+            
+            // Get index of maximum species
+            //int j = m_N.max().index();
+            
+            
+            // Compute a guess of the error
+            double error = 0.0;
+            for (int w = 0; w < m_ncr; ++w) {
+            //int w = (m_N*m_Br).max().index();
+                double sum = 0.0;
+                for (int j = 0; j < m_nsr; ++j) {
+                    double sum1 = 0.0;
+                    for (int k = 0; k < m_ncr; ++k)
+                        sum1 += m_Br(j,k)*dx(k);
+                    sum += m_Br(j,w)*m_N(j)*(
+                        std::pow(exp(dx(m_ncr+m_phase(m_sjr(j)))-dg(j)+sum1), mds)-1.0);
+                }
+                error += sum*sum;
+            }
+            error = std::sqrt(error);
+
+            
+            updateSpeciesMoles(lambda_trial, Nbar_trial, g);
+            computeResidual(Nbar_trial, r);
+            file << mds+s << " ";
+            for (int k = 0; k < m_ncr; ++k)
+                file << lambda_trial(k) << " ";
+            for (int k = 0; k < m_np; ++k)
+                file << Nbar_trial(k) << " ";
+            file << r.norm2() << " ";
+            file << error << endl;
+        }
+        file.close();*/
         
         // Update trial values
         lambda_trial = m_lambda + dx(0,m_ncr)*ds;
@@ -258,7 +323,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         computeResidual(Nbar_trial, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, g, r, A, 1.0e-3, 10);
+            newton(lambda_trial, Nbar_trial, g, r, A, 1.0e-3, 8);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over
@@ -276,7 +341,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         m_Nbar   = Nbar_trial;
         s += ds;
         
-        ds = std::min(ds*2.0, 1.0-s);
+        //ds = std::min(ds*2.0, 1.0-s);
         if (ds == 0.0 && s < 1.0) {
             std::cerr << "Continuation step size dropped to zero in equil solver!" << endl;
             std::exit(1);
@@ -286,22 +351,23 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Use Newton iterations to improve residual for final answer
-    std::pair<int,double> res = newton(m_lambda, m_Nbar, g, r, A, 1.0e-16, 100);
+    std::pair<int,double> res = newton(m_lambda, m_Nbar, g, r, A, 1.0e-10, 20);
     newt += res.first;
     
     // Compute the species mole fractions
-    double moles = m_N.sum();
+    //double moles = m_N.sum();
     std::fill(p_sv, p_sv+m_ns, 0.0);
+    //for (int i = 0; i < m_nsr; ++i)
+    //    p_sv[m_sjr(i)] = m_N(i) / moles;
+    
+    m_N = max(m_N, 1.0e-300);
+    m_Nbar = 0.0;
     for (int i = 0; i < m_nsr; ++i)
-        p_sv[m_sjr(i)] = m_N(i) / moles;
+        m_Nbar(m_phase(m_sjr(i))) += m_N(i);
+    for (int i = 0; i < m_nsr; ++i)
+        p_sv[m_sjr(i)] = m_N(i) / m_Nbar(m_phase(m_sjr(i)));
     
-    /*N = max(N, 1.0e-99);
-    Nbar = 0.0;
-    for (int i = 0; i < m_ns; ++i)
-        Nbar(m_phase(i)) += N(i);
-    for (int i = 0; i < m_ns; ++i)
-        p_sv[i] = N(i) / Nbar(m_phase(i));*/
-    
+    //exit(1);
     return std::make_pair(iter, newt);
 }
 
@@ -325,13 +391,16 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
         LeastSquares<double> ls(A);
         r = -r;
         ls.solve(dx, r);
-
-        // Return if the MINRES failed to converge
-        //if (hist.second > 1.0e-10)
-        //    return std::make_pair(iterations,rnorm);
+        //cout << "newton rank: " << ls.rank() << " (" << A.rows() << ")" << endl;
+        //minres(A, dx, -r);
+        //std::cout << "dx:" << std::endl;
+        //std::cout << dx << endl;
+        if (dx.norm2() > 1.0)
+            return std::make_pair(iterations, rnorm);
+            
         
-        lambda += dx(0,m_ncr);
-        Nbar *= exp(dx(m_ncr,m_ncr+m_np));
+        lambda += 0.5*dx(0,m_ncr);
+        Nbar *= exp(0.5*dx(m_ncr,m_ncr+m_np));
         
 #ifdef VERBOSE
         std::cout << "lambda:" << std::endl;
@@ -421,6 +490,11 @@ void MultiPhaseEquilSolver::reduceZeroSpecies()
         m_Br = m_B;
         m_cr = m_c;
     }
+    
+    // Print the new matrix
+    //cout << endl;
+    //cout << "Reduced B matrix: " << endl;
+    //cout << m_Br << endl;
 }
 
 //==============================================================================
@@ -651,11 +725,11 @@ void MultiPhaseEquilSolver::computeResidual(
 
 //==============================================================================
 
-/*void MultiPhaseEquilSolver::updatePreConditioner()
+void MultiPhaseEquilSolver::updatePreConditioner()
 {    
     const int nb = m_base.size();
     
-    m_P = Identity<double>(nb+m_np);
+    m_M = Identity<double>(nb+m_np);
     
     if (nb == 1) return;
     
@@ -677,18 +751,18 @@ void MultiPhaseEquilSolver::computeResidual(
         qrp.solve(x, b);
         
         for (int k = 0; k < nb; ++k)
-            m_P(n,k) = 
+            m_M(n,k) =
                 (std::abs(x(k)) > NumConst<double>::eps*10.0 ? x(k) : 0.0);
     }
     
-    //cout << "Base species" << endl;
-    //for (int n = 0; n < nb; ++n)
-    //    cout << m_thermo.speciesName(m_sjr(m_base(n))) << endl;
-    //
-    //cout << "Preconditioner" << endl;
-    //cout << m_P;
+    cout << "Base species" << endl;
+    for (int n = 0; n < nb; ++n)
+        cout << m_thermo.speciesName(m_sjr(m_base(n))) << endl;
     
-}*/
+    cout << "Preconditioner" << endl;
+    cout << m_M;
+ 
+}
 
 //==============================================================================
 

@@ -120,7 +120,7 @@ void JacobianManager::addReactionStoich(
             mp_work[i] = 1.0;
         
         for (int i = 0; i < reaction.efficiencies().size(); ++i)
-            mp_work[m_thermo.speciesIndex(reaction.efficiencies()[i].first)] = 
+            mp_work[reaction.efficiencies()[i].first] = 
                 reaction.efficiencies()[i].second;
         
         switch (type) {
@@ -195,58 +195,42 @@ void JacobianManager::addReactionStoich(
 //==============================================================================
 
 bool JacobianManager::getJacStoich(
-    const std::multiset<std::string>& stoich_set, JacStoichBase** p_stoich, 
+    const std::vector<int>& stoich_vec, JacStoichBase** p_stoich,
     StoichType& type) const
-{
-    std::vector<std::string> stoich_vec(
-        stoich_set.begin(), stoich_set.end());
-    
+{    
     switch (stoich_vec.size()) {
         case 1:
-            *p_stoich = new JacStoich11(
-                m_thermo.speciesIndex(stoich_vec[0]));
+            *p_stoich = new JacStoich11(stoich_vec[0]);
             type = STOICH_11;
             return true;
         case 2:
             if (stoich_vec[0] == stoich_vec[1]) {
-               *p_stoich = new JacStoich21(
-                    m_thermo.speciesIndex(stoich_vec[0]));
+               *p_stoich = new JacStoich21(stoich_vec[0]);
                 type = STOICH_21;
             } else {
-                *p_stoich = new JacStoich22(
-                    m_thermo.speciesIndex(stoich_vec[0]),
-                    m_thermo.speciesIndex(stoich_vec[1]));
+                *p_stoich = new JacStoich22(stoich_vec[0], stoich_vec[1]);
                 type = STOICH_22;
             }
             return true;
         case 3:
             if (stoich_vec[0] == stoich_vec[1]) {
                 if (stoich_vec[1] == stoich_vec[2]) {
-                    *p_stoich = new JacStoich31(
-                        m_thermo.speciesIndex(stoich_vec[0]));
+                    *p_stoich = new JacStoich31(stoich_vec[0]);
                     type = STOICH_31;
                 } else {
-                    *p_stoich = new JacStoich32(
-                        m_thermo.speciesIndex(stoich_vec[0]),
-                        m_thermo.speciesIndex(stoich_vec[2]));
+                    *p_stoich = new JacStoich32(stoich_vec[0], stoich_vec[2]);
                     type = STOICH_32;
                 }
             } else {
                 if (stoich_vec[1] == stoich_vec[2]) {
-                    *p_stoich = new JacStoich32(
-                        m_thermo.speciesIndex(stoich_vec[1]),
-                        m_thermo.speciesIndex(stoich_vec[0]));
+                    *p_stoich = new JacStoich32(stoich_vec[1], stoich_vec[0]);
                     type = STOICH_32;
                 } else if (stoich_vec[0] == stoich_vec[2]) {
-                    *p_stoich = new JacStoich32(
-                        m_thermo.speciesIndex(stoich_vec[0]),
-                        m_thermo.speciesIndex(stoich_vec[1]));
+                    *p_stoich = new JacStoich32(stoich_vec[0], stoich_vec[1]);
                     type = STOICH_32;
                 } else {
                     *p_stoich = new JacStoich33(
-                        m_thermo.speciesIndex(stoich_vec[0]),
-                        m_thermo.speciesIndex(stoich_vec[1]),
-                        m_thermo.speciesIndex(stoich_vec[2]));
+                        stoich_vec[0], stoich_vec[1], stoich_vec[2]);
                     type = STOICH_33;
                 }
             }

@@ -42,7 +42,7 @@ Kinetics::Kinetics(
     IO::XmlElement::Iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {        
         if (iter->tag() == "reaction")
-            addReaction(*iter);
+            addReaction(Reaction(*iter, thermo));
         else if (iter->tag() == "arrhenius_units")
             Arrhenius::setUnits(*iter);
     }
@@ -59,20 +59,17 @@ void Kinetics::addReaction(const Reaction& reaction)
     m_reactions.push_back(reaction);
     
     // Insert the reactants
-    m_reactants.addReaction(m_num_rxns, speciesIndices(reaction.reactants()));
+    m_reactants.addReaction(m_num_rxns, reaction.reactants());
     
     // Insert products
     if (reaction.isReversible())
-        m_rev_prods.addReaction(
-            m_num_rxns, speciesIndices(reaction.products()));
+        m_rev_prods.addReaction(m_num_rxns, reaction.products());
     else
-        m_irr_prods.addReaction(
-            m_num_rxns, speciesIndices(reaction.products()));
+        m_irr_prods.addReaction(m_num_rxns, reaction.products());
     
     // Add thirdbodies if necessary
     if (reaction.isThirdbody())
-        m_thirdbodies.addReaction(
-            m_num_rxns, thirdbodyEffs(reaction.efficiencies()));
+        m_thirdbodies.addReaction(m_num_rxns, reaction.efficiencies());
     
     // Insert new ratelaw to keep track of
     m_rates.addRateCoefficient(
@@ -95,60 +92,19 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     if (validate_mechanism) {
         bool is_valid = true;
         //cout << "Validating reaction mechanism..." << endl;
-        // Check that every species in each reaction exists in the species list
-        multiset<string>::const_iterator iter;
-        vector<pair<string, double> >::const_iterator tbiter;
-        for (size_t i = 0; i < m_num_rxns; ++i) {
-            // Reactants
-            iter = m_reactions[i].reactants().begin();
-            for ( ; iter != m_reactions[i].reactants().end(); ++iter) {
-                if (m_thermo.speciesIndex(*iter) < 0) {
-                    cerr << "From reaction " << i+1 << " \"" 
-                         << m_reactions[i].formula()
-                         << "\", species \"" << *iter
-                         << "\" does not exist in the mixture." << endl;
-                    is_valid = false;
-                }
-            }            
-            // Products
-            iter = m_reactions[i].products().begin();
-            for ( ; iter != m_reactions[i].products().end(); ++iter) {
-                if (m_thermo.speciesIndex(*iter) < 0) {
-                    cerr << "From reaction " << i+1 << " \"" 
-                         << m_reactions[i].formula()
-                         << "\", species \"" << *iter
-                         << "\" does not exist in the mixture." << endl;
-                    is_valid = false;
-                }
-            }
-            // Thirdbodies
-            if (m_reactions[i].isThirdbody()) {
-                tbiter = m_reactions[i].efficiencies().begin();
-                for ( ; tbiter != m_reactions[i].efficiencies().end(); 
-                    ++tbiter) {
-                    if (m_thermo.speciesIndex(tbiter->first) < 0) {
-                        cerr << "From reaction " << i+1 << " \"" 
-                             << m_reactions[i].formula()
-                             << "\", third-body species \"" << tbiter->first
-                             << "\" does not exist in the mixture." << endl;
-                        is_valid = false;
-                    }
-                }
-            }
-        }
         
         // Check for duplicate reactions
         RealVector stoichi(ns);
         RealVector stoichj(ns);
         for (size_t i = 0; i < m_num_rxns-1; ++i) {
             for (size_t k = 0; k < ns; ++k)
-                stoichi(k) = m_reactions[i].product(m_thermo.speciesName(k)) -
-                    m_reactions[i].reactant(m_thermo.speciesName(k));
+                stoichi(k) =
+                    m_reactions[i].product(k) - m_reactions[i].reactant(k);
             stoichi.normalize();
             for (size_t j = i+1; j < m_num_rxns; ++j) {
                 for (size_t k = 0; k < ns; ++k)
-                    stoichj(k) = m_reactions[j].product(m_thermo.speciesName(k))
-                        - m_reactions[j].reactant(m_thermo.speciesName(k));
+                    stoichj(k) =
+                        m_reactions[j].product(k) - m_reactions[j].reactant(k);
                 stoichj.normalize();
                 if (stoichi == stoichj) {
                     cerr << "Reactions " << i+1 << " \"" 
@@ -211,7 +167,7 @@ void Kinetics::getReactionDelta(const RealVector& s, RealVector& r)
 
 //==============================================================================
 
-vector<size_t> Kinetics::speciesIndices(
+/*vector<size_t> Kinetics::speciesIndices(
     const multiset<string>& set)
 {    
     multiset<string>::const_iterator iter = set.begin();
@@ -221,11 +177,11 @@ vector<size_t> Kinetics::speciesIndices(
         indices.push_back(m_thermo.speciesIndex(*iter));
     
     return indices;
-}
+}*/
 
 //==============================================================================
 
-vector<pair<size_t, double> > Kinetics::thirdbodyEffs(
+/*vector<pair<size_t, double> > Kinetics::thirdbodyEffs(
     const vector<pair<string, double> >& string_effs)
 {
     vector<pair<size_t, double> > effs;
@@ -236,7 +192,7 @@ vector<pair<size_t, double> > Kinetics::thirdbodyEffs(
             make_pair(m_thermo.speciesIndex(iter->first), iter->second));
     
     return effs;
-}
+}*/
 
 //==============================================================================
 

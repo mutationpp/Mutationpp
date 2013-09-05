@@ -180,6 +180,13 @@ public:
     }
     
     /**
+     * Returns true if this is an ion.
+     */
+    bool isIon() const {
+        return (charge() != 0);
+    }
+    
+    /**
      * Returns the phase of this species.
      */
     PhaseType phase() const { 

@@ -26,8 +26,12 @@ Element::Element(IO::XmlElement &xml_element)
     IO::XmlElement::Iterator child_end  = xml_element.end();
     
     for ( ; child_iter != child_end; ++child_iter) {
-        if (child_iter->tag() == "mw")
-            m_atomic_mass = atof(child_iter->text().c_str());
+        if (child_iter->tag() == "mw") {
+            std::string str;
+            child_iter->getAttribute("units", str, "kg/mol");
+            m_atomic_mass = Units(str).convertToBase(
+                atof(child_iter->text().c_str()));
+        }
     }
 }
 
@@ -350,9 +354,10 @@ void Species::checkStoichiometryNameMatching(
                     found = false;
                     for (int j = 0; j < elements.size(); ++j)
                         if ((found = (elements[j].name() == element))) break;
+                    
                     if (found)
                         guess[element] = guess[element] + 
-                            atoi(digits.c_str());
+                            std::max(atoi(digits.c_str()), 1);
                     else
                         return;
                     

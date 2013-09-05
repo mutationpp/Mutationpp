@@ -2353,5 +2353,106 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="Si" phase="gas">
+        <stoichiometry>
+            Si: 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="Si" />
+    </species>
+    
+    <species name="Si(cr)" phase="solid">
+        <stoichiometry>
+            Si: 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="Si(cr)" />
+    </species>
+    
+    <species name="Si(L)" phase="liquid">
+        <stoichiometry>
+            Si: 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="Si(L)" />
+    </species>
+    
+    <species name="SiC" phase="gas">
+        <stoichiometry>
+            Si : 1,
+            C  : 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiC" />
+    </species>
+    
+    <species name="SiC2" phase="gas">
+        <stoichiometry>
+            Si : 1,
+            C  : 2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiC2" />
+    </species>
+    
+    <species name="SiC(b)" phase="solid">
+        <stoichiometry>
+            Si : 1,
+            C  : 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiC(b)" />
+    </species>
+    
+    <species name="SiC(L)" phase="liquid">
+        <stoichiometry>
+            Si : 1,
+            C  : 1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiC(L)" />
+    </species>
+    
+    <species name="SiO" phase="gas">
+        <stoichiometry>
+            Si: 1,
+            O:  1
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO" />
+    </species>
+    
+    <species name="SiO2" phase="gas">
+        <stoichiometry>
+            Si: 1,
+            O:  2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO2" />
+    </species>
+    
+    <species name="SiO2(a-qz)" phase="solid">
+        <stoichiometry>
+            Si: 1,
+            O:  2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO2(a-qz)" />
+    </species>
+    
+    <species name="SiO2(b-qz)" phase="solid">
+        <stoichiometry>
+            Si: 1,
+            O:  2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO2(b-qz)" />
+    </species>
+    
+    <species name="SiO2(b-crt)" phase="solid">
+        <stoichiometry>
+            Si: 1,
+            O:  2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO2(b-crt)" />
+    </species>
+    
+    <species name="SiO2(L)" phase="liquid">
+        <stoichiometry>
+            Si: 1,
+            O:  2
+        </stoichiometry>
+        <thermodynamics type="NASA-9" db_name="SiO2(L)" />
+    </species>
  
 </specieslist>
