@@ -617,6 +617,14 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="C2H6O">
+        <stoichiometry>
+            C : 2,
+            H : 6,
+            O : 1
+        </stoichiometry>
+    </species>
  
 	<!-- Tricarbon -->
 	<species name="C3">
@@ -761,6 +769,20 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="C3H8">
+        <stoichiometry>
+            C : 3,
+            H : 8
+        </stoichiometry>
+    </species>
+    
+    <species name="C3O2">
+        <stoichiometry>
+            C : 3,
+            O : 2
+        </stoichiometry>
+    </species>
  
 	<!-- Carbon tetramer triplet -->
 	<species name="C4">
@@ -1410,6 +1432,30 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+    
+    <species name="HCHO">
+        <stoichiometry>
+            C : 1,
+            H : 2,
+            O : 1
+        </stoichiometry>
+    </species>
+    
+    <species name="HCOOH">
+        <stoichiometry>
+            C : 1,
+            H : 2,
+            O : 2
+        </stoichiometry>
+    </species>
+    
+    <species name="CH3OH">
+        <stoichiometry>
+            C : 1,
+            H : 4,
+            O : 1
+        </stoichiometry>
+    </species>
  
 	<!-- Methane -->
 	<species name="CH4">
