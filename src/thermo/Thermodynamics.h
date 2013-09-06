@@ -165,7 +165,7 @@ public:
      */
     const std::string &speciesName(const int &index) const {
         assert(index > -1);
-        assert(indec < nSpecies());
+        assert(index < nSpecies());
         return m_species[index].name();
     }
     

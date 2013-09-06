@@ -7,6 +7,8 @@
 #include "Thermodynamics.h"
 #include "RateLaws.h"
 
+using Mutation::Thermodynamics::ELECTRON;
+
 namespace Mutation {
     namespace Kinetics {
 
@@ -149,6 +151,43 @@ public:
         return m_thirdbodies;
     }
     
+    /**
+    * Returns true when ions are present in the reactants
+    **/
+    bool ionReactants(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
+        for (int i=0; i < nReactants(); ++i) 
+        if (thermo.species(m_reactants[i]).isIon() && thermo.species(m_reactants[i]).type() != ELECTRON) return true;
+        return false;
+    }
+
+    /**
+    * Returns true when ions are present in the products
+    **/
+    bool ionProducts(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
+        for (int i=0; i < nProducts(); ++i) 
+           if (thermo.species(m_products[i]).isIon()) return true;
+        return false;
+    }
+
+    /**
+    * Returns true when electrons in reactants
+    **/
+    bool electronReactants(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
+        for (int i=0; i < nReactants(); ++i) 
+           if (thermo.species(m_reactants[i]).type()==ELECTRON) return true;
+        return false;
+    }
+
+    /**
+    * Returns true when electrons in products
+    **/
+    bool electronProducts(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
+        for (int i=0; i < nProducts(); ++i) 
+           if (thermo.species(m_products[i]).type()==ELECTRON) return true;
+        return false;
+    }
+
+
     friend void swap(Reaction& left, Reaction& right);
     
 private:
