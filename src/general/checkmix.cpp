@@ -89,7 +89,11 @@ int main(int argc, char** argv)
     cout.setf(std::ios::right, std::ios::adjustfield);
     cout << setw(12) << "A (m,s,mol)";
     cout << setw(7) << "n";
-    cout << setw(10) << "Ta (K)" << endl;
+    cout << setw(10) << "Ta (K)";
+    cout.setf(std::ios::right, std::ios::adjustfield);
+    cout << setw(20) << "Reaction Type" << endl;   
+
+
     for (int i = 0; i < nr; ++i) {
         const Mutation::Kinetics::Reaction& r = mixture.reactions()[i];
         
@@ -98,6 +102,7 @@ int main(int argc, char** argv)
         cout << setw(4) << i+1 << ": ";        
         cout.setf(std::ios::left, std::ios::adjustfield);
         cout << setw(20) << r.formula();
+
         
         // Print out rate constants
         if (typeid(*(r.rateLaw())) == typeid(Mutation::Kinetics::Arrhenius)) {
@@ -114,6 +119,7 @@ int main(int argc, char** argv)
             cout << setw(7)  << rate.n();
             cout.precision(1);
             cout << setw(10) << rate.T();
+            cout << setw(20) << r.type(); 
         }
         
         cout << endl;
