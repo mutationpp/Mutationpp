@@ -70,6 +70,14 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     // Make sure we got a RateLaw out of all that
     if (mp_rate == NULL)
         node.parseError("A rate law must be supplied with this reaction!");
+    
+    // Determine the reaction type
+    determineType(thermo);
+}
+
+void determineType(const Thermodynamics& thermo)
+{
+
 }
 
 void Reaction::parseFormula(

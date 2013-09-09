@@ -11,6 +11,12 @@ using Mutation::Thermodynamics::ELECTRON;
 
 namespace Mutation {
     namespace Kinetics {
+    
+enum ReactionType
+{
+    DISSOCIATION,
+    EXCHANGE
+};
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
@@ -63,7 +69,11 @@ public:
      */
     const std::string& formula() const {
         return m_formula;
-    } 
+    }
+    
+    const ReactionType type() const {
+        return m_type;
+    }
     
     /**
      * Returns the order of the reaction.  Note that this can be different from
@@ -243,6 +253,7 @@ private:
     
     std::vector<std::pair<int, double> > m_thirdbodies;
     
+    ReactionType m_type;
     RateLaw* mp_rate;
 
 }; // class Reaction
