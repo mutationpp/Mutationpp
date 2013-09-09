@@ -4,6 +4,7 @@
 
 #include "Reaction.h"
 
+
 namespace Mutation {
     namespace Kinetics {
 
@@ -19,6 +20,7 @@ void swap(Reaction& left, Reaction& right) {
     swap(left.m_thirdbody,   right.m_thirdbody);
     swap(left.m_thirdbodies, right.m_thirdbodies);
     swap(left.mp_rate,       right.mp_rate);
+    swap(left.m_type,        right.m_type);
 }
 
 Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
@@ -75,8 +77,57 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     determineType(thermo);
 }
 
-void determineType(const Thermodynamics& thermo)
+void Reaction::determineType( const Mutation::Thermodynamics::Thermodynamics& thermo)
 {
+ 
+   if ( ionReactants(thermo)==1){
+     if (ionProducts(thermo)==1) {
+     m_type = CHARGE_EXCHANGE;
+     }
+     else {
+       if ( isThirdbody()) {
+       m_type = ION_RECOMBINATION;
+       }
+       else {
+         if (electronProducts(thermo)==1){
+         m_type = ELECTRONIC_DETACHMENT;
+         }
+         else {
+         m_type = DISSOCIATIVE_RECOMBINATION;
+         }
+       }
+     }
+   }
+
+   else {
+     if (isThirdbody()==1){
+       if (ionProducts(thermo)==1){
+       m_type = IONIZATION;
+       }
+       else {
+         if (nReactants() > nProducts()){
+         m_type = RECOMBINATION;
+         }
+         else {
+         m_type = DISSOCIATION;
+         }
+       }
+     }
+
+     else{
+       if (electronProducts(thermo)==1){
+       m_type = ASSOCIATIVE_IONIZATION;
+       }
+       else if (electronReactants(thermo)==1){
+       m_type  = ELECTRONIC_ATTACHMENT;
+       }
+       else {
+       m_type = EXCHANGE;
+       }
+     }   
+   }
+ 
+
 
 }
 

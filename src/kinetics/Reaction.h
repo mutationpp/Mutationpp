@@ -15,7 +15,15 @@ namespace Mutation {
 enum ReactionType
 {
     DISSOCIATION,
-    EXCHANGE
+    EXCHANGE,
+    IONIZATION,
+    RECOMBINATION,
+    ELECTRONIC_ATTACHMENT,
+    ASSOCIATIVE_IONIZATION,
+    CHARGE_EXCHANGE,
+    ION_RECOMBINATION,
+    ELECTRONIC_DETACHMENT,
+    DISSOCIATIVE_RECOMBINATION
 };
 
 /**
@@ -45,6 +53,7 @@ public:
           m_reversible(reaction.m_reversible),
           m_thirdbody(reaction.m_thirdbody),
           m_thirdbodies(reaction.m_thirdbodies),
+          m_type(reaction.m_type),
           mp_rate(reaction.mp_rate ? reaction.mp_rate->clone() : NULL)
     { }
     
@@ -71,6 +80,10 @@ public:
         return m_formula;
     }
     
+
+    /**
+    * Returns the type of reaction.
+    */
     const ReactionType type() const {
         return m_type;
     }
@@ -241,6 +254,12 @@ private:
         std::vector<int>& species, std::string& str,
         const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
+
+    /**
+    *Determines reaction type.  
+    */
+    void determineType(
+       const Mutation:: Thermodynamics::Thermodynamics& thermo);
 
 private:
 
