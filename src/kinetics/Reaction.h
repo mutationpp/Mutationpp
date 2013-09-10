@@ -11,20 +11,24 @@ using Mutation::Thermodynamics::ELECTRON;
 
 namespace Mutation {
     namespace Kinetics {
-    
+
+/**
+ * Defines reaction type. Is used by the function determineType(thermo) to
+ * store the type in m_type.
+ */    
 enum ReactionType
 {
     DISSOCIATION,
-    EXCHANGE,
-    IONIZATION,
     RECOMBINATION,
-    ELECTRONIC_ATTACHMENT,
-    ASSOCIATIVE_IONIZATION,
-    CHARGE_EXCHANGE,
+    IONIZATION,
     ION_RECOMBINATION,
-    ELECTRONIC_DETACHMENT,
-    DISSOCIATIVE_RECOMBINATION
-};
+    EXCHANGE,    
+    ASSOCIATIVE_IONIZATION,
+    DISSOCIATIVE_RECOMBINATION,
+    CHARGE_EXCHANGE,
+    ELECTRONIC_ATTACHMENT,
+    ELECTRONIC_DETACHMENT
+   };
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
@@ -82,7 +86,7 @@ public:
     
 
     /**
-    * Returns the type of reaction.
+    * Returns the reaction type.
     */
     const ReactionType type() const {
         return m_type;
