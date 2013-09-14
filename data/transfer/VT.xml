@@ -1,0 +1,55 @@
+<!-- 
+Basic data related to the vibration-translation energy transfer.
+
+Data References:
+[1] Chul Park, "Review of Chemical-Kinetic Problems of Future NASA Missions, I:
+    Earth Entries," Journal of Thermophysics and Heat Transfer, Vol. 7, No. 39,
+    1993.
+[2] Chul Park, John T. Howe, Richard L. Jaffe, Graham V. Candler, "Review of 
+    Chemical-Kinetic Problems of Future NASA Missions, II: Mars Entries," 
+    Journal of Thermophysics and Heat Transfer, Vol. 8, No. 1, 1994.
+-->                                                      
+<VT>
+
+    <!-- Millikan and White model parameters a and b with Park's correction -->
+    <!-- factor omega_v. Default values of a and b are                      -->
+    <!--     a = 0.00116*mu^0.5*theta_v^1.333,                              -->
+    <!--     b = 0.015*mu^0.25                                              -->
+    <Millikan-White>
+    
+        <!-- N2 data -->
+        <vibrator species="N2" omegav="3.0E-17">
+            <partner species="O" a="72.4" b="0.015" /> <!-- Ref. [1] -->
+            <partner species="C" a="72.4" b="0.015" /> <!-- Ref. [2] -->
+        </vibrator>
+        
+        <!-- O2 data from Ref. [1] -->
+        <vibrator species="O2" omegav="3.0E-17">
+            <partner species="N" a="72.4" b="0.015" />
+            <partner species="O" a="47.7" b="0.059" />
+        </vibrator>
+        
+        <!-- NO data from Ref. [1] -->
+        <vibrator species="NO" omegav="3.0E-17">
+            <partner species="N"  a="49.5" b="0.042" />
+            <partner species="O"  a="49.5" b="0.042" />
+            <partner species="N2" a="49.5" b="0.042" />
+            <partner species="O2" a="49.5" b="0.042" />
+            <partner species="NO" a="49.5" b="0.042" />
+        </vibrator>
+        
+        <!-- CO data from Ref. [2] -->
+        <vibrator species="CO" omegav="3.0E-18">
+            <partner species="N" a="47.7" b="0.05" />
+            <partner species="O" a="47.7" b="0.05" />
+            <partner species="C" a="47.7" b="0.05" />
+        </vibrator>
+        
+        <!-- CO2 data from Ref. [2] -->
+        <vibrator species="CO2" omegav="1.0E-16">
+            <partner species="CO2" a="36.5" b="-0.0193" />
+        </vibrator>
+        
+    </Millikan-White>
+
+</VT>
