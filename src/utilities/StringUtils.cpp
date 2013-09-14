@@ -24,6 +24,8 @@ void tokenize(
     else
         delim_pos = str.find(delim);
     
+    tokens.clear();
+    
     while (last_pos != string::npos) {
         if (last_pos == delim_pos) {
             // Skip over delimeter(s)

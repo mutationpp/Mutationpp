@@ -123,6 +123,32 @@ public:
         return m_iterator;
     }
     
+    template <typename T>
+    Iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const T& value)
+    {
+        return findTagWithAttribute(tag, attribute, value, begin());
+    }
+    
+    template <typename T>
+    Iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const T& value,
+        Iterator iter)
+    {
+        while (iter != end()) {
+            if (iter->tag() == tag) {
+                T val;
+                iter->getAttribute(attribute, val);
+                
+                if (val == value)
+                    return iter;
+            }
+            ++iter;
+        }
+        
+        return end();
+    }
+    
     void parseError(const char *const error_msg) const {
         parseError(std::string(error_msg));
     }
