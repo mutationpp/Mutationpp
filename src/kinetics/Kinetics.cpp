@@ -1,6 +1,7 @@
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
+#include "MillikanWhite.h"
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -330,6 +331,33 @@ void Kinetics::jacobianRho(
     
     delete [] p_kf;
     delete [] p_kb;
+}
+
+//==============================================================================
+
+double Kinetics::omegaTV()
+{
+    // Load Millikan-White model data on first call to this method
+    static MillikanWhite data(m_thermo);
+    
+    const int nheavy = m_thermo.nHeavy();
+    const int offset = m_thermo.hasElectrons() ? 1 : 0;
+    
+    for (int i = 0; i < data.nVibrators(); ++i) {
+        cout << "Vibrator: " << m_thermo.speciesName(data[i].index())
+             << ", omega = " << data[i].omega() << endl;
+        for (int j = 0; j < nheavy; ++j) {
+            cout << setw(14) << m_thermo.speciesName(data[i].index()) +
+                "-" + m_thermo.speciesName(j+offset);
+            cout << setw(14) << data[i][j].a();
+            cout << setw(14) << data[i][j].b();
+            cout << setw(14) << data[i][j].mu();
+            cout << endl;
+        }
+        cout << endl;
+    }
+    
+    return 0.0;
 }
 
     } // namespace Kinetics

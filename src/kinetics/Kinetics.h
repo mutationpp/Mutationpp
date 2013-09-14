@@ -155,6 +155,10 @@ public:
         const Mutation::Numerics::RealVector& s, 
         Mutation::Numerics::RealVector& r);
     
+    /**
+     * @todo Fill in this method.
+     */
+    double omegaTV();
 
 private:
 
