@@ -22,6 +22,30 @@ public:
     MixtureOptions();
     
     /**
+     * Copy constructor.
+     */
+    MixtureOptions(const MixtureOptions& options)
+        : m_species_names(options.m_species_names),
+          m_default_composition(options.m_default_composition),
+          m_composition_setter(options.m_composition_setter),
+          m_has_default_composition(options.m_has_default_composition),
+          m_state_model(options.m_state_model),
+          m_thermo_db(options.m_thermo_db),
+          m_mechanism(options.m_mechanism),
+          m_viscosity(options.m_viscosity),
+          m_thermal_conductivity(options.m_thermal_conductivity)
+    { }
+    
+    /**
+     * Assignment operator.
+     */
+    MixtureOptions& operator=(MixtureOptions options)
+    {
+        swap(*this, options);
+        return *this;
+    }
+    
+    /**
      * Constructs a new MixtureOptions object from a mixture file.
      */
     MixtureOptions(const std::string& mixture);
@@ -61,6 +85,13 @@ public:
     void setSpeciesNames(const std::vector<std::string>& species) {
         m_species_names = species;
     }
+    
+    /**
+     * Clears all of the species names.
+     */
+     void clearSpeciesNames() {
+        m_species_names.clear();
+     }
     
     /**
      * Gets the mixture state model to be used.
@@ -165,6 +196,16 @@ public:
             : m_composition(composition)
         { }
         
+        CompositionSetter(const CompositionSetter& setter)
+            : m_composition(setter.m_composition)
+        { }
+        
+        CompositionSetter& operator=(CompositionSetter setter)
+        {
+            std::swap(m_composition, setter.m_composition);
+            return *this;
+        }
+        
         CompositionSetter& operator () (
             const std::string& element, const double X)
         {
@@ -222,6 +263,8 @@ public:
     bool hasDefaultComposition() const {
         return m_has_default_composition;
     }
+    
+    friend void swap(MixtureOptions&, MixtureOptions&);
 
 private:
 
@@ -245,6 +288,21 @@ private:
     std::string m_thermal_conductivity;
 
 }; // class MixtureOptions
+
+/**
+ * Performs a swap on two MixtureOption objects.
+ */
+void swap(MixtureOptions& opt1, MixtureOptions& opt2)
+{
+    std::swap(opt1.m_species_names, opt2.m_species_names);
+    std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
+    std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
+    std::swap(opt1.m_state_model, opt2.m_state_model);
+    std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
+    std::swap(opt1.m_mechanism, opt2.m_mechanism);
+    std::swap(opt1.m_viscosity, opt2.m_viscosity);
+    std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
+}
 
 } // namespace Mutation
 
