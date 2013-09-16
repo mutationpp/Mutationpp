@@ -8,6 +8,7 @@
 #include "Reaction.h"
 #include "Thermodynamics.h"
 #include "Numerics.h"
+#include "MillikanWhite.h"
 
 namespace Mutation {
     namespace Kinetics {
@@ -32,7 +33,8 @@ public:
     {
         if (mp_g != NULL) delete [] mp_g;
     }
-    
+   
+ 
     /**
      * Returns the number of reactions in the mechanism.
      */
@@ -47,6 +49,7 @@ public:
     const std::vector<Reaction>& reactions() const {
         return m_reactions;
     }
+    
     
     /**
      * Fills the vector keq with the equilibrium constant for each reaction 
@@ -155,6 +158,11 @@ public:
         const Mutation::Numerics::RealVector& s, 
         Mutation::Numerics::RealVector& r);
     
+    /**
+     * Returns omega_VT following the Millikan-White formula for the relaxation time.
+     * Park's correction for high temperatures is included.
+     */
+    double omegaVT();
 
 private:
 
@@ -190,6 +198,10 @@ private:
     //std::vector<std::pair<size_t, double> > thirdbodyEffs(
     //    const std::vector<std::pair<std::string, double> >& string_effs);
 
+    
+      
+
+
 private:
 
     size_t m_num_rxns;
@@ -214,6 +226,7 @@ private:
     Mutation::Numerics::RealVector m_rop;
     
     double m_T_last;
+    
 };
 
 

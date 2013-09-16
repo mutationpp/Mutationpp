@@ -1,6 +1,8 @@
+#include <iostream>
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
+#include "MillikanWhite.h"
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -49,6 +51,8 @@ Kinetics::Kinetics(
     
     // Finally close the reaction mechanism
     closeReactions(true);
+
+
 }
 
 //==============================================================================
@@ -332,6 +336,62 @@ void Kinetics::jacobianRho(
     delete [] p_kb;
 }
 
+//==============================================================================
+
+double Kinetics::omegaVT()
+{
+    // Load Millikan-White model data on first call to this method
+    static MillikanWhite data(m_thermo);
+    
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double  P  = m_thermo.P();
+    const double rho = m_thermo.density();
+    const double *const Y = m_thermo.Y();
+    
+    const int nheavy = m_thermo.nHeavy();
+    const int offset = m_thermo.hasElectrons() ? 1 : 0;
+    
+    for (int i = 0; i < data.nVibrators(); ++i) {
+        cout << "Vibrator: " << m_thermo.speciesName(data[i].index())
+             << ", omega = " << data[i].omega() << endl;
+        for (int j = 0; j < nheavy; ++j) {
+            cout << setw(14) << m_thermo.speciesName(data[i].index()) +
+                "-" + m_thermo.speciesName(j+offset);
+            cout << setw(14) << data[i][j].a();
+            cout << setw(14) << data[i][j].b();
+            cout << setw(14) << data[i][j].mu();
+            cout << endl;
+        }
+        cout << endl;
+    }
+     
+    double SIGMA = 3E-21*pow(50000/Th, 2); // limiting cross sections for Park's correction [m^2]
+   
+    // Calculation of tau_VT following the Millikan-White formula including Park's correction.
+    double tauVT[data.nVibrators()][nheavy];
+    for (int j = 0 ; j< nheavy; ++j){
+      for (int i = 0; i< data.nVibrators(); ++i)
+         tauVT[i][j] = exp(data[i][j].a()*(pow(Th,-0.3333)-data[i][j].b())-18.421) * 101325.0/ P + sqrt(PI*data[i][j].mu()*KB*Th/(8.0*NA))*(SIGMA*P);
+    }
+     
+    
+    // frequency average over heavy particles
+    double sum1=0;
+    double sum2=0;
+    for (int i=0; i < data.nVibrators(); ++i) {
+      for (int j=0; j< nheavy ; ++j){
+      sum1 = sum1 + Y[j]/data[i][j].mu();
+      sum2 = sum2 + Y[j]/(data[i][j].mu()*tauVT[i][j-offset]);
+      }
+    }
+ 
+    double tau = sum1/sum2;
+
+
+    return rho*Y[nheavy]/tau; // To be completed!
+}
     } // namespace Kinetics
 } // namespace Mutation
 
