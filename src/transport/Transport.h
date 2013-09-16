@@ -7,6 +7,7 @@
 #include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
 #include "Utilities.h"
+#include "Constants.h"
 
 namespace Mutation {
     namespace Transport {
@@ -33,7 +34,16 @@ public:
     void stateUpdated() {
         std::cout << "stateUpdated: Transport" << std::endl;
     }
+   
+
+
+    /**
+     * Returns omega_ET.
+     */
+    double omega_ET();       
     
+
+ 
     /**
      * Sets the algorithm to use when computing viscosity.
      */

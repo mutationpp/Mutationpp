@@ -106,8 +106,46 @@ double Transport::electronThermalConductivity()
     // 3rd order solution
     return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
 }
-
 //==============================================================================
+
+double Transport::omega_ET()
+{
+    const int ns     = m_thermo.nSpecies();
+    const int nh     = m_thermo.nHeavy();
+    const int ne     = ns-nh;
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity(); 
+    const double p   = m_thermo.P();
+    const double *const Y = m_thermo.Y();
+    const double *const X = m_thermo.X();
+    
+  
+    const RealSymMat& Q11 = m_collisions.Q11(Th, Te, nd, X);
+    
+    // sum over heavies
+    double tauET[nh] ;
+   
+    for (int i = 1; i < nh; ++i) {
+    tauET[i] = (8.0/3.0)*(m_thermo.speciesMw(0)/m_thermo.speciesMw(i))*sqrt(8*KB*Te/(PI*m_thermo.speciesMw(i)))*Q11(i)*nd;
+    }
+    
+    // frequency average over heavy particles
+    double sum1=0;
+    double sum2=0;
+    for (int i=1; i<nh; ++i) {
+      sum1 = sum1 + Y[i]/m_thermo.speciesMw(i);
+      sum2 = sum2 + Y[i]/(m_thermo.speciesMw(i)*tauET[i-ne]);
+    }
+ 
+    double tau = sum1/sum2;
+
+    return (3/2)*nd*KB*(Th-Te)/tau;
+
+}
+
+//=============================================================================
+
 
 double Transport::internalThermalConductivity()
 {
