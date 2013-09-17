@@ -300,12 +300,11 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     }
     
     // Check for inert species
-    for (int i=0; i< nReactants(); ++i){
         if (isThirdbody())
            m_inert = true;
         else if (product_electron && reactant_electron)
            m_inert_e = true;
-    }
+    
 
 
     // Logic tree for ground electronic state reactions
@@ -325,11 +324,11 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             }
         }
     } else {
-        if (m_inert) {
+        if (m_inert || m_inert_e) {
             if (product_ion)
-               if (m_inert_e)
+                if (m_inert_e)
                 m_type = IONIZATION_E;
-               else 
+                else
                 m_type = IONIZATION_M;
             else {
                 if (nReactants() > nProducts())
