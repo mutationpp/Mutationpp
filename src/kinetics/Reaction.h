@@ -9,6 +9,31 @@
 
 namespace Mutation {
     namespace Kinetics {
+    
+
+/**
+ * Enumerates possible reaction types.
+ * @see Reaction::type()
+ */    
+enum ReactionType
+{
+    ASSOCIATIVE_IONIZATION,
+    CHARGE_EXCHANGE,
+    DISSOCIATION,
+    DISSOCIATIVE_RECOMBINATION,
+    ELECTRONIC_ATTACHMENT,
+    ELECTRONIC_DETACHMENT,
+    EXCHANGE,
+    IONIZATION,
+    ION_RECOMBINATION,
+    RECOMBINATION
+};
+
+/**
+ * Simpy returns a string which represents the reaction type given by the 
+ * ReactionType argument.
+ */
+const char* const reactionTypeString(const ReactionType type);
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
@@ -37,6 +62,7 @@ public:
           m_reversible(reaction.m_reversible),
           m_thirdbody(reaction.m_thirdbody),
           m_thirdbodies(reaction.m_thirdbodies),
+          m_type(reaction.m_type),
           mp_rate(reaction.mp_rate ? reaction.mp_rate->clone() : NULL)
     { }
     
@@ -46,6 +72,19 @@ public:
     Reaction& operator = (Reaction reaction) {
         swap(*this, reaction);
         return *this;
+    }
+    
+    /**
+     * Equal to operator.  Returns true if these reactions have the same
+     * stoichiometry in either the forward or reverse directions.
+     */
+    bool operator == (const Reaction& r);
+    
+    /**
+     * Not equal to operator.
+     */
+    bool operator != (const Reaction& r) {
+        return !((*this) == r);
     }
     
     /**
@@ -98,6 +137,14 @@ public:
     bool isThirdbody() const { 
         return m_thirdbody; 
     }
+    
+    /**
+     * Returns the type of the reaction.
+     * @see enum ReactionType.
+     */
+     ReactionType type() const {
+        return m_type;
+     }
     
     /**
      * Returns the rate law object associated with this reaction.
@@ -172,11 +219,11 @@ private:
      * reactants and products from the reaction formula.
      * @see parseSpecies()
      */
-    enum ParseState {
+    /*enum ParseState {
         coefficient,
         name,
         plus
-    };
+    };*/
     
     /**
      * Fills a list of strings with the species names of the species in a
@@ -192,6 +239,12 @@ private:
         std::vector<int>& species, std::string& str,
         const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
+    
+    /**
+     * Determines which type of reaction this is.
+     * @see enum ReactionType.
+     */
+    void determineType(const Mutation::Thermodynamics::Thermodynamics& thermo);
 
 private:
 
@@ -204,6 +257,7 @@ private:
     
     std::vector<std::pair<int, double> > m_thirdbodies;
     
+    ReactionType m_type;
     RateLaw* mp_rate;
 
 }; // class Reaction

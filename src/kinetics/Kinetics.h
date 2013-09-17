@@ -158,7 +158,7 @@ public:
     /**
      * @todo Fill in this method.
      */
-    double omegaTV();
+    double omegaVT();
 
 private:
 

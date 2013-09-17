@@ -4,11 +4,13 @@
 
 #include "Reaction.h"
 
+using namespace Mutation::Utilities;
+using namespace Mutation::Thermodynamics;
+
 namespace Mutation {
     namespace Kinetics {
 
-using namespace Mutation::Utilities;
-using namespace Mutation::Thermodynamics;
+//==============================================================================
 
 void swap(Reaction& left, Reaction& right) {
     using std::swap;
@@ -18,8 +20,41 @@ void swap(Reaction& left, Reaction& right) {
     swap(left.m_reversible,  right.m_reversible);
     swap(left.m_thirdbody,   right.m_thirdbody);
     swap(left.m_thirdbodies, right.m_thirdbodies);
+    swap(left.m_type,        right.m_type);
     swap(left.mp_rate,       right.mp_rate);
 }
+
+//==============================================================================
+
+const char* const reactionTypeString(const ReactionType type)
+{
+    switch (type) {
+        case ASSOCIATIVE_IONIZATION:
+            return "associative ionization";
+        case CHARGE_EXCHANGE:
+            return "charge exchange";
+        case DISSOCIATION:
+            return "dissociation";
+        case DISSOCIATIVE_RECOMBINATION:
+            return "dissociative recombination";
+        case ELECTRONIC_ATTACHMENT:
+            return "electronic attachment";
+        case ELECTRONIC_DETACHMENT:
+            return "electronic detachment";
+        case EXCHANGE:
+            return "exchange";
+        case IONIZATION:
+            return "ionization";
+        case ION_RECOMBINATION:
+            return "ion recombination";
+        case RECOMBINATION:
+            return "recombination";
+        default:
+            return "unknown type";
+    }
+}
+
+//==============================================================================
 
 Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     : m_formula(""),
@@ -70,7 +105,52 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     // Make sure we got a RateLaw out of all that
     if (mp_rate == NULL)
         node.parseError("A rate law must be supplied with this reaction!");
+    
+    // Figure out what type of reaction this is
+    determineType(thermo);
 }
+
+//==============================================================================
+
+bool Reaction::operator == (const Reaction& r)
+{
+    // Either both reactions are thirdbody or not
+    if (isThirdbody() == r.isThirdbody()) {
+        // A + B <=> AB  =  A + B <=> AB
+        // A + B  => AB  =  A + B <=> AB
+        // A + B <=> AB  =  A + B  => AB
+        // A + B  => AB  =  A + B  => AB
+        if (m_reactants == r.m_reactants &&
+            m_products == r.m_products)
+            return true;
+    
+        // A + B <=> AB  =  AB <=> A + B,
+        // A + B  => AB  =  AB <=> A + B,
+        // A + B <=> AB  =  AB  => A + B
+        if (m_reactants == r.m_products &&
+            m_products == r.m_reactants &&
+            !(isReversible() && r.isReversible()))
+            return true;
+    }
+    
+    // In the case where one reaction is thirdbody, we have to check if the non-
+    // thirdbody reaction is a special case of the thirdbody reaction
+    // (ie: N + O + M <=> NO + M (alpha_N != 0)  and  2N + O <=> NO + N)
+    if (isThirdbody()) {
+        if (r.hasInertSpecies())
+            if (r.inertIndex()
+            for (int i = 0; i < r.efficiencies().size(); ++i)
+                if (r.efficiencies()[i].first == inertIndex() &&
+                    r.efficiencies()[i].second != 0.0)
+            return m_thirdbodies[inertIndex()]
+    } else {
+    
+    }
+
+    return false;
+}
+
+//==============================================================================
 
 void Reaction::parseFormula(
     IO::XmlElement& node, const class Thermodynamics& thermo)
@@ -100,16 +180,24 @@ void Reaction::parseFormula(
     parseSpecies(m_products,  products,  node, thermo);
 }
 
+//==============================================================================
+
 void Reaction::parseSpecies(
     std::vector<int>& species, std::string& str, const IO::XmlElement& node,
     const class Thermodynamics& thermo)
 {
+    // State-Machine states for parsing a species formula
+    enum ParseState {
+        coefficient,
+        name,
+        plus
+    } state = coefficient;
+
     size_t c = 0;
     size_t s = 0;
     size_t e = 0;
     int nu   = 1;
     bool add_species = false;
-    ParseState state = coefficient;
     
     // Remove all spaces to simplify the state machine logic
     String::eraseAll(str, " ");
@@ -169,7 +257,74 @@ void Reaction::parseSpecies(
         // Move on to the next character
         c++;
     }
+    
+    // Sort the species vector
+    std::sort(species.begin(), species.end());
 }
+
+//==============================================================================
+
+void Reaction::determineType(const class Thermodynamics& thermo)
+{
+    bool reactant_ion      = false;
+    bool reactant_electron = false;
+    bool product_ion       = false;
+    bool product_electron  = false;
+    
+    // Check reactants for heavy ions and electrons
+    for (int i=0; i < nReactants(); ++i) {
+        const Species& species = thermo.species(m_reactants[i]);
+        if (species.type() == ELECTRON)
+            reactant_electron = true;
+        else if (species.isIon())
+            reactant_ion = true;
+    }
+    
+    // Check products
+    for (int i=0; i < nProducts(); ++i) {
+        const Species& species = thermo.species(m_products[i]);
+        if (species.type() == ELECTRON)
+            product_electron = true;
+        else if (species.isIon())
+            product_ion = true;
+    }
+    
+    // Logic tree for ground electronic state reactions
+    if (reactant_ion) {
+        if (product_ion)
+            m_type = CHARGE_EXCHANGE;
+        else {
+            if (isThirdbody())
+                m_type = ION_RECOMBINATION;
+            else {
+                if (product_electron)
+                    m_type = ELECTRONIC_DETACHMENT;
+                else
+                    m_type = DISSOCIATIVE_RECOMBINATION;
+            }
+        }
+    } else {
+        if (isThirdbody()) {
+            if (product_ion)
+                m_type = IONIZATION;
+            else {
+                if (nReactants() > nProducts())
+                    m_type = RECOMBINATION;
+                else
+                    m_type = DISSOCIATION;
+            }
+        } else {
+            if (product_electron)
+                m_type = ASSOCIATIVE_IONIZATION;
+            else if (reactant_electron)
+                m_type = ELECTRONIC_ATTACHMENT;
+            else
+                m_type = EXCHANGE;
+        }
+    }
+}
+
+//==============================================================================
 
     } // namespace Kinetics
 } // namespace Mutation

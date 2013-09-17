@@ -97,7 +97,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         // Check for duplicate reactions
         RealVector stoichi(ns);
         RealVector stoichj(ns);
-        for (size_t i = 0; i < m_num_rxns-1; ++i) {
+        /*for (size_t i = 0; i < m_num_rxns-1; ++i) {
             for (size_t k = 0; k < ns; ++k)
                 stoichi(k) =
                     m_reactions[i].product(k) - m_reactions[i].reactant(k);
@@ -108,6 +108,18 @@ void Kinetics::closeReactions(const bool validate_mechanism)
                         m_reactions[j].product(k) - m_reactions[j].reactant(k);
                 stoichj.normalize();
                 if (stoichi == stoichj) {
+                    cerr << "Reactions " << i+1 << " \"" 
+                         << m_reactions[i].formula()
+                         << "\" and " << j+1 << " \""
+                         << m_reactions[j].formula()
+                         << "\" are identical." << endl;
+                    is_valid = false;
+                }
+            }
+        }*/
+        for (size_t i = 0; i < m_num_rxns-1; ++i) {
+            for (size_t j = i+1; j < m_num_rxns; ++j) {
+                if (m_reactions[i] == m_reactions[j]) {
                     cerr << "Reactions " << i+1 << " \"" 
                          << m_reactions[i].formula()
                          << "\" and " << j+1 << " \""
@@ -335,7 +347,7 @@ void Kinetics::jacobianRho(
 
 //==============================================================================
 
-double Kinetics::omegaTV()
+double Kinetics::omegaVT()
 {
     // Load Millikan-White model data on first call to this method
     static MillikanWhite data(m_thermo);
