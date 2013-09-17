@@ -33,8 +33,14 @@ const char* const reactionTypeString(const ReactionType type)
             return "associative ionization";
         case CHARGE_EXCHANGE:
             return "charge exchange";
-        case DISSOCIATION:
-            return "dissociation";
+        case DISSOCIATION_M:
+            return "dissociation (heavy)";
+        case DISSOCIATION_E:
+            return "dissociation (electron)";
+        case RECOMBINATION_M:
+            return "recombination (heavy)";
+        case RECOMBINATION_E:
+            return "recombination (electron)";
         case DISSOCIATIVE_RECOMBINATION:
             return "dissociative recombination";
         case ELECTRONIC_ATTACHMENT:
@@ -43,12 +49,14 @@ const char* const reactionTypeString(const ReactionType type)
             return "electronic detachment";
         case EXCHANGE:
             return "exchange";
-        case IONIZATION:
-            return "ionization";
-        case ION_RECOMBINATION:
-            return "ion recombination";
-        case RECOMBINATION:
-            return "recombination";
+        case IONIZATION_M:
+            return "ionization (heavy)";
+        case IONIZATION_E:
+            return "ionization (electron)";
+        case ION_RECOMBINATION_M:
+            return "ion recombination (heavy)";
+        case ION_RECOMBINATION_E:
+            return "ion recombination (electron)";
         default:
             return "unknown type";
     }
@@ -136,16 +144,6 @@ bool Reaction::operator == (const Reaction& r)
     // In the case where one reaction is thirdbody, we have to check if the non-
     // thirdbody reaction is a special case of the thirdbody reaction
     // (ie: N + O + M <=> NO + M (alpha_N != 0)  and  2N + O <=> NO + N)
-    if (isThirdbody()) {
-        if (r.hasInertSpecies())
-            if (r.inertIndex()
-            for (int i = 0; i < r.efficiencies().size(); ++i)
-                if (r.efficiencies()[i].first == inertIndex() &&
-                    r.efficiencies()[i].second != 0.0)
-            return m_thirdbodies[inertIndex()]
-    } else {
-    
-    }
 
     return false;
 }
@@ -270,6 +268,8 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     bool reactant_electron = false;
     bool product_ion       = false;
     bool product_electron  = false;
+    bool m_inert           = isThirdbody();
+    bool m_inert_e	       = false;
     
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
@@ -289,13 +289,26 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             product_ion = true;
     }
     
+    // Check for an inert species if not explicitly a thirdbody reaction
+    if (!m_inert) {
+        for (int i=0; i < nReactants(); ++i) {
+            for (int j=0; j < nProducts(); ++j)
+                m_inert |= (m_reactants[i] == m_products[j]);
+        }
+    }
+    
+    // Is there an inert electron?
+    m_inert_e = (product_electron && reactant_electron);
+    
     // Logic tree for ground electronic state reactions
     if (reactant_ion) {
         if (product_ion)
             m_type = CHARGE_EXCHANGE;
         else {
-            if (isThirdbody())
-                m_type = ION_RECOMBINATION;
+            if (m_inert_e)
+                m_type = ION_RECOMBINATION_E;
+            else if (m_inert)
+                m_type = ION_RECOMBINATION_M;
             else {
                 if (product_electron)
                     m_type = ELECTRONIC_DETACHMENT;
@@ -304,14 +317,24 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             }
         }
     } else {
-        if (isThirdbody()) {
-            if (product_ion)
-                m_type = IONIZATION;
-            else {
-                if (nReactants() > nProducts())
-                    m_type = RECOMBINATION;
+        if (m_inert) {
+            if (product_ion) {
+                if (m_inert_e)
+                    m_type = IONIZATION_E;
                 else
-                    m_type = DISSOCIATION;
+                    m_type = IONIZATION_M;
+            } else {
+                if (nReactants() > nProducts()) {
+                    if (m_inert_e)
+                       m_type = RECOMBINATION_E;
+                    else 
+                       m_type = RECOMBINATION_M;
+                } else {
+                    if (m_inert_e)
+                       m_type = DISSOCIATION_E;
+                    else
+                       m_type = DISSOCIATION_M;
+                }
             }
         } else {
             if (product_electron)
