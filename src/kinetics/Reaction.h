@@ -7,28 +7,37 @@
 #include "Thermodynamics.h"
 #include "RateLaws.h"
 
-using Mutation::Thermodynamics::ELECTRON;
-
 namespace Mutation {
     namespace Kinetics {
+    
 
 /**
- * Defines reaction type. Is used by the function determineType(thermo) to
- * store the type in m_type.
+ * Enumerates possible reaction types.
+ * @see Reaction::type()
  */    
 enum ReactionType
 {
-    DISSOCIATION,
-    RECOMBINATION,
-    IONIZATION,
-    ION_RECOMBINATION,
+    DISSOCIATION_M,
+    DISSOCIATION_E,
+    RECOMBINATION_M,
+    RECOMBINATION_E,
+    IONIZATION_M,
+    IONIZATION_E,
+    ION_RECOMBINATION_M,
+    ION_RECOMBINATION_E,
     EXCHANGE,    
     ASSOCIATIVE_IONIZATION,
     DISSOCIATIVE_RECOMBINATION,
     CHARGE_EXCHANGE,
     ELECTRONIC_ATTACHMENT,
     ELECTRONIC_DETACHMENT
-   };
+};
+
+/**
+ * Simpy returns a string which represents the reaction type given by the 
+ * ReactionType argument.
+ */
+const char* const reactionTypeString(const ReactionType type);
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
@@ -70,6 +79,19 @@ public:
     }
     
     /**
+     * Equal to operator.  Returns true if these reactions have the same
+     * stoichiometry in either the forward or reverse directions.
+     */
+    bool operator == (const Reaction& r);
+    
+    /**
+     * Not equal to operator.
+     */
+    bool operator != (const Reaction& r) {
+        return !((*this) == r);
+    }
+    
+    /**
      * Destructor.
      */
     ~Reaction() {
@@ -82,15 +104,7 @@ public:
      */
     const std::string& formula() const {
         return m_formula;
-    }
-    
-
-    /**
-    * Returns the reaction type.
-    */
-    const ReactionType type() const {
-        return m_type;
-    }
+    } 
     
     /**
      * Returns the order of the reaction.  Note that this can be different from
@@ -127,6 +141,14 @@ public:
     bool isThirdbody() const { 
         return m_thirdbody; 
     }
+    
+    /**
+     * Returns the type of the reaction.
+     * @see enum ReactionType.
+     */
+     ReactionType type() const {
+        return m_type;
+     }
     
     /**
      * Returns the rate law object associated with this reaction.
@@ -178,43 +200,6 @@ public:
         return m_thirdbodies;
     }
     
-    /**
-    * Returns true when ions are present in the reactants
-    **/
-    bool ionReactants(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
-        for (int i=0; i < nReactants(); ++i) 
-        if (thermo.species(m_reactants[i]).isIon() && thermo.species(m_reactants[i]).type() != ELECTRON) return true;
-        return false;
-    }
-
-    /**
-    * Returns true when ions are present in the products
-    **/
-    bool ionProducts(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
-        for (int i=0; i < nProducts(); ++i) 
-           if (thermo.species(m_products[i]).isIon()) return true;
-        return false;
-    }
-
-    /**
-    * Returns true when electrons in reactants
-    **/
-    bool electronReactants(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
-        for (int i=0; i < nReactants(); ++i) 
-           if (thermo.species(m_reactants[i]).type()==ELECTRON) return true;
-        return false;
-    }
-
-    /**
-    * Returns true when electrons in products
-    **/
-    bool electronProducts(const Mutation::Thermodynamics::Thermodynamics& thermo) const {
-        for (int i=0; i < nProducts(); ++i) 
-           if (thermo.species(m_products[i]).type()==ELECTRON) return true;
-        return false;
-    }
-
-
     friend void swap(Reaction& left, Reaction& right);
     
 private:
@@ -238,11 +223,11 @@ private:
      * reactants and products from the reaction formula.
      * @see parseSpecies()
      */
-    enum ParseState {
+    /*enum ParseState {
         coefficient,
         name,
         plus
-    };
+    };*/
     
     /**
      * Fills a list of strings with the species names of the species in a
@@ -258,12 +243,12 @@ private:
         std::vector<int>& species, std::string& str,
         const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
-
+    
     /**
-    *Determines reaction type.  
-    */
-    void determineType(
-       const Mutation:: Thermodynamics::Thermodynamics& thermo);
+     * Determines which type of reaction this is.
+     * @see enum ReactionType.
+     */
+    void determineType(const Mutation::Thermodynamics::Thermodynamics& thermo);
 
 private:
 

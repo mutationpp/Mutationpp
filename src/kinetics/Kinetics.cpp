@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
@@ -51,8 +50,6 @@ Kinetics::Kinetics(
     
     // Finally close the reaction mechanism
     closeReactions(true);
-
-
 }
 
 //==============================================================================
@@ -100,7 +97,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         // Check for duplicate reactions
         RealVector stoichi(ns);
         RealVector stoichj(ns);
-        for (size_t i = 0; i < m_num_rxns-1; ++i) {
+        /*for (size_t i = 0; i < m_num_rxns-1; ++i) {
             for (size_t k = 0; k < ns; ++k)
                 stoichi(k) =
                     m_reactions[i].product(k) - m_reactions[i].reactant(k);
@@ -111,6 +108,18 @@ void Kinetics::closeReactions(const bool validate_mechanism)
                         m_reactions[j].product(k) - m_reactions[j].reactant(k);
                 stoichj.normalize();
                 if (stoichi == stoichj) {
+                    cerr << "Reactions " << i+1 << " \"" 
+                         << m_reactions[i].formula()
+                         << "\" and " << j+1 << " \""
+                         << m_reactions[j].formula()
+                         << "\" are identical." << endl;
+                    is_valid = false;
+                }
+            }
+        }*/
+        for (size_t i = 0; i < m_num_rxns-1; ++i) {
+            for (size_t j = i+1; j < m_num_rxns; ++j) {
+                if (m_reactions[i] == m_reactions[j]) {
                     cerr << "Reactions " << i+1 << " \"" 
                          << m_reactions[i].formula()
                          << "\" and " << j+1 << " \""
@@ -343,13 +352,6 @@ double Kinetics::omegaVT()
     // Load Millikan-White model data on first call to this method
     static MillikanWhite data(m_thermo);
     
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double nd  = m_thermo.numberDensity();
-    const double  P  = m_thermo.P();
-    const double rho = m_thermo.density();
-    const double *const Y = m_thermo.Y();
-    
     const int nheavy = m_thermo.nHeavy();
     const int offset = m_thermo.hasElectrons() ? 1 : 0;
     
@@ -366,32 +368,10 @@ double Kinetics::omegaVT()
         }
         cout << endl;
     }
-     
-    double SIGMA = 3E-21*pow(50000/Th, 2); // limiting cross sections for Park's correction [m^2]
-   
-    // Calculation of tau_VT following the Millikan-White formula including Park's correction.
-    double tauVT[data.nVibrators()][nheavy];
-    for (int j = 0 ; j< nheavy; ++j){
-      for (int i = 0; i< data.nVibrators(); ++i)
-         tauVT[i][j] = exp(data[i][j].a()*(pow(Th,-0.3333)-data[i][j].b())-18.421) * 101325.0/ P + sqrt(PI*data[i][j].mu()*KB*Th/(8.0*NA))*(SIGMA*P);
-    }
-     
     
-    // frequency average over heavy particles
-    double sum1=0;
-    double sum2=0;
-    for (int i=0; i < data.nVibrators(); ++i) {
-      for (int j=0; j< nheavy ; ++j){
-      sum1 = sum1 + Y[j]/data[i][j].mu();
-      sum2 = sum2 + Y[j]/(data[i][j].mu()*tauVT[i][j-offset]);
-      }
-    }
- 
-    double tau = sum1/sum2;
-
-
-    return rho*Y[nheavy]/tau; // To be completed!
+    return 0.0;
 }
+
     } // namespace Kinetics
 } // namespace Mutation
 
