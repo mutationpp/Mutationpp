@@ -78,7 +78,7 @@ void MixtureOptions::loadFromFile(const string& mixture)
     for (iter = root.begin(); iter != root.end(); ++iter) {
         // Load the species list
         if (iter->tag() == "species") {
-            String::tokenize(iter->text(), m_species_names, ", \n");
+            String::tokenize(iter->text(), m_species_names, ", \n\r\t\f");
         
         // Load the default element fractions, note that we only check for valid
         // format, not for valid elements or fractions, this is left up to the

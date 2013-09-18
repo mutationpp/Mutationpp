@@ -11,6 +11,10 @@ using std::setw;
 using std::vector;
 using std::pair;
 
+using namespace Mutation;
+using namespace Mutation::Thermodynamics;
+using namespace Mutation::Kinetics;
+
 int main(int argc, char** argv)
 {
     if (argc <= 1) exit(1);
@@ -29,7 +33,7 @@ int main(int argc, char** argv)
     
     std::string mix(argv[argc-1]);
     cout << "Loading mixture file " << mix << " ..." << endl;
-    Mutation::Mixture mixture(mix);
+    Mixture mixture(mix);
         
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();
@@ -58,9 +62,9 @@ int main(int argc, char** argv)
         cout << setw(12) << mixture.speciesMw(i) * 1000.0
              << setw(10) << mixture.species()[i].charge();
         
-        Mutation::Thermodynamics::PhaseType phase = mixture.species()[i].phase();
-        cout << setw(12) << (phase == Mutation::Thermodynamics::GAS ? "gas" : 
-            (phase == Mutation::Thermodynamics::LIQUID ? "liquid" : "solid")) << endl;
+        PhaseType phase = mixture.species()[i].phase();
+        cout << setw(12) << (phase == GAS ? "gas" : 
+            (phase == LIQUID ? "liquid" : "solid")) << endl;
     }
     
     cout << endl;
@@ -81,28 +85,42 @@ int main(int argc, char** argv)
     cout << "Reaction info:" << endl;
     cout << "--------------" << endl;
     
+    // Make a key for the reaction type
+    std::set<ReactionType> types;
+    for (int i = 0; i < nr; ++i)
+        types.insert(mixture.reactions()[i].type());
+    
+    cout << "Type ID Key" << endl;
+    std::set<ReactionType>::const_iterator iter = types.begin();
+    for ( ; iter != types.end(); ++iter)
+        cout << setw(4) << *iter << ": " << reactionTypeString(*iter) << endl;
+    
     // Reaction table header
+    cout << endl;
+    cout << "Reactions" << endl;
     cout << setw(4) << "#";
     cout.setf(std::ios::left, std::ios::adjustfield);
     cout << setw(22) << "  Formula";
+    cout << setw(6)  << "Type";
     cout << setw(12) << "Rate Law";
     cout.setf(std::ios::right, std::ios::adjustfield);
     cout << setw(12) << "A (m,s,mol)";
     cout << setw(7) << "n";
     cout << setw(10) << "Ta (K)" << endl;
     for (int i = 0; i < nr; ++i) {
-        const Mutation::Kinetics::Reaction& r = mixture.reactions()[i];
+        const Reaction& r = mixture.reactions()[i];
         
         // Print reaction formula and number
         cout.setf(std::ios::right, std::ios::adjustfield);
         cout << setw(4) << i+1 << ": ";        
         cout.setf(std::ios::left, std::ios::adjustfield);
         cout << setw(20) << r.formula();
+        cout << setw(6)  << r.type();
         
         // Print out rate constants
-        if (typeid(*(r.rateLaw())) == typeid(Mutation::Kinetics::Arrhenius)) {
-            const Mutation::Kinetics::Arrhenius& rate = 
-                dynamic_cast<const Mutation::Kinetics::Arrhenius&>(*(r.rateLaw()));
+        if (typeid(*(r.rateLaw())) == typeid(Arrhenius)) {
+            const Arrhenius& rate = 
+                dynamic_cast<const Arrhenius&>(*(r.rateLaw()));
             cout << setw(12) << "Arrhenius: ";
             
             cout.setf(std::ios::right, std::ios::adjustfield);
