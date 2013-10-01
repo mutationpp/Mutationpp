@@ -67,11 +67,17 @@ public:
      */
     ~Thermodynamics();
     
-    void stateUpdated() {
+    /*void stateUpdated() {
         std::cout << "stateUpdated: Thermodynamics" << std::endl;
-    }
+    }*/
     
-    StateModel* const stateModel() const { return mp_state; }
+    /**
+     * Returns a pointer to the StateModel object owned by this thermodynamics
+     * object.
+     */
+    StateModel* const stateModel() const {
+        return mp_state;
+    }
     
     /**
      * Returns the number of species considered in the mixture.
@@ -84,7 +90,21 @@ public:
      * Returns the number of heavy particles (non electrons) in the mixture.
      */
     int nHeavy() const {
-        return (hasElectrons() ? nSpecies() - 1 : nSpecies());
+        return m_natoms + m_nmolecules;
+    }
+    
+    /**
+     * Returns the number of atomic species in the mixture.
+     */
+    int nAtoms() const {
+        return m_natoms;
+    }
+    
+    /**
+     * Returns the number of molecules in the mixture.
+     */
+    int nMolecules() const {
+        return m_nmolecules;
     }
     
     /**
@@ -165,7 +185,7 @@ public:
      */
     const std::string &speciesName(const int &index) const {
         assert(index > -1);
-        assert(indec < nSpecies());
+        assert(index < nSpecies());
         return m_species[index].name();
     }
     
@@ -203,7 +223,7 @@ public:
      * elemental composition.
      */
     void equilibrate(
-        double T, double P, const double* const p_c, double* const p_X,
+        double T, double P, const double* const p_c, double* const p_X = NULL,
         bool set_state = true);
     
     /**
@@ -515,6 +535,8 @@ public:
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
     
+    void speciesEvibMass(double T, double* const p_evib);
+    
     /**
      * Returns the mixture averaged enthalpy in J/mol.
      */
@@ -638,6 +660,8 @@ private:
     double* mp_default_composition;
     
     bool m_has_electrons;
+    int  m_natoms;
+    int  m_nmolecules;
     
 }; // class Thermodynamics
 

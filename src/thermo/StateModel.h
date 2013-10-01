@@ -39,7 +39,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~StateModel()
+    ~StateModel()
     {
         delete [] mp_T;
         delete [] mp_P;
@@ -54,7 +54,7 @@ public:
      * @param P - pressure array
      * @param X - species mole fraction array
      */
-    virtual void setStateTPX(
+    void setStateTPX(
         const double* const T, const double* const P, const double* const X);
     
     /**
@@ -66,42 +66,42 @@ public:
     /**
      * Returns the mixture translational temperature.
      */
-    virtual double T() const {
-        return mp_T[0];
+    double T() const {
+        return mp_T[m_it];
     }
     
     /**
      * Returns the mixture vibrational temperature.
      */
-    virtual double Tv() const {
-        return mp_T[0];
+    double Tv() const {
+        return mp_T[m_itv];
     }
     
     /**
      * Returns the mixture electron temperature.
      */
-    virtual double Te() const {
-        return mp_T[0];
+    double Te() const {
+        return mp_T[m_ite];
     }
     
     /**
      * Returns the mixture rotational temperature.
      */
-    virtual double Tr() const {
-        return mp_T[0];
+    double Tr() const {
+        return mp_T[m_itr];
     }
     
     /**
      * Returns the mixture electronic temperature.
      */
-    virtual double Tel() const {
-        return mp_T[0];
+    double Tel() const {
+        return mp_T[m_itel];
     }
     
     /**
      * Returns the mixture static pressure.
      */
-    virtual double P() const {
+    double P() const {
         return mp_P[0];
     }
     
@@ -117,26 +117,33 @@ protected:
     /**
      * Allocates storage for the state model and initializes the memory to zero.
      */
-    virtual void init();
+    void init();
     
     /**
      * Returns the number of temperatures used in this model.
      */
-    virtual int nT() const {
-        return 1;
+    int nT() const {
+        return m_nt;
     }
     
     /**
      * Returns the number of pressures used in this model.
      */
-    virtual int nP() const {
+    int nP() const {
         return 1;
     }
 
 protected:
 
-    int m_ns;
-
+    const int m_ns;
+    
+    unsigned int m_it;
+    unsigned int m_itr;
+    unsigned int m_itv;
+    unsigned int m_itel;
+    unsigned int m_ite;
+    unsigned int m_nt;
+    
     double* mp_T;
     double* mp_P;
     double* mp_X;

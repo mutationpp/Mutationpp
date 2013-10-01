@@ -23,10 +23,16 @@ void StateModel::setStateTPX(
 
 void StateModel::init() 
 {
+    // Set temperature indices
+    m_it = m_itr = m_itv = m_itel = m_ite = 0;
+    m_nt = 1;
+
+    // Allocate storage
     mp_T = new double [nT()];
     mp_P = new double [nP()];
     mp_X = new double [m_ns];
     
+    // Initialize everything to 0
     std::fill(mp_T, mp_T+nT(), 0.0);
     std::fill(mp_P, mp_P+nP(), 0.0);
     std::fill(mp_X, mp_X+m_ns, 0.0);
@@ -49,26 +55,11 @@ public:
      */
     TTvStateModel(int ns)
         : StateModel(ns)
-    {}
-    
-    /**
-     * Returns the mixture vibrational temperature.
-     */
-    virtual double Tv() const {
-        return mp_T[1];
-    }
-    
-    /**
-     * Returns the mixture rotational temperature.
-     */
-    virtual double Tr() const {
-        return mp_T[1];
-    }
-    
-protected:
-
-    virtual int nT() const {
-        return 2;
+    {
+        // Set the temperature indices
+        m_it  = m_itr  =         0;
+        m_itv = m_itel = m_ite = 1;
+        m_nt = 2;
     }
     
 }; // class TTvStateModel

@@ -23,7 +23,7 @@ Thermodynamics::Thermodynamics(
     const vector<string> &species_names, const string& thermo_db,
     const string& state_model )
     : mp_work1(NULL), mp_work2(NULL), mp_default_composition(NULL),
-      m_has_electrons(false)
+      m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
     // Load the species and element objects for the specified species
     loadSpeciesFromList(species_names);
@@ -126,11 +126,21 @@ void Thermodynamics::loadSpeciesFromList(
         m_species.push_back(Species(*species_iter, elements, used_elements));
         
         // Make sure that the electron (if it exists) is stored at the beginning
-        // to make life easier.
-        if (species_name == "e-") {
-            if (m_species.size() > 1) 
-                std::swap(m_species[0], m_species.back());
-            m_has_electrons = true;
+        // to make life easier.  Also count number of atoms and molecules.
+        switch (m_species.back().type()) {
+            case ELECTRON:
+                if (m_species.size() > 1) 
+                    std::swap(m_species[0], m_species.back());
+                m_has_electrons = true;
+                break;
+            case ATOM:
+                m_natoms++;
+                break;
+            case MOLECULE:
+                m_nmolecules++;
+                break;
+            default:
+                break;
         }
         
         // Clear this species from the list of species that we still need to
@@ -325,26 +335,14 @@ void Thermodynamics::equilibrate(
     double T, double P, const double* const p_c, double* const p_X, 
     bool set_state)
 {
+    double* const p_Xref = (p_X == NULL ? mp_work1 : p_X);
     
-    /// @todo Add an internal mp_X array in EquilibriumSolver class instead of
-    /// needing the work array on the outside (dangerous to need work array's
-    /// because other functions could be using them and they get clobbered when
-    /// equilibrate is called.
-    
-    mp_equil->equilibrate(T, P, p_c, p_X);
-    //convert<CONC_TO_X>(p_X, p_X);
-    
-    //cout << "After Return:" << endl;
-    //for (int i = 0; i < nSpecies(); ++i)
-    //    cout << setw(14) << p_X[i];
-    //cout << endl;
+    mp_equil->equilibrate(T, P, p_c, p_Xref);
     
     if (set_state) {
-        convert<X_TO_Y>(p_X, mp_y);
-        mp_state->setStateTPX(T, P, p_X);
+        convert<X_TO_Y>(p_Xref, mp_y);
+        mp_state->setStateTPX(T, P, p_Xref);
     }
-
-    
 }
 
 //==============================================================================

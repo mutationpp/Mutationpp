@@ -180,7 +180,6 @@ void Species::loadStoichiometry(
     
     for (int i = 0; i < stoichiometry_tokens.size(); i+=2) {
         element_name = stoichiometry_tokens[i];
-        atoms = atoi(stoichiometry_tokens[i+1].c_str());
     
         // Check that each element name in the stoichiometry list matches an
         // element in the element list that is loaded
