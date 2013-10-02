@@ -12,6 +12,7 @@
  */
 
 #include "XMLite.h"
+#include "StringUtils.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -54,6 +55,8 @@ void XmlElement::parseError(const std::string& error_msg) const
     _parseError(document(), line(), error_msg);
 }
 
+//==============================================================================
+
 void XmlElement::_parseError(
     const XmlDocument *const p_document, const long int line, 
     const std::string& error)
@@ -63,6 +66,8 @@ void XmlElement::_parseError(
     exit(1);
 }
 
+//==============================================================================
+
 template < >
 void XmlElement::getAttribute(
     const std::string &name, std::string &value)
@@ -70,11 +75,15 @@ void XmlElement::getAttribute(
     value = m_attributes[name];
 }
 
+//==============================================================================
+
 template < >
 void XmlElement::getAttribute(const std::string &name, int &value)
 {
     value = atoi(m_attributes[name].c_str());
 }
+
+//==============================================================================
 
 template < >
 void XmlElement::getAttribute(const std::string &name, float &value)
@@ -82,17 +91,23 @@ void XmlElement::getAttribute(const std::string &name, float &value)
     value = (float)atof(m_attributes[name].c_str());
 }
 
+//==============================================================================
+
 template < >
 void XmlElement::getAttribute(const std::string &name, double &value)
 {
     value = atof(m_attributes[name].c_str());
 }
 
+//==============================================================================
+
 template < >
 void XmlElement::getAttribute(const std::string &name, bool &value)
 {
-    value = (m_attributes[name] == "true");
+    value = (String::toLowerCase(m_attributes[name]) == "true");
 }
+
+//==============================================================================
 
 bool XmlElement::parse(
     istream &is, int &line, string name, ParseState state)
@@ -259,6 +274,8 @@ bool XmlElement::parse(
         
     return true;
 }
+
+//==============================================================================
 
         } // namespace IO
     } // namespace Utilities

@@ -26,7 +26,7 @@ class XmlDocument;
 
 /**
  * Represents an XML element node which can contain (name,value) pair attributes
- * as well as either element children or a value.
+ * as well as either element children or a text value.
  *
  * @todo Should make the mp_document and mp_parent members be constatnt pointers
  * and then implement the = operator and clone stuff (forget the name of this
@@ -51,34 +51,62 @@ private:
     
 public:
 
+    /**
+     * Constructs a new XmlElement given its parent and document pointers.
+     */
     XmlElement(XmlElement *p_parent, XmlDocument *p_document)
         : mp_parent(p_parent), mp_document(p_document), m_line_number(0)
     { }
     
+    /**
+     * Returns a pointer to the parent XmlElement object.
+     */
     XmlElement* parent() const {
         return const_cast<XmlElement *const>(mp_parent);
     }
     
+    /**
+     * Returns a pointer to the XmlDocument object to which this element 
+     * belongs.
+     */
     XmlDocument* document() const {
         return const_cast<XmlDocument *const>(mp_document);
     }
     
+    /**
+     * Returns the tag associated with this element.
+     */
     const std::string &tag() const {
         return m_tag;
     }
     
+    /**
+     * Returns the text associated with this element.
+     */
     const std::string &text() const {
         return m_text;
     }
     
+    /** 
+     * Returns the line number in the file where this element begins.
+     */
     long int line() const {
         return m_line_number;
     }
     
+    /**
+     * Returns true if the given attribute name exists in the attributes
+     * belonging to this element, false otherwise.
+     */
     bool hasAttribute(const std::string &name) const {
         return (m_attributes.count(name) > 0);
     }
     
+    /**
+     * Fills the value parameter with the value of the corresponding attribute
+     * with the given name.  If the attribute is not present in the element, the
+     * given default value is used.
+     */
     template <typename T>
     void getAttribute(const std::string& name, T& value, const T& dflt)
     {
@@ -88,6 +116,11 @@ public:
             value = dflt;
     }
 	
+    /**
+     * Fills the value parameter with the value of the corresponding attribute
+     * with the given name.  If the attribute is not present in the element,
+     * the error message is printed and execution is terminated.
+     */
 	template <typename T>
 	void getAttribute(const std::string& name, T& value, 
         const char *const error_msg)
@@ -97,7 +130,11 @@ public:
         else
             parseError(error_msg);
 	}
-        
+    
+    /**
+     * Fills the value parameter with the value of the corresponding attribute
+     * with the given name.
+     */
     template <typename T>
     void getAttribute(const std::string& name, T& value);
     
@@ -111,18 +148,30 @@ public:
         friend class XmlElement;
     };
     
+    /**
+     * Returns an iterator pointing to the first child element in this
+     * XmlElement.
+     */
     Iterator &begin()
     {
         m_iterator.m_iter = m_children.begin();
         return m_iterator;
     }
     
+    /**
+     * Returns an iterator pointing to the end of the child element list.
+     */
     Iterator &end()
     {
         m_iterator.m_iter = m_children.end();
         return m_iterator;
     }
     
+    /**
+     * Returns an iterator pointing to the first child element which has the 
+     * given tag and given attribute/value pair.  If no such child element 
+     * exists, the iterator equals end().
+     */
     template <typename T>
     Iterator findTagWithAttribute(
         const std::string& tag, const std::string& attribute, const T& value)
@@ -130,6 +179,11 @@ public:
         return findTagWithAttribute(tag, attribute, value, begin());
     }
     
+    /**
+     * Returns an iterator pointing to the first child element (starting from
+     * iter) which has the given tag and given attribute/value pair.  If no such
+     * child element exists, the iterator equals end().
+     */
     template <typename T>
     Iterator findTagWithAttribute(
         const std::string& tag, const std::string& attribute, const T& value,
@@ -149,10 +203,16 @@ public:
         return end();
     }
     
+    /** 
+     * Prints the given error message and exits.
+     */
     void parseError(const char *const error_msg) const {
         parseError(std::string(error_msg));
     }
     
+    /** 
+     * Prints the given error message and exits.
+     */
     void parseError(const std::string& error_msg) const;
     
     friend class XmlDocument;

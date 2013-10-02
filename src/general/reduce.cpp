@@ -18,11 +18,11 @@ using namespace Mutation;
 
 #define T_MIN     300.0
 #define T_MAX    6000.0
-#define T_POINTS   51
+#define T_POINTS   101
 
 #define P_MIN     (0.001*ONEATM)
 #define P_MAX     (10.0*ONEATM)
-#define P_POINTS   5
+#define P_POINTS   10
 
 /**
  * Simple class to represent a reduced species list at a given tolerance.
@@ -168,7 +168,7 @@ void computeErrorTable(
             P = std::exp(double(p)/double(P_POINTS-1)*std::log(P_MAX/P_MIN)+
                 std::log(P_MIN));
             
-            for (int i = 0; i < XE_POINTS; ++i) {
+            for (int i = 0; i < std::max(XE_POINTS / 10, 100); ++i) {
                 randomComposition(xe, mix);
                 
                 mix.equilibrate(T, P, &xe[0]);
@@ -283,6 +283,10 @@ int main(int argc, char** argv)
     // Compute the mixture Cp, H, S, and G and determine the maximum error in
     // each for each mixture
     cout << "Maximum errors thermodynamic properties..." << endl;
+    cout << setw(10) << "Tol";
+    cout << setw(14) << "Cp_mix [%]";
+    cout << setw(14) << "H_mix [%]";
+    cout << setw(14) << "S_mix [%]" << endl;
     for (int i = 0; i < reductions.size(); ++i) {
         computeErrorTable(reductions[i], mix, opts);
     }

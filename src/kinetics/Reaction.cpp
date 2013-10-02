@@ -34,29 +34,29 @@ const char* const reactionTypeString(const ReactionType type)
         case CHARGE_EXCHANGE:
             return "charge exchange";
         case DISSOCIATION_M:
-            return "dissociation (heavy)";
+            return "heavy particle impact dissociation";
         case DISSOCIATION_E:
-            return "dissociation (electron)";
+            return "electron impact dissociation";
         case RECOMBINATION_M:
-            return "recombination (heavy)";
+            return "heavy particle impact recombination";
         case RECOMBINATION_E:
-            return "recombination (electron)";
+            return "electron impact recombination";
         case DISSOCIATIVE_RECOMBINATION:
             return "dissociative recombination";
         case ELECTRONIC_ATTACHMENT:
-            return "electronic attachment";
+            return "electron attachment";
         case ELECTRONIC_DETACHMENT:
-            return "electronic detachment";
+            return "electron detachment";
         case EXCHANGE:
             return "exchange";
         case IONIZATION_M:
-            return "ionization (heavy)";
+            return "heavy particle impact ionization";
         case IONIZATION_E:
-            return "ionization (electron)";
+            return "electron impact ionization";
         case ION_RECOMBINATION_M:
-            return "ion recombination (heavy)";
+            return "heavy particle impact ion recombination";
         case ION_RECOMBINATION_E:
-            return "ion recombination (electron)";
+            return "electron impact ion recombination";
         default:
             return "unknown type";
     }

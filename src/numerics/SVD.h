@@ -323,7 +323,6 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
     int iter = 0;
     
     while (p > 0) {
-        k = 0;
 		int kase = 0;
 		Real eps = NumConst<Real>::eps;
 
