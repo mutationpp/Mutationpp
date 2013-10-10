@@ -7,6 +7,7 @@ add_sources(mutation++
     RateLaws.cpp
     RateManager.cpp
     Reaction.cpp
+    ReactionType.cpp
     StoichiometryManager.cpp
 )
 
@@ -16,6 +17,7 @@ install(FILES MillikanWhite.h DESTINATION include/mutation++)
 install(FILES RateLaws.h DESTINATION include/mutation++)
 install(FILES RateManager.h DESTINATION include/mutation++)
 install(FILES Reaction.h DESTINATION include/mutation++)
+install(FILES ReactionType.h DESTINATION include/mutation++)
 install(FILES StoichiometryManager.h DESTINATION include/mutation++)
 install(FILES ThirdBodyManager.h DESTINATION include/mutation++)
 

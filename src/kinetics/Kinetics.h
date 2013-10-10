@@ -28,10 +28,10 @@ public:
         const Mutation::Thermodynamics::Thermodynamics& thermo, 
         std::string mechanism);
     
-    ~Kinetics()
-    {
-        if (mp_g != NULL) delete [] mp_g;
-    }
+    /**
+     * Destructor.
+     */
+    ~Kinetics();
     
     /**
      * Returns the number of reactions in the mechanism.
@@ -205,7 +205,7 @@ private:
     StoichiometryManager m_rev_prods;
     StoichiometryManager m_irr_prods;
     
-    RateManager m_rates;
+    RateManager* mp_rates;
     ThirdbodyManager m_thirdbodies;
     JacobianManager m_jacobian;
     

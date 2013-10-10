@@ -6,44 +6,16 @@
 
 #include "Thermodynamics.h"
 #include "RateLaws.h"
+#include "ReactionType.h"
 
 namespace Mutation {
     namespace Kinetics {
-    
-
-/**
- * Enumerates possible reaction types.
- * @see Reaction::type()
- */    
-enum ReactionType
-{
-    ASSOCIATIVE_IONIZATION,
-    CHARGE_EXCHANGE,
-    DISSOCIATION_E,
-    DISSOCIATION_M,
-    DISSOCIATIVE_RECOMBINATION,
-    ELECTRONIC_ATTACHMENT,
-    ELECTRONIC_DETACHMENT,
-    EXCHANGE,
-    IONIZATION_E,
-    IONIZATION_M,
-    ION_RECOMBINATION_E,
-    ION_RECOMBINATION_M,
-    RECOMBINATION_E,
-    RECOMBINATION_M
-};
-
-/**
- * Simpy returns a string which represents the reaction type given by the 
- * ReactionType argument.
- */
-const char* const reactionTypeString(const ReactionType type);
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
  * reversibility, thirdbody efficiencies, rate law, and rate coefficients).  The
  * Reaction has no knowledge of the available species in a mixture and species
- * information is stored via the species names, not actual Species objects.
+ * information is stored via the specqies names, not actual Species objects.
  */
 class Reaction
 {

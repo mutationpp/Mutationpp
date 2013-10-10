@@ -1,65 +1,92 @@
 #ifndef KINETICS_RATEMANAGER_H
 #define KINETICS_RATEMANAGER_H
 
-#include <vector>
-
-#include "RateLaws.h"
-#include "Numerics.h"
+#include "RateLawGroup.h"
+#include "Reaction.h"
 
 namespace Mutation {
     namespace Kinetics {
 
+class Reaction;
+
 /**
- * Manages the efficient computation of forward rate coefficients.
- *
- * @see RateLaw
+ * Manages the efficient computation of rate coefficients for the evaluation of 
+ * reaction rates.
  */
 class RateManager
 {
 public:
 
     /**
-     * Default constructor.
+     * Creates a new RateManager which manages the reaction rate coefficients
+     * for the given reactions.
      */
-    RateManager() { }
+    RateManager(const std::vector<Reaction>& reactions);
     
     /**
-     * Adds a new rate coefficient to the manager.
-     *
-     * @param rxn   the corresponding reaction index in the Kinetics manager
-     * @param rate  the RateLaw to be used
-     * 
-     * @see RateLaw
+     * Destructor.
      */
-    void addRateCoefficient(
-        const size_t rxn, const RateLaw *const rate);
+    ~RateManager();
     
     /**
-     * Returns the forward rate coefficients \f$ k_{f,j}(T) \f$ for each 
-     * reaction managed by this RateManager.
-     *
-     * @param T   temperature in Kelvin
-     * @param kf  on return, filled with \f$ k_{f,j}(T) \f$
+     * Updates the current values of the rate coefficients.
      */
-    void forwardRateCoefficients(
-        const double T, Mutation::Numerics::RealVector& kf) const;
+    void update(const Thermodynamics::StateModel* p_state);
     
     /**
-     * Returns the natural logarithm of the forward rate coefficients
-     * \f$ \ln k_{f,j}(T) \f$.  It is sometimes useful to work with the log
-     * of \f$ k_{f,j}(T) \f$ rather than \f$ k_{f,j}(T) \f$ itself.
-     *
-     * @param T   temperature in Kelvin
-     * @param kf  on return, filled with \f$ \ln k_{f,j}(T) \f$
+     * Returns a pointer to the forward rate coefficients evaluated at the 
+     * forward temperature.
      */
-    void lnForwardRateCoefficients(
-        const double T, Mutation::Numerics::RealVector& lnkf) const;
+    const double* const lnkff() { return mp_lnkff; }
     
+    /**
+     * Returns a pointer to the forward rate coefficients evaluated at the 
+     * forward temperature.
+     */
+    const double* const lnkfb() { return mp_lnkfb; }
+
 private:
 
-    std::vector<std::pair<size_t, Arrhenius> > m_arrhenius;
+    /**
+     * Add a new reaction whose rate law should be managed.  This method will
+     * select the appropriate temperature to evaluate the given reaction's rate
+     * law based on the type of reaction it is.
+     */
+    void addReaction(const size_t rxn, const Reaction& reactions);
 
-}; // class RateManager
+    /**
+     * Helper function which enumerates all of the possible reaction types and
+     * calls the appropriate addRate() template based on the reaction type.
+     */
+    template <int NReactionTypes>
+    void selectRate(
+        const ReactionType type, const size_t rxn, const RateLaw* const p_rate);
+
+    /**
+     * Small helper function which adds a new rate law to the manager based on
+     * which rate law groups the forward and reverse rates fall into.
+     */
+    template <typename ForwardGroup, typename ReverseGroup>
+    void addRate(const size_t rxn, const RateLaw* const p_rate);
+
+private:
+
+    /// Total number of reactions
+    const size_t m_nr;
+
+    /// Collection of different rate law groups (can be forward or reverse)
+    RateLawGroupCollection m_rate_groups;
+    
+    /// Storage for forward rate coefficient at forward temperature
+    double* mp_lnkff;
+    
+    /// Storage for forward rate coefficient at backward temperature
+    double* mp_lnkfb;
+    
+    /// Stores the indices for which the forward and reverse temperature
+    /// evaluations are equal
+    std::vector<size_t> m_to_copy;
+};
 
 
     } // namespace Kinetics

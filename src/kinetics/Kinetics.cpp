@@ -48,8 +48,19 @@ Kinetics::Kinetics(
             Arrhenius::setUnits(*iter);
     }
     
+    // Setup the rate manager
+    mp_rates = new RateManager(m_reactions);
+    
     // Finally close the reaction mechanism
     closeReactions(true);
+}
+
+Kinetics::~Kinetics()
+{
+    if (mp_g != NULL)
+        delete [] mp_g;
+    if (mp_rates != NULL)
+        delete mp_rates;
 }
 
 //==============================================================================
@@ -72,10 +83,6 @@ void Kinetics::addReaction(const Reaction& reaction)
     if (reaction.isThirdbody())
         m_thirdbodies.addReaction(m_num_rxns, reaction.efficiencies());
     
-    // Insert new ratelaw to keep track of
-    m_rates.addRateCoefficient(
-        m_num_rxns, reaction.rateLaw());
-    
     // Add the reaction to the jacobian managaer
     m_jacobian.addReaction(reaction);
     
@@ -95,28 +102,6 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         //cout << "Validating reaction mechanism..." << endl;
         
         // Check for duplicate reactions
-        RealVector stoichi(ns);
-        RealVector stoichj(ns);
-        /*for (size_t i = 0; i < m_num_rxns-1; ++i) {
-            for (size_t k = 0; k < ns; ++k)
-                stoichi(k) =
-                    m_reactions[i].product(k) - m_reactions[i].reactant(k);
-            stoichi.normalize();
-            for (size_t j = i+1; j < m_num_rxns; ++j) {
-                for (size_t k = 0; k < ns; ++k)
-                    stoichj(k) =
-                        m_reactions[j].product(k) - m_reactions[j].reactant(k);
-                stoichj.normalize();
-                if (stoichi == stoichj) {
-                    cerr << "Reactions " << i+1 << " \"" 
-                         << m_reactions[i].formula()
-                         << "\" and " << j+1 << " \""
-                         << m_reactions[j].formula()
-                         << "\" are identical." << endl;
-                    is_valid = false;
-                }
-            }
-        }*/
         for (size_t i = 0; i < m_num_rxns-1; ++i) {
             for (size_t j = i+1; j < m_num_rxns; ++j) {
                 if (m_reactions[i] == m_reactions[j]) {
@@ -132,6 +117,8 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         
         // Check for elemental mass and charge conservation
         RealVector mass(m_num_rxns);
+        RealVector stoichi(ns);
+        RealVector stoichj(ns);
         for (int i = 0; i < m_thermo.nElements(); ++i) {
             for (size_t k = 0; k < ns; ++k)
                 stoichi(k) = m_thermo.elementMatrix()(k,i);
@@ -216,7 +203,8 @@ void Kinetics::updateT(const double T)
     if (abs(T - m_T_last) < 1.0E-6) return;
 
     // Update forward rates
-    m_rates.lnForwardRateCoefficients(T, m_lnkf);
+    mp_rates->update(m_thermo.state());
+    m_lnkf = asVector(mp_rates->lnkff(), m_num_rxns);
     
     // Update the equilibrium constants
     m_lnkeq = m_dnu * std::log(101325.0 / (RU * T));

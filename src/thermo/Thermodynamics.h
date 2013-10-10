@@ -75,7 +75,7 @@ public:
      * Returns a pointer to the StateModel object owned by this thermodynamics
      * object.
      */
-    StateModel* const stateModel() const {
+    StateModel* const state() const {
         return mp_state;
     }
     
@@ -742,11 +742,11 @@ inline void Thermodynamics::convert<YE_TO_XE>(
         b[i] /= sum;
 }
 
-template <>
-inline void Thermodynamics::convert<Y_TO_XE>(
-    const double *const a, double *const b) const {
-       
-}
+//template <>
+//inline void Thermodynamics::convert<Y_TO_XE>(
+//    const double *const a, double *const b) const {
+//
+//}
 /// @endcond
 
     } // namespace Thermodynamics
