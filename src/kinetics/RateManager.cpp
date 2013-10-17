@@ -60,37 +60,40 @@ template <> struct RateSelector<__TYPE__> {\
 };
 
 // Default rate law groups for non (kf(T), kb(T)) reaction types
-SELECT_RATE_LAWS(ASSOCIATIVE_IONIZATION, ArrheniusT, ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATION_E, ArrheniusTe, ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATION_M, ArrheniusPark, ArrheniusT)
-SELECT_RATE_LAWS(DISSOCIATIVE_RECOMBINATION, ArrheniusTe, ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT, ArrheniusTe, ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT, ArrheniusT, ArrheniusTe)
-SELECT_RATE_LAWS(IONIZATION_E, ArrheniusTe, ArrheniusTe)
-SELECT_RATE_LAWS(IONIZATION_M, ArrheniusT, ArrheniusTe)
-SELECT_RATE_LAWS(ION_RECOMBINATION_E, ArrheniusTe, ArrheniusTe)
-SELECT_RATE_LAWS(ION_RECOMBINATION_M, ArrheniusTe, ArrheniusT)
-SELECT_RATE_LAWS(RECOMBINATION_E, ArrheniusTe, ArrheniusTe)
-SELECT_RATE_LAWS(RECOMBINATION_M, ArrheniusT, ArrheniusPark)
+SELECT_RATE_LAWS(ASSOCIATIVE_IONIZATION,     ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(DISSOCIATION_E,             ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(DISSOCIATION_M,             ArrheniusPark, ArrheniusT)
+SELECT_RATE_LAWS(DISSOCIATIVE_RECOMBINATION, ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT,      ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT,      ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(IONIZATION_M,               ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(ION_RECOMBINATION_E,        ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(ION_RECOMBINATION_M,        ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(RECOMBINATION_E,            ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(RECOMBINATION_M,            ArrheniusT,    ArrheniusPark)
 
 #undef SELECT_RATE_LAWS
 
 //==============================================================================
 
-RateManager::RateManager(const std::vector<Reaction>& reactions)
-    : m_nr(reactions.size())
+RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
+    : m_ns(ns), m_nr(reactions.size())
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
-    for (size_t i = 0; i < nr; ++i)
+    for (size_t i = 0; i < m_nr; ++i)
         addReaction(i, reactions[i]);
     
-    // Allocate storage in one block for both rate coefficient arrays
-    mp_lnkff = new double [2*nr];
-    mp_lnkfb = mp_lnkff + nr;
+    // Allocate storage in one block for both rate coefficient arrays and
+    // species gibbs free energies 
+    const size_t block_size = 2*m_nr + ns;
+    mp_lnkf  = new double [block_size];
+    mp_lnkb  = mp_lnkf + m_nr;
+    mp_gibbs = mp_lnkb + m_nr;
     
     // Initialize the arrays to zero
-    std::fill(mp_lnkff, mp_lnkff+2*nr, 0.0);
+    std::fill(mp_lnkf, mp_lnkf+block_size, 0.0);
 }
 
 //==============================================================================
@@ -98,8 +101,8 @@ RateManager::RateManager(const std::vector<Reaction>& reactions)
 RateManager::~RateManager()
 {
     // Storage for lnkff and lnkfb were both allocated in mp_lnkff
-    if (mp_lnkff != NULL)
-        delete [] mp_lnkff;
+    if (mp_lnkf != NULL)
+        delete [] mp_lnkf;
 }
 
 //==============================================================================
@@ -111,7 +114,7 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
     
     // Arrhenius reactions
     if (typeid(*p_rate) == typeid(Arrhenius)) {
-        selectRate<MAX_REACTION_TYPES-1>(reaction.type(), rxn, p_rate);
+        selectRate<MAX_REACTION_TYPES-1>(rxn, reaction);
     } else {
         std::cerr << "Rate law " << typeid(*p_rate).name()
                   << " not implemented in RateManager!" << std::endl;
@@ -125,23 +128,24 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
 
 template <int NReactionTypes>
 void RateManager::selectRate(
-    const ReactionType type, const size_t rxn, const RateLaw* const p_rate)
+    const size_t rxn, const Reaction& reaction)
 {
-    if (type == NReactionTypes)
+    if (reaction.type() == NReactionTypes)
         addRate<
             typename RateSelector<NReactionTypes>::ForwardGroup,
-            typename RateSelector<NReactionTypes>::ReverseGroup>(rxn, p_rate);
+            typename RateSelector<NReactionTypes>::ReverseGroup>(
+            rxn, reaction);
     else
-        selectRate<NReactionTypes-1>(type, rxn, p_rate);
+        selectRate<NReactionTypes-1>(rxn, reaction);
 }
 
 template <>
 void RateManager::selectRate<0>(
-    const ReactionType type, const size_t rxn, const RateLaw* const p_rate)
+    const size_t rxn, const Reaction& reaction)
 {
     addRate<
         typename RateSelector<0>::ForwardGroup,
-        typename RateSelector<0>::ReverseGroup>(rxn, p_rate);
+        typename RateSelector<0>::ReverseGroup>(rxn, reaction);
 }
 
 //==============================================================================
@@ -159,28 +163,39 @@ struct is_same<T,T> {
 //==============================================================================
 
 template <typename ForwardGroup, typename ReverseGroup>
-void RateManager::addRate(const size_t rxn, const RateLaw* const p_rate)
+void RateManager::addRate(const size_t rxn, const Reaction& reaction)
 {    
-    m_rate_groups.addRateCoefficient<ForwardGroup>(rxn, p_rate);
+    m_rate_groups.addRateCoefficient<ForwardGroup>(rxn, reaction.rateLaw());
     
-    /// Make use of forward computation when possible
+    // Make use of forward computation when possible
     if (is_same<ForwardGroup, ReverseGroup>::value)
         m_to_copy.push_back(rxn);
     else
         // Evaluate at the reverse temperature
         // note: mp_lnkff+(rxn+m_nr) = mp_lnkfb+rxn
-        m_rate_groups.addRateCoefficient<ReverseGroup>(rxn+m_nr, p_rate);
+        m_rate_groups.addRateCoefficient<ReverseGroup>(
+            rxn+m_nr, reaction.rateLaw());
+    
+    m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
 }
 
 //==============================================================================
 
-void RateManager::update(const Thermodynamics::StateModel* p_state)
+void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
 {
-    m_rate_groups.logOfRateCoefficients(p_state, mp_lnkff);
+    // Evaulate all of the different rate coefficients
+    m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
     
+    // Copy rate coefficients which are the same as one of the previously
+    // calculated ones
     std::vector<size_t>::const_iterator iter = m_to_copy.begin();
-    for ( ; iter != m_to_copy.end(); ++iter)
-        mp_lnkfb[*iter] = mp_lnkff[*iter];
+    for ( ; iter != m_to_copy.end(); ++iter) {
+        const size_t index = *iter;
+        mp_lnkb[index] = mp_lnkf[index];
+    }
+    
+    // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
+    m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
 }
 
 //==============================================================================

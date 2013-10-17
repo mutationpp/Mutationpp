@@ -5,67 +5,205 @@
 namespace Mutation {
     namespace Thermodynamics {
 
-void StateModel::setStateTPX(
-    const double* const T, const double* const P, const double* const X)
-{
-    std::copy(T, T+nT(), mp_T);
-    std::copy(P, P+nP(), mp_P);
-    std::copy(X, X+m_ns, mp_X);
-}
+//==============================================================================
 
-void StateModel::setStateTPX(
-    const double T, const double P, const double* const X)
-{
-    std::fill(mp_T, mp_T+nT(), T);
-    std::fill(mp_P, mp_P+nP(), P);
-    std::copy(X, X+m_ns, mp_X);
-}
-
-void StateModel::init() 
-{
-    // Set temperature indices
-    m_it = m_itr = m_itv = m_itel = m_ite = 0;
-    m_nt = 1;
-
-    // Allocate storage
-    mp_T = new double [nT()];
-    mp_P = new double [nP()];
-    mp_X = new double [m_ns];
-    
-    // Initialize everything to 0
-    std::fill(mp_T, mp_T+nT(), 0.0);
-    std::fill(mp_P, mp_P+nP(), 0.0);
-    std::fill(mp_X, mp_X+m_ns, 0.0);
-}
-
-// Register the basic state model
-Utilities::Config::ObjectProvider<StateModel, StateModel> tpModel("T");
-
-
-/**
- * Represents a mixture using two temperatures: \f$T_1 = T = T_e = T_{el}\f$ and 
- * \f$T_2 = T_v = T_r\f$.  
- */
-class TTvStateModel : public StateModel
+class EquilTPStateModel : public StateModel
 {
 public:
-    
     /**
      * Constructor.
      */
-    TTvStateModel(int ns)
-        : StateModel(ns)
-    {
-        // Set the temperature indices
-        m_it  = m_itr  =         0;
-        m_itv = m_itel = m_ite = 1;
-        m_nt = 2;
-    }
-    
-}; // class TTvStateModel
+    EquilTPStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
 
-// Register the T,Tv model
-Utilities::Config::ObjectProvider<TTvStateModel, StateModel> ttvModel("T,Tv");
+    /**
+     * Sets the mixture state by computing the equilibrium composition at the
+     * given temperature and pressure using the default elemental composition.
+     *
+     * @param p_T - pointer to temperature value (K)
+     * @param p_P - pointer to pressure value (Pa)
+     */
+    virtual void setState(const double* const p_T, const double* const p_P)
+    {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = p_T[0];
+        m_P = p_P[0];
+        m_thermo.equilibriumComposition(m_T, m_P, mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    EquilTPStateModel, StateModel> equil_tp("EquilTP");
+
+//==============================================================================
+
+class EquilTPXeStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    EquilTPXeStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+
+    /**
+     * Sets the mixture state by computing the equilibrium composition at the
+     * given temperature and pressure using the default elemental composition.
+     *
+     * @param p_T - pointer to temperature value (K)
+     * @param p_P - pointer to pressure value (Pa)
+     */
+    virtual void setState(const double* const p_TP, const double* const p_Xe)
+    {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = p_TP[0];
+        m_P = p_TP[1];
+        m_thermo.equilibriumComposition(m_T, m_P, p_Xe, mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    EquilTPXeStateModel, StateModel> equil_tpxe("EquilTPXe");
+
+//==============================================================================
+
+class TPXStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    TPXStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+    
+    /**
+     * Sets the mixture state from mixture temperature, pressure, and species
+     * mole fractions.
+     *
+     * @param p_TP - pointer to {T (K), P (Pa)} array
+     * @param p_X  - pointer to species mole fraction array
+     */
+    virtual void setState(const double* const p_TP, const double* const p_X)
+    {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = p_TP[0];
+        m_P = p_TP[1];
+        std::copy(p_X, p_X+m_thermo.nSpecies(), mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    TPXStateModel, StateModel> tpx("TPX");
+
+//==============================================================================
+
+class TPYStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    TPYStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+    
+    /**
+     * Sets the mixture state from mixture temperature, pressure, and species
+     * mass fractions.
+     *
+     * @param p_TP - pointer to {T (K), P (Pa)} array
+     * @param p_Y  - pointer to species mass fraction array
+     */
+    virtual void setState(const double* const p_TP, const double* const p_Y)
+    {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = p_TP[0];
+        m_P = p_TP[1];
+        m_thermo.convert<Y_TO_X>(p_Y, mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    TPYStateModel, StateModel> tpy("TPY");
+
+//==============================================================================
+
+class TRhoiStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    TRhoiStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+    
+    /**
+     * Sets the mixture state from mixture temperature and species densities.
+     *
+     * @param p_T    - pointer to mixture temperature
+     * @param p_rhoi - pointer to species densities array
+     */
+    virtual void setState(const double* const p_T, const double* const p_rhoi)
+    {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = p_T[0];
+        
+        m_P = 0.0;
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_rhoi[i];
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_rhoi[i] / m_P;
+        m_P = m_thermo.pressure(m_T, m_P, mp_X);
+        
+        m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    TRhoiStateModel, StateModel> trhoi("TRhoi");
+
+//==============================================================================
+
+class TTvRhoiStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    TTvRhoiStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+    
+    /**
+     * Sets the mixture state from mixture temperature, pressure, and species
+     * mass fractions.
+     *
+     * @param p_T    - pointer to {T (K), Tv (K)} array
+     * @param p_rhoi - pointer to species densities array
+     */
+    virtual void setState(const double* const p_T, const double* const p_rhoi)
+    {
+        m_T = m_Tr = p_T[0];
+        m_Tv = m_Tel = m_Te = p_T[1];
+        
+        m_P = 0.0;
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_rhoi[i];
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_rhoi[i] / m_P;
+        m_P = m_thermo.pressure(m_T, m_P, mp_X);
+        
+        m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    TTvRhoiStateModel, StateModel> ttvrhoi("TTvRhoi");
 
     } // namespace Thermodynamics
 } // namespace Mutation

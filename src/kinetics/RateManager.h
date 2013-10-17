@@ -21,7 +21,7 @@ public:
      * Creates a new RateManager which manages the reaction rate coefficients
      * for the given reactions.
      */
-    RateManager(const std::vector<Reaction>& reactions);
+    RateManager(size_t ns, const std::vector<Reaction>& reactions);
     
     /**
      * Destructor.
@@ -31,19 +31,19 @@ public:
     /**
      * Updates the current values of the rate coefficients.
      */
-    void update(const Thermodynamics::StateModel* p_state);
+    void update(const Thermodynamics::Thermodynamics& thermo);
     
     /**
      * Returns a pointer to the forward rate coefficients evaluated at the 
      * forward temperature.
      */
-    const double* const lnkff() { return mp_lnkff; }
+    const double* const lnkf() { return mp_lnkf; }
     
     /**
      * Returns a pointer to the forward rate coefficients evaluated at the 
      * forward temperature.
      */
-    const double* const lnkfb() { return mp_lnkfb; }
+    const double* const lnkb() { return mp_lnkb; }
 
 private:
 
@@ -59,29 +59,34 @@ private:
      * calls the appropriate addRate() template based on the reaction type.
      */
     template <int NReactionTypes>
-    void selectRate(
-        const ReactionType type, const size_t rxn, const RateLaw* const p_rate);
+    void selectRate(const size_t rxn, const Reaction& reaction);
 
     /**
      * Small helper function which adds a new rate law to the manager based on
      * which rate law groups the forward and reverse rates fall into.
      */
     template <typename ForwardGroup, typename ReverseGroup>
-    void addRate(const size_t rxn, const RateLaw* const p_rate);
+    void addRate(const size_t rxn, const Reaction& reaction);
 
 private:
 
-    /// Total number of reactions
+    /// Number of species in the mixture
+    const size_t m_ns;
+    
+    /// Number of reactions in the mechanism
     const size_t m_nr;
 
     /// Collection of different rate law groups (can be forward or reverse)
     RateLawGroupCollection m_rate_groups;
     
     /// Storage for forward rate coefficient at forward temperature
-    double* mp_lnkff;
+    double* mp_lnkf;
     
     /// Storage for forward rate coefficient at backward temperature
-    double* mp_lnkfb;
+    double* mp_lnkb;
+    
+    /// Storage for species Gibbs free energies
+    double* mp_gibbs;
     
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal

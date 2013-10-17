@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "StateModel.h"
+//#include "StateModel.h"
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
@@ -17,6 +17,7 @@ namespace Mutation {
 class GfcEquilSolver;
 class MultiPhaseEquilSolver;
 class ThermoDB;
+class StateModel;
 
 /**
  * Possible conversion methods that can be used with the 
@@ -208,29 +209,37 @@ public:
      * Sets the current state of the mixture using temperatures, pressure, and 
      * species mole fractions.
      */
-    void setStateTPX(
-        const double* const T, const double* const P, const double* const X);
+    //void setStateTPX(
+    //    const double* const T, const double* const P, const double* const X);
     
     /**
      * Sets the current state of the mixture using temperatures pressures, and 
      * species mass fractions.
      */
-    void setStateTPY(
-        const double* const T, const double* const P, const double* const Y);
+    //void setStateTPY(
+    //    const double* const T, const double* const P, const double* const Y);
+    
+    void setState(const double* const p_v1, const double* const p_v2);
         
     /**
      * Computes the equilibrium mole fractions of the mixture given the
      * elemental composition.
      */
-    void equilibrate(
-        double T, double P, const double* const p_c, double* const p_X = NULL,
-        bool set_state = true);
+    //void equilibrate(
+    //    double T, double P, const double* const p_c, double* const p_X = NULL,
+    //    bool set_state = true);
     
     /**
      * Equilibrates the mixture to a given temperature and pressure using the 
      * default elemental composition.
      */
-    void equilibrate(double T, double P);
+    //void equilibrate(double T, double P);
+    
+    void equilibriumComposition(double T, double P, double* const p_X) const {
+        equilibriumComposition(T, P, mp_default_composition, p_X);
+    }
+    void equilibriumComposition(
+        double T, double P, const double* const p_Xe, double* const p_X) const;
     
     /**
      * Returns the element potentials calculated by the most recent call to 
@@ -598,6 +607,7 @@ public:
      */
     void speciesGOverRT(double* const p_g) const;
     void speciesGOverRT(double T, double P, double* const p_g) const;
+    void speciesSTGOverRT(double T, double* const p_g) const;
     
     /**
      * Returns the number of moles of each element in a mixture with a given

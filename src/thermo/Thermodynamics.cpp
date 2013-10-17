@@ -59,7 +59,7 @@ Thermodynamics::Thermodynamics(
     mp_equil = new MultiPhaseEquilSolver(*this);
     
     // Allocate a new state model
-    mp_state = Config::Factory<StateModel>::create(state_model, nSpecies());
+    mp_state = Config::Factory<StateModel>::create(state_model, *this);
     //mp_state->notifyOnUpdate(this);
 }
 
@@ -245,21 +245,11 @@ int Thermodynamics::nPhases() const {
 
 //==============================================================================
 
-void Thermodynamics::setStateTPX(
-    const double* const T, const double* const P, const double* const X)
+void Thermodynamics::setState(
+    const double* const p_v1, const double* const p_v2)
 {
-    mp_state->setStateTPX(T, P, X);
-    convert<X_TO_Y>(X, mp_y);
-}
-
-//==============================================================================
-
-void Thermodynamics::setStateTPY(
-        const double* const T, const double* const P, const double* const Y)
-{
-    std::copy(Y, Y+nSpecies(), mp_y);
-    convert<Y_TO_X>(Y, mp_work1);
-    mp_state->setStateTPX(T, P, mp_work1);
+    mp_state->setState(p_v1, p_v2);
+    convert<X_TO_Y>(X(), mp_y);
 }
 
 //==============================================================================
@@ -331,7 +321,7 @@ double Thermodynamics::mixtureMw() const
 
 //==============================================================================
 
-void Thermodynamics::equilibrate(
+/*void Thermodynamics::equilibrate(
     double T, double P, const double* const p_c, double* const p_X, 
     bool set_state)
 {
@@ -350,6 +340,12 @@ void Thermodynamics::equilibrate(
 void Thermodynamics::equilibrate(double T, double P)
 {
     equilibrate(T, P, mp_default_composition, mp_work1);
+}*/
+
+void Thermodynamics::equilibriumComposition(
+    double T, double P, const double* const p_Xe, double* const p_X) const
+{
+    mp_equil->equilibrate(T, P, p_Xe, p_X);
 }
 
 //==============================================================================
@@ -902,6 +898,13 @@ void Thermodynamics::speciesGOverRT(double T, double P, double* const p_g) const
 
 //==============================================================================
 
+void Thermodynamics::speciesSTGOverRT(double T, double* const p_g) const {
+    mp_thermodb->gibbs(
+        T, T, T, T, T, standardStateP(), p_g, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
 void Thermodynamics::elementMoles(
     const double *const species_N, double *const element_N) const
 {
@@ -955,7 +958,7 @@ void Thermodynamics::surfaceMassBalance(
     
     // Compute equilibrium
     convert<YE_TO_XE>(p_Yw, p_Xw);    
-    equilibrate(T, P, p_Xw, p_X, false);
+    equilibriumComposition(T, P, p_Xw, p_X);
     
     // Compute the gas mass fractions at the wall
     double mwg = 0.0;

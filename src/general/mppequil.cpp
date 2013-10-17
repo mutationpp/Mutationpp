@@ -310,6 +310,9 @@ Options parseOptions(int argc, char** argv)
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
     }
     
+    // Must use the equilibirum state model
+    opts.p_mixture_opts->setStateModel("EquilTP");
+    
     // Elemental mole fractions
     if (optionExists(argc, argv, "--elem-x")) {
         std::vector<std::string> tokens;
@@ -503,7 +506,7 @@ int main(int argc, char** argv)
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {
             // Compute the equilibrium composition
-            mix.equilibrate(T, P);
+            mix.setState(&T, &P);
             cw = 0;
         
             // Mixture properties
@@ -681,10 +684,7 @@ int main(int argc, char** argv)
                     for (int i = 0; i < mix.nSpecies(); ++i)
                         species_values[i] *= rho * mix.Y()[i];
                 } else if (name == "omega") {
-                    double conc = mix.density() / mix.mixtureMw();
-                    for (int i = 0; i < mix.nSpecies(); ++i)
-                        temp[i] = mix.X()[i] * conc;
-                    mix.netProductionRates(mix.T(), temp, species_values);
+                    mix.netProductionRates(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)

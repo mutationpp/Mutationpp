@@ -20,9 +20,10 @@
 #include <typeinfo>
 #include <vector>
 
-#include "Functors.h"
 #include "RateLaws.h"
+#include "Reaction.h"
 #include "StateModel.h"
+#include "StoichiometryManager.h"
 
 namespace Mutation {
     namespace Kinetics {
@@ -47,6 +48,15 @@ public:
         const size_t rxn, const RateLaw* const p_rate) = 0;
     
     /**
+     * Adds a reaction which uses the backward temperature represented by this
+     * group.
+     */
+    void addReaction(const size_t rxn, const Reaction& reaction) {
+        m_reacs.addReaction(rxn, reaction.reactants());
+        m_prods.addReaction(rxn, reaction.products());
+    }
+    
+    /**
      * Returns the temperature used in the last evaluation of the rate
      * coefficients.
      */
@@ -57,25 +67,37 @@ public:
      */
     virtual void lnk(
         const Thermodynamics::StateModel* const p_state, double* const p_lnk) = 0;
-    //{
-    //    lnk(p_lnk, Mutation::Numerics::Equals());
-    //}
-    
+        
     /**
-     * Evaluates all of the rates in the group and applies them to the given
-     * vector using the given equality operator.
+     * Computes \Delta G / RT for this rate law group and subtracts these values
+     * for each of the reactions in this group.
      */
-    /*template <typename OP>
-    virtual void lnk(
-        const Thermodynamics::StateModel* const p_state, double* const p_lnk,
-        const OP& op
-    ) const = 0;*/
+    void subtractLnKeq(size_t ns, double* const p_g, double* const p_r) const
+    {        
+        // Compute G_i/RT - ln(Patm/RT)
+        const double val = std::log(ONEATM / (RU * m_t));
+        for (int i = 0; i < ns; ++i)
+            p_g[i] -= val;
+        
+        // Now subtract \Delta[G_i/RT - ln(Patm/RT)]_j
+        m_reacs.decrReactions(p_g, p_r);
+        m_prods.incrReactions(p_g, p_r);
+    }
+    
 
 protected:
 
     /// This is the temperature computed to evaluate the rate law (should be set
     /// in the lnk() function)
     double m_t;
+    
+    /// Stores the reactants for reactions that will use this rate law for the
+    /// reverse direction
+    StoichiometryManager m_reacs;
+    
+    /// Stores the products for reactions that will use this rate law for the
+    /// reverse direction
+    StoichiometryManager m_prods;
 };
 
 
@@ -127,12 +149,26 @@ private:
 
 
 /**
+ * Small helper class which provides comparison between two std::type_info
+ * pointers.
+ */
+struct CompareTypeInfo {
+    bool operator ()(const std::type_info* a, const std::type_info* b) const {
+        return a->before(*b);
+    }
+};
+
+
+/**
  * Manages a collection of RateLawGroup objects such that only one object of any
  * RateLawGroup type is ever created in each collection.
  */
 class RateLawGroupCollection
 {
 public:
+
+    typedef std::map<const std::type_info*, RateLawGroup*, CompareTypeInfo>
+        GroupMap;
 
     /**
      * Destructor.
@@ -145,6 +181,16 @@ public:
             iter->second = NULL;
         }
     }
+    
+    /**
+     * Returns the number of different rate law groups in this collection.
+     */
+    size_t nGroups() const { return m_group_map.size(); }
+    
+    /**
+     * Returns the GroupMap managed by this RateLawGroupCollection object.
+     */
+    const GroupMap& groups() const { return m_group_map; }
 
     /**
      * Adds a new rate law to be managed by this collection of rate law groups.
@@ -160,6 +206,18 @@ public:
                   << typeid(GroupType).name() << "), " << "Ngroups = "
                   << m_group_map.size() << std::endl;
     }
+    
+    /**
+     * Adds a reaction to the manager which allows for the calculation of the 
+     * \Delta G / RT term for reverse rate coefficients.
+     */
+    template <typename GroupType>
+    void addReaction(const size_t rxn, const Reaction& reaction)
+    {
+        if (m_group_map[&typeid(GroupType)] == NULL)
+            m_group_map[&typeid(GroupType)] = new GroupType();
+        m_group_map[&typeid(GroupType)]->addReaction(rxn, reaction);
+    }
 
     /**
      * Computes the rate coefficients in this collection and stores them in
@@ -173,22 +231,24 @@ public:
         for ( ; iter != m_group_map.end(); ++iter)
             iter->second->lnk(p_state, p_lnk);
     }
+    
+    /**
+     * Subtracts ln(keq) from the provided rate coefficients.
+     */
+    void subtractLnKeq(
+        const Thermodynamics::Thermodynamics& thermo, double* const p_g,
+        double* const p_lnk)
+    {
+        const size_t ns = thermo.nSpecies();
+        GroupMap::iterator iter = m_group_map.begin();
+        for ( ; iter != m_group_map.end(); ++iter) {
+            const RateLawGroup* p_group = iter->second;
+            thermo.speciesSTGOverRT(p_group->getT(), p_g);
+            p_group->subtractLnKeq(ns, p_g, p_lnk);
+        }
+    }
 
 private:
-
-    /**
-     * Small helper class which provides comparison between two std::type_info 
-     * pointers.
-     */
-    struct CompareTypeInfo {
-        bool operator ()(const std::type_info* a, const std::type_info* b) const
-        {
-            return a->before(*b);
-        }
-    };
-    
-    typedef std::map<const std::type_info*, RateLawGroup*, CompareTypeInfo>
-        GroupMap;
     
     /// Collection of RateLawGroup objects
     GroupMap m_group_map;

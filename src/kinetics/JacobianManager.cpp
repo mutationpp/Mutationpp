@@ -1,6 +1,6 @@
 #include "JacobianManager.h"
 #include "Reaction.h"
-#include "Numerics.h"
+#include "Functors.h"
 
 #include <iomanip>
 #include <iostream>

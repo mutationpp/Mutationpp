@@ -13,9 +13,8 @@ namespace Mutation {
 
 /**
  * Stores information that defines a complete reaction (reactants, products,
- * reversibility, thirdbody efficiencies, rate law, and rate coefficients).  The
- * Reaction has no knowledge of the available species in a mixture and species
- * information is stored via the specqies names, not actual Species objects.
+ * reversibility, thirdbody efficiencies, rate law, and rate coefficients).
+ * Species information is stored via indices into the global species list.
  */
 class Reaction
 {
@@ -37,6 +36,7 @@ public:
           m_products(reaction.m_products),
           m_reversible(reaction.m_reversible),
           m_thirdbody(reaction.m_thirdbody),
+          m_conserves(reaction.m_conserves),
           m_thirdbodies(reaction.m_thirdbodies),
           m_type(reaction.m_type),
           mp_rate(reaction.mp_rate ? reaction.mp_rate->clone() : NULL)
@@ -112,6 +112,13 @@ public:
      */
     bool isThirdbody() const { 
         return m_thirdbody; 
+    }
+    
+    /**
+     * Returns true if the reaction conserves mass and charge.
+     */
+    bool conservesChargeAndMass() const {
+        return m_conserves;
     }
     
     /**
@@ -230,6 +237,7 @@ private:
     
     bool m_reversible;
     bool m_thirdbody;
+    bool m_conserves;
     
     std::vector<std::pair<int, double> > m_thirdbodies;
     
