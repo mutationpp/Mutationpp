@@ -94,7 +94,7 @@ extern "C" {
  * called once before calling any other function.
  */
 void NAME_MANGLE(initialize)(
-    char* mixture, int mixture_length);
+    char* mixture, char* state_model, int mixture_length, int state_length);
 
 /**
  * Deallocates all data associated with the mutation++ library.  Should be
@@ -225,14 +225,14 @@ void NAME_MANGLE(species_densities)(
  * @param element_y - element densities or mass fractions
  * @param species_y - species mass fractions on return
  */
-void NAME_MANGLE(equilibrate)(
-    double* T, double* P);
+//void NAME_MANGLE(equilibrate)(
+//    double* T, double* P);
     
 /**
  * Sets the current state of the mixture using temperature and species 
  * densities.
  */
-void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi);
+void NAME_MANGLE(set_state)(double* v1, double* v2);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the

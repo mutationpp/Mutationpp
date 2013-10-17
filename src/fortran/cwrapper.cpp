@@ -32,10 +32,13 @@ void string_to_char(std::string string, char* str, int length)
 }
 
 //==============================================================================
-void NAME_MANGLE(initialize)(char* mixture, int mixture_length)
+void NAME_MANGLE(initialize)(
+    char* mixture, char* state_model, int mixture_length, int state_length)
 {
     //feenableexcept(FE_INVALID);
-    p_mix = new Mutation::Mixture(char_to_string(mixture, mixture_length));
+    Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
+    opts.setStateModel(char_to_string(state_model, state_length));
+    p_mix = new Mutation::Mixture(opts);
     p_work_species = new double [p_mix->nSpecies()];
     p_work_element = new double [p_mix->nElements()];
     //work_species = RealVector(p_mix->nSpecies());
@@ -150,26 +153,31 @@ void NAME_MANGLE(species_densities)(double* const rhoi)
 }
 
 //==============================================================================
-void NAME_MANGLE(equilibrate)(double* T, double* P)
-{
-    p_mix->equilibrate(*T, *P);
-}
+//void NAME_MANGLE(equilibrate)(double* T, double* P)
+//{
+//    p_mix->equilibrate(*T, *P);
+//}
 
 //==============================================================================
-void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi)
+//void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi)
+//{
+//    double rho = 0.0;
+//    for (int i = 0; i < p_mix->nSpecies(); ++i)
+//        rho += rhoi[i];
+//    
+//    double P = 0.0;
+//    for (int i = 0; i < p_mix->nSpecies(); ++i) {
+//        p_work_species[i] = rhoi[i] / rho;
+//        P += rhoi[i] / p_mix->speciesMw(i);
+//    }
+//    
+//    P *= Mutation::RU * (*T);
+//    p_mix->setStateTPY(T, &P, p_work_species);
+//}
+
+void NAME_MANGLE(set_state)(double* v1, double* v2)
 {
-    double rho = 0.0;
-    for (int i = 0; i < p_mix->nSpecies(); ++i)
-        rho += rhoi[i];
-    
-    double P = 0.0;
-    for (int i = 0; i < p_mix->nSpecies(); ++i) {
-        p_work_species[i] = rhoi[i] / rho;
-        P += rhoi[i] / p_mix->speciesMw(i);
-    }
-    
-    P *= Mutation::RU * (*T);
-    p_mix->setStateTPY(T, &P, p_work_species);
+    p_mix->setState(v1, v2);
 }
 
 //==============================================================================
