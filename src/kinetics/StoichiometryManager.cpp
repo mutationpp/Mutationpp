@@ -4,12 +4,11 @@
 #include "StoichiometryManager.h"
 
 using namespace std;
-using namespace Mutation::Numerics;
 
 namespace Mutation {
     namespace Kinetics {
 
-void StoichiometryManager::addReaction(const int rxn, const vector<int> &sps)
+void StoichiometryManager::addReaction(const int rxn, const vector<int>& sps)
 {
     switch (sps.size()) {
         case 1:
@@ -28,7 +27,7 @@ void StoichiometryManager::addReaction(const int rxn, const vector<int> &sps)
     }
 }
 
-#define STOICH_MGR_APPLY_FUNC(__my_func__,__stoic_func__,__in__,__out__)\
+#define STOICH_MGR_APPLY_FUNC(__my_func__,__stoic_func__)\
 template<class Iterator, class Vec1, class Vec2>\
 inline static void _##__my_func__ (\
     Iterator begin, const Iterator end, const Vec1& input, Vec2& output)\
@@ -37,19 +36,19 @@ inline static void _##__my_func__ (\
         begin-> __stoic_func__ (input, output);\
 }\
 void StoichiometryManager:: __my_func__ (\
-    const RealVector& __in__ , RealVector& __out__ ) const\
+    const double* const in, double* const out) const\
 {\
-    _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), __in__ , __out__ );\
-    _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), __in__ , __out__ );\
-    _##__my_func__ (m_stoich3_vec.begin(), m_stoich3_vec.end(), __in__ , __out__ );\
+    _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
+    _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in , out );\
+    _##__my_func__ (m_stoich3_vec.begin(), m_stoich3_vec.end(), in , out );\
 }
 
-STOICH_MGR_APPLY_FUNC(multReactions, multReaction, s, r)
-STOICH_MGR_APPLY_FUNC(incrReactions, incrReaction, s, r)
-STOICH_MGR_APPLY_FUNC(decrReactions, decrReaction, s, r)
+STOICH_MGR_APPLY_FUNC(multReactions, multReaction)
+STOICH_MGR_APPLY_FUNC(incrReactions, incrReaction)
+STOICH_MGR_APPLY_FUNC(decrReactions, decrReaction)
 
-STOICH_MGR_APPLY_FUNC(incrSpecies, incrSpecies, r, s)
-STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies, r, s)
+STOICH_MGR_APPLY_FUNC(incrSpecies, incrSpecies)
+STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies)
 
 #undef STOICH_MGR_APPLY_FUNC
 

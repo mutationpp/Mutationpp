@@ -27,7 +27,13 @@ module mutationpp
         
         real(kind=8) function mpp_density()
         end function
-        
+
+        real(kind=8) function mpp_density_tpx(T, P, X)
+            real(kind=8), intent(in) :: T
+            real(kind=8), intent(in) :: P
+            real(kind=8), intent(in), dimension(:) :: X
+        end function
+
         real(kind=8) function mpp_pressure()
         end function
         

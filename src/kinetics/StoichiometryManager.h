@@ -5,11 +5,10 @@
  * based on the kinetics classes design from the Cantera kinetics library.
  */
 
-#ifndef STOICHIOMETRYMANAGER_H
-#define STOICHIOMETRYMANAGER_H
+#ifndef KINETICS_STOICHIOMETRY_MANAGER_H
+#define KINETICS_STOICHIOMETRY_MANAGER_H
 
 #include <vector>
-#include "Numerics.h"
 
 namespace Mutation {
     namespace Kinetics {
@@ -40,6 +39,14 @@ public:
             m_sps[i] = 0;
     }
     
+    /*template <typename OP>
+    inline void updateReaction(
+        const double* const p_s, double* const p_r, const OP& op) const
+    {
+        for (int i = 0; i < N; ++i)
+            op(p_r[m_rnx], p_s[m_sps[i]]);
+    }*/
+    
     /**
      * Performs the following operation on this reaction:
      * \f[
@@ -49,12 +56,10 @@ public:
      * dependent quantities, and \f$\nu_{ij}\f$ is the stoichiometric coefficient
      * for species i in reaction j.
      */
-    inline void multReaction(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const 
+    inline void multReaction(const double* const p_s, double* const p_r) const
     {
         for (int i = 0; i < N; ++i)
-            r(m_rxn) *= s(m_sps[i]);
+            p_r[m_rxn] *= p_s[m_sps[i]];
     }
     
     /**
@@ -66,12 +71,10 @@ public:
      * dependent quantities, and \f$\nu_{ij}\f$ is the stoichiometric coefficient
      * for species i in reaction j.
      */
-    inline void incrReaction(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const 
+    inline void incrReaction(const double* const p_s, double* const p_r) const
     {
         for (int i = 0; i < N; ++i)
-            r(m_rxn) += s(m_sps[i]);
+            p_r[m_rxn] += p_s[m_sps[i]];
     }
     
     /**
@@ -83,12 +86,10 @@ public:
      * dependent quantities, and \f$\nu_{ij}\f$ is the stoichiometric coefficient
      * for species i in reaction j.
      */
-    inline void decrReaction(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const 
+    inline void decrReaction(const double* const p_s, double* const p_r) const 
     {
         for (int i = 0; i < N; ++i)
-            r(m_rxn) -= s(m_sps[i]);
+            p_r[m_rxn] -= p_s[m_sps[i]];
     }
     
     /**
@@ -100,12 +101,10 @@ public:
      * dependent quantities, and \f$\nu_{ij}\f$ is the stoichiometric coefficient
      * for species i in reaction j.
      */
-    inline void incrSpecies(
-        const Mutation::Numerics::RealVector& r, 
-        Mutation::Numerics::RealVector& s) const 
+    inline void incrSpecies(const double* const p_r, double* const p_s) const
     {
         for (int i = 0; i < N; ++i)
-            s(m_sps[i]) += r(m_rxn);
+            p_s[m_sps[i]] += p_r[m_rxn];
     }
     
     /**
@@ -117,12 +116,10 @@ public:
      * dependent quantities, and \f$\nu_{ij}\f$ is the stoichiometric coefficient
      * for species i in reaction j.
      */
-    inline void decrSpecies(
-        const Mutation::Numerics::RealVector& r, 
-        Mutation::Numerics::RealVector& s) const 
+    inline void decrSpecies(const double* const p_r, double* const p_s) const
     {
         for (int i = 0; i < N; ++i)
-            s(m_sps[i]) -= r(m_rxn);
+            p_s[m_sps[i]] -= p_r[m_rxn];
     }
     
 protected:
@@ -210,27 +207,17 @@ public:
 
     StoichiometryManager() { }
     
-    void addReaction(const int rxn, const std::vector<int> &sps);
+    void addReaction(const int rxn, const std::vector<int>& sps);
     
-    void multReactions(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const;
+    void multReactions(const double* const p_s, double* const p_r) const;
     
-    void incrReactions(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const;
+    void incrReactions(const double* const p_s, double* const p_r) const;
     
-    void decrReactions(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const;
+    void decrReactions(const double* const p_s, double* const p_r) const;
     
-    void incrSpecies(
-        const Mutation::Numerics::RealVector& r, 
-        Mutation::Numerics::RealVector& s) const;
+    void incrSpecies(const double* const p_r, double* const p_s) const;
     
-    void decrSpecies(
-        const Mutation::Numerics::RealVector& r, 
-        Mutation::Numerics::RealVector& s) const;
+    void decrSpecies(const double* const p_r, double* const p_s) const;
 
 private:
 
@@ -245,4 +232,4 @@ private:
 } // namespace Mutation
 
 
-#endif // STOICHIOMETRYMANAGER_H
+#endif // KINETICS_STOICHIOMETRY_MANAGER_H

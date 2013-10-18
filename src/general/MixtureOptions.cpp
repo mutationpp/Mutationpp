@@ -31,7 +31,7 @@ MixtureOptions::MixtureOptions(const char* mixture)
 void MixtureOptions::setDefaultOptions()
 {
     m_species_names.clear();
-    m_state_model = "T";
+    m_state_model = "EquilTP";
     m_thermo_db   = "RRHO";
     m_mechanism   = "none";
     m_viscosity   = "LDLT";

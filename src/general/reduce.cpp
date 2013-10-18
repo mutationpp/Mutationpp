@@ -109,7 +109,7 @@ void reduceTP(
         //    cout << mix.elementName(k) << ": " << xe[k] << endl;
         
         // Compute equilibrium mixture
-        mix.equilibrate(T, P, &xe[0], &xs[0]);
+        mix.equilibriumComposition(T, P, &xe[0], &xs[0]);
         
         // Update reductions
         for (int k = 0; k < reductions.size(); ++k)
@@ -154,7 +154,7 @@ void computeErrorTable(
     // Now loop over a range of compositions, temperatures and pressures to
     // compute the error in Cp, H, S, G
     // Loop over temperature and pressure values
-    double T, P;
+    double TP [2];
     double cpr, cpf, cp_error = 0.0;
     double hr, hf, h_error = 0.0;
     double sr, sf, s_error = 0.0;
@@ -162,22 +162,22 @@ void computeErrorTable(
     
     std::vector<double> xe(mix.nElements());
     for (int t = 0; t < T_POINTS; ++t) {
-        T = double(t)/double(T_POINTS-1)*(T_MAX-T_MIN)+T_MIN;
+        TP[0] = double(t)/double(T_POINTS-1)*(T_MAX-T_MIN)+T_MIN;
         
         for (int p = 0; p < P_POINTS; ++p) {
-            P = std::exp(double(p)/double(P_POINTS-1)*std::log(P_MAX/P_MIN)+
+            TP[1] = std::exp(double(p)/double(P_POINTS-1)*std::log(P_MAX/P_MIN)+
                 std::log(P_MIN));
             
             for (int i = 0; i < std::max(XE_POINTS / 10, 100); ++i) {
                 randomComposition(xe, mix);
                 
-                mix.equilibrate(T, P, &xe[0]);
+                mix.setState(TP, &xe[0]);
                 cpr = mix.mixtureEquilibriumCpMass();
                 hr  = mix.mixtureHMass();
                 sr  = mix.mixtureSMass();
                 //gr  = mix.mixtureGMass();
                 
-                full.equilibrate(T, P, &xe[0]);
+                full.setState(TP, &xe[0]);
                 cpf = full.mixtureEquilibriumCpMass();
                 hf  = full.mixtureHMass();
                 sf  = full.mixtureSMass();
@@ -212,6 +212,7 @@ int main(int argc, char** argv)
     
     // Load the mixture to be reduced
     MixtureOptions opts(argv[1]);
+    opts.setStateModel("EquilTPXe");
     Mixture mix(opts);
     
     // Define the different tolerance levels
