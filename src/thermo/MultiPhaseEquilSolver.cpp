@@ -272,7 +272,11 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
             //ds = std::min(1.0-s, 5.0/ds);
         }*/
         
-        continuationStep(dx);
+        if (update_dx) {
+            continuationStep(dx);
+            //cout << "dx from continuation step" << endl;
+            //cout << dx << endl;
+        }
         /*std::stringstream ss;
         ss << "hist_" << iter << ".dat";
         std::ofstream file(ss.str().c_str());
@@ -331,7 +335,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
 
         // Compute the 
         if (!updateSpeciesMoles(lambda_trial, Nbar_trial, m_g)) {
-            ds *= 0.1;
+            ds *= 0.25;
             update_dx = false;
             continue;
         }
@@ -339,15 +343,15 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         computeResidual(Nbar_trial, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-8, 10);
+            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-12, 10);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over
-        if (res.second > 1.0e-7) {
+        if (res.second > 1.0e-12) {
 #ifdef VERBOSE
             std::cout << "Newton did not converge, reducing step size" << std::endl;
 #endif
-            ds *= 0.1;
+            ds *= 0.25;
             update_dx = false;
             continue;
         }
@@ -450,6 +454,9 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
         case 1: {
             RealVector NTBr = y*m_Br;
             dx(m_ncr) = (dot(NTBr, dlamg) - dot(y, m_dg)) / dot(NTBr, dlamm[0]);
+            //cout << "dot(NTBr, dlamg) - dot(y, m_dg) = " << dot(NTBr, dlamg) - dot(y, m_dg) << endl;
+            //cout << "NTBr*dlamm[0] = " << dot(NTBr, dlamm[0]) << endl;
+            //cout << "Nbar          = " << m_Nbar(0) << endl;
             break;
         } case 2: {
             // Compute matrix elements and right-hand-side vector
@@ -466,10 +473,25 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
                 dx(m_ncr+m) += y(i)*(BrLg(i) - m_dg(i));
             }
             
+            //cout << "A = " << endl;
+            //cout << A << endl;
+            
             // Compute determinant
             double det = A(0,0)*A(1,1) - A(0,1)*A(1,0);
-            if (det < 1.0E-30)
-                cout << "TINY determinant!! (" << det << ")" << endl;
+            //if (det < 1.0E-30)
+            //    cout << "TINY determinant!! (" << det << ")" << endl;
+            
+            if (m_Nbar(0) < 1.0E-30) {
+                dx(m_ncr) = 0.0;
+                dx(m_ncr+1) /= A(1,1);
+                break;
+            }
+            
+            if (m_Nbar(1) < 1.0E-30) {
+                dx(m_ncr) /= A(0,0);
+                dx(m_ncr+1) = 0.0;
+                break;
+            }
             
             // Cofactor
             double temp = A(0,0);
@@ -478,11 +500,13 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
             A(0,1) = -A(0,1);
             A(1,0) = -A(1,0);
             
-            cout << "A = " << endl;
-            cout << A << endl;
+            
             
             // Now compute system solution for dlnNbar
+            //dx(m_ncr) /= m_Nbar(0);
+            //dx(m_ncr+1) /= m_Nbar(1);
             RealVector x = (A * dx(m_ncr,m_ncr+2)) / det;
+            
             dx(m_ncr,m_ncr+2) = x;
             /*RealVector x(m_np);
             RealVector b = dx(m_ncr,m_ncr+m_np);
@@ -512,7 +536,7 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
     double err_last = error;
     RealVector dx(m_ncr+m_np);
     
-    while (error > tol && iterations < max_iters) {
+    while (error >= tol && iterations < max_iters) {
         iterations++;
 #ifdef VERBOSE
         std::cout << "Newton: iter = " << iterations << ", r = " << error << endl;
