@@ -125,10 +125,8 @@ public:
     /**
      * Evaluates all of the rates in the group and stores in the given vector.
      */
-    //template <typename OP>
     virtual void lnk(
         const Thermodynamics::StateModel* const p_state, double* const p_lnk)
-        //const OP& op) const
     {
         m_t = TSelectorType().getT(p_state);
         const double lnT  = std::log(m_t);
@@ -136,7 +134,6 @@ public:
     
         for (int i = 0; i < m_rates.size(); ++i) {
             const std::pair<size_t, RateLawType>& rate = m_rates[i];
-            //op(p_lnk[rate.first], rate.second.lnk(lnT));
             p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
         }
     }
@@ -202,9 +199,9 @@ public:
             m_group_map[&typeid(GroupType)] = new GroupType();
         m_group_map[&typeid(GroupType)]->addRateCoefficient(rxn, p_rate);
         
-        std::cout << "Added reaction " << rxn << "("
-                  << typeid(GroupType).name() << "), " << "Ngroups = "
-                  << m_group_map.size() << std::endl;
+//        std::cout << "Added reaction " << rxn << "("
+//                  << typeid(GroupType).name() << "), " << "Ngroups = "
+//                  << m_group_map.size() << std::endl;
     }
     
     /**

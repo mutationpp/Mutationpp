@@ -205,10 +205,15 @@ double NAME_MANGLE(number_density)();
 double NAME_MANGLE(pressure)();
 
 /**
+ * Returns the density of the mixture.
+ */
+double NAME_MANGLE(density)();
+
+/**
  * Returns the density of the mixture given the mixture temperature and
  * pressure and species mole fractions.
  */
-double NAME_MANGLE(density)();
+double NAME_MANGLE(density_tpx)(double* T, double* P, double* X);
 
 /**
  * Returns the current species densities.
@@ -217,16 +222,14 @@ void NAME_MANGLE(species_densities)(
     double* const rhoi);
 
 /**
- * Returns the equilibrium composition of the mixture in species mass fractions
- * given the temperature, pressure, and elemental mass fractions.
+ * Returns the equilibrium composition of the mixture in species mole fractions
+ * given the temperature and pressure.
  *
- * @param T         - mixture temperature
- * @param P         - mixture pressure
- * @param element_y - element densities or mass fractions
- * @param species_y - species mass fractions on return
+ * @param T - mixture temperature
+ * @param P - mixture pressure
+ * @param X - mole fractions
  */
-//void NAME_MANGLE(equilibrate)(
-//    double* T, double* P);
+void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
     
 /**
  * Sets the current state of the mixture using temperature and species 

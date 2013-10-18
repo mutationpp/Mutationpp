@@ -149,6 +149,10 @@ public:
      */
     virtual void setState(const double* const p_T, const double* const p_rhoi)
     {
+//        cout << "T,Rhoi : setState(" << p_T[0];
+//        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//            cout << ", " << p_rhoi[i];
+//        cout << ")" << endl;
         m_T = m_Tr = m_Tv = m_Tel = m_Te = p_T[0];
         
         m_P = 0.0;

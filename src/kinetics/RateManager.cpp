@@ -121,7 +121,7 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
         exit(1);
     }
     
-    cout << "Number of reactions with Tf = Tb: " << m_to_copy.size() << endl;
+    //cout << "Number of reactions with Tf = Tb: " << m_to_copy.size() << endl;
 }
 
 //==============================================================================

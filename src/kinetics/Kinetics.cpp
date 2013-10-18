@@ -287,6 +287,11 @@ void Kinetics::netProductionRates(double* const p_wdot)
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);
+    
+//    cout << "Net production rates: ";
+//    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//        cout << p_wdot[i] << " ";
+//    cout << endl;
 }
 
 //==============================================================================
