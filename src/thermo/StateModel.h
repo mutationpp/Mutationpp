@@ -2,6 +2,9 @@
 #define THERMO_STATE_MODEL_H
 
 #include "Thermodynamics.h"
+#include "Kinetics.h"
+#include "TransferModel.h"
+#include "Transport.h"
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -98,7 +101,19 @@ public:
     const double* const X() const {
         return mp_X;
     }
-
+    
+    /**
+     * Creates a new TransferModel object which can compute the energy transfer
+     * source terms for this state model.
+     */
+    virtual Mutation::Transfer::TransferModel* createTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics)
+    {
+        return NULL;
+    }
+    
 protected:
 
     const Thermodynamics& m_thermo;

@@ -292,17 +292,7 @@ private:
 /**
  * Performs a swap on two MixtureOption objects.
  */
-void swap(MixtureOptions& opt1, MixtureOptions& opt2)
-{
-    std::swap(opt1.m_species_names, opt2.m_species_names);
-    std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
-    std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
-    std::swap(opt1.m_state_model, opt2.m_state_model);
-    std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
-    std::swap(opt1.m_mechanism, opt2.m_mechanism);
-    std::swap(opt1.m_viscosity, opt2.m_viscosity);
-    std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
-}
+void swap(MixtureOptions& opt1, MixtureOptions& opt2);
 
 } // namespace Mutation
 

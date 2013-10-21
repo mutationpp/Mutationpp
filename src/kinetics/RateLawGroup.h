@@ -22,8 +22,10 @@
 
 #include "RateLaws.h"
 #include "Reaction.h"
-#include "StateModel.h"
+//#include "StateModel.h"
 #include "StoichiometryManager.h"
+
+class StateModel;
 
 namespace Mutation {
     namespace Kinetics {
