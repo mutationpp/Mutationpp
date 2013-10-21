@@ -8,7 +8,7 @@
 #include "Thermodynamics.h"
 
 namespace Mutation {
-    namespace Kinetics {
+    namespace Transfer {
 
 /** 
  * Data storage for single Millikan-White collision pair.

@@ -8,7 +8,7 @@ using namespace Mutation::Utilities::IO;
 using namespace Mutation::Thermodynamics;
 
 namespace Mutation {
-    namespace Kinetics {
+    namespace Transfer {
 
 //==============================================================================
 

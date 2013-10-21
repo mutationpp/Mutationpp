@@ -1,7 +1,6 @@
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
-#include "MillikanWhite.h"
 
 using namespace std;
 using namespace Mutation::Thermodynamics;
@@ -319,7 +318,7 @@ void Kinetics::netProductionRates(double* const p_wdot)
 double Kinetics::omegaVT()
 {
     // Load Millikan-White model data on first call to this method
-    static MillikanWhite data(m_thermo);
+    /*static MillikanWhite data(m_thermo);
     
     const int nheavy = m_thermo.nHeavy();
     const int offset = m_thermo.hasElectrons() ? 1 : 0;
@@ -336,7 +335,7 @@ double Kinetics::omegaVT()
             cout << endl;
         }
         cout << endl;
-    }
+    }*/
     
     return 0.0;
 }
