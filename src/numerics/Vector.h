@@ -351,6 +351,13 @@ public:
     size_t size() const { return m_data.size(); }
     
     /**
+     * Resizes the vector to the given size.
+     */
+    void resize(size_t n) {
+        m_data.resize(n);
+    }
+    
+    /**
      * Returns the Vector element at index i for writing.  Assertion error
      * thrown for index out of Vector bounds.
      */

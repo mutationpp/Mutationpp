@@ -346,12 +346,13 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
             newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-12, 10);
         newt += res.first;
         
-        // If newton did not converge, reduce the step size and start over
-        if (res.second > 1.0e-12) {
+        // If newton did not converge, reduce the step size and start over unless
+        // the stepsize was already very small, in that case just take the step
+        if (res.second > 1.0e-12 && ds > 1.0e-8) {
 #ifdef VERBOSE
             std::cout << "Newton did not converge, reducing step size" << std::endl;
 #endif
-            ds *= 0.25;
+            ds *= 0.1;
             update_dx = false;
             continue;
         }
@@ -363,6 +364,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         //ds *= 2.0;
         
         ds = std::min(ds*2.0, 1.0-s);
+        
         if (ds == 0.0 && s < 1.0) {
             std::cerr << "Continuation step size dropped to zero in equil solver!" << endl;
             std::exit(1);

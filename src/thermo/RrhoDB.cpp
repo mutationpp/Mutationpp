@@ -282,7 +282,8 @@ public:
             
             LOOP(cp[i] /= deltaT);
             
-            CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
+            cpE(Tel, cp, PlusEq());
+            //CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
             return;
         }
         
