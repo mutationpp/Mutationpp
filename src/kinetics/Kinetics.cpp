@@ -17,8 +17,12 @@ using Mutation::Thermodynamics::Thermodynamics;
 Kinetics::Kinetics(
     const Thermodynamics& thermo, string mechanism)
     : m_thermo(thermo),
+      mp_rates(NULL),
       m_thirdbodies(thermo.nSpecies()),
-      m_jacobian(thermo)
+      m_jacobian(thermo),
+      mp_ropf(NULL),
+      mp_ropb(NULL),
+      mp_rop(NULL)
 {
     if (mechanism == "none")
         return;
