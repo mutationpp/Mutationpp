@@ -56,49 +56,49 @@ public:
     /**
      * Returns the mixture translational temperature.
      */
-    double T() const {
+    inline double T() const {
         return m_T;
     }
     
     /**
      * Returns the mixture vibrational temperature.
      */
-    double Tv() const {
+    inline double Tv() const {
         return m_Tv;
     }
     
     /**
      * Returns the mixture electron temperature.
      */
-    double Te() const {
+    inline double Te() const {
         return m_Te;
     }
     
     /**
      * Returns the mixture rotational temperature.
      */
-    double Tr() const {
+    inline double Tr() const {
         return m_Tr;
     }
     
     /**
      * Returns the mixture electronic temperature.
      */
-    double Tel() const {
+    inline double Tel() const {
         return m_Tel;
     }
     
     /**
      * Returns the mixture static pressure.
      */
-    double P() const {
+    inline double P() const {
         return m_P;
     }
     
     /**
      * Returns the species mole fractions.
      */
-    const double* const X() const {
+    inline const double* const X() const {
         return mp_X;
     }
     

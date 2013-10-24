@@ -5,6 +5,7 @@
 #include "ThermoDB.h"
 #include "StateModel.h"
 #include "Utilities.h"
+#include "ParticleRRHO.h"
 
 #include <set>
 
@@ -114,34 +115,35 @@ void Thermodynamics::loadSpeciesFromList(
     IO::XmlElement::Iterator species_iter = species_doc.root().begin();
     IO::XmlElement::Iterator species_end  = species_doc.root().end();
     
+    bool expand_elec_states = false;
+    
     for ( ; species_iter != species_end; ++species_iter) {
         // Get the name of current species
         species_iter->getAttribute("name", species_name);
         
         // Do we need this one?
-        if (species_set.find(species_name) == species_set.end())
+        if (species_set.find(species_name) != species_set.end())
+            addSpecies(Species(*species_iter, elements, used_elements));
+        // How about this species with expanded electronic states?
+        else if (species_set.find(species_name+="*") != species_set.end()) {
+            // Load this species
+            const Species species(*species_iter, elements, used_elements);
+            
+            if (!species.hasRRHOParameters()) {
+                cout << "Error! Requested species \"" << species_name
+                     << "\" but this species does not have RRHO data..."
+                     << endl;
+                exit(1);
+            }
+            
+            const size_t nlevels =
+                species.getRRHOParameters()->nElectronicLevels();
+            
+            for (size_t i = 0; i < nlevels; ++i)
+                addSpecies(Species(species, i));
+            
+        } else
             continue;
-        
-        // We do, so store it
-        m_species.push_back(Species(*species_iter, elements, used_elements));
-        
-        // Make sure that the electron (if it exists) is stored at the beginning
-        // to make life easier.  Also count number of atoms and molecules.
-        switch (m_species.back().type()) {
-            case ELECTRON:
-                if (m_species.size() > 1) 
-                    std::swap(m_species[0], m_species.back());
-                m_has_electrons = true;
-                break;
-            case ATOM:
-                m_natoms++;
-                break;
-            case MOLECULE:
-                m_nmolecules++;
-                break;
-            default:
-                break;
-        }
         
         // Clear this species from the list of species that we still need to
         // find
@@ -183,6 +185,32 @@ void Thermodynamics::loadSpeciesFromList(
     
     for (int i = 0; i < m_species.size(); ++i)
         m_species_indices[m_species[i].name()] = i;
+}
+
+//==============================================================================
+
+void Thermodynamics::addSpecies(const Species& species)
+{
+    // We do, so store it
+    m_species.push_back(species);
+    
+    // Make sure that the electron (if it exists) is stored at the beginning
+    // to make life easier.  Also count number of atoms and molecules.
+    switch (m_species.back().type()) {
+        case ELECTRON:
+            if (m_species.size() > 1)
+                std::swap(m_species[0], m_species.back());
+            m_has_electrons = true;
+            break;
+        case ATOM:
+            m_natoms++;
+            break;
+        case MOLECULE:
+            m_nmolecules++;
+            break;
+        default:
+            break;
+    }
 }
 
 //==============================================================================

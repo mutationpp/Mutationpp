@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-//#define VERBOSE
+#define VERBOSE
 
 using std::cout;
 using std::endl;
@@ -217,6 +217,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
     
     double s  = 0.0;
     double ds = 1.0;
+    double error_tol = 1.0e-9;
     
     int iter = 0;
     int newt = 0;
@@ -343,19 +344,21 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         computeResidual(Nbar_trial, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-12, 10);
+            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-9, 10);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over unless
         // the stepsize was already very small, in that case just take the step
-        if (res.second > 1.0e-12 && ds > 1.0e-8) {
+        if (res.second > error_tol) {
 #ifdef VERBOSE
             std::cout << "Newton did not converge, reducing step size" << std::endl;
 #endif
-            ds *= 0.1;
+            ds *= 0.25;
             update_dx = false;
             continue;
         }
+        
+        error_tol = res.second + std::max(1.0e-9, 0.05*res.second);
         
         // Update the system variables
         m_lambda = lambda_trial;
@@ -466,6 +469,7 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
             RealVector BrL2 = m_Br*dlamm[1];
             RealVector BrLg = m_Br*dlamg;
             RealMatrix A(2, 2, 0.0);
+            //RealSymMat(2, 0.0);
             dx = 0.0;
             
             for (int i = 0; i < m_nsr; ++i) {
@@ -474,6 +478,22 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
                 A(m,1) += y(i)*BrL2(i);
                 dx(m_ncr+m) += y(i)*(BrLg(i) - m_dg(i));
             }
+            
+            //RealSymMat Asym(2);
+            //Asym(0,0) = std::max(A(0,0), 1.0E-100);
+            //Asym(0,1) = std::max(0.5*(A(0,1)+A(1,0)), 1.0E-100);
+            //Asym(1,1) = std::max(A(1,1), 1.0E-100);
+            
+            //RealVector x(2, 0.0);
+            //RealVector b = dx(m_ncr,m_ncr+2);
+            
+            //cg(Asym, x, b, DiagonalPreconditioner<double>(Asym));
+            
+            //cout << "Asym:" << endl << Asym << endl;
+            //cout << "b:" << endl << b << endl;
+            //LDLT<double> ldlt(Asym);
+            //ldlt.solve(x, b);
+            //cout << "x:" << endl << x << endl;
             
             //cout << "A = " << endl;
             //cout << A << endl;
@@ -508,7 +528,6 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
             //dx(m_ncr) /= m_Nbar(0);
             //dx(m_ncr+1) /= m_Nbar(1);
             RealVector x = (A * dx(m_ncr,m_ncr+2)) / det;
-            
             dx(m_ncr,m_ncr+2) = x;
             /*RealVector x(m_np);
             RealVector b = dx(m_ncr,m_ncr+m_np);
@@ -525,6 +544,8 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
     dx(0,m_ncr) = dlamg;
     for (int m = 0; m < m_np; ++m)
         dx(0,m_ncr) -= dx(m_ncr+m)*dlamm[m];
+    
+    //cout << "dx" << endl << dx << endl;
 }
 
 //==============================================================================
@@ -586,7 +607,7 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
         error = r.norm2();
         
         // Check that we are still converging
-        if (error > 0.75 * err_last) {
+        if (error > 0.9 * err_last) {
 #ifdef VERBOSE
             cout << "newton stopped converging with error = " << error << ", returning..." << endl;
 #endif

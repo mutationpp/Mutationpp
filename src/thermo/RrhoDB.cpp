@@ -78,7 +78,7 @@ public:
           m_na(0), 
           m_nm(0), 
           m_has_electron(species[0].type() == ELECTRON),
-          m_use_tables(true)
+          m_use_tables(false)
     {    
         // First make sure that every species contains an RRHO model
         bool complete = true;

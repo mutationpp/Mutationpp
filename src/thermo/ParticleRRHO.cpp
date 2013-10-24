@@ -2,12 +2,15 @@
 #include "ParticleRRHO.h"
 #include "Utilities.h"
 
+#include <cassert>
 #include <iostream>
 
 using namespace Mutation::Utilities;
 
 namespace Mutation {
     namespace Thermodynamics {
+
+//==============================================================================
 
 ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
     : m_hform(0), m_steric(0), m_linearity(0), m_rotational_t(0)
@@ -64,6 +67,25 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
     }
 }
 
-} // namespace Thermodynamics
+//==============================================================================
+
+ParticleRRHO::ParticleRRHO(const ParticleRRHO* p_rrho, const size_t level)
+    : m_hform(p_rrho->m_hform),
+      m_steric(p_rrho->m_steric),
+      m_linearity(p_rrho->m_linearity),
+      m_rotational_t(p_rrho->m_rotational_t),
+      m_electronic_energies(),
+      m_vibrational_energies(p_rrho->m_vibrational_energies)
+{
+    // Make sure the level used is actually present in the given RRHO parameters
+    assert(level < p_rrho->nElectronicLevels());
+    
+    // Copy only the level given
+    m_electronic_energies.push_back(p_rrho->electronicEnergy(level));
+}
+
+//==============================================================================
+
+    } // namespace Thermodynamics
 } // namespace Mutation
 

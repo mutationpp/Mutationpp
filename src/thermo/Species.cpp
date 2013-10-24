@@ -52,6 +52,26 @@ Species::Species(const Species& to_copy)
 
 //==============================================================================
 
+Species::Species(const Species& to_copy, const size_t level)
+    : m_name(to_copy.m_name),
+      m_nasa7_name(to_copy.m_nasa7_name),
+      m_nasa9_name(to_copy.m_nasa9_name),
+      mp_rrho_model(
+          (to_copy.mp_rrho_model == NULL ? NULL : 
+              new ParticleRRHO(to_copy.mp_rrho_model, level))),
+      m_mw(to_copy.m_mw),
+      m_charge(to_copy.m_charge),
+      m_phase(to_copy.m_phase),
+      m_stoichiometry(to_copy.m_stoichiometry)
+{
+    // Add on the level indication to the species name
+    std::stringstream ss(m_name);
+    ss << "(" << level << ")";
+    m_name += ss.str();
+}
+
+//==============================================================================
+
 Species::Species(
     IO::XmlElement &xml_element, const vector<Element> &elements, 
     set<int> &used_elements)

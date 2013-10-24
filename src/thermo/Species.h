@@ -93,6 +93,12 @@ public:
         const std::vector<Element> &elements, std::set<int> &used_elements);
     
     /**
+     * Instantiate a new species object which represents a single electronic
+     * state of the given species.
+     */
+    Species(const Species& species, const size_t level);
+    
+    /**
      * Copy constructor.
      */
     Species(const Species& to_copy);

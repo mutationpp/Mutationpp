@@ -648,6 +648,11 @@ private:
      * thermo database.
      */
     void loadSpeciesFromList(const std::vector<std::string> &species_names);
+    
+    /**
+     * Adds a single species to the thermodynamic list.
+     */
+    void addSpecies(const Species& species);
 
 private:
   
