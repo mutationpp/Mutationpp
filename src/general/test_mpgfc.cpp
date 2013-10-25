@@ -14,6 +14,7 @@ void bishnuTable3()
 {
     Mutation::MixtureOptions opts("water8");
     opts.setThermodynamicDatabase("NASA-9");
+    opts.setStateModel("TPX");
     Mutation::Mixture mix(opts);
     
     double c[mix.nElements()];
@@ -30,31 +31,31 @@ void bishnuTable3()
     cout << endl;
     
     
-    mix.equilibrate(373.15, ONEATM, c, x);
+    mix.equilibriumComposition(373.15, ONEATM, c, x);
     cout << setw(5) << "BP" << setw(10) << 373.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    mix.equilibrate(473.15, ONEATM, c, x);
+    mix.equilibriumComposition(473.15, ONEATM, c, x);
     cout << setw(5) << "G1" << setw(10) << 473.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    mix.equilibrate(541.15, ONEATM, c, x);
+    mix.equilibriumComposition(541.15, ONEATM, c, x);
     cout << setw(5) << "G2" << setw(10) << 541.15 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    mix.equilibrate(1500.0, ONEATM, c, x);
+    mix.equilibriumComposition(1500.0, ONEATM, c, x);
     cout << setw(5) << "G3" << setw(10) << 1500.0 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
     cout << endl;
     
-    mix.equilibrate(647.25, 218.0*ONEATM, c, x);
+    mix.equilibriumComposition(647.25, 218.0*ONEATM, c, x);
     cout << setw(5) << "CP" << setw(10) << 647.25 << setw(10) << 218;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
@@ -85,7 +86,7 @@ void bishnuTable5()
     cout << endl;
     
     c[ne] = 4;
-    mix.equilibrate(1500.0, ONEATM, c, x);
+    mix.equilibriumComposition(1500.0, ONEATM, c, x);
     mix.speciesGOverRT(x);
     cout << setw(30) << "G/RT";
     for (int i = 0; i < mix.nSpecies(); ++i)
@@ -94,7 +95,7 @@ void bishnuTable5()
     
     for (double m = 2.0; m < 6.0; m += 0.01) {
         c[ne] = m;
-        mix.equilibrate(1500.0, ONEATM, c, x);
+        mix.equilibriumComposition(1500.0, ONEATM, c, x);
         cout << setw(10) << m << setw(10) << 1500 << setw(10) << 1;
         for (int i = 0; i < mix.nSpecies(); ++i)
             cout << setw(14) << x[i];
@@ -127,7 +128,9 @@ void bishnuTable5()
 
 void CHO_M_FV()
 {
-    Mutation::Mixture mix("Bishnu-CHO");
+    Mutation::MixtureOptions opts("Bishnu-CHO");
+    opts.setStateModel("TPX");
+    Mutation::Mixture mix(opts);
     
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
@@ -164,7 +167,7 @@ void CHO_M_FV()
     // Compute the constrained equilibrium composition
     c[ne]   = 1.0; // M
     c[ne+1] = 0.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -173,7 +176,7 @@ void CHO_M_FV()
     
     c[ne]   = 2.0; // M
     c[ne+1] = 0.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -182,7 +185,7 @@ void CHO_M_FV()
     
     c[ne]   = 2.0; // M
     c[ne+1] = 2.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -191,7 +194,7 @@ void CHO_M_FV()
     
     c[ne]   = 2.0; // M
     c[ne+1] = 4.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -200,7 +203,7 @@ void CHO_M_FV()
     
     c[ne]   = 3.5; // M
     c[ne+1] = 4.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -209,7 +212,7 @@ void CHO_M_FV()
     
     c[ne]   = 4.0; // M
     c[ne+1] = 8.0; // FV
-    mix.equilibrate(1000.0, ONEATM, c, x);
+    mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
@@ -242,7 +245,7 @@ void dXdT()
     
     for (int i = 0; i < 115; ++i) {
         double T = 300.0 + 50.0*double(i);
-        mix.equilibrate(T, ONEATM, c, x);
+        mix.equilibriumComposition(T, ONEATM, c, x);
         
         cout << setw(10) << T;
         for (int k = 0; k < ns; ++k)
@@ -258,7 +261,7 @@ void dXdT()
         cout << setw(14) << sum;
         
         double Teps = T*1.0E-8;
-        mix.equilibrate(T+Teps, ONEATM, c, x, false);
+        mix.equilibriumComposition(T+Teps, ONEATM, c, x);
         sum = 0.0;
         for (int k = 0; k < ns; ++k) {
             double dxdt = (x[k]-mix.X()[k])/Teps;
