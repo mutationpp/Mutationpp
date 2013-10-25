@@ -117,7 +117,7 @@ public:
         const Mutation::Thermodynamics::Species& s1, 
         const Mutation::Thermodynamics::Species& s2) 
     {
-        initialize(s1.name(), s2.name());
+        initialize(s1.groundStateName(), s2.groundStateName());
         m_charge = s1.charge() * s2.charge();
     }
     
