@@ -8,18 +8,36 @@
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
 				<level degeneracy="1" energy="0.0" />
-				<level degeneracy="1" energy="111667.9" />
-				<level degeneracy="3" energy="111818.1" />
-				<level degeneracy="5" energy="112139.0" />
-				<level degeneracy="9" energy="112750.2" />
-				<level degeneracy="7" energy="113020.4" />
-				<level degeneracy="5" energy="113426.0" />
-				<level degeneracy="7" energy="113716.6" />
-				<level degeneracy="3" energy="114147.7" />
-				<level degeneracy="5" energy="114641.0" />
-				<level degeneracy="5" energy="114805.2" />
-				<level degeneracy="7" energy="114822.0" />
-				<level degeneracy="3" energy="115366.9" />
+				<level degeneracy="5" energy="93144.1" />
+				<level degeneracy="3" energy="93751.0" />
+				<level degeneracy="1" energy="94554.1" />
+				<level degeneracy="3" energy="95400.2" />
+				<level degeneracy="3" energy="104102.5" />
+				<level degeneracy="7" energy="105463.2" />
+				<level degeneracy="5" energy="105617.7" />
+				<level degeneracy="3" energy="106087.7" />
+				<level degeneracy="5" energy="106238.0" />
+				<level degeneracy="1" energy="107054.8" />
+				<level degeneracy="3" energy="107132.2" />
+				<level degeneracy="5" energy="107290.2" />
+				<level degeneracy="3" energy="107496.9" />
+				<level degeneracy="1" energy="108723.1" />
+				<level degeneracy="1" energy="111668.3" />
+				<level degeneracy="3" energy="111818.5" />
+				<level degeneracy="5" energy="112139.4" />
+				<level degeneracy="9" energy="112750.7" />
+				<level degeneracy="7" energy="113020.9" />
+				<level degeneracy="5" energy="113426.5" />
+				<level degeneracy="5" energy="113469.0" />
+				<level degeneracy="3" energy="113643.8" />
+				<level degeneracy="7" energy="113717.1" />
+				<level degeneracy="3" energy="114148.2" />
+				<level degeneracy="5" energy="144641.5" />
+				<level degeneracy="5" energy="114805.6" />
+				<level degeneracy="7" energy="114822.5" />
+				<level degeneracy="1" energy="114862.2" />
+				<level degeneracy="3" energy="114975.5" />
+				<level degeneracy="3" energy="115367.4" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				0
