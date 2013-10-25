@@ -124,6 +124,13 @@ public:
     }
     
     /**
+     * Returns the name of the ground state for this species.
+     */
+    const std::string& groundStateName() const {
+        return m_base_name;
+    }
+    
+    /**
      * Returns the name of this species that is used in the NASA polynomial
      * database given the number of coefficients of the polynomial (7 or 9).
      */
@@ -240,7 +247,7 @@ private:
 private:
 
     std::string m_name;
-    
+    std::string m_base_name;
     std::string m_nasa7_name;
     std::string m_nasa9_name;
     

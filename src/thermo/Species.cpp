@@ -39,6 +39,7 @@ Element::Element(IO::XmlElement &xml_element)
 
 Species::Species(const Species& to_copy)
     : m_name(to_copy.m_name),
+      m_base_name(to_copy.m_base_name),
       m_nasa7_name(to_copy.m_nasa7_name),
       m_nasa9_name(to_copy.m_nasa9_name),
       mp_rrho_model(
@@ -54,6 +55,7 @@ Species::Species(const Species& to_copy)
 
 Species::Species(const Species& to_copy, const size_t level)
     : m_name(to_copy.m_name),
+      m_base_name(to_copy.m_name),
       m_nasa7_name(to_copy.m_nasa7_name),
       m_nasa9_name(to_copy.m_nasa9_name),
       mp_rrho_model(
@@ -63,9 +65,8 @@ Species::Species(const Species& to_copy, const size_t level)
       m_charge(to_copy.m_charge),
       m_phase(to_copy.m_phase),
       m_stoichiometry(to_copy.m_stoichiometry)
-{
-    // Add on the level indication to the species name
-    std::stringstream ss(m_name);
+{ 
+    stringstream ss;
     ss << "(" << level << ")";
     m_name += ss.str();
 }
@@ -79,6 +80,7 @@ Species::Species(
 {
     // Load attribute information
     xml_element.getAttribute("name", m_name);
+    m_base_name  = m_name;
     m_nasa9_name = m_name;
     m_nasa7_name = m_name;
     
@@ -434,6 +436,7 @@ void Species::checkStoichiometryNameMatching(
 void swap(Species& s1, Species& s2)
 {
     std::swap(s1.m_name, s2.m_name);
+    std::swap(s1.m_base_name, s2.m_base_name);
     std::swap(s1.m_nasa7_name, s2.m_nasa7_name);
     std::swap(s1.m_nasa9_name, s2.m_nasa9_name);
     std::swap(s1.mp_rrho_model, s2.mp_rrho_model);

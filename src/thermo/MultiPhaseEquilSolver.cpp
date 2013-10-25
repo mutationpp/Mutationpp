@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-#define VERBOSE
+//#define VERBOSE
 
 using std::cout;
 using std::endl;
@@ -426,14 +426,19 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
 
 void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
 {
+#ifdef VERBOSE
+    cout << "continuationStep()" << endl;
+#endif
     std::vector<RealVector> dlamm(m_np, RealVector(m_ncr, 0.0));
     RealVector dlamg(m_ncr, 0.0);
     
     // Compute H = diag(y)*Br
-    RealVector y = exp(0.5*(m_Br*m_lambda - m_g));
+    static RealVector y;
+    y = exp(0.5*(m_Br*m_lambda - m_g));
     for (int i = 0; i < m_nsr; ++i)
         y(i) *= std::sqrt(m_Nbar(m_phase(m_sjr(i))));
-    RealMatrix H = m_Br;
+    static RealMatrix H;
+    H = m_Br;
     for (int j = 0; j < m_nsr; ++j)
         for (int i = 0; i < m_ncr; ++i)
             H(j,i) *= y(j);
@@ -442,7 +447,8 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
     LeastSquares<double> ls(H);
     
     // Compute dlambda_g
-    RealVector rhs = y * m_dg;
+    static RealVector rhs;
+    rhs = y * m_dg;
     ls.solve(dlamg, rhs);
     
     // Compute dlambda_m for each phase m
@@ -478,6 +484,12 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
                 A(m,1) += y(i)*BrL2(i);
                 dx(m_ncr+m) += y(i)*(BrLg(i) - m_dg(i));
             }
+#ifdef VERBOSE
+            cout << "P^TYHLamy = " << endl;
+            cout << A << endl;
+            cout << "rhs = " << endl;
+            cout << dx(m_ncr,m_ncr+2) << endl;
+#endif
             
             //RealSymMat Asym(2);
             //Asym(0,0) = std::max(A(0,0), 1.0E-100);
@@ -500,6 +512,9 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
             
             // Compute determinant
             double det = A(0,0)*A(1,1) - A(0,1)*A(1,0);
+#ifdef VERBOSE
+            cout << "det = " << det << endl;
+#endif
             //if (det < 1.0E-30)
             //    cout << "TINY determinant!! (" << det << ")" << endl;
             
@@ -516,19 +531,22 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
             }
             
             // Cofactor
-            double temp = A(0,0);
+            /*double temp = A(0,0);
             A(0,0) = A(1,1);
             A(1,1) = temp;
             A(0,1) = -A(0,1);
-            A(1,0) = -A(1,0);
+            A(1,0) = -A(1,0);*/
+            
+            dx(m_ncr)   = std::min((dx(m_ncr)*A(1,1) - dx(m_ncr+1)*A(0,1)) / det, 0.1);
+            dx(m_ncr+1) = std::min((dx(m_ncr+1)*A(0,0) - dx(m_ncr)*A(1,0)) / det, 0.1);
             
             
             
             // Now compute system solution for dlnNbar
             //dx(m_ncr) /= m_Nbar(0);
             //dx(m_ncr+1) /= m_Nbar(1);
-            RealVector x = (A * dx(m_ncr,m_ncr+2)) / det;
-            dx(m_ncr,m_ncr+2) = x;
+            //RealVector x = (A * dx(m_ncr,m_ncr+2)) / det;
+            //dx(m_ncr,m_ncr+2) = x;
             /*RealVector x(m_np);
             RealVector b = dx(m_ncr,m_ncr+m_np);
             LeastSquares<double> ls(A);
@@ -544,8 +562,10 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
     dx(0,m_ncr) = dlamg;
     for (int m = 0; m < m_np; ++m)
         dx(0,m_ncr) -= dx(m_ncr+m)*dlamm[m];
-    
-    //cout << "dx" << endl << dx << endl;
+
+#ifdef VERBOSE    
+    cout << "dx" << endl << dx << endl;
+#endif
 }
 
 //==============================================================================
@@ -710,7 +730,7 @@ void MultiPhaseEquilSolver::initialConditions(
     ming(m_cr, gtp, Nmg);
     perturb(Nmm);
     
-    const double alpha = 0.99;
+    const double alpha = 0.999;
     m_N = alpha*Nmg + (1.0-alpha)*Nmm;
 
     
@@ -731,6 +751,11 @@ void MultiPhaseEquilSolver::initialConditions(
     
     // Initial g
     g = m_Br*lambda - log(m_N);
+    
+#ifdef VERBOSE
+    cout << "Initial conditions:" << endl;
+    cout << m_N << endl;
+#endif
 }
 
 void MultiPhaseEquilSolver::perturb(RealVector& nmm)
@@ -905,7 +930,6 @@ bool MultiPhaseEquilSolver::updateSpeciesMoles(
     #ifdef VERBOSE
     cout << "updateSpeciesMoles: " << endl;
     #endif
-    m_N = m_Br*lambda - g;
     
     if (Nbar.sum() > m_cr.sum()*10.0) {
         #ifdef VERBOSE
@@ -914,6 +938,8 @@ bool MultiPhaseEquilSolver::updateSpeciesMoles(
         #endif
         return false;
     }
+    
+    m_N = m_Br*lambda - g;
     
     for (int i = 0; i < m_nsr; ++i) {
         if (m_N(i) > 5.0) {
@@ -927,6 +953,10 @@ bool MultiPhaseEquilSolver::updateSpeciesMoles(
             m_N(i) = std::exp(m_N(i)) * Nbar(m_phase(m_sjr(i)));
     }
     
+#ifdef VERBOSE
+    cout << "N = " << endl;
+    cout << m_N << endl;
+#endif
     return true;
 }
 
