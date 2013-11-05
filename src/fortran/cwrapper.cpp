@@ -13,7 +13,7 @@ double* p_work_element;
 //RealVector work_species;
 
 //==============================================================================
-std::string char_to_string(char *str, int length)
+std::string char_to_string(F_STRING str, F_STRLEN length)
 {
     std::string string(str, length);
     string.erase(0, string.find_first_not_of(' '));
@@ -22,7 +22,7 @@ std::string char_to_string(char *str, int length)
 }
 
 //==============================================================================
-void string_to_char(std::string string, char* str, int length)
+void string_to_char(std::string string, F_STRING str, F_STRLEN length)
 {
     for (int i = 0; i < length; ++i)
         if (i < string.length())
@@ -33,7 +33,8 @@ void string_to_char(std::string string, char* str, int length)
 
 //==============================================================================
 void NAME_MANGLE(initialize)(
-    char* mixture, char* state_model, int mixture_length, int state_length)
+    F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
+    F_STRLEN state_length)
 {
     //feenableexcept(FE_INVALID);
     Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
@@ -75,19 +76,19 @@ int NAME_MANGLE(nreactions)()
 }
 
 //==============================================================================
-int NAME_MANGLE(element_index)(char* element, int element_length)
+int NAME_MANGLE(element_index)(F_STRING element, F_STRLEN element_length)
 {
     return p_mix->elementIndex(char_to_string(element, element_length)) + 1;
 }
 
 //==============================================================================
-int NAME_MANGLE(species_index)(char* species, int species_length)
+int NAME_MANGLE(species_index)(F_STRING species, F_STRLEN species_length)
 {
     return p_mix->speciesIndex(char_to_string(species, species_length)) + 1;
 }
 
 //==============================================================================
-void NAME_MANGLE(species_name)(int* index, char* species, int species_length)
+void NAME_MANGLE(species_name)(int* index, F_STRING species, F_STRLEN species_length)
 {
     string_to_char(p_mix->speciesName(*index-1), species, species_length);
 }
@@ -145,9 +146,9 @@ double NAME_MANGLE(density)()
 }
 
 //==============================================================================
-double NAME_MANGLE(density_tpx)(double* T, double* P, double* X)
+void NAME_MANGLE(density_tpx)(double* T, double* P, const double* const X, double* rho)
 {
-    return p_mix->density(*T, *P, X);
+    *rho = p_mix->density(*T, *P, X);
 }
 
 //==============================================================================

@@ -762,8 +762,8 @@ void MultiPhaseEquilSolver::perturb(RealVector& nmm)
 {
     // Possibly perturb the constraints
     double ne_max = m_cr.maxValue();
-    double ne_low = 1.0e-200 * ne_max;    
-    m_cr = Numerics::max(m_cr, ne_low);
+    double ne_low = 1.0e-100 * ne_max;
+    m_cr = max(m_cr, ne_low);
     
     // Determine upper bound on moles of undetermined species (ie a species
     // contains all the moles of a given element and thus cannot be any bigger)
@@ -780,7 +780,7 @@ void MultiPhaseEquilSolver::perturb(RealVector& nmm)
     
     // Compute a (possibly) perturbed vector of undetermined species moles
     // (just storing in nk_max)
-    nk_max = max(nmm, nk_max * 1.0e-200);
+    nk_max = max(nmm, nk_max * 1.0e-100);
     
     // Now back out the (possibly) perturbed constraint vector
     m_cr = nk_max * m_Br;
