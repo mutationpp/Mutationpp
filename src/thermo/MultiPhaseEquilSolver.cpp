@@ -344,7 +344,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
         computeResidual(Nbar_trial, r);
         
         std::pair<int,double> res = 
-            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-9, 10);
+            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-8, 10);
         newt += res.first;
         
         // If newton did not converge, reduce the step size and start over unless
@@ -358,7 +358,7 @@ std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
             continue;
         }
         
-        error_tol = res.second + std::max(1.0e-9, 0.05*res.second);
+        error_tol = res.second + std::max(1.0e-8, 0.05*res.second);
         
         // Update the system variables
         m_lambda = lambda_trial;
@@ -442,6 +442,11 @@ void MultiPhaseEquilSolver::continuationStep(RealVector& dx)
     for (int j = 0; j < m_nsr; ++j)
         for (int i = 0; i < m_ncr; ++i)
             H(j,i) *= y(j);
+
+#ifdef VERBOSE
+    cout << "H = " << endl;
+    cout << H << endl;
+#endif
     
     // Compute a least squares factorization of H
     LeastSquares<double> ls(H);
@@ -585,6 +590,11 @@ std::pair<int,double> MultiPhaseEquilSolver::newton(
         std::cout << "Newton: iter = " << iterations << ", r = " << error << endl;
 #endif
         formSystemMatrix(A);
+
+#ifdef VERBOSE
+        std::cout << "A = " << endl;
+        std::cout << A << endl;
+#endif
 
         LeastSquares<double> ls(A);
         r = -r;
@@ -919,6 +929,14 @@ void MultiPhaseEquilSolver::formSystemMatrix(RealSymMat& A) const
             
             A(i,m_phase(m_sjr(k))+m_ncr) += temp;
         }
+    }
+    
+    for (int m = m_ncr; m < m_ncr+m_np; ++m)
+        A(m,m) = -m_Nbar(m-m_ncr);
+    
+    for (int j = 0; j < m_nsr; ++j) {
+        const int m = m_phase(m_sjr(j))+m_ncr;
+        A(m,m) += m_N(j);
     }
 }
 
