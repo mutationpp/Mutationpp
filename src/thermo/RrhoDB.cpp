@@ -593,7 +593,7 @@ private:
             
             for (unsigned int i = 0; i < data.nheavy; ++i) {
                 sum1 = sum2 = sum3 = 0.0;
-                if (data.p_nelec[i] > 0) {
+                if (data.p_nelec[i] > 1) {
                     for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
                         fac = data.p_levels[ilevel].g *
                             std::exp(-data.p_levels[ilevel].theta / T);
@@ -606,6 +606,7 @@ private:
                         (sum3*sum1 - sum2*sum2) / (T*T*sum1*sum1));
                 } else {
                     op(p_cp[i+data.offset], 0.0);
+                    ilevel += data.p_nelec[i];
                 }
             }
         }
