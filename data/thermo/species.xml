@@ -32,7 +32,7 @@
 				<level degeneracy="3" energy="113643.8" />
 				<level degeneracy="7" energy="113717.1" />
 				<level degeneracy="3" energy="114148.2" />
-				<level degeneracy="5" energy="144641.5" />
+				<level degeneracy="5" energy="114641.5" />
 				<level degeneracy="5" energy="114805.6" />
 				<level degeneracy="7" energy="114822.5" />
 				<level degeneracy="1" energy="114862.2" />
@@ -53,14 +53,7 @@
 		</stoichiometry>
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
-				<level degeneracy="4" energy="0.0" />
-				<level degeneracy="2" energy="1432.0" />
-				<level degeneracy="2" energy="108722.5" />
-				<level degeneracy="20" energy="132476.1" />
-				<level degeneracy="28" energy="142705.7" />
-				<level degeneracy="6" energy="144350.2" />
-				<level degeneracy="12" energy="147644.7" />
-				<level degeneracy="14" energy="149595.2" />
+				<level degeneracy="4" energy="127113.5" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				1526778
