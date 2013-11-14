@@ -1,6 +1,7 @@
 
 #include "ParticleRRHO.h"
 #include "Utilities.h"
+#include "Constants.h"
 
 #include <cassert>
 #include <iostream>
@@ -70,7 +71,7 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
 //==============================================================================
 
 ParticleRRHO::ParticleRRHO(const ParticleRRHO* p_rrho, const size_t level)
-    : m_hform(p_rrho->m_hform),
+    : m_hform(p_rrho->m_hform + p_rrho->electronicEnergy(level).second*RU),
       m_steric(p_rrho->m_steric),
       m_linearity(p_rrho->m_linearity),
       m_rotational_t(p_rrho->m_rotational_t),
