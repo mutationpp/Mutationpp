@@ -1,0 +1,12 @@
+<mixture mechanism="argonCR" thermo_db="RRHO">
+
+    <default_element_fractions>
+        Ar : 1,
+        e- : 0
+    </default_element_fractions>
+
+    <species>
+        e- Ar+ Ar*
+    </species>
+    
+</mixture>

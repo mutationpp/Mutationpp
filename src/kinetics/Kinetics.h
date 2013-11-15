@@ -14,6 +14,13 @@ namespace Mutation {
 /**
  * Manages the computation of chemical source terms for an entire reaction
  * mechanism.
+ *
+ * @todo Currently, intermediate values are always recomputed even if they don't
+ * need to be.  An detailed look should be made into how to save computations
+ * when, for instance, the temperature does not change.  This also holds true
+ * for the jacobian.  For example, if the source terms were just computed, there
+ * is no need to recompute the reaction rate coefficients in the jacobian
+ * evaluation.
  */
 class Kinetics
 {
@@ -119,27 +126,22 @@ public:
      *    C_i^{\nu_{ij}^"} \right] \Theta_{TB}
      * \f]
      *
-     * @param T     the temperature in K
-     * @param conc  the species concentration vector in kg/m^3
-     * @param wdot  on return, the species production rates in kg/m^3-s
+     * @param p_wdot - on return, the species production rates in kg/m^3-s
      */
-    //void netProductionRates(
-    //    const double T, const double* const conc, double* const wdot);
-        
-    void netProductionRates(double* const wdot);
+    void netProductionRates(double* const p_wdot);
 
     /**
      * Fills the matrix p_jac with the species production rate jacobian matrix
      * \f[
      * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial \rho_j}
      * \f]
+     * The Jacobian matrix should be sized to be at least the square of the
+     * number of species, ns.  Access the jacobian using row-major ordering (ie:
+     * J_{ij} = p_jac[i*ns + j]).
      *
-     * @param T      - the temperature in K
-     * @param p_conc - the species concentration vector in mol/m^3
-     * @param p_jac  - on return, the jacobian matrix \f$J_ij\f$
+     * @param p_jac  - on return, the jacobian matrix \f$J_{ij}\f$
      */
-    //void jacobianRho(
-    //    const double T, const double *const p_conc, double* const p_jac);
+    void jacobianRho(double* const p_jac);
 
     /**
      * Returns the change in some species quantity across each reaction.
