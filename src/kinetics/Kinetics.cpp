@@ -182,24 +182,25 @@ void Kinetics::closeReactions(const bool validate_mechanism)
 
 //==============================================================================
 
-/*void Kinetics::forwardRateCoefficients(const double T, double* const p_kf)
+void Kinetics::forwardRateCoefficients(double* const p_kf)
 {
-    updateT(T);
-    const double* const p_lnkf = mp_rates->lnkff();
-    for (int i = 0; i < m_num_rxns; ++i)
+    mp_rates->update(m_thermo);
+    const double* const p_lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
         p_kf[i] = std::exp(p_lnkf[i]);
 }
 
 //==============================================================================
 
-void Kinetics::backwardRateCoefficients(const double T, double* const p_kb)
+void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
-    updateT(T);
-    const double* const p_lnkf = mp_rates->lnkff();
-    for (int i = 0; i < m_num_rxns; ++i)
-        p_kb[i] = std::exp(p_lnkf[i] - mp_lnkeq[i]);
+    mp_rates->update(m_thermo);
+    const double* const p_lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        p_kb[i] = std::exp(p_lnkb[i]);
 }
 
+/*
 //==============================================================================
 
 void Kinetics::forwardRatesOfProgress(

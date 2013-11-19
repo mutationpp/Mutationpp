@@ -26,7 +26,7 @@ MixtureOptions::MixtureOptions()
     setDefaultOptions();
 }
 
-MixtureOptions::MixtureOptions(const string& mixture)
+MixtureOptions::MixtureOptions(const std::string& mixture)
     : m_composition_setter(m_default_composition),
       m_has_default_composition(false)
 {

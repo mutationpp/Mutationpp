@@ -69,19 +69,17 @@ public:
      * for each reaction.  The coefficients are computed based on the rate laws
      * assigned to each individual reaction.
      *
-     * @param T   the temperature in K
-     * @param kf  on return, \f$ k_{f,j}(T) \f$
+     * @param kf  on return, \f$ k_{f,j} \f$
      */
-    //void forwardRateCoefficients(const double T, double* const p_kf);
+    void forwardRateCoefficients(double* const p_kf);
     
     /**
      * Fills the vector kb with the backward rate coefficients 
      * \f$ k_{b,j} = k_{f,j} / K_{C,j} \f$ for each reaction.
      *
-     * @param T   the temperature in K
-     * @param kb  on return, \f$ k_{b,j}(T) \f$
+     * @param kb  on return, \f$ k_{b,j} \f$
      */
-    //void backwardRateCoefficients(const double T, double* const p_kb);
+    void backwardRateCoefficients(double* const p_kb);
     
     /**
      * Fills the vector ropf with the forward rate of progress variables for
