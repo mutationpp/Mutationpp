@@ -56,7 +56,7 @@ public:
      * exist.
      */
     MillikanWhiteVibrator(
-        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**

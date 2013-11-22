@@ -29,9 +29,9 @@ class Arrhenius : public RateLaw
 {
 public:
 
-    static void setUnits(Mutation::Utilities::IO::XmlElement& node);
+    static void setUnits(const Mutation::Utilities::IO::XmlElement& node);
     
-    Arrhenius(Mutation::Utilities::IO::XmlElement& node, const int order);
+    Arrhenius(const Mutation::Utilities::IO::XmlElement& node, const int order);
     
     Arrhenius(const Arrhenius& to_copy)
         : m_lnA(to_copy.m_lnA), m_n(to_copy.m_n), m_temp(to_copy.m_temp)

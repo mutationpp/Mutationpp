@@ -25,7 +25,7 @@ public:
      * Copy constructor.
      */
     MixtureOptions(const MixtureOptions& options)
-        : m_species_names(options.m_species_names),
+        : m_species_descriptor(options.m_species_descriptor),
           m_default_composition(options.m_default_composition),
           m_composition_setter(options.m_composition_setter),
           m_has_default_composition(options.m_has_default_composition),
@@ -68,30 +68,16 @@ public:
     /**
      * Gets the list of species names.
      */
-    const std::vector<std::string>& getSpeciesNames() const {
-        return m_species_names;
-    }
-    
-    /**
-     * Adds a species name to the list.
-     */
-    void addSpeciesName(const std::string& species) {
-        m_species_names.push_back(species);
+    const std::string& getSpeciesDescriptor() const {
+        return m_species_descriptor;
     }
     
     /**
      * Sets the list of species names.
      */
-    void setSpeciesNames(const std::vector<std::string>& species) {
-        m_species_names = species;
+    void setSpeciesDescriptor(const std::string& descriptor) {
+        m_species_descriptor = descriptor;
     }
-    
-    /**
-     * Clears all of the species names.
-     */
-     void clearSpeciesNames() {
-        m_species_names.clear();
-     }
     
     /**
      * Gets the mixture state model to be used.
@@ -275,7 +261,7 @@ private:
 
 private:
 
-    std::vector<std::string> m_species_names;
+    std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
     CompositionSetter m_composition_setter;

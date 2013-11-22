@@ -12,11 +12,11 @@ namespace Mutation {
 
 //==============================================================================
 
-ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
+ParticleRRHO::ParticleRRHO(const IO::XmlElement& xml_element)
     : m_hform(0), m_steric(0), m_linearity(0), m_rotational_t(0)
 {
     // Load information stored in child elements
-    IO::XmlElement::Iterator iter = xml_element.begin();        
+    IO::XmlElement::const_iterator iter = xml_element.begin();
     
     for ( ; iter != xml_element.end(); ++iter) {
         if (iter->tag() == "formation_enthalpy") {
@@ -48,7 +48,7 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
                 m_vibrational_energies.push_back(atof(t_iter->c_str()));
         }
         else if (iter->tag() == "electronic_levels") {
-            IO::XmlElement::Iterator level_iter = iter->begin();
+            IO::XmlElement::const_iterator level_iter = iter->begin();
             
             int    degeneracy;
             double temperature;
@@ -69,19 +69,16 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
 
 //==============================================================================
 
-ParticleRRHO::ParticleRRHO(const ParticleRRHO* p_rrho, const size_t level)
-    : m_hform(p_rrho->m_hform),
-      m_steric(p_rrho->m_steric),
-      m_linearity(p_rrho->m_linearity),
-      m_rotational_t(p_rrho->m_rotational_t),
-      m_electronic_energies(),
-      m_vibrational_energies(p_rrho->m_vibrational_energies)
+ParticleRRHO::ParticleRRHO(const ParticleRRHO& rrho, const size_t level)
+    : m_hform(rrho.m_hform + rrho.electronicEnergy(level).second),
+      m_steric(rrho.m_steric),
+      m_linearity(rrho.m_linearity),
+      m_rotational_t(rrho.m_rotational_t),
+      m_electronic_energies(1, rrho.electronicEnergy(level)),
+      m_vibrational_energies(rrho.m_vibrational_energies)
 {
     // Make sure the level used is actually present in the given RRHO parameters
-    assert(level < p_rrho->nElectronicLevels());
-    
-    // Copy only the level given
-    m_electronic_energies.push_back(p_rrho->electronicEnergy(level));
+    assert(level < rrho.nElectronicLevels());
 }
 
 //==============================================================================

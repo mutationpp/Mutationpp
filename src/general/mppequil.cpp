@@ -303,9 +303,7 @@ Options parseOptions(int argc, char** argv)
     // is present)
     if (optionExists(argc, argv, "--species-list")) {
         opts.p_mixture_opts = new Mutation::MixtureOptions();
-        std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--species-list"), tokens, ", ");
-        opts.p_mixture_opts->setSpeciesNames(tokens);
+        opts.p_mixture_opts->setSpeciesDescriptor(getOption(argc, argv, "--species-list"));
     } else {
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
     }
@@ -422,9 +420,9 @@ void writeHeader(
     iter = opts.species_indices.begin();
     for ( ; iter != opts.species_indices.end(); ++iter) {
         for (int i = 0; i < mix.nSpecies(); ++i) {
-            name = species_quantities[*iter].name + "_" + mix.speciesName(i) +
+            name = "\"" + species_quantities[*iter].name + "_" + mix.speciesName(i) +
                 (species_quantities[*iter].units == "" ? 
-                    "" : "[" + species_quantities[*iter].units + "]");
+                    "" : "[" + species_quantities[*iter].units + "]") + "\"";
             column_widths.push_back(
                 std::max(width, static_cast<int>(name.length())+2));
             cout << setw(column_widths.back()) << name;

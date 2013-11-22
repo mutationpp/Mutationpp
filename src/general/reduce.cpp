@@ -141,11 +141,14 @@ void computeErrorTable(
     const ReducedSet& reduction, Mixture& full, MixtureOptions opts)
 {
     // Create a new mixture based on the reduced set of species
-    opts.clearSpeciesNames();
     opts.setMechanism("none");
+    
+    std::string species_names("");
     std::set<int>::const_iterator iter = reduction.species().begin();
     for ( ; iter != reduction.species().end(); ++iter)
-        opts.addSpeciesName(full.speciesName(*iter));
+        species_names += " " + full.speciesName(*iter);
+    
+    opts.setSpeciesDescriptor(species_names);
     Mixture mix(opts);
     
     for (int k = 0; k < mix.nElements(); ++k)

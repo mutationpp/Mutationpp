@@ -16,6 +16,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 namespace Mutation {
     namespace Utilities {
@@ -50,6 +51,9 @@ private:
     };
     
 public:
+
+    typedef std::vector<XmlElement>::iterator iterator;
+    typedef std::vector<XmlElement>::const_iterator const_iterator;
 
     /**
      * Constructs a new XmlElement given its parent and document pointers.
@@ -108,7 +112,7 @@ public:
      * given default value is used.
      */
     template <typename T>
-    void getAttribute(const std::string& name, T& value, const T& dflt)
+    void getAttribute(const std::string& name, T& value, const T& dflt) const
     {
         if (hasAttribute(name))
             getAttribute(name, value);
@@ -122,8 +126,8 @@ public:
      * the error message is printed and execution is terminated.
      */
 	template <typename T>
-	void getAttribute(const std::string& name, T& value, 
-        const char *const error_msg)
+	void getAttribute(
+        const std::string& name, T& value, const char *const error_msg) const
 	{
         if (hasAttribute(name))
             getAttribute(name, value);
@@ -136,35 +140,45 @@ public:
      * with the given name.
      */
     template <typename T>
-    void getAttribute(const std::string& name, T& value);
-    
-    /**
-     * Children iterator class.
-     */
-    class Iterator 
-        : public Mutation::Utilities::IteratorWrapper<
-            XmlElement, std::vector<XmlElement>::iterator>
-    {
-        friend class XmlElement;
-    };
+    void getAttribute(const std::string& name, T& value) const;
     
     /**
      * Returns an iterator pointing to the first child element in this
      * XmlElement.
      */
-    Iterator &begin()
-    {
-        m_iterator.m_iter = m_children.begin();
-        return m_iterator;
+    const_iterator begin() const {
+        return m_children.begin();
     }
     
     /**
      * Returns an iterator pointing to the end of the child element list.
      */
-    Iterator &end()
+    const_iterator end() const {
+        return m_children.end();
+    }
+    
+    /**
+     * Returns an iterator pointing to the first child element which has the
+     * given tag.
+     */
+    const_iterator findTag(const std::string& tag) const
     {
-        m_iterator.m_iter = m_children.end();
-        return m_iterator;
+        return findTag(tag, begin());
+    }
+    
+    /**
+     * Returns an iterator pointing to the first child element which has the
+     * given tag starting from the given iterator.
+     */
+    const_iterator findTag(const std::string& tag, const_iterator iter) const
+    {
+        while (iter != end()) {
+            if (iter->tag() == tag)
+                break;
+            ++iter;
+        }
+        
+        return iter;
     }
     
     /**
@@ -173,10 +187,21 @@ public:
      * exists, the iterator equals end().
      */
     template <typename T>
-    Iterator findTagWithAttribute(
-        const std::string& tag, const std::string& attribute, const T& value)
+    const_iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const T value) const
     {
         return findTagWithAttribute(tag, attribute, value, begin());
+    }
+    
+    /**
+     * Returns an iterator pointing to the first child element which has the 
+     * given tag and given attribute/value pair.  If no such child element 
+     * exists, the iterator equals end().
+     */
+    const_iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const char* value) const
+    {
+        return findTagWithAttribute(tag, attribute, std::string(value), begin());
     }
     
     /**
@@ -185,22 +210,35 @@ public:
      * child element exists, the iterator equals end().
      */
     template <typename T>
-    Iterator findTagWithAttribute(
-        const std::string& tag, const std::string& attribute, const T& value,
-        Iterator iter)
+    const_iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const T value,
+        const_iterator iter) const
     {
+        iter = findTag(tag, iter);
         while (iter != end()) {
-            if (iter->tag() == tag) {
-                T val;
-                iter->getAttribute(attribute, val);
+            T val;
+            iter->getAttribute(attribute, val);
                 
-                if (val == value)
-                    return iter;
-            }
-            ++iter;
+            if (val == value)
+                break;
+            
+            iter = findTag(tag, ++iter);
         }
         
-        return end();
+        return iter;
+    }
+    
+    
+    /**
+     * Returns an iterator pointing to the first child element (starting from
+     * iter) which has the given tag and given attribute/value pair.  If no such
+     * child element exists, the iterator equals end().
+     */
+    const_iterator findTagWithAttribute(
+        const std::string& tag, const std::string& attribute, const char* value,
+        const_iterator iter) const
+    {
+        return findTagWithAttribute(tag, attribute, std::string(value), iter);
     }
     
     /** 
@@ -235,7 +273,6 @@ private:
     std::vector<XmlElement>            m_children;
     std::string                        m_tag;
     std::string                        m_text;
-    Iterator                           m_iterator;
     long int                           m_line_number;
     
 };
@@ -246,7 +283,10 @@ private:
  */
 class XmlDocument
 {
-public:    
+public:
+
+    typedef std::vector<XmlElement>::iterator iterator;
+    typedef std::vector<XmlElement>::const_iterator const_iterator;
 
     XmlDocument(const std::string &filename);
     
@@ -257,23 +297,13 @@ public:
     const std::string& file() const {
         return m_filename;
     }
-
-    class Iterator 
-        : public IteratorWrapper<XmlElement, std::vector<XmlElement>::iterator>
-    {
-        friend class XmlDocument;
-    };
     
-    Iterator &begin()
-    {
-        m_iterator.m_iter = m_elements.begin();
-        return m_iterator;
+    const_iterator begin() const {
+        return m_elements.begin();
     }
     
-    Iterator &end()
-    {
-        m_iterator.m_iter = m_elements.end();
-        return m_iterator;
+    const_iterator end() const {
+        return m_elements.end();
     }
     
     friend void _parseError(const int, const std::string &);
@@ -282,7 +312,6 @@ private:
 
     const std::string       m_filename;
     std::vector<XmlElement> m_elements;
-    Iterator                m_iterator;
 };
 
         } // namespace IO
