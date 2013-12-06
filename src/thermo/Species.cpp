@@ -1,10 +1,5 @@
-#include <cctype>
-#include <cstdlib>
-#include <iostream>
-#include <iomanip>
 
 #include "Species.h"
-#include "ParticleRRHO.h"
 #include "Utilities.h"
 
 using namespace std;
@@ -15,15 +10,15 @@ namespace Mutation {
 
 //==============================================================================
 
-Element::Element(IO::XmlElement &xml_element)
+Element::Element(const IO::XmlElement &xml_element)
 {
     xml_element.getAttribute("name", m_name, 
         "Element must have a name attribute!");
     
     xml_element.getAttribute("charge", m_charge, 0);
     
-    IO::XmlElement::Iterator child_iter = xml_element.begin();
-    IO::XmlElement::Iterator child_end  = xml_element.end();
+    IO::XmlElement::const_iterator child_iter = xml_element.begin();
+    IO::XmlElement::const_iterator child_end  = xml_element.end();
     
     for ( ; child_iter != child_end; ++child_iter) {
         if (child_iter->tag() == "mw") {
@@ -39,15 +34,12 @@ Element::Element(IO::XmlElement &xml_element)
 
 Species::Species(const Species& to_copy)
     : m_name(to_copy.m_name),
-      m_base_name(to_copy.m_base_name),
-      m_nasa7_name(to_copy.m_nasa7_name),
-      m_nasa9_name(to_copy.m_nasa9_name),
-      mp_rrho_model(
-          (to_copy.mp_rrho_model == NULL ? NULL : 
-              new ParticleRRHO(*(to_copy.mp_rrho_model)))),
+      m_ground_state_name(to_copy.m_ground_state_name),
       m_mw(to_copy.m_mw),
       m_charge(to_copy.m_charge),
       m_phase(to_copy.m_phase),
+      m_type(to_copy.m_type),
+      m_level(to_copy.m_level),
       m_stoichiometry(to_copy.m_stoichiometry)
 { }
 
@@ -55,174 +47,53 @@ Species::Species(const Species& to_copy)
 
 Species::Species(const Species& to_copy, const size_t level)
     : m_name(to_copy.m_name),
-      m_base_name(to_copy.m_name),
-      m_nasa7_name(to_copy.m_nasa7_name),
-      m_nasa9_name(to_copy.m_nasa9_name),
-      mp_rrho_model(
-          (to_copy.mp_rrho_model == NULL ? NULL : 
-              new ParticleRRHO(to_copy.mp_rrho_model, level))),
+      m_ground_state_name(to_copy.m_name),
       m_mw(to_copy.m_mw),
       m_charge(to_copy.m_charge),
       m_phase(to_copy.m_phase),
+      m_type(to_copy.m_type),
+      m_level(level),
       m_stoichiometry(to_copy.m_stoichiometry)
 { 
     stringstream ss;
-    ss << "(" << level << ")";
+    ss << "(" << m_level << ")";
     m_name += ss.str();
 }
 
 //==============================================================================
 
 Species::Species(
-    IO::XmlElement &xml_element, const vector<Element> &elements, 
-    set<int> &used_elements)
-    : mp_rrho_model(NULL)
+    const std::string& name, const PhaseType phase,
+    const StoichList& stoichiometry, const std::vector<Element>& elements)
+    : m_name(name),
+      m_ground_state_name(name),
+      m_mw(0.0),
+      m_charge(0),
+      m_phase(phase),
+      m_type(ATOM),
+      m_level(0),
+      m_stoichiometry(stoichiometry)
 {
-    // Load attribute information
-    xml_element.getAttribute("name", m_name);
-    m_base_name  = m_name;
-    m_nasa9_name = m_name;
-    m_nasa7_name = m_name;
+    StoichList::const_iterator iter = m_stoichiometry.begin();
+    std::vector<Element>::const_iterator el;
+    for ( ; iter != m_stoichiometry.end(); ++iter) {
+        for (el = elements.begin(); el != elements.end(); ++el)
+            if (el->name() == iter->first) break;
     
-    string phase;
-    xml_element.getAttribute("phase", phase, string("gas"));
-    phase = String::toLowerCase(phase);
-    
-    if (phase == "gas")
-        m_phase = GAS;
-    else if (phase == "liquid")
-        m_phase = LIQUID;
-    else if (phase == "solid")
-        m_phase = SOLID;
-    else {
-        cerr << "Invalid phase description for species \"" << m_name
-             << "\", can be \"gas\", \"liquid\", or \"solid\"." << endl;
-        exit(1);
-    }
-    
-    // Load information stored in child elements
-    IO::XmlElement::Iterator child_iter = xml_element.begin();
-    IO::XmlElement::Iterator child_end  = xml_element.end();
-    
-    for ( ; child_iter != child_end; ++child_iter) {
-        if (child_iter->tag() == "stoichiometry")
-            loadStoichiometry(child_iter->text(), elements);
-        else if (child_iter->tag() == "thermodynamics") {
-            std::string thermo_type;
-            child_iter->getAttribute("type", thermo_type);
-            if (thermo_type == "NASA-7")
-                child_iter->getAttribute("db_name", m_nasa7_name, m_name);
-            else if (thermo_type == "NASA-9")
-                child_iter->getAttribute("db_name", m_nasa9_name, m_name);
-            else if (thermo_type == "RRHO")
-                mp_rrho_model = new ParticleRRHO(*child_iter);
-        }
-    }
-    
-    /*cout << m_name << endl;
-    ParticleType ptype = type();
-    cout << (ptype == ELECTRON ? "ELECTRON" : 
-        (ptype == ATOM ? "ATOM" : "MOLECULE")) << endl;
-    switch (ptype) {
-        
-        case MOLECULE:
-            cout << "theta_r: " << mp_rrho_model->rotationalTemperature() << endl;
-            cout << "linearity: " << mp_rrho_model->linearity() << endl;
-            cout << "omega: " << mp_rrho_model->stericFactor() << endl;
-            cout << "nvib: " << mp_rrho_model->nVibrationalLevels() << endl;
-            for (int i = 0; i < mp_rrho_model->nVibrationalLevels(); ++i)
-                cout << mp_rrho_model->vibrationalEnergy(i) << endl;
-        case ATOM:
-            cout << "nelec: " << mp_rrho_model->nElectronicLevels() << endl;
-            for (int i = 0; i < mp_rrho_model->nElectronicLevels(); ++i)
-                cout << mp_rrho_model->electronicEnergy(i).first << " "
-                     << mp_rrho_model->electronicEnergy(i).second << endl;
-        case ELECTRON:
-            cout << "hf: " << mp_rrho_model->formationEnthalpy() << endl;
-    }
-    cout << endl;*/
-    
-    // Now use the elemental composition and elements list to determine the
-    // molecular weight and charge of this species (ensures mass and charge
-    // conservation)
-    vector<Element>::const_iterator iter = elements.begin();
-    set<string> element_names;
-    
-    m_mw = 0.0;
-    m_charge = 0;
-    
-    for (int i = 0; iter < elements.end(); ++iter, ++i) {
-        if (m_stoichiometry.count(iter->name()) > 0) {
-            // Number of atoms of this element belonging to this species
-            int atoms = nAtoms(iter->name());
-            // Update molecular weight
-            m_mw += atoms * iter->atomicMass();
-            // Update species charge
-            m_charge += atoms * iter->charge();
-            // Let the user know that this element is in this species
-            used_elements.insert(i);
-        }
-    }
-}
-
-//==============================================================================
-
-Species::~Species()
-{
-    if (mp_rrho_model != NULL)
-        delete mp_rrho_model;
-}
-
-//==============================================================================
-
-void Species::loadStoichiometry(
-    const string& stoichiometry, const vector<Element> &elements)
-{
-    // Split up the string in the format "A:a, B:b, ..." into a vector of
-    // strings matching ["A", "a", "B", "b", ... ]
-    vector<string> stoichiometry_tokens;
-    String::tokenize(
-        String::removeWhiteSpace(stoichiometry), 
-        stoichiometry_tokens, ":,");
-    
-    // Check that the vector has an even number of tokens (otherwise there must
-    // be an error in the syntax)
-    if (stoichiometry_tokens.size() % 2 != 0) {
-        cerr << "Error in species \"" << name() << "\" stoichiometry "
-             << "definition, invalid syntax!" << endl;
-        for (int i = 0; i < stoichiometry_tokens.size(); ++i)
-            cerr << "\"" << stoichiometry_tokens[i] << "\"" << endl;
-        exit(1); 
-    }
-    
-    // Determine stoichiometry from the stoichiometry vector
-    string element_name;
-    int atoms;
-    bool found;
-    
-    for (int i = 0; i < stoichiometry_tokens.size(); i+=2) {
-        element_name = stoichiometry_tokens[i];
-    
-        // Check that each element name in the stoichiometry list matches an
-        // element in the element list that is loaded
-        found = false;
-        for (int j = 0; j < elements.size(); ++j)
-            if ((found = (elements[j].name() == element_name))) break;
-        if (!found) {
-            cerr << "Error in species \"" << name() << "\" stoichiometry "
-                 << "definition, element \"" << element_name
-                 << "\" is not defined!" << endl;
+        if (el == elements.end()) {
+            std::cout << "Error trying to create species " << m_name
+                      << " when element " << iter->first
+                      << " does not exist in the database!" << std::endl;
             exit(1);
         }
         
-        // Now add the element's stoichiometry to the map
-        m_stoichiometry[stoichiometry_tokens[i]] = 
-            atoi(stoichiometry_tokens[i+1].c_str());
+        m_mw += iter->second * el->atomicMass();
+        m_charge += iter->second * el->charge();
     }
     
-    // Finally, do a check to determine whether or not the species name matches
-    // the given stoichiometry if the name is in "standard" form
-    checkStoichiometryNameMatching(m_name, m_stoichiometry, elements);
+    // Determine the species type
+    int atoms = nAtoms();
+    m_type = (atoms == 0 ? ELECTRON : (atoms == 1 ? ATOM : MOLECULE));
 }
 
 //==============================================================================
@@ -436,13 +307,12 @@ void Species::checkStoichiometryNameMatching(
 void swap(Species& s1, Species& s2)
 {
     std::swap(s1.m_name, s2.m_name);
-    std::swap(s1.m_base_name, s2.m_base_name);
-    std::swap(s1.m_nasa7_name, s2.m_nasa7_name);
-    std::swap(s1.m_nasa9_name, s2.m_nasa9_name);
-    std::swap(s1.mp_rrho_model, s2.mp_rrho_model);
+    std::swap(s1.m_ground_state_name, s2.m_ground_state_name);
     std::swap(s1.m_mw, s2.m_mw);
     std::swap(s1.m_charge, s2.m_charge);
     std::swap(s1.m_phase, s2.m_phase);
+    std::swap(s1.m_type, s2.m_type);
+    std::swap(s1.m_level, s2.m_level);
     std::swap(s1.m_stoichiometry, s2.m_stoichiometry);
 }
 

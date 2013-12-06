@@ -43,7 +43,7 @@ Kinetics::Kinetics(
     
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
-    IO::XmlElement::Iterator iter = root.begin();
+    IO::XmlElement::const_iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {        
         if (iter->tag() == "reaction")
             addReaction(Reaction(*iter, thermo));

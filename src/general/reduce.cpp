@@ -141,11 +141,14 @@ void computeErrorTable(
     const ReducedSet& reduction, Mixture& full, MixtureOptions opts)
 {
     // Create a new mixture based on the reduced set of species
-    opts.clearSpeciesNames();
     opts.setMechanism("none");
+    
+    std::string species_names("");
     std::set<int>::const_iterator iter = reduction.species().begin();
     for ( ; iter != reduction.species().end(); ++iter)
-        opts.addSpeciesName(full.speciesName(*iter));
+        species_names += " " + full.speciesName(*iter);
+    
+    opts.setSpeciesDescriptor(species_names);
     Mixture mix(opts);
     
     for (int k = 0; k < mix.nElements(); ++k)
@@ -203,24 +206,35 @@ void computeErrorTable(
 
 int main(int argc, char** argv)
 {
-    if (argc <= 1) {
-        cout << "Provide a reaction mechanism." << endl;
+    MixtureOptions* p_opts;
+    
+    if (argc < 2 || argc > 3) {
+        cout << "- reduce mixture-name" << endl;
+        cout << "           or          " << endl;
+        cout << "- reduce database(NASA-7, NASA-9, RRHO) species-descriptor" << endl;
         exit(1);
+    } else if (argc == 2) {
+        p_opts = new MixtureOptions(argv[1]);
+    } else {
+        p_opts = new MixtureOptions();
+        p_opts->setThermodynamicDatabase(argv[1]);
+        p_opts->setSpeciesDescriptor(argv[2]);
     }
+    
+    p_opts->setStateModel("EquilTPXe");
+    Mixture mix(*p_opts);
+    delete p_opts;
     
     srand(time(NULL));
     
-    // Load the mixture to be reduced
-    MixtureOptions opts(argv[1]);
-    opts.setStateModel("EquilTPXe");
-    Mixture mix(opts);
-    
     // Define the different tolerance levels
     std::vector<ReducedSet> reductions;
+    reductions.push_back(1.0E-2);
     reductions.push_back(1.0E-3);
     reductions.push_back(1.0E-4);
     reductions.push_back(1.0E-5);
     reductions.push_back(1.0E-7);
+    reductions.push_back(1.0E-10);
     
     // Loop over temperature and pressure values
     double T, P;
@@ -283,12 +297,12 @@ int main(int argc, char** argv)
     
     // Compute the mixture Cp, H, S, and G and determine the maximum error in
     // each for each mixture
-    cout << "Maximum errors thermodynamic properties..." << endl;
-    cout << setw(10) << "Tol";
-    cout << setw(14) << "Cp_mix [%]";
-    cout << setw(14) << "H_mix [%]";
-    cout << setw(14) << "S_mix [%]" << endl;
-    for (int i = 0; i < reductions.size(); ++i) {
-        computeErrorTable(reductions[i], mix, opts);
-    }
+//    cout << "Maximum errors thermodynamic properties..." << endl;
+//    cout << setw(10) << "Tol";
+//    cout << setw(14) << "Cp_mix [%]";
+//    cout << setw(14) << "H_mix [%]";
+//    cout << setw(14) << "S_mix [%]" << endl;
+//    for (int i = 0; i < reductions.size(); ++i) {
+//        computeErrorTable(reductions[i], mix, opts);
+//    }
 }

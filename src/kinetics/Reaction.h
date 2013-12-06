@@ -24,7 +24,7 @@ public:
      * Constructs a reaction object from a "reaction" XML element.
      */
     Reaction(
-        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**
@@ -194,7 +194,7 @@ private:
      * forward reaction.
      */
     void parseFormula(
-        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**

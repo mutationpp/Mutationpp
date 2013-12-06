@@ -27,7 +27,7 @@ void swap(Reaction& left, Reaction& right) {
 
 //==============================================================================
 
-Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
+Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& thermo)
     : m_formula(""),
       m_reversible(true),
       m_thirdbody(false),
@@ -47,7 +47,7 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     
     // Now loop through the children of this node to determine the other 
     // attributes of the reaction
-    IO::XmlElement::Iterator iter = node.begin();
+    IO::XmlElement::const_iterator iter = node.begin();
     for ( ; iter != node.end(); ++iter) {
         if (iter->tag() == "arrhenius") {
             mp_rate = new Arrhenius(*iter, order());
@@ -128,7 +128,7 @@ bool Reaction::operator == (const Reaction& r)
 //==============================================================================
 
 void Reaction::parseFormula(
-    IO::XmlElement& node, const class Thermodynamics& thermo)
+    const IO::XmlElement& node, const class Thermodynamics& thermo)
 {
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction

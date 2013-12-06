@@ -273,14 +273,14 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         n9.mp_coefficients[i][8] = atof(line.substr(64,16).replace(12,1,"E").c_str()); // b_{2,i}
     }
     
-    // We have now loaded all the data we need, write out the data to check that
-    // it is working
-    /*cout << "Species: " << name << endl;
-    for (int i = 0; i < n9.m_nr; ++i) {
-        cout << "T-range: " << n9.mp_tbounds[i] << " - " << n9.mp_tbounds[i+1] << endl;
-        for (int j = 0; j < n9.m_nc; ++j)
-            cout << "a" << j << ": " << n9.mp_coefficients[i][j] << endl; 
-    }*/
+//    // We have now loaded all the data we need, write out the data to check that
+//    // it is working
+//    cout << "Species: " << name << endl;
+//    for (int i = 0; i < n9.m_nr; ++i) {
+//        cout << "T-range: " << n9.mp_tbounds[i] << " - " << n9.mp_tbounds[i+1] << endl;
+//        for (int j = 0; j < n9.m_nc; ++j)
+//            cout << "a" << j << ": " << n9.mp_coefficients[i][j] << endl; 
+//    }
 
     return in;
 }

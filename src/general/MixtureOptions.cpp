@@ -9,7 +9,7 @@ namespace Mutation {
 
 void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 {
-    std::swap(opt1.m_species_names, opt2.m_species_names);
+    std::swap(opt1.m_species_descriptor, opt2.m_species_descriptor);
     std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
     std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
     std::swap(opt1.m_state_model, opt2.m_state_model);
@@ -42,7 +42,7 @@ MixtureOptions::MixtureOptions(const char* mixture)
 
 void MixtureOptions::setDefaultOptions()
 {
-    m_species_names.clear();
+    m_species_descriptor = "";
     m_state_model = "EquilTP";
     m_thermo_db   = "RRHO";
     m_mechanism   = "none";
@@ -86,11 +86,11 @@ void MixtureOptions::loadFromFile(const string& mixture)
     root.getAttribute("state_model", m_state_model, m_state_model);
     
     // Loop over all of the mixture child elements
-    IO::XmlElement::Iterator iter;
+    IO::XmlElement::const_iterator iter;
     for (iter = root.begin(); iter != root.end(); ++iter) {
         // Load the species list
         if (iter->tag() == "species") {
-            String::tokenize(iter->text(), m_species_names, ", \n\r\t\f");
+            m_species_descriptor = String::trim(iter->text());
         
         // Load the default element fractions, note that we only check for valid
         // format, not for valid elements or fractions, this is left up to the

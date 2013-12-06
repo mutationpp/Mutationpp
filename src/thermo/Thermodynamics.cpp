@@ -1,11 +1,9 @@
 #include "Thermodynamics.h"
-#include "Constants.h"
 #include "GfcEquilSolver.h"
 #include "MultiPhaseEquilSolver.h"
-#include "ThermoDB.h"
 #include "StateModel.h"
 #include "Utilities.h"
-#include "ParticleRRHO.h"
+//#include "ParticleRRHO.h"
 
 #include <set>
 
@@ -21,16 +19,30 @@ namespace Mutation {
 //==============================================================================
 
 Thermodynamics::Thermodynamics(
-    const vector<string> &species_names, const string& thermo_db,
+    const string& species_descriptor,
+    const string& thermo_db,
     const string& state_model )
     : mp_work1(NULL), mp_work2(NULL), mp_default_composition(NULL),
       m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
-    // Load the species and element objects for the specified species
-    loadSpeciesFromList(species_names);
+    // Load the thermodynamic database
+    mp_thermodb = Config::Factory<ThermoDB>::create(thermo_db, 0);
+    if (!mp_thermodb->load(species_descriptor)) {
+        cout << "Did not load all required species... Exiting." << endl;
+        exit(1);
+    }
     
-    // Now we can load the relevant thermodynamic database
-    mp_thermodb = Config::Factory<ThermoDB>::create(thermo_db, m_species);
+    // Store the species and element order information for easy access
+    for (int i = 0; i < nElements(); ++i)
+        m_element_indices[element(i).name()] = i;
+    
+    for (int i = 0; i < nSpecies(); ++i) {
+        m_species_indices[species(i).name()] = i;
+        m_natoms += (species(i).type() == ATOM ? 1 : 0);
+        m_nmolecules += (species(i).type() == MOLECULE ? 1 : 0);
+    }
+    
+    m_has_electrons = (species(0).type() == ELECTRON);
     
     // Build the composition matrix
     m_element_matrix = RealMatrix(nSpecies(), nElements());
@@ -38,12 +50,12 @@ Thermodynamics::Thermodynamics(
     for (int i = 0; i < nSpecies(); ++i)
         for (int j = 0; j < nElements(); ++j)
             m_element_matrix(i,j) = 
-                m_species[i].nAtoms(m_elements[j].name());
+                species(i).nAtoms(element(j).name());
     
     // Store the species molecular weights for faster access
     m_species_mw = RealVector(nSpecies());
     for (int i = 0; i < nSpecies(); ++i)
-        m_species_mw(i) = m_species[i].molecularWeight();
+        m_species_mw(i) = species(i).molecularWeight();
     
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];
@@ -80,101 +92,101 @@ Thermodynamics::~Thermodynamics()
 
 //==============================================================================
 
-void Thermodynamics::loadSpeciesFromList(
-    const std::vector<std::string> &species_names)
-{
-    // Determine file paths
-    string thermo_directory = 
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
-    string elements_path    = thermo_directory + "/elements.xml";
-    string species_path     = thermo_directory + "/species.xml";
-    
-    // First we need to load the entire element database for use in constructing
-    // our species list
-    IO::XmlDocument element_doc(elements_path);
-    IO::XmlElement::Iterator element_iter = element_doc.root().begin();
-    IO::XmlElement::Iterator element_end  = element_doc.root().end();
-    
-    vector<Element> elements;
-    set<int> used_elements;
-    
-    for ( ; element_iter != element_end; ++element_iter)
-        elements.push_back(Element(*element_iter));
-    
-    // Load the species XML database
-    IO::XmlDocument species_doc(species_path);
-    IO::XmlElement species_list = species_doc.root();
-    
-    // Loop over each species and load from the database
-    std::string name;
-    bool expand = false;
-    std::vector<std::string> not_found;
-    for (int i = 0; i < species_names.size(); ++i) {
-        // Get species name
-        name = species_names[i];
-        
-        // Check if this species is supposed to be expanded into excited states
-        expand = (name[name.size()-1] == '*');
-        if (expand)
-            name.erase(name.end()-1);
-        
-        // Find the species information
-        IO::XmlElement::Iterator iterator =
-            species_list.findTagWithAttribute("species", "name", name);
-        
-        // Add species (or expanded species) to the species list
-        if (iterator != species_list.end()) {
-            if (expand) {
-                const Species species(*iterator, elements, used_elements);
-                
-                if (!species.hasRRHOParameters()) {
-                    cout << "Error! Requested species \"" << name
-                        << "*\", but this species does not have RRHO data..."
-                        << endl;
-                    exit(1);
-                }
-            
-                const size_t nlevels =
-                    species.getRRHOParameters()->nElectronicLevels();
-            
-                for (size_t i = 0; i < nlevels; ++i)
-                    addSpecies(Species(species, i));
-            } else
-                addSpecies(Species(*iterator, elements, used_elements));
-        } else
-            not_found.push_back(name);
-    }
-    
-    // Make sure all species were loaded (todo: better error message with file
-    // name and list of missing species...)
-    if (not_found.size() > 0) {
-        cout << "Could not find all the species in listed in the mixture!";
-        cout << endl << "Missing species:" << endl;
-        
-        for (size_t i = 0; i < not_found.size(); ++i)
-            cout << setw(10) << not_found[i] << endl;
-        
-        exit(1);
-    }
-    
-    
-    // Now the species are loaded and the corresponding elements are determined
-    // so store only the necessary elements in the class (note the ordering of
-    // elements in the database is preserved here because of set)
-    set<int>::const_iterator iter = used_elements.begin();
-    set<int>::const_iterator end  = used_elements.end();
-    
-    for ( ; iter != end; ++iter)
-        m_elements.push_back(elements[*iter]);
-    
-    // Finally store the species and element order information for easy access
-    for (int i = 0; i < m_elements.size(); ++i)
-        m_element_indices[m_elements[i].name()] = i;
-    
-    for (int i = 0; i < m_species.size(); ++i)
-        m_species_indices[m_species[i].name()] = i;
-    
-}
+//void Thermodynamics::loadSpeciesFromList(
+//    const std::vector<std::string> &species_names)
+//{
+//    // Determine file paths
+//    string thermo_directory = 
+//        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
+//    string elements_path    = thermo_directory + "/elements.xml";
+//    string species_path     = thermo_directory + "/species.xml";
+//    
+//    // First we need to load the entire element database for use in constructing
+//    // our species list
+//    IO::XmlDocument element_doc(elements_path);
+//    IO::XmlElement::Iterator element_iter = element_doc.root().begin();
+//    IO::XmlElement::Iterator element_end  = element_doc.root().end();
+//    
+//    vector<Element> elements;
+//    set<int> used_elements;
+//    
+//    for ( ; element_iter != element_end; ++element_iter)
+//        elements.push_back(Element(*element_iter));
+//    
+//    // Load the species XML database
+//    IO::XmlDocument species_doc(species_path);
+//    IO::XmlElement species_list = species_doc.root();
+//    
+//    // Loop over each species and load from the database
+//    std::string name;
+//    bool expand = false;
+//    std::vector<std::string> not_found;
+//    for (int i = 0; i < species_names.size(); ++i) {
+//        // Get species name
+//        name = species_names[i];
+//        
+//        // Check if this species is supposed to be expanded into excited states
+//        expand = (name[name.size()-1] == '*');
+//        if (expand)
+//            name.erase(name.end()-1);
+//        
+//        // Find the species information
+//        IO::XmlElement::Iterator iterator =
+//            species_list.findTagWithAttribute("species", "name", name);
+//        
+//        // Add species (or expanded species) to the species list
+//        if (iterator != species_list.end()) {
+//            if (expand) {
+//                const Species species(*iterator, elements, used_elements);
+//                
+//                if (!species.hasRRHOParameters()) {
+//                    cout << "Error! Requested species \"" << name
+//                        << "*\", but this species does not have RRHO data..."
+//                        << endl;
+//                    exit(1);
+//                }
+//            
+//                const size_t nlevels =
+//                    species.getRRHOParameters()->nElectronicLevels();
+//            
+//                for (size_t i = 0; i < nlevels; ++i)
+//                    addSpecies(Species(species, i));
+//            } else
+//                addSpecies(Species(*iterator, elements, used_elements));
+//        } else
+//            not_found.push_back(name);
+//    }
+//    
+//    // Make sure all species were loaded (todo: better error message with file
+//    // name and list of missing species...)
+//    if (not_found.size() > 0) {
+//        cout << "Could not find all the species in listed in the mixture!";
+//        cout << endl << "Missing species:" << endl;
+//        
+//        for (size_t i = 0; i < not_found.size(); ++i)
+//            cout << setw(10) << not_found[i] << endl;
+//        
+//        exit(1);
+//    }
+//    
+//    
+//    // Now the species are loaded and the corresponding elements are determined
+//    // so store only the necessary elements in the class (note the ordering of
+//    // elements in the database is preserved here because of set)
+//    set<int>::const_iterator iter = used_elements.begin();
+//    set<int>::const_iterator end  = used_elements.end();
+//    
+//    for ( ; iter != end; ++iter)
+//        m_elements.push_back(elements[*iter]);
+//    
+//    // Finally store the species and element order information for easy access
+//    for (int i = 0; i < m_elements.size(); ++i)
+//        m_element_indices[m_elements[i].name()] = i;
+//    
+//    for (int i = 0; i < m_species.size(); ++i)
+//        m_species_indices[m_species[i].name()] = i;
+//    
+//}
 
 /*void Thermodynamics::loadSpeciesFromList(
     const std::vector<std::string> &species_names)
@@ -274,29 +286,24 @@ void Thermodynamics::loadSpeciesFromList(
     for ( ; iter != end; ++iter)
         m_elements.push_back(elements[*iter]);
     
-    // Finally store the species and element order information for easy access
-    for (int i = 0; i < m_elements.size(); ++i)
-        m_element_indices[m_elements[i].name()] = i;
-    
-    for (int i = 0; i < m_species.size(); ++i)
-        m_species_indices[m_species[i].name()] = i;
+ 
 }*/
 
 //==============================================================================
 
-void Thermodynamics::addSpecies(const Species& species)
-{
-    if (species.type() == ELECTRON) {
-        m_species.insert(m_species.begin(), species);
-        m_has_electrons = true;
-    } else {
-        m_species.push_back(species);
-        if (species.type() == ATOM)
-            m_natoms++;
-        else
-            m_nmolecules++;
-    }
-}
+//void Thermodynamics::addSpecies(const Species& species)
+//{
+//    if (species.type() == ELECTRON) {
+//        m_species.insert(m_species.begin(), species);
+//        m_has_electrons = true;
+//    } else {
+//        m_species.push_back(species);
+//        if (species.type() == ATOM)
+//            m_natoms++;
+//        else
+//            m_nmolecules++;
+//    }
+//}
 
 //==============================================================================
 
@@ -962,7 +969,7 @@ void Thermodynamics::speciesSOverR(double *const p_s) const
     
     double lnp = std::log(mp_state->P() / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
-        if (m_species[i].phase() == GAS) 
+        if (species(i).phase() == GAS)
             p_s[i] -= lnp;
 }
 
@@ -993,7 +1000,7 @@ void Thermodynamics::speciesGOverRT(double* const p_g) const
     
     double lnp = std::log(mp_state->P() / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
-        if (m_species[i].phase() == GAS) 
+        if (species(i).phase() == GAS)
             p_g[i] += lnp;
 }
 
@@ -1005,7 +1012,7 @@ void Thermodynamics::speciesGOverRT(double T, double P, double* const p_g) const
     
     double lnp = std::log(P / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
-        if (m_species[i].phase() == GAS)
+        if (species(i).phase() == GAS)
             p_g[i] += lnp;
 }
 

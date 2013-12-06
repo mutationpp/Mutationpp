@@ -8,7 +8,7 @@ namespace Mutation {
 
 Mixture::Mixture(const MixtureOptions& options)
     : Thermodynamics::Thermodynamics(
-        options.getSpeciesNames(),
+        options.getSpeciesDescriptor(),
         options.getThermodynamicDatabase(),
         options.getStateModel()),
       Transport(
