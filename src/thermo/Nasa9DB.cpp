@@ -107,7 +107,7 @@ protected:
         // First build a map of the species names with their indices in order
         // to speed up the searching for needed names
         std::map<std::string, size_t> species_names;
-        std::map<std::string, size_t>::const_iterator iter;
+        std::map<std::string, size_t>::iterator iter;
         for (size_t i = 0; i < species().size(); ++i)
             species_names.insert(make_pair(species()[i].name(), i));
         

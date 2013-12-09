@@ -43,8 +43,8 @@ bool ThermoDB::load(const SpeciesListDescriptor& descriptor)
     loadAvailableSpecies(species_list, elements);
     
     // Check for duplicate species in the database
-    std::list<Species>::const_iterator iter1 = species_list.begin();
-    std::list<Species>::const_iterator iter2;
+    std::list<Species>::iterator iter1 = species_list.begin();
+    std::list<Species>::iterator iter2;
     
     while (iter1 != species_list.end()) {
         (iter2 = iter1)++;
