@@ -2,6 +2,7 @@
 #define THERMO_PARTICLE_RRHO_H
 
 #include <vector>
+#include <cstdlib>
 
 // Forward declartion of XmlElement
 namespace Mutation { 
