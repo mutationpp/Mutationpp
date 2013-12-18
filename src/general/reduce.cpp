@@ -50,10 +50,7 @@ public:
     }
     
     std::ostream& writeReducedSet(std::ostream& os, const Mixture& mix) const
-    {
-        os << "Tolerance: " << m_tol << " (" << m_species.size()
-           << " species)" << std::endl;
-    
+    {    
         std::set<int>::const_iterator iter = m_species.begin();
         for ( ; iter != m_species.end(); ++iter)
             os << mix.speciesName(*iter) << " ";
@@ -94,7 +91,7 @@ void reduceTP(
 {
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
-    const int mod = XE_POINTS/20;
+    const int mod = (XE_POINTS > 20 ? XE_POINTS/20 : 1);
     
     std::vector<double> xe(ne);
     std::vector<double> xs(ns);
@@ -252,8 +249,12 @@ int main(int argc, char** argv)
             
             // Write out the current reductions based on the previous
             // equilibrate calls
-            for (int i = 0; i < reductions.size(); ++i)
+            for (int i = 0; i < reductions.size(); ++i) {
+                cout << "Tolerance: " << reductions[i].tolerance() << " (" 
+                     << reductions[i].species().size()
+                     << " species)" << endl;
                 reductions[i].writeReducedSet(cout, mix) << endl;
+            }
             cout << endl;
         }
     }
@@ -261,7 +262,8 @@ int main(int argc, char** argv)
     
     // Write out the latex tables starting with the first reduction and then
     // adding species that are not in previous reductions
-    writeLatexTable(cout, reductions[0].species(), mix); cout << endl;
+    std::ofstream file("table.tex");
+    writeLatexTable(file, reductions[0].species(), mix); file << endl;
     std::set<int> old_species(
         reductions[0].species().begin(), reductions[0].species().end());
     std::set<int> new_species;
@@ -274,15 +276,23 @@ int main(int argc, char** argv)
         old_species.insert(
             reductions[i].species().begin(), reductions[i].species().end());
         
-        writeLatexTable(cout, new_species, mix);
+        writeLatexTable(file, new_species, mix);
         new_species.clear();
-        cout << endl;
+        file << endl;
     }
-    cout << endl;
+    file.close();
+    
+    char filename [20];
+    for (int i = 0; i < reductions.size(); i++) {
+        sprintf(filename, "list-%02d.txt", (int)-log10(reductions[i].tolerance()));
+        file.open(filename);
+        reductions[i].writeReducedSet(file, mix);
+        file.close();
+    }
     
     // Compute a random sampling of composition points which can be used to show
     // good coverage of the composition space
-    std::ofstream file("compositions.dat");
+    /*std::ofstream file("compositions.dat");
     for (int i = 0; i < mix.nElements(); ++i)
         file << setw(14) << mix.elementName(i);
     file << endl;
@@ -293,7 +303,7 @@ int main(int argc, char** argv)
             file << setw(14) << xe[k];
         file << endl;
     }
-    file.close();
+    file.close();*/
     
     // Compute the mixture Cp, H, S, and G and determine the maximum error in
     // each for each mixture
