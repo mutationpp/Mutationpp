@@ -405,31 +405,39 @@ private:
         }
         
         template <typename OP>
-        void operator () (
-            double T, double* p_h, const DataProvider& data, const OP& op) const
+        void operator () (double T, double* p_h, const DataProvider& data, const OP& op) const
         {
             double sum1, sum2, fac;
             unsigned int ilevel = 0;
             
             op(p_h[0], 0.0);
-            
+         
             for (unsigned int i = 0; i < data.nheavy; ++i) {
                 sum1 = sum2 = 0.0;
+
                 if (data.p_nelec[i] > 0) {
                     for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
+
                         fac = data.p_levels[ilevel].g *
                             std::exp(-data.p_levels[ilevel].theta / T);
                         sum1 += fac;
                         sum2 += fac * data.p_levels[ilevel].theta;
+                                              
                     }
+
                     op(p_h[i+data.offset], sum2 / sum1);
-                } else {
+
+                           
+                      } else {
+                    
                     op(p_h[i+data.offset], 0.0);
+                                                        
                 }
             }
         }
     };
     
+
     class CpelFunctor
     {
     public:

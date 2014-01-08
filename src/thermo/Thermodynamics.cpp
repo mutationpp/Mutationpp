@@ -548,9 +548,10 @@ double Thermodynamics::density() const
 
 void Thermodynamics::speciesCpOverR(double *const p_cp) const
 {
-    mp_thermodb->cp(
+       mp_thermodb->cp(
         mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
         mp_state->Tel(), p_cp, NULL, NULL, NULL, NULL);
+   
 }
 
 //==============================================================================
@@ -570,6 +571,7 @@ void Thermodynamics::speciesCpOverR(
 {
     mp_thermodb->cp(
         Th, Te, Tr, Tv, Tel, p_cp, p_cpt, p_cpr, p_cpv, p_cpel);
+
 }
 
 //==============================================================================
@@ -615,7 +617,8 @@ double Thermodynamics::mixtureFrozenCpMole() const
     speciesCpOverR(mp_work1);
     for (int i = 0; i < nSpecies(); ++i)
         cp += mp_work1[i] * X()[i];
-    return (cp * RU);
+        
+            return (cp * RU);
 }
 
 //==============================================================================
