@@ -1,6 +1,8 @@
 #include "StateModel.h"
 #include "Utilities.h"
+#include "TransferModel.h"
 #include <algorithm>
+#include <new>
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -203,12 +205,66 @@ public:
         
         m_thermo.convert<Y_TO_X>(mp_X, mp_X);
     }
-    
 };
 
 // Register the state model
 Utilities::Config::ObjectProvider<
     TTvRhoiStateModel, StateModel> ttvrhoi("TTvRhoi");
+
+//==============================================================================
+
+class TTERhoiStateModel : public StateModel
+{
+public:
+    /**
+     * Constructor.
+     */
+    TTERhoiStateModel(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { }
+    
+    /**
+     * Sets the mixture state from mixture temperature, pressure, and species
+     * mass fractions.
+     *
+     * @param p_T    - pointer to {T (K), Tv (K)} array
+     * @param p_rhoi - pointer to species densities array
+     */
+    virtual void setState(const double* const p_T, const double* const p_rhoi)
+    {
+
+        m_T = m_Tr = p_T[0];
+        m_Tv = m_Tel = m_Te = p_T[1];
+        
+        m_P = 0.0;
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_rhoi[i];
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_rhoi[i] / m_P;
+        m_P = m_thermo.pressure(m_T, m_P, mp_X);
+        
+        m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+
+ for (int i = 0; i < m_thermo.nSpecies(); ++i)
+  cout << mp_X[i] << endl;
+ 
+cout << m_P << endl;
+
+    }
+
+    virtual Mutation::Transfer::TransferModel* createTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics)
+    {
+        return new Transfer::TransferModelTE(thermo,transport);
+    }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    TTERhoiStateModel, StateModel> tterhoi("TTERhoi");
+
 
     } // namespace Thermodynamics
 } // namespace Mutation
