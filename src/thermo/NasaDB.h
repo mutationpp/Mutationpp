@@ -40,7 +40,7 @@ public:
     
     virtual bool speciesThermoValidAtT(const size_t i, const double T) const {
         assert(i < m_ns);
-        return (T >= m_polynomials[i].minT() && T <= m_polynomials[i].maxT());
+        return (T > m_polynomials[i].minT() && T <= m_polynomials[i].maxT());
     }
     
     void cp(
