@@ -62,7 +62,7 @@ protected:
                 phase = LIQUID;
                 break;
             default:
-                if (name.substr(name.size()-4,3) == "(L)")
+                if (name.substr(name.size()-3,3) == "(L)")
                     phase = LIQUID;
                 else
                     phase = SOLID;

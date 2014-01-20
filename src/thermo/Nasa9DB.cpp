@@ -5,9 +5,12 @@
 
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 namespace Mutation {
     namespace Thermodynamics {
+    
+using namespace std;
 
 class Nasa9DB : public NasaDB<Nasa9Polynomial>
 {
@@ -56,7 +59,7 @@ protected:
                 phase = GAS;
                 break;
             default:
-                if (name.substr(name.size()-4,3) == "(L)")
+                if (name.substr(name.size()-3,3) == "(L)")
                     phase = LIQUID;
                 else
                     phase = SOLID;

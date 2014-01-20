@@ -14,6 +14,7 @@
 #include <list>
 #include <fstream>
 #include <vector>
+#include <cassert>
 
 #include "ThermoDB.h"
 #include "Species.h"
@@ -36,6 +37,11 @@ public:
     { }
     
     virtual ~NasaDB() {};
+    
+    virtual bool speciesThermoValidAtT(const size_t i, const double T) const {
+        assert(i < m_ns);
+        return (T >= m_polynomials[i].minT() && T <= m_polynomials[i].maxT());
+    }
     
     void cp(
         double Th, double Te, double Tr, double Tv, double Tel, 
@@ -87,9 +93,12 @@ void NasaDB<PolynomialType>::cp(
     double* const cp, double* const cpt, double* const cpr, 
     double* const cpv, double* const cpel)
 {
-    PolynomialType::computeParams(Th, mp_params, PolynomialType::CP);
-    for (size_t i = 0; i < m_ns; ++i)
-        m_polynomials[i].cp(mp_params, cp[i]);
+    
+    if (cp != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::CP);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].cp(mp_params, cp[i]);
+    }
     
     if (cpt != NULL) std::fill(cpt, cpt+m_ns, 0.0);
     if (cpr != NULL) std::fill(cpr, cpr+m_ns, 0.0);
@@ -103,9 +112,11 @@ void NasaDB<PolynomialType>::enthalpy(
     double* const h, double* const ht, double* const hr, double* const hv, 
     double* const hel, double* const hf)
 {
-    PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTHALPY);
-    for (size_t i = 0; i < m_ns; ++i)
-        m_polynomials[i].enthalpy(mp_params, h[i]);
+    if (h != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTHALPY);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].enthalpy(mp_params, h[i]);
+    }
     
     if (ht != NULL) std::fill(ht, ht+m_ns, 0.0);
     if (hr != NULL) std::fill(hr, hr+m_ns, 0.0);
@@ -120,9 +131,11 @@ void NasaDB<PolynomialType>::entropy(
     double* const s, double* const st, double* const sr, double* const sv, 
     double* const sel)
 {
-    PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTROPY);
-    for (size_t i = 0; i < m_ns; ++i)
-        m_polynomials[i].entropy(mp_params, s[i]);
+    if (s != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTROPY);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].entropy(mp_params, s[i]);
+    }
     
     if (st != NULL) std::fill(st, st+m_ns, 0.0);
     if (sr != NULL) std::fill(sr, sr+m_ns, 0.0);
@@ -136,9 +149,11 @@ void NasaDB<PolynomialType>::gibbs(
     double* const g, double* const gt, double* const gr, double* const gv, 
     double* const gel)
 {
-    PolynomialType::computeParams(Th, mp_params, PolynomialType::GIBBS);
-    for (size_t i = 0; i < m_ns; ++i)
-        m_polynomials[i].gibbs(mp_params, g[i]);
+    if (g != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::GIBBS);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].gibbs(mp_params, g[i]);
+    }
     
     if (gt != NULL) std::fill(gt, gt+m_ns, 0.0);
     if (gr != NULL) std::fill(gr, gr+m_ns, 0.0);
