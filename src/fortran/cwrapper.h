@@ -234,6 +234,7 @@ void NAME_MANGLE(species_densities)(
  * @param X - mole fractions
  */
 void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
+void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X);
     
 /**
  * Sets the current state of the mixture using temperature and species 
