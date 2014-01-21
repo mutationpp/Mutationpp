@@ -305,6 +305,20 @@ double NAME_MANGLE(sigma)()
 }
 
 //==============================================================================
+
+void NAME_MANGLE(gibbs_free_energy)(double* const p_g)
+{
+    return p_mix->speciesGOverRT(p_g);
+}
+
+//==============================================================================
+
+void NAME_MANGLE(gibbs_free_energy_t_p)(double* const T, double* const P, double* const p_g)
+{
+    return p_mix->speciesGOverRT(*T, *P, p_g);
+}
+
+//==============================================================================
 void NAME_MANGLE(surface_mass_balance)
     (const double *const p_Yke, const double *const p_Ykg, const double* const T,
      const double* const P, const double* const Bg, double* const Bc,

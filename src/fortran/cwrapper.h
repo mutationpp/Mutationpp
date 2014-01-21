@@ -370,6 +370,16 @@ void NAME_MANGLE(stefan_maxwell)
 double NAME_MANGLE(sigma)();
 
 /**
+ * Returns the Gibbs free energy. Takes the conditions from set state.
+ */
+void NAME_MANGLE(gibbs_free_energy)(double* const p_g);
+
+/**
+ * Returns the Gibbs free energy.
+ */
+void NAME_MANGLE(gibbs_free_energy_t_p)(double* const T, double* const P, double* const p_g);
+
+/**
  * Solves the surface mass balance at an ablating surface.
  */
 void NAME_MANGLE(surface_mass_balance)
