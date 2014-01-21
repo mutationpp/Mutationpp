@@ -82,12 +82,12 @@ public:
     }
     
     // ++ and -- operators
-    IteratorWrapper &operator++()
+    IteratorWrapper& operator++()
     {
         m_iter++;
         return *this;
-    }        
-    IteratorWrapper &operator--()
+    }
+    IteratorWrapper& operator--()
     {
         m_iter--;
         return *this;

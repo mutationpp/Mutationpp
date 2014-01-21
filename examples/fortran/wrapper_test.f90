@@ -1,7 +1,7 @@
 program main
     use mutationpp
     implicit none
-    character(len=10) :: mixture
+    character(len=10) :: mixture, state_model
     character(len=12) :: species
     integer :: i, j, ne, ns, nr
     
@@ -9,9 +9,10 @@ program main
     real, dimension(:), allocatable :: species_x, wdot, species_y
     real, dimension(:), allocatable :: mwi
     
-    mixture = "air11"
+    mixture     = "air11"
+    state_model = "EquilTP"
     
-    call mpp_initialize(mixture)
+    call mpp_initialize(mixture, state_model)
     ne = mpp_nelements()
     ns = mpp_nspecies()
     nr = mpp_nreactions()
@@ -45,7 +46,7 @@ program main
     do i = 1,295
         T = dble(i-1)*50.0 + 300.0
         
-        call mpp_equilibrate(T, P)
+        call mpp_set_state(T, P)
         call mpp_x(species_x)
             
         write(*,'(E12.4)',advance='no') T

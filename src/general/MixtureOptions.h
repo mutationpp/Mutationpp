@@ -25,7 +25,7 @@ public:
      * Copy constructor.
      */
     MixtureOptions(const MixtureOptions& options)
-        : m_species_names(options.m_species_names),
+        : m_species_descriptor(options.m_species_descriptor),
           m_default_composition(options.m_default_composition),
           m_composition_setter(options.m_composition_setter),
           m_has_default_composition(options.m_has_default_composition),
@@ -68,30 +68,16 @@ public:
     /**
      * Gets the list of species names.
      */
-    const std::vector<std::string>& getSpeciesNames() const {
-        return m_species_names;
-    }
-    
-    /**
-     * Adds a species name to the list.
-     */
-    void addSpeciesName(const std::string& species) {
-        m_species_names.push_back(species);
+    const std::string& getSpeciesDescriptor() const {
+        return m_species_descriptor;
     }
     
     /**
      * Sets the list of species names.
      */
-    void setSpeciesNames(const std::vector<std::string>& species) {
-        m_species_names = species;
+    void setSpeciesDescriptor(const std::string& descriptor) {
+        m_species_descriptor = descriptor;
     }
-    
-    /**
-     * Clears all of the species names.
-     */
-     void clearSpeciesNames() {
-        m_species_names.clear();
-     }
     
     /**
      * Gets the mixture state model to be used.
@@ -275,7 +261,7 @@ private:
 
 private:
 
-    std::vector<std::string> m_species_names;
+    std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
     CompositionSetter m_composition_setter;
@@ -292,17 +278,7 @@ private:
 /**
  * Performs a swap on two MixtureOption objects.
  */
-void swap(MixtureOptions& opt1, MixtureOptions& opt2)
-{
-    std::swap(opt1.m_species_names, opt2.m_species_names);
-    std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
-    std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
-    std::swap(opt1.m_state_model, opt2.m_state_model);
-    std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
-    std::swap(opt1.m_mechanism, opt2.m_mechanism);
-    std::swap(opt1.m_viscosity, opt2.m_viscosity);
-    std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
-}
+void swap(MixtureOptions& opt1, MixtureOptions& opt2);
 
 } // namespace Mutation
 

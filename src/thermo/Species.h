@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include <set>
+//#include <set>
 #include <vector>
 
 // Forward declaration of the XmlElement Class
@@ -17,7 +17,7 @@ namespace IO {
 namespace Mutation {
     namespace Thermodynamics {
     
-class ParticleRRHO; 
+//class ParticleRRHO;
 
 /**
  * Responsible for loading element data from the elements.xml file.
@@ -29,7 +29,7 @@ public:
     /**
      * Loads an element from an "element" XmlElement node.
      */
-    Element(Mutation::Utilities::IO::XmlElement& xml_element);
+    Element(const Mutation::Utilities::IO::XmlElement& xml_element);
     
     /**
      * Returns the name of the element.
@@ -50,13 +50,13 @@ public:
      */
     int charge() const { 
         return m_charge; 
-    } 
+    }
     
 private:
 
     std::string m_name;
-    double m_atomic_mass;
-    int m_charge;
+    double      m_atomic_mass;
+    int         m_charge;
 
 }; // class Element
 
@@ -79,18 +79,35 @@ enum ParticleType {
 };
 
 /**
- * Responsible for loading species data from the species.xml file.
+ * Stores basic information about a species including how many elements belong
+ * to the species, its charge, and phase type.
  */
 class Species
 {
 public:
+
+    typedef std::vector< std::pair<std::string, int> > StoichList;
+    
+    Species()
+        : m_name(""), m_ground_state_name(""), m_mw(0.0), m_charge(0),
+          m_phase(GAS), m_type(ATOM), m_level(0)
+    { }
+    
     
     /**
-     * Load species data from a "species" XmlElement node.
+     * Create a new species object.
      */
     Species(
-        Mutation::Utilities::IO::XmlElement &xml_element, 
-        const std::vector<Element> &elements, std::set<int> &used_elements);
+        const std::string& name,
+        const PhaseType phase,
+        const StoichList& stoichiometry,
+        const std::vector<Element>& elements);
+    
+    /**
+     * Instantiate a new species object which represents a single electronic
+     * state of the given species.
+     */
+    Species(const Species& species, const size_t level);
     
     /**
      * Copy constructor.
@@ -100,7 +117,7 @@ public:
     /**
      * Destructor.
      */
-    ~Species();
+    ~Species(){};
     
     /**
      * Assignment operator.
@@ -118,19 +135,10 @@ public:
     }
     
     /**
-     * Returns the name of this species that is used in the NASA polynomial
-     * database given the number of coefficients of the polynomial (7 or 9).
+     * Returns the name of the ground state for this species.
      */
-    const std::string& nasaName(int n) const 
-    {
-        switch (n) {
-            case 7:
-                return m_nasa7_name;
-            case 9:
-                return m_nasa9_name;
-            default:
-                return m_name;
-        }
+    const std::string& groundStateName() const {
+        return m_ground_state_name;
     }
     
     /**
@@ -139,21 +147,26 @@ public:
      * @see enum ParticleType
      */
     ParticleType type() const {
-        return (name() == "e-" ? ELECTRON : (nAtoms() == 1 ? ATOM : MOLECULE));
+        return m_type;
     }
     
     /**
      * Returns the molecular weight of the species in kg/mol.
      */
-    const double &molecularWeight() const { return m_mw; }
+    double molecularWeight() const {
+        return m_mw;
+    }
     
     /**
      * Returns the number of atoms of a particular element contained in this
      * species.  For example calling nAtoms("C") for the C2H2 molecule would
      * return 2.
      */
-    const int &nAtoms(const std::string &element) {
-        return m_stoichiometry[element];
+    int nAtoms(const std::string &element) const {
+        StoichList::const_iterator iter = m_stoichiometry.begin();
+        for ( ; iter != m_stoichiometry.end(); ++iter)
+            if (iter->first == element) return iter->second;
+        return 0;
     }
     
     /**
@@ -163,13 +176,18 @@ public:
      */
     int nAtoms() const {
         int atoms = 0;
-        std::map<std::string, int>::const_iterator iter = 
-            m_stoichiometry.begin();
-        
+        StoichList::const_iterator iter = m_stoichiometry.begin();
         for ( ; iter != m_stoichiometry.end(); ++iter)
             atoms += (iter->first != "e-" ? iter->second : 0);
-        
         return atoms;
+    }
+    
+    /**
+     * Returns a vector of element name/number pairs for the elements that make
+     * up this species.
+     */
+    const StoichList& stoichiometry() const {
+        return m_stoichiometry;
     }
     
     /**
@@ -194,21 +212,10 @@ public:
     }
     
     /**
-     * Returns true if this species data contains a Rigid-Rotator Harmonic-
-     * Oscillator model.
+     * Returns the excited state level if this is an excited state species.
      */
-    bool hasRRHOParameters() const {
-        return (mp_rrho_model != NULL);
-    }
-    
-    /**
-     * Returns a pointer to this species ParticleRRHO object which stores
-     * parameters for evaluating the species thermodynamics using the Rigid-
-     * Rotator Harmonic-Oscillator model.  Note that if hasRRHOParameters() 
-     * returns false, then this method will return a NULL pointer.
-     */
-    const ParticleRRHO* getRRHOParameters() const {
-        return mp_rrho_model;
+    std::size_t level() const {
+        return m_level;
     }
     
     friend void swap(Species&, Species&);
@@ -218,13 +225,13 @@ private:
     /**
      * Determines the stoichiometry of this species from a stoichiometry string.
      */
-    void loadStoichiometry(
-        const std::string& stoichiometry, const std::vector<Element> &elements);
+    //void loadStoichiometry(
+    //    const std::string& stoichiometry, const std::vector<Element> &elements);
 
     /**
      * Will check the species name against its stoichiometry to determine if
      * the stoichiometry given by the user matches the stoichiometry found by
-     * parsing the name.  Note that the name can be anything, therefor if it is
+     * parsing the name.  Note that the name can be anything, therefore if it is
      * not in the standard form then it will simply be ignored.
      */
     static void checkStoichiometryNameMatching(
@@ -233,19 +240,17 @@ private:
 
 private:
 
-    std::string m_name;
+    std::string  m_name;
+    std::string  m_ground_state_name;
+    double       m_mw;
+    int          m_charge;
+    PhaseType    m_phase;
+    ParticleType m_type;
+    std::size_t  m_level;
     
-    std::string m_nasa7_name;
-    std::string m_nasa9_name;
+    StoichList m_stoichiometry;
     
-    ParticleRRHO* mp_rrho_model;
-    
-    double m_mw;
-    int   m_charge;
-    
-    PhaseType m_phase;
-    
-    std::map<std::string, int> m_stoichiometry;
+    //ParticleRRHO* mp_rrho_model;
     
 }; // class Species
 

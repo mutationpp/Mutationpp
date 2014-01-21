@@ -6,17 +6,18 @@
 #include <string>
 #include <vector>
 
-#include "StateModel.h"
+//#include "StateModel.h"
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
+#include "ThermoDB.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
-class GfcEquilSolver;
+//class GfcEquilSolver;
 class MultiPhaseEquilSolver;
-class ThermoDB;
+class StateModel;
 
 /**
  * Possible conversion methods that can be used with the 
@@ -59,8 +60,9 @@ public:
      * mutation++.
      */
     Thermodynamics(
-        const std::vector<std::string> &species_names, 
-        const std::string& database, const std::string& state_model);
+        const std::string& species_descriptor,
+        const std::string& database,
+        const std::string& state_model);
     
     /**
      * Destructor.
@@ -75,7 +77,7 @@ public:
      * Returns a pointer to the StateModel object owned by this thermodynamics
      * object.
      */
-    StateModel* const stateModel() const {
+    StateModel* const state() const {
         return mp_state;
     }
     
@@ -83,7 +85,7 @@ public:
      * Returns the number of species considered in the mixture.
      */
     int nSpecies() const { 
-        return m_species.size();
+        return mp_thermodb->species().size();
     }
     
     /**
@@ -111,7 +113,7 @@ public:
      * Returns the number of elements considered in the mixture.
      */
     int nElements() const {
-        return m_elements.size();
+        return mp_thermodb->elements().size();
     }
     
     /**
@@ -131,8 +133,8 @@ public:
      */
     const Species& species(int i) const {
         assert(i >= 0);
-        assert(i < m_species.size());
-        return m_species[i];
+        assert(i < nSpecies());
+        return mp_thermodb->species()[i];
     }
     
     /**
@@ -140,6 +142,12 @@ public:
      */
     const Species& species(std::string name) const {
         return species(speciesIndex(name));
+    }
+    
+    const Element& element(int i) const {
+        assert(i >= 0);
+        assert(i < nElements());
+        return mp_thermodb->elements()[i];
     }
     
     /**
@@ -184,16 +192,14 @@ public:
      * array.
      */
     const std::string &speciesName(const int &index) const {
-        assert(index > -1);
-        assert(index < nSpecies());
-        return m_species[index].name();
+        return species(index).name();
     }
     
     /**
      * Returns the charge of the species with the given index.
      */
     double speciesCharge(const int &index) const {
-        return m_species[index].charge()*QE;
+        return species(index).charge()*QE;
     }
     
     /**
@@ -201,36 +207,44 @@ public:
      * array.
      */
     const std::string &elementName(const int &index) const {
-        return m_elements[index].name();
+        return element(index).name();
     }
     
     /**
      * Sets the current state of the mixture using temperatures, pressure, and 
      * species mole fractions.
      */
-    void setStateTPX(
-        const double* const T, const double* const P, const double* const X);
+    //void setStateTPX(
+    //    const double* const T, const double* const P, const double* const X);
     
     /**
      * Sets the current state of the mixture using temperatures pressures, and 
      * species mass fractions.
      */
-    void setStateTPY(
-        const double* const T, const double* const P, const double* const Y);
+    //void setStateTPY(
+    //    const double* const T, const double* const P, const double* const Y);
+    
+    void setState(const double* const p_v1, const double* const p_v2);
         
     /**
      * Computes the equilibrium mole fractions of the mixture given the
      * elemental composition.
      */
-    void equilibrate(
-        double T, double P, const double* const p_c, double* const p_X = NULL,
-        bool set_state = true);
+    //void equilibrate(
+    //    double T, double P, const double* const p_c, double* const p_X = NULL,
+    //    bool set_state = true);
     
     /**
      * Equilibrates the mixture to a given temperature and pressure using the 
      * default elemental composition.
      */
-    void equilibrate(double T, double P);
+    //void equilibrate(double T, double P);
+    
+    void equilibriumComposition(double T, double P, double* const p_X) const {
+        equilibriumComposition(T, P, mp_default_composition, p_X);
+    }
+    void equilibriumComposition(
+        double T, double P, const double* const p_Xe, double* const p_X) const;
     
     /**
      * Returns the element potentials calculated by the most recent call to 
@@ -342,14 +356,14 @@ public:
      * in the element array.
      */
     double atomicMass(const int index) const {
-        return m_elements[index].atomicMass();
+        return element(index).atomicMass();
     }
     
     /**
      * Returns the species vector.
      */
-    const std::vector<Species> &species() const {
-        return m_species;
+    const std::vector<Species>& species() const {
+        return mp_thermodb->species();
     }
     
     /**
@@ -598,6 +612,7 @@ public:
      */
     void speciesGOverRT(double* const p_g) const;
     void speciesGOverRT(double T, double P, double* const p_g) const;
+    void speciesSTGOverRT(double T, double* const p_g) const;
     
     /**
      * Returns the number of moles of each element in a mixture with a given
@@ -638,6 +653,11 @@ private:
      * thermo database.
      */
     void loadSpeciesFromList(const std::vector<std::string> &species_names);
+    
+    /**
+     * Adds a single species to the thermodynamic list.
+     */
+    void addSpecies(const Species& species);
 
 private:
   
@@ -645,10 +665,7 @@ private:
     MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
     
-    std::vector<Species> m_species;    
     std::map<std::string, int> m_species_indices;
-    
-    std::vector<Element> m_elements;
     std::map<std::string, int> m_element_indices;
     
     Numerics::RealMatrix m_element_matrix;
@@ -742,11 +759,11 @@ inline void Thermodynamics::convert<YE_TO_XE>(
         b[i] /= sum;
 }
 
-template <>
-inline void Thermodynamics::convert<Y_TO_XE>(
-    const double *const a, double *const b) const {
-       
-}
+//template <>
+//inline void Thermodynamics::convert<Y_TO_XE>(
+//    const double *const a, double *const b) const {
+//
+//}
 /// @endcond
 
     } // namespace Thermodynamics

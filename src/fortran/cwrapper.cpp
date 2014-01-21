@@ -13,7 +13,7 @@ double* p_work_element;
 //RealVector work_species;
 
 //==============================================================================
-std::string char_to_string(char *str, int length)
+std::string char_to_string(F_STRING str, F_STRLEN length)
 {
     std::string string(str, length);
     string.erase(0, string.find_first_not_of(' '));
@@ -22,7 +22,7 @@ std::string char_to_string(char *str, int length)
 }
 
 //==============================================================================
-void string_to_char(std::string string, char* str, int length)
+void string_to_char(std::string string, F_STRING str, F_STRLEN length)
 {
     for (int i = 0; i < length; ++i)
         if (i < string.length())
@@ -32,10 +32,14 @@ void string_to_char(std::string string, char* str, int length)
 }
 
 //==============================================================================
-void NAME_MANGLE(initialize)(char* mixture, int mixture_length)
+void NAME_MANGLE(initialize)(
+    F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
+    F_STRLEN state_length)
 {
     //feenableexcept(FE_INVALID);
-    p_mix = new Mutation::Mixture(char_to_string(mixture, mixture_length));
+    Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
+    opts.setStateModel(char_to_string(state_model, state_length));
+    p_mix = new Mutation::Mixture(opts);
     p_work_species = new double [p_mix->nSpecies()];
     p_work_element = new double [p_mix->nElements()];
     //work_species = RealVector(p_mix->nSpecies());
@@ -72,19 +76,19 @@ int NAME_MANGLE(nreactions)()
 }
 
 //==============================================================================
-int NAME_MANGLE(element_index)(char* element, int element_length)
+int NAME_MANGLE(element_index)(F_STRING element, F_STRLEN element_length)
 {
     return p_mix->elementIndex(char_to_string(element, element_length)) + 1;
 }
 
 //==============================================================================
-int NAME_MANGLE(species_index)(char* species, int species_length)
+int NAME_MANGLE(species_index)(F_STRING species, F_STRLEN species_length)
 {
     return p_mix->speciesIndex(char_to_string(species, species_length)) + 1;
 }
 
 //==============================================================================
-void NAME_MANGLE(species_name)(int* index, char* species, int species_length)
+void NAME_MANGLE(species_name)(int* index, F_STRING species, F_STRLEN species_length)
 {
     string_to_char(p_mix->speciesName(*index-1), species, species_length);
 }
@@ -142,6 +146,12 @@ double NAME_MANGLE(density)()
 }
 
 //==============================================================================
+void NAME_MANGLE(density_tpx)(double* T, double* P, const double* const X, double* rho)
+{
+    *rho = p_mix->density(*T, *P, X);
+}
+
+//==============================================================================
 void NAME_MANGLE(species_densities)(double* const rhoi)
 {
     double rho = p_mix->density();
@@ -150,26 +160,15 @@ void NAME_MANGLE(species_densities)(double* const rhoi)
 }
 
 //==============================================================================
-void NAME_MANGLE(equilibrate)(double* T, double* P)
+void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X)
 {
-    p_mix->equilibrate(*T, *P);
+    p_mix->equilibriumComposition(*T, *P, X);
 }
 
 //==============================================================================
-void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi)
+void NAME_MANGLE(set_state)(double* v1, double* v2)
 {
-    double rho = 0.0;
-    for (int i = 0; i < p_mix->nSpecies(); ++i)
-        rho += rhoi[i];
-    
-    double P = 0.0;
-    for (int i = 0; i < p_mix->nSpecies(); ++i) {
-        p_work_species[i] = rhoi[i] / rho;
-        P += rhoi[i] / p_mix->speciesMw(i);
-    }
-    
-    P *= Mutation::RU * (*T);
-    p_mix->setStateTPY(T, &P, p_work_species);
+    p_mix->setState(v1, v2);
 }
 
 //==============================================================================
@@ -181,9 +180,7 @@ void NAME_MANGLE(x)(double *const X)
 //==============================================================================
 void NAME_MANGLE(y)(double *const Y)
 {
-    //std::copy(p_mix->Y(), p_mix->Y()+p_mix->nSpecies(), Y);
-    for (int i = 0; i < p_mix->nSpecies(); ++i)
-        Y[i] = p_mix->Y()[i];
+    std::copy(p_mix->Y(), p_mix->Y()+p_mix->nSpecies(), Y);
 }
 
 //==============================================================================

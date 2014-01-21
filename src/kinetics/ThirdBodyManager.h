@@ -4,8 +4,6 @@
 #include <vector>
 #include <utility>
 
-#include "Numerics.h"
-
 namespace Mutation {
     namespace Kinetics {
 
@@ -23,13 +21,12 @@ public:
     { }
     
     inline void multiplyEfficiencies(
-        double sum, const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) const 
+        double sum, const double* const p_s, double* const p_r) const
     {
         std::vector<std::pair<int, double> >::const_iterator iter;
         for (iter = m_effs.begin(); iter != m_effs.end(); ++iter)
-            sum += s(iter->first) * iter->second;
-        r(m_rxn) *= sum;
+            sum += p_s[iter->first] * iter->second;
+        p_r[m_rxn] *= sum;
     }
     
 private:
@@ -48,7 +45,12 @@ class ThirdbodyManager
 {
 public:
 
-    ThirdbodyManager() { }
+    /**
+     * Constructor
+     */
+    ThirdbodyManager(const size_t ns)
+        : m_ns(ns)
+    { }
     
     /**
      * Adds a new thirdbody reaction to be managed by this manager.
@@ -73,18 +75,20 @@ public:
      * corresponding thirdbody efficiency sums given the species molar 
      * concentrations vector.
      */
-    void multiplyThirdbodies(
-        const Mutation::Numerics::RealVector& s, 
-        Mutation::Numerics::RealVector& r) 
+    void multiplyThirdbodies(const double* const p_s, double* const p_r) const
     {
-        const double sum = s.sum();
+        double sum = 0.0;
+        for (int i = 0; i < m_ns; ++i)
+            sum += p_s[i];
+        
         std::vector<PartialThirdbodyEffs>::const_iterator iter = m_effs.begin();
         for ( ; iter != m_effs.end(); ++iter)
-            iter->multiplyEfficiencies(sum, s, r);
+            iter->multiplyEfficiencies(sum, p_s, p_r);
     }
 
 private:
 
+    const size_t m_ns;
     std::vector<PartialThirdbodyEffs> m_effs;
     
 }; // class ThirdbodyManager

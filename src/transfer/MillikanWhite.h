@@ -8,7 +8,7 @@
 #include "Thermodynamics.h"
 
 namespace Mutation {
-    namespace Kinetics {
+    namespace Transfer {
 
 /** 
  * Data storage for single Millikan-White collision pair.
@@ -56,7 +56,7 @@ public:
      * exist.
      */
     MillikanWhiteVibrator(
-        Mutation::Utilities::IO::XmlElement& node,
+        const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
     
     /**

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <cstdlib>
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -96,6 +97,13 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions")
 };
 
+// List of reaction output quantities
+#define NREACTION 2
+OutputQuantity reaction_quantities[NREACTION] = {
+    OutputQuantity("kf", "mol,m,s,K", "forward reaction rate coefficients"),
+    OutputQuantity("kb", "mol,m,s,K", "backward reaction rate coefficients")
+};
+
 // List of other output quantities
 #define NOTHER 3
 OutputQuantity other_quantities[NOTHER] = {
@@ -116,6 +124,7 @@ typedef struct {
     
     std::vector<int> mixture_indices;
     std::vector<int> species_indices;
+    std::vector<int> reaction_indices;
     std::vector<int> other_indices;
     
     bool verbose;
@@ -165,6 +174,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
+    cout << tab << "-r                  list of reaction values to output (see below)" << endl;
     cout << tab << "-o                  list of other values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
@@ -190,6 +200,16 @@ void printHelpMessage(const char* const name)
              << (species_quantities[i].units == "" ? "[-]" : 
                 "[" + species_quantities[i].units + "]") 
              << species_quantities[i].description << endl;
+    
+    cout << endl;
+    cout << "Reaction values (same format as mixture values):" << endl;
+    
+    for (int i = 0; i < NREACTION; ++i)
+        cout << tab << setw(2) << i << ": " << setw(10)
+             << reaction_quantities[i].name << setw(12)
+             << (reaction_quantities[i].units == "" ? "[-]" :
+                "[" + reaction_quantities[i].units + "]")
+             << reaction_quantities[i].description << endl;
     
     cout << endl;
     cout << "Other values (same format as mixture values):" << endl;
@@ -303,12 +323,13 @@ Options parseOptions(int argc, char** argv)
     // is present)
     if (optionExists(argc, argv, "--species-list")) {
         opts.p_mixture_opts = new Mutation::MixtureOptions();
-        std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--species-list"), tokens, ", ");
-        opts.p_mixture_opts->setSpeciesNames(tokens);
+        opts.p_mixture_opts->setSpeciesDescriptor(getOption(argc, argv, "--species-list"));
     } else {
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
     }
+    
+    // Must use the equilibirum state model
+    opts.p_mixture_opts->setStateModel("EquilTP");
     
     // Elemental mole fractions
     if (optionExists(argc, argv, "--elem-x")) {
@@ -375,6 +396,14 @@ Options parseOptions(int argc, char** argv)
         }
     }
     
+    // Get the reaction properties to print
+    if (optionExists(argc, argv, "-r")) {
+        if (!parseIndices(
+            getOption(argc, argv, "-r"), opts.reaction_indices, NREACTION-1)) {
+            printHelpMessage(argv[0]);
+        }
+    }
+    
     // Get the other properties to print
     if (optionExists(argc, argv, "-o")) {
         if (!parseIndices(
@@ -419,9 +448,23 @@ void writeHeader(
     iter = opts.species_indices.begin();
     for ( ; iter != opts.species_indices.end(); ++iter) {
         for (int i = 0; i < mix.nSpecies(); ++i) {
-            name = species_quantities[*iter].name + "_" + mix.speciesName(i) +
+            name = "\"" + species_quantities[*iter].name + "_" + mix.speciesName(i) +
                 (species_quantities[*iter].units == "" ? 
-                    "" : "[" + species_quantities[*iter].units + "]");
+                    "" : "[" + species_quantities[*iter].units + "]") + "\"";
+            column_widths.push_back(
+                std::max(width, static_cast<int>(name.length())+2));
+            cout << setw(column_widths.back()) << name;
+        }
+    }
+    
+    iter = opts.reaction_indices.begin();
+    for ( ; iter != opts.reaction_indices.end(); ++iter) {
+        for (int i = 0; i < mix.nReactions(); ++i) {
+            char buff [10];
+            sprintf(buff, "%d", i);
+            name = reaction_quantities[*iter].name + "_" + buff +
+                (reaction_quantities[*iter].units == "" ?
+                    "" : "[" + reaction_quantities[*iter].units + "]");
             column_widths.push_back(
                 std::max(width, static_cast<int>(name.length())+2));
             cout << setw(column_widths.back()) << name;
@@ -488,6 +531,7 @@ int main(int argc, char** argv)
     double* sjac_exact     = new double [mix.nSpecies()*mix.nSpecies()];
     double* sjac_fd        = new double [mix.nSpecies()*mix.nSpecies()];
     double* temp2          = new double [mix.nSpecies()];
+    double* reaction_values = new double [mix.nReactions()];
     
     /*ofstream jac_file("jac.dat");
     
@@ -503,7 +547,7 @@ int main(int argc, char** argv)
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {
             // Compute the equilibrium composition
-            mix.equilibrate(T, P);
+            mix.setState(&T, &P);
             cw = 0;
         
             // Mixture properties
@@ -681,14 +725,25 @@ int main(int argc, char** argv)
                     for (int i = 0; i < mix.nSpecies(); ++i)
                         species_values[i] *= rho * mix.Y()[i];
                 } else if (name == "omega") {
-                    double conc = mix.density() / mix.mixtureMw();
-                    for (int i = 0; i < mix.nSpecies(); ++i)
-                        temp[i] = mix.X()[i] * conc;
-                    mix.netProductionRates(mix.T(), temp, species_values);
+                    mix.netProductionRates(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
                     cout << setw(column_widths[cw++]) << species_values[i];
+            }
+            
+            // Reaction properties
+            iter = opts.reaction_indices.begin();
+            for ( ; iter < opts.reaction_indices.end(); ++iter) {
+                name  = reaction_quantities[*iter].name;
+                
+                if (name == "kf")
+                    mix.forwardRateCoefficients(reaction_values);
+                else if (name == "kb")
+                    mix.backwardRateCoefficients(reaction_values);
+                
+                for (int i = 0; i < mix.nReactions(); ++i)
+                    cout << setw(column_widths[cw++]) << reaction_values[i];
             }
             
             // Other properties
@@ -764,6 +819,7 @@ int main(int argc, char** argv)
     delete [] sjac_exact;
     delete [] sjac_fd;
     delete [] temp2;
+    delete [] reaction_values;
 
     return 0;
 }

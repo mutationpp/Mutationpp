@@ -49,6 +49,7 @@ public:
 private:
 
     SymmetricMatrix<T> m_L;
+    Vector<T>          m_work;
     
 };
 
@@ -67,15 +68,14 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
     
     m_L = mat;
     const size_t n = m_L.rows();
-    
-    Vector<T> work(n);
+    m_work.resize(n);
     
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j)
-            work(j) = m_L(j,j) * m_L(i,j);
+            m_work(j) = m_L(j,j) * m_L(i,j);
         
         for (int j = 0; j < i; ++j)
-            m_L(i,i) -= work(j) * m_L(i,j);
+            m_L(i,i) -= m_work(j) * m_L(i,j);
         
         if (m_L(i,i) == static_cast<T>(0)) {
             std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
@@ -84,7 +84,7 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
         
         for (int j = 0; j < i; ++j)
             for (int k = i+1; k < n; ++k)
-                m_L(k,i) -= m_L(k,j) * work(j);
+                m_L(k,i) -= m_L(k,j) * m_work(j);
         
         for (int k = i+1; k < n; ++k)
             m_L(k,i) /= m_L(i,i);

@@ -18,11 +18,11 @@ using namespace Mutation;
 
 #define T_MIN     300.0
 #define T_MAX    6000.0
-#define T_POINTS   51
+#define T_POINTS   101
 
 #define P_MIN     (0.001*ONEATM)
 #define P_MAX     (10.0*ONEATM)
-#define P_POINTS   5
+#define P_POINTS   10
 
 /**
  * Simple class to represent a reduced species list at a given tolerance.
@@ -50,10 +50,7 @@ public:
     }
     
     std::ostream& writeReducedSet(std::ostream& os, const Mixture& mix) const
-    {
-        os << "Tolerance: " << m_tol << " (" << m_species.size()
-           << " species)" << std::endl;
-    
+    {    
         std::set<int>::const_iterator iter = m_species.begin();
         for ( ; iter != m_species.end(); ++iter)
             os << mix.speciesName(*iter) << " ";
@@ -94,7 +91,7 @@ void reduceTP(
 {
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
-    const int mod = XE_POINTS/20;
+    const int mod = (XE_POINTS > 20 ? XE_POINTS/20 : 1);
     
     std::vector<double> xe(ne);
     std::vector<double> xs(ns);
@@ -109,7 +106,7 @@ void reduceTP(
         //    cout << mix.elementName(k) << ": " << xe[k] << endl;
         
         // Compute equilibrium mixture
-        mix.equilibrate(T, P, &xe[0], &xs[0]);
+        mix.equilibriumComposition(T, P, &xe[0], &xs[0]);
         
         // Update reductions
         for (int k = 0; k < reductions.size(); ++k)
@@ -141,11 +138,14 @@ void computeErrorTable(
     const ReducedSet& reduction, Mixture& full, MixtureOptions opts)
 {
     // Create a new mixture based on the reduced set of species
-    opts.clearSpeciesNames();
     opts.setMechanism("none");
+    
+    std::string species_names("");
     std::set<int>::const_iterator iter = reduction.species().begin();
     for ( ; iter != reduction.species().end(); ++iter)
-        opts.addSpeciesName(full.speciesName(*iter));
+        species_names += " " + full.speciesName(*iter);
+    
+    opts.setSpeciesDescriptor(species_names);
     Mixture mix(opts);
     
     for (int k = 0; k < mix.nElements(); ++k)
@@ -154,7 +154,7 @@ void computeErrorTable(
     // Now loop over a range of compositions, temperatures and pressures to
     // compute the error in Cp, H, S, G
     // Loop over temperature and pressure values
-    double T, P;
+    double TP [2];
     double cpr, cpf, cp_error = 0.0;
     double hr, hf, h_error = 0.0;
     double sr, sf, s_error = 0.0;
@@ -162,22 +162,22 @@ void computeErrorTable(
     
     std::vector<double> xe(mix.nElements());
     for (int t = 0; t < T_POINTS; ++t) {
-        T = double(t)/double(T_POINTS-1)*(T_MAX-T_MIN)+T_MIN;
+        TP[0] = double(t)/double(T_POINTS-1)*(T_MAX-T_MIN)+T_MIN;
         
         for (int p = 0; p < P_POINTS; ++p) {
-            P = std::exp(double(p)/double(P_POINTS-1)*std::log(P_MAX/P_MIN)+
+            TP[1] = std::exp(double(p)/double(P_POINTS-1)*std::log(P_MAX/P_MIN)+
                 std::log(P_MIN));
             
-            for (int i = 0; i < XE_POINTS; ++i) {
+            for (int i = 0; i < std::max(XE_POINTS / 10, 100); ++i) {
                 randomComposition(xe, mix);
                 
-                mix.equilibrate(T, P, &xe[0]);
+                mix.setState(TP, &xe[0]);
                 cpr = mix.mixtureEquilibriumCpMass();
                 hr  = mix.mixtureHMass();
                 sr  = mix.mixtureSMass();
                 //gr  = mix.mixtureGMass();
                 
-                full.equilibrate(T, P, &xe[0]);
+                full.setState(TP, &xe[0]);
                 cpf = full.mixtureEquilibriumCpMass();
                 hf  = full.mixtureHMass();
                 sf  = full.mixtureSMass();
@@ -203,23 +203,35 @@ void computeErrorTable(
 
 int main(int argc, char** argv)
 {
-    if (argc <= 1) {
-        cout << "Provide a reaction mechanism." << endl;
+    MixtureOptions* p_opts;
+    
+    if (argc < 2 || argc > 3) {
+        cout << "- reduce mixture-name" << endl;
+        cout << "           or          " << endl;
+        cout << "- reduce database(NASA-7, NASA-9, RRHO) species-descriptor" << endl;
         exit(1);
+    } else if (argc == 2) {
+        p_opts = new MixtureOptions(argv[1]);
+    } else {
+        p_opts = new MixtureOptions();
+        p_opts->setThermodynamicDatabase(argv[1]);
+        p_opts->setSpeciesDescriptor(argv[2]);
     }
+    
+    p_opts->setStateModel("EquilTPXe");
+    Mixture mix(*p_opts);
+    delete p_opts;
     
     srand(time(NULL));
     
-    // Load the mixture to be reduced
-    MixtureOptions opts(argv[1]);
-    Mixture mix(opts);
-    
     // Define the different tolerance levels
     std::vector<ReducedSet> reductions;
+    reductions.push_back(1.0E-2);
     reductions.push_back(1.0E-3);
     reductions.push_back(1.0E-4);
     reductions.push_back(1.0E-5);
     reductions.push_back(1.0E-7);
+    reductions.push_back(1.0E-10);
     
     // Loop over temperature and pressure values
     double T, P;
@@ -237,8 +249,12 @@ int main(int argc, char** argv)
             
             // Write out the current reductions based on the previous
             // equilibrate calls
-            for (int i = 0; i < reductions.size(); ++i)
+            for (int i = 0; i < reductions.size(); ++i) {
+                cout << "Tolerance: " << reductions[i].tolerance() << " (" 
+                     << reductions[i].species().size()
+                     << " species)" << endl;
                 reductions[i].writeReducedSet(cout, mix) << endl;
+            }
             cout << endl;
         }
     }
@@ -246,7 +262,8 @@ int main(int argc, char** argv)
     
     // Write out the latex tables starting with the first reduction and then
     // adding species that are not in previous reductions
-    writeLatexTable(cout, reductions[0].species(), mix); cout << endl;
+    std::ofstream file("table.tex");
+    writeLatexTable(file, reductions[0].species(), mix); file << endl;
     std::set<int> old_species(
         reductions[0].species().begin(), reductions[0].species().end());
     std::set<int> new_species;
@@ -259,15 +276,23 @@ int main(int argc, char** argv)
         old_species.insert(
             reductions[i].species().begin(), reductions[i].species().end());
         
-        writeLatexTable(cout, new_species, mix);
+        writeLatexTable(file, new_species, mix);
         new_species.clear();
-        cout << endl;
+        file << endl;
     }
-    cout << endl;
+    file.close();
+    
+    char filename [20];
+    for (int i = 0; i < reductions.size(); i++) {
+        sprintf(filename, "list-%02d.txt", (int)-log10(reductions[i].tolerance()));
+        file.open(filename);
+        reductions[i].writeReducedSet(file, mix);
+        file.close();
+    }
     
     // Compute a random sampling of composition points which can be used to show
     // good coverage of the composition space
-    std::ofstream file("compositions.dat");
+    /*std::ofstream file("compositions.dat");
     for (int i = 0; i < mix.nElements(); ++i)
         file << setw(14) << mix.elementName(i);
     file << endl;
@@ -278,12 +303,16 @@ int main(int argc, char** argv)
             file << setw(14) << xe[k];
         file << endl;
     }
-    file.close();
+    file.close();*/
     
     // Compute the mixture Cp, H, S, and G and determine the maximum error in
     // each for each mixture
-    cout << "Maximum errors thermodynamic properties..." << endl;
-    for (int i = 0; i < reductions.size(); ++i) {
-        computeErrorTable(reductions[i], mix, opts);
-    }
+//    cout << "Maximum errors thermodynamic properties..." << endl;
+//    cout << setw(10) << "Tol";
+//    cout << setw(14) << "Cp_mix [%]";
+//    cout << setw(14) << "H_mix [%]";
+//    cout << setw(14) << "S_mix [%]" << endl;
+//    for (int i = 0; i < reductions.size(); ++i) {
+//        computeErrorTable(reductions[i], mix, opts);
+//    }
 }

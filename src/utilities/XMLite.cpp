@@ -12,6 +12,7 @@
  */
 
 #include "XMLite.h"
+#include "StringUtils.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -54,6 +55,8 @@ void XmlElement::parseError(const std::string& error_msg) const
     _parseError(document(), line(), error_msg);
 }
 
+//==============================================================================
+
 void XmlElement::_parseError(
     const XmlDocument *const p_document, const long int line, 
     const std::string& error)
@@ -63,36 +66,73 @@ void XmlElement::_parseError(
     exit(1);
 }
 
+//==============================================================================
+
 template < >
 void XmlElement::getAttribute(
-    const std::string &name, std::string &value)
+    const std::string& name, std::string& value) const
 {
-    value = m_attributes[name];
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = iter->second;
+    else
+        value = "";
 }
 
-template < >
-void XmlElement::getAttribute(const std::string &name, int &value)
-{
-    value = atoi(m_attributes[name].c_str());
-}
+//==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, float &value)
+void XmlElement::getAttribute(const std::string& name, int& value) const
 {
-    value = (float)atof(m_attributes[name].c_str());
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = atoi(iter->second.c_str());
+    else
+        value = 0;
 }
 
-template < >
-void XmlElement::getAttribute(const std::string &name, double &value)
-{
-    value = atof(m_attributes[name].c_str());
-}
+//==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, bool &value)
+void XmlElement::getAttribute(const std::string &name, float &value) const
 {
-    value = (m_attributes[name] == "true");
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = (float)atof(iter->second.c_str());
+    else
+        value = 0.0f;
 }
+
+//==============================================================================
+
+template < >
+void XmlElement::getAttribute(const std::string &name, double &value) const
+{
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = atof(iter->second.c_str());
+    else
+        value = 0.0;
+}
+
+//==============================================================================
+
+template < >
+void XmlElement::getAttribute(const std::string &name, bool &value) const
+{
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = (String::toLowerCase(iter->second) == "true");
+    else
+        value = false;
+}
+
+//==============================================================================
 
 bool XmlElement::parse(
     istream &is, int &line, string name, ParseState state)
@@ -259,6 +299,8 @@ bool XmlElement::parse(
         
     return true;
 }
+
+//==============================================================================
 
         } // namespace IO
     } // namespace Utilities

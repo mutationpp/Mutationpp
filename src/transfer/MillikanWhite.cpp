@@ -8,12 +8,12 @@ using namespace Mutation::Utilities::IO;
 using namespace Mutation::Thermodynamics;
 
 namespace Mutation {
-    namespace Kinetics {
+    namespace Transfer {
 
 //==============================================================================
 
 MillikanWhiteVibrator::MillikanWhiteVibrator(
-    XmlElement& node, const class Thermodynamics& thermo)
+    const XmlElement& node, const class Thermodynamics& thermo)
 {
     assert(node.tag() == "vibrator");
         
@@ -29,18 +29,18 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     
     // Get characteristic vibrational temperature
     double theta;
-    if (vibrator.hasRRHOParameters())
-        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-    else {
+    //if (vibrator.hasRRHOParameters())
+   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+    //else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
         exit(1);
-    }
+    //}
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
-    XmlElement::Iterator partner_iter;
+    XmlElement::const_iterator partner_iter;
     
     double a, b, mu;
     for (int i = 0; i < thermo.nHeavy(); ++i) {
@@ -78,14 +78,14 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     
     // Get characteristic vibrational temperature
     double theta, mu;
-    if (vibrator.hasRRHOParameters())
-        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-    else {
+   // if (vibrator.hasRRHOParameters())
+   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+   // else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
         exit(1);
-    }
+    //}
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -115,7 +115,7 @@ MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
     XmlElement root = doc.root();
     
     // Search for the Millikan and White element
-    XmlElement::Iterator iter = root.begin();
+    XmlElement::const_iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {
         if (iter->tag() == "Millikan-White") {
             root = *iter;

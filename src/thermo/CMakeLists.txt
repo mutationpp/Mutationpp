@@ -4,10 +4,12 @@ add_sources(mutation++
     MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
     Nasa9Polynomial.cpp
-    NasaDB.cpp
+    Nasa7DB.cpp
+    Nasa9DB.cpp
     ParticleRRHO.cpp
     RrhoDB.cpp
     Species.cpp
+    SpeciesListDescriptor.cpp
     StateModel.cpp
     Thermodynamics.cpp
     ThermoDB.cpp
@@ -16,6 +18,7 @@ add_sources(mutation++
 install(FILES GfcEquilSolver.h DESTINATION include/mutation++)
 install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
+install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)
 install(FILES StateModel.h DESTINATION include/mutation++)
 install(FILES ThermoDB.h DESTINATION include/mutation++)
 install(FILES Thermodynamics.h DESTINATION include/mutation++)
