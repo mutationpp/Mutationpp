@@ -53,7 +53,14 @@
 		</stoichiometry>
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
-				<level degeneracy="4" energy="127113.5" />
+                <level degeneracy="4"  energy="0.0" />
+				<level degeneracy="2"  energy="1432.0" />
+                <level degeneracy="2"  energy="108722.5" />
+                <level degeneracy="20" energy="132476.1" />
+                <level degeneracy="28" energy="142705.7" />
+                <level degeneracy="6"  energy="144350.2" />
+                <level degeneracy="12" energy="147644.7" />
+                <level degeneracy="14" energy="149595.2" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				1526778
@@ -88,14 +95,6 @@
 				716680
 			</formation_enthalpy>
 		</thermodynamics>
-	</species>
-	
-	<species name="C(s)" phase="solid">
-	    <stoichiometry>
-	        C: 1
-	    </stoichiometry>
-	    <thermodynamics type="NASA-7" db_name="C(gr)"/>
-        <thermodynamics type="NASA-9" db_name="C(gr)"/>
 	</species>
  
 	<!-- Carbon cation -->
@@ -781,20 +780,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="C3H8">
-        <stoichiometry>
-            C : 3,
-            H : 8
-        </stoichiometry>
-    </species>
-    
-    <species name="C3O2">
-        <stoichiometry>
-            C : 3,
-            O : 2
-        </stoichiometry>
-    </species>
  
 	<!-- Carbon tetramer triplet -->
 	<species name="C4">
@@ -1404,14 +1389,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-	
-	<species name="CH2OH">
-	    <stoichiometry>
-	        C: 1,
-	        H: 3,
-	        O: 1
-	    </stoichiometry>
-	</species>
  
 	<!-- Methene -->
 	<species name="CH3">
@@ -1444,30 +1421,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="HCHO">
-        <stoichiometry>
-            C : 1,
-            H : 2,
-            O : 1
-        </stoichiometry>
-    </species>
-    
-    <species name="HCOOH">
-        <stoichiometry>
-            C : 1,
-            H : 2,
-            O : 2
-        </stoichiometry>
-    </species>
-    
-    <species name="CH3OH">
-        <stoichiometry>
-            C : 1,
-            H : 4,
-            O : 1
-        </stoichiometry>
-    </species>
  
 	<!-- Methane -->
 	<species name="CH4">
@@ -1583,28 +1536,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-	
-	<species name="CNC">
-		<stoichiometry>
-			C: 2,
-			N: 1
-		</stoichiometry>
-    </species>
-    
-    <species name="CNCOCN">
-		<stoichiometry>
-			C: 3,
-			N: 2,
-			O: 1
-		</stoichiometry>
-    </species>
-    
-    <species name="CNN">
-		<stoichiometry>
-			C: 1,
-			N: 2
-		</stoichiometry>
-    </species>
  
 	<!-- Carbon monoxide -->
 	<species name="CO">
@@ -1754,13 +1685,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="HO2">
-        <stoichiometry>
-            H: 1,
-            O: 2
-        </stoichiometry>
-    </species>
  
 	<!-- Hydrogen diatomic -->
 	<species name="H2">
@@ -1892,14 +1816,6 @@
 				129290
 			</formation_enthalpy>
 		</thermodynamics>
-	</species>
-	
-	<species name="HNC">
-	    <stoichiometry>
-	        C: 1,
-	        H: 1,
-	        N: 1
-	    </stoichiometry>
 	</species>
  
 	<!-- Nitrogen -->
@@ -2411,181 +2327,5 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="Si">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-7" db_name="Si" />
-        <thermodynamics type="NASA-9" db_name="Si" />
-    </species>
-    
-    <species name="Si+">
-        <stoichiometry>
-            Si :  1,
-            e- : -1
-        </stoichiometry>
-        <thermodynamics type="NASA-7" db_name="Si+" />
-        <thermodynamics type="NASA-9" db_name="Si+" />
-    </species>
-    
-    <species name="Si-">
-        <stoichiometry>
-            Si : 1,
-            e- : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si-" />
-    </species>
-    
-    <species name="SiC">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-7" db_name="SiC" />
-        <thermodynamics type="NASA-9" db_name="SiC" />
-    </species>
-    
-    <species name="SiC2">
-        <stoichiometry>
-            Si : 1,
-            C  : 2
-        </stoichiometry>
-        <thermodynamics type="NASA-7" db_name="SiC2" />
-        <thermodynamics type="NASA-9" db_name="SiC2" />
-    </species>
-    
-    <species name="SiN">
-        <stoichiometry>
-            Si : 1,
-            N  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiN" />
-    </species>
-    
-    <species name="SiO">
-        <stoichiometry>
-            Si: 1,
-            O:  1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO" />
-    </species>
-    
-    <species name="SiO2">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2" />
-    </species>
-    
-    <species name="Si2">
-        <stoichiometry>
-            Si : 2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si2" />
-    </species>
-    
-    <species name="Si2C">
-        <stoichiometry>
-            Si : 2,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si2C" />
-    </species>
-    
-    <species name="Si2N">
-        <stoichiometry>
-            Si : 2,
-            N  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si2N" />
-    </species>
-    
-    <species name="Si3">
-        <stoichiometry>
-            Si : 3
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si3" />
-    </species>
-    
-    <species name="Si(cr)" phase="solid">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si(cr)" />
-    </species>
-    
-    <species name="Si(L)" phase="liquid">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si(L)" />
-    </species>
-    
-    <species name="SiC(b)" phase="solid">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC(b)" />
-    </species>
-    
-    <species name="SiC(L)" phase="liquid">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC(L)" />
-    </species>
-    
-    <species name="SiO2(a-qz)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(a-qz)" />
-    </species>
-    
-    <species name="SiO2(b-qz)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(b-qz)" />
-    </species>
-    
-    <species name="SiO2(b-crt)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(b-crt)" />
-    </species>
-    
-    <species name="SiO2(L)" phase="liquid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(L)" />
-    </species>
-    
-    <species name="Si2N2O(cr)" phase="solid">
-        <stoichiometry>
-            Si: 2,
-            N : 2,
-            O : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si2N2O(cr)" />
-    </species>
-    
-    <species name="Si3N4(cr)" phase="solid">
-        <stoichiometry>
-            Si: 3,
-            N : 4
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si3N4(cr)" />
-    </species>
  
 </specieslist>
