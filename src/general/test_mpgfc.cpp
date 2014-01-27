@@ -10,6 +10,7 @@ using namespace Mutation::Thermodynamics;
 using namespace std;
 using Mutation::ONEATM;
 
+/*
 void bishnuTable3()
 {
     Mutation::MixtureOptions opts("water8");
@@ -122,7 +123,7 @@ void bishnuTable5()
     cout << setw(5) << "6" << setw(10) << 1500 << setw(10) << 1;
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(14) << x[i];
-    cout << endl << endl;*/
+    cout << endl << endl;
     
 }
 
@@ -289,17 +290,20 @@ void dXdT()
     
 }
 
+
+*/
 int main()
 {
 #ifdef _GNU_SOURCE
     feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
-    bishnuTable3();
-    bishnuTable5();
+    //bishnuTable3();
+    //bishnuTable5();
     
-    cout << endl;
-    dXdT();
+    //cout << endl;
+    //dXdT();
     
-    CHO_M_FV();
+    //CHO_M_FV();
 }
+

@@ -86,6 +86,7 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
       m_Cst(m_ns),
       m_eta(m_ns),
       m_Dij(m_ns)
+      
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
@@ -302,8 +303,8 @@ void CollisionDB::updateCollisionData(
         0.0); 
     
     // Reduced temperatures
-    const double Tste = std::max(0.5 * lambdaD / be, 0.1);
-    const double Tsth = std::max(0.5 * lambdaD / bh, 0.1);
+    const double Tste = std::max(0.5 * lambdaD / be, 0.1);  // electron-electron or electron-ion
+    const double Tsth = std::max(0.5 * lambdaD / bh, 0.1);  // ion-ion
     
     // Factors used in the curve-fitting of the reduced collision integrals
     const double efac   = PI * lambdaD * lambdaD / (Tste * Tste);
@@ -316,7 +317,8 @@ void CollisionDB::updateCollisionData(
         case Q11IJ: {
             // Neutral collisions
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Q11_table->lookup(lnT, mp_work, LINEAR);
+            const double LNT = (m_em_index >=0 ? log(Te): log(Th));
+            mp_Q11_table->lookup(LNT, mp_work, LINEAR);
             for (int i = 0; i < nn; ++i)
                 m_Q11(m_neutral_indices[i]) = mp_work[i];
 #else
@@ -325,11 +327,11 @@ void CollisionDB::updateCollisionData(
 #endif
                 
             // Charged collisions
-            const double Q11_rep = hfac * sm_Q11_rep(lnTsth);
+            const double Q11_rep = (m_em_index >=0 ? efac*sm_Q11_rep(lnTste) : hfac*sm_Q11_rep(lnTsth));
             for (int i = 0; i < nr; ++i)
                 m_Q11(m_repulse_indices[i]) = Q11_rep;
-            
-            const double Q11_att = hfac * sm_Q11_att(lnTsth);
+                         
+            const double Q11_att = efac * sm_Q11_att(lnTste);
             for (int i = 0; i < na; ++i)
                 m_Q11(m_attract_indices[i]) = Q11_att;
             } break;
@@ -407,7 +409,7 @@ void CollisionDB::updateCollisionData(
 #endif
             
             // Charged collisions
-            const double Q22_rep = hfac * sm_Q22_rep(lnTsth);
+            const double Q22_rep = efac * sm_Q22_rep(lnTste);
             for (int i = 0; i < nr; ++i)
                 m_Q22(m_repulse_indices[i]) = Q22_rep;
             

@@ -1,0 +1,3296 @@
+<mechanism name="argonCR">
+   <arrhenius_units A="mol,m,s,K" E="kcal,mol,K"/>
+     
+ 
+   <reaction formula="Ar(0)+e-=Ar(1)+e-"><!--0_1-->
+      <arrhenius A="892831544.4458" T="133762.3" n="0.033774"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(2)+e-"><!--0_2-->
+      <arrhenius A="64717868.0595" T="133075.23" n="0.28819"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(3)+e-"><!--0_3-->
+      <arrhenius A="110569208.2996" T="134932.83" n="0.074777"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(4)+e-"><!--0_4-->
+      <arrhenius A="9170277.0813" T="134939.66" n="0.5438"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(5)+e-"><!--0_5-->
+      <arrhenius A="18884959.866" T="146561.45" n="0.3606"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(6)+e-"><!--0_6-->
+      <arrhenius A="12216628.1979" T="150347.56" n="0.41748"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(7)+e-"><!--0_7-->
+      <arrhenius A="32607026.2326" T="150456.18" n="0.32164"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(8)+e-"><!--0_8-->
+      <arrhenius A="40226191.8262" T="151693.44" n="0.2285"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(9)+e-"><!--0_9-->
+      <arrhenius A="374502709.3643" T="151699.22" n="0.066577"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(10)+e-"><!--0_10-->
+      <arrhenius A="12690062.061" T="152920.21" n="0.39322"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(11)+e-"><!--0_11-->
+      <arrhenius A="15540813.1935" T="153610.03" n="0.32035"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(12)+e-"><!--0_12-->
+      <arrhenius A="83086892.6188" T="153214.99" n="0.22722"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(13)+e-"><!--0_13-->
+      <arrhenius A="270696930.5785" T="153987.33" n="0.023721"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(14)+e-"><!--0_14-->
+      <arrhenius A="19777596.1718" T="156015.72" n="0.50422"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(15)+e-"><!--0_15-->
+      <arrhenius A="64100.8067" T="161062.13" n="0.81158"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(16)+e-"><!--0_16-->
+      <arrhenius A="252040.751" T="160726.83" n="0.78747"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(17)+e-"><!--0_17-->
+      <arrhenius A="447940.4283" T="160667.08" n="0.77438"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(18)+e-"><!--0_18-->
+      <arrhenius A="916392.1286" T="162277.74" n="0.67823"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(19)+e-"><!--0_19-->
+      <arrhenius A="6307730.3303" T="161976.91" n="0.46582"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(20)+e-"><!--0_20-->
+      <arrhenius A="99535285.5232" T="164136.32" n="0.16757"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(21)+e-"><!--0_21-->
+      <arrhenius A="42159823.5329" T="163281.45" n="0.33046"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(22)+e-"><!--0_22-->
+      <arrhenius A="798288.5209" T="163307.86" n="0.61186"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(23)+e-"><!--0_23-->
+      <arrhenius A="90538896.7074" T="163966.33" n="0.17614"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(24)+e-"><!--0_24-->
+      <arrhenius A="3725815.9594" T="164973.15" n="0.61347"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(25)+e-"><!--0_25-->
+      <arrhenius A="25961451.7313" T="166352.4" n="0.16112"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(26)+e-"><!--0_26-->
+      <arrhenius A="527092.5575" T="165316.03" n="0.65807"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(27)+e-"><!--0_27-->
+      <arrhenius A="57818986.1589" T="165669.29" n="0.27475"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(28)+e-"><!--0_28-->
+      <arrhenius A="1006437.6774" T="164579.62" n="0.58412"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(29)+e-"><!--0_29-->
+      <arrhenius A="21770231.8663" T="165299.79" n="0.32503"/>
+   </reaction>
+   <reaction formula="Ar(0)+e-=Ar(30)+e-"><!--0_30-->
+      <arrhenius A="2656794.5977" T="166336.77" n="0.63021"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(2)+e-"><!--1_2-->
+      <arrhenius A="94482807853557" T="1977.8922" n="-0.79646"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(3)+e-"><!--1_3-->
+      <arrhenius A="151540256668.914" T="1101.0303" n="-0.44685"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(4)+e-"><!--1_4-->
+      <arrhenius A="12550407406061.7" T="3511.0947" n="-0.70927"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(5)+e-"><!--1_5-->
+      <arrhenius A="8783270347.83" T="15253.616" n="0.23119"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(6)+e-"><!--1_6-->
+      <arrhenius A="21294409009.5348" T="16996.209" n="0.2332"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(7)+e-"><!--1_7-->
+      <arrhenius A="34755305435.4597" T="17303.52" n="0.058331"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(8)+e-"><!--1_8-->
+      <arrhenius A="79289259909.078" T="18196.809" n="-0.12769"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(9)+e-"><!--1_9-->
+      <arrhenius A="13794977946.9" T="17971.162" n="0.18671"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(10)+e-"><!--1_10-->
+      <arrhenius A="4604204600912.61" T="21382.495" n="-0.72513"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(11)+e-"><!--1_11-->
+      <arrhenius A="32194119363.312" T="20082.351" n="-0.31556"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(12)+e-"><!--1_12-->
+      <arrhenius A="796663920.9529" T="19439.923" n="0.17314"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(13)+e-"><!--1_13-->
+      <arrhenius A="903667590.859" T="19807.714" n="0.22542"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(14)+e-"><!--1_14-->
+      <arrhenius A="120879549644.478" T="23202.359" n="-0.47296"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(15)+e-"><!--1_15-->
+      <arrhenius A="3241990666.3993" T="26767.511" n="0.080448"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(16)+e-"><!--1_16-->
+      <arrhenius A="10515440093.0241" T="26800.709" n="0.058057"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(17)+e-"><!--1_17-->
+      <arrhenius A="10503699878.4576" T="26996.199" n="0.089541"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(18)+e-"><!--1_18-->
+      <arrhenius A="15145558500.0894" T="27906.658" n="0.13507"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(19)+e-"><!--1_19-->
+      <arrhenius A="20612709942.8187" T="28244.829" n="0.010931"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(20)+e-"><!--1_20-->
+      <arrhenius A="11838830562.2085" T="29391.235" n="0.15657"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(21)+e-"><!--1_21-->
+      <arrhenius A="655455185590.14" T="30271.62" n="-0.45915"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(22)+e-"><!--1_22-->
+      <arrhenius A="16321645560.0204" T="29344.867" n="-0.029333"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(23)+e-"><!--1_23-->
+      <arrhenius A="10721221152.7143" T="29342.858" n="0.082998"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(24)+e-"><!--1_24-->
+      <arrhenius A="48597600150.6954" T="30631.664" n="-0.23967"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(25)+e-"><!--1_25-->
+      <arrhenius A="549976009.1936" T="31688.653" n="0.044966"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(26)+e-"><!--1_26-->
+      <arrhenius A="4497363228.4072" T="31750.675" n="-0.19151"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(27)+e-"><!--1_27-->
+      <arrhenius A="383445470.7829" T="31758.945" n="0.16686"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(28)+e-"><!--1_28-->
+      <arrhenius A="1025269294.6814" T="31371.542" n="0.13264"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(29)+e-"><!--1_29-->
+      <arrhenius A="263446223.444" T="31479.536" n="0.18295"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar(30)+e-"><!--1_30-->
+      <arrhenius A="220244203.0879" T="31987.493" n="0.13407"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(3)+e-"><!--2_3-->
+      <arrhenius A="6246186794666.4" T="2182.6931" n="-0.70292"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(4)+e-"><!--2_4-->
+      <arrhenius A="45375197606232.01" T="3527.4022" n="-0.76453"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(5)+e-"><!--2_5-->
+      <arrhenius A="9264561332.2533" T="14223.828" n="0.18213"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(6)+e-"><!--2_6-->
+      <arrhenius A="33895360463227.5" T="18243.106" n="-0.71186"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(7)+e-"><!--2_7-->
+      <arrhenius A="12296728438.9203" T="16492.933" n="0.26264"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(8)+e-"><!--2_8-->
+      <arrhenius A="5935248822.8023" T="17125.235" n="0.28514"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(9)+e-"><!--2_9-->
+      <arrhenius A="20684589323.6973" T="17174.36" n="0.10448"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(10)+e-"><!--2_10-->
+      <arrhenius A="1070619584.6049" T="18391.114" n="0.3527"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(11)+e-"><!--2_11-->
+      <arrhenius A="539343560202.405" T="19815.203" n="-0.42288"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(12)+e-"><!--2_12-->
+      <arrhenius A="7618274915.0796" T="18757.203" n="0.16402"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(13)+e-"><!--2_13-->
+      <arrhenius A="72177719031.78" T="19577.715" n="-0.18615"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(14)+e-"><!--2_14-->
+      <arrhenius A="350560518532.23" T="22074.69" n="-0.48963"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(15)+e-"><!--2_15-->
+      <arrhenius A="119566458285.297" T="27208.558" n="-0.4397"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(16)+e-"><!--2_16-->
+      <arrhenius A="11775621897.3765" T="25970.771" n="-0.021215"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(17)+e-"><!--2_17-->
+      <arrhenius A="18520317654.1359" T="26284.307" n="0.016685"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(18)+e-"><!--2_18-->
+      <arrhenius A="974882124500.76" T="28238.546" n="-0.44578"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(19)+e-"><!--2_19-->
+      <arrhenius A="8096148319.7304" T="27250.415" n="0.16506"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(20)+e-"><!--2_20-->
+      <arrhenius A="233715634090.575" T="29088.743" n="-0.29813"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(21)+e-"><!--2_21-->
+      <arrhenius A="5192715571.4806" T="28309.035" n="0.22334"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(22)+e-"><!--2_22-->
+      <arrhenius A="3878582497.852" T="28338.136" n="0.20292"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(23)+e-"><!--2_23-->
+      <arrhenius A="8162009146.9092" T="28421.8" n="0.092723"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(24)+e-"><!--2_24-->
+      <arrhenius A="1476489130.1852" T="29371.24" n="0.25343"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(25)+e-"><!--2_25-->
+      <arrhenius A="16308846046.2786" T="30771.097" n="-0.22599"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(26)+e-"><!--2_26-->
+      <arrhenius A="41902424070.9603" T="30502.207" n="-0.23716"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(27)+e-"><!--2_27-->
+      <arrhenius A="5414884573.5629" T="30420.481" n="0.062345"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(28)+e-"><!--2_28-->
+      <arrhenius A="69256251398.907" T="30779.774" n="-0.29236"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(29)+e-"><!--2_29-->
+      <arrhenius A="4939666824.1158" T="30070.787" n="0.095255"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar(30)+e-"><!--2_30-->
+      <arrhenius A="6618843908.5767" T="30674.604" n="-0.049941"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(4)+e-"><!--3_4-->
+      <arrhenius A="295031778743322" T="2977.7579" n="-0.85457"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(5)+e-"><!--3_5-->
+      <arrhenius A="3418996728.1734" T="13098.174" n="0.25305"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(6)+e-"><!--3_6-->
+      <arrhenius A="84100820787.903" T="15896.647" n="-0.34864"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(7)+e-"><!--3_7-->
+      <arrhenius A="254336906952.651" T="16440.744" n="-0.43205"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(8)+e-"><!--3_8-->
+      <arrhenius A="2068386545.9224" T="16173.291" n="0.24631"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(9)+e-"><!--3_9-->
+      <arrhenius A="457152814210.56" T="17765.12" n="-0.51322"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(10)+e-"><!--3_10-->
+      <arrhenius A="3157308158478.69" T="19166.858" n="-0.69398"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(11)+e-"><!--3_11-->
+      <arrhenius A="15183250641.1257" T="17530.516" n="0.27032"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(12)+e-"><!--3_12-->
+      <arrhenius A="60277037803398" T="19822.147" n="-0.72875"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(13)+e-"><!--3_13-->
+      <arrhenius A="10713571193.9742" T="17774.829" n="0.26341"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(14)+e-"><!--3_14-->
+      <arrhenius A="9384026070115.801" T="21837.044" n="-0.74772"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(15)+e-"><!--3_15-->
+      <arrhenius A="61530244.7339" T="23464.532" n="0.24843"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(16)+e-"><!--3_16-->
+      <arrhenius A="20675642190.1854" T="26076.697" n="-0.29119"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(17)+e-"><!--3_17-->
+      <arrhenius A="8746835033.0466" T="25501.783" n="0.055744"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(18)+e-"><!--3_18-->
+      <arrhenius A="16117646459.5455" T="27002.904" n="-0.31061"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(19)+e-"><!--3_19-->
+      <arrhenius A="4562946373.4656" T="26738.868" n="-0.11916"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(20)+e-"><!--3_20-->
+      <arrhenius A="4387787792.0837" T="26648.244" n="0.0051605"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(21)+e-"><!--3_21-->
+      <arrhenius A="280390505.6679" T="26068.063" n="0.19495"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(22)+e-"><!--3_22-->
+      <arrhenius A="1684527900.2837" T="27493.738" n="0.15912"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(23)+e-"><!--3_23-->
+      <arrhenius A="27332242676.9853" T="27680.242" n="-0.33195"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(24)+e-"><!--3_24-->
+      <arrhenius A="111428788.3285" T="27168.725" n="0.1304"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(25)+e-"><!--3_25-->
+      <arrhenius A="4821376167.9316" T="29197.651" n="0.23912"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(26)+e-"><!--3_26-->
+      <arrhenius A="10160626659.9348" T="28776.214" n="0.16896"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(27)+e-"><!--3_27-->
+      <arrhenius A="3986179652315.94" T="30495.264" n="-0.58313"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(28)+e-"><!--3_28-->
+      <arrhenius A="8114702616.2574" T="28831.206" n="0.20833"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(29)+e-"><!--3_29-->
+      <arrhenius A="1172784443326.53" T="29911.143" n="-0.41893"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar(30)+e-"><!--3_30-->
+      <arrhenius A="586192948157.235" T="30519.757" n="-0.45406"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(5)+e-"><!--4_5-->
+      <arrhenius A="128952258485.811" T="12001.051" n="-0.25407"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(6)+e-"><!--4_6-->
+      <arrhenius A="5836038740319.271" T="15480.238" n="-0.65494"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(7)+e-"><!--4_7-->
+      <arrhenius A="13291773501.1971" T="13993.062" n="0.062078"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(8)+e-"><!--4_8-->
+      <arrhenius A="5292638317.2065" T="14715.663" n="0.1306"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(9)+e-"><!--4_9-->
+      <arrhenius A="5123343038.0591" T="14997.928" n="0.22908"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(10)+e-"><!--4_10-->
+      <arrhenius A="1328102694418.56" T="17428.219" n="-0.59325"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(11)+e-"><!--4_11-->
+      <arrhenius A="19973240719.9734" T="16270.199" n="0.14681"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(12)+e-"><!--4_12-->
+      <arrhenius A="25486825479.1395" T="16497.448" n="0.21671"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(13)+e-"><!--4_13-->
+      <arrhenius A="17213556796.9053" T="16610.829" n="0.14789"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(14)+e-"><!--4_14-->
+      <arrhenius A="2391984738.8056" T="18273.415" n="0.28358"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(15)+e-"><!--4_15-->
+      <arrhenius A="175412566275.105" T="24902.379" n="-0.54865"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(16)+e-"><!--4_16-->
+      <arrhenius A="254962037998.086" T="24661.821" n="-0.44907"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(17)+e-"><!--4_17-->
+      <arrhenius A="346782897483.468" T="25209.23" n="-0.41171"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(18)+e-"><!--4_18-->
+      <arrhenius A="640765072740.3601" T="25945.081" n="-0.51364"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(19)+e-"><!--4_19-->
+      <arrhenius A="11957345604.3351" T="25214.574" n="-0.053964"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(20)+e-"><!--4_20-->
+      <arrhenius A="25348510756.3503" T="26018.106" n="-0.18247"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(21)+e-"><!--4_21-->
+      <arrhenius A="2465169725.4898" T="25784.962" n="0.16376"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(22)+e-"><!--4_22-->
+      <arrhenius A="10839354991.6698" T="26265.784" n="-0.068459"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(23)+e-"><!--4_23-->
+      <arrhenius A="2566989754.9289" T="26302.281" n="0.18481"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(24)+e-"><!--4_24-->
+      <arrhenius A="1027138755.9832" T="26971.816" n="0.16268"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(25)+e-"><!--4_25-->
+      <arrhenius A="1057535403029.04" T="29316.792" n="-0.58266"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(26)+e-"><!--4_26-->
+      <arrhenius A="10513434711.4131" T="27566.988" n="0.12104"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(27)+e-"><!--4_27-->
+      <arrhenius A="9753776886.2319" T="27879.124" n="0.17215"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(28)+e-"><!--4_28-->
+      <arrhenius A="14671035829.1574" T="27624.295" n="0.041519"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(29)+e-"><!--4_29-->
+      <arrhenius A="11348123317.464" T="27645.344" n="0.16402"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar(30)+e-"><!--4_30-->
+      <arrhenius A="2947526151.6987" T="28142.519" n="0.21148"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(6)+e-"><!--5_6-->
+      <arrhenius A="3726959327.9878" T="2879.5584" n="-0.39377"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(7)+e-"><!--5_7-->
+      <arrhenius A="3761287787.6463" T="3131.4442" n="-0.38544"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(8)+e-"><!--5_8-->
+      <arrhenius A="3743807123.052" T="3880.5724" n="-0.36225"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(9)+e-"><!--5_9-->
+      <arrhenius A="3712464935.5655" T="4115.8487" n="-0.35541"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(10)+e-"><!--5_10-->
+      <arrhenius A="3440223843.08" T="5370.1511" n="-0.32187"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(11)+e-"><!--5_11-->
+      <arrhenius A="3409708378.6793" T="5487.4373" n="-0.31897"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(12)+e-"><!--5_12-->
+      <arrhenius A="3346309172.4834" T="5725.9706" n="-0.31315"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(13)+e-"><!--5_13-->
+      <arrhenius A="3262124336.4437" T="6036.8297" n="-0.30579"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(14)+e-"><!--5_14-->
+      <arrhenius A="2772738535.804" T="7858.1526" n="-0.26669"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(15)+e-"><!--5_15-->
+      <arrhenius A="223583759664.765" T="12323.683" n="0.19512"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(16)+e-"><!--5_16-->
+      <arrhenius A="206512746958.533" T="12535.207" n="0.19958"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(17)+e-"><!--5_17-->
+      <arrhenius A="175035705086.412" T="12986.652" n="0.20887"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(18)+e-"><!--5_18-->
+      <arrhenius A="1644091277.0805" T="13710.045" n="-0.17251"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(19)+e-"><!--5_19-->
+      <arrhenius A="1592226086.4531" T="14099.201" n="-0.16742"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(20)+e-"><!--5_20-->
+      <arrhenius A="94937397151.719" T="14793.937" n="0.24329"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(21)+e-"><!--5_21-->
+      <arrhenius A="93155528268.924" T="14853.554" n="0.24435"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(22)+e-"><!--5_22-->
+      <arrhenius A="86242140774.594" T="15098.674" n="0.2487"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(23)+e-"><!--5_23-->
+      <arrhenius A="1468832306.1748" T="15100.848" n="-0.15481"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(24)+e-"><!--5_24-->
+      <arrhenius A="69496993546.899" T="15805.857" n="0.26085"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(25)+e-"><!--5_25-->
+      <arrhenius A="56780156329.1919" T="16496.997" n="0.27223"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(26)+e-"><!--5_26-->
+      <arrhenius A="53185285164.6453" T="16726.926" n="0.27591"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(27)+e-"><!--5_27-->
+      <arrhenius A="1299445188.9807" T="16688.674" n="-0.13616"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(28)+e-"><!--5_28-->
+      <arrhenius A="52012693972.6578" T="16806.086" n="0.27717"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(29)+e-"><!--5_29-->
+      <arrhenius A="49751140217.3784" T="16964.897" n="0.27967"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar(30)+e-"><!--5_30-->
+      <arrhenius A="42799258429.3677" T="17513.663" n="0.28814"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(7)+e-"><!--6_7-->
+      <arrhenius A="1189215022.661" T="674.22" n="-0.48206"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(8)+e-"><!--6_8-->
+      <arrhenius A="2965309851.7364" T="1612.4563" n="-0.44057"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(9)+e-"><!--6_9-->
+      <arrhenius A="3241940622.1915" T="1883.6837" n="-0.42977"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(10)+e-"><!--6_10-->
+      <arrhenius A="3769382965.1927" T="3254.7291" n="-0.38147"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(11)+e-"><!--6_11-->
+      <arrhenius A="3772558514.0734" T="3379.0971" n="-0.37753"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(12)+e-"><!--6_12-->
+      <arrhenius A="3765550759.2222" T="3630.8373" n="-0.36974"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(13)+e-"><!--6_13-->
+      <arrhenius A="3734711964.6753" T="3956.6869" n="-0.36002"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(14)+e-"><!--6_14-->
+      <arrhenius A="3317035840.2481" T="5834.8135" n="-0.31055"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(15)+e-"><!--6_15-->
+      <arrhenius A="2238138606.4367" T="10175.767" n="-0.22476"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(16)+e-"><!--6_16-->
+      <arrhenius A="2194066702.1239" T="10394.214" n="-0.22117"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(17)+e-"><!--6_17-->
+      <arrhenius A="368170280320.449" T="11068.952" n="0.16719"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(18)+e-"><!--6_18-->
+      <arrhenius A="259922298224.475" T="11931.634" n="0.18667"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(19)+e-"><!--6_19-->
+      <arrhenius A="224547505116.276" T="12312.312" n="0.19488"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(20)+e-"><!--6_20-->
+      <arrhenius A="181715348190.804" T="12883.126" n="0.20676"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(21)+e-"><!--6_21-->
+      <arrhenius A="177823787742.402" T="12942.926" n="0.20798"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(22)+e-"><!--6_22-->
+      <arrhenius A="1739564062.9451" T="13035.99" n="-0.18161"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(23)+e-"><!--6_23-->
+      <arrhenius A="157008980499.447" T="13291.699" n="0.21497"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(24)+e-"><!--6_24-->
+      <arrhenius A="1636848898.603" T="13763.211" n="-0.17181"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(25)+e-"><!--6_25-->
+      <arrhenius A="101362591656.027" T="14589.678" n="0.2396"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(26)+e-"><!--6_26-->
+      <arrhenius A="94158062498.082" T="14819.919" n="0.24375"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(27)+e-"><!--6_27-->
+      <arrhenius A="93454306040.295" T="14843.473" n="0.24417"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(28)+e-"><!--6_28-->
+      <arrhenius A="1505554516.994" T="14790.855" n="-0.15864"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(29)+e-"><!--6_29-->
+      <arrhenius A="1486091716.3534" T="14953.918" n="-0.15662"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar(30)+e-"><!--6_30-->
+      <arrhenius A="1421507709.022" T="15517.194" n="-0.14977"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(8)+e-"><!--7_8-->
+      <arrhenius A="2569908639.0522" T="1322.6388" n="-0.45265"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(9)+e-"><!--7_9-->
+      <arrhenius A="2956186027.8447" T="1604.7271" n="-0.44089"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(10)+e-"><!--7_10-->
+      <arrhenius A="3747200373.2698" T="3004.4574" n="-0.3896"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(11)+e-"><!--7_11-->
+      <arrhenius A="3761193239.6244" T="3130.2626" n="-0.38548"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(12)+e-"><!--7_12-->
+      <arrhenius A="3772577785.0079" T="3384.6591" n="-0.37735"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(13)+e-"><!--7_13-->
+      <arrhenius A="3759806695.8943" T="3713.469" n="-0.36723"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(14)+e-"><!--7_14-->
+      <arrhenius A="3379443918.1991" T="5601.8883" n="-0.31616"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(15)+e-"><!--7_15-->
+      <arrhenius A="2284619377.5494" T="9950.9644" n="-0.22852"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(16)+e-"><!--7_16-->
+      <arrhenius A="491663787684.279" T="10396.2" n="0.15106"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(17)+e-"><!--7_17-->
+      <arrhenius A="403701475127.805" T="10850.5" n="0.16205"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(18)+e-"><!--7_18-->
+      <arrhenius A="1983033289.0413" T="11522.067" n="-0.20345"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(19)+e-"><!--7_19-->
+      <arrhenius A="244012118429.163" T="12094.697" n="0.19022"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(20)+e-"><!--7_20-->
+      <arrhenius A="196758600913.464" T="12665.763" n="0.20229"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(21)+e-"><!--7_21-->
+      <arrhenius A="192476418624.774" T="12725.579" n="0.20353"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(22)+e-"><!--7_22-->
+      <arrhenius A="176001775094.385" T="12971.439" n="0.20856"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(23)+e-"><!--7_23-->
+      <arrhenius A="169601331696.447" T="13074.478" n="0.21064"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(24)+e-"><!--7_24-->
+      <arrhenius A="137155822993.887" T="13680.371" n="0.22258"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(25)+e-"><!--7_25-->
+      <arrhenius A="108758595613.737" T="14372.859" n="0.23563"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(26)+e-"><!--7_26-->
+      <arrhenius A="100919902159.857" T="14603.154" n="0.23985"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(27)+e-"><!--7_27-->
+      <arrhenius A="100155231482.865" T="14626.716" n="0.24027"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(28)+e-"><!--7_28-->
+      <arrhenius A="1532674502.9752" T="14568.586" n="-0.16143"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(29)+e-"><!--7_29-->
+      <arrhenius A="93513467808.903" T="14841.434" n="0.24414"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar(30)+e-"><!--7_30-->
+      <arrhenius A="78790371550.464" T="15390.92" n="0.25378"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(9)+e-"><!--8_9-->
+      <arrhenius A="1162900561.7378" T="664.713" n="-0.48252"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(10)+e-"><!--8_10-->
+      <arrhenius A="3484171088.5359" T="2219.348" n="-0.41703"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(11)+e-"><!--8_11-->
+      <arrhenius A="3554689941.4459" T="2351.7878" n="-0.41219"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(12)+e-"><!--8_12-->
+      <arrhenius A="3660936504.5167" T="2617.7768" n="-0.40273"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(13)+e-"><!--8_13-->
+      <arrhenius A="3740585504.5937" T="2958.9839" n="-0.39111"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(14)+e-"><!--8_14-->
+      <arrhenius A="3559497557.8053" T="4887.7314" n="-0.33422"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(15)+e-"><!--8_15-->
+      <arrhenius A="737489144464.14" T="9515.341" n="0.12856"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(16)+e-"><!--8_16-->
+      <arrhenius A="666365846652.39" T="9729.0967" n="0.13417"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(17)+e-"><!--8_17-->
+      <arrhenius A="540341957202.834" T="10184.831" n="0.14581"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(18)+e-"><!--8_18-->
+      <arrhenius A="2107244879.5982" T="10840.902" n="-0.21399"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(19)+e-"><!--8_19-->
+      <arrhenius A="2034588699.3983" T="11232.657" n="-0.20787"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(20)+e-"><!--8_20-->
+      <arrhenius A="252714390630.843" T="12003.941" n="0.18825"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(21)+e-"><!--8_21-->
+      <arrhenius A="246925925865.612" T="12063.863" n="0.18955"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(22)+e-"><!--8_22-->
+      <arrhenius A="224740130149.938" T="12310.076" n="0.19483"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(23)+e-"><!--8_23-->
+      <arrhenius A="1862252527.0243" T="12240.134" n="-0.19283"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(24)+e-"><!--8_24-->
+      <arrhenius A="172953631178.667" T="13019.892" n="0.20954"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(25)+e-"><!--8_25-->
+      <arrhenius A="135632756737.917" T="13713.112" n="0.22321"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(26)+e-"><!--8_26-->
+      <arrhenius A="125421528217.548" T="13943.598" n="0.22761"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(27)+e-"><!--8_27-->
+      <arrhenius A="1627199881.5272" T="13834.824" n="-0.17087"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(28)+e-"><!--8_28-->
+      <arrhenius A="122121784186.737" T="14022.893" n="0.22911"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(29)+e-"><!--8_29-->
+      <arrhenius A="115812835572.03" T="14182.054" n="0.2321"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar(30)+e-"><!--8_30-->
+      <arrhenius A="96835469768.946" T="14731.845" n="0.24217"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(10)+e-"><!--9_10-->
+      <arrhenius A="3304197061.9775" T="1957.8833" n="-0.4269"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(11)+e-"><!--9_11-->
+      <arrhenius A="3404766166.8874" T="2093.4371" n="-0.42174"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(12)+e-"><!--9_12-->
+      <arrhenius A="3560944985.6438" T="2364.8401" n="-0.41171"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(13)+e-"><!--9_13-->
+      <arrhenius A="3688558137.0089" T="2711.6138" n="-0.39948"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(14)+e-"><!--9_14-->
+      <arrhenius A="3611396291.903" T="4657.2253" n="-0.34036"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(15)+e-"><!--9_15-->
+      <arrhenius A="2483395874.1369" T="9046.0889" n="-0.24427"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(16)+e-"><!--9_16-->
+      <arrhenius A="737499081039.6899" T="9515.2891" n="0.12856"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(17)+e-"><!--9_17-->
+      <arrhenius A="595412199307.197" T="9971.5296" n="0.14042"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(18)+e-"><!--9_18-->
+      <arrhenius A="2149126280.8864" T="10622.783" n="-0.21747"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(19)+e-"><!--9_19-->
+      <arrhenius A="345842060355.225" T="11219.654" n="0.17069"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(20)+e-"><!--9_20-->
+      <arrhenius A="274537844602.461" T="11792.076" n="0.18361"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(21)+e-"><!--9_21-->
+      <arrhenius A="268142459824.803" T="11852.02" n="0.18493"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(22)+e-"><!--9_22-->
+      <arrhenius A="243658412472.585" T="12098.348" n="0.1903"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(23)+e-"><!--9_23-->
+      <arrhenius A="234200761797.594" T="12201.609" n="0.19252"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(24)+e-"><!--9_24-->
+      <arrhenius A="186720822847.029" T="12808.587" n="0.20523"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(25)+e-"><!--9_25-->
+      <arrhenius A="145868495477.976" T="13501.938" n="0.21911"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(26)+e-"><!--9_26-->
+      <arrhenius A="134728558473.702" T="13732.497" n="0.22358"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(27)+e-"><!--9_27-->
+      <arrhenius A="133649645100.483" T="13756.132" n="0.22403"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(28)+e-"><!--9_28-->
+      <arrhenius A="1648813077.5602" T="13675.519" n="-0.17297"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(29)+e-"><!--9_29-->
+      <arrhenius A="124264489271.838" T="13971.077" n="0.22813"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar(30)+e-"><!--9_30-->
+      <arrhenius A="103634237358.765" T="14521.004" n="0.23835"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(11)+e-"><!--10_11-->
+      <arrhenius A="659627764.4394" T="496.1707" n="-0.49084"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(12)+e-"><!--10_12-->
+      <arrhenius A="1644456943.0608" T="850.6818" n="-0.47369"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(13)+e-"><!--10_13-->
+      <arrhenius A="2483529927.5744" T="1268.9386" n="-0.45496"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(14)+e-"><!--10_14-->
+      <arrhenius A="3772579471.2146" T="3378.1617" n="-0.37756"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(15)+e-"><!--10_15-->
+      <arrhenius A="2775345351.2333" T="7847.7609" n="-0.2669"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(16)+e-"><!--10_16-->
+      <arrhenius A="1333512105926.31" T="8348.156" n="0.095942"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(17)+e-"><!--10_17-->
+      <arrhenius A="2602807074.9348" T="8540.192" n="-0.25356"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(18)+e-"><!--10_18-->
+      <arrhenius A="2395860304.3784" T="9434.1399" n="-0.23739"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(19)+e-"><!--10_19-->
+      <arrhenius A="2310513190.1077" T="9828.0268" n="-0.2306"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(20)+e-"><!--10_20-->
+      <arrhenius A="2189311779.7257" T="10418.072" n="-0.22078"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(21)+e-"><!--10_21-->
+      <arrhenius A="2177076603.2535" T="10479.841" n="-0.21977"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(22)+e-"><!--10_22-->
+      <arrhenius A="387728435953.347" T="10945.711" n="0.1643"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(23)+e-"><!--10_23-->
+      <arrhenius A="2107402660.3736" T="10840.007" n="-0.214"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(24)+e-"><!--10_24-->
+      <arrhenius A="289508259215.256" T="11658.199" n="0.18064"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(25)+e-"><!--10_25-->
+      <arrhenius A="1872191872.7711" T="12178.563" n="-0.19372"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(26)+e-"><!--10_26-->
+      <arrhenius A="1834161707.5011" T="12415.73" n="-0.19031"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(27)+e-"><!--10_27-->
+      <arrhenius A="1830366658.3011" T="12440.053" n="-0.18996"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(28)+e-"><!--10_28-->
+      <arrhenius A="1821361892.651" T="12497.402" n="-0.18915"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(29)+e-"><!--10_29-->
+      <arrhenius A="185708671217.172" T="12823.427" n="0.20554"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar(30)+e-"><!--10_30-->
+      <arrhenius A="152511222698.658" T="13374.286" n="0.21661"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(12)+e-"><!--11_12-->
+      <arrhenius A="1210719036.8063" T="682.0038" n="-0.48169"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(13)+e-"><!--11_13-->
+      <arrhenius A="2213739375.2845" T="1116.699" n="-0.46161"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(14)+e-"><!--11_14-->
+      <arrhenius A="3769378749.6758" T="3253.7854" n="-0.3815"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(15)+e-"><!--11_15-->
+      <arrhenius A="1595252887808.94" T="8020.8243" n="0.086147"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(16)+e-"><!--11_16-->
+      <arrhenius A="1416237349350.24" T="8236.9547" n="0.092648"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(17)+e-"><!--11_17-->
+      <arrhenius A="1108962360563.91" T="8697.1148" n="0.10606"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(18)+e-"><!--11_18-->
+      <arrhenius A="2420985808.8708" T="9321.1034" n="-0.23937"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(19)+e-"><!--11_19-->
+      <arrhenius A="2334572289.2677" T="9715.194" n="-0.23252"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(20)+e-"><!--11_20-->
+      <arrhenius A="463837281070.719" T="10528.681" n="0.15431"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(21)+e-"><!--11_21-->
+      <arrhenius A="451815204999.951" T="10588.861" n="0.15577"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(22)+e-"><!--11_22-->
+      <arrhenius A="406168263130.011" T="10836.223" n="0.16171"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(23)+e-"><!--11_23-->
+      <arrhenius A="2128866988.4384" T="10727.659" n="-0.21579"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(24)+e-"><!--11_24-->
+      <arrhenius A="302442067281.156" T="11548.929" n="0.17819"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(25)+e-"><!--11_25-->
+      <arrhenius A="230425736302.809" T="12244.279" n="0.19343"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(26)+e-"><!--11_26-->
+      <arrhenius A="211177770447.747" T="12475.399" n="0.19832"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(27)+e-"><!--11_27-->
+      <arrhenius A="1848110792.7016" T="12328.179" n="-0.19157"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(28)+e-"><!--11_28-->
+      <arrhenius A="205005115516.584" T="12554.917" n="0.19999"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(29)+e-"><!--11_29-->
+      <arrhenius A="193261823622.747" T="12714.473" n="0.2033"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar(30)+e-"><!--11_30-->
+      <arrhenius A="158467290393.666" T="13265.509" n="0.21445"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(13)+e-"><!--12_13-->
+      <arrhenius A="1493084656.6738" T="789.1238" n="-0.47658"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(14)+e-"><!--12_14-->
+      <arrhenius A="3746261216.3262" T="2997.7643" n="-0.38982"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(15)+e-"><!--12_15-->
+      <arrhenius A="2865565241.7104" T="7500.5" n="-0.27388"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(16)+e-"><!--12_16-->
+      <arrhenius A="1605167843779.41" T="8009.6862" n="0.08581"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(17)+e-"><!--12_17-->
+      <arrhenius A="1248915654772.14" T="8470.7966" n="0.099532"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(18)+e-"><!--12_18-->
+      <arrhenius A="2473245090.1067" T="9090.2961" n="-0.24348"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(19)+e-"><!--12_19-->
+      <arrhenius A="666427152312.45" T="9728.9571" n="0.13417"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(20)+e-"><!--12_20-->
+      <arrhenius A="512040397967.6461" T="10304.797" n="0.1488"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(21)+e-"><!--12_21-->
+      <arrhenius A="498496990025.004" T="10365.041" n="0.1503"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(22)+e-"><!--12_22-->
+      <arrhenius A="447166844846.8261" T="10612.637" n="0.15635"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(23)+e-"><!--12_23-->
+      <arrhenius A="427551105253.074" T="10716.372" n="0.15885"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(24)+e-"><!--12_24-->
+      <arrhenius A="331065601674.999" T="11325.896" n="0.17313"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(25)+e-"><!--12_25-->
+      <arrhenius A="250982433468.144" T="12021.69" n="0.18864"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(26)+e-"><!--12_26-->
+      <arrhenius A="229667063704.149" T="12252.944" n="0.19361"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(27)+e-"><!--12_27-->
+      <arrhenius A="227607428390.646" T="12276.589" n="0.19412"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(28)+e-"><!--12_28-->
+      <arrhenius A="1875688102.0447" T="12157.213" n="-0.19404"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(29)+e-"><!--12_29-->
+      <arrhenius A="209861138054.37" T="12492.147" n="0.19867"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar(30)+e-"><!--12_30-->
+      <arrhenius A="171503282589.222" T="13043.397" n="0.21001"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(14)+e-"><!--13_14-->
+      <arrhenius A="3673160479.7583" T="2657.361" n="-0.40135"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(15)+e-"><!--13_15-->
+      <arrhenius A="2157891002959.89" T="7494.2588" n="0.069726"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(16)+e-"><!--13_16-->
+      <arrhenius A="1900831070821.35" T="7711.5672" n="0.076607"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(17)+e-"><!--13_17-->
+      <arrhenius A="1465783523909.34" T="8173.9625" n="0.090769"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(18)+e-"><!--13_18-->
+      <arrhenius A="2543585807.3168" T="8787.8913" n="-0.24897"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(19)+e-"><!--13_19-->
+      <arrhenius A="2452111138.1236" T="9183.0913" n="-0.24182"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(20)+e-"><!--13_20-->
+      <arrhenius A="584579862548.949" T="10011.501" n="0.14144"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(21)+e-"><!--13_21-->
+      <arrhenius A="568697559364.6801" T="10071.858" n="0.14297"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(22)+e-"><!--13_22-->
+      <arrhenius A="508627949081.43" T="10319.788" n="0.14918"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(23)+e-"><!--13_23-->
+      <arrhenius A="2233639505.6927" T="10197.774" n="-0.2244"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(24)+e-"><!--13_24-->
+      <arrhenius A="373627441590.342" T="11033.856" n="0.16637"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(25)+e-"><!--13_25-->
+      <arrhenius A="281328367845.657" T="11730.262" n="0.18224"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(26)+e-"><!--13_26-->
+      <arrhenius A="256897249319.202" T="11961.692" n="0.18733"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(27)+e-"><!--13_27-->
+      <arrhenius A="1934937131.8525" T="11800.875" n="-0.19927"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(28)+e-"><!--13_28-->
+      <arrhenius A="249082891442.169" T="12041.299" n="0.18906"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(29)+e-"><!--13_29-->
+      <arrhenius A="234250372409.34" T="12201.04" n="0.19251"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar(30)+e-"><!--13_30-->
+      <arrhenius A="190572612904.563" T="12752.656" n="0.20409"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(15)+e-"><!--14_15-->
+      <arrhenius A="3442982838.6694" T="5359.5054" n="-0.32214"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(16)+e-"><!--14_16-->
+      <arrhenius A="6031831975818.3" T="5918.7094" n="0.014833"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(17)+e-"><!--14_17-->
+      <arrhenius A="3253162147.5143" T="6069.8404" n="-0.30502"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(18)+e-"><!--14_18-->
+      <arrhenius A="3004066651.6766" T="6981.493" n="-0.28471"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(19)+e-"><!--14_19-->
+      <arrhenius A="2896855518.1174" T="7381.7458" n="-0.27631"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(20)+e-"><!--14_20-->
+      <arrhenius A="2741632417.2639" T="7980.0907" n="-0.26429"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(21)+e-"><!--14_21-->
+      <arrhenius A="2725798393.7925" T="8042.6336" n="-0.26307"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(22)+e-"><!--14_22-->
+      <arrhenius A="1183140161699.73" T="8573.1491" n="0.1025"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(23)+e-"><!--14_23-->
+      <arrhenius A="2635175379.4564" T="8407.1166" n="-0.25607"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(24)+e-"><!--14_24-->
+      <arrhenius A="820926509135.82" T="9294.0063" n="0.12263"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(25)+e-"><!--14_25-->
+      <arrhenius A="2325305378.6881" T="9758.5215" n="-0.23178"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(26)+e-"><!--14_26-->
+      <arrhenius A="2274897311.588" T="9997.5628" n="-0.22773"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(27)+e-"><!--14_27-->
+      <arrhenius A="2269791477.5187" T="10021.998" n="-0.22732"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(28)+e-"><!--14_28-->
+      <arrhenius A="2257834464.9402" T="10079.775" n="-0.22636"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(29)+e-"><!--14_29-->
+      <arrhenius A="476048868714.81" T="10469.363" n="0.15286"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar(30)+e-"><!--14_30-->
+      <arrhenius A="375194897239.269" T="11023.86" n="0.16614"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(16)+e-"><!--15_16-->
+      <arrhenius A="1162684486.3858" T="664.6806" n="-0.48252"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(17)+e-"><!--15_17-->
+      <arrhenius A="2573433955.3923" T="1324.9099" n="-0.45256"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(18)+e-"><!--15_18-->
+      <arrhenius A="3584480336.9398" T="2416.1184" n="-0.40987"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(19)+e-"><!--15_19-->
+      <arrhenius A="3724411469.5735" T="2866.3057" n="-0.39421"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(20)+e-"><!--15_20-->
+      <arrhenius A="3770627566.4466" T="3521.6156" n="-0.37309"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(21)+e-"><!--15_21-->
+      <arrhenius A="3767840808.6673" T="3589.2213" n="-0.37101"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(22)+e-"><!--15_22-->
+      <arrhenius A="3745493088.9254" T="3865.3734" n="-0.3627"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(23)+e-"><!--15_23-->
+      <arrhenius A="3731645296.5739" T="3980.3818" n="-0.35932"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(24)+e-"><!--15_24-->
+      <arrhenius A="3613045281.6709" T="4649.3533" n="-0.34057"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(25)+e-"><!--15_25-->
+      <arrhenius A="3431955708.8974" T="5402.0512" n="-0.32108"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(26)+e-"><!--15_26-->
+      <arrhenius A="3366600081.3082" T="5650.2397" n="-0.31498"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(27)+e-"><!--15_27-->
+      <arrhenius A="3359833213.137" T="5675.5938" n="-0.31437"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(28)+e-"><!--15_28-->
+      <arrhenius A="3343792448.6725" T="5735.4323" n="-0.31293"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(29)+e-"><!--15_29-->
+      <arrhenius A="3297723834.6692" T="5906.0911" n="-0.30886"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar(30)+e-"><!--15_30-->
+      <arrhenius A="3137262652.9592" T="6492.8094" n="-0.29538"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(17)+e-"><!--16_17-->
+      <arrhenius A="2039331577.4625" T="1028.4025" n="-0.46556"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(18)+e-"><!--16_18-->
+      <arrhenius A="3447871573.6184" T="2159.2411" n="-0.41927"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(19)+e-"><!--16_19-->
+      <arrhenius A="3660856229.0306" T="2617.5782" n="-0.40273"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(20)+e-"><!--16_20-->
+      <arrhenius A="3770484539.9803" T="3281.1866" n="-0.38062"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(21)+e-"><!--16_21-->
+      <arrhenius A="3772263969.8855" T="3349.459" n="-0.37846"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(22)+e-"><!--16_22-->
+      <arrhenius A="3765716549.4797" T="3628.1304" n="-0.36982"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(23)+e-"><!--16_23-->
+      <arrhenius A="3757308038.5843" T="3744.0927" n="-0.36631"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(24)+e-"><!--16_24-->
+      <arrhenius A="3660291771.3177" T="4417.5793" n="-0.3469"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(25)+e-"><!--16_25-->
+      <arrhenius A="3490145620.1949" T="5173.9355" n="-0.32682"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(26)+e-"><!--16_26-->
+      <arrhenius A="3426492218.33" T="5423.0756" n="-0.32056"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(27)+e-"><!--16_27-->
+      <arrhenius A="3419871809.2602" T="5448.5429" n="-0.31993"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(28)+e-"><!--16_28-->
+      <arrhenius A="3404122216.5701" T="5508.5908" n="-0.31844"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(29)+e-"><!--16_29-->
+      <arrhenius A="3358708633.6714" T="5679.85" n="-0.31427"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar(30)+e-"><!--16_30-->
+      <arrhenius A="3198809139.4775" T="6268.3434" n="-0.30045"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(18)+e-"><!--17_18-->
+      <arrhenius A="2936255425.2715" T="1588.0112" n="-0.44156"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(19)+e-"><!--17_19-->
+      <arrhenius A="3389419999.1647" T="2071.2648" n="-0.42257"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(20)+e-"><!--17_20-->
+      <arrhenius A="3700574708.8191" T="2758.2463" n="-0.39788"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(21)+e-"><!--17_21-->
+      <arrhenius A="3716660579.3144" T="2828.3888" n="-0.39549"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(22)+e-"><!--17_22-->
+      <arrhenius A="3759697694.6716" T="3113.8799" n="-0.38601"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(23)+e-"><!--17_23-->
+      <arrhenius A="3768302046.4379" T="3232.3659" n="-0.38218"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(24)+e-"><!--17_24-->
+      <arrhenius A="3739498563.6719" T="3917.7077" n="-0.36116"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(25)+e-"><!--17_25-->
+      <arrhenius A="3605698237.9309" T="4683.3417" n="-0.33965"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(26)+e-"><!--17_26-->
+      <arrhenius A="3548390393.4338" T="4934.907" n="-0.33299"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(27)+e-"><!--17_27-->
+      <arrhenius A="3542327034.8116" T="4960.6104" n="-0.33232"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(28)+e-"><!--17_28-->
+      <arrhenius A="3527710934.3942" T="5021.1786" n="-0.33074"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(29)+e-"><!--17_29-->
+      <arrhenius A="3485169082.0511" T="5193.9309" n="-0.32631"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar(30)+e-"><!--17_30-->
+      <arrhenius A="3329952665.8031" T="5786.7261" n="-0.3117"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(19)+e-"><!--18_19-->
+      <arrhenius A="1814555037.2909" T="923.9227" n="-0.47031"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(20)+e-"><!--18_20-->
+      <arrhenius A="3070079899.9022" T="1706.0893" n="-0.43679"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(21)+e-"><!--18_21-->
+      <arrhenius A="3148476891.4599" T="1782.8334" n="-0.43373"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(22)+e-"><!--18_22-->
+      <arrhenius A="3403518012.555" T="2091.6122" n="-0.42181"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(23)+e-"><!--18_23-->
+      <arrhenius A="3483632225.0327" T="2218.3402" n="-0.41707"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(24)+e-"><!--18_24-->
+      <arrhenius A="3737554487.7209" T="2940.0384" n="-0.39174"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(25)+e-"><!--18_25-->
+      <arrhenius A="3758326627.9107" T="3731.9495" n="-0.36668"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(26)+e-"><!--18_26-->
+      <arrhenius A="3730396600.2464" T="3990.1009" n="-0.35904"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(27)+e-"><!--18_27-->
+      <arrhenius A="3726841112.8496" T="4016.3807" n="-0.35828"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(28)+e-"><!--18_28-->
+      <arrhenius A="3718059649.1519" T="4078.4407" n="-0.35648"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(29)+e-"><!--18_29-->
+      <arrhenius A="3689885241.9507" T="4255.0458" n="-0.35144"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar(30)+e-"><!--18_30-->
+      <arrhenius A="3566143681.5282" T="4859.1978" n="-0.33497"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(20)+e-"><!--19_20-->
+      <arrhenius A="2361937979.6624" T="1197.6545" n="-0.45805"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(21)+e-"><!--19_21-->
+      <arrhenius A="2502516916.8003" T="1280.5016" n="-0.45446"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(22)+e-"><!--19_22-->
+      <arrhenius A="2961859812.4837" T="1609.5099" n="-0.44069"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(23)+e-"><!--19_23-->
+      <arrhenius A="3108572085.8244" T="1742.9649" n="-0.43532"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(24)+e-"><!--19_24-->
+      <arrhenius A="3616210412.2027" T="2492.0648" n="-0.40716"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(25)+e-"><!--19_25-->
+      <arrhenius A="3771138968.8682" T="3301.5715" n="-0.37997"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(26)+e-"><!--19_26-->
+      <arrhenius A="3768968579.8814" T="3563.8644" n="-0.37178"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(27)+e-"><!--19_27-->
+      <arrhenius A="3767775889.7071" T="3590.6124" n="-0.37097"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(28)+e-"><!--19_28-->
+      <arrhenius A="3764144101.4544" T="3653.5747" n="-0.36905"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(29)+e-"><!--19_29-->
+      <arrhenius A="3748992991.7207" T="3832.6164" n="-0.36367"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar(30)+e-"><!--19_30-->
+      <arrhenius A="3655238510.7663" T="4443.5439" n="-0.34618"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(21)+e-"><!--20_21-->
+      <arrhenius A="380570066.7055" T="411.367" n="-0.49515"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(22)+e-"><!--20_22-->
+      <arrhenius A="1550073868.3149" T="811.9313" n="-0.47551"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(23)+e-"><!--20_23-->
+      <arrhenius A="1908078026.1458" T="966.2644" n="-0.46837"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(24)+e-"><!--20_24-->
+      <arrhenius A="3154501647.9917" T="1789.0104" n="-0.43349"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(25)+e-"><!--20_25-->
+      <arrhenius A="3667530295.6084" T="2638.7602" n="-0.402"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(26)+e-"><!--20_26-->
+      <arrhenius A="3732479186.0384" T="2909.9104" n="-0.39275"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(27)+e-"><!--20_27-->
+      <arrhenius A="3737131671.3759" T="2937.4152" n="-0.39183"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(28)+e-"><!--20_28-->
+      <arrhenius A="3746869515.4149" T="3002.242" n="-0.38967"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(29)+e-"><!--20_29-->
+      <arrhenius A="3765547266.3654" T="3186.2628" n="-0.38367"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar(30)+e-"><!--20_30-->
+      <arrhenius A="3751146398.1966" T="3810.9087" n="-0.36432"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(22)+e-"><!--21_22-->
+      <arrhenius A="1311911255.3357" T="719.3101" n="-0.4799"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(23)+e-"><!--21_23-->
+      <arrhenius A="1707973400.8481" T="877.5067" n="-0.47245"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(24)+e-"><!--21_24-->
+      <arrhenius A="3076724156.7533" T="1712.3578" n="-0.43654"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(25)+e-"><!--21_25-->
+      <arrhenius A="3644222642.4466" T="2567.7781" n="-0.40448"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(26)+e-"><!--21_26-->
+      <arrhenius A="3719097629.856" T="2840.081" n="-0.39509"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(27)+e-"><!--21_27-->
+      <arrhenius A="3724647779.4065" T="2867.7135" n="-0.39416"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(28)+e-"><!--21_28-->
+      <arrhenius A="3736364387.0784" T="2932.7995" n="-0.39198"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(29)+e-"><!--21_29-->
+      <arrhenius A="3760018495.5077" T="3117.4587" n="-0.38589"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar(30)+e-"><!--21_30-->
+      <arrhenius A="3757302136.8607" T="3743.8685" n="-0.36632"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(23)+e-"><!--22_23-->
+      <arrhenius A="627940747.6705" T="486.2785" n="-0.49133"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(24)+e-"><!--22_24-->
+      <arrhenius A="2669919609.5246" T="1388.503" n="-0.44986"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(25)+e-"><!--22_25-->
+      <arrhenius A="3513789250.0536" T="2272.0605" n="-0.41509"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(26)+e-"><!--22_26-->
+      <arrhenius A="3637924178.4246" T="2549.9457" n="-0.4051"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(27)+e-"><!--22_27-->
+      <arrhenius A="3647782104.4736" T="2578.0855" n="-0.40412"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(28)+e-"><!--22_28-->
+      <arrhenius A="3669221982.5403" T="2644.3319" n="-0.4018"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(29)+e-"><!--22_29-->
+      <arrhenius A="3717422804.9916" T="2832.023" n="-0.39537"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar(30)+e-"><!--22_30-->
+      <arrhenius A="3772018325.6936" T="3466.4676" n="-0.37479"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(24)+e-"><!--23_24-->
+      <arrhenius A="2448061772.8112" T="1247.6364" n="-0.45588"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(25)+e-"><!--23_25-->
+      <arrhenius A="3439464929.5947" T="2145.9688" n="-0.41977"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(26)+e-"><!--23_26-->
+      <arrhenius A="3589074226.5924" T="2426.6109" n="-0.40949"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(27)+e-"><!--23_27-->
+      <arrhenius A="3601143251.4771" T="2454.9711" n="-0.40847"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(28)+e-"><!--23_28-->
+      <arrhenius A="3627593030.4928" T="2521.7851" n="-0.4061"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(29)+e-"><!--23_29-->
+      <arrhenius A="3688390479.8797" T="2710.9486" n="-0.3995"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar(30)+e-"><!--23_30-->
+      <arrhenius A="3772228258.4352" T="3349.2292" n="-0.37847"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(25)+e-"><!--24_25-->
+      <arrhenius A="2638201277.4872" T="1367.1758" n="-0.45076"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(26)+e-"><!--24_26-->
+      <arrhenius A="3033823744.587" T="1672.6395" n="-0.43813"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(27)+e-"><!--24_27-->
+      <arrhenius A="3066971739.0701" T="1703.1693" n="-0.43691"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(28)+e-"><!--24_28-->
+      <arrhenius A="3140655481.6253" T="1774.8731" n="-0.43405"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(29)+e-"><!--24_29-->
+      <arrhenius A="3318979554.869" T="1976.4906" n="-0.42619"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar(30)+e-"><!--24_30-->
+      <arrhenius A="3669632212.5564" T="2645.607" n="-0.40176"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar(26)+e-"><!--25_26-->
+      <arrhenius A="1248275076.8684" T="695.7179" n="-0.48103"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar(27)+e-"><!--25_27-->
+      <arrhenius A="1347968438.2532" T="732.8779" n="-0.47925"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar(28)+e-"><!--25_28-->
+      <arrhenius A="1567802947.2979" T="819.1178" n="-0.47517"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar(29)+e-"><!--25_29-->
+      <arrhenius A="2093363001.7815" T="1055.003" n="-0.46436"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar(30)+e-"><!--25_30-->
+      <arrhenius A="3161659655.9096" T="1796.3867" n="-0.4332"/>
+   </reaction>
+   <reaction formula="Ar(26)+e-=Ar(27)+e-"><!--26_27-->
+      <arrhenius A="156342699.9869" T="346.9605" n="-0.49848"/>
+   </reaction>
+   <reaction formula="Ar(26)+e-=Ar(28)+e-"><!--26_28-->
+      <arrhenius A="495674418.4186" T="445.7188" n="-0.49339"/>
+   </reaction>
+   <reaction formula="Ar(26)+e-=Ar(29)+e-"><!--26_29-->
+      <arrhenius A="1282806784.6631" T="708.4617" n="-0.48042"/>
+   </reaction>
+   <reaction formula="Ar(26)+e-=Ar(30)+e-"><!--26_30-->
+      <arrhenius A="2820354545.618" T="1496.2617" n="-0.44534"/>
+   </reaction>
+   <reaction formula="Ar(27)+e-=Ar(28)+e-"><!--27_28-->
+      <arrhenius A="356844101.7795" T="404.4035" n="-0.4955"/>
+   </reaction>
+   <reaction formula="Ar(27)+e-=Ar(29)+e-"><!--27_29-->
+      <arrhenius A="1180303239.2694" T="671.008" n="-0.48222"/>
+   </reaction>
+   <reaction formula="Ar(27)+e-=Ar(30)+e-"><!--27_30-->
+      <arrhenius A="2778103563.941" T="1464.8052" n="-0.44665"/>
+   </reaction>
+   <reaction formula="Ar(28)+e-=Ar(29)+e-"><!--28_29-->
+      <arrhenius A="920031023.0314" T="580.628" n="-0.48663"/>
+   </reaction>
+   <reaction formula="Ar(28)+e-=Ar(30)+e-"><!--28_30-->
+      <arrhenius A="2672024296.6694" T="1389.9101" n="-0.44979"/>
+   </reaction>
+   <reaction formula="Ar(29)+e-=Ar(30)+e-"><!--29_30-->
+      <arrhenius A="2313575160.9188" T="1170.5551" n="-0.45924"/>
+   </reaction>
+   
+      <reaction formula="Ar(0)+Ar(0)=Ar(2)+Ar(0)"><!--0_2-->
+      <arrhenius A="15.4646" T="134060.58" n="0.7903"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(4)+Ar(0)"><!--0_4-->
+      <arrhenius A="58.2611" T="136442.49" n="0.78677"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(16)+Ar(0)"><!--0_16-->
+      <arrhenius A="0.21784" T="160145.02" n="0.7558"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(22)+Ar(0)"><!--0_22-->
+      <arrhenius A="7.3611" T="162779.11" n="0.75277"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(24)+Ar(0)"><!--0_24-->
+      <arrhenius A="20.5475" T="163507.12" n="0.75195"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(29)+Ar(0)"><!--0_29-->
+      <arrhenius A="3.8823" T="164700.94" n="0.7506"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(0)+Ar(0)=Ar(30)+Ar(0)"><!--0_30-->
+      <arrhenius A="17.1019" T="165266.4" n="0.74997"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(2)+Ar(0)"><!--1_2-->
+      <arrhenius A="2.1988" T="519.6451" n="1.4956"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(3)+Ar(0)"><!--1_3-->
+      <arrhenius A="0.010088" T="1356.6742" n="1.483"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(4)+Ar(0)"><!--1_4-->
+      <arrhenius A="0.0042078" T="2344.0568" n="1.4661"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(5)+Ar(0)"><!--1_5-->
+      <arrhenius A="15.5819" T="14236.121" n="1.2892"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(6)+Ar(0)"><!--1_6-->
+      <arrhenius A="47.9005" T="16183.066" n="1.2666"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(7)+Ar(0)"><!--1_7-->
+      <arrhenius A="9.5745" T="16404.629" n="1.2641"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(8)+Ar(0)"><!--1_8-->
+      <arrhenius A="2.6538" T="17079.211" n="1.2567"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(9)+Ar(0)"><!--1_9-->
+      <arrhenius A="20.0053" T="17295.077" n="1.2543"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(10)+Ar(0)"><!--1_10-->
+      <arrhenius A="15.8964" T="18468.666" n="1.242"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(11)+Ar(0)"><!--1_11-->
+      <arrhenius A="0.18134" T="18580.872" n="1.2406"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(12)+Ar(0)"><!--1_12-->
+      <arrhenius A="2.6639" T="18808.315" n="1.2382"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(13)+Ar(0)"><!--1_13-->
+      <arrhenius A="2.67" T="19105.924" n="1.2352"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(14)+Ar(0)"><!--1_14-->
+      <arrhenius A="16.3151" T="20873.077" n="1.2177"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(15)+Ar(0)"><!--1_15-->
+      <arrhenius A="17.4059" T="25129.856" n="1.1786"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(16)+Ar(0)"><!--1_16-->
+      <arrhenius A="17.4704" T="25347.329" n="1.1767"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(17)+Ar(0)"><!--1_17-->
+      <arrhenius A="17.6105" T="25811.822" n="1.1727"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(18)+Ar(0)"><!--1_18-->
+      <arrhenius A="17.8866" T="26696.925" n="1.1653"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(19)+Ar(0)"><!--1_19-->
+      <arrhenius A="18.0117" T="27088.265" n="1.1621"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(20)+Ar(0)"><!--1_20-->
+      <arrhenius A="18.2037" T="27675.885" n="1.1573"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(21)+Ar(0)"><!--1_21-->
+      <arrhenius A="18.2239" T="27737.419" n="1.1568"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(22)+Ar(0)"><!--1_22-->
+      <arrhenius A="18.3076" T="27990.677" n="1.1548"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(23)+Ar(0)"><!--1_23-->
+      <arrhenius A="18.3436" T="28096.926" n="1.1539"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(24)+Ar(0)"><!--1_24-->
+      <arrhenius A="18.5547" T="28721.76" n="1.149"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(25)+Ar(0)"><!--1_25-->
+      <arrhenius A="18.8012" T="29436.691" n="1.1434"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(26)+Ar(0)"><!--1_26-->
+      <arrhenius A="18.8848" T="29674.67" n="1.1416"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(27)+Ar(0)"><!--1_27-->
+      <arrhenius A="18.8932" T="29699.01" n="1.1414"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(28)+Ar(0)"><!--1_28-->
+      <arrhenius A="18.9134" T="29756.56" n="1.1409"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(29)+Ar(0)"><!--1_29-->
+      <arrhenius A="18.9713" T="29920.928" n="1.1397"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(1)+Ar(0)=Ar(30)+Ar(0)"><!--1_30-->
+      <arrhenius A="19.1737" T="30489.066" n="1.1354"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(3)+Ar(0)"><!--2_3-->
+      <arrhenius A="0.032209" T="711.8516" n="1.493"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(4)+Ar(0)"><!--2_4-->
+      <arrhenius A="0.0074441" T="1627.3294" n="1.4784"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(5)+Ar(0)"><!--2_5-->
+      <arrhenius A="8.8736" T="13370.861" n="1.2997"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(6)+Ar(0)"><!--2_6-->
+      <arrhenius A="15.6993" T="15312.826" n="1.2768"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(7)+Ar(0)"><!--2_7-->
+      <arrhenius A="38.8781" T="15534.909" n="1.274"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(8)+Ar(0)"><!--2_8-->
+      <arrhenius A="24.4133" T="16208.404" n="1.2663"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(9)+Ar(0)"><!--2_9-->
+      <arrhenius A="8.4593" T="16423.926" n="1.2639"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(10)+Ar(0)"><!--2_10-->
+      <arrhenius A="10.923" T="17596.694" n="1.251"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(11)+Ar(0)"><!--2_11-->
+      <arrhenius A="0.0064797" T="17708.019" n="1.2498"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(12)+Ar(0)"><!--2_12-->
+      <arrhenius A="9.44" T="17935.168" n="1.2474"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(13)+Ar(0)"><!--2_13-->
+      <arrhenius A="1.5007" T="18232.449" n="1.2443"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(14)+Ar(0)"><!--2_14-->
+      <arrhenius A="0.03585" T="19998.478" n="1.2261"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(15)+Ar(0)"><!--2_15-->
+      <arrhenius A="17.1522" T="24251.747" n="1.1863"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(16)+Ar(0)"><!--2_16-->
+      <arrhenius A="17.2145" T="24469.225" n="1.1843"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(17)+Ar(0)"><!--2_17-->
+      <arrhenius A="17.348" T="24933.461" n="1.1803"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(18)+Ar(0)"><!--2_18-->
+      <arrhenius A="17.6127" T="25818.209" n="1.1727"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(19)+Ar(0)"><!--2_19-->
+      <arrhenius A="17.7335" T="26209.436" n="1.1694"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(20)+Ar(0)"><!--2_20-->
+      <arrhenius A="17.9179" T="26796.79" n="1.1645"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(21)+Ar(0)"><!--2_21-->
+      <arrhenius A="17.9379" T="26858.368" n="1.164"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(22)+Ar(0)"><!--2_22-->
+      <arrhenius A="18.0194" T="27111.555" n="1.1619"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(23)+Ar(0)"><!--2_23-->
+      <arrhenius A="18.0539" T="27217.739" n="1.161"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(24)+Ar(0)"><!--2_24-->
+      <arrhenius A="18.2586" T="27842.38" n="1.156"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(25)+Ar(0)"><!--2_25-->
+      <arrhenius A="18.4984" T="28557.133" n="1.1503"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(26)+Ar(0)"><!--2_26-->
+      <arrhenius A="18.5794" T="28795.011" n="1.1484"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(27)+Ar(0)"><!--2_27-->
+      <arrhenius A="18.588" T="28819.391" n="1.1482"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(28)+Ar(0)"><!--2_28-->
+      <arrhenius A="18.6079" T="28876.939" n="1.1477"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(29)+Ar(0)"><!--2_29-->
+      <arrhenius A="18.6643" T="29041.273" n="1.1465"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(2)+Ar(0)=Ar(30)+Ar(0)"><!--2_30-->
+      <arrhenius A="18.8623" T="29609.328" n="1.1421"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(4)+Ar(0)"><!--3_4-->
+      <arrhenius A="1.0746" T="755.2741" n="1.4924"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(5)+Ar(0)"><!--3_5-->
+      <arrhenius A="6.6721" T="12229.307" n="1.3141"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(6)+Ar(0)"><!--3_6-->
+      <arrhenius A="15.775" T="14164.9" n="1.2904"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(7)+Ar(0)"><!--3_7-->
+      <arrhenius A="15.7525" T="14385.506" n="1.2877"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(8)+Ar(0)"><!--3_8-->
+      <arrhenius A="10.0286" T="15058.209" n="1.2795"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(9)+Ar(0)"><!--3_9-->
+      <arrhenius A="15.7002" T="15272.35" n="1.2773"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(10)+Ar(0)"><!--3_10-->
+      <arrhenius A="15.7114" T="16442.678" n="1.2639"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(11)+Ar(0)"><!--3_11-->
+      <arrhenius A="48.3933" T="16554.627" n="1.2624"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(12)+Ar(0)"><!--3_12-->
+      <arrhenius A="15.7293" T="16780.551" n="1.2602"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(13)+Ar(0)"><!--3_13-->
+      <arrhenius A="36.1682" T="17078.123" n="1.2567"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(14)+Ar(0)"><!--3_14-->
+      <arrhenius A="15.949" T="18840.707" n="1.2381"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(15)+Ar(0)"><!--3_15-->
+      <arrhenius A="16.8384" T="23090.505" n="1.1967"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(16)+Ar(0)"><!--3_16-->
+      <arrhenius A="16.8953" T="23307.739" n="1.1947"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(17)+Ar(0)"><!--3_17-->
+      <arrhenius A="17.0192" T="23771.661" n="1.1905"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(18)+Ar(0)"><!--3_18-->
+      <arrhenius A="17.2675" T="24655.89" n="1.1827"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(19)+Ar(0)"><!--3_19-->
+      <arrhenius A="17.3812" T="25046.878" n="1.1793"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(20)+Ar(0)"><!--3_20-->
+      <arrhenius A="17.5568" T="25634.015" n="1.1742"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(21)+Ar(0)"><!--3_21-->
+      <arrhenius A="17.575" T="25695.494" n="1.1737"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(22)+Ar(0)"><!--3_22-->
+      <arrhenius A="17.6524" T="25948.54" n="1.1716"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(23)+Ar(0)"><!--3_23-->
+      <arrhenius A="17.6855" T="26054.7" n="1.1707"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(24)+Ar(0)"><!--3_24-->
+      <arrhenius A="17.8809" T="26679.074" n="1.1655"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(25)+Ar(0)"><!--3_25-->
+      <arrhenius A="18.1111" T="27393.559" n="1.1596"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(26)+Ar(0)"><!--3_26-->
+      <arrhenius A="18.189" T="27631.348" n="1.1577"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(27)+Ar(0)"><!--3_27-->
+      <arrhenius A="18.197" T="27655.697" n="1.1575"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(28)+Ar(0)"><!--3_28-->
+      <arrhenius A="18.216" T="27713.206" n="1.157"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(29)+Ar(0)"><!--3_29-->
+      <arrhenius A="18.2703" T="27877.488" n="1.1557"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(3)+Ar(0)=Ar(30)+Ar(0)"><!--3_30-->
+      <arrhenius A="18.461" T="28445.318" n="1.1511"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(5)+Ar(0)"><!--4_5-->
+      <arrhenius A="0.6288" T="11031.793" n="1.3298"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(6)+Ar(0)"><!--4_6-->
+      <arrhenius A="15.9773" T="12959.121" n="1.3052"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(7)+Ar(0)"><!--4_7-->
+      <arrhenius A="3.087" T="13179.993" n="1.3021"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(8)+Ar(0)"><!--4_8-->
+      <arrhenius A="1.8304" T="13849.591" n="1.2939"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(9)+Ar(0)"><!--4_9-->
+      <arrhenius A="13.9982" T="14063.98" n="1.2913"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(10)+Ar(0)"><!--4_10-->
+      <arrhenius A="0.0031083" T="15231.105" n="1.2775"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(11)+Ar(0)"><!--4_11-->
+      <arrhenius A="17.713" T="15341.948" n="1.2762"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(12)+Ar(0)"><!--4_12-->
+      <arrhenius A="42.3436" T="15568.144" n="1.2736"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(13)+Ar(0)"><!--4_13-->
+      <arrhenius A="14.5469" T="15864.318" n="1.2702"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(14)+Ar(0)"><!--4_14-->
+      <arrhenius A="12.186" T="17624.156" n="1.2507"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(15)+Ar(0)"><!--4_15-->
+      <arrhenius A="16.5359" T="21867.845" n="1.2081"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(16)+Ar(0)"><!--4_16-->
+      <arrhenius A="16.5872" T="22084.877" n="1.2061"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(17)+Ar(0)"><!--4_17-->
+      <arrhenius A="16.7004" T="22548.504" n="1.2017"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(18)+Ar(0)"><!--4_18-->
+      <arrhenius A="16.9279" T="23431.981" n="1.1936"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(19)+Ar(0)"><!--4_19-->
+      <arrhenius A="17.0333" T="23822.704" n="1.1901"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(20)+Ar(0)"><!--4_20-->
+      <arrhenius A="17.1972" T="24409.432" n="1.1849"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(21)+Ar(0)"><!--4_21-->
+      <arrhenius A="17.215" T="24470.976" n="1.1843"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(22)+Ar(0)"><!--4_22-->
+      <arrhenius A="17.2873" T="24723.835" n="1.1821"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(23)+Ar(0)"><!--4_23-->
+      <arrhenius A="17.3177" T="24829.861" n="1.1812"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(24)+Ar(0)"><!--4_24-->
+      <arrhenius A="17.5022" T="25453.893" n="1.1758"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(25)+Ar(0)"><!--4_25-->
+      <arrhenius A="17.7204" T="26168.015" n="1.1697"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(26)+Ar(0)"><!--4_26-->
+      <arrhenius A="17.7948" T="26405.718" n="1.1677"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(27)+Ar(0)"><!--4_27-->
+      <arrhenius A="17.8022" T="26430.029" n="1.1675"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(28)+Ar(0)"><!--4_28-->
+      <arrhenius A="17.8203" T="26487.523" n="1.167"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(29)+Ar(0)"><!--4_29-->
+      <arrhenius A="17.8721" T="26651.719" n="1.1657"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(4)+Ar(0)=Ar(30)+Ar(0)"><!--4_30-->
+      <arrhenius A="18.0543" T="27219.291" n="1.161"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(6)+Ar(0)"><!--5_6-->
+      <arrhenius A="195.9542" T="1301.9899" n="1.4839"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(7)+Ar(0)"><!--5_7-->
+      <arrhenius A="158.6342" T="1474.7544" n="1.481"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(8)+Ar(0)"><!--5_8-->
+      <arrhenius A="95.5212" T="2019.284" n="1.4717"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(9)+Ar(0)"><!--5_9-->
+      <arrhenius A="83.8509" T="2198.5715" n="1.4686"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(10)+Ar(0)"><!--5_10-->
+      <arrhenius A="49.0699" T="3206.6764" n="1.451"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(11)+Ar(0)"><!--5_11-->
+      <arrhenius A="47.1712" T="3304.755" n="1.4493"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(12)+Ar(0)"><!--5_12-->
+      <arrhenius A="43.7232" T="3505.9434" n="1.4458"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(13)+Ar(0)"><!--5_13-->
+      <arrhenius A="39.9295" T="3771.3444" n="1.4412"/>
+      <FitGoodness Rsquare="0.99992"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(14)+Ar(0)"><!--5_14-->
+      <arrhenius A="26.9738" T="5385.6612" n="1.4141"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(15)+Ar(0)"><!--5_15-->
+      <arrhenius A="12.8125" T="9434.0103" n="1.3518"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(16)+Ar(0)"><!--5_16-->
+      <arrhenius A="31.0863" T="9644.3895" n="1.3488"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(17)+Ar(0)"><!--5_17-->
+      <arrhenius A="24.2783" T="10094.616" n="1.3426"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(18)+Ar(0)"><!--5_18-->
+      <arrhenius A="16.7162" T="10954.066" n="1.3312"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(19)+Ar(0)"><!--5_19-->
+      <arrhenius A="16.5259" T="11335.703" n="1.3261"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(20)+Ar(0)"><!--5_20-->
+      <arrhenius A="0.020099" T="11910.923" n="1.3182"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(21)+Ar(0)"><!--5_21-->
+      <arrhenius A="33.1622" T="11971.159" n="1.3174"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(22)+Ar(0)"><!--5_22-->
+      <arrhenius A="6.8502" T="12218.998" n="1.3142"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(23)+Ar(0)"><!--5_23-->
+      <arrhenius A="16.1485" T="12321.891" n="1.3133"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(24)+Ar(0)"><!--5_24-->
+      <arrhenius A="0.022225" T="12935.568" n="1.3052"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(25)+Ar(0)"><!--5_25-->
+      <arrhenius A="0.018001" T="13637.836" n="1.2965"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(26)+Ar(0)"><!--5_26-->
+      <arrhenius A="0.43313" T="13871.848" n="1.2936"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(27)+Ar(0)"><!--5_27-->
+      <arrhenius A="15.8082" T="13894.854" n="1.2936"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(28)+Ar(0)"><!--5_28-->
+      <arrhenius A="1.7519" T="13952.456" n="1.2926"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(29)+Ar(0)"><!--5_29-->
+      <arrhenius A="2.5303" T="14114.231" n="1.2907"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(5)+Ar(0)=Ar(30)+Ar(0)"><!--5_30-->
+      <arrhenius A="0.024043" T="14673.828" n="1.284"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(7)+Ar(0)"><!--6_7-->
+      <arrhenius A="22495.0244" T="119.4175" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(8)+Ar(0)"><!--6_8-->
+      <arrhenius A="1002.8154" T="536.5408" n="1.4953"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(9)+Ar(0)"><!--6_9-->
+      <arrhenius A="629.5435" T="683.5657" n="1.4934"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(10)+Ar(0)"><!--6_10-->
+      <arrhenius A="144.2678" T="1561.3524" n="1.4795"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(11)+Ar(0)"><!--6_11-->
+      <arrhenius A="131.7584" T="1649.9708" n="1.478"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(12)+Ar(0)"><!--6_12-->
+      <arrhenius A="111.2007" T="1833.077" n="1.4749"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(13)+Ar(0)"><!--6_13-->
+      <arrhenius A="91.4603" T="2076.8877" n="1.4707"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(14)+Ar(0)"><!--6_14-->
+      <arrhenius A="42.3139" T="3598.4594" n="1.4442"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(15)+Ar(0)"><!--6_15-->
+      <arrhenius A="20.3431" T="7541.723" n="1.38"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(16)+Ar(0)"><!--6_16-->
+      <arrhenius A="19.9689" T="7749.0632" n="1.3769"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(17)+Ar(0)"><!--6_17-->
+      <arrhenius A="0.42734" T="8194.7705" n="1.3697"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(18)+Ar(0)"><!--6_18-->
+      <arrhenius A="92.8731" T="9045.1303" n="1.3573"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(19)+Ar(0)"><!--6_19-->
+      <arrhenius A="9.1772" T="9422.7125" n="1.352"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(20)+Ar(0)"><!--6_20-->
+      <arrhenius A="0.99579" T="9991.2297" n="1.344"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(21)+Ar(0)"><!--6_21-->
+      <arrhenius A="28.1496" T="10050.94" n="1.3432"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(22)+Ar(0)"><!--6_22-->
+      <arrhenius A="17.1152" T="10295.309" n="1.3402"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(23)+Ar(0)"><!--6_23-->
+      <arrhenius A="12.7106" T="10399.712" n="1.3384"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(24)+Ar(0)"><!--6_24-->
+      <arrhenius A="16.6884" T="11006.154" n="1.3305"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(25)+Ar(0)"><!--6_25-->
+      <arrhenius A="0.066488" T="11704.689" n="1.3209"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(26)+Ar(0)"><!--6_26-->
+      <arrhenius A="0.22243" T="11937.175" n="1.3179"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(27)+Ar(0)"><!--6_27-->
+      <arrhenius A="1.5003" T="11960.974" n="1.3176"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(28)+Ar(0)"><!--6_28-->
+      <arrhenius A="16.2498" T="12016.12" n="1.3172"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(29)+Ar(0)"><!--6_29-->
+      <arrhenius A="16.195" T="12176.897" n="1.3151"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(6)+Ar(0)=Ar(30)+Ar(0)"><!--6_30-->
+      <arrhenius A="16.0322" T="12733.287" n="1.308"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(8)+Ar(0)"><!--7_8-->
+      <arrhenius A="1869.9314" T="391.6149" n="1.4971"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(9)+Ar(0)"><!--7_9-->
+      <arrhenius A="1017.7193" T="532.5109" n="1.4954"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(10)+Ar(0)"><!--7_10-->
+      <arrhenius A="175.9276" T="1386.9347" n="1.4825"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(11)+Ar(0)"><!--7_11-->
+      <arrhenius A="158.7823" T="1473.9202" n="1.481"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(12)+Ar(0)"><!--7_12-->
+      <arrhenius A="131.2375" T="1653.9609" n="1.478"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(13)+Ar(0)"><!--7_13-->
+      <arrhenius A="105.5675" T="1894.2089" n="1.4739"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(14)+Ar(0)"><!--7_14-->
+      <arrhenius A="45.4513" T="3401.0117" n="1.4476"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(15)+Ar(0)"><!--7_15-->
+      <arrhenius A="20.7603" T="7328.9877" n="1.3833"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(16)+Ar(0)"><!--7_16-->
+      <arrhenius A="0.2819" T="7537.5755" n="1.3796"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(17)+Ar(0)"><!--7_17-->
+      <arrhenius A="2.6991" T="7980.7503" n="1.3729"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(18)+Ar(0)"><!--7_18-->
+      <arrhenius A="18.4332" T="8828.1662" n="1.3609"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(19)+Ar(0)"><!--7_19-->
+      <arrhenius A="90.0174" T="9206.7082" n="1.355"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(20)+Ar(0)"><!--7_20-->
+      <arrhenius A="22.0221" T="9774.4283" n="1.347"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(21)+Ar(0)"><!--7_21-->
+      <arrhenius A="5.7691" T="9834.0544" n="1.3462"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(22)+Ar(0)"><!--7_22-->
+      <arrhenius A="20.0789" T="10079.42" n="1.3428"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(23)+Ar(0)"><!--7_23-->
+      <arrhenius A="3.3025" T="10182.386" n="1.3413"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(24)+Ar(0)"><!--7_24-->
+      <arrhenius A="1.7528" T="10789.383" n="1.3331"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(25)+Ar(0)"><!--7_25-->
+      <arrhenius A="0.82213" T="11486.011" n="1.3238"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(26)+Ar(0)"><!--7_26-->
+      <arrhenius A="1.5589" T="11718.288" n="1.3207"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(27)+Ar(0)"><!--7_27-->
+      <arrhenius A="0.12599" T="11742.069" n="1.3204"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(28)+Ar(0)"><!--7_28-->
+      <arrhenius A="16.3306" T="11797.18" n="1.32"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(29)+Ar(0)"><!--7_29-->
+      <arrhenius A="0.32467" T="11958.909" n="1.3176"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(7)+Ar(0)=Ar(30)+Ar(0)"><!--7_30-->
+      <arrhenius A="0.090122" T="12514.859" n="1.3105"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(9)+Ar(0)"><!--8_9-->
+      <arrhenius A="23941.6254" T="116.027" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(10)+Ar(0)"><!--8_10-->
+      <arrhenius A="393.6919" T="879.1544" n="1.4905"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(11)+Ar(0)"><!--8_11-->
+      <arrhenius A="335.3475" T="960.1896" n="1.4893"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(12)+Ar(0)"><!--8_12-->
+      <arrhenius A="251.1714" T="1128.8319" n="1.4867"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(13)+Ar(0)"><!--8_13-->
+      <arrhenius A="182.8334" T="1355.8422" n="1.483"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(14)+Ar(0)"><!--8_14-->
+      <arrhenius A="58.704" T="2809.5763" n="1.4579"/>
+      <FitGoodness Rsquare="0.99995"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(15)+Ar(0)"><!--8_15-->
+      <arrhenius A="2.969" T="6686.6372" n="1.3927"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(16)+Ar(0)"><!--8_16-->
+      <arrhenius A="3.2414" T="6892.0237" n="1.3895"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(17)+Ar(0)"><!--8_17-->
+      <arrhenius A="7.5541" T="7332.3263" n="1.3827"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(18)+Ar(0)"><!--8_18-->
+      <arrhenius A="19.2882" T="8174.8038" n="1.3705"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(19)+Ar(0)"><!--8_19-->
+      <arrhenius A="18.7718" T="8549.9996" n="1.365"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(20)+Ar(0)"><!--8_20-->
+      <arrhenius A="83.6249" T="9116.746" n="1.3563"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(21)+Ar(0)"><!--8_21-->
+      <arrhenius A="1.0714" T="9176.1351" n="1.3555"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(22)+Ar(0)"><!--8_22-->
+      <arrhenius A="18.5768" T="9420.4929" n="1.352"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(23)+Ar(0)"><!--8_23-->
+      <arrhenius A="17.7235" T="9521.6937" n="1.351"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(24)+Ar(0)"><!--8_24-->
+      <arrhenius A="32.443" T="10127.827" n="1.3421"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(25)+Ar(0)"><!--8_25-->
+      <arrhenius A="0.22497" T="10822.256" n="1.3326"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(26)+Ar(0)"><!--8_26-->
+      <arrhenius A="2.908" T="11053.845" n="1.3295"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(27)+Ar(0)"><!--8_27-->
+      <arrhenius A="16.6521" T="11076.336" n="1.3296"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(28)+Ar(0)"><!--8_28-->
+      <arrhenius A="2.7095" T="11133.596" n="1.3284"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(29)+Ar(0)"><!--8_29-->
+      <arrhenius A="0.083171" T="11293.782" n="1.3263"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(8)+Ar(0)=Ar(30)+Ar(0)"><!--8_30-->
+      <arrhenius A="0.81603" T="11848.209" n="1.319"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(10)+Ar(0)"><!--9_10-->
+      <arrhenius A="562.5277" T="725.5601" n="1.4928"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(11)+Ar(0)"><!--9_11-->
+      <arrhenius A="464.1858" T="804.1293" n="1.4917"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(12)+Ar(0)"><!--9_12-->
+      <arrhenius A="330.2777" T="968.2725" n="1.4892"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(13)+Ar(0)"><!--9_13-->
+      <arrhenius A="228.9296" T="1190.1208" n="1.4857"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(14)+Ar(0)"><!--9_14-->
+      <arrhenius A="64.6517" T="2623.7272" n="1.4612"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(15)+Ar(0)"><!--9_15-->
+      <arrhenius A="22.8357" T="6479.7758" n="1.3965"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(16)+Ar(0)"><!--9_16-->
+      <arrhenius A="9.4988" T="6686.5873" n="1.3927"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(17)+Ar(0)"><!--9_17-->
+      <arrhenius A="41.9474" T="7125.8552" n="1.3859"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(18)+Ar(0)"><!--9_18-->
+      <arrhenius A="19.6076" T="7966.6218" n="1.3736"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(19)+Ar(0)"><!--9_19-->
+      <arrhenius A="19.0507" T="8341.1935" n="1.368"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(20)+Ar(0)"><!--9_20-->
+      <arrhenius A="0.9467" T="8907.0444" n="1.3593"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(21)+Ar(0)"><!--9_21-->
+      <arrhenius A="5.3982" T="8966.3328" n="1.3585"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(22)+Ar(0)"><!--9_22-->
+      <arrhenius A="6.3139" T="9210.3271" n="1.355"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(23)+Ar(0)"><!--9_23-->
+      <arrhenius A="87.3399" T="9312.7749" n="1.3535"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(24)+Ar(0)"><!--9_24-->
+      <arrhenius A="0.083099" T="9916.841" n="1.345"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(25)+Ar(0)"><!--9_25-->
+      <arrhenius A="0.594" T="10610.366" n="1.3355"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(26)+Ar(0)"><!--9_26-->
+      <arrhenius A="10.9647" T="10841.719" n="1.3324"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(27)+Ar(0)"><!--9_27-->
+      <arrhenius A="0.34753" T="10865.459" n="1.332"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(28)+Ar(0)"><!--9_28-->
+      <arrhenius A="16.7345" T="10920.252" n="1.3317"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(29)+Ar(0)"><!--9_29-->
+      <arrhenius A="2.9982" T="11081.481" n="1.3291"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(9)+Ar(0)=Ar(30)+Ar(0)"><!--9_30-->
+      <arrhenius A="0.65483" T="11635.397" n="1.3218"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(11)+Ar(0)"><!--10_11-->
+      <arrhenius A="106825.1428" T="58.6671" n="1.4998"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(12)+Ar(0)"><!--10_12-->
+      <arrhenius A="8727.4665" T="185.808" n="1.4991"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(13)+Ar(0)"><!--10_13-->
+      <arrhenius A="2140.0768" T="366.2428" n="1.4974"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(14)+Ar(0)"><!--10_14-->
+      <arrhenius A="131.8499" T="1649.2915" n="1.478"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(15)+Ar(0)"><!--10_15-->
+      <arrhenius A="27.0192" T="5376.2171" n="1.4142"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(16)+Ar(0)"><!--10_16-->
+      <arrhenius A="36.1035" T="5580.0475" n="1.4103"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(17)+Ar(0)"><!--10_17-->
+      <arrhenius A="24.3546" T="6010.6368" n="1.4039"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(18)+Ar(0)"><!--10_18-->
+      <arrhenius A="21.8588" T="6842.4719" n="1.3908"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(19)+Ar(0)"><!--10_19-->
+      <arrhenius A="21.0028" T="7212.919" n="1.385"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(20)+Ar(0)"><!--10_20-->
+      <arrhenius A="19.9299" T="7771.7471" n="1.3765"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(21)+Ar(0)"><!--10_21-->
+      <arrhenius A="19.83" T="7830.4982" n="1.3756"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(22)+Ar(0)"><!--10_22-->
+      <arrhenius A="29.8778" T="8073.9599" n="1.3715"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(23)+Ar(0)"><!--10_23-->
+      <arrhenius A="19.2894" T="8173.9502" n="1.3705"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(24)+Ar(0)"><!--10_24-->
+      <arrhenius A="106.1997" T="8774.7638" n="1.3612"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(25)+Ar(0)"><!--10_25-->
+      <arrhenius A="17.7774" T="9462.0498" n="1.3518"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(26)+Ar(0)"><!--10_26-->
+      <arrhenius A="17.5741" T="9691.9614" n="1.3486"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(27)+Ar(0)"><!--10_27-->
+      <arrhenius A="17.5547" T="9715.5603" n="1.3482"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(28)+Ar(0)"><!--10_28-->
+      <arrhenius A="17.5085" T="9771.2364" n="1.3474"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(29)+Ar(0)"><!--10_29-->
+      <arrhenius A="3.4706" T="9931.6507" n="1.3448"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(10)+Ar(0)=Ar(30)+Ar(0)"><!--10_30-->
+      <arrhenius A="11.1315" T="10482.425" n="1.3372"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(12)+Ar(0)"><!--11_12-->
+      <arrhenius A="21394.2746" T="122.2151" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(13)+Ar(0)"><!--11_13-->
+      <arrhenius A="3280.7202" T="296.9584" n="1.4981"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(14)+Ar(0)"><!--11_14-->
+      <arrhenius A="144.3723" T="1560.6603" n="1.4795"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(15)+Ar(0)"><!--11_15-->
+      <arrhenius A="1.3966" T="5274.9443" n="1.4152"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(16)+Ar(0)"><!--11_16-->
+      <arrhenius A="0.90729" T="5476.1116" n="1.4119"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(17)+Ar(0)"><!--11_17-->
+      <arrhenius A="2.7087" T="5908.0115" n="1.405"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(18)+Ar(0)"><!--11_18-->
+      <arrhenius A="22.1285" T="6736.5856" n="1.3924"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(19)+Ar(0)"><!--11_19-->
+      <arrhenius A="21.235" T="7106.5767" n="1.3867"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(20)+Ar(0)"><!--11_20-->
+      <arrhenius A="0.019278" T="7666.5381" n="1.3776"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(21)+Ar(0)"><!--11_21-->
+      <arrhenius A="0.0061524" T="7725.1916" n="1.3767"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(22)+Ar(0)"><!--11_22-->
+      <arrhenius A="2.2275" T="7966.7844" n="1.3731"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(23)+Ar(0)"><!--11_23-->
+      <arrhenius A="19.4511" T="8066.6514" n="1.3721"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(24)+Ar(0)"><!--11_24-->
+      <arrhenius A="4.6185" T="8666.9295" n="1.3628"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(25)+Ar(0)"><!--11_25-->
+      <arrhenius A="105.5617" T="9355.1387" n="1.3529"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(26)+Ar(0)"><!--11_26-->
+      <arrhenius A="1.0945" T="9584.8699" n="1.3497"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(27)+Ar(0)"><!--11_27-->
+      <arrhenius A="17.6477" T="9607.0358" n="1.3498"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(28)+Ar(0)"><!--11_28-->
+      <arrhenius A="12.9677" T="9664.0168" n="1.3486"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(29)+Ar(0)"><!--11_29-->
+      <arrhenius A="9.6793" T="9822.9816" n="1.3463"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(11)+Ar(0)=Ar(30)+Ar(0)"><!--11_30-->
+      <arrhenius A="14.3367" T="10373.491" n="1.3387"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(13)+Ar(0)"><!--12_13-->
+      <arrhenius A="11686.8588" T="161.9527" n="1.4992"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(14)+Ar(0)"><!--12_14-->
+      <arrhenius A="176.9104" T="1382.3452" n="1.4825"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(15)+Ar(0)"><!--12_15-->
+      <arrhenius A="28.6926" T="5061.8436" n="1.4194"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(16)+Ar(0)"><!--12_16-->
+      <arrhenius A="4.3107" T="5264.6096" n="1.4154"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(17)+Ar(0)"><!--12_17-->
+      <arrhenius A="14.6782" T="5695.0026" n="1.4084"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(18)+Ar(0)"><!--12_18-->
+      <arrhenius A="22.7169" T="6520.9761" n="1.3958"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(19)+Ar(0)"><!--12_19-->
+      <arrhenius A="0.037095" T="6891.8912" n="1.3895"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(20)+Ar(0)"><!--12_20-->
+      <arrhenius A="0.17033" T="7448.7438" n="1.3809"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(21)+Ar(0)"><!--12_21-->
+      <arrhenius A="0.83833" T="7507.2809" n="1.38"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(22)+Ar(0)"><!--12_22-->
+      <arrhenius A="0.1128" T="7748.3787" n="1.3764"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(23)+Ar(0)"><!--12_23-->
+      <arrhenius A="19.8008" T="7847.9946" n="1.3754"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(24)+Ar(0)"><!--12_24-->
+      <arrhenius A="0.1486" T="8447.2142" n="1.366"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(25)+Ar(0)"><!--12_25-->
+      <arrhenius A="9.941" T="9134.3334" n="1.3561"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(26)+Ar(0)"><!--12_26-->
+      <arrhenius A="2.3685" T="9363.7441" n="1.3528"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(27)+Ar(0)"><!--12_27-->
+      <arrhenius A="104.3571" T="9387.226" n="1.3525"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(28)+Ar(0)"><!--12_28-->
+      <arrhenius A="17.7967" T="9441.3715" n="1.3521"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(29)+Ar(0)"><!--12_29-->
+      <arrhenius A="25.0168" T="9601.5349" n="1.3494"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(12)+Ar(0)=Ar(30)+Ar(0)"><!--12_30-->
+      <arrhenius A="0.094032" T="10151.318" n="1.3418"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(14)+Ar(0)"><!--13_14-->
+      <arrhenius A="241.4052" T="1154.5781" n="1.4862"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(15)+Ar(0)"><!--13_15-->
+      <arrhenius A="9.0716" T="4789.8776" n="1.4232"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(16)+Ar(0)"><!--13_16-->
+      <arrhenius A="8.6748" T="4989.1507" n="1.4199"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(17)+Ar(0)"><!--13_17-->
+      <arrhenius A="6.6417" T="5417.3642" n="1.4129"/>
+      <FitGoodness Rsquare="0.99989"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(18)+Ar(0)"><!--13_18-->
+      <arrhenius A="23.5723" T="6239.7889" n="1.4003"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(19)+Ar(0)"><!--13_19-->
+      <arrhenius A="22.4743" T="6607.5581" n="1.3944"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(20)+Ar(0)"><!--13_20-->
+      <arrhenius A="0.010419" T="7164.4937" n="1.3853"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(21)+Ar(0)"><!--13_21-->
+      <arrhenius A="6.4416" T="7222.8886" n="1.3844"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(22)+Ar(0)"><!--13_22-->
+      <arrhenius A="0.39328" T="7463.3029" n="1.3807"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(23)+Ar(0)"><!--13_23-->
+      <arrhenius A="20.3041" T="7562.5907" n="1.3797"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(24)+Ar(0)"><!--13_24-->
+      <arrhenius A="0.362" T="8160.3509" n="1.3702"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(25)+Ar(0)"><!--13_25-->
+      <arrhenius A="0.027039" T="8845.9436" n="1.3602"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(26)+Ar(0)"><!--13_26-->
+      <arrhenius A="97.0988" T="9074.8954" n="1.3569"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(27)+Ar(0)"><!--13_27-->
+      <arrhenius A="18.1368" T="9096.9003" n="1.357"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(28)+Ar(0)"><!--13_28-->
+      <arrhenius A="9.6975" T="9153.7665" n="1.3558"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(29)+Ar(0)"><!--13_29-->
+      <arrhenius A="9.2479" T="9312.2102" n="1.3535"/>
+      <FitGoodness Rsquare="0.99984"/>
+   </reaction>
+   <reaction formula="Ar(13)+Ar(0)=Ar(30)+Ar(0)"><!--13_30-->
+      <arrhenius A="24.0139" T="9861.0506" n="1.3458"/>
+      <FitGoodness Rsquare="0.99983"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(15)+Ar(0)"><!--14_15-->
+      <arrhenius A="49.25" T="3197.8031" n="1.4512"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(16)+Ar(0)"><!--14_16-->
+      <arrhenius A="0.89565" T="3391.7571" n="1.4468"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(17)+Ar(0)"><!--14_17-->
+      <arrhenius A="39.5669" T="3799.7198" n="1.4408"/>
+      <FitGoodness Rsquare="0.99992"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(18)+Ar(0)"><!--14_18-->
+      <arrhenius A="31.757" T="4597.3538" n="1.4272"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(19)+Ar(0)"><!--14_19-->
+      <arrhenius A="29.3279" T="4954.9794" n="1.4212"/>
+      <FitGoodness Rsquare="0.9999"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(20)+Ar(0)"><!--14_20-->
+      <arrhenius A="26.4475" T="5496.7076" n="1.4123"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(21)+Ar(0)"><!--14_21-->
+      <arrhenius A="26.1882" T="5553.7827" n="1.4113"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(22)+Ar(0)"><!--14_22-->
+      <arrhenius A="13.7894" T="5791.2006" n="1.4068"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(23)+Ar(0)"><!--14_23-->
+      <arrhenius A="24.8081" T="5887.9758" n="1.4059"/>
+      <FitGoodness Rsquare="0.99988"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(24)+Ar(0)"><!--14_24-->
+      <arrhenius A="35.1463" T="6474.788" n="1.396"/>
+      <FitGoodness Rsquare="0.99987"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(25)+Ar(0)"><!--14_25-->
+      <arrhenius A="21.1447" T="7147.3922" n="1.386"/>
+      <FitGoodness Rsquare="0.99986"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(26)+Ar(0)"><!--14_26-->
+      <arrhenius A="20.6708" T="7373.0221" n="1.3826"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(27)+Ar(0)"><!--14_27-->
+      <arrhenius A="20.6244" T="7396.1318" n="1.3822"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(28)+Ar(0)"><!--14_28-->
+      <arrhenius A="20.517" T="7450.8096" n="1.3814"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(29)+Ar(0)"><!--14_29-->
+      <arrhenius A="54.3696" T="7608.7639" n="1.3785"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(14)+Ar(0)=Ar(30)+Ar(0)"><!--14_30-->
+      <arrhenius A="119.1616" T="8150.5467" n="1.3704"/>
+      <FitGoodness Rsquare="0.99985"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(16)+Ar(0)"><!--15_16-->
+      <arrhenius A="23952.2653" T="115.9794" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(17)+Ar(0)"><!--15_17-->
+      <arrhenius A="1859.752" T="392.7074" n="1.4971"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(18)+Ar(0)"><!--15_18-->
+      <arrhenius A="311.4954" T="1000.255" n="1.4887"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(19)+Ar(0)"><!--15_19-->
+      <arrhenius A="198.285" T="1293.0603" n="1.484"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(20)+Ar(0)"><!--15_20-->
+      <arrhenius A="119.4331" T="1753.0257" n="1.4763"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(21)+Ar(0)"><!--15_21-->
+      <arrhenius A="114.2264" T="1802.4643" n="1.4754"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(22)+Ar(0)"><!--15_22-->
+      <arrhenius A="96.368" T="2007.835" n="1.4719"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(23)+Ar(0)"><!--15_23-->
+      <arrhenius A="90.2536" T="2094.9042" n="1.4704"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(24)+Ar(0)"><!--15_24-->
+      <arrhenius A="64.8727" T="2617.4388" n="1.4613"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(25)+Ar(0)"><!--15_25-->
+      <arrhenius A="48.5385" T="3233.2984" n="1.4505"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(26)+Ar(0)"><!--15_26-->
+      <arrhenius A="44.7627" T="3441.8326" n="1.4469"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(27)+Ar(0)"><!--15_27-->
+      <arrhenius A="44.4095" T="3463.2688" n="1.4466"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(28)+Ar(0)"><!--15_28-->
+      <arrhenius A="43.5973" T="3513.9684" n="1.4457"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(29)+Ar(0)"><!--15_29-->
+      <arrhenius A="41.4397" T="3659.2928" n="1.4432"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(15)+Ar(0)=Ar(30)+Ar(0)"><!--15_30-->
+      <arrhenius A="35.4664" T="4166.6354" n="1.4345"/>
+      <FitGoodness Rsquare="0.99991"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(17)+Ar(0)"><!--16_17-->
+      <arrhenius A="4363.5949" T="258.6598" n="1.4985"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(18)+Ar(0)"><!--16_18-->
+      <arrhenius A="425.2462" T="843.1123" n="1.4911"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(19)+Ar(0)"><!--16_19-->
+      <arrhenius A="251.2191" T="1128.7073" n="1.4867"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(20)+Ar(0)"><!--16_20-->
+      <arrhenius A="141.4558" T="1580.0836" n="1.4792"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(21)+Ar(0)"><!--16_21-->
+      <arrhenius A="134.5799" T="1628.7235" n="1.4784"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(22)+Ar(0)"><!--16_22-->
+      <arrhenius A="111.3929" T="1831.0674" n="1.4749"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(23)+Ar(0)"><!--16_23-->
+      <arrhenius A="103.5987" T="1916.974" n="1.4735"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(24)+Ar(0)"><!--16_24-->
+      <arrhenius A="72.0869" T="2433.4725" n="1.4645"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(25)+Ar(0)"><!--16_25-->
+      <arrhenius A="52.6009" T="3043.896" n="1.4538"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(26)+Ar(0)"><!--16_26-->
+      <arrhenius A="48.1943" T="3250.8633" n="1.4502"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(27)+Ar(0)"><!--16_27-->
+      <arrhenius A="47.7849" T="3272.173" n="1.4499"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(28)+Ar(0)"><!--16_28-->
+      <arrhenius A="46.8431" T="3322.5049" n="1.449"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(29)+Ar(0)"><!--16_29-->
+      <arrhenius A="44.3509" T="3466.8665" n="1.4465"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(16)+Ar(0)=Ar(30)+Ar(0)"><!--16_30-->
+      <arrhenius A="37.5216" T="3971.1985" n="1.4378"/>
+      <FitGoodness Rsquare="0.99992"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(18)+Ar(0)"><!--17_18-->
+      <arrhenius A="1050.8116" T="523.8334" n="1.4955"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(19)+Ar(0)"><!--17_19-->
+      <arrhenius A="478.4545" T="791.1073" n="1.4918"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(20)+Ar(0)"><!--17_20-->
+      <arrhenius A="218.9611" T="1220.8851" n="1.4852"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(21)+Ar(0)"><!--17_21-->
+      <arrhenius A="205.1849" T="1267.6248" n="1.4844"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(22)+Ar(0)"><!--17_22-->
+      <arrhenius A="160.8611" T="1462.5164" n="1.4812"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(23)+Ar(0)"><!--17_23-->
+      <arrhenius A="146.7172" T="1545.5425" n="1.4798"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(24)+Ar(0)"><!--17_24-->
+      <arrhenius A="93.5026" T="2047.3421" n="1.4712"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(25)+Ar(0)"><!--17_25-->
+      <arrhenius A="63.9229" T="2644.6598" n="1.4608"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(26)+Ar(0)"><!--17_26-->
+      <arrhenius A="57.6091" T="2847.9368" n="1.4573"/>
+      <FitGoodness Rsquare="0.99995"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(27)+Ar(0)"><!--17_27-->
+      <arrhenius A="57.0294" T="2868.874" n="1.4569"/>
+      <FitGoodness Rsquare="0.99995"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(28)+Ar(0)"><!--17_28-->
+      <arrhenius A="55.7016" T="2918.3681" n="1.456"/>
+      <FitGoodness Rsquare="0.99995"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(29)+Ar(0)"><!--17_29-->
+      <arrhenius A="52.2198" T="3060.4038" n="1.4536"/>
+      <FitGoodness Rsquare="0.99994"/>
+   </reaction>
+   <reaction formula="Ar(17)+Ar(0)=Ar(30)+Ar(0)"><!--17_30-->
+      <arrhenius A="42.924" T="3557.5231" n="1.4449"/>
+      <FitGoodness Rsquare="0.99993"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(19)+Ar(0)"><!--18_19-->
+      <arrhenius A="6408.9605" T="215.1112" n="1.4988"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(20)+Ar(0)"><!--18_20-->
+      <arrhenius A="844.9239" T="586.109" n="1.4947"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(21)+Ar(0)"><!--18_21-->
+      <arrhenius A="740.6569" T="627.6772" n="1.4941"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(22)+Ar(0)"><!--18_22-->
+      <arrhenius A="465.339" T="803.0548" n="1.4917"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(23)+Ar(0)"><!--18_23-->
+      <arrhenius A="394.2311" T="878.5824" n="1.4905"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(24)+Ar(0)"><!--18_24-->
+      <arrhenius A="185.8331" T="1342.9369" n="1.4832"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(25)+Ar(0)"><!--18_25-->
+      <arrhenius A="104.3724" T="1907.9419" n="1.4736"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(26)+Ar(0)"><!--18_26-->
+      <arrhenius A="89.7686" T="2102.2976" n="1.4703"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(27)+Ar(0)"><!--18_27-->
+      <arrhenius A="88.4723" T="2122.3279" n="1.4699"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(28)+Ar(0)"><!--18_28-->
+      <arrhenius A="85.5406" T="2169.8271" n="1.4691"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(29)+Ar(0)"><!--18_29-->
+      <arrhenius A="78.0393" T="2306.2591" n="1.4667"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(18)+Ar(0)=Ar(30)+Ar(0)"><!--18_30-->
+      <arrhenius A="59.3854" T="2786.4223" n="1.4583"/>
+      <FitGoodness Rsquare="0.99995"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(20)+Ar(0)"><!--19_20-->
+      <arrhenius A="2590.6" T="333.3074" n="1.4977"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(21)+Ar(0)"><!--19_21-->
+      <arrhenius A="2077.4957" T="371.6712" n="1.4973"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(22)+Ar(0)"><!--19_22-->
+      <arrhenius A="1008.404" T="535.0071" n="1.4954"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(23)+Ar(0)"><!--19_23-->
+      <arrhenius A="792.3382" T="605.9853" n="1.4944"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(24)+Ar(0)"><!--19_24-->
+      <arrhenius A="286.4774" T="1048.1748" n="1.4879"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(25)+Ar(0)"><!--19_25-->
+      <arrhenius A="139.339" T="1594.5677" n="1.479"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(26)+Ar(0)"><!--19_26-->
+      <arrhenius A="116.1291" T="1783.8859" n="1.4758"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(27)+Ar(0)"><!--19_27-->
+      <arrhenius A="114.1223" T="1803.4785" n="1.4754"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(28)+Ar(0)"><!--19_28-->
+      <arrhenius A="109.6036" T="1849.8357" n="1.4746"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(29)+Ar(0)"><!--19_29-->
+      <arrhenius A="98.2376" T="1983.1857" n="1.4723"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(19)+Ar(0)=Ar(30)+Ar(0)"><!--19_30-->
+      <arrhenius A="71.2076" T="2453.9379" n="1.4641"/>
+      <FitGoodness Rsquare="0.99996"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(21)+Ar(0)"><!--20_21-->
+      <arrhenius A="413885.1221" T="31.9989" n="1.4999"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(22)+Ar(0)"><!--20_22-->
+      <arrhenius A="10447.3637" T="170.6997" n="1.4992"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(23)+Ar(0)"><!--20_23-->
+      <arrhenius A="5446.1356" T="232.4997" n="1.4987"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(24)+Ar(0)"><!--20_24-->
+      <arrhenius A="733.047" T="631.0539" n="1.4941"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(25)+Ar(0)"><!--20_25-->
+      <arrhenius A="245.9214" T="1142.4547" n="1.4864"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(26)+Ar(0)"><!--20_26-->
+      <arrhenius A="190.772" T="1322.4937" n="1.4835"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(27)+Ar(0)"><!--20_27-->
+      <arrhenius A="186.2565" T="1341.1687" n="1.4832"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(28)+Ar(0)"><!--20_28-->
+      <arrhenius A="176.2442" T="1385.4142" n="1.4825"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(29)+Ar(0)"><!--20_29-->
+      <arrhenius A="151.9808" T="1513.0908" n="1.4803"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(20)+Ar(0)=Ar(30)+Ar(0)"><!--20_30-->
+      <arrhenius A="99.5059" T="1966.9094" n="1.4726"/>
+      <FitGoodness Rsquare="0.99997"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(22)+Ar(0)"><!--21_22-->
+      <arrhenius A="17042.7067" T="135.8065" n="1.4994"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(23)+Ar(0)"><!--21_23-->
+      <arrhenius A="7760.6167" T="196.4238" n="1.499"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(24)+Ar(0)"><!--21_24-->
+      <arrhenius A="835.6706" T="589.4655" n="1.4947"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(25)+Ar(0)"><!--21_25-->
+      <arrhenius A="264.3807" T="1096.5524" n="1.4872"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(26)+Ar(0)"><!--21_26-->
+      <arrhenius A="203.0132" T="1275.4572" n="1.4843"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(27)+Ar(0)"><!--21_27-->
+      <arrhenius A="198.0271" T="1294.0147" n="1.484"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(28)+Ar(0)"><!--21_28-->
+      <arrhenius A="186.9993" T="1338.0281" n="1.4833"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(29)+Ar(0)"><!--21_29-->
+      <arrhenius A="160.4022" T="1465.0055" n="1.4812"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(21)+Ar(0)=Ar(30)+Ar(0)"><!--21_30-->
+      <arrhenius A="103.6121" T="1916.8188" n="1.4735"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(23)+Ar(0)"><!--22_23-->
+      <arrhenius A="120938.1634" T="55.467" n="1.4998"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(24)+Ar(0)"><!--22_24-->
+      <arrhenius A="1599.8349" T="423.3795" n="1.4967"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(25)+Ar(0)"><!--22_25-->
+      <arrhenius A="368.8091" T="911.185" n="1.4901"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(26)+Ar(0)"><!--22_26-->
+      <arrhenius A="269.3426" T="1085.1025" n="1.4874"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(27)+Ar(0)"><!--22_27-->
+      <arrhenius A="261.5728" T="1103.1852" n="1.4871"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(28)+Ar(0)"><!--22_28-->
+      <arrhenius A="244.5556" T="1146.0839" n="1.4864"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(29)+Ar(0)"><!--22_29-->
+      <arrhenius A="204.5047" T="1270.0486" n="1.4844"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(22)+Ar(0)=Ar(30)+Ar(0)"><!--22_30-->
+      <arrhenius A="123.9727" T="1712.9735" n="1.477"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(24)+Ar(0)"><!--23_24-->
+      <arrhenius A="2262.4078" T="356.3274" n="1.4975"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(25)+Ar(0)"><!--23_25-->
+      <arrhenius A="432.7186" T="835.1964" n="1.4912"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(26)+Ar(0)"><!--23_26-->
+      <arrhenius A="307.8559" T="1006.8311" n="1.4886"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(27)+Ar(0)"><!--23_27-->
+      <arrhenius A="298.2967" T="1024.6824" n="1.4883"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(28)+Ar(0)"><!--23_28-->
+      <arrhenius A="277.4773" T="1067.0888" n="1.4876"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(29)+Ar(0)"><!--23_29-->
+      <arrhenius A="229.075" T="1189.682" n="1.4857"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(23)+Ar(0)=Ar(30)+Ar(0)"><!--23_30-->
+      <arrhenius A="134.6012" T="1628.5725" n="1.4784"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(25)+Ar(0)"><!--24_25-->
+      <arrhenius A="1680.9833" T="413.015" n="1.4968"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(26)+Ar(0)"><!--24_26-->
+      <arrhenius A="897.0125" T="568.2584" n="1.4949"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(27)+Ar(0)"><!--24_27-->
+      <arrhenius A="849.2794" T="584.5519" n="1.4947"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(28)+Ar(0)"><!--24_28-->
+      <arrhenius A="750.5624" T="623.3287" n="1.4942"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(29)+Ar(0)"><!--24_29-->
+      <arrhenius A="547.338" T="736.2028" n="1.4926"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(24)+Ar(0)=Ar(30)+Ar(0)"><!--24_30-->
+      <arrhenius A="244.2485" T="1146.9158" n="1.4864"/>
+      <FitGoodness Rsquare="0.99999"/>
+   </reaction>
+   <reaction formula="Ar(25)+Ar(0)=Ar(26)+Ar(0)"><!--25_26-->
+      <arrhenius A="19631.0756" T="127.1691" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(25)+Ar(0)=Ar(27)+Ar(0)"><!--25_27-->
+      <arrhenius A="15764.8456" T="140.8058" n="1.4994"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(25)+Ar(0)=Ar(28)+Ar(0)"><!--25_28-->
+      <arrhenius A="10095.0152" T="173.4881" n="1.4992"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(25)+Ar(0)=Ar(29)+Ar(0)"><!--25_29-->
+      <arrhenius A="3990.0266" T="270.0348" n="1.4983"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(25)+Ar(0)=Ar(30)+Ar(0)"><!--25_30-->
+      <arrhenius A="724.1552" T="635.1082" n="1.494"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(26)+Ar(0)=Ar(27)+Ar(0)"><!--26_27-->
+      <arrhenius A="3369494.0939" T="12.7323" n="1.5"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(26)+Ar(0)=Ar(28)+Ar(0)"><!--26_28-->
+      <arrhenius A="217662.1147" T="42.6074" n="1.4999"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(26)+Ar(0)=Ar(29)+Ar(0)"><!--26_29-->
+      <arrhenius A="18169.15" T="131.8141" n="1.4994"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(26)+Ar(0)=Ar(30)+Ar(0)"><!--26_30-->
+      <arrhenius A="1263.6067" T="476.8746" n="1.4961"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(27)+Ar(0)=Ar(28)+Ar(0)"><!--27_28-->
+      <arrhenius A="483141.7288" T="29.8689" n="1.4999"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(27)+Ar(0)=Ar(29)+Ar(0)"><!--27_29-->
+      <arrhenius A="22970.6678" T="118.2461" n="1.4995"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(27)+Ar(0)=Ar(30)+Ar(0)"><!--27_30-->
+      <arrhenius A="1350.5127" T="461.0633" n="1.4963"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(28)+Ar(0)=Ar(29)+Ar(0)"><!--28_29-->
+      <arrhenius A="45184.1161" T="86.6754" n="1.4997"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(28)+Ar(0)=Ar(30)+Ar(0)"><!--28_30-->
+      <arrhenius A="1594.558" T="424.0877" n="1.4967"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(29)+Ar(0)=Ar(30)+Ar(0)"><!--29_30-->
+      <arrhenius A="2796.8895" T="321.0192" n="1.4978"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   
+   <reaction formula="Ar(0)+e-=Ar++e-+e-"><!--0-->
+      <arrhenius A="40407500.0036" T="182585.37" n="0.60503"/>
+      <FitGoodness Rsquare="1"/>
+   </reaction>
+   <reaction formula="Ar(1)+e-=Ar++e-+e-"><!--1-->
+      <arrhenius A="1093854610.4327" T="49490.216" n="0.42492"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(2)+e-=Ar++e-+e-"><!--2-->
+      <arrhenius A="1147886817.6334" T="48626.664" n="0.42184"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(3)+e-=Ar++e-+e-"><!--3-->
+      <arrhenius A="1091983703.8108" T="49521.057" n="0.42502"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(4)+e-=Ar++e-+e-"><!--4-->
+      <arrhenius A="1168204344.4363" T="48316.971" n="0.42072"/>
+      <FitGoodness Rsquare="0.99998"/>
+   </reaction>
+   <reaction formula="Ar(5)+e-=Ar++e-+e-"><!--5-->
+      <arrhenius A="286140320.1653" T="35090.917" n="0.74148"/>
+      <FitGoodness Rsquare="0.99981"/>
+   </reaction>
+   <reaction formula="Ar(6)+e-=Ar++e-+e-"><!--6-->
+      <arrhenius A="390387222.6838" T="33171.935" n="0.71859"/>
+      <FitGoodness Rsquare="0.99979"/>
+   </reaction>
+   <reaction formula="Ar(7)+e-=Ar++e-+e-"><!--7-->
+      <arrhenius A="404882349.8105" T="32954.067" n="0.71589"/>
+      <FitGoodness Rsquare="0.99978"/>
+   </reaction>
+   <reaction formula="Ar(8)+e-=Ar++e-+e-"><!--8-->
+      <arrhenius A="453104436.5335" T="32291.504" n="0.70757"/>
+      <FitGoodness Rsquare="0.99978"/>
+   </reaction>
+   <reaction formula="Ar(9)+e-=Ar++e-+e-"><!--9-->
+      <arrhenius A="469947046.5119" T="32079.662" n="0.70486"/>
+      <FitGoodness Rsquare="0.99977"/>
+   </reaction>
+   <reaction formula="Ar(10)+e-=Ar++e-+e-"><!--10-->
+      <arrhenius A="575619992.1538" T="30928.627" n="0.68981"/>
+      <FitGoodness Rsquare="0.99976"/>
+   </reaction>
+   <reaction formula="Ar(11)+e-=Ar++e-+e-"><!--11-->
+      <arrhenius A="412924646.7085" T="32837.261" n="0.71444"/>
+      <FitGoodness Rsquare="0.99978"/>
+   </reaction>
+   <reaction formula="Ar(12)+e-=Ar++e-+e-"><!--12-->
+      <arrhenius A="428790635.8424" T="32614.533" n="0.71165"/>
+      <FitGoodness Rsquare="0.99978"/>
+   </reaction>
+   <reaction formula="Ar(13)+e-=Ar++e-+e-"><!--13-->
+      <arrhenius A="450649241.2027" T="32323.104" n="0.70797"/>
+      <FitGoodness Rsquare="0.99978"/>
+   </reaction>
+   <reaction formula="Ar(14)+e-=Ar++e-+e-"><!--14-->
+      <arrhenius A="611384425.4891" T="30595.004" n="0.68532"/>
+      <FitGoodness Rsquare="0.99975"/>
+   </reaction>
+   <reaction formula="Ar(15)+e-=Ar++e-+e-"><!--15-->
+      <arrhenius A="58609090855.9587" T="23836.12" n="0.32642"/>
+      <FitGoodness Rsquare="0.99975"/>
+   </reaction>
+   <reaction formula="Ar(16)+e-=Ar++e-+e-"><!--16-->
+      <arrhenius A="60780647540.94" T="23623.654" n="0.32367"/>
+      <FitGoodness Rsquare="0.99974"/>
+   </reaction>
+   <reaction formula="Ar(17)+e-=Ar++e-+e-"><!--17-->
+      <arrhenius A="65764809748.152" T="23169.95" n="0.31771"/>
+      <FitGoodness Rsquare="0.99973"/>
+   </reaction>
+   <reaction formula="Ar(18)+e-=Ar++e-+e-"><!--18-->
+      <arrhenius A="76752771346.014" T="22305.819" n="0.30601"/>
+      <FitGoodness Rsquare="0.99971"/>
+   </reaction>
+   <reaction formula="Ar(19)+e-=Ar++e-+e-"><!--19-->
+      <arrhenius A="82337313492.291" T="21923.84" n="0.30067"/>
+      <FitGoodness Rsquare="0.9997"/>
+   </reaction>
+   <reaction formula="Ar(20)+e-=Ar++e-+e-"><!--20-->
+      <arrhenius A="91700747364.567" T="21350.409" n="0.29248"/>
+      <FitGoodness Rsquare="0.99968"/>
+   </reaction>
+   <reaction formula="Ar(21)+e-=Ar++e-+e-"><!--21-->
+      <arrhenius A="84094063916.529" T="20716.764" n="0.24412"/>
+      <FitGoodness Rsquare="0.9998"/>
+   </reaction>
+   <reaction formula="Ar(22)+e-=Ar++e-+e-"><!--22-->
+      <arrhenius A="87379806409.065" T="20471.032" n="0.24133"/>
+      <FitGoodness Rsquare="0.99979"/>
+   </reaction>
+   <reaction formula="Ar(23)+e-=Ar++e-+e-"><!--23-->
+      <arrhenius A="99235580338.128" T="20939.628" n="0.28646"/>
+      <FitGoodness Rsquare="0.99967"/>
+   </reaction>
+   <reaction formula="Ar(24)+e-=Ar++e-+e-"><!--24-->
+      <arrhenius A="111891591862.485" T="20330.077" n="0.2773"/>
+      <FitGoodness Rsquare="0.99965"/>
+   </reaction>
+   <reaction formula="Ar(25)+e-=Ar++e-+e-"><!--25-->
+      <arrhenius A="86546151809.088" T="21656.573" n="0.29688"/>
+      <FitGoodness Rsquare="0.99969"/>
+   </reaction>
+   <reaction formula="Ar(26)+e-=Ar++e-+e-"><!--26-->
+      <arrhenius A="90419302492.971" T="21424.51" n="0.29355"/>
+      <FitGoodness Rsquare="0.99969"/>
+   </reaction>
+   <reaction formula="Ar(27)+e-=Ar++e-+e-"><!--27-->
+      <arrhenius A="90826087829.487" T="21400.722" n="0.29321"/>
+      <FitGoodness Rsquare="0.99969"/>
+   </reaction>
+   <reaction formula="Ar(28)+e-=Ar++e-+e-"><!--28-->
+      <arrhenius A="83393625672.759" T="20770.772" n="0.24473"/>
+      <FitGoodness Rsquare="0.9998"/>
+   </reaction>
+   <reaction formula="Ar(29)+e-=Ar++e-+e-"><!--29-->
+      <arrhenius A="85481775947.007" T="20611.346" n="0.24293"/>
+      <FitGoodness Rsquare="0.9998"/>
+   </reaction>
+   <reaction formula="Ar(30)+e-=Ar++e-+e-"><!--30-->
+      <arrhenius A="105421706856.87" T="20630.445" n="0.28185"/>
+      <FitGoodness Rsquare="0.99966"/>
+   </reaction>
+   
+         
+  </mechanism>

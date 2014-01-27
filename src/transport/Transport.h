@@ -51,6 +51,13 @@ public:
         mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
             ThermalConductivityAlgorithm>::create(algo, m_collisions);
     }
+
+    /**
+    * m_collisions used for calculation of omegaTE
+    */
+    CollisionDB& collisionDB() {
+        return m_collisions;
+    }
     
     /**
      * Returns the total number of collision pairs accounted for in the 

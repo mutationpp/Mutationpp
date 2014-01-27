@@ -100,8 +100,8 @@ int main(int argc, char** argv)
     cout << "Reactions" << endl;
     cout << setw(4) << "#";
     cout.setf(std::ios::left, std::ios::adjustfield);
-    cout << setw(22) << "  Formula";
-    cout << setw(6)  << "Type";
+    cout << setw(30) << "  Formula";
+    cout << setw(10)  << "Type";
     cout << setw(12) << "Rate Law";
     cout.setf(std::ios::right, std::ios::adjustfield);
     cout << setw(12) << "A (m,s,mol)";
@@ -114,8 +114,8 @@ int main(int argc, char** argv)
         cout.setf(std::ios::right, std::ios::adjustfield);
         cout << setw(4) << i+1 << ": ";        
         cout.setf(std::ios::left, std::ios::adjustfield);
-        cout << setw(20) << r.formula();
-        cout << setw(6)  << r.type();
+        cout << setw(30) << r.formula();
+        cout << setw(10)  << r.type();
         
         // Print out rate constants
         if (typeid(*(r.rateLaw())) == typeid(Arrhenius)) {

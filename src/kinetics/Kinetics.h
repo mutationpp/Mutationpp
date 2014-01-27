@@ -152,6 +152,8 @@ public:
      */
     double omegaVT();
 
+    double omegaTE();
+
 private:
 
     /**
