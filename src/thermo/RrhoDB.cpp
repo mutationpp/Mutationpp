@@ -419,7 +419,6 @@ private:
                     for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
                         fac = data.p_levels[ilevel].g *
                             std::exp(-data.p_levels[ilevel].theta / T);
-
                         sum1 += fac;
                         sum2 += fac * data.p_levels[ilevel].theta;
                     }

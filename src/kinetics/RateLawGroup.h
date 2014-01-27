@@ -84,7 +84,6 @@ public:
         // Now subtract \Delta[G_i/RT - ln(Patm/RT)]_j
         m_reacs.decrReactions(p_g, p_r);
         m_prods.incrReactions(p_g, p_r);
-        
     }
     
 
@@ -134,7 +133,7 @@ public:
         m_t = TSelectorType().getT(p_state);
         const double lnT  = std::log(m_t);
         const double invT = 1.0 / m_t;
-
+    
         for (int i = 0; i < m_rates.size(); ++i) {
             const std::pair<size_t, RateLawType>& rate = m_rates[i];
             p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
@@ -202,9 +201,9 @@ public:
             m_group_map[&typeid(GroupType)] = new GroupType();
         m_group_map[&typeid(GroupType)]->addRateCoefficient(rxn, p_rate);
         
-        //std::cout << "Added reaction " << rxn << "("
-        //          << typeid(GroupType).name() << "), " << "Ngroups = "
-        //          << m_group_map.size() << std::endl;
+//        std::cout << "Added reaction " << rxn << "("
+//                  << typeid(GroupType).name() << "), " << "Ngroups = "
+//                  << m_group_map.size() << std::endl;
     }
     
     /**

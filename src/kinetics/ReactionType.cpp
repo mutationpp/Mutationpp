@@ -36,14 +36,6 @@ const char* const reactionTypeString(const ReactionType type)
             return "heavy particle impact ion recombination";
         case ION_RECOMBINATION_E:
             return "electron impact ion recombination";
-        case EXCITATION_E:
-            return "electron impact excitation";
-        case EXCITATION_M:
-            return "atom impact excitation";
-        case DEEXCITATION_E:
-            return "electron impact de-excitation";
-        case DEEXCITATION_M:
-            return "atom impact de-excitation";
         default:
             return "unknown type";
     }

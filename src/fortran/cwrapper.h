@@ -296,8 +296,6 @@ double NAME_MANGLE(mixture_e_mass)();
  */
 void NAME_MANGLE(net_production_rates)(double* const wdot);
 
-void NAME_MANGLE(omega_te)(double* const p_source);
-
 /**
  * Returns the total number of collision pairs accounted for in the 
  * collision database.

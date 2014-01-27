@@ -81,13 +81,10 @@ void MixtureOptions::loadFromFile(const string& mixture)
     // Get the thermal conductivity algorithm
     root.getAttribute(
         "thermal_conductivity", m_thermal_conductivity, m_thermal_conductivity);
-   
+    
     // Get the state model
     root.getAttribute("state_model", m_state_model, m_state_model);
-
-cout << "Mutation++:: State Model in use:  " << m_state_model << endl; 
-cout << endl; 
-  
+    
     // Loop over all of the mixture child elements
     IO::XmlElement::const_iterator iter;
     for (iter = root.begin(); iter != root.end(); ++iter) {

@@ -192,17 +192,15 @@ void NAME_MANGLE(y)(double *const Y)
 //==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    
-   p_mix->speciesCpOverR(cp);
-
-   for (int i = 0; i < p_mix->nSpecies(); i++)
+    p_mix->speciesCpOverR(cp);
+    for (int i = 0; i < p_mix->nSpecies(); i++)
         cp[i] *= Mutation::RU / p_mix->speciesMw(i);
-    }
+}
 
 //==============================================================================
 double NAME_MANGLE(mixture_frozen_cp_mass)()
 {
-    return p_mix->mixtureFrozenCpMass();      
+    return p_mix->mixtureFrozenCpMass();
 }
 
 //==============================================================================
@@ -243,17 +241,13 @@ void NAME_MANGLE(net_production_rates)(double* const wdot)
 {
     p_mix->netProductionRates(wdot);
 }
-//==============================================================================
-void NAME_MANGLE(omega_te)(double* const p_source)
-{
-    return p_mix->energyTransferSource(p_source);
-    
-}
+
 //==============================================================================
 int NAME_MANGLE(ncollision_pairs)()
 {
     return p_mix->nCollisionPairs();
 }
+
 
 //==============================================================================
 double NAME_MANGLE(viscosity)()

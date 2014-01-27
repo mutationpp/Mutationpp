@@ -25,10 +25,6 @@ enum ReactionType
     ION_RECOMBINATION_M,
     RECOMBINATION_E,
     RECOMBINATION_M,
-    EXCITATION_E,
-    EXCITATION_M,
-    DEEXCITATION_E,
-    DEEXCITATION_M,
     MAX_REACTION_TYPES /// Number of ReactionType values (leave at end of list)
 };
 

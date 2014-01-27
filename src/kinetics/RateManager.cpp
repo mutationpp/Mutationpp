@@ -66,17 +66,12 @@ SELECT_RATE_LAWS(DISSOCIATION_M,             ArrheniusPark, ArrheniusT)
 SELECT_RATE_LAWS(DISSOCIATIVE_RECOMBINATION, ArrheniusTe,   ArrheniusT)
 SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT,      ArrheniusTe,   ArrheniusT)
 SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT,      ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusTe)
 SELECT_RATE_LAWS(IONIZATION_M,               ArrheniusT,    ArrheniusTe)
 SELECT_RATE_LAWS(ION_RECOMBINATION_E,        ArrheniusTe,   ArrheniusTe)
 SELECT_RATE_LAWS(ION_RECOMBINATION_M,        ArrheniusTe,   ArrheniusT)
 SELECT_RATE_LAWS(RECOMBINATION_E,            ArrheniusTe,   ArrheniusTe)
 SELECT_RATE_LAWS(RECOMBINATION_M,            ArrheniusT,    ArrheniusPark)
-SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(EXCITATION_M,               ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(DEEXCITATION_E,             ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(DEEXCITATION_M,             ArrheniusT,    ArrheniusT)
-
 
 #undef SELECT_RATE_LAWS
 
