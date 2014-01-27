@@ -57,6 +57,36 @@ Transport::~Transport()
 
 //==============================================================================
 
+void Transport::omega11ii(double* const p_omega)
+{
+    const double ns  = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double *const X = m_thermo.X();
+    const RealSymMat& Q11 = m_collisions.Q11(Th, Te, nd, X);
+    
+    for (int i = 0; i < ns; ++i)
+        p_omega[i] = Q11(i,i);
+}
+
+//==============================================================================
+
+void Transport::omega22ii(double* const p_omega)
+{
+    const double ns  = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double *const X = m_thermo.X();
+    const RealSymMat& Q22 = m_collisions.Q22(Th, Te, nd, X);
+    
+    for (int i = 0; i < ns; ++i)
+        p_omega[i] = Q22(i,i);
+}
+
+//==============================================================================
+
 double Transport::electronThermalConductivity()
 {
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
