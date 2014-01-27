@@ -78,7 +78,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
 };
 
 // List of all species output quantities
-#define NSPECIES 15
+#define NSPECIES 17
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
     OutputQuantity("dX/dT", "1/K", "partial of mole fraction w.r.t. temperature"),
@@ -94,7 +94,9 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("S", "J/kg-K", "entropies"),
     OutputQuantity("G", "J/kg", "Gibbs free energies"),
     OutputQuantity("J", "kg/m^2-s", "Species diffusion fluxes (SM Ramshaw)"),
-    OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions")
+    OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions"),
+    OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
+    OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals")
 };
 
 // List of reaction output quantities
@@ -510,6 +512,8 @@ int main(int argc, char** argv)
     // Enable floating point exception handling
     feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
+
+    
     
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
@@ -726,6 +730,10 @@ int main(int argc, char** argv)
                         species_values[i] *= rho * mix.Y()[i];
                 } else if (name == "omega") {
                     mix.netProductionRates(species_values);
+                } else if (name == "Omega11") {
+                    mix.omega11ii(species_values);
+                } else if (name == "Omega22") {
+                    mix.omega22ii(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
