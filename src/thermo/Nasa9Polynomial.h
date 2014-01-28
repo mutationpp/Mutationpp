@@ -36,6 +36,14 @@ public:
     
     static int nCoefficients() { return 9; }
     
+    double minT() const {
+        return mp_tbounds[0];
+    }
+    
+    double maxT() const {
+        return mp_tbounds[m_nr];
+    }
+    
     /**
      * Computes dimensionless specific heat Cp/Ru.
      * @see computeParams()

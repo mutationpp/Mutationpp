@@ -43,6 +43,14 @@ public:
     
     virtual ~NasaPolynomial() {};
     
+    double minT() const {
+        return mp_tbounds[0];
+    }
+    
+    double maxT() const {
+        return mp_tbounds[NR];
+    }
+    
     int tRange(double T) const
     {
         for (int i = 1; i < NR; ++i)

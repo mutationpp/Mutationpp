@@ -1,9 +1,13 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
+#include "Thermodynamics.h"
+#include "Kinetics.h"
+#include "TransferModel.h"
+#include "Transport.h"
+
 namespace Mutation {
     namespace Thermodynamics {
-        
 
 /**
  * Base class for all state models.  A mixture state is completely determined
@@ -23,17 +27,17 @@ class StateModel
 {
 public:
 
-    typedef int ARGS;
+    typedef const Thermodynamics& ARGS;
     
     /**
      * Constructor.
      *
      * @param ns - number of species
      */
-    StateModel(int ns)
-        : m_ns(ns)
+    StateModel(ARGS thermo)
+        : m_thermo(thermo)
     {
-        init();
+        mp_X = new double [m_thermo.nSpecies()];
     }
     
     /**
@@ -41,154 +45,90 @@ public:
      */
     virtual ~StateModel()
     {
-        delete [] mp_T;
-        delete [] mp_P;
         delete [] mp_X;
     }
     
     /**
-     * Sets the current mixture state via temperature(s), pressure(s), and 
-     * species mole fractions.
-     *
-     * @param T - temperature array
-     * @param P - pressure array
-     * @param X - species mole fraction array
+     * Sets the current mixture state.
      */
-    virtual void setStateTPX(
-        const double* const T, const double* const P, const double* const X);
-    
-    /**
-     * Sets the current mixture state using thermal equilibrium (ie: all the 
-     * temperatures are equal.
-     */
-    void setStateTPX(const double T, const double P, const double* X);
+    virtual void setState(const double* const v1, const double* const v2) = 0;
     
     /**
      * Returns the mixture translational temperature.
      */
-    virtual double T() const {
-        return mp_T[0];
+    inline double T() const {
+        return m_T;
     }
     
     /**
      * Returns the mixture vibrational temperature.
      */
-    virtual double Tv() const {
-        return mp_T[0];
+    inline double Tv() const {
+        return m_Tv;
     }
     
     /**
      * Returns the mixture electron temperature.
      */
-    virtual double Te() const {
-        return mp_T[0];
+    inline double Te() const {
+        return m_Te;
     }
     
     /**
      * Returns the mixture rotational temperature.
      */
-    virtual double Tr() const {
-        return mp_T[0];
+    inline double Tr() const {
+        return m_Tr;
     }
     
     /**
      * Returns the mixture electronic temperature.
      */
-    virtual double Tel() const {
-        return mp_T[0];
+    inline double Tel() const {
+        return m_Tel;
     }
     
     /**
      * Returns the mixture static pressure.
      */
-    virtual double P() const {
-        return mp_P[0];
+    inline double P() const {
+        return m_P;
     }
     
     /**
      * Returns the species mole fractions.
      */
-    const double* const X() const {
+    inline const double* const X() const {
         return mp_X;
     }
-
-protected:
-
-    /**
-     * Allocates storage for the state model and initializes the memory to zero.
-     */
-    virtual void init();
     
     /**
-     * Returns the number of temperatures used in this model.
+     * Creates a new TransferModel object which can compute the energy transfer
+     * source terms for this state model.
      */
-    virtual int nT() const {
-        return 1;
+    virtual Mutation::Transfer::TransferModel* createTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics)
+    {
+        return NULL;
     }
     
-    /**
-     * Returns the number of pressures used in this model.
-     */
-    virtual int nP() const {
-        return 1;
-    }
-
 protected:
 
-    int m_ns;
-
-    double* mp_T;
-    double* mp_P;
+    const Thermodynamics& m_thermo;
+    
+    double m_T;
+    double m_Tv;
+    double m_Tr;
+    double m_Tel;
+    double m_Te;
+    double m_P;
+    
     double* mp_X;
     
 }; // class StateModel
 
-
-/**
- * Working on improving the StateModel class to remove virtual functions when
- * possible.
- */
-/*class StateModel
-{
-public:
-
-    StateModel()
-    {
-        INDEX_T   = 0;
-        INDEX_TR  = INDEX_T;
-        INDEX_TV  = INDEX_T;
-        INDEX_TEL = INDEX_T;
-        INDEX_TE  = INDEX_T;
-    }
-
-    double T() {
-        return m_state[INDEX_T];
-    }
-    
-    double Tr() {
-        return m_state[INDEX_TR];
-    }
-    
-    double Tv() {
-        return m_state[INDEX_TV];
-    }
-    
-    double Tel() {
-        return m_state[INDEX_TEL];
-    }
-    
-    double Te() {
-        return m_state[INDEX_TE];
-    }
-    
-    const double* const Y() {
-        return &m_state[INDEX_Y];
-    }
-
-protected:
-    
-    
-};*/
 
     } // namespace Thermodynamics
 } // namespace Mutation

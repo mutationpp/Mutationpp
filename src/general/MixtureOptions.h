@@ -22,6 +22,30 @@ public:
     MixtureOptions();
     
     /**
+     * Copy constructor.
+     */
+    MixtureOptions(const MixtureOptions& options)
+        : m_species_descriptor(options.m_species_descriptor),
+          m_default_composition(options.m_default_composition),
+          m_composition_setter(options.m_composition_setter),
+          m_has_default_composition(options.m_has_default_composition),
+          m_state_model(options.m_state_model),
+          m_thermo_db(options.m_thermo_db),
+          m_mechanism(options.m_mechanism),
+          m_viscosity(options.m_viscosity),
+          m_thermal_conductivity(options.m_thermal_conductivity)
+    { }
+    
+    /**
+     * Assignment operator.
+     */
+    MixtureOptions& operator=(MixtureOptions options)
+    {
+        swap(*this, options);
+        return *this;
+    }
+    
+    /**
      * Constructs a new MixtureOptions object from a mixture file.
      */
     MixtureOptions(const std::string& mixture);
@@ -44,22 +68,15 @@ public:
     /**
      * Gets the list of species names.
      */
-    const std::vector<std::string>& getSpeciesNames() const {
-        return m_species_names;
-    }
-    
-    /**
-     * Adds a species name to the list.
-     */
-    void addSpeciesName(const std::string& species) {
-        m_species_names.push_back(species);
+    const std::string& getSpeciesDescriptor() const {
+        return m_species_descriptor;
     }
     
     /**
      * Sets the list of species names.
      */
-    void setSpeciesNames(const std::vector<std::string>& species) {
-        m_species_names = species;
+    void setSpeciesDescriptor(const std::string& descriptor) {
+        m_species_descriptor = descriptor;
     }
     
     /**
@@ -232,7 +249,7 @@ private:
 
 private:
 
-    std::vector<std::string> m_species_names;
+    std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
     CompositionSetter m_composition_setter;
@@ -245,6 +262,11 @@ private:
     std::string m_thermal_conductivity;
 
 }; // class MixtureOptions
+
+/**
+ * Performs a swap on two MixtureOption objects.
+ */
+void swap(MixtureOptions& opt1, MixtureOptions& opt2);
 
 } // namespace Mutation
 

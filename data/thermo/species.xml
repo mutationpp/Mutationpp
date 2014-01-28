@@ -8,18 +8,36 @@
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
 				<level degeneracy="1" energy="0.0" />
-				<level degeneracy="1" energy="111667.9" />
-				<level degeneracy="3" energy="111818.1" />
-				<level degeneracy="5" energy="112139.0" />
-				<level degeneracy="9" energy="112750.2" />
-				<level degeneracy="7" energy="113020.4" />
-				<level degeneracy="5" energy="113426.0" />
-				<level degeneracy="7" energy="113716.6" />
-				<level degeneracy="3" energy="114147.7" />
-				<level degeneracy="5" energy="114641.0" />
-				<level degeneracy="5" energy="114805.2" />
-				<level degeneracy="7" energy="114822.0" />
-				<level degeneracy="3" energy="115366.9" />
+				<level degeneracy="5" energy="93144.1" />
+				<level degeneracy="3" energy="93751.0" />
+				<level degeneracy="1" energy="94554.1" />
+				<level degeneracy="3" energy="95400.2" />
+				<level degeneracy="3" energy="104102.5" />
+				<level degeneracy="7" energy="105463.2" />
+				<level degeneracy="5" energy="105617.7" />
+				<level degeneracy="3" energy="106087.7" />
+				<level degeneracy="5" energy="106238.0" />
+				<level degeneracy="1" energy="107054.8" />
+				<level degeneracy="3" energy="107132.2" />
+				<level degeneracy="5" energy="107290.2" />
+				<level degeneracy="3" energy="107496.9" />
+				<level degeneracy="1" energy="108723.1" />
+				<level degeneracy="1" energy="111668.3" />
+				<level degeneracy="3" energy="111818.5" />
+				<level degeneracy="5" energy="112139.4" />
+				<level degeneracy="9" energy="112750.7" />
+				<level degeneracy="7" energy="113020.9" />
+				<level degeneracy="5" energy="113426.5" />
+				<level degeneracy="5" energy="113469.0" />
+				<level degeneracy="3" energy="113643.8" />
+				<level degeneracy="7" energy="113717.1" />
+				<level degeneracy="3" energy="114148.2" />
+				<level degeneracy="5" energy="114641.5" />
+				<level degeneracy="5" energy="114805.6" />
+				<level degeneracy="7" energy="114822.5" />
+				<level degeneracy="1" energy="114862.2" />
+				<level degeneracy="3" energy="114975.5" />
+				<level degeneracy="3" energy="115367.4" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				0
@@ -35,14 +53,14 @@
 		</stoichiometry>
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
-				<level degeneracy="4" energy="0.0" />
-				<level degeneracy="2" energy="1432.0" />
-				<level degeneracy="2" energy="108722.5" />
-				<level degeneracy="20" energy="132476.1" />
-				<level degeneracy="28" energy="142705.7" />
-				<level degeneracy="6" energy="144350.2" />
-				<level degeneracy="12" energy="147644.7" />
-				<level degeneracy="14" energy="149595.2" />
+                <level degeneracy="4"  energy="0.0" />
+				<level degeneracy="2"  energy="1432.0" />
+                <level degeneracy="2"  energy="108722.5" />
+                <level degeneracy="20" energy="132476.1" />
+                <level degeneracy="28" energy="142705.7" />
+                <level degeneracy="6"  energy="144350.2" />
+                <level degeneracy="12" energy="147644.7" />
+                <level degeneracy="14" energy="149595.2" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				1526778
@@ -77,13 +95,6 @@
 				716680
 			</formation_enthalpy>
 		</thermodynamics>
-	</species>
-	
-	<species name="C(s)" phase="solid">
-	    <stoichiometry>
-	        C: 1
-	    </stoichiometry>
-	    <thermodynamics type="NASA-9" db_name="C(gr)"/>
 	</species>
  
 	<!-- Carbon cation -->
@@ -1370,14 +1381,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-	
-	<species name="CH2OH">
-	    <stoichiometry>
-	        C: 1,
-	        H: 3,
-	        O: 1
-	    </stoichiometry>
-	</species>
  
 	<!-- Methene -->
 	<species name="CH3">
@@ -1525,28 +1528,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-	
-	<species name="CNC">
-		<stoichiometry>
-			C: 2,
-			N: 1
-		</stoichiometry>
-    </species>
-    
-    <species name="CNCOCN">
-		<stoichiometry>
-			C: 3,
-			N: 2,
-			O: 1
-		</stoichiometry>
-    </species>
-    
-    <species name="CNN">
-		<stoichiometry>
-			C: 1,
-			N: 2
-		</stoichiometry>
-    </species>
  
 	<!-- Carbon monoxide -->
 	<species name="CO">
@@ -1696,13 +1677,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="HO2">
-        <stoichiometry>
-            H: 1,
-            O: 2
-        </stoichiometry>
-    </species>
  
 	<!-- Hydrogen diatomic -->
 	<species name="H2">
@@ -1835,14 +1809,6 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-	
-	<species name="HNC">
-	    <stoichiometry>
-	        C: 1,
-	        H: 1,
-	        N: 1
-	    </stoichiometry>
-	</species>
  
 	<!-- Nitrogen -->
 	<species name="N">
@@ -1955,7 +1921,7 @@
 				<level degeneracy="1" energy="68152.7" />
 				<level degeneracy="2" energy="69283.0" />
 				<level degeneracy="2" energy="72097.6" />
-				<!-- removed to match old mutation library -->
+				<!-- removed to match old mutation library
 				<level degeneracy="5" energy="77600.0" />
 				<level degeneracy="1" energy="85200.0" />
 				<level degeneracy="6" energy="86800.0" />
@@ -1963,7 +1929,7 @@
 				<level degeneracy="10" energy="93000.0" />
 				<level degeneracy="6" energy="97603.0" />
 				<level degeneracy="6" energy="104600.0" />
-				<!-- -->
+				 -->
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				0.0
@@ -2093,10 +2059,10 @@
 			<electronic_levels units="1/cm">
 				<level degeneracy="4" energy="0.0" />
 				<level degeneracy="8" energy="38000.0" />
-				<!-- Comment out to match old mutation library -->
+				<!-- Comment out to match old mutation library
 				<level degeneracy="2" energy="43906.0" />
 				<level degeneracy="4" energy="45868.0" />
-			    <!-- -->
+			    -->
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				91089
@@ -2353,106 +2319,5 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-    
-    <species name="Si" phase="gas">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si" />
-    </species>
-    
-    <species name="Si(cr)" phase="solid">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si(cr)" />
-    </species>
-    
-    <species name="Si(L)" phase="liquid">
-        <stoichiometry>
-            Si: 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="Si(L)" />
-    </species>
-    
-    <species name="SiC" phase="gas">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC" />
-    </species>
-    
-    <species name="SiC2" phase="gas">
-        <stoichiometry>
-            Si : 1,
-            C  : 2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC2" />
-    </species>
-    
-    <species name="SiC(b)" phase="solid">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC(b)" />
-    </species>
-    
-    <species name="SiC(L)" phase="liquid">
-        <stoichiometry>
-            Si : 1,
-            C  : 1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiC(L)" />
-    </species>
-    
-    <species name="SiO" phase="gas">
-        <stoichiometry>
-            Si: 1,
-            O:  1
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO" />
-    </species>
-    
-    <species name="SiO2" phase="gas">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2" />
-    </species>
-    
-    <species name="SiO2(a-qz)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(a-qz)" />
-    </species>
-    
-    <species name="SiO2(b-qz)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(b-qz)" />
-    </species>
-    
-    <species name="SiO2(b-crt)" phase="solid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(b-crt)" />
-    </species>
-    
-    <species name="SiO2(L)" phase="liquid">
-        <stoichiometry>
-            Si: 1,
-            O:  2
-        </stoichiometry>
-        <thermodynamics type="NASA-9" db_name="SiO2(L)" />
-    </species>
  
 </specieslist>

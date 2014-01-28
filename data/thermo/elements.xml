@@ -1,42 +1,318 @@
 <elementlist>
+
+    <!-- Electron (treated as element in mutation++) -->
+    <element name="e-" charge="-1">
+        <mw units="g/mol">0.00055</mw>
+    </element>
+    
+    <!-- Aluminium -->
+    <element name="Al">
+        <mw units="g/mol">26.9815386</mw>
+    </element>
+    
+    <!-- Antimony -->
+    <element name="Sb">
+        <mw units="g/mol">121.760</mw>
+    </element>
     
     <!-- Argon -->
-    <element name="Ar" charge="0">
-        <mw units="kg/mol">0.039948</mw>
+    <element name="Ar">
+        <mw units="g/mol">39.948</mw>
+    </element>
+    
+    <!-- Barium -->
+    <element name="Ba">
+        <mw units="g/mol">137.327</mw>
+    </element>
+    
+    <!-- Beryllium -->
+    <element name="Be">
+        <mw units="g/mol">9.012182</mw>
+    </element>
+    
+    <!-- Bismuth -->
+    <element name="Bi">
+        <mw units="g/mol">208.98040</mw>
+    </element>
+    
+    <!-- Boron -->
+    <element name="B">
+        <mw units="g/mol">10.8135</mw>
+    </element>
+    
+    <!-- Bromine -->
+    <element name="Br">
+        <mw units="g/mol">79.904</mw>
+    </element>
+    
+    <!-- Cadmium -->
+    <element name="Cd">
+        <mw units="g/mol">112.411</mw>
+    </element>
+    
+    <!-- Caesium -->
+    <element name="Cs">
+        <mw units="g/mol">132.9054519</mw>
+    </element>
+    
+    <!-- Calcium -->
+    <element name="Ca">
+        <mw units="g/mol">40.078</mw>
     </element>
     
     <!-- Carbon -->
-    <element name="C"  charge="0">
-        <mw units="kg/mol">0.012011</mw>
+    <element name="C">
+        <mw units="g/mol">12.011</mw>
     </element>
     
-    <!-- Electron (treated as element in mutation++) -->
-    <element name="e-" charge="-1">
-        <mw units="kg/mol">0.00000055</mw>
+    <!-- Chlorine -->
+    <element name="Cl">
+        <mw units="g/mol">35.450</mw>
+    </element>
+    
+    <!-- Chromium -->
+    <element name="Cr">
+        <mw units="g/mol">51.9961</mw>
+    </element>
+    
+    <!-- Cobalt -->
+    <element name="Co">
+        <mw units="g/mol">58.933195</mw>
+    </element>
+    
+    <!-- Copper -->
+    <element name="Cu">
+        <mw units="g/mol">63.546</mw>
+    </element>
+    
+    <!-- Fluorine -->
+    <element name="F">
+        <mw units="g/mol">18.9984032</mw>
+    </element>
+    
+    <!-- Gallium -->
+    <element name="Ga">
+        <mw units="g/mol">69.723</mw>
+    </element>
+    
+    <!-- Germanium -->
+    <element name="Ge">
+        <mw units="g/mol">72.630</mw>
+    </element>
+    
+    <!-- Helium -->
+    <element name="He">
+        <mw units="g/mol">4.0026</mw>
     </element>
     
     <!-- Hydrogen -->
-    <element name="H"  charge="0">
-        <mw units="kg/mol">0.0010079</mw>
+    <element name="H">
+        <mw units="g/mol">1.007947</mw>
     </element>
     
-    <element name="He" charge="0">
-        <mw units="kg/mol">0.0040026</mw>
+    <!-- Deuterium -->
+    <element name="D">
+        <mw units="g/mol">2.014102</mw>
+    </element>
+    
+    <!-- Indium -->
+    <element name="In">
+        <mw units="g/mol">114.818</mw>
+    </element>
+    
+    <!-- Iodine -->
+    <element name="I">
+        <mw units="g/mol">126.90447</mw>
+    </element>
+    
+    <!-- Iridium -->
+    <element name="Ir">
+        <mw units="g/mol">192.217</mw>
+    </element>
+    
+    <!-- Iron -->
+    <element name="Fe">
+        <mw units="g/mol">55.845</mw>
+    </element>
+    
+    <!-- Krypton -->
+    <element name="Kr">
+        <mw units="g/mol">83.798</mw>
+    </element>
+    
+    <!-- Lead -->
+    <element name="Pb">
+        <mw units="g/mol">207.2</mw>
+    </element>
+    
+    <!-- Lithium -->
+    <element name="Li">
+        <mw units="g/mol">6.9675</mw>
+    </element>
+    
+    <!-- Magnesium -->
+    <element name="Mg">
+        <mw units="g/mol">24.3055</mw>
+    </element>
+    
+    <!-- Manganese -->
+    <element name="Mn">
+        <mw units="g/mol">54.938045</mw>
+    </element>
+    
+    <!-- Mercury -->
+    <element name="Hg">
+        <mw units="g/mol">200.592</mw>
+    </element>
+    
+    <!-- Molybdenum -->
+    <element name="Mo">
+        <mw units="g/mol">95.96</mw>
+    </element>
+    
+    <!-- Neon -->
+    <element name="Ne">
+        <mw units="g/mol">20.1797</mw>
+    </element>
+    
+    <!-- Nickel -->
+    <element name="Ni">
+        <mw units="g/mol">58.6934</mw>
+    </element>
+    
+    <!-- Niobium -->
+    <element name="Nb">
+        <mw units="g/mol">92.906</mw>
     </element>
     
     <!-- Nitrogen -->
-    <element name="N"  charge="0">
-        <mw units="kg/mol">0.0140067</mw>
+    <element name="N">
+        <mw units="g/mol">14.0067</mw>
+    </element>
+    
+    <!-- Osmium -->
+    <element name="Os">
+        <mw units="g/mol">190.23</mw>
     </element>
     
     <!-- Oxygen -->
-    <element name="O"  charge="0">
-        <mw units="kg/mol">0.0159994</mw>
+    <element name="O">
+        <mw units="g/mol">15.9994</mw>
+    </element>
+    
+    <!-- Palladium -->
+    <element name="Pd">
+        <mw units="g/mol">106.42</mw>
+    </element>
+    
+    <!-- Phosphorus -->
+    <element name="P">
+        <mw units="g/mol">30.973762</mw>
+    </element>
+    
+    <!-- Platinum -->
+    <element name="Pt">
+        <mw units="g/mol">195.084</mw>
+    </element>
+    
+    <!-- Polonium -->
+    <element name="Po">
+        <mw units="g/mol">207.9812</mw>
+    </element>
+    
+    <!-- Potassium -->
+    <element name="K">
+        <mw units="g/mol">39.0983</mw>
+    </element>
+    
+    <!-- Radon -->
+    <element name="Rn">
+        <mw units="g/mol">209.9897</mw>
+    </element>
+    
+    <!-- Rubidium -->
+    <element name="Rb">
+        <mw units="g/mol">85.4678</mw>
+    </element>
+    
+    <!-- Scandium -->
+    <element name="Sc">
+        <mw units="g/mol">44.955912</mw>
     </element>
     
     <!-- Silicone -->
-    <element name="Si"  charge="0">
+    <element name="Si">
         <mw units="g/mol">28.085</mw>
+    </element>
+    
+    <!-- Silver -->
+    <element name="Ag">
+        <mw units="g/mol">107.8682</mw>
+    </element>
+    
+    <!-- Sodium -->
+    <element name="Na">
+        <mw units="g/mol">22.98976928</mw>
+    </element>
+    
+    <!-- Strontium -->
+    <element name="Sr">
+        <mw units="g/mol">87.62</mw>
+    </element>
+    
+    <!-- Sulfur -->
+    <element name="S">
+        <mw units="g/mol">32.0665</mw>
+    </element>
+    
+    <!-- Tantalum -->
+    <element name="Ta">
+        <mw units="g/mol">180.94788</mw>
+    </element>
+    
+    <!-- Thorium -->
+    <element name="Th">
+        <mw units="g/mol">232.03806</mw>
+    </element>
+    
+    <!-- Tin -->
+    <element name="Sn">
+        <mw units="g/mol">118.710</mw>
+    </element>
+    
+    <!-- Titanium -->
+    <element name="Ti">
+        <mw units="g/mol">47.867</mw>
+    </element>
+    
+    <!-- Tungsten -->
+    <element name="W">
+        <mw units="g/mol">183.84</mw>
+    </element>
+    
+    <!-- Uranium -->
+    <element name="U">
+        <mw units="g/mol">238.02891</mw>
+    </element>
+    
+    <!-- Vanadium -->
+    <element name="V">
+        <mw units="g/mol">50.9415</mw>
+    </element>
+    
+    <!-- Xenon -->
+    <element name="Xe">
+        <mw units="g/mol">131.293</mw>
+    </element>
+    
+    <!-- Zinc -->
+    <element name="Zn">
+        <mw units="g/mol">65.38</mw>
+    </element>
+    
+    <!-- Zirconium -->
+    <element name="Zr">
+        <mw units="g/mol">91.224</mw>
     </element>
     
 </elementlist>

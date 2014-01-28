@@ -22,6 +22,7 @@ int main()
 {
     // Generate the default options for the air11 mixture
     Mutation::MixtureOptions opts("air11");
+    opts.setStateModel("EquilTP");
     
     // Override composition in mixture file
     opts.setDefaultComposition()
@@ -46,13 +47,14 @@ int main()
     std::cout << std::endl;
     
     // Loop over range of temperatures and compute equilibrium values at 1 atm    
+    double P = ONEATM;
     for (int i = 0; i < 148; ++i) {
         // Compute the temperature
         double T = 300.0 + static_cast<double>(i) * 100.0;
         
         // Set the mixture state equal to the equilibrium state for the given
         // temprature and pressure
-        mix.equilibrate(T, ONEATM);
+        mix.setState(&T, &P);
         
         // Temperature
         std::cout << std::setw(15) << mix.T();

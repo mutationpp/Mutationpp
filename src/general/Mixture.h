@@ -3,6 +3,7 @@
 
 #include "Thermodynamics.h"
 #include "Kinetics.h"
+#include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
 
@@ -32,27 +33,28 @@ public:
      *
      * @see MixtureOptions
      */
-    Mixture(const MixtureOptions& options)
-        : Thermodynamics::Thermodynamics(
-             options.getSpeciesNames(), 
-             options.getThermodynamicDatabase(),
-             options.getStateModel()),
-          Transport(
-             *this, 
-             options.getViscosityAlgorithm(),
-             options.getThermalConductivityAlgorithm()),
-          Kinetics(
-             static_cast<const Thermodynamics&>(*this),
-             options.getMechanism())
-    { 
-        if (options.hasDefaultComposition())
-            setDefaultComposition(options.getDefaultComposition());
-    }
+    Mixture(const MixtureOptions& options);
     
     /** 
      * Destructor.
      */
-    ~Mixture() {}
+    ~Mixture()
+    {
+        if (mp_transfer != NULL) delete mp_transfer;
+    }
+    
+    /**
+     * Provides energy transfer source terms based on the current state of the
+     * mixture.
+     */
+    void energyTransferSource(double* const p_source) {
+        if (mp_transfer != NULL)
+            mp_transfer->source(p_source);
+    }
+
+private:
+
+    Transfer::TransferModel* mp_transfer;
     
 }; // class Mixture
 

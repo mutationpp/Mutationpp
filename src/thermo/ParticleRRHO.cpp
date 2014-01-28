@@ -1,7 +1,9 @@
 
 #include "ParticleRRHO.h"
 #include "Utilities.h"
+#include "Constants.h"
 
+#include <cassert>
 #include <iostream>
 
 using namespace Mutation::Utilities;
@@ -9,11 +11,13 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace Thermodynamics {
 
-ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
+//==============================================================================
+
+ParticleRRHO::ParticleRRHO(const IO::XmlElement& xml_element)
     : m_hform(0), m_steric(0), m_linearity(0), m_rotational_t(0)
 {
     // Load information stored in child elements
-    IO::XmlElement::Iterator iter = xml_element.begin();        
+    IO::XmlElement::const_iterator iter = xml_element.begin();
     
     for ( ; iter != xml_element.end(); ++iter) {
         if (iter->tag() == "formation_enthalpy") {
@@ -45,7 +49,7 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
                 m_vibrational_energies.push_back(atof(t_iter->c_str()));
         }
         else if (iter->tag() == "electronic_levels") {
-            IO::XmlElement::Iterator level_iter = iter->begin();
+            IO::XmlElement::const_iterator level_iter = iter->begin();
             
             int    degeneracy;
             double temperature;
@@ -64,6 +68,22 @@ ParticleRRHO::ParticleRRHO(IO::XmlElement& xml_element)
     }
 }
 
-} // namespace Thermodynamics
+//==============================================================================
+
+ParticleRRHO::ParticleRRHO(const ParticleRRHO& rrho, const size_t level)
+    : m_hform(rrho.m_hform + rrho.electronicEnergy(level).second),
+      m_steric(rrho.m_steric),
+      m_linearity(rrho.m_linearity),
+      m_rotational_t(rrho.m_rotational_t),
+      m_electronic_energies(1, rrho.electronicEnergy(level)),
+      m_vibrational_energies(rrho.m_vibrational_energies)
+{
+    // Make sure the level used is actually present in the given RRHO parameters
+    assert(level < rrho.nElectronicLevels());
+}
+
+//==============================================================================
+
+    } // namespace Thermodynamics
 } // namespace Mutation
 

@@ -17,23 +17,23 @@ using namespace Mutation::Kinetics;
 
 int main(int argc, char** argv)
 {
-    if (argc <= 1) exit(1);
+    MixtureOptions* p_opts;
     
-    /*cout << "Numerical constants:" << endl;
-    cout << "pi:   " << PI << endl;
-    cout << "2pi:  " << TWOPI << endl;
-    cout << "NA:   " << NA << endl;
-    cout << "KB:   " << KB << endl;
-    cout << "RU:   " << RU << endl;
-    cout << "MU0:  " << MU0 << endl;
-    cout << "C0:   " << C0 << endl;
-    cout << "EPS0: " << EPS0 << endl;
-    cout << "QE:   " << QE << endl;
-    cout << endl;*/
+    if (argc < 2 || argc > 3) {
+        cout << "- checkmix mixture-name" << endl;
+        cout << "           or          " << endl;
+        cout << "- checkmix database(NASA-7, NASA-9, RRHO) species-descriptor" << endl;
+        exit(1);
+    } else if (argc == 2) {
+        p_opts = new MixtureOptions(argv[1]);
+    } else {
+        p_opts = new MixtureOptions();
+        p_opts->setThermodynamicDatabase(argv[1]);
+        p_opts->setSpeciesDescriptor(argv[2]);
+    }
     
-    std::string mix(argv[argc-1]);
-    cout << "Loading mixture file " << mix << " ..." << endl;
-    Mixture mixture(mix);
+    Mixture mixture(*p_opts);
+    delete p_opts;
         
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();

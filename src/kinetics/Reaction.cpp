@@ -19,6 +19,7 @@ void swap(Reaction& left, Reaction& right) {
     swap(left.m_products,    right.m_products);
     swap(left.m_reversible,  right.m_reversible);
     swap(left.m_thirdbody,   right.m_thirdbody);
+    swap(left.m_conserves,   right.m_conserves);
     swap(left.m_thirdbodies, right.m_thirdbodies);
     swap(left.m_type,        right.m_type);
     swap(left.mp_rate,       right.mp_rate);
@@ -26,48 +27,11 @@ void swap(Reaction& left, Reaction& right) {
 
 //==============================================================================
 
-const char* const reactionTypeString(const ReactionType type)
-{
-    switch (type) {
-        case ASSOCIATIVE_IONIZATION:
-            return "associative ionization";
-        case CHARGE_EXCHANGE:
-            return "charge exchange";
-        case DISSOCIATION_M:
-            return "dissociation (heavy)";
-        case DISSOCIATION_E:
-            return "dissociation (electron)";
-        case RECOMBINATION_M:
-            return "recombination (heavy)";
-        case RECOMBINATION_E:
-            return "recombination (electron)";
-        case DISSOCIATIVE_RECOMBINATION:
-            return "dissociative recombination";
-        case ELECTRONIC_ATTACHMENT:
-            return "electronic attachment";
-        case ELECTRONIC_DETACHMENT:
-            return "electronic detachment";
-        case EXCHANGE:
-            return "exchange";
-        case IONIZATION_M:
-            return "ionization (heavy)";
-        case IONIZATION_E:
-            return "ionization (electron)";
-        case ION_RECOMBINATION_M:
-            return "ion recombination (heavy)";
-        case ION_RECOMBINATION_E:
-            return "ion recombination (electron)";
-        default:
-            return "unknown type";
-    }
-}
-
-//==============================================================================
-
-Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
+Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& thermo)
     : m_formula(""),
       m_reversible(true),
       m_thirdbody(false),
+      m_conserves(true),
       mp_rate(NULL)
 {
     // Make sure this is a reaction type XML element
@@ -83,7 +47,7 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     
     // Now loop through the children of this node to determine the other 
     // attributes of the reaction
-    IO::XmlElement::Iterator iter = node.begin();
+    IO::XmlElement::const_iterator iter = node.begin();
     for ( ; iter != node.end(); ++iter) {
         if (iter->tag() == "arrhenius") {
             mp_rate = new Arrhenius(*iter, order());
@@ -113,6 +77,19 @@ Reaction::Reaction(IO::XmlElement& node, const class Thermodynamics& thermo)
     // Make sure we got a RateLaw out of all that
     if (mp_rate == NULL)
         node.parseError("A rate law must be supplied with this reaction!");
+    
+    // Check for charge and mass conservation
+    const size_t ne = thermo.nElements();
+    int sums [ne];
+    std::fill(sums, sums+ne, 0.0);
+    for (int i = 0; i < nReactants(); ++i)
+        for (int k = 0; k < ne; ++k)
+            sums[k] += thermo.elementMatrix()(m_reactants[i],k);
+    for (int i = 0; i < nProducts(); ++i)
+        for (int k = 0; k < ne; ++k)
+            sums[k] -= thermo.elementMatrix()(m_products[i],k);
+    for (int i = 0; i < ne; ++i)
+        m_conserves &= (sums[i] == 0);
     
     // Figure out what type of reaction this is
     determineType(thermo);
@@ -161,7 +138,7 @@ bool Reaction::operator == (const Reaction& r)
 //==============================================================================
 
 void Reaction::parseFormula(
-    IO::XmlElement& node, const class Thermodynamics& thermo)
+    const IO::XmlElement& node, const class Thermodynamics& thermo)
 {
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction

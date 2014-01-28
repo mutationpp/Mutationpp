@@ -13,6 +13,9 @@
 // the name mangling that is performed in order to use the function in Fortran
 #define NAME_MANGLE(__name__) mpp_##__name__##_
 
+#define F_STRING char*
+#define F_STRLEN long int
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -94,7 +97,8 @@ extern "C" {
  * called once before calling any other function.
  */
 void NAME_MANGLE(initialize)(
-    char* mixture, int mixture_length);
+    F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
+    F_STRLEN state_length);
 
 /**
  * Deallocates all data associated with the mutation++ library.  Should be
@@ -121,7 +125,7 @@ int NAME_MANGLE(nreactions)();
  * Returns the index of the element with the given name.
  */
 int NAME_MANGLE(element_index)(
-    char* element, int element_length);
+    F_STRING element, F_STRLEN element_length);
 
 /**
  * Returns the index of the species with the given name or -1 if the species
@@ -130,7 +134,7 @@ int NAME_MANGLE(element_index)(
  * @param species - name of the species
  */
 int NAME_MANGLE(species_index)(
-    char* species, int species_length);
+    F_STRING species, F_STRLEN species_length);
 
 /**
  * Returns the name of the species with the given index.
@@ -140,7 +144,7 @@ int NAME_MANGLE(species_index)(
  * @param species - the name of the species on return
  */
 void NAME_MANGLE(species_name)(
-    int* index, char* species, int species_length);
+    int* index, F_STRING species, F_STRLEN species_length);
 
 /**
  * Returns the mixture molecular weight in kg/mol.
@@ -205,10 +209,15 @@ double NAME_MANGLE(number_density)();
 double NAME_MANGLE(pressure)();
 
 /**
+ * Returns the density of the mixture.
+ */
+double NAME_MANGLE(density)();
+
+/**
  * Returns the density of the mixture given the mixture temperature and
  * pressure and species mole fractions.
  */
-double NAME_MANGLE(density)();
+void NAME_MANGLE(density_tpx)(double* T, double* P, const double* const X, double* rho);
 
 /**
  * Returns the current species densities.
@@ -217,22 +226,21 @@ void NAME_MANGLE(species_densities)(
     double* const rhoi);
 
 /**
- * Returns the equilibrium composition of the mixture in species mass fractions
- * given the temperature, pressure, and elemental mass fractions.
+ * Returns the equilibrium composition of the mixture in species mole fractions
+ * given the temperature and pressure.
  *
- * @param T         - mixture temperature
- * @param P         - mixture pressure
- * @param element_y - element densities or mass fractions
- * @param species_y - species mass fractions on return
+ * @param T - mixture temperature
+ * @param P - mixture pressure
+ * @param X - mole fractions
  */
-void NAME_MANGLE(equilibrate)(
-    double* T, double* P);
+void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
+void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X);
     
 /**
  * Sets the current state of the mixture using temperature and species 
  * densities.
  */
-void NAME_MANGLE(set_state_t_rhoi)(double* T, double* rhoi);
+void NAME_MANGLE(set_state)(double* v1, double* v2);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the

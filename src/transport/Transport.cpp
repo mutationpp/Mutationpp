@@ -57,6 +57,36 @@ Transport::~Transport()
 
 //==============================================================================
 
+void Transport::omega11ii(double* const p_omega)
+{
+    const double ns  = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double *const X = m_thermo.X();
+    const RealSymMat& Q11 = m_collisions.Q11(Th, Te, nd, X);
+    
+    for (int i = 0; i < ns; ++i)
+        p_omega[i] = Q11(i,i);
+}
+
+//==============================================================================
+
+void Transport::omega22ii(double* const p_omega)
+{
+    const double ns  = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double *const X = m_thermo.X();
+    const RealSymMat& Q22 = m_collisions.Q22(Th, Te, nd, X);
+    
+    for (int i = 0; i < ns; ++i)
+        p_omega[i] = Q22(i,i);
+}
+
+//==============================================================================
+
 double Transport::electronThermalConductivity()
 {
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
@@ -286,9 +316,15 @@ void Transport::stefanMaxwell(
     a /= ((double)nDij.size()*nd);
     a = 1.0/a;
     
+    // static storage in order to prevent calls to new and delete every time
+    static RealSymMat G((m_thermo.hasElectrons() ? ns-1 : ns));
+    static RealVector V((m_thermo.hasElectrons() ? ns-1 : ns));
+    static RealVector b((m_thermo.hasElectrons() ? ns-1 : ns));
+    static LDLT<double> ldlt;
+    
     if (m_thermo.hasElectrons()) {
         // Compute the diffusion transport system
-        RealSymMat G(ns-1);
+        //RealSymMat G(ns-1);
         double temp;
         for (int i = 1; i < ns; ++i) {
             G(i-1,i-1) = 0.0;
@@ -319,26 +355,25 @@ void Transport::stefanMaxwell(
         E = p_dp[0] / kappae * KB * Th;
         
         // Right-hand side
-        RealVector b(ns-1);
         for (int i = 1; i < ns; ++i)
             b(i-1) = -p_dp[i] + p_dp[0]*(X[i]*mp_wrk3[i]-Y[i]*q)/kappae;
         
         // Solve the linear system
-        LDLT<double> ldlt(G);
-        RealVector V(ns-1);
+        ldlt.setMatrix(G);
         ldlt.solve(V, b);
-        asVector(p_V+1, ns-1) = V;
         
         // Compute the electron diffusion velocity
         p_V[0] = 0.0;
-        for (int i = 1; i < ns; ++i)
+        for (int i = 1; i < ns; ++i) {
+            p_V[i]  = V(i-1);
             p_V[0] -= X[i]*mp_wrk3[i]*p_V[i];
+        }
         p_V[0] /= (X[0]*mp_wrk3[0]);
     
     // No electrons!!
     } else {
         // Compute the diffusion transport system
-        RealSymMat G(ns);
+        //RealSymMat G(ns);
         double temp;
         for (int i = 0; i < ns; ++i) {
             G(i,i) = 0.0;
@@ -358,20 +393,18 @@ void Transport::stefanMaxwell(
                 G(i,j) += a*Y[i]*Y[j];
         
         // Right-hand side
-        RealVector b(ns);
         for (int i = 0; i < ns; ++i)
             b(i) = -p_dp[i];
         
         // Solve the linear system
-        LDLT<double> ldlt(G);
-        RealVector V(ns);
+        ldlt.setMatrix(G);
         ldlt.solve(V, b);
-        asVector(p_V, ns) = V;
+        for (int i = 0; i < ns; ++i)
+            p_V[i] = V(i);
         
         // Compute mixture charge
         E = 0.0;
     }
-    
 }
 
 //==============================================================================

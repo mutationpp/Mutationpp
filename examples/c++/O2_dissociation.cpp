@@ -41,8 +41,8 @@ public:
           mp_work(new double [mix.nSpecies()]),
           mp_Y(NULL)
     {
-        setEpsilon(1.e-7);
-        setJacobianLag(3);
+        setEpsilon(1.e-6);
+        setJacobianLag(1);
     }
     
     virtual ~EnergyEqSolution() {
@@ -104,6 +104,7 @@ private:
 int main()
 {
     Mutation::MixtureOptions opts("O2");
+    opts.setStateModel("TPY");
     opts.setThermodynamicDatabase("RRHO");
     Mutation::Mixture mix(opts);
     
@@ -118,12 +119,13 @@ int main()
     pY[iO]  = 0.0;
     
     // Initial temperature and density
-    double T   = 4000.0;   // K
+    double TP [2];
+    TP[0] = 4000.0;   // K
     double rho = 2.85e-4;  // kg/m^3
     
     // Set the initial mixture state
-    double P = mix.pressure(T, rho, pY);
-    mix.setStateTPY(&T, &P, pY);
+    TP[1] = mix.pressure(TP[0], rho, pY);
+    mix.setState(TP, pY);
     
     // Compute the total energy
     double etot = mix.mixtureEnergyMass();
@@ -151,15 +153,15 @@ int main()
     
     // Write time = 0 conditions
     cout << setw(15) << time;
-    cout << setw(15) << T;
-    cout << setw(15) << P;
+    cout << setw(15) << TP[0];
+    cout << setw(15) << TP[1];
     cout << setw(15) << mix.density();
     cout << setw(15) << mix.mixtureEnergyMass();
     cout << setw(15) << pY[iO];
     cout << setw(15) << pY[iO2];
     cout << endl;
     
-    while (time < 500.0) {
+    while (time < 100.0) {
         // Get species net production rates due to chemical reactions
         mix.netProductionRates(pWdot);
         
@@ -177,17 +179,17 @@ int main()
         // equation
         //T = newton(mix, pY, etot, T);
         tSolver.setMassFractions(pY);
-        tSolver.solve(T);
+        tSolver.solve(TP[0]);
         
         // Finally set the mixture state
-        P = mix.pressure(T, rho, pY);
-        mix.setStateTPY(&T, &P, pY);
+        TP[1] = mix.pressure(TP[0], rho, pY);
+        mix.setState(TP, pY);
         
         // Print results
         if (std::abs(tout-time) < 1.0e-10) {
             cout << setw(15) << time;
-            cout << setw(15) << T;
-            cout << setw(15) << P;
+            cout << setw(15) << TP[0];
+            cout << setw(15) << TP[1];
             cout << setw(15) << mix.density();
             cout << setw(15) << mix.mixtureEnergyMass();
             cout << setw(15) << pY[iO];
@@ -204,10 +206,10 @@ int main()
     }
     
     // Output what the equilibrium values are at these conditions
-    mix.equilibrate(T, P);
+    /*mix.equilibrate(T, P);
     cout << "Equilibrium values: " << endl;
-    cout << setw(30) << T;
-    cout << setw(15) << P;
+    cout << setw(30) << TP[0];
+    cout << setw(15) << TP[1];
     cout << setw(15) << mix.Y()[iO];
     cout << setw(15) << mix.Y()[iO2];
     cout << endl;
@@ -216,7 +218,7 @@ int main()
     cout << "Total energy at equilibrium:  " << mix.mixtureEnergyMass()*mix.density() << endl;
     
     cout << "Total density given:          " << rho << endl;
-    cout << "Total density at equilibrium: " << mix.density() << endl;
+    cout << "Total density at equilibrium: " << mix.density() << endl;*/
     
     // Clean up
     delete [] pY;

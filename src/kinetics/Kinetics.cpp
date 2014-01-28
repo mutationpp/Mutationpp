@@ -1,10 +1,8 @@
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
-#include "MillikanWhite.h"
 
 using namespace std;
-using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
@@ -18,8 +16,13 @@ using Mutation::Thermodynamics::Thermodynamics;
 
 Kinetics::Kinetics(
     const Thermodynamics& thermo, string mechanism)
-    : m_num_rxns(0), m_thermo(thermo), m_jacobian(thermo), mp_g(NULL),
-      m_T_last(-1.0)
+    : m_thermo(thermo),
+      mp_rates(NULL),
+      m_thirdbodies(thermo.nSpecies()),
+      m_jacobian(thermo),
+      mp_ropf(NULL),
+      mp_ropb(NULL),
+      mp_rop(NULL)
 {
     if (mechanism == "none")
         return;
@@ -40,7 +43,7 @@ Kinetics::Kinetics(
     
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
-    IO::XmlElement::Iterator iter = root.begin();
+    IO::XmlElement::const_iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {        
         if (iter->tag() == "reaction")
             addReaction(Reaction(*iter, thermo));
@@ -48,8 +51,23 @@ Kinetics::Kinetics(
             Arrhenius::setUnits(*iter);
     }
     
+    // Setup the rate manager
+    mp_rates = new RateManager(thermo.nSpecies(), m_reactions);
+    
     // Finally close the reaction mechanism
     closeReactions(true);
+}
+
+Kinetics::~Kinetics()
+{
+    if (mp_rates != NULL)
+        delete mp_rates;
+    if (mp_ropf != NULL)
+        delete [] mp_ropf;
+    if (mp_ropb != NULL)
+        delete [] mp_ropb;
+    if (mp_rop != NULL)
+        delete [] mp_rop;
 }
 
 //==============================================================================
@@ -60,26 +78,20 @@ void Kinetics::addReaction(const Reaction& reaction)
     m_reactions.push_back(reaction);
     
     // Insert the reactants
-    m_reactants.addReaction(m_num_rxns, reaction.reactants());
+    m_reactants.addReaction(nReactions()-1, reaction.reactants());
     
     // Insert products
     if (reaction.isReversible())
-        m_rev_prods.addReaction(m_num_rxns, reaction.products());
+        m_rev_prods.addReaction(nReactions()-1, reaction.products());
     else
-        m_irr_prods.addReaction(m_num_rxns, reaction.products());
+        m_irr_prods.addReaction(nReactions()-1, reaction.products());
     
     // Add thirdbodies if necessary
     if (reaction.isThirdbody())
-        m_thirdbodies.addReaction(m_num_rxns, reaction.efficiencies());
-    
-    // Insert new ratelaw to keep track of
-    m_rates.addRateCoefficient(
-        m_num_rxns, reaction.rateLaw());
+        m_thirdbodies.addReaction(nReactions()-1, reaction.efficiencies());
     
     // Add the reaction to the jacobian managaer
     m_jacobian.addReaction(reaction);
-    
-    m_num_rxns++;
 }
 
 //==============================================================================
@@ -87,7 +99,6 @@ void Kinetics::addReaction(const Reaction& reaction)
 void Kinetics::closeReactions(const bool validate_mechanism) 
 {
     const size_t ns = m_thermo.nSpecies();
-    RealVector tempsp(ns);
     
     // Validate the mechanism
     if (validate_mechanism) {
@@ -95,30 +106,8 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         //cout << "Validating reaction mechanism..." << endl;
         
         // Check for duplicate reactions
-        RealVector stoichi(ns);
-        RealVector stoichj(ns);
-        /*for (size_t i = 0; i < m_num_rxns-1; ++i) {
-            for (size_t k = 0; k < ns; ++k)
-                stoichi(k) =
-                    m_reactions[i].product(k) - m_reactions[i].reactant(k);
-            stoichi.normalize();
-            for (size_t j = i+1; j < m_num_rxns; ++j) {
-                for (size_t k = 0; k < ns; ++k)
-                    stoichj(k) =
-                        m_reactions[j].product(k) - m_reactions[j].reactant(k);
-                stoichj.normalize();
-                if (stoichi == stoichj) {
-                    cerr << "Reactions " << i+1 << " \"" 
-                         << m_reactions[i].formula()
-                         << "\" and " << j+1 << " \""
-                         << m_reactions[j].formula()
-                         << "\" are identical." << endl;
-                    is_valid = false;
-                }
-            }
-        }*/
-        for (size_t i = 0; i < m_num_rxns-1; ++i) {
-            for (size_t j = i+1; j < m_num_rxns; ++j) {
+        for (size_t i = 0; i < nReactions()-1; ++i) {
+            for (size_t j = i+1; j < nReactions(); ++j) {
                 if (m_reactions[i] == m_reactions[j]) {
                     cerr << "Reactions " << i+1 << " \"" 
                          << m_reactions[i].formula()
@@ -131,19 +120,11 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         }
         
         // Check for elemental mass and charge conservation
-        RealVector mass(m_num_rxns);
-        for (int i = 0; i < m_thermo.nElements(); ++i) {
-            for (size_t k = 0; k < ns; ++k)
-                stoichi(k) = m_thermo.elementMatrix()(k,i);
-            getReactionDelta(stoichi, mass);
-            for (size_t j = 0; j < m_num_rxns; ++j) {
-                if (mass(j) != 0.0) {
-                    cerr << "Reaction " << j+1 << " \""
-                         << m_reactions[j].formula()
-                         << "\" does not conserve element "
-                         << m_thermo.elementName(i) << "." << endl;
-                    is_valid = false;
-                }
+        for (size_t i = 0; i < nReactions(); ++i) {
+            if (!m_reactions[i].conservesChargeAndMass()) {
+                cerr << "Reaction " << i+1 << " \"" << m_reactions[i].formula()
+                     << "\" does not conserve charge or mass." << endl;
+                is_valid = false;
             }
         }
         
@@ -153,30 +134,22 @@ void Kinetics::closeReactions(const bool validate_mechanism)
         }
     }
     
-    // Compute dnu        
-    tempsp = 1.0;
-    m_dnu = RealVector(m_num_rxns);
-    getReactionDelta(tempsp, m_dnu);
-    
     // Allocate work arrays
-    mp_g    = new double [m_thermo.nSpecies()];
-    m_lnkf  = RealVector(m_num_rxns);
-    m_lnkeq = RealVector(m_num_rxns);
-    m_ropf  = RealVector(m_num_rxns);
-    m_ropb  = RealVector(m_num_rxns);
-    m_rop   = RealVector(m_num_rxns);
+    mp_ropf  = new double [nReactions()];
+    mp_ropb  = new double [nReactions()];
+    mp_rop   = new double [nReactions()];
     
 }
 
 //==============================================================================
 
-void Kinetics::getReactionDelta(const RealVector& s, RealVector& r)
+/*void Kinetics::getReactionDelta(
+    const double* const p_s, double* const p_r) const
 {
-    r = 0.0;
-    m_reactants.decrReactions(s, r);
-    m_rev_prods.incrReactions(s, r);
-    m_irr_prods.incrReactions(s, r);
-}
+    m_reactants.decrReactions(p_s, p_r);
+    m_rev_prods.incrReactions(p_s, p_r);
+    m_irr_prods.incrReactions(p_s, p_r);
+}*/
 
 //==============================================================================
 
@@ -209,81 +182,59 @@ void Kinetics::getReactionDelta(const RealVector& s, RealVector& r)
 
 //==============================================================================
 
-void Kinetics::updateT(const double T)
+void Kinetics::forwardRateCoefficients(double* const p_kf)
 {
-    // We shouldn't care about temperatures that are only different by small
-    // amounts
-    if (abs(T - m_T_last) < 1.0E-6) return;
-
-    // Update forward rates
-    m_rates.lnForwardRateCoefficients(T, m_lnkf);
-    
-    // Update the equilibrium constants
-    m_lnkeq = m_dnu * std::log(101325.0 / (RU * T));
-    m_thermo.speciesGOverRT(mp_g);
-    
-    const RealVecWrapper g(mp_g, m_thermo.nSpecies());
-    m_reactants.incrReactions(g, m_lnkeq);
-    m_rev_prods.decrReactions(g, m_lnkeq);
-    m_irr_prods.decrReactions(g, m_lnkeq);
-    
-    m_T_last = T;
-}
-
-//==============================================================================
-    
-void Kinetics::equilibriumConstants(const double T, RealVector& keq)
-{      
-    updateT(T);
-    keq = exp(m_lnkeq);       
+    mp_rates->update(m_thermo);
+    const double* const p_lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
+        p_kf[i] = std::exp(p_lnkf[i]);
 }
 
 //==============================================================================
 
-void Kinetics::forwardRateCoefficients(const double T, RealVector& kf)
+void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
-    updateT(T);
-    kf = exp(m_lnkf);
+    mp_rates->update(m_thermo);
+    const double* const p_lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        p_kb[i] = std::exp(p_lnkb[i]);
 }
 
-//==============================================================================
-
-void Kinetics::backwardRateCoefficients(const double T, RealVector& kb)
-{
-    updateT(T);
-    kb = exp(m_lnkf - m_lnkeq);
-}
-
+/*
 //==============================================================================
 
 void Kinetics::forwardRatesOfProgress(
-    const double T, const RealVector& conc, RealVector& ropf)
+    const double T, const double* const p_conc, double* const p_ropf)
 {
-    forwardRateCoefficients(T, ropf);
-    m_reactants.multReactions(conc, ropf);
-    m_thirdbodies.multiplyThirdbodies(conc, ropf);
+    forwardRateCoefficients(T, p_ropf);
+    m_reactants.multReactions(p_conc, p_ropf);
+    m_thirdbodies.multiplyThirdbodies(p_conc, p_ropf);
 }
 
 //==============================================================================
 
 void Kinetics::backwardRatesOfProgress(
-    const double T, const RealVector& conc, RealVector& ropb)
+    const double T, const double* const p_conc, double* const p_ropb)
 {
-    backwardRateCoefficients(T, ropb);
-    m_rev_prods.multReactions(conc, ropb);
-    m_thirdbodies.multiplyThirdbodies(conc, ropb);
+    backwardRateCoefficients(T, p_ropb);
+    m_rev_prods.multReactions(p_conc, p_ropb);
+    m_thirdbodies.multiplyThirdbodies(p_conc, p_ropb);
 }
 
 //==============================================================================
 
 void Kinetics::netRatesOfProgress(
-    const double T, const RealVector& conc, RealVector& rop)
+    const double T, const double* const p_conc, double* const p_rop)
 {
-    forwardRateCoefficients(T, m_ropf);
-    m_reactants.multReactions(conc, m_ropf);        
-    backwardRateCoefficients(T, m_ropb);
-    m_rev_prods.multReactions(conc, m_ropb);        
-    m_thirdbodies.multiplyThirdbodies(conc, rop = (m_ropf - m_ropb));
+    forwardRateCoefficients(T, mp_ropf);
+    m_reactants.multReactions(p_conc, mp_ropf);
+    backwardRateCoefficients(T, mp_ropb);
+    m_rev_prods.multReactions(p_conc, mp_ropb);
+    
+    for (int i = 0; i < m_num_rxns; ++i)
+        p_rop[i] = (mp_ropf[i] - mp_ropb[i]);
+    
+    m_thirdbodies.multiplyThirdbodies(p_conc, p_rop);
 }
 
 //==============================================================================
@@ -291,58 +242,83 @@ void Kinetics::netRatesOfProgress(
 void Kinetics::netProductionRates(
     const double T, const double* const p_conc, double* const p_wdot)
 {
-    const RealVector conc(p_conc, m_thermo.nSpecies());
-    RealVector wdot(p_wdot, m_thermo.nSpecies());
-    
-    netRatesOfProgress(T, conc, m_rop);
-    m_reactants.decrSpecies(m_rop, wdot = 0.0);
-    m_rev_prods.incrSpecies(m_rop, wdot);
-    m_irr_prods.incrSpecies(m_rop, wdot);
+    std::fill(p_wdot, p_wdot+m_thermo.nSpecies(), 0.0);
+
+    netRatesOfProgress(T, p_conc, mp_rop);
+    m_reactants.decrSpecies(mp_rop, p_wdot);
+    m_rev_prods.incrSpecies(mp_rop, p_wdot);
+    m_irr_prods.incrSpecies(mp_rop, p_wdot);
     
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        p_wdot[i] = wdot(i) * m_thermo.speciesMw(i);
-}
+        p_wdot[i] *= m_thermo.speciesMw(i);
+}*/
 
 //==============================================================================
 
 void Kinetics::netProductionRates(double* const p_wdot)
 {
-    RealVector conc(m_thermo.nSpecies());
-    const double rho = m_thermo.density();
-    const double T   = m_thermo.T();
-    
+    // Compute species concentrations (mol/m^3)
+    const double mix_conc = m_thermo.numberDensity() / NA;
+    const double* const p_x = m_thermo.X();
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        conc(i) = m_thermo.Y()[i] * rho / m_thermo.speciesMw(i);
+        p_wdot[i] = p_x[i] * mix_conc;
     
-    RealVector wdot(p_wdot, m_thermo.nSpecies());
+    // Update the forward and backward rate coefficients
+    mp_rates->update(m_thermo);
     
-    netRatesOfProgress(T, conc, m_rop);
-    m_reactants.decrSpecies(m_rop, wdot = 0.0);
-    m_rev_prods.incrSpecies(m_rop, wdot);
-    m_irr_prods.incrSpecies(m_rop, wdot);
+    // Compute forward ROP
+    const double* const lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropf[i] = std::exp(lnkf[i]);
+    m_reactants.multReactions(p_wdot, mp_ropf);
     
+    // Compute reverse ROP
+    const double* const lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropb[i] = std::exp(lnkb[i]);
+    m_rev_prods.multReactions(p_wdot, mp_ropb);
+    
+    // Compute net ROP
+    for (int i = 0; i < nReactions(); ++i)
+        mp_rop[i] = mp_ropf[i] - mp_ropb[i];
+    
+    // Thirdbody efficiencies
+    m_thirdbodies.multiplyThirdbodies(p_wdot, mp_rop);
+    
+    // Sum all contributions from every reaction
+    std::fill(p_wdot, p_wdot+m_thermo.nSpecies(), 0.0);
+    m_reactants.decrSpecies(mp_rop, p_wdot);
+    m_rev_prods.incrSpecies(mp_rop, p_wdot);
+    m_irr_prods.incrSpecies(mp_rop, p_wdot);
+    
+    // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        p_wdot[i] = wdot(i) * m_thermo.speciesMw(i);
+        p_wdot[i] *= m_thermo.speciesMw(i);
 }
 
 //==============================================================================
 
-void Kinetics::jacobianRho(
-    const double T, const double* const p_conc, double* const p_jac)
+void Kinetics::jacobianRho(double* const p_jac)
 {
-    updateT(T);
-    double* p_kf = new double [m_num_rxns];
-    double* p_kb = new double [m_num_rxns];
+    // Update reaction rate coefficients
+    mp_rates->update(m_thermo);
     
-    for (int i = 0; i < m_num_rxns; ++i) {
-        p_kf[i] = std::exp(m_lnkf(i));
-        p_kb[i] = std::exp(m_lnkf(i) - m_lnkeq(i));
-    }
+    const double* const lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropf[i] = std::exp(lnkf[i]);
     
-    m_jacobian.computeJacobian(p_kf, p_kb, p_conc, p_jac);
+    const double* const lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropb[i] = std::exp(lnkb[i]);
     
-    delete [] p_kf;
-    delete [] p_kb;
+    // Compute species concentrations (mol/m^3)
+    const double mix_conc = m_thermo.numberDensity() / NA;
+    const double* const p_x = m_thermo.X();
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        mp_rop[i] = p_x[i] * mix_conc;
+    
+    // Compute the Jacobian matrix
+    m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);
 }
 
 //==============================================================================
@@ -350,7 +326,7 @@ void Kinetics::jacobianRho(
 double Kinetics::omegaVT()
 {
     // Load Millikan-White model data on first call to this method
-    static MillikanWhite data(m_thermo);
+    /*static MillikanWhite data(m_thermo);
     
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
@@ -374,7 +350,7 @@ double Kinetics::omegaVT()
             cout << endl;
         }
         cout << endl;
-    }
+    }*/
      
     double SIGMA = 3E-21*pow(50000/Th, 2); // limiting cross sections for Park's correction [m^2]
    

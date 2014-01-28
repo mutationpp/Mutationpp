@@ -106,6 +106,8 @@ private:
         Numerics::RealVector& Nbar, Numerics::RealVector& g);
     
     void perturb(Numerics::RealVector& nmm);
+    
+    void continuationStep(Numerics::RealVector& dx);
         
     std::pair<int, double> newton(
         Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 
@@ -192,6 +194,8 @@ private:
     Numerics::Vector<double> m_c;
     Numerics::Vector<double> m_cr;
     Numerics::Vector<double> m_N;
+    Numerics::Vector<double> m_g;
+    Numerics::Vector<double> m_dg;
     Numerics::Vector<double> m_lambda;
     Numerics::Vector<double> m_Nbar;
     
