@@ -280,10 +280,10 @@ void Kinetics::netProductionRates(double* const p_wdot)
     
     // Compute net ROP
     for (int i = 0; i < nReactions(); ++i)
-        mp_rop[i] = mp_ropf[i] - mp_ropb[i];
-    
+        mp_rop[i] =  mp_ropf[i] - mp_ropb[i];
+   
     // Thirdbody efficiencies
-    m_thirdbodies.multiplyThirdbodies(p_wdot, mp_rop);
+   m_thirdbodies.multiplyThirdbodies(p_wdot, mp_rop);
     
     // Sum all contributions from every reaction
     std::fill(p_wdot, p_wdot+m_thermo.nSpecies(), 0.0);
@@ -291,9 +291,12 @@ void Kinetics::netProductionRates(double* const p_wdot)
     m_rev_prods.incrSpecies(mp_rop, p_wdot);
     m_irr_prods.incrSpecies(mp_rop, p_wdot);
     
+    
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);
+
+   
 }
 
 //==============================================================================
@@ -328,13 +331,6 @@ double Kinetics::omegaVT()
     // Load Millikan-White model data on first call to this method
     /*static MillikanWhite data(m_thermo);
     
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double nd  = m_thermo.numberDensity();
-    const double  P  = m_thermo.P();
-    const double rho = m_thermo.density();
-    const double *const Y = m_thermo.Y();
-    
     const int nheavy = m_thermo.nHeavy();
     const int offset = m_thermo.hasElectrons() ? 1 : 0;
     
@@ -351,31 +347,43 @@ double Kinetics::omegaVT()
         }
         cout << endl;
     }*/
-     
-    double SIGMA = 3E-21*pow(50000/Th, 2); // limiting cross sections for Park's correction [m^2]
-   
-    // Calculation of tau_VT following the Millikan-White formula including Park's correction.
-    double tauVT[data.nVibrators()][nheavy];
-    for (int j = 0 ; j< nheavy; ++j){
-      for (int i = 0; i< data.nVibrators(); ++i)
-         tauVT[i][j] = exp(data[i][j].a()*(pow(Th,-0.3333)-data[i][j].b())-18.421) * 101325.0/ P + sqrt(PI*data[i][j].mu()*KB*Th/(8.0*NA))*(SIGMA*P);
-    }
-     
     
-    // frequency average over heavy particles
-    double sum1=0;
-    double sum2=0;
-    for (int i=0; i < data.nVibrators(); ++i) {
-      for (int j=0; j< nheavy ; ++j){
-      sum1 = sum1 + Y[j]/data[i][j].mu();
-      sum2 = sum2 + Y[j]/(data[i][j].mu()*tauVT[i][j-offset]);
-      }
-    }
+    return 0.0;
+}
+//================================================================================
+
+double Kinetics:: omegaTE()
+{
+    const double T = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double mm = m_thermo.mixtureMw();
+    const double nd = m_thermo.numberDensity();
+    const double mm_Ar = 39.948E-3;
+    const double mm_Arp = 39.947E-3;
  
-    double tau = sum1/sum2;
+    // Collisional integrals
+    const double Q11_Arp = 1.0;
+    const double Q11_Ar = 1.0;
+   
+    // Mass fractions of argon and argon+
+    double y_Ar = 0.0;
+    const double* const p_y = m_thermo.Y();
+     for (int i = 1; i < m_thermo.nHeavy(); ++i)
+        y_Ar = y_Ar + p_y[i];
+    
+    double y_Arp = p_y[m_thermo.nSpecies()];
+    
+    // Calculation of omegaTE
+    double omegaTE = 0.0;
+    double sum_int = 0.0;
+    double nu_Arp = sqrt(RU*8.0*Te/PI*mm_Arp)* mm*y_Arp/(mm_Arp*nd)*Q11_Arp;
+    double nu_Ar = sqrt(RU*8.0*Te/PI*mm_Ar)* mm*y_Ar/(mm_Ar*nd)*Q11_Ar;
 
+    sum_int = nu_Ar/mm_Ar + nu_Arp/mm_Arp;
+   
+    omegaTE = 3.0*RU*(T-Te)*sum_int;
 
-    return rho*Y[nheavy]/tau; // To be completed!
+    return omegaTE;
 }
 
     } // namespace Kinetics

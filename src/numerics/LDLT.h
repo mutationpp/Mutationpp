@@ -44,8 +44,7 @@ public:
      * Solves the SPD system Ax = b via forward and backward substitutions with
      * the LDLT decomposition.
      */
-    template <typename E>
-    void solve(Vector<T>& x, const VecExpr<T, E>& b) const;
+    void solve(Vector<T>& x, const Vector<T>& b) const;
     
 private:
 
@@ -93,8 +92,7 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
 }
 
 template <typename T>
-template <typename E>
-void LDLT<T>::solve(Vector<T>& x, const VecExpr<T, E>& b) const
+void LDLT<T>::solve(Vector<T>& x, const Vector<T>& b) const
 {
     const size_t n = m_L.rows();
     

@@ -116,21 +116,11 @@ bool Reaction::operator == (const Reaction& r)
             m_products == r.m_reactants &&
             !(isReversible() && r.isReversible()))
             return true;
-    
+    }
     
     // In the case where one reaction is thirdbody, we have to check if the non-
     // thirdbody reaction is a special case of the thirdbody reaction
     // (ie: N + O + M <=> NO + M (alpha_N != 0)  and  2N + O <=> NO + N)
-   // if (isThirdbody()) {
-     //   if (r.hasInertSpecies())
-       //     if (r.inertIndex()
-         //   for (int i = 0; i < r.efficiencies().size(); ++i)
-           //     if (r.efficiencies()[i].first == inertIndex() &&
-             //       r.efficiencies()[i].second != 0.0)
-           // return m_thirdbodies[inertIndex()]
-   // } else {
-    
-    }
 
     return false;
 }
@@ -255,8 +245,12 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     bool reactant_electron = false;
     bool product_ion       = false;
     bool product_electron  = false;
-    bool m_inert           = false;
+    bool m_inert           = isThirdbody();
     bool m_inert_e	   = false;
+    bool excited_react     = false;
+    bool excited_prod      = false;
+    bool excited           = false;
+    bool exciting	   = false;
     
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
@@ -276,23 +270,64 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             product_ion = true;
     }
     
-    // Check for inert species
-        if (isThirdbody())
-           m_inert = true;
-        else if (product_electron && reactant_electron)
-           m_inert_e = true;
+    // Check for an inert species if not explicitly a thirdbody reaction
+    if (!m_inert) {
+        for (int i=0; i < nReactants(); ++i) {
+            for (int j=0; j < nProducts(); ++j)
+                m_inert |= (m_reactants[i] == m_products[j]);
+        }
+    }
     
+    // Is there an inert electron?
+    m_inert_e = (product_electron && reactant_electron);
+
+    // Are there any excited states ?
+     for (int i=0; i < nReactants(); ++i) {
+        const Species& species = thermo.species(m_reactants[i]);
+        if (species.level() >0)
+           excited_react = true;
+          
+    }
+       for (int i=0; i < nProducts(); ++i) {
+        const Species& species = thermo.species(m_products[i]);
+        if (species.level() >0)
+           excited_prod = true;
+    }
+    if (excited_prod or excited_react)
+           excited = true;
 
 
-    // Logic tree for ground electronic state reactions
+
+    // Logic tree for ground electronic state reactions || reactions involving excited states
+    if (excited) {
+    // excited state reactions
+        if (m_inert_e) {
+           if (product_ion)
+              m_type = IONIZATION_E;
+           else if (reactant_ion)
+              m_type = ION_RECOMBINATION_E;
+           else 
+              m_type = EXCITATION_E;
+           
+       } else {
+            if (product_ion)
+               m_type = IONIZATION_M;
+            else if (reactant_ion)
+               m_type = ION_RECOMBINATION_M;
+            else 
+               m_type = EXCITATION_M;
+            }
+
+      }else {
+    // ground electronic state reactions
     if (reactant_ion) {
         if (product_ion)
             m_type = CHARGE_EXCHANGE;
         else {
-            if (m_inert) 
-                m_type = ION_RECOMBINATION_M;
-            else if (m_inert_e)
+            if (m_inert_e)
                 m_type = ION_RECOMBINATION_E;
+            else if (m_inert)
+                m_type = ION_RECOMBINATION_M;
             else {
                 if (product_electron)
                     m_type = ELECTRONIC_DETACHMENT;
@@ -301,23 +336,24 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             }
         }
     } else {
-        if (m_inert || m_inert_e) {
-            if (product_ion)
+        if (m_inert) {
+            if (product_ion) {
                 if (m_inert_e)
-                m_type = IONIZATION_E;
+                    m_type = IONIZATION_E;
                 else
-                m_type = IONIZATION_M;
-            else {
-                if (nReactants() > nProducts())
+                    m_type = IONIZATION_M;
+            } else {
+                if (nReactants() > nProducts()) {
                     if (m_inert_e)
                        m_type = RECOMBINATION_E;
                     else 
                        m_type = RECOMBINATION_M;
-                else
+                } else {
                     if (m_inert_e)
                        m_type = DISSOCIATION_E;
                     else
                        m_type = DISSOCIATION_M;
+                }
             }
         } else {
             if (product_electron)
@@ -328,6 +364,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
                 m_type = EXCHANGE;
         }
     }
+  }
 }
 
 //==============================================================================

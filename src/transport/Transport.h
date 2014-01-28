@@ -7,7 +7,6 @@
 #include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
 #include "Utilities.h"
-#include "Constants.h"
 
 namespace Mutation {
     namespace Transport {
@@ -34,16 +33,7 @@ public:
     void stateUpdated() {
         std::cout << "stateUpdated: Transport" << std::endl;
     }
-   
-
-
-    /**
-     * Returns omega_ET.
-     */
-    double omega_ET();       
     
-
- 
     /**
      * Sets the algorithm to use when computing viscosity.
      */
@@ -61,6 +51,13 @@ public:
         mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
             ThermalConductivityAlgorithm>::create(algo, m_collisions);
     }
+
+    /**
+    * m_collisions used for calculation of omegaTE
+    */
+    CollisionDB& collisionDB() {
+        return m_collisions;
+    }
     
     /**
      * Returns the total number of collision pairs accounted for in the 
@@ -69,9 +66,6 @@ public:
     int nCollisionPairs() const {
         return m_collisions.nCollisionPairs();
     }
-    
-    void omega11ii(double* const p_omega);
-    void omega22ii(double* const p_omega);
     
     /**
      * Returns the mixture viscosity.

@@ -23,6 +23,7 @@ class Mixture
     : public Thermodynamics::Thermodynamics, 
       public Transport::Transport, 
       public Kinetics::Kinetics
+
 {
 public:
 
@@ -49,7 +50,8 @@ public:
      */
     void energyTransferSource(double* const p_source) {
         if (mp_transfer != NULL)
-            mp_transfer->source(p_source);
+          mp_transfer->source(p_source);
+          
     }
 
 private:

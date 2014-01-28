@@ -182,6 +182,16 @@ public:
             : m_composition(composition)
         { }
         
+        CompositionSetter(const CompositionSetter& setter)
+            : m_composition(setter.m_composition)
+        { }
+        
+        CompositionSetter& operator=(CompositionSetter setter)
+        {
+            std::swap(m_composition, setter.m_composition);
+            return *this;
+        }
+        
         CompositionSetter& operator () (
             const std::string& element, const double X)
         {
@@ -239,6 +249,8 @@ public:
     bool hasDefaultComposition() const {
         return m_has_default_composition;
     }
+    
+    friend void swap(MixtureOptions&, MixtureOptions&);
 
 private:
 

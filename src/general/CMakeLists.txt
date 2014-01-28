@@ -19,6 +19,10 @@ add_executable(bprime bprime.cpp)
 target_link_libraries(bprime mutation++)
 install(TARGETS bprime DESTINATION bin)
 
+add_executable(reduce reduce.cpp)
+target_link_libraries(reduce mutation++)
+install(TARGETS reduce DESTINATION bin)
+
 # Build and install the test codes
 option(BUILD_TEST_CODES "Build test executables" OFF)
 if (BUILD_TEST_CODES)
