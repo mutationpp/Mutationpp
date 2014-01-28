@@ -1,4 +1,4 @@
-<mixture mechanism="argonCR" thermo_db="RRHO">
+<mixture mechanism="argonCR" thermo_db="RRHO" state_model="TTERhoi">
 
     <default_element_fractions>
         Ar : 1,
@@ -6,7 +6,7 @@
     </default_element_fractions>
 
     <species>
-        e- Ar* Ar+
+        e- Ar(*) Ar+
     </species>
     
 </mixture>
