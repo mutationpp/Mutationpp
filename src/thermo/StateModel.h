@@ -51,7 +51,7 @@ public:
     /**
      * Sets the current mixture state.
      */
-    virtual void setState(const double* const v1, const double* const v2) = 0;
+    virtual void setState(const double* const v1, const double* const v2, int v3 = 0) = 0;
     
     /**
      * Returns the mixture translational temperature.

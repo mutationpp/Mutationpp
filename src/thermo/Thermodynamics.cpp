@@ -366,7 +366,7 @@ int Thermodynamics::nPhases() const {
 //==============================================================================
 
 void Thermodynamics::setState(
-    const double* const p_v1, const double* const p_v2)
+    const double* const p_v1, const double* const p_v2, int v3)
 {
     mp_state->setState(p_v1, p_v2);
     convert<X_TO_Y>(X(), mp_y);

@@ -224,7 +224,7 @@ public:
     //void setStateTPY(
     //    const double* const T, const double* const P, const double* const Y);
     
-    void setState(const double* const p_v1, const double* const p_v2);
+    void setState(const double* const p_v1, const double* const p_v2, int v3 = 0);
         
     /**
      * Computes the equilibrium mole fractions of the mixture given the

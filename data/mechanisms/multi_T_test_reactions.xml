@@ -1,0 +1,76 @@
+<!-- Multi-Temperature testing for the original tree -->
+<mechanism name="multi_T_test_reactions">
+    
+    <arrhenius_units A="mol,m,s,K" E="J,mol,K" />
+    
+    <!-- 1 -->
+    <reaction formula="N2+N2=2N+N2">
+        <arrhenius A="7.0E+21" n="-1.6" T="113200." />
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="2O+O2=O2+O2">
+        <arrhenius A="1.E+20" n="-2.0" T="100000."/>
+    </reaction>
+
+    <!-- 3-->
+    <reaction formula="N2+e-=2N+e-">
+        <arrhenius A="3.E24" n="-1.6" T="120000"/>
+    </reaction>
+
+    <!-- 4-->
+    <reaction formula="2O+e-=O2+e-">
+        <arrhenius A="2.E+20" n="-2.1" T="110000"/>
+    </reaction>
+
+    <!-- 5-->
+    <reaction formula="N+O=N++O+e-">
+        <arrhenius A="3.E20" n="-2.2" T="130000"/>
+    </reaction>
+
+    <!-- 6-->
+    <reaction formula="N++N+e-=N+N">
+        <arrhenius A="4.E20" n="-2.3" T="140000"/>
+    </reaction>
+
+    <!-- 7-->
+    <reaction formula="N+e-=N++e-+e-">
+        <arrhenius A="2.5E+34" n="-3.82" T="168600"/>
+    </reaction>
+
+    <!-- 8-->
+    <reaction formula="O++e-+e-=O+e-">
+        <arrhenius A="5.E+20" n="-2.4" T="150000"/>
+    </reaction>
+
+    <!-- 9-->
+    <reaction formula="O2+N=NO+O">
+        <arrhenius A="2.49E+09" n="1.18d0" T="4005.5"/>
+    </reaction>
+
+    <!-- 10-->
+    <reaction formula="N+O=NO++e-">
+        <arrhenius A="5.3E+12" n="+0.00" T="31900."/>
+    </reaction>
+
+    <!-- 11-->
+    <reaction formula="N2++e-=N+N">
+        <arrhenius A="6E+20" n="-2.5d0" T="150000."/>
+    </reaction>
+
+    <!-- 12-->
+    <reaction formula="O++N2=N2++O">
+        <arrhenius A="9.9E+12" n="0.d0" T="40700."/>
+    </reaction>
+
+    <!-- 13-->
+    <reaction formula="NO+e-=N + O-">
+        <arrhenius A="7.E+20" n="-2.6d0" T="160000."/>
+    </reaction>
+
+    <!-- 14-->
+    <reaction formula="O+O-=O2+e-">
+        <arrhenius A="8.E+20" n="-2.7d0" T="170000."/>
+    </reaction>
+
+</mechanism>

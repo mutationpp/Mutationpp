@@ -9,7 +9,8 @@ CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
 EXAMPLES  = \
 	equilibrium_air \
 	O2_dissociation \
-	Reaction_Rate_T_Tv_Te
+	Reaction_Rate_T_Tv_Te\
+	rhoie_test
 
 OUTPUT_FILES = \
 	Reaction_Rates.dat
@@ -23,6 +24,9 @@ O2_dissociation : O2_dissociation.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 Reaction_Rate_T_Tv_Te : Reaction_Rate_T_Tv_Te.o
+	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
+rhoie_test : rhoie_test.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp
