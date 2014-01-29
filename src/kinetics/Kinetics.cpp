@@ -143,13 +143,13 @@ void Kinetics::closeReactions(const bool validate_mechanism)
 
 //==============================================================================
 
-/*void Kinetics::getReactionDelta(
+void Kinetics::getReactionDelta(
     const double* const p_s, double* const p_r) const
 {
     m_reactants.decrReactions(p_s, p_r);
     m_rev_prods.incrReactions(p_s, p_r);
     m_irr_prods.incrReactions(p_s, p_r);
-}*/
+}
 
 //==============================================================================
 
@@ -223,7 +223,7 @@ void Kinetics::backwardRatesOfProgress(
 
 //==============================================================================
 
-void Kinetics::netRatesOfProgress(
+void Kinetics::updateROP(
     const double T, const double* const p_conc, double* const p_rop)
 {
     forwardRateCoefficients(T, mp_ropf);

@@ -55,6 +55,11 @@ public:
     }
     
     /**
+     * Computes the change in any given species quantity across each reaction.
+     */
+    void getReactionDelta(const double* const p_s, double* const p_r) const;
+    
+    /**
      * Fills the vector keq with the equilibrium constant for each reaction 
      * \f$ K_{C,j} = \left(\frac{P_{atm}}{R_u T}\right)^{\Delta \nu_j}
      * \exp\left(-\frac{\Delta {G^\circ}_j}{R_u T}\right) \f$.
