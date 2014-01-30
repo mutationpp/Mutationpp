@@ -6,7 +6,7 @@
 #include "CollisionDB.h"
 #include "Constants.h"
 #include "Transport.h"
-
+#include "ReactionType.h"
 
 namespace Mutation {
     namespace Transfer {
@@ -99,13 +99,14 @@ class TransferModelTE : public TransferModel
 {
 public:
 
-    TransferModelTE(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport)
+    TransferModelTE(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport, Kinetics::Kinetics& kin)
         : m_thermo(thermo), 
           m_collisions(transport.collisionDB()), 
           m_iar(m_thermo.speciesIndex("Ar(30)")), 
           m_iarp(m_thermo.speciesIndex("Ar+")),
           m_iem(m_thermo.speciesIndex("e-")),
-          m_ns(m_thermo.nSpecies()) 
+          m_ns(m_thermo.nSpecies()),
+          m_kin(kin) 
                          
     { }
 
@@ -124,7 +125,7 @@ virtual void source(double* const p_source)
     const double *const p_x=m_thermo.X();
     const Numerics::RealSymMat& Q11 =m_collisions.Q11(T, Te, nd, p_x);
     const double Q11_Arp = Q11(m_iarp);
-    const double Q11_Ar = Q11(m_iar);
+    const double Q11_Ar = Q11(m_iar)/29.3;
 
  
     // Mass fractions of argon and argon+
@@ -149,20 +150,41 @@ virtual void source(double* const p_source)
      
     double omegaTE = 3.0*RU*rho[m_iem]*(T-Te)*sum_int;
 
-    // Calculation of omegaEexc (electron impact excitation)
-    double omegaEexc = 0.0;
+ 
+    // Species enthalpies
+    double enthalpy[m_thermo.nSpecies()];
+    m_thermo.speciesHOverRT(T,enthalpy);
+     for (int i=0; i< m_thermo.nSpecies(); i++)
+        enthalpy[i] *= RU*T/m_thermo.speciesMw(i);
 
-    // Calculation of omegaEI (electron impact ionization)
-    double omegaEI = 0.0;
+    // Get reaction Delta for enthalpies
+    double delta[m_kin.nReactions()];
+     for (int i=0; i<m_kin.nReactions(); i++)
+       delta[i]=0;
+    m_kin.getReactionDelta(enthalpy,delta);
+   
+    // ROP
+    double rates[m_kin.nReactions()];
+    m_kin.netRatesOfProgress(rates);
+    
+    // Calculation of omegaEI (electron impact ionization) and omegaEexc (electron impact excitation)
+    double omegaEI=0;
+    double omegaEexc =0;
+
+     for (int i=0; i<m_kin.nReactions(); i++)
+      if (m_kin.reactions()[i].type() == Kinetics::IONIZATION_E )
+        omegaEI = omegaEI - delta[i]*rates[i];
+     else if (m_kin.reactions()[i].type() == Kinetics::EXCITATION_E )
+        omegaEexc = omegaEexc - delta[i]*rates[i];
 
     p_source[0] = omegaTE + omegaEI + omegaEexc;
 
  }
 
 private:
-
     
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
+    Mutation::Kinetics::Kinetics& m_kin;
     Transport::CollisionDB& m_collisions;
     int m_iar;
     int m_iarp;
