@@ -60,6 +60,9 @@ public:
         return m_collisions.nCollisionPairs();
     }
     
+    void omega11ii(double* const p_omega);
+    void omega22ii(double* const p_omega);
+    
     /**
      * Returns the mixture viscosity.
      */

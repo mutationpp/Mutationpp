@@ -109,7 +109,7 @@ void SpeciesListDescriptor::order(
     output.resize(input.size());
     
     std::size_t index = 0;
-    std::list<Species>::const_iterator species_iter;
+    std::list<Species>::iterator species_iter;
     
     // First order all of the species that are explicitly listed
     for (std::size_t i = 0; i < m_species_names.size(); ++i) {
@@ -132,7 +132,7 @@ void SpeciesListDescriptor::order(
                    species_iter != input.end())
                 species_iter++;
             
-            std::list<Species>::const_iterator lowest_level = species_iter;
+            std::list<Species>::iterator lowest_level = species_iter;
             while (lowest_level != input.end()) {
                 while (species_iter != input.end()) {
                     if (species_iter->groundStateName() == name &&

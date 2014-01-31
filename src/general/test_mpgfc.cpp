@@ -160,15 +160,19 @@ void CHO_M_FV()
     
     cout << endl;
     cout << setw(10) << "M" << setw(10) << "FV";
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << "X_" + mix.speciesName(i);
     for (int i = 0; i < ne; ++i)
         cout << setw(14) << mix.elementName(i);
     cout << setw(14) << "M" << setw(14) << "FV" << endl;
     
     // Compute the constrained equilibrium composition
-    c[ne]   = 1.0; // M
+    /*c[ne]   = 1.0; // M
     c[ne+1] = 0.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];
@@ -178,6 +182,8 @@ void CHO_M_FV()
     c[ne+1] = 0.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];
@@ -187,6 +193,8 @@ void CHO_M_FV()
     c[ne+1] = 2.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];
@@ -196,6 +204,8 @@ void CHO_M_FV()
     c[ne+1] = 4.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];
@@ -205,15 +215,19 @@ void CHO_M_FV()
     c[ne+1] = 4.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];
-    cout << endl;
+    cout << endl;*/
     
-    c[ne]   = 4.0; // M
-    c[ne+1] = 8.0; // FV
+    c[ne]   = 2.0; // M
+    c[ne+1] = 2.0; // FV
     mix.equilibriumComposition(1000.0, ONEATM, c, x);
     cout << setw(10) << c[ne] << setw(10) << c[ne+1];
+    for (int i = 0; i < ns; ++i)
+        cout << setw(14) << x[i];
     mix.elementPotentials(x);
     for (int i = 0; i < ne+2; ++i)
         cout << setw(14) << x[i];

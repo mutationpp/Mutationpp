@@ -166,6 +166,12 @@ void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X)
 }
 
 //==============================================================================
+void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X)
+{
+    p_mix->equilibriumComposition(*T, *P, el, X);
+}
+
+//==============================================================================
 void NAME_MANGLE(set_state)(double* v1, double* v2)
 {
     p_mix->setState(v1, v2);

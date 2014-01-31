@@ -5,9 +5,12 @@
 
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 namespace Mutation {
     namespace Thermodynamics {
+    
+using namespace std;
 
 class Nasa9DB : public NasaDB<Nasa9Polynomial>
 {
@@ -56,7 +59,7 @@ protected:
                 phase = GAS;
                 break;
             default:
-                if (name.substr(name.size()-4,3) == "(L)")
+                if (name.substr(name.size()-3,3) == "(L)")
                     phase = LIQUID;
                 else
                     phase = SOLID;
@@ -107,7 +110,7 @@ protected:
         // First build a map of the species names with their indices in order
         // to speed up the searching for needed names
         std::map<std::string, size_t> species_names;
-        std::map<std::string, size_t>::const_iterator iter;
+        std::map<std::string, size_t>::iterator iter;
         for (size_t i = 0; i < species().size(); ++i)
             species_names.insert(make_pair(species()[i].name(), i));
         
