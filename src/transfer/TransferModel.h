@@ -171,15 +171,15 @@ virtual void source(double* const p_source)
     double omegaEI=0;
     double omegaEexc =0;
 
-     for (int i=0; i<m_kin.nReactions(); i++)
-      if (m_kin.reactions()[i].type() == Kinetics::IONIZATION_E )
-        omegaEI = omegaEI - delta[i]*rates[i];
-     else if (m_kin.reactions()[i].type() == Kinetics::EXCITATION_E )
+     for (int i=0; i< m_kin.nReactions(); i++)
+      if (m_kin.reactions()[i].type() == Kinetics::IONIZATION_E && Te>400)
+        omegaEI = omegaEI - (delta[i]-enthalpy[0])*rates[i];
+      else if (m_kin.reactions()[i].type() == Kinetics::EXCITATION_E )
         omegaEexc = omegaEexc - delta[i]*rates[i];
 
     p_source[0] = omegaTE + omegaEI + omegaEexc;
-
- }
+  
+}
 
 private:
     
