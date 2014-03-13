@@ -1,4 +1,7 @@
 
+#include <iostream>
+#include <fstream>
+
 #include "MixtureOptions.h"
 #include "Utilities.h"
 
@@ -12,6 +15,7 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
     std::swap(opt1.m_species_descriptor, opt2.m_species_descriptor);
     std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
     std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
+    std::swap(opt1.m_source, opt2.m_source);
     std::swap(opt1.m_state_model, opt2.m_state_model);
     std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
     std::swap(opt1.m_mechanism, opt2.m_mechanism);
@@ -21,7 +25,8 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 
 MixtureOptions::MixtureOptions()
     : m_composition_setter(m_default_composition),
-      m_has_default_composition(false)
+      m_has_default_composition(false),
+      m_source()
 { 
     setDefaultOptions();
 }
@@ -43,6 +48,7 @@ MixtureOptions::MixtureOptions(const char* mixture)
 void MixtureOptions::setDefaultOptions()
 {
     m_species_descriptor = "";
+    m_source = "";
     m_state_model = "EquilTP";
     m_thermo_db   = "RRHO";
     m_mechanism   = "none";
@@ -55,13 +61,18 @@ void MixtureOptions::loadFromFile(const string& mixture)
     // Initalize to the default options
     setDefaultOptions();
     
-    // Get the mixture path on this computer
-    string mixture_path = 
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/mixtures/" + 
-        mixture + ".xml";
-        
+    // Get the mixture path on this computer (first assume the local directory)
+    m_source = mixture + ".xml";
+    ifstream file(m_source.c_str(), ios::in);
+
+    // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
+    if (!file.is_open())
+		m_source = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
+			"/mixtures/" + m_source;
+    file.close();
+
     // Now load the XML file
-    IO::XmlDocument mixture_doc(mixture_path);
+    IO::XmlDocument mixture_doc(m_source);
     IO::XmlElement root = mixture_doc.root();
     
     // Make sure this is a mixture element

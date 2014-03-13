@@ -29,6 +29,7 @@ public:
           m_default_composition(options.m_default_composition),
           m_composition_setter(options.m_composition_setter),
           m_has_default_composition(options.m_has_default_composition),
+          m_source(options.m_source),
           m_state_model(options.m_state_model),
           m_thermo_db(options.m_thermo_db),
           m_mechanism(options.m_mechanism),
@@ -46,12 +47,18 @@ public:
     }
     
     /**
-     * Constructs a new MixtureOptions object from a mixture file.
+     * Constructs a new MixtureOptions object from a mixture file (without the
+     * .xml extension).  The file is first assumed to reside in the relative
+     * path from the local directory.  If it does not exist there, then
+     * MPP_DATA_DIRECTORY/mixtures is checked.
      */
     MixtureOptions(const std::string& mixture);
     
     /**
-     * Constructs a new MixtureOptions object from a mixture file.
+     * Constructs a new MixtureOptions object from a mixture file (without the
+     * .xml extension).  The file is first assumed to reside in the relative
+     * path from the local directory.  If it does not exist there, then
+     * MPP_DATA_DIRECTORY/mixtures is checked.
      */
     MixtureOptions(const char* mixture);
     
@@ -60,6 +67,18 @@ public:
      */
     ~MixtureOptions() {}
     
+    /**
+     * Loads the mixture options from a mixture input file.
+     */
+    void loadFromFile(const std::string& mixture);
+
+    /**
+     * Gets the source of this mixture options (mixture file name).
+     */
+    const std::string& getSource() const {
+		return m_source;
+    }
+
     /**
      * Sets the options back to a default state.
      */
@@ -254,19 +273,13 @@ public:
 
 private:
 
-    /**
-     * Loads the mixture options from a mixture input file.
-     */
-    void loadFromFile(const std::string& mixture);
-
-private:
-
     std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
     CompositionSetter m_composition_setter;
     bool m_has_default_composition;
 
+	std::string m_source;
     std::string m_state_model;
     std::string m_thermo_db;
     std::string m_mechanism;

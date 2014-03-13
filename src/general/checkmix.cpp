@@ -17,7 +17,7 @@ using namespace Mutation::Kinetics;
 
 int main(int argc, char** argv)
 {
-    MixtureOptions* p_opts;
+    MixtureOptions opts;
     
     if (argc < 2 || argc > 3) {
         cout << "- checkmix mixture-name" << endl;
@@ -25,20 +25,19 @@ int main(int argc, char** argv)
         cout << "- checkmix database(NASA-7, NASA-9, RRHO) species-descriptor" << endl;
         exit(1);
     } else if (argc == 2) {
-        p_opts = new MixtureOptions(argv[1]);
+        opts.loadFromFile(argv[1]);
     } else {
-        p_opts = new MixtureOptions();
-        p_opts->setThermodynamicDatabase(argv[1]);
-        p_opts->setSpeciesDescriptor(argv[2]);
+        opts.setThermodynamicDatabase(argv[1]);
+        opts.setSpeciesDescriptor(argv[2]);
     }
     
-    Mixture mixture(*p_opts);
-    delete p_opts;
+    Mixture mixture(opts);
         
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();
     const int nr = mixture.nReactions();
  
+    cout << "location: " << opts.getSource() << endl;
     cout << ns << " species containing " << ne << " elements" << endl;
     cout << nr << " reactions" << endl;
     cout << endl;
