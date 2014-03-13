@@ -86,7 +86,7 @@ public:
     }
     
     template <typename E>
-    bool operator==(const VecExpr<T, E>& vec) {
+    bool operator==(const VecExpr<T, E>& vec) const {
         if (size() != vec.size())
             return false;
         for (int i = 0; i < size(); ++i)
@@ -97,7 +97,7 @@ public:
     }
     
     template <typename E>
-    bool operator!=(const VecExpr<T, E>& vec) {
+    bool operator!=(const VecExpr<T, E>& vec) const {
         return !operator==(vec);
     }
     

@@ -40,9 +40,10 @@ class QR
 public:
 
     /**
-     * Constructs the QR decomposition with column pivoting of A.
+     * Constructs the QR decomposition of A.
      */
-    QR(const Matrix<Real>& A, bool do_nothing = false);
+    template <typename E>
+    QR(const MatExpr<Real, E>& A, bool do_nothing = false);
     
     /** 
      * Returns the NxN upper triangular matrix R.
@@ -60,6 +61,7 @@ public:
      * Computes Q'b.
      */
     void qTransposeB(Vector<Real> &b) const;
+    void qTransposeB(double* const p_b) const;
     
     /**
      * Solves Ax = b via Rx = Q'b.
@@ -124,7 +126,8 @@ void house(VecExpr<T, E>& v, T& beta)
 //==============================================================================
 
 template <typename Real>
-QR<Real>::QR(const Matrix<Real> &A, const bool do_nothing)
+template <typename E>
+QR<Real>::QR(const MatExpr<Real, E>& A, const bool do_nothing)
     : m_A(A), m_betas(std::min(A.rows()-1,A.cols())), m_have_Q(false), 
       m_have_R(false)
 {
@@ -197,6 +200,29 @@ void QR<Real>::qTransposeB(Vector<Real> &b) const
             u(i) = NumConst<Real>::one;
             u(i+1,m) = m_A(i+1,m,i,i+1);
             b(i,m) -= (m_betas(i) * dot(b(i,m), u(i,m))) * u(i,m);
+        }
+    }
+}
+
+//==============================================================================
+
+template <typename Real>
+void QR<Real>::qTransposeB(double* const p_b) const
+{
+    const size_t m = m_A.rows();
+
+    Vector<Real> u(m);
+    for (size_t i = 0; i < m_betas.size(); ++i) {
+        if (m_betas(i) > NumConst<Real>::zero) {
+            u(i) = NumConst<Real>::one;
+            u(i+1,m) = m_A(i+1,m,i,i+1);
+            //b(i,m) -= (m_betas(i) * dot(b(i,m), u(i,m))) * u(i,m);
+            
+            double dotp = 0.0;
+            for (int k = i; k < m; ++k)
+                dotp += p_b[k]*u(k);
+            for (int k = i; k < m; ++k)
+                p_b[k] -= m_betas(i) * dotp * u(k);
         }
     }
 }
