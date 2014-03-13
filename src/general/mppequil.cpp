@@ -107,11 +107,13 @@ OutputQuantity reaction_quantities[NREACTION] = {
 };
 
 // List of other output quantities
-#define NOTHER 3
+#define NOTHER 5
 OutputQuantity other_quantities[NOTHER] = {
-    OutputQuantity("Dij", "?", "multicomponent diffusion coefficients"),
-    OutputQuantity("pi_i", "?", "element potentials"),
-    OutputQuantity("N_p", "mol", "phase moles")
+    OutputQuantity("Dij", "", "multicomponent diffusion coefficients"),
+    OutputQuantity("pi_i", "", "element potentials"),
+    OutputQuantity("N_p", "mol", "phase moles"),
+    OutputQuantity("iters", "", "number of continuation step iterations"),
+    OutputQuantity("newts", "", "total number of newton iterations")
 };
 
 // Simply stores the command line options
@@ -500,6 +502,12 @@ void writeHeader(
                     std::max(width, static_cast<int>(name.length())+2));
                 cout << setw(column_widths.back()) << name;
             }
+        } else if (other_quantities[*iter].name == "iters") {
+            column_widths.push_back(width);
+            cout << setw(column_widths.back()) << "iters";
+        } else if (other_quantities[*iter].name == "newts") {
+            column_widths.push_back(width);
+            cout << setw(column_widths.back()) << "newts";
         }
     }
     
@@ -771,6 +779,10 @@ int main(int argc, char** argv)
                     mix.phaseMoles(species_values);
                     for (int i = 0; i < mix.nPhases(); ++i)
                         cout << setw(column_widths[cw++]) << species_values[i];
+                } else if (name == "iters") {
+                    cout << setw(column_widths[cw++]) << mix.nEquilibriumSteps();
+                } else if (name == "newts") {
+                    cout << setw(column_widths[cw++]) << mix.nEquilibriumNewtons();
                 }
             }
             

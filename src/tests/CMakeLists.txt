@@ -1,3 +1,4 @@
 
-add_definitions(-DTEST_DATA_DIRECTORY=${CMAKE_CURRENT_SOURCE_DIR}/data)
+find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 
+add_subdirectory(numerics)
