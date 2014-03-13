@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
-
+enable_testing()
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
