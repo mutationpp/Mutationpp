@@ -76,6 +76,14 @@ public:
     }
     
     /**
+     * Returns true if the thermodynaic data in this database is valid at the
+     * given temperature for the given species index.
+     */
+    virtual bool speciesThermoValidAtT(const size_t i, const double T) const {
+        return true;
+    }
+    
+    /**
      * Computes the unitless species specific heats at constant pressure
      * \f$ C_{p,i}/R_U\f$ of each species in thermal nonequilibrium.
      *

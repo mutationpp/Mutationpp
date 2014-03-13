@@ -211,6 +211,12 @@ public:
     }
     
     /**
+     * Returns true if the thermodynaic data in this database is valid at the
+     * given temperature for the given species index.
+     */
+    bool speciesThermoValidAtT(const size_t i, const double T) const;
+    
+    /**
      * Sets the current state of the mixture using temperatures, pressure, and 
      * species mole fractions.
      */
@@ -257,6 +263,17 @@ public:
      * equilibrate().
      */
     void phaseMoles(double* const p_moles);
+    
+    /**
+     * Returns the number of continuation steps on the last call to equilibrate.
+     */
+    int nEquilibriumSteps() const;
+    
+    /**
+     * Returns the total number of newton iterations on the last call to
+     * equilibrate.
+     */
+    int nEquilibriumNewtons() const;
     
     /**
      * Adds a new set of linear constraints to the equilibrium solver.

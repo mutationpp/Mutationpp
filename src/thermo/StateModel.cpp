@@ -4,6 +4,16 @@
 
 namespace Mutation {
     namespace Thermodynamics {
+    
+
+//==============================================================================
+
+//void StateModel::notifyWatchers()
+//{
+//    std::list<StateModelWatcher>::iterator i = m_watcher_list.begin()
+//    for ( ; i < m_watcher_list.end(); ++i)
+//        i->stateUpdated();
+//}
 
 //==============================================================================
 

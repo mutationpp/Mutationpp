@@ -9,6 +9,18 @@
 namespace Mutation {
     namespace Thermodynamics {
 
+
+/**
+ * Simple interface for any object who wants to be updated whenever the a
+ * StateModel changes its state.
+ */
+//class StateModelWatcher
+//{
+//protected:
+//    void stateChanged() = 0;
+//}
+
+
 /**
  * Base class for all state models.  A mixture state is completely determined
  * when enough thermodynamic values are combined with the mixture composition
@@ -38,6 +50,8 @@ public:
         : m_thermo(thermo)
     {
         mp_X = new double [m_thermo.nSpecies()];
+        for (int i = 0; i < thermo.nSpecies(); ++i)
+            mp_X[i] = 0.0;
     }
     
     /**
@@ -47,6 +61,8 @@ public:
     {
         delete [] mp_X;
     }
+    
+//    void addWatcher(StateModelWatcher* p_watcher);
     
     /**
      * Sets the current mixture state.
@@ -114,6 +130,10 @@ public:
         return NULL;
     }
     
+//protected:
+
+//    void notifyWatchers();
+    
 protected:
 
     const Thermodynamics& m_thermo;
@@ -126,6 +146,10 @@ protected:
     double m_P;
     
     double* mp_X;
+    
+//private:
+    
+//    std::list<StateModelWatcher*> m_watcher_list;
     
 }; // class StateModel
 

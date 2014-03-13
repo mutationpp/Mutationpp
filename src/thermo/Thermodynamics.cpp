@@ -353,14 +353,19 @@ void Thermodynamics::setDefaultComposition(
         
     
     // Scale the fractions to sum to one
-    RealVecWrapper wrapper(mp_default_composition, nElements());
-    wrapper = wrapper / wrapper.sum();
+    //RealVecWrapper wrapper(mp_default_composition, nElements());
+    //wrapper = wrapper / wrapper.sum();
 }
 
 //==============================================================================
 
 int Thermodynamics::nPhases() const {
     return mp_equil->nPhases();
+}
+
+bool Thermodynamics::speciesThermoValidAtT(const size_t i, const double T) const
+{
+    return mp_thermodb->speciesThermoValidAtT(i, T);
 }
 
 //==============================================================================
@@ -494,6 +499,18 @@ void Thermodynamics::elementPotentials(double *const p_lambda)
 void Thermodynamics::phaseMoles(double *const p_moles)
 {
     mp_equil->phaseMoles(p_moles);
+}
+
+//==============================================================================
+
+int Thermodynamics::nEquilibriumSteps() const {
+    return mp_equil->nSteps();
+}
+
+//==============================================================================
+
+int Thermodynamics::nEquilibriumNewtons() const {
+    return mp_equil->nNewtons();
 }
 
 //==============================================================================
