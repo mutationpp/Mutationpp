@@ -42,9 +42,14 @@ int main(int argc, char** argv)
     cout << nr << " reactions" << endl;
     cout << endl;
     
+    int width = 0;
+	for (int i = 0; i < ns; ++i)
+		width = std::max(width, (int) mixture.speciesName(i).size());
+	width++;
+
     cout << "Species info:" << endl;
     cout << "-------------" << endl;  
-    cout << setw(9) << " ";
+    cout << setw(width) << " ";
     for (int i = 0; i < ne; ++i)
         cout << setw(4) << mixture.elementName(i);
     
@@ -52,7 +57,7 @@ int main(int argc, char** argv)
     cout << setw(12) << "Phase" << endl;
     for (int i = 0; i < ns; ++i) {
         cout.setf(std::ios::left, std::ios::adjustfield);
-        cout << setw(9) << mixture.speciesName(i);
+        cout << setw(width) << mixture.speciesName(i);
         
         cout.setf(std::ios::right, std::ios::adjustfield); 
         for (int j = 0; j < ne; ++j)
