@@ -651,87 +651,13 @@ private:
     void partialOfX(const Numerics::RealVector& dg, double* const p_dx) const;
     
     void initialConditions();
-    
-//    void initialConditions(
-//        Numerics::RealVector& gtp, Numerics::RealVector& lambda, 
-//        Numerics::RealVector& Nbar, Numerics::RealVector& g);
-    
-//    void perturb(Numerics::RealVector& nmm);
-    
     void rates(Numerics::RealVector& dx);
-//    void continuationStep(Numerics::RealVector& dx);
-    
     double newton();
-//    std::pair<int, double> newton(
-//        Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 
-//         Numerics::RealVector& g, Numerics::RealVector& r,
-//        Numerics::RealSymMat& A, const double tol,
-//        const int max_iters = 10);
-        
-    /**
-     * Computes the max-min composition \f$N^{mm}\f$, for the undetermined 
-     * species which is defined as the composition that maximizes the minimum
-     * species moles while satisfying the reduced constraints.
-     *
-     * @param c    reduced constraint vector
-     * @param nmm  on return, the max-min composition for the constraints
-     */
-    //void maxmin(const Numerics::RealVector& c, Numerics::RealVector& Nmm);
-    
-    /**
-     * Computes the min-g composition, \f$N^g\f$, which is defined as the 
-     * solution to
-     *
-     *     \f[ \min \sum_{k=1}^{n_{su}} N_k^u \tilde{g}_k^u \f]
-     *
-     * subject to the constraints \f$ \hat{B}^T N^u = \hat{c} \f$ and 
-     * \f$ N_k^u \ge 0 \f$.  \f$ \tilde{g}_k^u \f$ is the normalized molar
-     * specific Gibbs function 
-     *
-     *     \f[ \tilde{g}_k^u = 
-     *            \frac{h_k}{R_u T} - \frac{S^\circ_k}{R_u} + 
-     *            \ln \frac{p}{p_{atm}} \f]
-     *
-     * and \f$ \hat{B} \f$ and \f$ \hat{c} \f$ are the reduced constraint matrix
-     * and reduced constraint vector respectively.
-     *
-     * @param T   temperature in K
-     * @param P   pressure in Pa
-     * @param cr  reduced constraint vector
-     * @param gu  on return, vector of normalized molar specific Gibbs function 
-     *            values for undetermined species
-     * @param ng  on return, equals the min-g composition of undetermined
-     *            species
-     */
-//    void ming(
-//        const Numerics::RealVector& c, const Numerics::RealVector& gu, 
-//        Numerics::RealVector& Nmg);
-    
     void updateMinGSolution(const double* const p_g);
     void updateMaxMinSolution();
-//    
     void formSystemMatrix(Numerics::RealSymMat& A) const;
-//
-//    bool updateSpeciesMoles(
-//        const Numerics::RealVector& lambda, const Numerics::RealVector& Nbar,
-//        const Numerics::RealVector& g);
-//        
     void computeResidual(Numerics::RealVector& r) const;
-    
-    /**
-     * Moves the given phase from the included phase list to the excluded phase
-     * list. Updates m_npr, m_nsr, mp_sizes accordingly (m_ncr is not affected).
-     */
-    //void removePhase(const int phase);
-    
-    /**
-     * Moves the given phase to the included phase list from the excluded phase
-     * list.  The newly included phase is guaranteed to be placed at the end of
-     * the included phase list.  Updates m_npr, m_nsr, mp_sizes accordingly 
-     * (m_ncr is not affected).
-     */
-    //void addPhase(const int phase);
-    
+
     /**
      * Adjusts the phase ordering according to the vapor pressure test and phase
      * rule based on the current (converged) solution parameters.
@@ -753,10 +679,6 @@ private:
     int m_ne;
     int m_nc;
     int m_np;
-    
-//    int m_nsr;
-//    int m_ncr;
-//    int m_npr;
     
     double m_T;
     double m_P;
