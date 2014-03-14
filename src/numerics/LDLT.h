@@ -35,10 +35,11 @@ public:
     LDLT(const SymMatExpr<T, E>& mat);
     
     /**
-     * Constructs a new LDLT decomposition using the new matrix.
+     * Constructs a new LDLT decomposition using the new matrix.  Returns false
+     * if the matrix is numerically singular.
      */
     template <typename E>
-    void setMatrix(const SymMatExpr<T, E>& mat);
+    bool setMatrix(const SymMatExpr<T, E>& mat);
     
     /**
      * Solves the SPD system Ax = b via forward and backward substitutions with
@@ -64,7 +65,7 @@ LDLT<T>::LDLT(const SymMatExpr<T, E>& mat)
 
 template <typename T>
 template <typename E>
-void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
+bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
 {
     
     m_L = mat;
@@ -79,8 +80,9 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
             m_L(i,i) -= m_work(j) * m_L(i,j);
         
         if (m_L(i,i) == static_cast<T>(0)) {
-            std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
-            exit(1);
+            //std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
+            //exit(1);
+        	return false;
         }
         
         for (int j = 0; j < i; ++j)
@@ -90,6 +92,8 @@ void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
         for (int k = i+1; k < n; ++k)
             m_L(k,i) /= m_L(i,i);
     }
+
+    return true;
 }
 
 template <typename T>

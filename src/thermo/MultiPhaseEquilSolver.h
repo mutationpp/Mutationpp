@@ -661,7 +661,7 @@ private:
     void rates(Numerics::RealVector& dx);
 //    void continuationStep(Numerics::RealVector& dx);
     
-    bool newton();
+    double newton();
 //    std::pair<int, double> newton(
 //        Numerics::RealVector& lambda, Numerics::RealVector& Nbar, 
 //         Numerics::RealVector& g, Numerics::RealVector& r,
@@ -741,6 +741,11 @@ private:
     bool phaseRedistribution();
      
 private:
+
+    static const double ms_eps_rel;
+    static const double ms_eps_abs;
+    static const double ms_ds_inc;
+    static const double ms_ds_dec;
 
     const Thermodynamics& m_thermo;
     

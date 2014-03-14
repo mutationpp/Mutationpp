@@ -10,6 +10,7 @@
 #include <sstream>
 
 //#define VERBOSE
+#include "Utilities.h"
 
 using std::cout;
 using std::endl;
@@ -20,6 +21,13 @@ using namespace Mutation::Numerics;
 namespace Mutation {
     namespace Thermodynamics {
     
+
+// Define static constants for class MultiPhaseEquilSolver
+const double MultiPhaseEquilSolver::ms_eps_rel = 0.001;
+const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-8;
+const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
+const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
+
 
 //==============================================================================
 
@@ -204,12 +212,16 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     m_T  = T;
     m_P  = P;
     std::copy(p_cv, p_cv+m_nc, mp_c);
-    #ifdef VERBOSE
+    /*#ifdef VERBOSE
     std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
     for (int i = 0; i < m_ne; ++i)
         std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
     std::cout << std::endl;
-    #endif
+    #endif*/
+    DEBUG("equilibrate(" << T << " K, " << P << " Pa,")
+    for (int i = 0; i < m_ne; ++i)
+		DEBUG(m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ","))
+	DEBUG(endl)
     
     // Compute species gibbs free energies at the given temperature and pressure
     m_thermo.speciesGOverRT(T, P, mp_g);
@@ -233,13 +245,14 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 
     double s  = 0.0;
     double ds = 1.0;
+    double res, resk = ms_eps_abs;
     Solution last_solution(m_thermo);
     
     // Integrate the equilibrium solution from s = 0 to s = 1
     m_niters = 0;
     m_nnewts = 0;
     while (s < 1.0) {
-        // Save current solution incase we need to take a smaller step
+        // Save current solution in case we need to take a smaller step
         last_solution = m_solution;
         
         // Compute the rates for lambda and Nbar
@@ -258,25 +271,31 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
             // Get trial solution
             m_solution.setG(mp_g0, mp_g, s+ds);
             m_solution.update(dx*ds, m_B);
-            //m_solution.printSolution();
 
             // Use newton to reduce the residual
-            solution_obtained = newton();
-            //while (solution_obtained && phaseRedistribution())
-            //    solution_obtained = newton();
-            
+            res = newton();
+            solution_obtained =
+            		(res < std::max((1.0+ms_eps_rel)*resk, ms_eps_abs));
+
             // If newton fails to converge then reduce the step size and try
-            // again
-            if (!solution_obtained) {
+            // again, otherwise we can continue
+            if (solution_obtained)
+            	resk = res;
+            else {
                 #ifdef VERBOSE
                 cout << "Could not converge to solution, reducing step size" << endl;
                 #endif
-                ds *= 0.25;
+                ds *= ms_ds_dec;
                 m_solution = last_solution;
             }
             
             if (m_niters + m_nnewts > 1000) {
-                cout << "Touble converging..." << endl;
+                cout << "equil iter: " << m_niters << ", newt: " << m_nnewts << endl;
+                cout << "s = " << s << ", ds = " << log(ds) << ", res = " << res << ", resk = " << resk << endl;
+                std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
+                    for (int i = 0; i < m_ne; ++i)
+                        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
+                    std::cout << std::endl;
                 exit(1);
             }
         }
@@ -286,10 +305,18 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         cout << "Step succeded, increasing step size" << endl;
         #endif
         s += ds;
-        ds = std::min(ds*4.0, 1.0-s);
+        ds = std::min(ds*ms_ds_inc, 1.0-s);
         m_niters++;
     }
     
+    // Check one last newton
+    newton();
+
+    if (resk > ms_eps_abs) {
+    	cout << "Warning: equilibrium solver finished with residual of "
+    	     << resk << "!";
+    }
+
     // Finally, unwrap the solution for the user and return convergence stats
     for (int j = 0; j < m_ns; ++j)
         p_sv[j] = 0.0;
@@ -304,310 +331,6 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     return std::make_pair(m_niters, m_nnewts);
 }
 
-
-//std::pair<int,int> MultiPhaseEquilSolver::equilibrate(
-//    double T, double P, const double *const p_cv, double *const p_sv)
-//{
-//    m_T = T;
-//    m_P = P;
-//
-//#ifdef VERBOSE
-//    std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
-//    for (int i = 0; i < m_ne; ++i)
-//        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
-//    std::cout << std::endl;
-//#endif
-//
-//    static RealVector g0;
-//    
-//    // Begin by reducing zero species
-//    m_c = asVector(p_cv, m_nc);
-//    initialize();
-//
-//    m_niters = 0;
-//    m_nnewts = 0;
-//    
-//    bool still_solving = true;
-//    while (still_solving) {
-//    
-//
-//    m_Nbar = ones<double>(m_npr);
-//    RealVector Nbar_trial;
-//    
-//    //RealVector lambda(m_ncr);
-//    m_lambda = ones<double>(m_ncr);
-//    RealVector lambda_trial;
-//    
-//    // Resize vectors if need be
-//    m_dg = ones<double>(m_nsr);
-//    
-//    // Compute the unitless Gibbs function for each nonzero species
-//    // (temporarily store in dg)
-//    updateMinGSolution();
-//    for (int i = 0; i < m_nsr; ++i)
-//        m_dg(i) = mp_g[mp_sjr[i]];
-//
-//    // Compute the initial conditions for the integration
-//    initialConditions(m_dg, m_lambda, m_Nbar, g0);
-//    m_dg -= g0;
-//    m_g  =  g0;
-//    //updatePreConditioner();
-//    
-//    RealSymMat A(m_ncr+m_npr);
-//    RealVector r(m_ncr+m_npr);
-//    RealVector dx(m_ncr+m_npr);
-//    
-//    double s  = 0.0;
-//    double ds = 1.0;
-//    double error_tol = 1.0e-6;
-//    
-//    bool update_dx = true;
-//    
-//    //updateSpeciesMoles(m_lambda, m_Nbar, g0);
-//    
-//    // Integrate quantities from s = 0 to s = 1
-//    while (s < 1.0) {
-//        m_niters++;
-//        
-//#ifdef VERBOSE
-//        std::cout << "Step: iter = " << m_niters << ", s = " << s << ", ds = "
-//                  << ds << ", newt = " << m_nnewts << endl;
-//#endif
-//        
-//        if (update_dx) {
-//            m_g = g0 + s*m_dg;
-//            rates(dx);
-//            //cout << "dx from continuation step" << endl;
-//            //cout << dx << endl;
-//        }
-//
-//        
-//        // Update trial values
-//        lambda_trial = m_lambda + dx(0,m_ncr)*ds;
-//        Nbar_trial   = m_Nbar * exp(dx(m_ncr,m_ncr+m_npr)*ds);
-//        m_g          = g0 + m_dg*(s+ds);
-//
-//        // Compute the 
-//        if (!updateSpeciesMoles(lambda_trial, Nbar_trial, m_g)) {
-//            ds *= 0.5;
-//            update_dx = false;
-//            continue;
-//        }
-//        
-//        computeResidual(Nbar_trial, r);
-//        
-//        std::pair<int,double> res = 
-//            newton(lambda_trial, Nbar_trial, m_g, r, A, 1.0e-6, 5);
-//        m_nnewts += res.first;
-//        
-//        if ((m_niters + m_nnewts) > 1000) {
-//            cout << "Trouble converging...." << endl;
-//            cout << "equilibrate(" << T << " K, " << P << " Pa,";
-//            for (int i = 0; i < m_ne; ++i)
-//                cout << m_thermo.elementName(i) << " " << p_cv[i]
-//                     << (i == m_ne-1 ? ")" : ",");
-//            cout << endl;
-//
-//            cout << "Step: iter = " << m_niters << ", s = " << s << ", ds = " << ds
-//                 << ", newt = " << m_nnewts << endl;
-//            exit(1);
-//        }
-//        
-//        update_dx = false;
-//        if (m_nsr != g0.size()) {
-//            dx = RealVector(m_ncr+m_npr);
-//            g0 = m_g - m_dg*(s+ds);
-//            update_dx = true;
-//        }
-//        
-//        // If newton did not converge, reduce the step size and start over unless
-//        // the stepsize was already very small, in that case just take the step
-//        if (res.second > error_tol) {
-//#ifdef VERBOSE
-//            std::cout << "Newton did not converge, reducing step size" << std::endl;
-//#endif
-//            ds *= 0.25;
-//            continue;
-//        }
-//        
-//        error_tol = res.second + std::max(1.0e-6, 0.05*res.second);
-//        
-//        // Update the system variables
-//        m_lambda = lambda_trial;
-//        m_Nbar   = Nbar_trial;
-//        s += ds;
-//        //ds *= 2.0;
-//        
-//        ds = std::min(ds*4.0, 1.0-s);
-//        
-//        if (ds == 0.0 && s < 1.0) {
-//            std::cerr << "Continuation step size dropped to zero in equil solver!" << endl;
-//            std::exit(1);
-//        }
-//        
-//        update_dx = true;
-//    }
-//    
-//#ifdef VERBOSE
-//    cout << "s = 1 achieved, reducing residual..." << endl;
-//#endif
-//    
-//    // Use Newton iterations to improve residual for final answer
-//    std::pair<int,double> res = newton(m_lambda, m_Nbar, m_g, r, A, 1.0e-8, 20);
-//    m_nnewts += res.first;
-//    
-//    still_solving = phaseRedistribution();
-//    
-//    } // still solving
-//    
-//    // Compute the species mole fractions
-//    for (int j = 0; j < m_nsr; ++j)
-//        p_sv[mp_sjr[j]] = m_N(j);
-//    for (int j = m_nsr; j < m_ns; ++j)
-//        p_sv[mp_sjr[j]] = 0.0;
-//    
-//    m_Nbar = RealVector(m_np, 0.0);
-//    for (int j = 0; j < m_ns; ++j)
-//        m_Nbar(mp_phase[j]) += p_sv[j];
-//
-//    double total_moles = m_Nbar.sum();
-//    for (int j = 0; j < m_ns; ++j) {
-//        p_sv[j] /= total_moles;
-//    }
-//    
-////    double pmole;
-////    for (int j = 0; j < m_ns; ++j) {
-////        pmole = m_Nbar(mp_phase[j]);
-////        if (pmole > 0.0)
-////            p_sv[j] /= pmole;
-////    }
-//    
-//    //exit(1);
-//#ifdef VERBOSE
-//    cout << "Solution obtained :) - iters = " << m_niters << ", newts = "
-//         << m_nnewts << endl;
-//#endif
-//    return std::make_pair(m_niters, m_nnewts);
-//}
-
-//void MultiPhaseEquilSolver::removePhase(const int phase)
-//{
-//#ifdef VERBOSE
-//    cout << "Removing phase " << phase << " ( ";
-//    for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//        cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//    cout << ")" << endl;
-//#endif
-//    
-//    // Check that the phase number is feasible
-//    assert(phase >= 0);
-//    assert(phase < m_npr);
-//    assert(m_npr > 1);
-//    
-//    // If the phase is not the last non-empty phase, we need to shift it to the
-//    // right to make the non-empty species list contiguous
-//    const int size = mp_sizes[phase+1] - mp_sizes[phase];
-//    if (phase != m_npr-1) {
-//        int temp [size];
-//        
-//        // First copy the phase to be removed into temporary array
-//        int* p = temp;
-//        for (int i = mp_sizes[phase]; i < mp_sizes[phase+1]; ++i)
-//            *p++ = mp_sjr[i];
-//        
-//        // Shift all remaining phases to fill the space
-//        p = mp_sjr + mp_sizes[phase];
-//        for (int i = mp_sizes[phase+1]; i < mp_sizes[m_np]; ++i)
-//            *p++ = mp_sjr[i];
-//        
-//        // Place the removed phase at the end of the list (before determined
-//        // species)
-//        for (int i = phase+1; i < m_np; ++i)
-//            mp_sizes[i] = mp_sizes[i+1] - size;
-//        p = temp;
-//        for (int i = mp_sizes[m_np-1]; i < mp_sizes[m_np]; ++i)
-//            mp_sjr[i] = *p++;
-//    }
-//    
-//    // Update reduced species phase
-//    m_npr--;
-//    m_nsr -= size;
-//#ifdef VERBOSE
-//    cout << "New phase ordering:" << endl;
-//    cout << "(Included)" << endl;
-//    for (int m = 0; m < m_npr; ++m) {
-//        cout << m << ": ";
-//        for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-//            cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//        cout << endl;
-//    }
-//    cout << "(Excluded)" << endl;
-//    for (int m = m_npr; m < m_np; ++m) {
-//        cout << m << ": ";
-//        for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-//            cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//        cout << endl;
-//    }
-//#endif
-//}
-
-//void MultiPhaseEquilSolver::addPhase(const int phase)
-//{
-//#ifdef VERBOSE
-//    cout << "Adding phase " << phase << " ( ";
-//    for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//        cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//    cout << ")" << endl;
-//#endif
-//
-//    assert(phase >= m_npr);
-//    assert(phase < m_np);
-//    
-//    int size = mp_sizes[phase+1] - mp_sizes[phase];
-//    
-//    // If the phase is not the first empty phase, then we need to shift it to
-//    // the front
-//    if (phase > m_npr) {
-//        int temp [size];
-//        
-//        // First copy the phase to be added into temporary array
-//        int* p = temp;
-//        for (int i = mp_sizes[phase]; i < mp_sizes[phase+1]; ++i)
-//            *p++ = mp_sjr[i];
-//        
-//        // Shift phases that come before to the back
-//        p = mp_sjr + mp_sizes[phase+1]-1;
-//        for (int i = mp_sizes[phase]-1; i >= m_nsr; --i)
-//            *p-- = mp_sjr[i];
-//        
-//        // Place the added phase at the end of the included list
-//        for (int i = phase+1; i > m_npr; --i)
-//            mp_sizes[i] = mp_sizes[i-1] + size;
-//        p = temp;
-//        for (int i = mp_sizes[m_npr]; i < mp_sizes[m_npr+1]; ++i)
-//            mp_sjr[i] = *p++;
-//    }
-//    
-//    m_npr++;
-//    m_nsr += size;
-//#ifdef VERBOSE
-//    cout << "New phase ordering:" << endl;
-//    cout << "(Included)" << endl;
-//    for (int m = 0; m < m_npr; ++m) {
-//        cout << m << ": ";
-//        for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-//            cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//        cout << endl;
-//    }
-//    cout << "(Excluded)" << endl;
-//    for (int m = m_npr; m < m_np; ++m) {
-//        cout << m << ": ";
-//        for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-//            cout << m_thermo.speciesName(mp_sjr[j]) << " ";
-//        cout << endl;
-//    }
-//#endif
-//}
 
 bool MultiPhaseEquilSolver::phaseRedistribution()
 {
@@ -814,12 +537,11 @@ void MultiPhaseEquilSolver::rates(RealVector& dx)
 
 //==============================================================================
 
-bool MultiPhaseEquilSolver::newton()
+double MultiPhaseEquilSolver::newton()
 {
     #ifdef VERBOSE
     cout << "newton:" << endl;
     #endif
-    const double tolerance = 1.0e-6;
     const int    max_iters = 5;
     const double phase_tol = std::sqrt(1.0e-6);
     
@@ -842,10 +564,10 @@ bool MultiPhaseEquilSolver::newton()
     LDLT<double> ldlt;
     
     if (res > 1.0)
-        return false;
+        return res;
     
     int iter = 0;
-    while (res > tolerance && iter < max_iters) {
+    while (res > ms_eps_abs && iter < max_iters) {
         #ifdef VERBOSE
         cout << "newton, iter = " << iter << ", " << "res = " << res << endl;
         m_solution.printSolution();
@@ -881,16 +603,18 @@ bool MultiPhaseEquilSolver::newton()
         cout << r << endl;
         #endif
         
-        // Solve the linear system
-        //ldlt.setMatrix(A);
-        //ldlt.solve(dx, -r);
-        QRP<double> qrp(A);
-        #ifdef VERBOSE
-        cout << "R matrix = " << endl;
-        cout << qrp.R() << endl;
-        #endif
-        r = -r;
-        qrp.solve(dx, r);
+        // Solve the linear system (if it is singular then don't bother)
+        if (ldlt.setMatrix(A))
+        	ldlt.solve(dx, -r);
+        else
+			return res;
+        //QRP<double> qrp(A);
+        //#ifdef VERBOSE
+        //cout << "R matrix = " << endl;
+        //cout << qrp.R() << endl;
+        //#endif
+        //r = -r;
+        //qrp.solve(dx, r);
         
         #ifdef VERBOSE
         cout << "dx = " << endl;
@@ -914,7 +638,7 @@ bool MultiPhaseEquilSolver::newton()
     }
     
     m_nnewts += iter;
-    return (res <= tolerance);
+    return res;
 }
 
 ////==============================================================================
