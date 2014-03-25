@@ -672,6 +672,7 @@ private:
     static const double ms_eps_abs;
     static const double ms_ds_inc;
     static const double ms_ds_dec;
+    static const double ms_max_ds;
 
     const Thermodynamics& m_thermo;
     

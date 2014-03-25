@@ -10,6 +10,7 @@
 #include <sstream>
 
 //#define VERBOSE
+#define SAVE_PATH
 #include "Utilities.h"
 
 using std::cout;
@@ -27,6 +28,7 @@ const double MultiPhaseEquilSolver::ms_eps_rel = 0.001;
 const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-8;
 const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
+const double MultiPhaseEquilSolver::ms_max_ds  = 0.01;
 
 
 //==============================================================================
@@ -208,6 +210,10 @@ void MultiPhaseEquilSolver::initPhases()
 std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     double T, double P, const double* const p_cv, double* const p_sv)
 {
+#ifdef SAVE_PATH
+    std::ofstream of("path.dat");
+#endif
+
     // Save T, P, c
     m_T  = T;
     m_P  = P;
@@ -244,7 +250,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     #endif
 
     double s  = 0.0;
-    double ds = 1.0;
+    double ds = ms_max_ds;
     double res, resk = ms_eps_abs;
     Solution last_solution(m_thermo);
     
@@ -263,6 +269,23 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         cout << "dx = " << endl;
         cout << dx << endl;
         #endif
+
+#ifdef SAVE_PATH
+        // Compute the Gibbs free energy of the system
+        of << setw(12) << s;
+
+        double G = 0.0;
+        for (int i = 0; i < m_solution.ncr(); ++i)
+            G += m_solution.lambda()[i] * mp_c[m_solution.cir()[i]];
+        of << setw(12) << G;
+
+        for (int i = 0; i < m_solution.ncr(); ++i)
+            of << setw(12) << m_solution.lambda()[i];
+        for (int m = 0; m < m_solution.npr(); ++m)
+            of << setw(12) << std::exp(m_solution.lnNbar()[m]);
+
+        of << endl;
+#endif
 
         // Keep trying to obtain a solution at progressively smaller steps
         // until a solution is obtained
@@ -304,13 +327,31 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         #ifdef VERBOSE
         cout << "Step succeded, increasing step size" << endl;
         #endif
+
         s += ds;
-        ds = std::min(ds*ms_ds_inc, 1.0-s);
+        ds = std::min(ms_max_ds, std::min(ds*ms_ds_inc, 1.0-s));
         m_niters++;
     }
     
     // Check one last newton
-    newton();
+    resk = newton();
+
+#ifdef SAVE_PATH
+    // Compute the Gibbs free energy of the system
+    of << setw(12) << s;
+
+    double G = 0.0;
+    for (int i = 0; i < m_solution.ncr(); ++i)
+        G += m_solution.lambda()[i] * mp_c[m_solution.cir()[i]];
+    of << setw(12) << G;
+
+    for (int i = 0; i < m_solution.ncr(); ++i)
+        of << setw(12) << m_solution.lambda()[i];
+    for (int m = 0; m < m_solution.npr(); ++m)
+        of << setw(12) << std::exp(m_solution.lnNbar()[m]);
+
+    of << endl;
+#endif
 
     if (resk > ms_eps_abs) {
     	cout << "Warning: equilibrium solver finished with residual of "
@@ -328,6 +369,10 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     for (int j = 0; j < m_ns; ++j)
         p_sv[j] /= sum;
     
+#ifdef SAVE_PATH
+    of.close();
+#endif
+
     return std::make_pair(m_niters, m_nnewts);
 }
 
