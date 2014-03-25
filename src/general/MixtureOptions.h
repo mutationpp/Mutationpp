@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <XMLite.h>
+
 namespace Mutation {
 
 /**
@@ -38,6 +40,32 @@ public:
     { }
     
     /**
+	 * Constructs a new MixtureOptions object from a mixture file (without the
+	 * .xml extension).  The file is first assumed to reside in the relative
+	 * path from the local directory.  If it does not exist there, then
+	 * MPP_DATA_DIRECTORY/mixtures is checked.
+	 */
+	MixtureOptions(const std::string& mixture);
+
+	/**
+	 * Constructs a new MixtureOptions object from a mixture file (without the
+	 * .xml extension).  The file is first assumed to reside in the relative
+	 * path from the local directory.  If it does not exist there, then
+	 * MPP_DATA_DIRECTORY/mixtures is checked.
+	 */
+	MixtureOptions(const char* mixture);
+
+	/**
+	 * Constructs a new MixtureOptions from an XmlElement.
+	 */
+	MixtureOptions(Utilities::IO::XmlElement& element);
+
+	/**
+	 * Destructor.
+	 */
+	~MixtureOptions() {}
+
+    /**
      * Assignment operator.
      */
     MixtureOptions& operator=(MixtureOptions options)
@@ -47,30 +75,14 @@ public:
     }
     
     /**
-     * Constructs a new MixtureOptions object from a mixture file (without the
-     * .xml extension).  The file is first assumed to reside in the relative
-     * path from the local directory.  If it does not exist there, then
-     * MPP_DATA_DIRECTORY/mixtures is checked.
-     */
-    MixtureOptions(const std::string& mixture);
-    
-    /**
-     * Constructs a new MixtureOptions object from a mixture file (without the
-     * .xml extension).  The file is first assumed to reside in the relative
-     * path from the local directory.  If it does not exist there, then
-     * MPP_DATA_DIRECTORY/mixtures is checked.
-     */
-    MixtureOptions(const char* mixture);
-    
-    /**
-     * Destructor.
-     */
-    ~MixtureOptions() {}
-    
-    /**
      * Loads the mixture options from a mixture input file.
      */
     void loadFromFile(const std::string& mixture);
+
+    /**
+     * Loads the mixture options from an XmlElement.
+     */
+    void loadFromXmlElement(Utilities::IO::XmlElement& element);
 
     /**
      * Gets the source of this mixture options (mixture file name).

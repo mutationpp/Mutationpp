@@ -45,6 +45,14 @@ MixtureOptions::MixtureOptions(const char* mixture)
     loadFromFile(string(mixture));
 }
 
+MixtureOptions::MixtureOptions(IO::XmlElement& element)
+    : m_composition_setter(m_default_composition),
+      m_has_default_composition(false)
+{
+    loadFromXmlElement(element);
+}
+
+
 void MixtureOptions::setDefaultOptions()
 {
     m_species_descriptor = "";
@@ -75,30 +83,35 @@ void MixtureOptions::loadFromFile(const string& mixture)
     IO::XmlDocument mixture_doc(m_source);
     IO::XmlElement root = mixture_doc.root();
     
-    // Make sure this is a mixture element
-    if (root.tag() != "mixture")
-        root.parseError(
-            "Root element in mixture file is not of 'mixture' type!");
-    
+    // Now we can load from the mixture XmlElement
+    loadFromXmlElement(root);
+}
+
+void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
+{
+    if (element.tag() != "mixture")
+        element.parseError(
+            "XmlElement is not of 'mixture' type!");
+
     // Get the name of the mixture reaction mechanism
-    root.getAttribute("mechanism", m_mechanism, m_mechanism);
+    element.getAttribute("mechanism", m_mechanism, m_mechanism);
     
     // Get the type of thermodynamic database to use
-    root.getAttribute("thermo_db", m_thermo_db, m_thermo_db);
+    element.getAttribute("thermo_db", m_thermo_db, m_thermo_db);
     
     // Get the viscosity algorithm
-    root.getAttribute("viscosity", m_viscosity, m_viscosity);
+    element.getAttribute("viscosity", m_viscosity, m_viscosity);
     
     // Get the thermal conductivity algorithm
-    root.getAttribute(
+    element.getAttribute(
         "thermal_conductivity", m_thermal_conductivity, m_thermal_conductivity);
     
     // Get the state model
-    root.getAttribute("state_model", m_state_model, m_state_model);
+    element.getAttribute("state_model", m_state_model, m_state_model);
     
     // Loop over all of the mixture child elements
     IO::XmlElement::const_iterator iter;
-    for (iter = root.begin(); iter != root.end(); ++iter) {
+    for (iter = element.begin(); iter != element.end(); ++iter) {
         // Load the species list
         if (iter->tag() == "species") {
             m_species_descriptor = String::trim(iter->text());
@@ -132,6 +145,7 @@ void MixtureOptions::loadFromFile(const string& mixture)
         }
     }
 }
+
 
 } // namespace Mutation
 
