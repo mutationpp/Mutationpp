@@ -32,7 +32,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/transfer
     ${CMAKE_CURRENT_SOURCE_DIR}/transport
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
 add_subdirectory(general)
@@ -42,7 +41,10 @@ add_subdirectory(thermo)
 add_subdirectory(transfer)
 add_subdirectory(transport)
 add_subdirectory(utilities)
-add_subdirectory(tests)
+
+if (ENABLE_TESTING)
+    add_subdirectory(tests)
+endif()
 
 if (BUILD_FORTRAN_WRAPPER)
     add_subdirectory(fortran)
