@@ -41,6 +41,7 @@ public:
      * Orders the species given as input in the output array.  Ensures that 
      * species explicitly listed by the user maintain the same order and that 
      * the electron is always at the beginning if it is present as a species.
+     * Condensed phase species are listed at the end of the array.
      */
     void order(
         std::list<Species>& input, std::vector<Species>& output,

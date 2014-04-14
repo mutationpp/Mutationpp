@@ -3,6 +3,9 @@
 #include "Species.h"
 #include "Utilities.h"
 
+#include <iostream>
+using namespace std;
+
 namespace Mutation {
     namespace Thermodynamics {
 
@@ -108,7 +111,7 @@ void SpeciesListDescriptor::order(
     // Prepare memory for the ordered list
     output.resize(input.size());
     
-    std::size_t index = 0;
+    int index = 0;
     std::list<Species>::iterator species_iter;
     
     // First order all of the species that are explicitly listed
@@ -164,7 +167,7 @@ void SpeciesListDescriptor::order(
         species_iter = input.erase(species_iter);
     }
     
-    // Finally place the electron first
+    // Place the electron first
     for (index = 0; index < output.size(); ++index)
         if (output[index].type() == ELECTRON) break;
 
@@ -175,6 +178,16 @@ void SpeciesListDescriptor::order(
             index--;
         }
         output[0] = electron;
+    }
+
+    // Move all condensed species to the end of the list
+    int end;
+    index = end = output.size()-1;
+
+    while (index > -1) {
+        if (output[index].phase() != GAS)
+            swap(output[index], output[end--]);
+        index--;
     }
 }
 

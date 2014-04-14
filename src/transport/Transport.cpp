@@ -328,9 +328,9 @@ void Transport::stefanMaxwell(
         p_V[0] = 0.0;
         for (int i = 1; i < ns; ++i) {
             p_V[i]  = V(i-1);
-            p_V[0] -= X[i]*mp_wrk3[i]*p_V[i];
+            p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
         }
-        p_V[0] /= (X[0]*mp_wrk3[0]);
+        p_V[0] /= (X[0]*QE);
     
     // No electrons!!
     } else {

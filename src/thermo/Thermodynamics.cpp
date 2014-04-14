@@ -44,6 +44,11 @@ Thermodynamics::Thermodynamics(
     
     m_has_electrons = (species(0).type() == ELECTRON);
     
+    m_ngas = 0;
+    for (int i = nSpecies()-1; (i > -1 && species(i).phase() != GAS); --i)
+        m_ngas++;
+    m_ngas = nSpecies()-m_ngas;
+
     // Build the composition matrix
     m_element_matrix = RealMatrix(nSpecies(), nElements());
     
@@ -91,222 +96,6 @@ Thermodynamics::~Thermodynamics()
 }
 
 //==============================================================================
-
-//void Thermodynamics::loadSpeciesFromList(
-//    const std::vector<std::string> &species_names)
-//{
-//    // Determine file paths
-//    string thermo_directory = 
-//        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
-//    string elements_path    = thermo_directory + "/elements.xml";
-//    string species_path     = thermo_directory + "/species.xml";
-//    
-//    // First we need to load the entire element database for use in constructing
-//    // our species list
-//    IO::XmlDocument element_doc(elements_path);
-//    IO::XmlElement::Iterator element_iter = element_doc.root().begin();
-//    IO::XmlElement::Iterator element_end  = element_doc.root().end();
-//    
-//    vector<Element> elements;
-//    set<int> used_elements;
-//    
-//    for ( ; element_iter != element_end; ++element_iter)
-//        elements.push_back(Element(*element_iter));
-//    
-//    // Load the species XML database
-//    IO::XmlDocument species_doc(species_path);
-//    IO::XmlElement species_list = species_doc.root();
-//    
-//    // Loop over each species and load from the database
-//    std::string name;
-//    bool expand = false;
-//    std::vector<std::string> not_found;
-//    for (int i = 0; i < species_names.size(); ++i) {
-//        // Get species name
-//        name = species_names[i];
-//        
-//        // Check if this species is supposed to be expanded into excited states
-//        expand = (name[name.size()-1] == '*');
-//        if (expand)
-//            name.erase(name.end()-1);
-//        
-//        // Find the species information
-//        IO::XmlElement::Iterator iterator =
-//            species_list.findTagWithAttribute("species", "name", name);
-//        
-//        // Add species (or expanded species) to the species list
-//        if (iterator != species_list.end()) {
-//            if (expand) {
-//                const Species species(*iterator, elements, used_elements);
-//                
-//                if (!species.hasRRHOParameters()) {
-//                    cout << "Error! Requested species \"" << name
-//                        << "*\", but this species does not have RRHO data..."
-//                        << endl;
-//                    exit(1);
-//                }
-//            
-//                const size_t nlevels =
-//                    species.getRRHOParameters()->nElectronicLevels();
-//            
-//                for (size_t i = 0; i < nlevels; ++i)
-//                    addSpecies(Species(species, i));
-//            } else
-//                addSpecies(Species(*iterator, elements, used_elements));
-//        } else
-//            not_found.push_back(name);
-//    }
-//    
-//    // Make sure all species were loaded (todo: better error message with file
-//    // name and list of missing species...)
-//    if (not_found.size() > 0) {
-//        cout << "Could not find all the species in listed in the mixture!";
-//        cout << endl << "Missing species:" << endl;
-//        
-//        for (size_t i = 0; i < not_found.size(); ++i)
-//            cout << setw(10) << not_found[i] << endl;
-//        
-//        exit(1);
-//    }
-//    
-//    
-//    // Now the species are loaded and the corresponding elements are determined
-//    // so store only the necessary elements in the class (note the ordering of
-//    // elements in the database is preserved here because of set)
-//    set<int>::const_iterator iter = used_elements.begin();
-//    set<int>::const_iterator end  = used_elements.end();
-//    
-//    for ( ; iter != end; ++iter)
-//        m_elements.push_back(elements[*iter]);
-//    
-//    // Finally store the species and element order information for easy access
-//    for (int i = 0; i < m_elements.size(); ++i)
-//        m_element_indices[m_elements[i].name()] = i;
-//    
-//    for (int i = 0; i < m_species.size(); ++i)
-//        m_species_indices[m_species[i].name()] = i;
-//    
-//}
-
-/*void Thermodynamics::loadSpeciesFromList(
-    const std::vector<std::string> &species_names)
-{
-    // Determine file paths
-    string thermo_directory = 
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo";
-    string elements_path    = thermo_directory + "/elements.xml";
-    string species_path     = thermo_directory + "/species.xml";
-    
-    // First we need to load the entire element database for use in constructing
-    // our species list
-    IO::XmlDocument element_doc(elements_path);
-    IO::XmlElement::Iterator element_iter = element_doc.root().begin();
-    IO::XmlElement::Iterator element_end  = element_doc.root().end();
-    
-    vector<Element> elements;
-    
-    for ( ; element_iter != element_end; ++element_iter)
-        elements.push_back(Element(*element_iter));
-    
-    // Load the species XML database
-    IO::XmlDocument species_doc(species_path);    
-    string species_name;
-    
-    // Use a set for the species names to ensure that species are listed only
-    // once and so that the find() function can be used
-    set<string> species_set(species_names.begin(), species_names.end());
-    set<int>    used_elements;
-    
-    // Iterate over all species in the database and pull out the ones that are
-    // needed from the list
-    IO::XmlElement::Iterator species_iter = species_doc.root().begin();
-    IO::XmlElement::Iterator species_end  = species_doc.root().end();
-    
-    bool expand_elec_states = false;
-    
-    for ( ; species_iter != species_end; ++species_iter) {
-        // Get the name of current species
-        species_iter->getAttribute("name", species_name);
-        
-        // Do we need this one?
-        if (species_set.find(species_name) != species_set.end())
-            addSpecies(Species(*species_iter, elements, used_elements));
-        // How about this species with expanded electronic states?
-        else if (species_set.find(species_name+="*") != species_set.end()) {
-            // Load this species
-            const Species species(*species_iter, elements, used_elements);
-            
-            if (!species.hasRRHOParameters()) {
-                cout << "Error! Requested species \"" << species_name
-                     << "\" but this species does not have RRHO data..."
-                     << endl;
-                exit(1);
-            }
-            
-            const size_t nlevels =
-                species.getRRHOParameters()->nElectronicLevels();
-            
-            for (size_t i = 0; i < nlevels; ++i)
-                addSpecies(Species(species, i));
-            
-        } else
-            continue;
-        
-        // Clear this species from the list of species that we still need to
-        // find
-        species_set.erase(species_name);
-        
-        // Break out early when they are all loaded
-        if (species_set.size() == 0)
-            break;
-    }
-    
-    // Make sure all species were loaded (todo: better error message with file
-    // name and list of missing species...)
-    if (species_set.size() > 0) {
-        cout << "Could not find all the species in listed in the mixture!";
-        cout << endl << "Missing species:" << endl;
-        
-        set<string>::const_iterator missing_iter = species_set.begin();
-        set<string>::const_iterator missing_end  = species_set.end();
-        
-        for ( ; missing_iter != missing_end; ++missing_iter)
-            cout << setw(10) << *missing_iter << endl;
-        
-        exit(1);
-    }
-    
-    
-    // Now the species are loaded and the corresponding elements are determined
-    // so store only the necessary elements in the class (note the ordering of
-    // elements in the database is preserved here because of set)
-    set<int>::const_iterator iter = used_elements.begin();
-    set<int>::const_iterator end  = used_elements.end();
-    
-    for ( ; iter != end; ++iter)
-        m_elements.push_back(elements[*iter]);
-    
- 
-}*/
-
-//==============================================================================
-
-//void Thermodynamics::addSpecies(const Species& species)
-//{
-//    if (species.type() == ELECTRON) {
-//        m_species.insert(m_species.begin(), species);
-//        m_has_electrons = true;
-//    } else {
-//        m_species.push_back(species);
-//        if (species.type() == ATOM)
-//            m_natoms++;
-//        else
-//            m_nmolecules++;
-//    }
-//}
-
-//==============================================================================
-
 
 void Thermodynamics::setDefaultComposition(
         const std::vector<std::pair<std::string, double> >& composition)
@@ -362,6 +151,8 @@ void Thermodynamics::setDefaultComposition(
 int Thermodynamics::nPhases() const {
     return mp_equil->nPhases();
 }
+
+//==============================================================================
 
 bool Thermodynamics::speciesThermoValidAtT(const size_t i, const double T) const
 {
@@ -446,27 +237,6 @@ double Thermodynamics::mixtureMw() const
 
 //==============================================================================
 
-/*void Thermodynamics::equilibrate(
-    double T, double P, const double* const p_c, double* const p_X, 
-    bool set_state)
-{
-    double* const p_Xref = (p_X == NULL ? mp_work1 : p_X);
-    
-    mp_equil->equilibrate(T, P, p_c, p_Xref);
-    
-    if (set_state) {
-        convert<X_TO_Y>(p_Xref, mp_y);
-        mp_state->setStateTPX(T, P, p_Xref);
-    }
-}
-
-//==============================================================================
-
-void Thermodynamics::equilibrate(double T, double P)
-{
-    equilibrate(T, P, mp_default_composition, mp_work1);
-}*/
-
 void Thermodynamics::equilibriumComposition(
     double T, double P, const double* const p_Xe, double* const p_X) const
 {
@@ -535,7 +305,7 @@ double Thermodynamics::pressure(
     const double T, const double rho, const double *const Y) const
 {
     double pressure = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
+    for (int i = 0; i < nGas(); ++i)
         pressure += Y[i] / speciesMw(i);
     pressure *= rho * T * RU;
     return pressure;
@@ -547,7 +317,7 @@ double Thermodynamics::density(
     const double T, const double P, const double *const X) const
 {
     double density = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
+    for (int i = 0; i < nGas(); ++i)
         density += X[i] * speciesMw(i);
     density *= P / (RU * T);
     return density;
@@ -630,7 +400,7 @@ double Thermodynamics::mixtureFrozenCpMole() const
 {
     double cp = 0.0;
     speciesCpOverR(mp_work1);
-    for (int i = 0; i < nSpecies(); ++i)
+    for (int i = 0; i < nGas(); ++i)
         cp += mp_work1[i] * X()[i];
     return (cp * RU);
 }
@@ -646,61 +416,116 @@ double Thermodynamics::mixtureFrozenCpMass() const
 
 double Thermodynamics::mixtureEquilibriumCpMole()
 {
-    mp_equil->dXdT(mp_work1);
-    speciesHOverRT(mp_work2);
-    double cp = 0.0;
-    for (int i = 0; i < nSpecies(); i++)
-        cp += mp_work1[i] * mp_work2[i];
+    const double T = this->T();
     
-    return (cp * RU * T() + mixtureFrozenCpMole());
+    // Compute species enthalpies and dg/dT
+    speciesHOverRT(mp_work1);
+    for (int j = 0; j < nSpecies(); ++j)
+        mp_work2[j] = -mp_work1[j] / T;
+
+    // Compute change in species moles due to change in temperature
+    mp_equil->dNdg(mp_work2, mp_work2);
+
+    // Now compute the sums which require dN/dT
+    double sum1 = 0.0, sum2 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j) {
+        sum1 += mp_work2[j];               // sum_j dN_j/dT
+        sum2 += mp_work2[j]*mp_work1[j];   // sum_j dN_j/dT*H_j/RT
+    }
+
+    // Compute the species moles vector from the equilibrium solver
+    mp_equil->speciesMoles(mp_work2);
+
+    // Compute the sums that require N and H
+    double sum3 = 0.0, sum4 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j) {
+        sum3 += mp_work2[j];               // sum_j N_j
+        sum4 += mp_work2[j]*mp_work1[j];   // sum_j N_j*H_j/RT
+    }
+
+    // Compute the Cp vector
+    speciesCpOverR(mp_work1);
+    double sum5 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j)
+        sum5 += mp_work2[j]*mp_work1[j];   // sum_j N_j*Cp_j/R
+
+    // Put together all the terms
+    return RU*(sum3*(sum5+T*sum2)-T*sum1*sum4)/(sum3*sum3);
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureEquilibriumCpMass()
 {
-    const double Mwmix = mixtureMw();
-    const double* const p_X = X();
+    const double T = this->T();
 
+    // Compute species enthalpies and dg/dT
     speciesHOverRT(mp_work1);
-    mp_equil->dXdT(mp_work2);
-    
-    double dMwdT = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdT += mp_work2[i] * speciesMw(i);
-        
-    double cp = 0.0;
-    for (int i = 0; i < nSpecies(); i++)
-        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
-    
-    return (cp * RU * T() / (Mwmix*Mwmix) + mixtureFrozenCpMass());
+    for (int j = 0; j < nSpecies(); ++j)
+        mp_work2[j] = -mp_work1[j] / T;
+
+    // Compute change in species moles due to change in temperature
+    mp_equil->dNdg(mp_work2, mp_work2);
+
+    // Now compute the sums which require dN/dT
+    double sum1 = 0.0, sum2 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j) {
+        sum1 += mp_work2[j]*speciesMw(j);  // sum_j dN_j/dT*Mw_j
+        sum2 += mp_work2[j]*mp_work1[j];   // sum_j dN_j/dT*H_j/RT
+    }
+
+    // Compute the species moles vector from the equilibrium solver
+    mp_equil->speciesMoles(mp_work2);
+
+    // Compute the sums that require N and H
+    double sum3 = 0.0, sum4 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j) {
+        sum3 += mp_work2[j]*speciesMw(j);  // sum_j N_j
+        sum4 += mp_work2[j]*mp_work1[j];   // sum_j N_j*H_j/RT
+    }
+
+    // Compute the Cp vector
+    speciesCpOverR(mp_work1);
+    double sum5 = 0.0;
+    for (int j = 0; j < nSpecies(); ++j)
+        sum5 += mp_work2[j]*mp_work1[j];   // sum_j N_j*Cp_j/R
+
+    // Put together all the terms
+    return RU*(sum3*(sum5+T*sum2)-T*sum1*sum4)/(sum3*sum3);
 }
 
 //==============================================================================
 
-void Thermodynamics::dXidT(double* const dxdt)
+void Thermodynamics::dXidT(double* const p_dxdt)
 {   
-    mp_equil->dXdT(dxdt);
+    const double T = this->T();
+
+    // Compute species enthalpies and dg/dT
+    speciesHOverRT(mp_work1);
+    for (int j = 0; j < nSpecies(); ++j)
+        p_dxdt[j] = -mp_work1[j] / T;
+
+    mp_equil->dXdg(p_dxdt, p_dxdt);
 }
 
 //==============================================================================
 
 double Thermodynamics::dRhodP()
 {    
-    // Get rho, P, T
-    const double rho = density();
-    const double P = this->P();
-    const double Mwmix = mixtureMw();
-
-    // First compute dX/dT (work1) and dX/dP (work2)
-    mp_equil->dXdP(mp_work1);
-    
-    // Compute dMw/dT
-    double dMwdP = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdP += mp_work1[i] * speciesMw(i);
-
-    return (rho*(dMwdP/Mwmix+1.0/P));
+//    // Get rho, P, T
+//    const double rho = density();
+//    const double P = this->P();
+//    const double Mwmix = mixtureMw();
+//
+//    // First compute dX/dT (work1) and dX/dP (work2)
+//    mp_equil->dXdP(mp_work1);
+//
+//    // Compute dMw/dT
+//    double dMwdP = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdP += mp_work1[i] * speciesMw(i);
+//
+//    return (rho*(dMwdP/Mwmix+1.0/P));
 }
 
 //==============================================================================
@@ -721,55 +546,55 @@ double Thermodynamics::mixtureFrozenCvMass() const
 
 double Thermodynamics::mixtureEquilibriumCvMass()
 {
-    // Get rho, P, T
-    const double rho = density();
-    const double P = this->P();
-    const double T = this->T();
-    const double Mwmix = mixtureMw();
-    const double* const p_X = X();
-
-    // Store H/RT for each species in work1
-    speciesHOverRT(mp_work1);
-    
-    // Compute dX/dT (work2)
-    mp_equil->dXdT(mp_work2);
-    
-    // Compute dMw/dT
-    double dMwdT = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdT += mp_work2[i] * speciesMw(i);
-    
-    // Compute reactive Cp
-    double cp = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
-    cp *= (T / Mwmix);
-    
-    // Add Frozen Cp
-    speciesCpOverR(mp_work2);
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work2[i] * p_X[i];
-    cp *= RU / Mwmix;
-    
-    // Compute dX/dP (work2)
-    mp_equil->dXdP(mp_work2);
-    
-    // Compute dMw/dP
-    double dMwdP = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdP += mp_work2[i] * speciesMw(i);
-
-    // Compute de/dP
-    double dedp = 0.0;
-    for (int i = 0; i < nSpecies(); i++)
-        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
-    dedp *= (RU * T / (Mwmix*Mwmix));
-    
-    // Compute density and energy derivatives
-    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
-    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
-    
-    return (cp + (P/rho - dedp/drdp)*drdt);
+//    // Get rho, P, T
+//    const double rho = density();
+//    const double P = this->P();
+//    const double T = this->T();
+//    const double Mwmix = mixtureMw();
+//    const double* const p_X = X();
+//
+//    // Store H/RT for each species in work1
+//    speciesHOverRT(mp_work1);
+//
+//    // Compute dX/dT (work2)
+//    mp_equil->dXdT(mp_work2);
+//
+//    // Compute dMw/dT
+//    double dMwdT = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdT += mp_work2[i] * speciesMw(i);
+//
+//    // Compute reactive Cp
+//    double cp = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+//    cp *= (T / Mwmix);
+//
+//    // Add Frozen Cp
+//    speciesCpOverR(mp_work2);
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work2[i] * p_X[i];
+//    cp *= RU / Mwmix;
+//
+//    // Compute dX/dP (work2)
+//    mp_equil->dXdP(mp_work2);
+//
+//    // Compute dMw/dP
+//    double dMwdP = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdP += mp_work2[i] * speciesMw(i);
+//
+//    // Compute de/dP
+//    double dedp = 0.0;
+//    for (int i = 0; i < nSpecies(); i++)
+//        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+//    dedp *= (RU * T / (Mwmix*Mwmix));
+//
+//    // Compute density and energy derivatives
+//    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+//    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+//
+//    return (cp + (P/rho - dedp/drdp)*drdt);
 }
 
 
@@ -832,111 +657,111 @@ double Thermodynamics::mixtureFrozenGamma() const
 
 double Thermodynamics::mixtureEquilibriumGamma()
 {
-    // Get rho, P, T
-    const double rho = density();
-    const double P = this->P();
-    const double T = this->T();
-    const double Mwmix = mixtureMw();
-    const double* const p_X = X();
-
-    // Store H/RT for each species in work1
-    speciesHOverRT(mp_work1);
-    
-    // Compute dX/dT (work2)
-    mp_equil->dXdT(mp_work2);
-    
-    // Compute dMw/dT
-    double dMwdT = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdT += mp_work2[i] * speciesMw(i);
-    
-    // Compute reactive Cp
-    double cp = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
-    cp *= (T / Mwmix);
-    
-    // Add Frozen Cp
-    speciesCpOverR(mp_work2);
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work2[i] * p_X[i];
-    cp *= RU / Mwmix;
-    
-    // Compute dX/dP (work2)
-    mp_equil->dXdP(mp_work2);
-    
-    // Compute dMw/dP
-    double dMwdP = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdP += mp_work2[i] * speciesMw(i);
-
-    // Compute de/dP
-    double dedp = 0.0;
-    for (int i = 0; i < nSpecies(); i++)
-        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
-    dedp *= (RU * T / (Mwmix*Mwmix));
-    
-    // Compute density and energy derivatives
-    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
-    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
-    
-    //return (dedt - dedp*drdt/drdp);
-    return cp / (cp + (P/rho - dedp/drdp)*drdt);
+//    // Get rho, P, T
+//    const double rho = density();
+//    const double P = this->P();
+//    const double T = this->T();
+//    const double Mwmix = mixtureMw();
+//    const double* const p_X = X();
+//
+//    // Store H/RT for each species in work1
+//    speciesHOverRT(mp_work1);
+//
+//    // Compute dX/dT (work2)
+//    mp_equil->dXdT(mp_work2);
+//
+//    // Compute dMw/dT
+//    double dMwdT = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdT += mp_work2[i] * speciesMw(i);
+//
+//    // Compute reactive Cp
+//    double cp = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+//    cp *= (T / Mwmix);
+//
+//    // Add Frozen Cp
+//    speciesCpOverR(mp_work2);
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work2[i] * p_X[i];
+//    cp *= RU / Mwmix;
+//
+//    // Compute dX/dP (work2)
+//    mp_equil->dXdP(mp_work2);
+//
+//    // Compute dMw/dP
+//    double dMwdP = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdP += mp_work2[i] * speciesMw(i);
+//
+//    // Compute de/dP
+//    double dedp = 0.0;
+//    for (int i = 0; i < nSpecies(); i++)
+//        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+//    dedp *= (RU * T / (Mwmix*Mwmix));
+//
+//    // Compute density and energy derivatives
+//    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+//    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+//
+//    //return (dedt - dedp*drdt/drdp);
+//    return cp / (cp + (P/rho - dedp/drdp)*drdt);
 }
 
 //==============================================================================
 
 double Thermodynamics::equilibriumSoundSpeed()
 {
-    // Get rho, P, T
-    const double rho = density();
-    const double P = this->P();
-    const double T = this->T();
-    const double Mwmix = mixtureMw();
-    const double* const p_X = X();
-
-    // Store H/RT for each species in work1
-    speciesHOverRT(mp_work1);
-    
-    // Compute dX/dT (work2)
-    mp_equil->dXdT(mp_work2);
-    
-    // Compute dMw/dT
-    double dMwdT = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdT += mp_work2[i] * speciesMw(i);
-    
-    // Compute reactive Cp
-    double cp = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
-    cp *= (T / Mwmix);
-    
-    // Add Frozen Cp
-    speciesCpOverR(mp_work2);
-    for (int i = 0; i < nSpecies(); ++i)
-        cp += mp_work2[i] * p_X[i];
-    cp *= RU / Mwmix;
-    
-    // Compute dX/dP (work2)
-    mp_equil->dXdP(mp_work2);
-    
-    // Compute dMw/dP
-    double dMwdP = 0.0;
-    for (int i = 0; i < nSpecies(); ++i)
-        dMwdP += mp_work2[i] * speciesMw(i);
-
-    // Compute de/dP
-    double dedp = 0.0;
-    for (int i = 0; i < nSpecies(); i++)
-        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
-    dedp *= (RU * T / (Mwmix*Mwmix));
-    
-    // Compute density and energy derivatives
-    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
-    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
-    
-    return std::sqrt(cp / ((cp + (P/rho - dedp/drdp)*drdt) * rho * drdp));
+//    // Get rho, P, T
+//    const double rho = density();
+//    const double P = this->P();
+//    const double T = this->T();
+//    const double Mwmix = mixtureMw();
+//    const double* const p_X = X();
+//
+//    // Store H/RT for each species in work1
+//    speciesHOverRT(mp_work1);
+//
+//    // Compute dX/dT (work2)
+//    mp_equil->dXdT(mp_work2);
+//
+//    // Compute dMw/dT
+//    double dMwdT = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdT += mp_work2[i] * speciesMw(i);
+//
+//    // Compute reactive Cp
+//    double cp = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work1[i] * (mp_work2[i]*Mwmix - p_X[i]*dMwdT);
+//    cp *= (T / Mwmix);
+//
+//    // Add Frozen Cp
+//    speciesCpOverR(mp_work2);
+//    for (int i = 0; i < nSpecies(); ++i)
+//        cp += mp_work2[i] * p_X[i];
+//    cp *= RU / Mwmix;
+//
+//    // Compute dX/dP (work2)
+//    mp_equil->dXdP(mp_work2);
+//
+//    // Compute dMw/dP
+//    double dMwdP = 0.0;
+//    for (int i = 0; i < nSpecies(); ++i)
+//        dMwdP += mp_work2[i] * speciesMw(i);
+//
+//    // Compute de/dP
+//    double dedp = 0.0;
+//    for (int i = 0; i < nSpecies(); i++)
+//        dedp += (mp_work1[i] - 1.0) * (mp_work2[i]*Mwmix - p_X[i]*dMwdP);
+//    dedp *= (RU * T / (Mwmix*Mwmix));
+//
+//    // Compute density and energy derivatives
+//    const double drdt = dMwdT/Mwmix - 1.0/T; // note we leave out rho*(...)
+//    const double drdp = dMwdP/Mwmix + 1.0/P; // here also
+//
+//    return std::sqrt(cp / ((cp + (P/rho - dedp/drdp)*drdt) * rho * drdp));
 }
 
 //==============================================================================

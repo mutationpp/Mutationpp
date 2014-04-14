@@ -8,9 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 
 //#define VERBOSE
-#define SAVE_PATH
+//#define SAVE_PATH
 #include "Utilities.h"
 
 using std::cout;
@@ -28,7 +29,7 @@ const double MultiPhaseEquilSolver::ms_eps_rel = 0.001;
 const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-8;
 const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
-const double MultiPhaseEquilSolver::ms_max_ds  = 0.01;
+const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
 
 
 //==============================================================================
@@ -101,15 +102,15 @@ void MultiPhaseEquilSolver::clearConstraints()
 
 //==============================================================================
         
-void MultiPhaseEquilSolver::dXdT(double *const p_dxdt) const
+void MultiPhaseEquilSolver::dNdT(double *const p_dNdt) const
 {
 //    // Compute the dg/dT = [-H/RT]/T values
-//    RealVector dgdt(m_nsr);
-//    m_thermo.speciesHOverRT(m_T, p_dxdt);
-//    for (int j = 0; j < m_nsr; ++j)
-//        dgdt(j) = -p_dxdt[mp_sjr[j]] / m_T;
-//    
-//    partialOfX(dgdt, p_dxdt);
+//    m_thermo.speciesHOverRT(m_T, p_dNdt);
+//    for (int j = 0; j < m_ns; ++j)
+//        p_dNdt[j] /= -m_T;
+//
+//    partialOfN(p_dNdt, p_dNdt);
+    cout << "dNdT not implemented!" << endl; exit(1);
 }
 
 //==============================================================================
@@ -124,48 +125,115 @@ void MultiPhaseEquilSolver::dXdP(double *const p_dxdp) const
 //        if (mp_phase[mp_sjr[j]] > 0) dgdp(j) = 0.0;
 //    
 //    partialOfX(dgdp, p_dxdp);
+    cout << "dXdP not implemented!" << endl; exit(1);
 }
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::partialOfX(
-    const RealVector& dg, double* const p_dx) const
+void MultiPhaseEquilSolver::dSoldg(const double* const p_dg, RealVector& dx)
 {
-//    // RHS
-//    double temp;
-//    RealVector rhs(m_ncr+m_np, 0.0);
-//    RealVector sol = rhs;
-//    
-//    for (int k = 0; k < m_nsr; k++) {
-//        temp = m_N(k)*dg(k);
-//        for (int i = 0; i < m_ncr; ++i)
-//            rhs(i) += temp * m_Br(k,i);
-//        rhs(m_ncr+mp_phase[mp_sjr[k]]) += temp;
-//    }
-//    
-//    // Now compute the system solution
-//    RealSymMat A(m_ncr+m_np);
-//    formSystemMatrix(A);
-//    
-//    // Solve the system for dlambda/dalpha
-//    LeastSquares<double> ls(A);
-//    ls.solve(sol, rhs);
-//    
-//    // Compute dXj/dalpha = Xj*[-dgj/dalpha + sum_i Bji dlambdai/dalpha]
-//    RealVector Nbar(m_np, 0.0);
-//    for (int j = 0; j < m_nsr; ++j)
-//        Nbar(mp_phase[mp_sjr[j]]) += m_N(j);
-//    
-//    std::fill(p_dx, p_dx+m_ns, 0.0);
-//    
-//    for (int j = 0; j < m_nsr; ++j) {
-//        p_dx[mp_sjr[j]] = -dg(j);
-//        for (int i = 0; i < m_ncr; ++i)
-//            p_dx[mp_sjr[j]] += m_Br(j,i) * sol(i);
-//        p_dx[mp_sjr[j]] *= m_N(j) / Nbar(mp_phase[mp_sjr[j]]);
-//    }
+    const int ncr = m_solution.ncr();
+    const int npr = m_solution.npr();
+    const int nsr = m_solution.nsr();
+    const int neq = ncr + npr;
+
+    // Compute the Jacobian matrix
+    RealSymMat A(neq);
+    formSystemMatrix(A);
+
+    // Compute the RHS
+    RealVector rhs(neq);
+
+    double temp;
+    int jk;
+
+    for (int m = 0, j = 0; m < npr; ++m) {
+        for (; j < m_solution.sizes()[m+1]; ++j) {
+            jk = m_solution.sjr()[j];
+            temp = m_solution.y()[j];
+            temp *= temp * p_dg[jk];
+
+            for (int i = 0; i < ncr; ++i)
+                rhs(i) += temp * m_B(jk, m_solution.cir()[i]);
+
+            rhs(ncr+m) += temp;
+        }
+    }
+
+    // Get the system solution
+    SVD<double> svd(A);
+    svd.solve(dx, rhs);
 }
 
+//==============================================================================
+
+void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX)
+{
+    const int ncr = m_solution.ncr();
+    const int nsr = m_solution.nsr();
+    const int npr = m_solution.npr();
+    const int neq = ncr + npr;
+
+    // Compute the change in the solution variables due to change in dg
+    RealVector dx(neq);
+    dSoldg(p_dg, dx);
+
+    double temp;
+    int jk;
+
+    // Finally compute the dN/dg for all non zero species
+    for (int j = 0; j < nsr; ++j) {
+        jk = m_solution.sjr()[j];
+        p_dX[jk] = -p_dg[jk];
+
+        for (int i = 0; i < ncr; ++i)
+            p_dX[jk] += m_B(jk,m_solution.cir()[i])*dx(i);
+
+        temp = m_solution.y()[j];
+        p_dX[jk] *= temp*temp;
+    }
+
+    // Set the remaining species to zero
+    const int* p_jk = m_solution.sjr()+nsr;
+    for ( ; p_jk != m_solution.sjr()+m_ns; ++p_jk)
+        p_dX[*p_jk] = 0.0;
+}
+
+//==============================================================================
+
+void MultiPhaseEquilSolver::dNdg(const double* const p_dg, double* const p_dN)
+{
+    const int ncr = m_solution.ncr();
+    const int npr = m_solution.npr();
+    const int nsr = m_solution.nsr();
+    const int neq = ncr + npr;
+
+    // Compute the change in the solution variables due to change in dg
+    RealVector dx(neq);
+    dSoldg(p_dg, dx);
+
+    double temp;
+    int jk;
+
+    // Finally compute the dN/dg for all non zero species
+    for (int m = 0, j = 0; m < npr; ++m) {
+        for (; j < m_solution.sizes()[m+1]; ++j) {
+            jk = m_solution.sjr()[j];
+            p_dN[jk] = dx(ncr+m) - p_dg[jk];
+
+            for (int i = 0; i < ncr; ++i)
+                p_dN[jk] += m_B(jk,m_solution.cir()[i])*dx(i);
+
+            temp = m_solution.y()[j];
+            p_dN[jk] *= temp*temp;
+        }
+    }
+
+    // Set the remaining species to zero
+    const int* p_jk = m_solution.sjr()+nsr;
+    for ( ; p_jk != m_solution.sjr()+m_ns; ++p_jk)
+        p_dN[*p_jk] = 0.0;
+}
 
 //==============================================================================
 
@@ -210,10 +278,6 @@ void MultiPhaseEquilSolver::initPhases()
 std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     double T, double P, const double* const p_cv, double* const p_sv)
 {
-#ifdef SAVE_PATH
-    std::ofstream of("path.dat");
-#endif
-
     // Save T, P, c
     m_T  = T;
     m_P  = P;
@@ -249,6 +313,22 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 //    m_solution.printG();
     #endif
 
+#ifdef SAVE_PATH
+    std::ofstream of("path.dat");
+    of << setw(12) << "s";
+    of << setw(12) << "res";
+    of << setw(12) << "G/RT[mol]";
+    for (int i = 0; i < m_solution.ncr(); ++i)
+        of << setw(12) << "lam_" + m_thermo.elementName(m_solution.cir()[i]);
+//    for (int m = 0; m < m_solution.npr(); ++m) {
+//        if (m_solution.sizes()[m] == m_solution.sizes()[m+1]-1)
+//            of << setw(12) << "N_" + m_thermo.speciesName(m_solution.sjr()[m_solution.sizes()[m]]);
+//        else
+//            of << setw(11) << "N_" << m;
+//    }
+    of << endl;
+#endif
+
     double s  = 0.0;
     double ds = ms_max_ds;
     double res, resk = ms_eps_abs;
@@ -273,6 +353,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 #ifdef SAVE_PATH
         // Compute the Gibbs free energy of the system
         of << setw(12) << s;
+        of << setw(12) << resk;
 
         double G = 0.0;
         for (int i = 0; i < m_solution.ncr(); ++i)
@@ -281,8 +362,8 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 
         for (int i = 0; i < m_solution.ncr(); ++i)
             of << setw(12) << m_solution.lambda()[i];
-        for (int m = 0; m < m_solution.npr(); ++m)
-            of << setw(12) << std::exp(m_solution.lnNbar()[m]);
+//        for (int m = 0; m < m_solution.npr(); ++m)
+//            of << setw(12) << std::exp(m_solution.lnNbar()[m]);
 
         of << endl;
 #endif
@@ -312,21 +393,26 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
                 m_solution = last_solution;
             }
             
-            if (m_niters + m_nnewts > 1000) {
-                cout << "equil iter: " << m_niters << ", newt: " << m_nnewts << endl;
-                cout << "s = " << s << ", ds = " << log(ds) << ", res = " << res << ", resk = " << resk << endl;
-                std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
-                    for (int i = 0; i < m_ne; ++i)
-                        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
-                    std::cout << std::endl;
-                exit(1);
-            }
+//            if (m_niters + m_nnewts > 1000) {
+//                cout << "equil iter: " << m_niters << ", newt: " << m_nnewts << endl;
+//                cout << "s = " << s << ", ds = " << log(ds) << ", res = " << res << ", resk = " << resk << endl;
+//                std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
+//                    for (int i = 0; i < m_ne; ++i)
+//                        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
+//                    std::cout << std::endl;
+//                exit(1);
+//            }
         }
         
         // We found the solution at s, increase step size and move forward
         #ifdef VERBOSE
         cout << "Step succeded, increasing step size" << endl;
         #endif
+
+        int phase = m_solution.checkCondensedPhase(m_B);
+            if (phase > 0) {
+                cout << "Ooops! Phase " << m_thermo.speciesName(m_solution.sjr()[m_solution.sizes()[phase]]) << " should have been included..." << endl;
+            }
 
         s += ds;
         ds = std::min(ms_max_ds, std::min(ds*ms_ds_inc, 1.0-s));
@@ -339,6 +425,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 #ifdef SAVE_PATH
     // Compute the Gibbs free energy of the system
     of << setw(12) << s;
+    of << setw(12) << resk;
 
     double G = 0.0;
     for (int i = 0; i < m_solution.ncr(); ++i)
@@ -347,8 +434,8 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 
     for (int i = 0; i < m_solution.ncr(); ++i)
         of << setw(12) << m_solution.lambda()[i];
-    for (int m = 0; m < m_solution.npr(); ++m)
-        of << setw(12) << std::exp(m_solution.lnNbar()[m]);
+//    for (int m = 0; m < m_solution.npr(); ++m)
+//        of << setw(12) << std::exp(m_solution.lnNbar()[m]);
 
     of << endl;
 #endif
@@ -570,7 +657,6 @@ void MultiPhaseEquilSolver::rates(RealVector& dx)
             SVD<double> svd(A);
             svd.solve(x, b);
             dx(ncr,ncr+npr) = x;
-            
         }
     
     // Finally compute the d(lambda)/ds vector
@@ -652,8 +738,9 @@ double MultiPhaseEquilSolver::newton()
         // Solve the linear system (if it is singular then don't bother)
         if (ldlt.setMatrix(A))
         	ldlt.solve(dx, -r);
-        else
-			return res;
+        else {
+			minres(A, dx, -r);
+        }
         //QRP<double> qrp(A);
         //#ifdef VERBOSE
         //cout << "R matrix = " << endl;

@@ -36,6 +36,8 @@ int main(int argc, char** argv)
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();
     const int nr = mixture.nReactions();
+    const int ng = mixture.nGas();
+    const int nc = mixture.nCondensed();
  
     cout << "location: " << opts.getSource() << endl;
     cout << ns << " species containing " << ne << " elements" << endl;
@@ -55,20 +57,40 @@ int main(int argc, char** argv)
     
     cout << setw(12) << "Mw (g/mol)" << setw(10) << "Charge";
     cout << setw(12) << "Phase" << endl;
-    for (int i = 0; i < ns; ++i) {
+    cout << "Gas Species (" << ng << "):" << endl;
+    for (int i = 0; i < ng; ++i) {
         cout.setf(std::ios::left, std::ios::adjustfield);
         cout << setw(width) << mixture.speciesName(i);
-        
-        cout.setf(std::ios::right, std::ios::adjustfield); 
+
+        cout.setf(std::ios::right, std::ios::adjustfield);
         for (int j = 0; j < ne; ++j)
             cout << setw(4) << mixture.elementMatrix()(i,j);
-        
+
         cout << setw(12) << mixture.speciesMw(i) * 1000.0
              << setw(10) << mixture.species()[i].charge();
-        
+
         PhaseType phase = mixture.species()[i].phase();
-        cout << setw(12) << (phase == GAS ? "gas" : 
+        cout << setw(12) << (phase == GAS ? "gas" :
             (phase == LIQUID ? "liquid" : "solid")) << endl;
+    }
+
+    if (nc > 0) {
+        cout << "Condensed Species (" << nc << "):" << endl;
+        for (int i = ng; i < ns; ++i) {
+            cout.setf(std::ios::left, std::ios::adjustfield);
+            cout << setw(width) << mixture.speciesName(i);
+
+            cout.setf(std::ios::right, std::ios::adjustfield);
+            for (int j = 0; j < ne; ++j)
+                cout << setw(4) << mixture.elementMatrix()(i,j);
+
+            cout << setw(12) << mixture.speciesMw(i) * 1000.0
+                 << setw(10) << mixture.species()[i].charge();
+
+            PhaseType phase = mixture.species()[i].phase();
+            cout << setw(12) << (phase == GAS ? "gas" :
+                (phase == LIQUID ? "liquid" : "solid")) << endl;
+        }
     }
     
     cout << endl;

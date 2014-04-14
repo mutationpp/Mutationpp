@@ -122,6 +122,16 @@ public:
     int nPhases() const;
     
     /**
+     *  Returns number of gas species in the mixture.
+     */
+    int nGas() const { return m_ngas; }
+
+    /**
+     * Returns the number of condensed phase species in the mixture.
+     */
+    int nCondensed() const { return nSpecies()-m_ngas; }
+
+    /**
      * Returns true if this mixture includes electrons, false otherwise.
      */
     bool hasElectrons() const {
@@ -696,6 +706,7 @@ private:
     bool m_has_electrons;
     int  m_natoms;
     int  m_nmolecules;
+    int  m_ngas;
     
 }; // class Thermodynamics
 

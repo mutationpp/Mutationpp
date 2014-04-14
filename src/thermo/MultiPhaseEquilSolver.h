@@ -135,7 +135,7 @@ public:
      * Returns the partial derivative of the equilibrium mole fractions with
      * respect to temperature.
      */
-    void dXdT(double* const p_dxdt) const;
+    void dNdT(double* const p_dxdt) const;
     
     /**
      * Returns the partial derivative of the equilibrium mole fractions with
@@ -144,24 +144,52 @@ public:
     void dXdP(double* const p_dxdp) const;
     
     /**
+     * Computes the partial derivatives of the equilibrium species moles with
+     * respect to some change in the species Gibbs energies.  For instance, to
+     * compute dN/dT, supply the dg/dT vector.
+     */
+    void dNdg(const double* const p_dg, double* const p_dNdg);
+
+    void dXdg(const double* const p_dg, double* const p_dXdg);
+
+    void dSoldg(const double* const p_dg, Numerics::RealVector& dx);
+
+    /**
      * Returns the current element potentials as computed by the equilibrate
      * function.
      */
-    void elementPotentials(double* const p_lambda) const {
-//        std::fill(p_lambda, p_lambda+m_nc, 0.0);
-//        for (int i = 0; i < m_ncr; ++i) {
-//            p_lambda[mp_cir[i]] = m_lambda(i);
-//        }
+    void elementPotentials(double* const p_lambda) const
+    {
+        for (int i = 0; i < m_solution.ncr(); ++i)
+            p_lambda[m_solution.cir()[i]] = m_solution.lambda()[i];
+        for (int i = m_solution.ncr(); i < m_nc; ++i)
+            p_lambda[m_solution.cir()[i]] = 0.0;
     }
     
     /**
      * Returns the current phase moles as computed by the equilibrate function.
      */
     void phaseMoles(double* const p_moles) const {
-//        for (int i = 0; i < m_np; ++i)
-//            p_moles[i] = m_Nbar(i);
+//        for (int m = 0; m < m_npr; ++m)
+//            p_moles[m] = std::exp(m_solution.lnNbar(m));
     }
     
+    /*
+     * Returns the current species moles vector as computed the by the last
+     * call to equilibrate().
+     */
+    void speciesMoles(double* const p_moles) const
+    {
+        double temp;
+        for (int j = 0; j < m_solution.nsr(); ++j) {
+            temp = m_solution.y()[j];
+            p_moles[m_solution.sjr()[j]] = temp*temp;
+        }
+
+        for (int j = m_solution.nsr(); j < m_ns; ++j)
+            p_moles[m_solution.sjr()[j]] = 0.0;
+    }
+
     /**
      * Returns the number of continuation steps on the last call to equilibrate.
      */
@@ -176,6 +204,15 @@ public:
     int nNewtons() const {
         return m_nnewts;
     }
+
+    /**
+     * Computes the partial derivatives dN/dalpha given dg/dalpha.  This method
+     * is the common code used in dNdT() and dNdP().  Note that it is safe to
+     * use the same vector to pass in dg/dalpha and receive dN/dalpha.
+     * @see dXdP()
+     * @see dXdT()
+     */
+    //void partialOfN(const double* const p_dg, double* const p_dN) const;
 
 
 private:
@@ -367,7 +404,7 @@ private:
             for (int i = 0; i < m_ncr; ++i)
                 mp_lambda[i] += dx(i);
             for (int m = 0; m < m_npr; ++m)
-                mp_lnNbar[m] += dx(m+m_ncr);
+                mp_lnNbar[m] = std::min(300.0, mp_lnNbar[m]+dx(m+m_ncr));
                 
             updateY(B);
         }
@@ -556,6 +593,35 @@ private:
             return (m_npr-1);
         }
         
+        /**
+         * Returns the index of the phase which will reduce the Gibbs energy the
+         * most with the current solution.  If no phase will reduce further than
+         * -1 is returned.
+         */
+        int checkCondensedPhase(const Numerics::RealMatrix& B)
+        {
+            if (m_np <= m_ncr)
+                return -1;
+
+            int    min_m   = -1;
+            double min_sum = 0.0;
+
+            for (int m = m_npr; m < m_np; ++m) {
+                for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j) {
+                    double sum = mp_g[mp_sjr[j]];
+                    for (int i = 0; i < m_ncr; ++i)
+                        sum -= mp_lambda[i]*B(mp_sjr[j], mp_cir[i]);
+
+                    if (sum < min_sum) {
+                        min_m   = m;
+                        min_sum = sum;
+                    }
+                }
+            }
+
+            return min_m;
+        }
+
         void printOrder()
         {
             cout << "Species order:" << endl;
@@ -641,14 +707,6 @@ private:
      * structure.
      */
     void checkForDeterminedSpecies();
-    
-    /**
-     * Computes the partial derivatives dX/dalpha given dg/dalpha.  This method
-     * is the common code used in dXdT() and dXdP().
-     * @see dXdP()
-     * @see dXdT()
-     */
-    void partialOfX(const Numerics::RealVector& dg, double* const p_dx) const;
     
     void initialConditions();
     void rates(Numerics::RealVector& dx);
