@@ -140,7 +140,7 @@ public:
      * with the given name.
      */
     template <typename T>
-    void getAttribute(const std::string& name, T& value) const;
+    T getAttribute(const std::string& name, T& value = T()) const;
     
     /**
      * Returns an iterator pointing to the first child element in this
@@ -241,6 +241,25 @@ public:
         return findTagWithAttribute(tag, attribute, std::string(value), iter);
     }
     
+    template <typename T>
+    bool getChildElementObject(const std::string& tag, T& object) const
+    {
+        getChildElementObject(tag, object, begin());
+    }
+
+    template <typename T>
+    bool getChildElementObject(const std::string& tag, T& object,
+         const_iterator iter) const
+    {
+        iter = findTag(tag, iter);
+        if (iter != end()) {
+            object = T(*iter);
+            return true;
+        }
+
+        return false;
+    }
+
     /** 
      * Prints the given error message and exits.
      */
