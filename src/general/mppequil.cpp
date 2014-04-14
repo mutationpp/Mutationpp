@@ -561,13 +561,13 @@ int main(int argc, char** argv)
             // Compute the equilibrium composition
             mix.setState(&T, &P);
             cw = 0;
-        
+
             // Mixture properties
             iter = opts.mixture_indices.begin(); 
             for ( ; iter < opts.mixture_indices.end(); ++iter) {
                 name  = mixture_quantities[*iter].name;
                 units = mixture_quantities[*iter].units;
-                
+
                 if (name == "Th")
                     value = mix.T();
                 else if (name == "P")
