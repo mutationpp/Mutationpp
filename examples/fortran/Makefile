@@ -4,7 +4,7 @@ MUTATIONPP_INSTALL = ../../install
 FC       = gfortran
 FC_FLAGS = -J$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g -fdefault-real-8
 # use .dylib for Mac, .so for Unix
-FC_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++_fortran.dylib
+FC_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++_fortran.so
 
 EXAMPLES  = \
 	wrapper_test
