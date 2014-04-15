@@ -51,7 +51,15 @@ public:
     /**
      * Sets the current mixture state.
      */
-    virtual void setState(const double* const v1, const double* const v2, int v3 = 0) = 0;
+    virtual void setState(const double* const v1, const double* const v2, int v3 = 0 ) = 0;
+
+    /**
+     * Returns the number of temperatures of each mode.
+     */
+    virtual int nEnergyEq() = 0;
+    virtual int nVibEq() = 0;
+    virtual int nRotEq() = 0;
+    virtual int nElEq() = 0;
     
     /**
      * Returns the mixture translational temperature.

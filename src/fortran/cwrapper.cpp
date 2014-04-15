@@ -138,6 +138,11 @@ double NAME_MANGLE(pressure)()
 {
     return p_mix->P();
 }
+//==============================================================================
+double NAME_MANGLE(temperature)()
+{
+    return p_mix->T();
+}
 
 //==============================================================================
 double NAME_MANGLE(density)()
@@ -166,9 +171,34 @@ void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X)
 }
 
 //==============================================================================
-void NAME_MANGLE(set_state)(double* v1, double* v2, int v3)
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* p_v3)
 {
+    int v3 = *p_v3;
     p_mix->setState(v1, v2, v3);
+}
+
+//==============================================================================
+int NAME_MANGLE(nenergyeq)()
+{
+    return p_mix->nEnergyEq();
+}
+
+//==============================================================================
+int NAME_MANGLE(nvibeq)()
+{
+    return p_mix->nVibEq();
+}
+
+//==============================================================================
+int NAME_MANGLE(nroteq)()
+{
+    return p_mix->nRotEq();
+}
+
+//==============================================================================
+int NAME_MANGLE(neleq)()
+{
+    return p_mix->nElEq();
 }
 
 //==============================================================================
@@ -217,6 +247,19 @@ void NAME_MANGLE(species_h_mass)(double *const h)
     for (int i = 0; i < p_mix->nSpecies(); i++)
         h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
 }
+
+//==============================================================================
+/*void NAME_MANGLE(species_h_tcneq_mass)(double *const h, double *const h_t, double *const h_r, double const* h_v, double const* h_el, double const* h_f)
+{
+    double T = p_mix->T();
+    double Te = p_mix->Te();
+    double Tr = p_mix->Tr();
+    double Tv = p_mix->Tv();
+    double Tel = p_mix->Tel();
+    p_mix->speciesHOverRT(T, Te, Tr, Tv, Tel, h, h_t, h_r, h_v, h_el, h_f);
+    for (int i = 0; i < p_mix->nSpecies(); i++)
+        h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
+}*/
 
 //==============================================================================
 double NAME_MANGLE(mixture_h_mass)()

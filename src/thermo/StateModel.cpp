@@ -272,7 +272,6 @@ namespace Mutation {
 //     */
 //    virtual void setState(const double* const p_rhoi, const double* const p_rhoE)
 //    {
-//    // Get it robustly //!!!//
 //    int nb_temp = 1;
 //    int nb_ns = m_thermo.nSpecies(); 
 //    // Getting temperature from p_E. Newton iteration method. It should be implemented somewhere else
@@ -366,98 +365,467 @@ public:
     state_variable = 0;
     }
     
-    virtual void setState(const double* const p_mass, const double* const p_energy, int state)
+    virtual void setState(const double* const p_mass, const double* const p_energy, int i_state)
     {
-      state_variable = state;
+      state_variable = i_state;
 
       switch (state_variable)
       {
-      case 0:
-      {
-        // Default model --> rhoie, rhoE
-        
-        // Get it robustly //!!!//
-        int nb_temp = 1;
-        int nb_ns = m_thermo.nSpecies(); 
-
-        double T = 1000.e0;
-        double dT = 0;
-        double residual = 1.e0;
-        double f, fp;
-    
-        double * p_h = new double[nb_ns];
-        double * p_cp = new double[nb_ns];
-        double * p_Ri = new double[nb_ns];
-
-        while(residual > 1.e-8)
+        case 0:
         {
-          m_thermo.speciesHOverRT(T, p_h);
-          m_thermo.speciesCpOverR(T, p_cp);
-          f = 0; fp = 0;
+          // Default model --> rhoie, rhoE
+        
+          int nb_temp = nEnergyEq();
+          int nb_ns = m_thermo.nSpecies(); 
 
-          for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+          double T = 1000.e0;
+          double dT = 0;
+          double residual = 1.e0;
+          double f, fp;
+    
+          double * p_h = new double[nb_ns];
+          double * p_cp = new double[nb_ns];
+          double * p_Ri = new double[nb_ns];
+
+          while(residual > 1.e-8)
           {
-            p_Ri[ic_1] = (RU/m_thermo.speciesMw(ic_1));
-            p_h[ic_1] *= T * (p_Ri[ic_1]);
-            p_cp[ic_1] *= p_Ri[ic_1];
-            fp += p_mass[ic_1] * (p_cp[ic_1] - p_Ri[ic_1]);
-            f += p_mass[ic_1] * (p_h[ic_1] - T * p_Ri[ic_1]);
+            m_thermo.speciesHOverRT(T, p_h);
+            m_thermo.speciesCpOverR(T, p_cp);
+            f = 0; fp = 0;
+
+            for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+            {
+              p_Ri[ic_1] = (RU/m_thermo.speciesMw(ic_1));
+              p_h[ic_1] *= T * (p_Ri[ic_1]);
+              p_cp[ic_1] *= p_Ri[ic_1];
+              fp += p_mass[ic_1] * (p_cp[ic_1] - p_Ri[ic_1]);
+              f += p_mass[ic_1] * (p_h[ic_1] - T * p_Ri[ic_1]);
+            }
+
+            dT = (f - *p_energy)/fp;
+            T = T - dT;
+
+            residual = std::abs(dT/T);
+
+            m_T = m_Tr = m_Tv = m_Tel = m_Te = T;
+
           }
 
-          dT = (f - *p_energy)/fp;
-          T = T - dT;
-
-          residual = std::abs(dT/T);
-
-          m_T = m_Tr = m_Tv = m_Tel = m_Te = T;
-
-        }
-
-        m_P = 0.0;
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
-          m_P += p_mass[i];
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
-          mp_X[i] = p_mass[i] / m_P;
+          m_P = 0.0;
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_mass[i];
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_mass[i] / m_P;
           m_P = m_thermo.pressure(m_T, m_P, mp_X);
 
           m_thermo.convert<Y_TO_X>(mp_X, mp_X);
 
+          delete [] p_h;
+          delete [] p_cp;
+          delete [] p_Ri;
 
-        delete [] p_h;
-        delete [] p_cp;
-        delete [] p_Ri;
+          break;
+        }
+        case 1:
+        {
+          // rhoi, T
 
-        break;
-      }
-      case 1:
-      {
-      // rhoi, T
-
-        m_T = m_Tr = m_Tv = m_Tel = m_Te = *p_energy;
+          m_T = m_Tr = m_Tv = m_Tel = m_Te = *p_energy;
         
-        m_P = 0.0;
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+          m_P = 0.0;
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
             m_P += p_mass[i];
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
             mp_X[i] = p_mass[i] / m_P;
-        m_P = m_thermo.pressure(m_T, m_P, mp_X);
-        m_thermo.convert<Y_TO_X>(mp_X, mp_X);
-//
-        break;
-      }
-      default:
-      {
-        std::cout << "The setState model requested has not been implemented yet." << endl;
+          m_P = m_thermo.pressure(m_T, m_P, mp_X);
+          m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+
+          break;
+        }
+        default:
+        {
+          std::cout << "The setState model requested has not been implemented yet." << endl;
+        }
+
       }
 
     }
-
+    
+    virtual int nEnergyEq()
+    {
+      return(1);
     }
+
+    virtual int nVibEq()
+    {
+      return(0);
+    }
+
+    virtual int nRotEq()
+    {
+      return(0);
+    }
+
+    virtual int nElEq()
+    {
+      return(0);
+    }
+
 };
 
 // Register the state model
 Utilities::Config::ObjectProvider<
     NonequilibriumSingleT, StateModel> nonequilibriumsinglet("NonequilibriumSingleT");
+
+// This is the state model for the stagnation line code two temperature
+
+class NonequilibriumTTv : public StateModel
+{
+//Determines the state variables  in order to characterize the mixture via set_State function
+// state_variable = 0 --> Conservative variables; partial mass densities, total energy density and vib energy
+// state_variable = 1 --> Partial densities and temperatures T and Tv
+int state_variable;
+
+public:
+    /**
+     * Constructor.
+     */
+    NonequilibriumTTv(const Thermodynamics& thermo)
+        : StateModel(thermo)
+    { 
+// Default state_variable initialized
+    state_variable = 0;
+    }
+    
+    virtual void setState(const double* const p_mass, const double* const p_energy, int i_state)
+    {
+      state_variable = i_state;
+
+      switch (state_variable)
+      {
+        case 0:
+        {
+          // Default model --> rhoie, rhoE
+
+          int nb_temp = nEnergyEq();
+          int nb_ns = m_thermo.nSpecies(); 
+ 
+          double T=300.e0;
+          double dT = 0.e0;
+          double Tv=300.e0;
+          double Tv_trial = 0;
+          double dTv = 0;
+          double residual = 1.e0;
+          double residual_temp = 1.e0;
+          double cptr, hf, fv, fpv;
+          double f, fp;
+
+          bool b_in;
+
+          double * p_h = new double[nb_ns];
+          double * p_ht = new double[nb_ns];
+          double * p_hr = new double[nb_ns];
+          double * p_hv = new double[nb_ns];
+          double * p_he = new double[nb_ns];
+          double * p_hf = new double[nb_ns];
+          double * p_cp = new double[nb_ns];
+          double * p_cpt = new double[nb_ns];
+          double * p_cpr = new double[nb_ns];
+          double * p_cpv = new double[nb_ns];
+          double * p_cpe = new double[nb_ns];
+          double * p_Ri = new double[nb_ns];
+
+          for(int ic_1=0; ic_1 < nb_ns; ++ic_1){p_Ri[ic_1] = (RU/m_thermo.speciesMw(ic_1));}
+
+          // Computing Tv
+
+            m_T = m_Tr = T;
+            m_Tv = m_Tel = m_Te = Tv;
+
+          while(residual > 1.e-8){
+            m_thermo.speciesHOverRT(p_h, p_ht, p_hr, p_hv, p_he, p_hf);
+            m_thermo.speciesCpOverR(T, Tv, T, Tv, Tv, p_cp, p_cpt, p_cpr, p_cpv, p_cpe);
+
+            fv = 0; fpv = 0;
+
+            for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+            {
+              p_hv[ic_1] *= T * (p_Ri[ic_1]);
+              p_cpv[ic_1] *= p_Ri[ic_1];
+
+              fpv += p_mass[ic_1] * (p_cpv[ic_1]);
+              fv += p_mass[ic_1] * (p_hv[ic_1]);
+            }
+
+            dTv = (fv - p_energy[1])/fpv;
+            Tv_trial = Tv - dTv;
+            residual = std::abs(fv - p_energy[1]);
+
+            b_in = true;
+
+//          Test for residual
+            double lambda = 1.0;             
+            while(b_in){
+              m_Tv = m_Tel = m_Te = Tv_trial;
+
+              m_thermo.speciesHOverRT(p_h, p_ht, p_hr, p_hv, p_he, p_hf);
+
+              fv =0;
+
+              for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+              {
+                p_hv[ic_1] *= T * (p_Ri[ic_1]);
+
+                fv += p_mass[ic_1] * (p_hv[ic_1]);
+              }
+
+              residual_temp = std::abs(fv - p_energy[1]);
+
+              if(residual_temp > (1.0-1.0e-4*lambda)*residual){
+                  lambda *= 0.5;
+                  Tv_trial = Tv - lambda*dTv;
+              }
+              else{
+                Tv = Tv_trial;
+                b_in = false;
+              }
+            }
+            m_Tv = m_Tel = m_Te = Tv;
+          }
+
+          // Imposing equilibrium as initial guess
+
+          m_T = m_Tr = T = Tv;
+
+          // Computing T
+
+          while(residual > 1.e-8)
+          {
+            m_thermo.speciesHOverRT(T, p_h);
+            m_thermo.speciesCpOverR(T, p_cp);
+            f = 0; fp = 0;
+
+            for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+            {
+              p_h[ic_1] *= T * (p_Ri[ic_1]);
+              p_cp[ic_1] *= p_Ri[ic_1];
+              fp += p_mass[ic_1] * (p_cp[ic_1] - p_Ri[ic_1]);
+              f += p_mass[ic_1] * (p_h[ic_1] - T * p_Ri[ic_1]);
+            }
+
+            dT = (f - *p_energy)/fp;
+            T = T - dT;
+
+            // Bad residual fix me
+
+            residual = std::abs(dT/T);
+
+          }
+
+//          cout << T << " " << Tv << endl;
+
+          // Setting the final state
+
+          m_T = m_Tr = T;
+          m_Tv = m_Tel = m_Te = Tv;
+
+          m_P = 0.0;
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_mass[i];
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_mass[i] / m_P;
+          m_P = m_thermo.pressure(m_T, m_P, mp_X);
+
+          m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+//          int nb_temp = nEnergyEq();
+//          int nb_ns = m_thermo.nSpecies(); 
+//
+//          double T; //No need to be initialized
+//          double Tv = 1000.e0;
+//          double Tv_trial = 0;
+//          double dTv = 0;
+//          double residual = 1.e0;
+//          double residual_temp = 1.e0;
+//          double cptr, hf, fv, fpv;
+//
+//          bool b_in;
+//    
+//          double * p_h = new double[nb_ns];
+//          double * p_ht = new double[nb_ns];
+//          double * p_hr = new double[nb_ns];
+//          double * p_hv = new double[nb_ns];
+//          double * p_he = new double[nb_ns];
+//          double * p_hf = new double[nb_ns];
+//          double * p_cp = new double[nb_ns];
+//          double * p_cpt = new double[nb_ns];
+//          double * p_cpr = new double[nb_ns];
+//          double * p_cpv = new double[nb_ns];
+//          double * p_cpe = new double[nb_ns];
+//          double * p_Ri = new double[nb_ns];
+//
+//          cptr = 0;
+//
+//          for(int ic_1=0; ic_1 < nb_ns; ++ic_1){p_Ri[ic_1] = (RU/m_thermo.speciesMw(ic_1));}
+//
+//          m_T = m_Tr = m_Tv = m_Tel = m_Te = Tv;
+//
+//          m_thermo.speciesHOverRT(p_h, NULL, NULL, NULL, NULL, p_hf);
+//
+//          for(int ic_1=0; ic_1 < nb_ns; ++ic_1){
+//          hf += p_mass[ic_1] * p_hf[ic_1] * Tv * p_Ri[ic_1];
+//          }
+//
+////        Translational Temperature
+//          for(int ic_1=0; ic_1 < nb_ns; ++ic_1){
+//            cptr += p_mass[ic_1] * 1.5e0 * p_Ri[ic_1];
+//            if(m_thermo.species(ic_1).type() == MOLECULE ? 1 : 0) {cptr += p_mass[ic_1] * p_Ri[ic_1];} //Only for linear molecules
+//            }
+//
+//          T = (p_energy[0] - p_energy[1] - hf)/(cptr);
+//          Tv = T;
+//
+//          residual = 1.e0;
+//
+//          m_T = m_Tr = T;
+//          m_Tv = m_Tel = m_Te = Tv;
+//
+////        Newton loop for Tv 
+//
+//          while(residual > 1.e-8){
+//            m_thermo.speciesHOverRT(p_h, p_ht, p_hr, p_hv, p_he, p_hf);
+//            m_thermo.speciesCpOverR(T, Tv, T, Tv, Tv, p_cp, p_cpt, p_cpr, p_cpv, p_cpe);
+//
+//            fv = 0; fpv = 0;
+//
+////          SUPER SOS: MAKE IT GENERAL SO THAT IT CAN TAKE INTO ACCOUNT FREE ELECTRONS ALSO
+//
+//            for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+//            {
+//              p_hv[ic_1] *= T * (p_Ri[ic_1]);
+//              p_he[ic_1] *= T * (p_Ri[ic_1]);
+//              p_cpv[ic_1] *= p_Ri[ic_1];
+//              p_cpe[ic_1] *= p_Ri[ic_1];
+//
+//              fpv += p_mass[ic_1] * (p_cpv[ic_1] + p_cpe[ic_1]);
+//              fv += p_mass[ic_1] * (p_hv[ic_1] + p_he[ic_1] );
+//            }
+//
+//            dTv = (fv - p_energy[1])/fpv;
+//            Tv_trial = Tv - dTv;
+//            residual = std::abs(fv - p_energy[1]);
+//
+//            b_in = true;
+//
+////          Test for residual
+//            double lambda = 1.0;             
+//            while(b_in){
+//              m_T = m_Tr = T;
+//              m_Tv = m_Tel = m_Te = Tv_trial;
+//
+//              m_thermo.speciesHOverRT(p_h, p_ht, p_hr, p_hv, p_he, p_hf);
+//
+//              fv =0;
+//
+//              for(int ic_1=0; ic_1 < nb_ns; ic_1++)
+//              {
+//                p_hv[ic_1] *= T * (p_Ri[ic_1]);
+//                p_he[ic_1] *= T * (p_Ri[ic_1]);
+//
+//                fv += p_mass[ic_1] * (p_hv[ic_1] + p_he[ic_1]);
+//              }
+//
+//              residual_temp = std::abs(fv - p_energy[1]);
+//
+//              if(residual_temp > (1.0-1.0e-4*lambda)*residual){
+//                  lambda *= 0.5;
+//                  Tv_trial = Tv - lambda*dTv;
+//              }
+//              else{
+//                Tv = Tv_trial;
+//                b_in = false;
+//              }
+//            }
+//            m_Tv = m_Tel = m_Te = Tv;
+//          }
+//
+//          m_P = 0.0;
+//          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//            m_P += p_mass[i];
+//          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//            mp_X[i] = p_mass[i] / m_P;
+//          m_P = m_thermo.pressure(m_T, m_P, mp_X);
+//
+//          m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+//
+          delete [] p_h;
+          delete [] p_ht;
+          delete [] p_hr;
+          delete [] p_hv;
+          delete [] p_he;
+          delete [] p_hf;
+          delete [] p_cp;
+          delete [] p_cpt;
+          delete [] p_cpr;
+          delete [] p_cpv;
+          delete [] p_cpe;
+          delete [] p_Ri;
+
+          break;
+        }
+        case 1:
+        {
+          // rhoi, T
+
+          m_T = m_Tr = p_energy[0];
+          m_Tv = m_Tel = m_Te = p_energy[1];
+        
+          m_P = 0.0;
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            m_P += p_mass[i];
+          for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            mp_X[i] = p_mass[i] / m_P;
+          m_P = m_thermo.pressure(m_T, m_P, mp_X);
+          m_thermo.convert<Y_TO_X>(mp_X, mp_X);
+
+          break;
+        }
+        default:
+        {
+          std::cout << "The setState model requested has not been implemented yet." << endl;
+        }
+
+      }
+
+    }
+    
+    virtual int nEnergyEq()
+    {
+      return(2);
+    }
+
+    virtual int nVibEq()
+    {
+      return(1);
+    }
+
+    virtual int nRotEq()
+    {
+      return(0);
+    }
+
+    virtual int nElEq()
+    {
+      return(0);
+    }
+
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    NonequilibriumTTv, StateModel> nonequilibriumttv("NonequilibriumTTv");
 
 
     } // namespace Thermodynamics

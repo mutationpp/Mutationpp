@@ -368,8 +368,36 @@ int Thermodynamics::nPhases() const {
 void Thermodynamics::setState(
     const double* const p_v1, const double* const p_v2, int v3)
 {
-    mp_state->setState(p_v1, p_v2);
+    mp_state->setState(p_v1, p_v2, v3);
     convert<X_TO_Y>(X(), mp_y);
+}
+
+//==============================================================================
+
+int Thermodynamics::nEnergyEq() const 
+{
+    return mp_state->nEnergyEq();
+}
+
+//==============================================================================
+
+int Thermodynamics::nVibEq() const 
+{
+    return mp_state->nVibEq();
+}
+
+//==============================================================================
+
+int Thermodynamics::nRotEq() const 
+{
+    return mp_state->nRotEq();
+}
+
+//==============================================================================
+
+int Thermodynamics::nElEq() const 
+{
+    return mp_state->nElEq();
 }
 
 //==============================================================================

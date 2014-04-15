@@ -14,6 +14,18 @@ module mutationpp
         integer function mpp_nreactions()
         end function
         
+        integer function mpp_nenergyeq()
+        end function
+
+        integer function mpp_nvibeq()
+        end function
+
+        integer function mpp_nroteq()
+        end function
+
+        integer function mpp_neleq()
+        end function
+
         integer function mpp_element_index(element)
             character(len=*) :: element
         end function
@@ -37,6 +49,9 @@ module mutationpp
         real(kind=8) function mpp_pressure()
         end function
         
+        real(kind=8) function mpp_temperature()
+        end function
+
         real(kind=8) function mpp_mixture_mw()
         end function
         

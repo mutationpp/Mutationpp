@@ -209,6 +209,11 @@ double NAME_MANGLE(number_density)();
 double NAME_MANGLE(pressure)();
 
 /**
+ * Returns the temperature of the mixture.
+ */
+double NAME_MANGLE(temperature)();
+
+/**
  * Returns the density of the mixture.
  */
 double NAME_MANGLE(density)();
@@ -239,7 +244,15 @@ void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
  * Sets the current state of the mixture using temperature and species 
  * densities.
  */
-void NAME_MANGLE(set_state)(double* v1, double* v2);
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* p_v3);
+
+/**
+ * Returns the number of energy equation
+ */
+int NAME_MANGLE(nenergyeq)();
+int NAME_MANGLE(nvibeq)();
+int NAME_MANGLE(nroteq)();
+int NAME_MANGLE(neleq)();
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the
@@ -269,6 +282,17 @@ double NAME_MANGLE(mixture_frozen_gamma)();
  * @param h - species enthalpies on return
  */
 void NAME_MANGLE(species_h_mass)(double *const h);
+
+/**
+ * Returns the species enthalpies in J/kg.
+ *
+ * @param h - species enthalpies on return
+ * @param h - species enthalpies on return
+ * @param h - species enthalpies on return
+ * @param h - species enthalpies on return
+ * @param h - species enthalpies on return
+ */
+//void NAME_MANGLE(species_h_tcneq_mass)(double *const h, double *const h_t, double *const h_r, double const* h_v, double const* h_el, double const* h_f);
 
 /**
  * Returns the mixture enthalpy in J/kg given the mixture temperature and

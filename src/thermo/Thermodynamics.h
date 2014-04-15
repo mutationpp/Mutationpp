@@ -226,6 +226,11 @@ public:
     
     void setState(const double* const p_v1, const double* const p_v2, int v3 = 0);
         
+    int nEnergyEq() const;
+    int nVibEq() const;
+    int nRotEq() const;
+    int nElEq() const;
+
     /**
      * Computes the equilibrium mole fractions of the mixture given the
      * elemental composition.
