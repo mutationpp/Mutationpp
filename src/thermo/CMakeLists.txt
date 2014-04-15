@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
+    ChemNonEqStateModel.cpp
+    EquilTPStateModel.cpp
     MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
     Nasa9Polynomial.cpp
@@ -10,7 +12,6 @@ add_sources(mutation++
     RrhoDB.cpp
     Species.cpp
     SpeciesListDescriptor.cpp
-    StateModel.cpp
     Thermodynamics.cpp
     ThermoDB.cpp
 )

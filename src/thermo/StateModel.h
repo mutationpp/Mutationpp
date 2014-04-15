@@ -42,13 +42,15 @@ public:
     typedef const Thermodynamics& ARGS;
     
     /**
-     * Constructor.
+     * Constructor initializes state.
      *
      * @param ns - number of species
      */
     StateModel(ARGS thermo)
         : m_thermo(thermo)
     {
+        m_T = m_Tr = m_Tv = m_Tel = m_Te = 300.0;
+        m_P = 0.0;
         mp_X = new double [m_thermo.nSpecies()];
         for (int i = 0; i < thermo.nSpecies(); ++i)
             mp_X[i] = 0.0;
@@ -65,9 +67,17 @@ public:
 //    void addWatcher(StateModelWatcher* p_watcher);
     
     /**
-     * Sets the current mixture state.
+     * Abstract method to set the state of the mixture which is dependent on the
+     * type of the concrete StateModel class.
+     *
+     * @param p_mass - The "mass" vector (depends on concrete class)
+     * @param p_energy - The "energy" vector (depends on concrete class)
+     * @param vars - Index representing which variable set is given in the mass
+     * and energy vectors
      */
-    virtual void setState(const double* const v1, const double* const v2) = 0;
+    virtual void setState(
+        const double* const p_mass, const double* const p_energy,
+        const int vars = 0) = 0;
     
     /**
      * Returns the mixture translational temperature.
