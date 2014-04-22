@@ -132,6 +132,18 @@ public:
     int nCondensed() const { return nSpecies()-m_ngas; }
 
     /**
+     * Returns the number of energy equations associated with the mixture
+     * StateModel.
+     */
+    int nEnergyEqns() const;
+
+    /**
+     * Returns the number of mass equations associated with the mixture
+     * StateModel.
+     */
+    int nMassEqns() const;
+
+    /**
      * Returns true if this mixture includes electrons, false otherwise.
      */
     bool hasElectrons() const {
@@ -240,7 +252,8 @@ public:
     //void setStateTPY(
     //    const double* const T, const double* const P, const double* const Y);
     
-    void setState(const double* const p_v1, const double* const p_v2);
+    void setState(
+        const double* const p_v1, const double* const p_v2, const int vars = 0);
         
     /**
      * Computes the equilibrium mole fractions of the mixture given the
