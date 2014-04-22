@@ -12,7 +12,7 @@ class ChemNonEqStateModel : public StateModel
 public:
 
     ChemNonEqStateModel(const Thermodynamics& thermo)
-        : StateModel(thermo)
+        : StateModel(thermo, 1, thermo.nSpecies())
     {
         mp_work = new double [thermo.nSpecies()];
     }
@@ -33,7 +33,7 @@ public:
         const int vars = 0)
     {
         const int ns = m_thermo.nSpecies();
-        const double tol = 1.0e-8;
+        const double tol = 1.0e-9;
 
         // Compute the species concentrations which are used through out this
         // method regardless of variable set

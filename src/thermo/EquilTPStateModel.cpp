@@ -14,7 +14,7 @@ public:
      * Constructor.
      */
     EquilTPStateModel(const Thermodynamics& thermo)
-        : StateModel(thermo)
+        : StateModel(thermo, 1, 1)
     { }
 
     /**

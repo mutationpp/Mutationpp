@@ -46,8 +46,8 @@ public:
      *
      * @param ns - number of species
      */
-    StateModel(ARGS thermo)
-        : m_thermo(thermo)
+    StateModel(ARGS thermo, const int nenergy, const int nmass)
+        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
     {
         m_T = m_Tr = m_Tv = m_Tel = m_Te = 300.0;
         m_P = 0.0;
@@ -66,6 +66,9 @@ public:
     
 //    void addWatcher(StateModelWatcher* p_watcher);
     
+    inline int nEnergyEqns() const { return m_nenergy; }
+    inline int nMassEqns() const { return m_nmass; }
+
     /**
      * Abstract method to set the state of the mixture which is dependent on the
      * type of the concrete StateModel class.
@@ -147,6 +150,8 @@ public:
 protected:
 
     const Thermodynamics& m_thermo;
+    const int m_nenergy;
+    const int m_nmass;
     
     double m_T;
     double m_Tv;
