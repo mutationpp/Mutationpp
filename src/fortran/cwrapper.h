@@ -38,56 +38,7 @@ extern "C" {
  * used as input or output to the functions.  These do not need to be included
  * when calling the function in a Fortran code.
  *
- * Below is an example Fortran snippit which illustrates how these functions may
- * be used.
- *
- * @code
- * program test
- *    use mutationpp ! Needed to use the wrapper
- *
- *    character(len=10) :: mixture
- *    integer :: ne, ns, nr
- *    real :: T, P, rho, n, cp, cv, h, mw, e
- *    real, dimension(:), allocatable :: element_x
- *    real, dimension(:), allocatable :: species_x
- *    real, dimension(:), allocatable :: species_y
- *
- *    ! Define the mixture to be used
- *    mixture = "air11"
- * 
- *    ! Initialize the Mutation++ library
- *    call mpp_initialize(mixture)
- *    ne = mpp_nelements()
- *    ns = mpp_nspecies()
- *    nr = mpp_nreactions()
- *    
- *    ! Allocate storage
- *    allocate(element_x(ne))
- *    allocate(species_x(ns))
- *    allocate(species_y(ns))
- *   
- *    ! Initialize elemental fractions for equilibrium calculation
- *    element = "N";  element_x(mpp_element_index(element)) = 0.79;
- *    element = "O";  element_x(mpp_element_index(element)) = 0.21;
- *    element = "e-"; element_x(mpp_element_index(element)) = 0.0;
- *
- *    ! Compute some properties at 1000K and 1atm
- *    T = 1000.0
- *    P = 101325.0
- *    call mpp_equilibrate_mole(T, P, element_x, species_x)
- *    call mpp_convert_x_to_y(species_x, species_y)        
- *    call mpp_number_density(T, P, n)
- *    call mpp_density(T, P, species_x, rho)
- *    call mpp_mixture_mw_mole(species_x, mw)
- *    call mpp_mixture_frozen_cp_mass(T, species_y, cp)
- *    call mpp_mixture_frozen_cv_mass(T, species_y, cv)
- *    call mpp_mixture_h_mass(T, species_y, h)
- *    call mpp_mixture_e_mass(T, rho, species_y, e)
- *
- *    ! Clean up the library memory (should be done once at the end)
- *    mpp_destroy()
- * end program test
- * @endcode
+ * See \ref wrapper_test.f90 for an example of a code which uses this wrapper.
  * 
  * @{
  */
