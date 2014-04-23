@@ -1,3 +1,9 @@
+!!
+!> \example wrapper_test.f90
+!!
+!! Example Fortran90 program which makes use of the \ref FortranWrapper to 
+!! mutation++.  Computes equilibrium properties for the air11 mixture.
+!!
 program main
     use mutationpp
     implicit none

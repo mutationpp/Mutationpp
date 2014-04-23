@@ -1,15 +1,20 @@
 /**
- * @file O2_dissociation.cpp
+ * \example O2_dissociation.cpp
  *
  * Example program demonstrating the use of the Mutation++ finite-rate 
- * chemistry routine netProductionRates().  This program simulates a constant
- * volume, adiabatic reactor beginning with pure O2 at 4000 K and density of
- * 2.85e-4 kg/m^3.  The program integrates the mass conservation equation for
- * each species explicitly in time up to 100 seconds until the O/O2 mixture is
- * essentially at equilibrium.  The reactor temperature, pressure, and mass
- * fractions of O and O2 are output to show the results of the simulation.  The
- * final conditions at 100 seconds are also compared with equilibrium values for
- * the O/O2 mixture at the final temperature and pressure.
+ * chemistry routine netProductionRates().  This program simulates
+ * a constant volume, adiabatic reactor beginning with pure O2 at 4000 K and
+ * density of 2.85e-4 kg/m^3.  The program integrates the mass conservation
+ * equation for each species explicitly in time up to 100 seconds until the O/O2
+ * mixture is essentially at equilibrium.  The reactor temperature, pressure,
+ * and mass fractions of O and O2 are output to show the results of the
+ * simulation.  The final conditions at 100 seconds are also compared with
+ * equilibrium values for the O/O2 mixture at the final temperature and
+ * pressure.
+ *
+ * The main example code is illustrated as follows:
+ *
+ * Running the example yields the following output:
  */
 
 // Must include this header file to use the Mutation++ library
@@ -44,7 +49,7 @@ void printResults(double time, const Mixture& mix)
     cout << endl;
 }
 
-// Main entry point for the code
+//! [main]
 int main()
 {
     // Initial conditions are defined here
@@ -113,8 +118,8 @@ int main()
     }
 
     // Now get the equilibrium values
-    mix.equilibriumComposition(mix.T(), mix.P(), rhoi);
-    mix.convert<Thermodynamics::X_TO_Y>(rhoi, rhoi);
+    mix.equilibriumComposition(mix.T(), mix.P(), rhoi); // puts X_i in rhoi
+    mix.convert<Thermodynamics::X_TO_Y>(rhoi, rhoi);    // converts X_i to Y_i
 
     cout << "Equilibrium mass fractions at " << mix.T() << " K and "
          << mix.P() << " Pa:" << endl;
@@ -125,4 +130,5 @@ int main()
 
     return 0;
 }
+//! [main]
 
