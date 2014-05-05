@@ -114,6 +114,13 @@ void NAME_MANGLE(convert_x_to_y)(
 }
 
 //==============================================================================
+void NAME_MANGLE(convert_xe_to_ye)(
+    const double* const element_x, double* const element_y)
+{
+    p_mix->convert<XE_TO_YE>(element_x, element_y);
+}
+
+//==============================================================================
 void NAME_MANGLE(convert_rho_to_x)(
     const double* species_rho, double* species_x)
 {

@@ -119,6 +119,15 @@ void NAME_MANGLE(convert_x_to_y)(
     const double* species_x, double* species_y);
 
 /**
+ * Converts the element mole fractions to element mass fractions.
+ *
+ * @param element_x - element mole fractions
+ * @param element_y - element mass fractions on return
+ */
+void NAME_MANGLE(convert_xe_to_ye)(
+    const double* element_x, double* element_y);
+
+/**
  * Converts the species densities to species mole fractions.
  *
  * @param species_rho - species mass densities
