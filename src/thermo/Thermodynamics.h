@@ -11,6 +11,7 @@
 #include "Numerics.h"
 #include "Constants.h"
 #include "ThermoDB.h"
+#include "MultiPhaseEquilSolver.h"
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -44,8 +45,6 @@ enum ConversionType {
     Y_TO_XE,     ///< species mass fractions to elemental mole fractions
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
 };
-
-
 
 /**
  * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
@@ -81,6 +80,14 @@ public:
         return mp_state;
     }
     
+    /**
+     * Returns a pointer to the ThermoDB object owned by this Thermodynamics
+     * object.
+     */
+    ThermoDB* thermoDB() const {
+        return mp_thermodb;
+    }
+
     /**
      * Returns the number of species considered in the mixture.
      */
@@ -233,47 +240,35 @@ public:
     }
     
     /**
-     * Returns true if the thermodynaic data in this database is valid at the
+     * Returns true if the thermodynamic data in this database is valid at the
      * given temperature for the given species index.
      */
     bool speciesThermoValidAtT(const size_t i, const double T) const;
     
     /**
-     * Sets the current state of the mixture using temperatures, pressure, and 
-     * species mole fractions.
+     * Sets the state of the mixture using the StateModel belonging to the
+     * mixture.  The input variables depend on the type of StateModel being
+     * used.
      */
-    //void setStateTPX(
-    //    const double* const T, const double* const P, const double* const X);
-    
-    /**
-     * Sets the current state of the mixture using temperatures pressures, and 
-     * species mass fractions.
-     */
-    //void setStateTPY(
-    //    const double* const T, const double* const P, const double* const Y);
-    
     void setState(
         const double* const p_v1, const double* const p_v2, const int vars = 0);
         
     /**
-     * Computes the equilibrium mole fractions of the mixture given the
-     * elemental composition.
+     * Computes the equilibrium composition of the mixture at the given fixed
+     * temperature and pressure using the default elemental composition.
      */
-    //void equilibrate(
-    //    double T, double P, const double* const p_c, double* const p_X = NULL,
-    //    bool set_state = true);
-    
-    /**
-     * Equilibrates the mixture to a given temperature and pressure using the 
-     * default elemental composition.
-     */
-    //void equilibrate(double T, double P);
-    
-    void equilibriumComposition(double T, double P, double* const p_X) const {
-        equilibriumComposition(T, P, mp_default_composition, p_X);
-    }
     void equilibriumComposition(
-        double T, double P, const double* const p_Xe, double* const p_X) const;
+        double T, double P, double* const p_X, MoleFracDef mdf = GLOBAL) const {
+        equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
+    }
+
+    /**
+     * Computes the equilibrium composition of the mixture at the given fixed
+     * temperature, pressure, and elemental moles/mole fractions.
+     */
+    void equilibriumComposition(
+        double T, double P, const double* const p_Xe, double* const p_X,
+        MoleFracDef mdf = GLOBAL) const;
     
     /**
      * Returns the element potentials calculated by the most recent call to 

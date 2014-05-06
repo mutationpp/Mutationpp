@@ -1,8 +1,7 @@
 #include "Thermodynamics.h"
-#include "GfcEquilSolver.h"
-#include "MultiPhaseEquilSolver.h"
 #include "StateModel.h"
 #include "Utilities.h"
+//#include "MultiPhaseEquilSolver.h"
 //#include "ParticleRRHO.h"
 
 #include <set>
@@ -246,9 +245,10 @@ double Thermodynamics::mixtureMw() const
 //==============================================================================
 
 void Thermodynamics::equilibriumComposition(
-    double T, double P, const double* const p_Xe, double* const p_X) const
+    double T, double P, const double* const p_Xe, double* const p_X,
+    MoleFracDef mdf) const
 {
-    mp_equil->equilibrate(T, P, p_Xe, p_X);
+    mp_equil->equilibrate(T, P, p_Xe, p_X, mdf);
 }
 
 //==============================================================================
@@ -902,69 +902,59 @@ void Thermodynamics::surfaceMassBalance(
     const double P, const double Bg, double &Bc, double &hw, double *const p_Xs)
 {
     const int ne = nElements();
-    const int ns = nSpecies();
+    const int ng = nGas();
     
-    double* p_Yw = new double [ne];
-    double* p_Xw = new double [ne];
-    double* p_X  = (p_Xs != NULL ? p_Xs : new double [ns]);
-    double* p_h  = new double [ns]; 
+    double p_Xw [ne];
+    double* p_X  = (p_Xs != NULL ? p_Xs : mp_work1);
+    double* p_h  = mp_work2;
     
     // Initialize the wall element fractions to be the pyrolysis gas fractions
     double sum = 0.0;
     for (int i = 0; i < ne; ++i) {
-        p_Yw[i] = p_Yke[i] + Bg*p_Ykg[i];
-        sum += p_Yw[i];
+        p_Xw[i] = p_Yke[i] + Bg*p_Ykg[i];
+        sum += p_Xw[i];
     }
     
     // Use "large" amount of carbon to simulate infinite char
     int ic = elementIndex("C");
     //double carbon = std::min(1000.0, std::max(100.0,1000.0*Bg));
     double carbon = std::max(100.0*Bg, 200.0);
-    p_Yw[ic] += carbon;
+    p_Xw[ic] += carbon;
     sum += carbon;
     
     for (int i = 0; i < ne; ++i)
-        p_Yw[i] /= sum;
+        p_Xw[i] /= sum;
     
     // Compute equilibrium
-    convert<YE_TO_XE>(p_Yw, p_Xw);    
-    equilibriumComposition(T, P, p_Xw, p_X);
+    convert<YE_TO_XE>(p_Xw, p_Xw);
+    equilibriumComposition(T, P, p_Xw, p_X, IN_PHASE);
     
     // Compute the gas mass fractions at the wall
     double mwg = 0.0;
+    double ywc = 0.0;
     
-    for (int i = 0; i < ne; ++i)
-        p_Yw[i] = 0.0;
-    
-    for (int j = 0; j < ns; ++j) {
-        if (species(j).phase() == GAS) {
-            mwg += speciesMw(j) * p_X[j];
-            for (int i = 0; i < ne; ++i)
-                p_Yw[i] += elementMatrix()(j,i) * p_X[j];
-        }
+    for (int j = 0; j < ng; ++j) {
+        mwg += speciesMw(j) * p_X[j];
+        ywc += elementMatrix()(j,ic) * p_X[j];
+        //for (int i = 0; i < ne; ++i)
+        //    p_Yw[i] += elementMatrix()(j,i) * p_X[j];
     }
     
-    for (int i = 0; i < ne; ++i)
-        p_Yw[i] *= atomicMass(i) / mwg;
+    //for (int i = 0; i < ne; ++i)
+    //    p_Yw[i] *= atomicMass(i) / mwg;
+    ywc *= atomicMass(ic) / mwg;
     
     // Compute char mass blowing rate
-    Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - p_Yw[ic]*(1.0 + Bg)) / (p_Yw[ic] - 1.0);
+    Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - ywc*(1.0 + Bg)) / (ywc - 1.0);
     Bc = std::max(Bc, 0.0);
     
     // Compute the gas enthalpy
     speciesHOverRT(T, p_h);
     
     hw = 0.0;
-    for (int i = 0; i < ns; ++i)
-        if (species(i).phase() == GAS)
-            hw += p_X[i] * p_h[i];
-    
+    for (int i = 0; i < ng; ++i)
+        hw += p_X[i] * p_h[i];
     hw *= RU * T / mwg;
-    
-    delete [] p_Yw;
-    delete [] p_Xw;
-    if (p_X != p_Xs) delete [] p_X;
-    delete [] p_h;
 }
 
 //==============================================================================

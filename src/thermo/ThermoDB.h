@@ -104,6 +104,18 @@ public:
         double* const cpv, double* const cpel) = 0;
     
     /**
+     * Computes the species vibrational specific heats at the given temperature
+     * nondimensionalized by the universal gas constant.
+     */
+    virtual void cpv(double Tv, double* const p_cpv);
+
+    /**
+     * Returns the species electronic specific heats at the given temperature
+     * nondimensionalized by the universal gas constant.
+     */
+    virtual void cpel(double Tel, double* const p_cpel);
+
+    /**
      * Computes the unitless species specific heats at constant volume
      * \f$ C_{v,i} / R_U\f$ of each species in thermal nonequilibrium.
      *
@@ -146,6 +158,18 @@ public:
         double* const ht, double* const hr, double* const hv, double* const hel, 
         double* const hf) = 0;
     
+    /**
+     * Returns the species vibrational enthalpy at the given temperature
+     * nondimensionalized by the universal gas constant times the temperature.
+     */
+    virtual void hv(double Tv, double* const p_hv);
+
+    /**
+     * Returns the species electronic enthalpy at the given temperature
+     * nondimensionalized by the universal gas constant times the temperature.
+     */
+    virtual void hel(double Tel, double* const p_hel);
+
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.

@@ -10,12 +10,22 @@
 #ifndef THERMO_MULTI_PHASE_EQUIL_SOLVER
 #define THERMO_MULTI_PHASE_EQUIL_SOLVER
 
-#include "Thermodynamics.h"
 #include "Numerics.h"
 
 namespace Mutation {
     namespace Thermodynamics {
+
+class Thermodynamics;
+
     
+/**
+ * Enumerates the two possibilities for defining mole fractions.
+ */
+enum MoleFracDef {
+    IN_PHASE,
+    GLOBAL
+};
+
 
 //==============================================================================
 
@@ -116,10 +126,14 @@ public:
     }
     
     /**
-     * Computes the equilibrium composition of the mixture.
+     * Computes the equilibrium composition of the mixture.  The returned
+     * species mole-fraction array is computed based on the value of the
+     * MoleFracDef parameter.  The default method defines the mole fractions
+     * globally, though they can also be defined in-phase.
      */
     std::pair<int,int> equilibrate(
-        double T, double P, const double *const p_ev, double *const p_sv);
+        double T, double P, const double *const p_ev, double *const p_sv,
+        MoleFracDef mfd = GLOBAL);
     
     /**
      * Adds an additional linear constraint to the equilibrium solver.
@@ -175,7 +189,7 @@ public:
     }
     
     /*
-     * Returns the current species moles vector as computed the by the last
+     * Returns the current species moles vector as computed by the last
      * call to equilibrate().
      */
     void speciesMoles(double* const p_moles) const
@@ -308,89 +322,13 @@ private:
          * Initializes data storage for the solution.  Solution and ordering are
          * just filled with zeros.
          */
-        void initialize(int np, int nc, int ns)
-        {
-            // Init sizes
-            m_np = np;
-            m_nc = nc;
-            m_ns = ns;
-            m_npr = np;
-            m_ncr = nc;
-            m_nsr = ns;
-            
-            int dsize = 2*ns+np+nc;
-            int isize = ns+nc+np+2;
-            
-            // Allocate data storage if necessary
-            if (dsize > m_dsize) {
-                if (mp_ddata != NULL)
-                    delete [] mp_ddata;
-                mp_ddata = new double [dsize];
-            }
-            m_dsize = dsize;
-            
-            if (isize > m_isize) {
-                if (mp_idata != NULL)
-                    delete [] mp_idata;
-                mp_idata = new int [isize];
-            }
-            m_isize = isize;
-            
-            // Setup the pointer locations
-            mp_g      = mp_ddata;
-            mp_y      = mp_g+ns;
-            mp_lnNbar = mp_y+ns;
-            mp_lambda = mp_lnNbar+np;
-            
-            mp_sizes = mp_idata;
-            mp_sjr   = mp_sizes+np+2;
-            mp_cir   = mp_sjr+ns;
-            
-            // Just fill all data with 0
-            std::fill(mp_ddata, mp_ddata+m_dsize, 0.0);
-            std::fill(mp_idata, mp_idata+m_isize, 0);
-        }
+        void initialize(int np, int nc, int ns);
         
         /**
          * Initializes the ordering based on defined species "groups" and zero
          * constraints.
          */
-        void setupOrdering(int* species_group, bool* zero_constraint, bool pure)
-        {
-            // Count the number of species in each group and order the species such that
-            // the groups are contiguous
-            for (int i = 0; i < m_np+2; ++i)
-                mp_sizes[i] = 0;
-
-            for (int i = 0; i < m_ns; ++i)
-                mp_sizes[species_group[i]+1]++;
-            
-            for (int i = 1; i < m_np+1; ++i)
-                mp_sizes[i] += mp_sizes[i-1];
-            
-            for (int i = 0; i < m_ns; ++i)
-                mp_sjr[mp_sizes[species_group[i]]++] = i;
-            
-            for (int i = m_np+1; i > 0; --i)
-                mp_sizes[i] = mp_sizes[i-1];
-            mp_sizes[0] = 0;
-            
-            m_nsr = mp_sizes[m_np];
-            
-            // Update list of reduced constraint indices
-            int index = 0;
-            for (int i = 0; i < m_nc; ++i)
-                if (!zero_constraint[i]) mp_cir[index++] = i;
-            
-            m_ncr = index;
-            m_npr = m_np;
-            int i = m_np-1;
-            while (i > 0) {
-                if (mp_sizes[i+1] - mp_sizes[i] == 0)
-                    removePhase(i);
-                i--;
-            }
-        }
+        void setupOrdering(int* species_group, bool* zero_constraint, bool pure);
         
         /**
          * Updates the solution by adding dx to lambda and dlnNbar and
@@ -413,261 +351,52 @@ private:
          * Sets the g vector associated with the solution.  The solution is not
          * updated however.
          */
-        void setG(const double* const p_g0, const double* const p_g, double s)
-        {
-            const double s1 = 1.0 - s;
-            for (int j = 0; j < m_ns; ++j)
-                mp_g[j] = s1*p_g0[j] + s*p_g[j];
-        }
+        void setG(const double* const p_g0, const double* const p_g, double s);
         
         /**
          * Sets the solution vector.
          */
         void setSolution(
             const double* const p_lambda, const double* const p_Nbar,
-            const Numerics::RealMatrix& B)
-        {
-            for (int i = 0; i < m_ncr; ++i)
-                mp_lambda[i] = p_lambda[i];
-            for (int m = 0; m < m_npr; ++m)
-                mp_lnNbar[m] = std::log(p_Nbar[m]);
-            
-            updateY(B);
-        }
+            const Numerics::RealMatrix& B);
         
         /**
          * Updates the y vector based on the current solution variables and g
          * vector.
          */
-        void updateY(const Numerics::RealMatrix& B)
-        {
-            int jk;
-            for (int m = 0; m < m_npr; ++m) {
-                for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j) {
-                    jk = mp_sjr[j];
-                    mp_y[j] = mp_lnNbar[m] - mp_g[jk];
-                    for (int i = 0; i < m_ncr; ++i)
-                        mp_y[j] += B(jk, mp_cir[i])*mp_lambda[i];
-                    mp_y[j] = std::exp(0.5*std::min(mp_y[j], 300.0));
-                }
-            }
-        }
+        void updateY(const Numerics::RealMatrix& B);
         
         /**
          * Equality operator.  Reallocates only if the data size required is 
          * larger than the current capacity.
          */
-        Solution& operator=(const Solution& state)
-        {
-            m_np  = state.m_np;
-            m_ns  = state.m_ns;
-            m_npr = state.m_npr;
-            m_ncr = state.m_ncr;
-            m_nsr = state.m_nsr;
-            
-            if (state.m_dsize > m_dsize) {
-                if (mp_ddata != NULL) delete mp_ddata;
-                mp_ddata  = new double [state.m_dsize];
-                mp_g      = mp_ddata;
-                mp_y      = mp_g+m_ns;
-                mp_lnNbar = mp_y+m_ns;
-                mp_lambda = mp_lnNbar+m_np;
-            }
-            m_dsize = state.m_dsize;
-            
-            if (state.m_isize > m_isize) {
-                if (mp_idata != NULL) delete mp_idata;
-                mp_idata = new int [state.m_isize];
-                mp_sizes = mp_idata;
-                mp_sjr   = mp_sizes+m_np+2;
-                mp_cir   = mp_sjr+m_ns;
-            }
-            m_isize = state.m_isize;
-            
-            std::copy(state.mp_ddata, state.mp_ddata+m_dsize, mp_ddata);
-            std::copy(state.mp_idata, state.mp_idata+m_isize, mp_idata);
-            
-            return *this;
-        }
+        Solution& operator=(const Solution& state);
         
         /**
          * Removes the phase from the solution and returns the new phase number
          * associated with this phase.  The species ordering, and solution 
          * variables are all updated to correspond to the new solution.
          */
-        int removePhase(int phase)
-        {
-//            cout << "removing phase:";
-//            for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//                cout << " " << m_thermo.speciesName(mp_sjr[j]);
-//            cout << endl;
-            
-            // Check that the phase number is feasible
-            assert(phase >= 0);
-            assert(phase < m_npr);
-            assert(m_npr > 1);
-            
-            // If the phase is not the last non-empty phase, we need to shift it
-            // to the right to make the non-empty species list contiguous
-            const int size = mp_sizes[phase+1] - mp_sizes[phase];
-            if (phase != m_npr-1) {
-                int temp [size];
-                
-                // First copy the phase to be removed into temporary array
-                int* ip = temp;
-                for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-                    *ip++ = mp_sjr[j];
-                
-                // Shift all remaining phases to fill the space
-                ip = mp_sjr + mp_sizes[phase];
-                for (int j = mp_sizes[phase+1]; j < mp_sizes[m_np]; ++j)
-                    *ip++ = mp_sjr[j];
-                
-                // Place the removed phase at the end of the list (before
-                // determined species)
-                for (int m = phase+1; m < m_np; ++m)
-                    mp_sizes[m] = mp_sizes[m+1] - size;
-                ip = temp;
-                for (int j = mp_sizes[m_np-1]; j < mp_sizes[m_np]; ++j)
-                    mp_sjr[j] = *ip++;
-                
-                // Shift the solution to match the new phase ordering
-                for (int j = mp_sizes[phase]; j < m_nsr-size; ++j)
-                    mp_y[j] = mp_y[j+size];
-                for (int m = phase; m < m_npr-1; ++m)
-                    mp_lnNbar[m] = mp_lnNbar[m+1];
-                
-                // Set the phase number to the new number to return
-                phase = m_np-1;
-            }
-            
-            // Update reduced species and phase sizes
-            m_npr--;
-            m_nsr -= size;
-            
-            return phase;
-        }
+        int removePhase(int phase);
         
         /**
          * Moves an inactive phase to the active list and returns the new phase
          * number for that phase.  Note that the solution is not updated.
          */
-        int addPhase(int phase)
-        {
-//            cout << "adding phase:";
-//            for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//                cout << " " << m_thermo.speciesName(mp_sjr[j]);
-//            cout << endl;
-        
-            assert(phase >= m_npr);
-            assert(phase < m_np);
-            
-            // If the phase is not the first empty phase, then we need to shift
-            // it to the front
-            int size = mp_sizes[phase+1] - mp_sizes[phase];
-            if (phase > m_npr) {
-                int temp [size];
-                
-                // First copy the phase to be added into temporary array
-                int* p = temp;
-                for (int i = mp_sizes[phase]; i < mp_sizes[phase+1]; ++i)
-                    *p++ = mp_sjr[i];
-                
-                // Shift phases that come before to the back
-                p = mp_sjr + mp_sizes[phase+1]-1;
-                for (int i = mp_sizes[phase]-1; i >= m_nsr; --i)
-                    *p-- = mp_sjr[i];
-                
-                // Place the added phase at the end of the included list
-                for (int i = phase+1; i > m_npr; --i)
-                    mp_sizes[i] = mp_sizes[i-1] + size;
-                p = temp;
-                for (int i = mp_sizes[m_npr]; i < mp_sizes[m_npr+1]; ++i)
-                    mp_sjr[i] = *p++;
-            }
-            
-            // Update reduced species and phase sizes
-            m_npr++;
-            m_nsr += size;
-            
-            return (m_npr-1);
-        }
+        int addPhase(int phase);
         
         /**
          * Returns the index of the phase which will reduce the Gibbs energy the
          * most with the current solution.  If no phase will reduce further than
          * -1 is returned.
          */
-        int checkCondensedPhase(const Numerics::RealMatrix& B)
-        {
-            if (m_np <= m_ncr)
-                return -1;
+        int checkCondensedPhase(const Numerics::RealMatrix& B);
 
-            int    min_m   = -1;
-            double min_sum = 0.0;
-
-            for (int m = m_npr; m < m_np; ++m) {
-                for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j) {
-                    double sum = mp_g[mp_sjr[j]];
-                    for (int i = 0; i < m_ncr; ++i)
-                        sum -= mp_lambda[i]*B(mp_sjr[j], mp_cir[i]);
-
-                    if (sum < min_sum) {
-                        min_m   = m;
-                        min_sum = sum;
-                    }
-                }
-            }
-
-            return min_m;
-        }
-
-        void printOrder()
-        {
-            cout << "Species order:" << endl;
-            cout << "  Active Phases:" << endl;
-            for (int m = 0; m < m_npr; ++m) {
-                cout << "    " << m << ":";
-                for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-                    cout << " " << m_thermo.speciesName(mp_sjr[j]);
-                cout << endl;
-            }
-            cout << "  Inactive Phases:" << endl;
-            for (int m = m_npr; m < m_np; ++m) {
-                cout << "    " << m << ":";
-                for (int j = mp_sizes[m]; j < mp_sizes[m+1]; ++j)
-                    cout << " " << m_thermo.speciesName(mp_sjr[j]);
-                cout << endl;
-            }
-            cout << "  Determined Species:" << endl;
-            cout << "   ";
-            for (int j = mp_sizes[m_np]; j < m_ns; ++j)
-                cout << " " << m_thermo.speciesName(mp_sjr[j]);
-            cout << endl;
-        }
+        void printOrder();
         
-        void printSolution()
-        {
-            cout << "Solution:" << endl;
-            cout << "  lambda = " << endl;
-            for (int i = 0; i < m_ncr; ++i)
-                cout << "    " << mp_lambda[i] << endl;
-            cout << "  Nbar = " << endl;
-            for (int m = 0; m < m_npr; ++m)
-                cout << "    " << std::exp(mp_lnNbar[m]) << endl;
-            cout << "  N = " << endl;
-            for (int j = 0; j < m_nsr; ++j)
-                cout << "   " << setw(12) << m_thermo.speciesName(mp_sjr[j])
-                     << ": " << mp_y[j]*mp_y[j] << endl;
-        }
+        void printSolution();
         
-        void printG()
-        {
-            cout << "Current G vector" << endl;
-            for (int j = 0; j < m_ns; ++j)
-                cout << setw(12) << m_thermo.speciesName(j) << ": "
-                     << mp_g[j] << endl;
-        }
+        void printG();
         
     private:
     
