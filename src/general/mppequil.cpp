@@ -132,6 +132,7 @@ typedef struct {
     std::vector<int> other_indices;
     
     bool verbose;
+    bool header;
     
     Mutation::MixtureOptions* p_mixture_opts;
     
@@ -174,6 +175,7 @@ void printHelpMessage(const char* const name)
     cout << endl;
     cout << tab << "-h, --help          prints this help message" << endl;
     cout << tab << "-v, --verbose       toggles verbosity on" << endl;
+    cout << tab << "    --no-header     no table header will be printed" << endl;
     cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T" << endl;
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
@@ -323,6 +325,9 @@ Options parseOptions(int argc, char** argv)
     opts.verbose = 
         optionExists(argc, argv, "-v") || optionExists(argc, argv, "--verbose");
     
+    // Check if the header should be printed or not
+    opts.header = !optionExists(argc, argv, "--no-header");
+
     // The mixture name is given as the only argument (unless --species option
     // is present)
     if (optionExists(argc, argv, "--species-list")) {
@@ -446,7 +451,8 @@ void writeHeader(
                 "" : "[" + mixture_quantities[*iter].units + "]");
         column_widths.push_back(
             std::max(width, static_cast<int>(name.length())+2));
-        cout << setw(column_widths.back()) << name;
+        if (opts.header)
+            cout << setw(column_widths.back()) << name;
     }
     
     iter = opts.species_indices.begin();
@@ -457,7 +463,8 @@ void writeHeader(
                     "" : "[" + species_quantities[*iter].units + "]") + "\"";
             column_widths.push_back(
                 std::max(width, static_cast<int>(name.length())+2));
-            cout << setw(column_widths.back()) << name;
+            if (opts.header)
+                cout << setw(column_widths.back()) << name;
         }
     }
     
@@ -471,7 +478,8 @@ void writeHeader(
                     "" : "[" + reaction_quantities[*iter].units + "]");
             column_widths.push_back(
                 std::max(width, static_cast<int>(name.length())+2));
-            cout << setw(column_widths.back()) << name;
+            if (opts.header)
+                cout << setw(column_widths.back()) << name;
         }
     }
     
@@ -484,7 +492,8 @@ void writeHeader(
                         + "}";
                     column_widths.push_back(
                         std::max(width, static_cast<int>(name.length())+2));
-                    cout << setw(column_widths.back()) << name;
+                    if (opts.header)
+                        cout << setw(column_widths.back()) << name;
                 }
             }
         } else if (other_quantities[*iter].name == "pi_i") {
@@ -492,7 +501,8 @@ void writeHeader(
                 name = "pi_" + mix.elementName(i);
                 column_widths.push_back(
                     std::max(width, static_cast<int>(name.length())+2));
-                cout << setw(column_widths.back()) << name;
+                if (opts.header)
+                    cout << setw(column_widths.back()) << name;
             }
         } else if (other_quantities[*iter].name == "N_p") {
             for (int i = 0; i < mix.nPhases(); ++i) {
@@ -500,18 +510,22 @@ void writeHeader(
                 ss << "N_p" << i; ss >> name;
                 column_widths.push_back(
                     std::max(width, static_cast<int>(name.length())+2));
-                cout << setw(column_widths.back()) << name;
+                if (opts.header)
+                    cout << setw(column_widths.back()) << name;
             }
         } else if (other_quantities[*iter].name == "iters") {
             column_widths.push_back(width);
-            cout << setw(column_widths.back()) << "iters";
+            if (opts.header)
+                cout << setw(column_widths.back()) << "iters";
         } else if (other_quantities[*iter].name == "newts") {
             column_widths.push_back(width);
-            cout << setw(column_widths.back()) << "newts";
+            if (opts.header)
+                cout << setw(column_widths.back()) << "newts";
         }
     }
     
-    cout << endl;
+    if (opts.header)
+        cout << endl;
 }
 
 int main(int argc, char** argv)
