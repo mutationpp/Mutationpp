@@ -284,7 +284,7 @@ void Transport::equilibriumFickP(double* const p_F)
     for (int k = 0; k < ne; ++k) {
         p_F[k] = 0.0;
         for (int i = 0; i < ns; ++i)
-            p_F[k] += nu(k,i)*mp_wrk2[i];
+            p_F[k] += nu(i,k)*mp_wrk2[i];
     }
 }
 
@@ -313,7 +313,7 @@ void Transport::equilibriumFickT(double* const p_F)
     for (int k = 0; k < ne; ++k) {
         p_F[k] = 0.0;
         for (int i = 0; i < ns; ++i)
-            p_F[k] += nu(k,i)*mp_wrk2[i];
+            p_F[k] += nu(i,k)*mp_wrk2[i];
     }
 }
 
@@ -352,7 +352,7 @@ void Transport::equilibriumFickXe(double* const p_F)
            double& Fkl = p_F[l*ne+k];
            Fkl = 0.0;
            for (int i = 0; i < ns; ++i)
-               Fkl += nu(k,i)*mp_wrk2[i];
+               Fkl += nu(i,k)*mp_wrk2[i];
        }
    }
 
