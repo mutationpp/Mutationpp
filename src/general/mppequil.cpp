@@ -107,13 +107,16 @@ OutputQuantity reaction_quantities[NREACTION] = {
 };
 
 // List of other output quantities
-#define NOTHER 5
+#define NOTHER 8
 OutputQuantity other_quantities[NOTHER] = {
     OutputQuantity("Dij", "", "multicomponent diffusion coefficients"),
     OutputQuantity("pi_i", "", "element potentials"),
     OutputQuantity("N_p", "mol", "phase moles"),
     OutputQuantity("iters", "", "number of continuation step iterations"),
-    OutputQuantity("newts", "", "total number of newton iterations")
+    OutputQuantity("newts", "", "total number of newton iterations"),
+    OutputQuantity("Fp_k", "kg/m-Pa-s", "elemental diffusion fluxes per pressure gradient"),
+    OutputQuantity("Ft_k", "kg/m-K-s", "elemental diffusion fluxes per temperature gradient"),
+    OutputQuantity("Fz_k", "kg/m-s", "elemental diffusion fluxes per element mole fraction gradient")
 };
 
 // Simply stores the command line options
@@ -521,6 +524,36 @@ void writeHeader(
             column_widths.push_back(width);
             if (opts.header)
                 cout << setw(column_widths.back()) << "newts";
+        } else if (other_quantities[*iter].name == "Fp_k") {
+            for (int i = 0; i < mix.nElements(); ++i) {
+                std::stringstream ss;
+                ss << "Fp_" << mix.elementName(i) << "[kg/m-Pa-s]"; ss >> name;
+                column_widths.push_back(
+                    std::max(width, static_cast<int>(name.length())+2));
+                if (opts.header)
+                    cout << setw(column_widths.back()) << name;
+            }
+        } else if (other_quantities[*iter].name == "Ft_k") {
+            for (int i = 0; i < mix.nElements(); ++i) {
+                std::stringstream ss;
+                ss << "Ft_" << mix.elementName(i) << "[kg/m-K-s]"; ss >> name;
+                column_widths.push_back(
+                    std::max(width, static_cast<int>(name.length())+2));
+                if (opts.header)
+                    cout << setw(column_widths.back()) << name;
+            }
+        } else if (other_quantities[*iter].name == "Fz_k") {
+            for (int l = 0; l < mix.nElements(); ++l) {
+                for (int k = 0; k < mix.nElements(); ++k) {
+                    std::stringstream ss;
+                    ss << "F(" << mix.elementName(l) << ")_" <<
+                       mix.elementName(k) << "[kg/m-s]"; ss >> name;
+                    column_widths.push_back(
+                        std::max(width, static_cast<int>(name.length())+2));
+                    if (opts.header)
+                        cout << setw(column_widths.back()) << name;
+                }
+            }
         }
     }
     
@@ -797,6 +830,18 @@ int main(int argc, char** argv)
                     cout << setw(column_widths[cw++]) << mix.nEquilibriumSteps();
                 } else if (name == "newts") {
                     cout << setw(column_widths[cw++]) << mix.nEquilibriumNewtons();
+                } else if (name == "Fp_k") {
+                    mix.equilibriumFickP(temp);
+                    for (int i = 0; i < mix.nElements(); ++i)
+                        cout << setw(column_widths[cw++]) << temp[i];
+                } else if (name == "Ft_k") {
+                    mix.equilibriumFickT(temp);
+                    for (int i = 0; i < mix.nElements(); ++i)
+                        cout << setw(column_widths[cw++]) << temp[i];
+                } else if (name == "Fz_k") {
+                    mix.equilibriumFickXe(temp);
+                    for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
+                        cout << setw(column_widths[cw++]) << temp[k];
                 }
             }
             

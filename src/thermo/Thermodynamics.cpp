@@ -509,11 +509,21 @@ void Thermodynamics::dXidT(double* const p_dxdt)
     const double T = this->T();
 
     // Compute species enthalpies and dg/dT
-    speciesHOverRT(mp_work1);
+    speciesHOverRT(p_dxdt);
     for (int j = 0; j < nSpecies(); ++j)
-        p_dxdt[j] = -mp_work1[j] / T;
+        p_dxdt[j] = -p_dxdt[j] / T;
 
     mp_equil->dXdg(p_dxdt, p_dxdt);
+}
+
+void Thermodynamics::dXidP(double* const p_dxdp)
+{
+    const double P = this->P();
+    for (int i = 0; i < nGas(); ++i)
+        p_dxdp[i] = 1.0/P;
+    for (int i = nGas(); i < nSpecies(); ++i)
+        p_dxdp[i] = 0.0;
+    mp_equil->dXdg(p_dxdp, p_dxdp);
 }
 
 //==============================================================================
@@ -895,12 +905,34 @@ void Thermodynamics::elementMoles(
 void Thermodynamics::elementFractions(
     const double* const Xs, double* const Xe) const
 {
-    RealVecWrapper wrapper(Xe, nElements());
-    wrapper = asVector(Xs, nSpecies()) * m_element_matrix;
-    double sum = wrapper.sum();
-    for (int i = 0; i < nElements(); ++i)
-        Xe[i] /= sum;
+//    RealVecWrapper wrapper(Xe, nElements());
+//    wrapper = asVector(Xs, nSpecies()) * m_element_matrix;
+//    double sum = wrapper.sum();
+//    for (int i = 0; i < nElements(); ++i)
+//        Xe[i] /= sum;
     //wrapper = wrapper / wrapper.sum();
+
+    const int ne = nElements();
+    const int ns = nSpecies();
+
+    double temp = Xs[0];
+    for (int k = 0; k < ne; ++k)
+        Xe[k] = m_element_matrix(0,k)*temp;
+
+    for (int i = 1; i < ns; ++i) {
+        temp = Xs[i];
+        for (int k = 0; k < ne; ++k)
+            Xe[k] += m_element_matrix(i,k)*temp;
+    }
+
+    temp = 0.0;
+    for (int k = 0; k < ne; ++k) {
+        Xe[k] = std::max(0.0, Xe[k]);
+        temp += Xe[k];
+    }
+
+    for (int k = 0; k < ne; ++k)
+        Xe[k] /= temp;
 }
 
 //==============================================================================

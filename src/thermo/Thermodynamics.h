@@ -565,6 +565,13 @@ public:
     void dXidT(double* const dxdt);
     
     /**
+     * Returns the species derivatives of mole fraction w.r.t. pressure for the
+     * given equilibrium mixture.  Note that it is assumed the state model is an
+     * equilibrium one.
+     */
+    void dXidP(double* const dxdp);
+
+    /**
      * Returns the density derivative with respect to pressure for the current
      * equilibrium state.
      */

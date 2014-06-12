@@ -258,6 +258,110 @@ void Transport::averageDiffusionCoeffs(double *const p_Di)
         p_Di[i] = (1.0 - p_X[i]) / (p_Di[i] * nd);
 }
 
+void Transport::equilibriumFickP(double* const p_F)
+{
+    // Get some state data
+    const int ns = m_thermo.nSpecies();
+    const int ne = m_thermo.nElements();
+    const double* const p_Y = m_thermo.Y();
+    const double* const p_X = m_thermo.X();
+    const double rho = m_thermo.density();
+    const double p   = m_thermo.P();
+
+    const RealMatrix& Dij = diffusionMatrix();
+    const RealMatrix& nu  = m_thermo.elementMatrix();
+
+    // Compute the dXj/dP term
+    m_thermo.dXidP(mp_wrk1);
+
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk2[i] = 0.0;
+        for (int j = 0; j < ns; ++j)
+            mp_wrk2[i] += Dij(i,j)*(p_X[j]/p + mp_wrk1[j]);
+        mp_wrk2[i] *= -rho*p_Y[i];
+    }
+
+    for (int k = 0; k < ne; ++k) {
+        p_F[k] = 0.0;
+        for (int i = 0; i < ns; ++i)
+            p_F[k] += nu(k,i)*mp_wrk2[i];
+    }
+}
+
+void Transport::equilibriumFickT(double* const p_F)
+{
+    // Get some state data
+    const int ns = m_thermo.nSpecies();
+    const int ne = m_thermo.nElements();
+    const double* const p_Y = m_thermo.Y();
+    const double* const p_X = m_thermo.X();
+    const double rho = m_thermo.density();
+
+    const RealMatrix& Dij = diffusionMatrix();
+    const RealMatrix& nu  = m_thermo.elementMatrix();
+
+    // Compute the dXj/dP term
+    m_thermo.dXidT(mp_wrk1);
+
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk2[i] = 0.0;
+        for (int j = 0; j < ns; ++j)
+            mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
+        mp_wrk2[i] *= -rho*p_Y[i];
+    }
+
+    for (int k = 0; k < ne; ++k) {
+        p_F[k] = 0.0;
+        for (int i = 0; i < ns; ++i)
+            p_F[k] += nu(k,i)*mp_wrk2[i];
+    }
+}
+
+void Transport::equilibriumFickXe(double* const p_F)
+{
+    // Get some state data
+   const int ns = m_thermo.nSpecies();
+   const int ne = m_thermo.nElements();
+   const double* const p_Y = m_thermo.Y();
+   const double* const p_X = m_thermo.X();
+   const double rho = m_thermo.density();
+   const double T   = m_thermo.T();
+   const double p   = m_thermo.P();
+
+   const RealMatrix& Dij = diffusionMatrix();
+   const RealMatrix& nu  = m_thermo.elementMatrix();
+
+   for (int l = 0; l < ne; ++l) {
+       // Compute the dXj/dZl term using a finite difference
+       m_thermo.elementFractions(p_X, mp_wrk1);
+       double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-6);
+       mp_wrk1[l] += h;
+       m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+
+       for (int i = 0; i < ns; ++i)
+           mp_wrk1[i] = (mp_wrk2[i]-p_X[i])/h;
+
+       for (int i = 0; i < ns; ++i) {
+           mp_wrk2[i] = 0.0;
+           for (int j = 0; j < ns; ++j)
+               mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
+           mp_wrk2[i] *= -rho*p_Y[i];
+       }
+
+       for (int k = 0; k < ne; ++k) {
+           double& Fkl = p_F[l*ne+k];
+           Fkl = 0.0;
+           for (int i = 0; i < ns; ++i)
+               Fkl += nu(k,i)*mp_wrk2[i];
+       }
+   }
+
+   // Be sure to set the state back in the equilibrium solver in case other
+   // calculations rely on the correct element potential values
+   m_thermo.elementFractions(p_X, mp_wrk1);
+   m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+}
+
 //==============================================================================
 
 void Transport::stefanMaxwell(

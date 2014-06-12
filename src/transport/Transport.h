@@ -134,6 +134,10 @@ public:
      */
     void averageDiffusionCoeffs(double *const p_Di);
     
+    void equilibriumFickP(double* const p_F);
+    void equilibriumFickT(double* const p_F);
+    void equilibriumFickXe(double* const p_F);
+
     /**
      * Computes the species diffusion velocities and ambipolar electric field 
      * using the Ramshaw approximation of the generalized Stefan-Maxwell 
