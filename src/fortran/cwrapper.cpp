@@ -100,6 +100,12 @@ double NAME_MANGLE(mixture_mw)()
 }
 
 //==============================================================================
+double NAME_MANGLE(mixture_t)()
+{
+    return p_mix->T();
+}
+
+//==============================================================================
 void NAME_MANGLE(species_mw)(double* const mw)
 {
     for (int i = 0; i < p_mix->nSpecies(); ++i)
@@ -179,9 +185,9 @@ void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el,
 }
 
 //==============================================================================
-void NAME_MANGLE(set_state)(double* v1, double* v2)
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars)
 {
-    p_mix->setState(v1, v2);
+    p_mix->setState(v1, v2, *vars);
 }
 
 //==============================================================================

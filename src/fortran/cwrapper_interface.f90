@@ -39,6 +39,9 @@ module mutationpp
         
         real(kind=8) function mpp_mixture_mw()
         end function
+
+        real(kind=8) function mpp_mixture_t()
+        end function
         
         real(kind=8) function mpp_mixture_frozen_cp_mass()
         end function

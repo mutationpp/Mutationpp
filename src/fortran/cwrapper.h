@@ -103,6 +103,11 @@ void NAME_MANGLE(species_name)(
 double NAME_MANGLE(mixture_mw)();
 
 /**
+ * Returns the mixture translational temperature in K.
+ */
+double NAME_MANGLE(mixture_t)();
+
+/**
  * Returns the array of species molecular weights in kg/mol.
  *
  * @param mw - the species molecular weights on return
@@ -200,7 +205,7 @@ void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el,
  * Sets the current state of the mixture using temperature and species 
  * densities.
  */
-void NAME_MANGLE(set_state)(double* v1, double* v2);
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the
