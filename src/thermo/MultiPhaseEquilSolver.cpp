@@ -521,16 +521,19 @@ void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX)
     double temp;
     int jk;
 
-    // Finally compute the dN/dg for all non zero species
-    for (int j = 0; j < nsr; ++j) {
-        jk = m_solution.sjr()[j];
-        p_dX[jk] = -p_dg[jk];
-
-        for (int i = 0; i < ncr; ++i)
-            p_dX[jk] += m_B(jk,m_solution.cir()[i])*dx(i);
-
-        temp = m_solution.y()[j];
-        p_dX[jk] *= temp*temp;
+    // Finally compute the dX/dg for all non zero species
+    for (int m = 0, j = 0; m < npr; ++m) {
+        double Nbar = std::exp(m_solution.lnNbar()[m]);
+        for (; j < m_solution.sizes()[m+1]; ++j) {
+            jk = m_solution.sjr()[j];
+            p_dX[jk] = -p_dg[jk];
+        
+            for (int i = 0; i < ncr; ++i)
+                p_dX[jk] += m_B(jk,m_solution.cir()[i])*dx(i);
+        
+            temp = m_solution.y()[j];
+            p_dX[jk] *= temp*temp/Nbar;
+        }
     }
 
     // Set the remaining species to zero
@@ -674,6 +677,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     double ds = ms_max_ds;
     double res, resk = ms_eps_abs;
     Solution last_solution(m_thermo);
+    RealVector dx(m_solution.ncr()+m_solution.npr());
     
     // Integrate the equilibrium solution from s = 0 to s = 1
     m_niters = 0;
@@ -683,7 +687,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         last_solution = m_solution;
         
         // Compute the rates for lambda and Nbar
-        RealVector dx(m_solution.ncr()+m_solution.npr());
+        
         rates(dx);
         #ifdef VERBOSE
         cout << "iter = " << m_niters << ", s = " << s << ", ds = " << ds << endl;
@@ -1319,7 +1323,7 @@ void MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
 }
 
 void MultiPhaseEquilSolver::updateMaxMinSolution()
-{
+{    
     // Use the current solution's ordering
     const int nsr = m_solution.nsr();
     const int ncr = m_solution.ncr();

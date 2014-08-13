@@ -79,7 +79,7 @@ public:
             m_T = *p_energy;
             break;
         default:
-            cout << "Variable set not implemented in StateModel!" << endl;
+            cout << "Variable-set " << vars << " not implemented in StateModel!" << endl;
             exit(1);
         }
 
