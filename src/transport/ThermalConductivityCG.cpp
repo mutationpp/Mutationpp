@@ -11,7 +11,7 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace Transport {
 
-template <typename Implementation>
+template <typename SystemSolution>
 class ThermalConductivitySPD : public ThermalConductivityAlgorithm
 {
 public:
@@ -25,6 +25,110 @@ public:
 
     double thermalConductivity(
         double Th, double Te, double nd, const double *const p_x)
+    {
+        // First solve the linear system for the alphas
+        updateAlphas(Th, Te, nd, p_x);
+        
+        // Finally compute the dot product of alpha and X
+        const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
+        const int k  = ns - nh;
+        
+        double lambda = 0.0;
+        for (int i = k; i < ns; ++i)
+            lambda += p_x[i]*m_alpha(i-k);
+        
+        return lambda;
+    }
+    
+    void thermalDiffusionRatios(
+        double Th, double Te, double nd, const double* const p_x,
+        double* const p_k)
+    {
+        // First solve the linear system for the alphas
+        updateAlphas(Th, Te, nd, p_x);
+        
+        const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
+        const int k  = ns - nh;
+        
+        const RealVector& mi   = m_collisions.mass();
+        const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, p_x);
+        const RealSymMat& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
+        
+        // Compute heavy-particle thermal diffusion ratios
+        double fac;
+        for (int i = k; i < ns; ++i) {
+            p_k[i] = 0.0;
+            for (int j = k; j < ns; ++j) {
+                if (j == i) continue;
+                fac = 0.1*p_x[i]*p_x[j]*(12.0*Cij(i-k,j-k)-10.0)/
+                    (KB*nDij(i,j)*(mi(i)+mi(j)));
+                p_k[i] += fac*m_alpha(j-k)*mi(i);
+                p_k[i] -= fac*m_alpha(i-k)*mi(j);
+            }
+        }
+        
+        // Do we need to compute electron contributions?
+        if (k == 0)
+            return;
+        else
+            p_k[0] = 0.0;
+        
+        // Next compute the Lambda terms for the electron thermal diffusion
+        // ratios
+        const RealSymMat& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
+        const RealSymMat& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
+        const RealSymMat& B     = m_collisions.Bstar(Th, Te, nd, p_x);
+        const RealVector& Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
+        const RealVector& Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
+        const RealVector& Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
+        const RealVector& Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
+        const double      Q23ee = m_collisions.Q23ee(Th, Te, nd, p_x);
+        const double      Q24ee = m_collisions.Q24ee(Th, Te, nd, p_x);
+        const double      me    = mi(0);
+        
+        // Compute the lambdas
+        static RealVector lam01(ns); lam01 = 0.0;
+        static RealVector lam02(ns); lam02 = 0.0;
+        
+        double lam11ee = 0.0;
+        double lam12ee = 0.0;
+        double lam22ee = 0.0;
+        
+        for (int i = 1; i < ns; ++i) {
+            lam01(i) = -p_x[i]*(2.5*Q11(i)-3.0*Q12ei(i));
+            lam01(0) -= lam01(i);
+            lam02(i) = -p_x[i]*(35.0/8.0*Q11(i)-10.5*Q12ei(i)+6.0*Q13ei(i));
+            lam02(0) -= lam02(i);
+            lam11ee += p_x[i]*Q11(i)*(25.0/4.0-3.0*B(i));
+            lam12ee += p_x[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                Q14ei(i));
+            lam22ee += p_x[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                210.0*Q14ei(i)+90.0*Q15ei(i));
+        }
+        
+        
+        fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*p_x[0];
+        lam01   *= fac;
+        lam02   *= fac;
+        lam11ee = fac*(lam11ee + SQRT2*p_x[0]*Q22(0));
+        lam12ee = fac*(lam12ee + SQRT2*p_x[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+        lam22ee = fac*(lam22ee + SQRT2*p_x[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+        
+        fac = 1.0/(lam11ee*lam22ee-lam12ee*lam12ee);
+        for (int i = 0; i < ns; ++i)
+            p_k[i] += 2.5*p_x[0]*(lam01(i)*lam22ee - lam02(i)*lam12ee)*fac;
+    }
+    
+protected:
+
+    RealSymMat m_sys;
+    RealVector m_alpha;
+    
+private:
+
+    void updateAlphas(double Th, double Te, double nd, const double *const p_x)
     {
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
@@ -59,80 +163,53 @@ public:
             }
         }
         
-        // Solve the linear system (this process is determined by the subclass)
-        static_cast<Implementation&>(*this).solve(x(k,ns));
-        
-        // Finally compute the dot product of alpha and X
-        return dot(x(k,ns), m_alpha);
+        // Solve the linear system using the type of system solution given in
+        // template parameter
+        static SystemSolution sol;
+        sol(m_sys, x(k,ns), m_alpha);
     }
-    
-protected:
-
-    RealSymMat m_sys;
-    RealVector m_alpha;
-};    
+};
 
 /**
- * Computes the mixture thermal conductivity using the conjugate-gradient
- * algorithm to solve the linear transport system.
+ * Implementation of the conjugate gradient solution algorithm.
  */
-class ThermalConductivityCG : 
-    public ThermalConductivitySPD<ThermalConductivityCG>
+class CGSolution
 {
-    using ThermalConductivitySPD<ThermalConductivityCG>::m_alpha;
-    using ThermalConductivitySPD<ThermalConductivityCG>::m_sys;
-
 public:
-
-    ThermalConductivityCG(CollisionDB& collisions)
-        : ThermalConductivitySPD<ThermalConductivityCG>::
-            ThermalConductivitySPD(collisions)
-    { }
-
-    template <typename E>
-    void solve(const VecExpr<double, E>& x)
+    template <typename M, typename V>
+    void operator () (
+        const SymMatExpr<double, M>& A, const VecExpr<double, V>& b,
+        Vector<double>& x)
     {
-        DiagonalPreconditioner<double> M(m_sys);
-        cg(m_sys, m_alpha, x, M, 5);
+        DiagonalPreconditioner<double> P(A);
+        cg(A, x, b, P, 5);
     }
 };
 
 // Register the conjugate-gradient algorithm
 Config::ObjectProvider<
-    ThermalConductivityCG, ThermalConductivityAlgorithm> lambdaCG("CG");
+    ThermalConductivitySPD<CGSolution>, ThermalConductivityAlgorithm> cg("CG");
 
 /**
- * Computes the mixture thermal conductivity using the LDL^T decomposition
- * to solve the linear transport system.
+ * Implementation of the LDL^T solution algorithm.
  */
-class ThermalConductivityLDLT : 
-    public ThermalConductivitySPD<ThermalConductivityLDLT>
+class LDLTSolution
 {
-    using ThermalConductivitySPD<ThermalConductivityLDLT>::m_alpha;
-    using ThermalConductivitySPD<ThermalConductivityLDLT>::m_sys;
-
 public:
-
-    ThermalConductivityLDLT(CollisionDB& collisions)
-        : ThermalConductivitySPD<ThermalConductivityLDLT>::
-            ThermalConductivitySPD(collisions)
-    { }
-
-    template <typename E>
-    void solve(const VecExpr<double, E>& x)
+    template <typename M, typename V>
+    void operator () (
+        const SymMatExpr<double, M>& A, const VecExpr<double, V>& b,
+        Vector<double>& x)
     {
-        m_ldlt.setMatrix(m_sys);
-        m_ldlt.solve(m_alpha, x);
+        static LDLT<double> ldlt;
+        ldlt.setMatrix(A);
+        ldlt.solve(x, b);
     }
-
-private:
-
-    LDLT<double> m_ldlt;
 };
 
-// Register the direct solver
-Config::ObjectProvider<ThermalConductivityLDLT, ThermalConductivityAlgorithm> lambdaLDLT("LDLT");
-
+// Register the LDL^T algorithm
+Config::ObjectProvider<
+    ThermalConductivitySPD<LDLTSolution>, ThermalConductivityAlgorithm> ldlt("LDLT");
 
     } // namespace Transport
 } // namespace Mutation

@@ -216,6 +216,13 @@ double Transport::reactiveThermalConductivity()
     // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
     
+    // Compute the thermal diffusion ratios
+    thermalDiffusionRatios(mp_wrk2);
+    
+    // Combine to get the driving forces
+    for (int i = 0; i < m_thermo.nSpecies(); i++)
+        mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
+    
     // Compute the diffusion velocities
     double E;
     stefanMaxwell(mp_wrk1, mp_wrk2, E);
@@ -231,6 +238,29 @@ double Transport::reactiveThermalConductivity()
         lambda -= mp_wrk1[i] / m_thermo.speciesMw(i) * mp_wrk2[i] * Y[i] * rho;
     
     return (RU * m_thermo.T() * lambda);
+}
+
+double Transport::soretThermalConductivity()
+{
+    // Compute dX_i/dT
+    m_thermo.dXidT(mp_wrk1);
+    
+    // Compute the thermal diffusion ratios
+    thermalDiffusionRatios(mp_wrk2);
+    
+    // Combine to get the driving forces
+    for (int i = 0; i < m_thermo.nSpecies(); i++)
+        mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
+    
+    // Compute the diffusion velocities
+    double E;
+    stefanMaxwell(mp_wrk1, mp_wrk1, E);
+    
+    double lambda = 0.0;
+    for (int i = 0; i < m_thermo.nSpecies(); i++)
+        lambda -= mp_wrk2[i]*mp_wrk1[i];
+    
+    return (m_thermo.P()*lambda);
 }
 
 //==============================================================================

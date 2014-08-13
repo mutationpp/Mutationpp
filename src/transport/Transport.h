@@ -89,7 +89,8 @@ public:
     double equilibriumThermalConductivity() {
         return (
             frozenThermalConductivity() +
-            reactiveThermalConductivity()
+            reactiveThermalConductivity() +
+            soretThermalConductivity()
         );
     }
     
@@ -117,6 +118,21 @@ public:
      * for mixtures in thermochemical equilibrium.
      */
     double reactiveThermalConductivity();
+    
+    /**
+     * Returns the Soret thermal conductivity the mixture in thermochemical 
+     * equilibrium.
+     */
+    double soretThermalConductivity();
+    
+    /**
+     * Returns the thermal diffusion ratios for each species.
+     */
+    void thermalDiffusionRatios(double* const p_k) {
+        return mp_thermal_conductivity->thermalDiffusionRatios(
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
+            m_thermo.X(), p_k);
+    }
     
     /**
      * Returns the multicomponent diffusion coefficient matrix.

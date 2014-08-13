@@ -32,7 +32,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 41
+#define NMIXTURE 42
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -67,6 +67,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
     OutputQuantity("lambda", "W/m-K", "mixture equilibrium thermal conductivity"),
     OutputQuantity("lam_reac", "W/m-K", "reactive thermal conductivity"),
+    OutputQuantity("lam_soret", "W/m-K", "Soret thermal conductivity"),
     OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
     OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
@@ -78,7 +79,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
 };
 
 // List of all species output quantities
-#define NSPECIES 17
+#define NSPECIES 18
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
     OutputQuantity("dX/dT", "1/K", "partial of mole fraction w.r.t. temperature"),
@@ -96,7 +97,8 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("J", "kg/m^2-s", "Species diffusion fluxes (SM Ramshaw)"),
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions"),
     OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
-    OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals")
+    OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals"),
+    OutputQuantity("Chi", "?", "species thermal diffusion ratios")
 };
 
 // List of reaction output quantities
@@ -662,6 +664,8 @@ int main(int argc, char** argv)
                     value = mix.equilibriumThermalConductivity();
                 else if (name == "lam_reac")
                     value = mix.reactiveThermalConductivity();
+                else if (name == "lam_soret")
+                    value = mix.soretThermalConductivity();
                 else if (name == "lam_int")
                     value = mix.internalThermalConductivity();
                 else if (name == "lam_h")
@@ -789,6 +793,8 @@ int main(int argc, char** argv)
                     mix.omega11ii(species_values);
                 } else if (name == "Omega22") {
                     mix.omega22ii(species_values);
+                } else if (name == "Chi") {
+                    mix.thermalDiffusionRatios(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
