@@ -340,8 +340,19 @@ public:
         const double Th, const double Te, const double nd, 
         const double *const p_x)
     {
-        updateCollisionData(Th, Te, nd, p_x, CSTAR);
-        return m_Cst;
+        updateCollisionData(Th, Te, nd, p_x, CSTAREI);
+        return m_Cstei;
+    }
+    
+    /**
+     * Returns the dimensionless ratio \f$ (Q_{ij}^{(1,2)} / Q_{ij}^{(1,1)} \f$.
+     */
+    const Mutation::Numerics::RealSymMat& Cstij(
+        const double Th, const double Te, const double nd,
+        const double* const p_x)
+    {
+        updateCollisionData(Th, Te, nd, p_x, CSTARIJ);
+        return m_Cstij;
     }
     
     /**
@@ -477,7 +488,8 @@ private:
         Q24EE,
         ASTAR,
         BSTAR,
-        CSTAR,
+        CSTAREI,
+        CSTARIJ,
         ETAI,
         NDIJ,
         DATA_SIZE
@@ -562,7 +574,8 @@ private:
     double               m_Q24ee;
     Mutation::Numerics::RealSymMat m_Ast;
     Mutation::Numerics::RealSymMat m_Bst;
-    Mutation::Numerics::RealVector m_Cst;
+    Mutation::Numerics::RealVector m_Cstei;
+    Mutation::Numerics::RealSymMat m_Cstij;
     Mutation::Numerics::RealVector m_eta;
     Mutation::Numerics::RealSymMat m_Dij;
     
