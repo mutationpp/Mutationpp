@@ -72,8 +72,10 @@ public:
         // Do we need to compute electron contributions?
         if (k == 0)
             return;
-        else
-            p_k[0] = 0.0;
+        
+        p_k[0] = 0.0;
+        if (p_x[0] < 1.0e-16)
+            return;
         
         // Next compute the Lambda terms for the electron thermal diffusion
         // ratios

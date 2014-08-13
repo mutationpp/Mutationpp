@@ -7,7 +7,7 @@
 #include "Constants.h"
 #include "CollisionDB.h"
 
-//#define VERBOSE
+#define VERBOSE
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -149,7 +149,7 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     CollisionFunc4 func;
     std::map<CollisionPair, int>::iterator iter;
     
-    /*while (str != "STOP" && !collision_map.empty()) {
+    while (str != "STOP" && !collision_map.empty()) {
         // Check if we have landed on a collision identifier
         if (isValidCollisionString(str)) {
             // If so, is this a collision we need to load?
@@ -175,7 +175,7 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
         
         // Read next record
         file >> str;
-    }*/
+    }
     
     file.close();
     
@@ -200,27 +200,27 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     
     // If there are still collisions left over at this point then let the user 
     // know that they will be represented as zeros
-    /*if (!collision_map.empty()) {
-#ifdef VERBOSE
+    if (!collision_map.empty()) {
+//#ifdef VERBOSE
         cout << endl;
         cout << "The following collision pairs were not found!" << endl;
-#endif
+//#endif
         //func = CollisionFunc4();
         iter = collision_map.begin();
         for ( ; iter != collision_map.end(); ++iter) {
-#ifdef VERBOSE
+//#ifdef VERBOSE
             cout << "\t" << iter->first.name() << endl;
-#endif
+//#endif
             Q11_funcs.push_back(Q11_funcs[0]); // they are not evaluated as
             Q22_funcs.push_back(Q22_funcs[0]); // zero anymore...
             Bst_funcs.push_back(Bst_funcs[0]);
             m_neutral_indices.push_back(iter->second);
         }
-#ifdef VERBOSE
+//#ifdef VERBOSE
         cout << "They will be evaluated as the first integral..." << endl;
         cout << endl;
-#endif
-    }*/
+//#endif
+    }
     
     // Find collision pairs amongst those that were loaded which best resemble
     // those that were not loaded
