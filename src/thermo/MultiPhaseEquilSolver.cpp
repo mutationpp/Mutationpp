@@ -407,13 +407,13 @@ MultiPhaseEquilSolver::MultiPhaseEquilSolver(
 
 MultiPhaseEquilSolver::~MultiPhaseEquilSolver()
 {
-    delete mp_phase;
-    delete mp_tableau;
-    delete mp_ming;
-    delete mp_maxmin;
-    delete mp_g;
-    delete mp_g0;
-    delete mp_c;
+    delete [] mp_phase;
+    delete [] mp_tableau;
+    delete [] mp_ming;
+    delete [] mp_maxmin;
+    delete [] mp_g;
+    delete [] mp_g0;
+    delete [] mp_c;
 };
 
 //==============================================================================
@@ -640,6 +640,12 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     // Compute species gibbs free energies at the given temperature and pressure
     m_thermo.speciesGOverRT(T, P, mp_g);
     
+    // Special case for 1 species
+    if (m_ns == 1) {
+        p_sv[0] = 1.0;
+        return std::make_pair(0,0);
+    }
+
     // Setup species ordering and remove "determined" species from consideration
     // (reduced problem)
     checkForDeterminedSpecies();
