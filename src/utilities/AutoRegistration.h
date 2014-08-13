@@ -56,6 +56,12 @@ public:
         if (m_providers.count(key) == 0) {
             std::cout << "Provider < " <<  key << " > is not registered" 
                       << std::endl;
+            std::cout << "  possible providers are: " << std::endl;
+            
+            typename std::map<std::string, Provider<PTYPE>*>::const_iterator iter;
+            for (iter = m_providers.begin() ; iter != m_providers.end(); iter++)
+                std::cout << iter->first << std::endl;
+            std::cout << std::endl;
         }
         
         return dynamic_cast<Provider<PTYPE>*>(
