@@ -29,7 +29,6 @@ public:
     MixtureOptions(const MixtureOptions& options)
         : m_species_descriptor(options.m_species_descriptor),
           m_default_composition(options.m_default_composition),
-          m_composition_setter(options.m_composition_setter),
           m_has_default_composition(options.m_has_default_composition),
           m_source(options.m_source),
           m_state_model(options.m_state_model),
@@ -124,6 +123,10 @@ public:
         m_state_model = state_model;
     }
     
+    void setStateModel(const char* p_state_model) {
+        m_state_model = std::string(p_state_model);
+    }
+    
     /**
      * Gets the thermodynamic database type to use.
      */
@@ -195,7 +198,7 @@ public:
      * Sets the default mole fraction for a single element.
      */
     void setDefaultComposition(const std::string& element, const double X) {
-        m_composition_setter(element, X);
+        m_default_composition.push_back(std::make_pair(element, X));
         m_has_default_composition = true;
     }
     
@@ -256,10 +259,10 @@ public:
      *     ("e-", 0.0);
      * @endcode
      */
-    CompositionSetter& setDefaultComposition() {
+    CompositionSetter setDefaultComposition() {
         m_default_composition.clear();
         m_has_default_composition = true;
-        return m_composition_setter;
+        return CompositionSetter(m_default_composition);
     }
     
     /**
@@ -288,7 +291,6 @@ private:
     std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
-    CompositionSetter m_composition_setter;
     bool m_has_default_composition;
 
 	std::string m_source;

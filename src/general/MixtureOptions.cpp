@@ -13,7 +13,6 @@ namespace Mutation {
 void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 {
     std::swap(opt1.m_species_descriptor, opt2.m_species_descriptor);
-    std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
     std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
     std::swap(opt1.m_source, opt2.m_source);
     std::swap(opt1.m_state_model, opt2.m_state_model);
@@ -24,30 +23,26 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 }
 
 MixtureOptions::MixtureOptions()
-    : m_composition_setter(m_default_composition),
-      m_has_default_composition(false),
+    : m_has_default_composition(false),
       m_source()
 { 
     setDefaultOptions();
 }
 
 MixtureOptions::MixtureOptions(const std::string& mixture)
-    : m_composition_setter(m_default_composition),
-      m_has_default_composition(false)
+    : m_has_default_composition(false)
 {
     loadFromFile(mixture);
 }
 
 MixtureOptions::MixtureOptions(const char* mixture)
-    : m_composition_setter(m_default_composition),
-      m_has_default_composition(false)
+    : m_has_default_composition(false)
 {
     loadFromFile(string(mixture));
 }
 
 MixtureOptions::MixtureOptions(IO::XmlElement& element)
-    : m_composition_setter(m_default_composition),
-      m_has_default_composition(false)
+    : m_has_default_composition(false)
 {
     loadFromXmlElement(element);
 }
@@ -71,13 +66,14 @@ void MixtureOptions::loadFromFile(const string& mixture)
     
     // Get the mixture path on this computer (first assume the local directory)
     m_source = mixture + ".xml";
-    ifstream file(m_source.c_str(), ios::in);
+    {
+        ifstream file(m_source.c_str(), ios::in);
 
-    // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
-    if (!file.is_open())
-		m_source = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-			"/mixtures/" + m_source;
-    file.close();
+        // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
+        if (!file.is_open())
+            m_source = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
+                "/mixtures/" + m_source;
+    }
 
     // Now load the XML file
     IO::XmlDocument mixture_doc(m_source);
