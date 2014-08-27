@@ -146,6 +146,9 @@ void Kinetics::closeReactions(const bool validate_mechanism)
 void Kinetics::getReactionDelta(
     const double* const p_s, double* const p_r) const
 {
+    if (nReactions() == 0)
+        return;
+
     m_reactants.decrReactions(p_s, p_r);
     m_rev_prods.incrReactions(p_s, p_r);
     m_irr_prods.incrReactions(p_s, p_r);
@@ -184,6 +187,9 @@ void Kinetics::getReactionDelta(
 
 void Kinetics::forwardRateCoefficients(double* const p_kf)
 {
+    if (nReactions() == 0)
+        return;
+
     mp_rates->update(m_thermo);
     const double* const p_lnkf = mp_rates->lnkf();
     for (int i = 0; i < nReactions(); ++i)
@@ -194,6 +200,9 @@ void Kinetics::forwardRateCoefficients(double* const p_kf)
 
 void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
+    if (nReactions() == 0)
+        return;
+
     mp_rates->update(m_thermo);
     const double* const p_lnkb = mp_rates->lnkb();
     for (int i = 0; i < nReactions(); ++i)
@@ -257,6 +266,9 @@ void Kinetics::netProductionRates(
 
 void Kinetics::netProductionRates(double* const p_wdot)
 {
+    if (nReactions() == 0)
+        return;
+
     // Compute species concentrations (mol/m^3)
     const double mix_conc = m_thermo.numberDensity() / NA;
     const double* const p_x = m_thermo.X();
@@ -300,6 +312,9 @@ void Kinetics::netProductionRates(double* const p_wdot)
 
 void Kinetics::jacobianRho(double* const p_jac)
 {
+    if (nReactions() == 0)
+        return;
+
     // Update reaction rate coefficients
     mp_rates->update(m_thermo);
     
