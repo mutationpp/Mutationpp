@@ -318,7 +318,7 @@ void Kinetics::jacobianRho(double* const p_jac)
 {
     // Special case of no reactions
     if (nReactions() == 0) {
-        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nspecies(); ++i)
+        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nSpecies(); ++i)
             p_jac[i] = 0.0;
         return;
     }
