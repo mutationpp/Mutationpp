@@ -266,8 +266,12 @@ void Kinetics::netProductionRates(
 
 void Kinetics::netProductionRates(double* const p_wdot)
 {
-    if (nReactions() == 0)
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            p_wdot[i] = 0.0;
         return;
+    }
 
     // Compute species concentrations (mol/m^3)
     const double mix_conc = m_thermo.numberDensity() / NA;
@@ -312,8 +316,12 @@ void Kinetics::netProductionRates(double* const p_wdot)
 
 void Kinetics::jacobianRho(double* const p_jac)
 {
-    if (nReactions() == 0)
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nspecies(); ++i)
+            p_jac[i] = 0.0;
         return;
+    }
 
     // Update reaction rate coefficients
     mp_rates->update(m_thermo);
