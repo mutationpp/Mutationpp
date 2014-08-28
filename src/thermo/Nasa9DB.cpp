@@ -11,6 +11,7 @@ namespace Mutation {
     namespace Thermodynamics {
     
 using namespace std;
+using namespace Utilities;
 
 class Nasa9DB : public NasaDB<Nasa9Polynomial>
 {
@@ -32,10 +33,21 @@ protected:
      */
     void skipHeader(std::ifstream& is) const
     {
+        // Start by skipping all of the comments
         std::string line;
-        while (std::getline(is, line))
-            if (line.substr(0,6) == "thermo") break;
-        std::getline(is, line);
+        int length = 0;
+        while (std::getline(is, line)) {
+            length = line.length();
+            line = String::trim(line);
+            if (line != "" && line[0] != '!') break;
+        }
+        
+        // Skip the "thermo" header if it exists
+        if (length > 6 && String::toLowerCase(line.substr(0,6)) == "thermo")
+            std::getline(is, line);
+        // Else put the curser back to the beginning of the line
+        else
+            is.seekg(-static_cast<int>(length+1), std::ios_base::cur);
     }
     
     /**
@@ -44,13 +56,17 @@ protected:
     Species loadSpecies(
         std::ifstream& is, const std::vector<Element>& elements) const
     {
+        // Skip all comments and blank lines first
         std::string line;
-        if (!std::getline(is, line) || line.substr(0,3) == "END")
+        while (std::getline(is, line))
+            if (String::trim(line).length() > 1 && line[0] != '!') break; 
+        
+        if (is.eof() || String::toLowerCase(line.substr(0,3)) == "end")
             return Species();
         
         // Species name
-        std::string name = Utilities::String::trim(line.substr(0,18));
-        
+        std::string name = Utilities::String::trim(line.substr(0,24));
+
         // Phase
         getline(is, line);
         PhaseType phase;
@@ -72,7 +88,7 @@ protected:
             std::string el = Utilities::String::trim(line.substr(i,2));
             if (el == "") break;
             
-            if (el == "E")
+            if (el == "E" || el == "E-" || el == "e")
                 el = "e-";
             else {
                 el[0] = std::toupper(el[0]);
@@ -118,27 +134,13 @@ protected:
         // need
         std::string line, name;
         while (species_names.size() > 0) {
+            // Read each line until encountering a species that we want
             std::getline(is, line);
             
-            // Do we need this species?
+            // Is this the first line of a species that we need?
             iter = species_names.find(
-                Utilities::String::trim(line.substr(0,18)));
-            if (iter == species_names.end()) {
-                // No, skip remaining lines
-                std::getline(is, line);
-                int ranges = std::atoi(line.substr(0,2).c_str());
-                
-                if (ranges == 0)
-                    std::getline(is, line);
-                else {
-                    for (int i = 0; i < ranges; ++i) {
-                        std::getline(is, line);
-                        std::getline(is, line);
-                        std::getline(is, line);
-                    }
-                }
-            } else {
-                // Yes, load the polynomial and remove species from list
+                Utilities::String::trim(line.substr(0,24)));                
+            if (iter != species_names.end()) {
                 is.seekg(
                     -static_cast<int>(line.length()+1), std::ios_base::cur) >>
                     polynomials[iter->second];

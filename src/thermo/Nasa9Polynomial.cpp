@@ -159,10 +159,10 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
     
     // First line contains:
     // cols   format      value
-    // 1-16   A16         Species name or formula
-    // 19-80  A62         Comments and data source
+    // 1-24   A24         Species name or formula
+    // 25-80  A56         Comments and data source
     getline(in, line);
-    name = line.substr(0, min(static_cast<int>(line.find(" ")), 16));
+    name = line.substr(0, min(static_cast<int>(line.find(" ")), 24));
     
     // Second line contains:
     // cols   format      value
@@ -197,13 +197,13 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
     for (int i = 0; i < n9.m_nr; ++i) {
         // Third line contains:
         // cols   format      value
-        // 1-22   2F11.3      Temperature range
+        // 2-21   2F11.3      Temperature range
         // 23     I1          Number of coefficients for Cp(T)/R 
         // 24-63  8F5.1       T exponents in empirical equation for Cp(T)/R 
         // 66-80  F15.3       [H(298.15) – H(0)], J/mol
         getline(in, line);
-        double t1 = atof(line.substr( 0,11).c_str()); // T_{1,i}
-        double t2 = atof(line.substr(11,11).c_str()); // T_{2,i}
+        double t1 = atof(line.substr( 1,10).c_str()); // T_{1,i}
+        double t2 = atof(line.substr(11,10).c_str()); // T_{2,i}
         
         if (t2 <= t1) {
             cout << "Error: T2 (" << t2 << ") is less than T1 (" << t1 << ") for species " << name << endl;
@@ -228,7 +228,7 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         if (atoi(line.substr(22,1).c_str()) != 7) {
             cout << "Error: should have 7 exponents in species " 
                  << name << endl;
-            exit(1);
+            //exit(1);
         }
         
         // Verify that the exponents are -2, -1, 0, 1, 2, 3, 4 because that is
@@ -245,7 +245,7 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         if (!correct_exp) {
             cout << "Error: should use exponents (-2, -1, 0, 1, 2, 3, 4) "
                  << "in species " << name << endl;
-            exit(1);
+            //exit(1);
         }
     
         // Load the coefficients from lines 4 and 5.  Note that there is a 
