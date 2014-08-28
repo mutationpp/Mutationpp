@@ -328,7 +328,7 @@ private:
          * Initializes the ordering based on defined species "groups" and zero
          * constraints.
          */
-        void setupOrdering(int* species_group, bool* zero_constraint, bool pure);
+        void setupOrdering(int* species_group, bool* zero_constraint);
         
         /**
          * Updates the solution by adding dx to lambda and dlnNbar and
@@ -435,9 +435,10 @@ private:
      * Figure out "determined species" and setup the species ordering data
      * structure.
      */
-    void checkForDeterminedSpecies();
+    bool checkForDeterminedSpecies();
     
-    void initialConditions();
+    void initialConditions(
+        const double T, const double P, const double* const p_c);
     void rates(Numerics::RealVector& dx);
     double newton();
     void updateMinGSolution(const double* const p_g);
@@ -460,6 +461,8 @@ private:
     static const double ms_ds_inc;
     static const double ms_ds_dec;
     static const double ms_max_ds;
+    static const double ms_temp_change_tol;
+    static const double ms_pres_change_tol;
 
     const Thermodynamics& m_thermo;
     

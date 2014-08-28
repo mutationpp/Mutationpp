@@ -32,6 +32,12 @@ const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
 const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
 
+// A change in temperature more than this triggers an update in initial solution
+const double MultiPhaseEquilSolver::ms_temp_change_tol = 50.0;
+
+// A change in pressure more than this triggers an update in initial solution
+const double MultiPhaseEquilSolver::ms_pres_change_tol = 1000.0;
+
 //==============================================================================
 
 void MultiPhaseEquilSolver::Solution::initialize(int np, int nc, int ns)
@@ -80,7 +86,7 @@ void MultiPhaseEquilSolver::Solution::initialize(int np, int nc, int ns)
 //==============================================================================
 
 void MultiPhaseEquilSolver::Solution::setupOrdering(
-        int* species_group, bool* zero_constraint, bool pure)
+        int* species_group, bool* zero_constraint)
 {
     // Count the number of species in each group and order the species such that
     // the groups are contiguous
@@ -622,36 +628,20 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     double T, double P, const double* const p_cv, double* const p_sv,
     MoleFracDef mfd)
 {
-    // Save T, P, c
-    m_T  = T;
-    m_P  = P;
-    std::copy(p_cv, p_cv+m_nc, mp_c);
-    /*#ifdef VERBOSE
-    std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
-    for (int i = 0; i < m_ne; ++i)
-        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
-    std::cout << std::endl;
-    #endif*/
+
     DEBUG("equilibrate(" << T << " K, " << P << " Pa,")
     for (int i = 0; i < m_ne; ++i)
 		DEBUG(m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ","))
 	DEBUG(endl)
-    
-    // Compute species gibbs free energies at the given temperature and pressure
-    m_thermo.speciesGOverRT(T, P, mp_g);
     
     // Special case for 1 species
     if (m_ns == 1) {
         p_sv[0] = 1.0;
         return std::make_pair(0,0);
     }
-
-    // Setup species ordering and remove "determined" species from consideration
-    // (reduced problem)
-    checkForDeterminedSpecies();
     
     // Compute the initial conditions lambda(0), Nbar(0), N(0), and g(0)
-    initialConditions();
+    initialConditions(T, P, p_cv);
     
     #ifdef VERBOSE
 //    cout << "Gj/RT = " << endl;
@@ -1144,7 +1134,7 @@ double MultiPhaseEquilSolver::newton()
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::checkForDeterminedSpecies()
+bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 {
     // First determine which species must be zero (either due to constraints or
     // to temperature limits on condensed species)
@@ -1189,37 +1179,72 @@ void MultiPhaseEquilSolver::checkForDeterminedSpecies()
             }
         }
     }
-    
-    m_solution.setupOrdering(species_group, zero_constraint, m_pure_condensed);
+
+    m_solution.setupOrdering(species_group, zero_constraint);
+
+    return false;
 }
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::initialConditions()
+void MultiPhaseEquilSolver::initialConditions(
+        const double T, const double P, const double* const p_c)
 {
     const double alpha = 1.0e-3;
+    
+    // Determine which parameters have changed since the last equilibrate call
+    bool composition_change = false;
+    for (int i = 0; i < m_nc; ++i)
+        composition_change |= (p_c[i] != mp_c[i]);
+    bool temperature_change = (std::abs(T - m_T) < ms_temp_change_tol);
+    bool pressure_change    = (std::abs(P - m_P) < ms_pres_change_tol);
+
+    // Initialize input variables
+    m_T  = T;
+    m_P  = P;
+    std::copy(p_c, p_c+m_nc, mp_c);
+
+    // Initialize the Gibbs energy vector (regardless of tolerance)
+    m_thermo.speciesGOverRT(m_T, m_P, mp_g);
+
+    // Setup species ordering and remove "determined" species from consideration
+    // (depends on temperature and constraint changes regardless of tolerance)
+    bool order_change = checkForDeterminedSpecies();
+
     const int npr = m_solution.npr();
     const int ncr = m_solution.ncr();
     const int nsr = m_solution.nsr();
     const int* const p_sjr = m_solution.sjr();
     const int* const p_cir = m_solution.cir();
     const int* const p_sizes = m_solution.sizes();
-    
-    // Compute the min-g and max-min solutions
-    updateMinGSolution(mp_g);
-    updateMaxMinSolution();
-    
+
+    // Check to see if we can reuse the previous solution
+    if (!(composition_change || temperature_change || pressure_change || order_change)) {
+        // Can use the previous solution (just need to get g(0) which is the
+        // g* from the previous solution, which is the current g because s = 1)
+        std::copy(m_solution.g(), m_solution.g()+m_ns, mp_g0);
+
+        // Nothing left to do
+        return;
+    }
+
     // Use the tableau as temporary storage
     double* p_N = mp_tableau;
     double* p_Nbar = p_N + nsr;
     double* p_lambda = p_Nbar + npr;
-    
-    // Form estimate of species moles from min-g and max-min vectors
-    // (temporarily store in g0 vector)
     int j, jk;
+
+    // A composition change triggers a complete reinitialization
+    if (composition_change || order_change)
+        updateMaxMinSolution();
+
+    // Otherwise only update the MinG solution
+    updateMinGSolution(mp_g);
+
+    // Form estimate of species moles from min-g and max-min vectors
     for (j = 0; j < nsr; ++j)
         p_N[j] = mp_ming[j]*(1.0-alpha) + mp_maxmin[j]*alpha;
-    
+
     // Compute initial phase moles
     for (int m = 0, j = 0; m < npr; ++m) {
         p_Nbar[m] = 0.0;
