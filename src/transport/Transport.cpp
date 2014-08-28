@@ -17,27 +17,37 @@ using Mutation::Thermodynamics::Thermodynamics;
 //==============================================================================
 
 Transport::Transport(
-    Thermodynamics& thermo, const std::string& viscosity,
-    const std::string& lambda)
-    : m_thermo(thermo), m_collisions(thermo)
+    Thermodynamics& thermo, const std::string& viscosity, const std::string& lambda, const bool load_data)
+    : m_thermo(thermo),
+      mp_collisions(NULL),
+      mp_viscosity(NULL),
+      mp_thermal_conductivity(NULL),
+      mp_diffusion_matrix(NULL),
+      mp_wrk1(NULL)
 { 
+    if (!load_data)
+        return;
+
+    // Load the collision integral data
+    mp_collisions = new CollisionDB(thermo);
+
     // Load the viscosity calculator
     mp_viscosity = 
-        Config::Factory<ViscosityAlgorithm>::create(viscosity, m_collisions);
+        Config::Factory<ViscosityAlgorithm>::create(viscosity, *mp_collisions);
     
     // Load the thermal conductivity calculator
     mp_thermal_conductivity = 
         Config::Factory<ThermalConductivityAlgorithm>::create(
-            lambda, m_collisions);
+            lambda, *mp_collisions);
     
     // Load the diffusion matrix calculator
     mp_diffusion_matrix =
-        new Ramshaw(thermo, m_collisions);
+        new Ramshaw(thermo, *mp_collisions);
     
     // Allocate work array storage
-    mp_wrk1 = new double [m_thermo.nSpecies()];
-    mp_wrk2 = new double [m_thermo.nSpecies()];
-    mp_wrk3 = new double [m_thermo.nSpecies()];
+    mp_wrk1 = new double [m_thermo.nSpecies()*3];
+    mp_wrk2 = mp_wrk1 + m_thermo.nSpecies();
+    mp_wrk3 = mp_wrk2 + m_thermo.nSpecies();
     
     //thermo.stateModel()->notifyOnUpdate(this);
 }
@@ -46,25 +56,29 @@ Transport::Transport(
     
 Transport::~Transport()
 {
+    delete mp_collisions;
     delete mp_viscosity;
     delete mp_thermal_conductivity;
     delete mp_diffusion_matrix;
     
     delete [] mp_wrk1;
-    delete [] mp_wrk2;
-    delete [] mp_wrk3;
 }
 
 //==============================================================================
 
 void Transport::omega11ii(double* const p_omega)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     const double ns  = m_thermo.nSpecies();
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
     const double nd  = m_thermo.numberDensity();
     const double *const X = m_thermo.X();
-    const RealSymMat& Q11 = m_collisions.Q11(Th, Te, nd, X);
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
     
     for (int i = 0; i < ns; ++i)
         p_omega[i] = Q11(i,i);
@@ -74,12 +88,17 @@ void Transport::omega11ii(double* const p_omega)
 
 void Transport::omega22ii(double* const p_omega)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     const double ns  = m_thermo.nSpecies();
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
     const double nd  = m_thermo.numberDensity();
     const double *const X = m_thermo.X();
-    const RealSymMat& Q22 = m_collisions.Q22(Th, Te, nd, X);
+    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
     
     for (int i = 0; i < ns; ++i)
         p_omega[i] = Q22(i,i);
@@ -89,6 +108,11 @@ void Transport::omega22ii(double* const p_omega)
 
 double Transport::electronThermalConductivity()
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
         return 0.0;
 
@@ -101,15 +125,15 @@ double Transport::electronThermalConductivity()
     const double *const X = m_thermo.X();
     
     // Get collision integral information
-    const RealSymMat& Q11   = m_collisions.Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = m_collisions.Q22(Th, Te, nd, X);
-    const RealSymMat& B     = m_collisions.Bstar(Th, Te, nd, X);
-    const RealVector& Q12ei = m_collisions.Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = m_collisions.Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = m_collisions.Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = m_collisions.Q15ei(Th, Te, nd, X);
-    const double      Q23ee = m_collisions.Q23ee(Th, Te, nd, X);
-    const double      Q24ee = m_collisions.Q24ee(Th, Te, nd, X);
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& B     = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
     
     // Compute the lambdas
     double fac;
@@ -141,6 +165,11 @@ double Transport::electronThermalConductivity()
 
 double Transport::internalThermalConductivity()
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
     const int ns     = m_thermo.nSpecies();
     const int nh     = m_thermo.nHeavy();
     const double Th  = m_thermo.T();
@@ -151,7 +180,7 @@ double Transport::internalThermalConductivity()
     const double nd  = m_thermo.numberDensity(); 
     const double *const X = m_thermo.X();
     
-    const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, X);
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
     
     m_thermo.speciesCpOverR(
         Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
@@ -213,6 +242,11 @@ double Transport::internalThermalConductivity()
 
 double Transport::reactiveThermalConductivity()
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
     // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
     
@@ -242,6 +276,11 @@ double Transport::reactiveThermalConductivity()
 
 double Transport::soretThermalConductivity()
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
     // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
     
@@ -267,12 +306,17 @@ double Transport::soretThermalConductivity()
 
 void Transport::averageDiffusionCoeffs(double *const p_Di)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
     const double* const p_X = m_thermo.X();
-    const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, p_X);
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, p_X);
     
     for (int i = 0; i < ns; ++i)
         p_Di[i] = 0.0;
@@ -290,6 +334,11 @@ void Transport::averageDiffusionCoeffs(double *const p_Di)
 
 void Transport::equilibriumFickP(double* const p_F)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     // Get some state data
     const int ns = m_thermo.nSpecies();
     const int ne = m_thermo.nElements();
@@ -320,6 +369,11 @@ void Transport::equilibriumFickP(double* const p_F)
 
 void Transport::equilibriumFickT(double* const p_F)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     // Get some state data
     const int ns = m_thermo.nSpecies();
     const int ne = m_thermo.nElements();
@@ -349,19 +403,24 @@ void Transport::equilibriumFickT(double* const p_F)
 
 void Transport::equilibriumFickXe(double* const p_F)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     // Get some state data
-   const int ns = m_thermo.nSpecies();
-   const int ne = m_thermo.nElements();
-   const double* const p_Y = m_thermo.Y();
-   const double* const p_X = m_thermo.X();
-   const double rho = m_thermo.density();
-   const double T   = m_thermo.T();
-   const double p   = m_thermo.P();
+    const int ns = m_thermo.nSpecies();
+    const int ne = m_thermo.nElements();
+    const double* const p_Y = m_thermo.Y();
+    const double* const p_X = m_thermo.X();
+    const double rho = m_thermo.density();
+    const double T   = m_thermo.T();
+    const double p   = m_thermo.P();
 
-   const RealMatrix& Dij = diffusionMatrix();
-   const RealMatrix& nu  = m_thermo.elementMatrix();
+    const RealMatrix& Dij = diffusionMatrix();
+    const RealMatrix& nu  = m_thermo.elementMatrix();
 
-   for (int l = 0; l < ne; ++l) {
+    for (int l = 0; l < ne; ++l) {
        // Compute the dXj/dZl term using a finite difference
        m_thermo.elementFractions(p_X, mp_wrk1);
        double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-6);
@@ -384,7 +443,7 @@ void Transport::equilibriumFickXe(double* const p_F)
            for (int i = 0; i < ns; ++i)
                Fkl += nu(i,k)*mp_wrk2[i];
        }
-   }
+    }
 
    // Be sure to set the state back in the equilibrium solver in case other
    // calculations rely on the correct element potential values
@@ -397,6 +456,11 @@ void Transport::equilibriumFickXe(double* const p_F)
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return;
+    }
+
     const double tol = 1.0e-30;
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
@@ -404,7 +468,7 @@ void Transport::stefanMaxwell(
     const double nd = m_thermo.numberDensity();
     const double* const X = m_thermo.X();
     const double* const Y = m_thermo.Y();
-    const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, X);
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
     
     double a = 0.0;
     for (int i = 0; i < nDij.size(); ++i)
@@ -507,6 +571,11 @@ void Transport::stefanMaxwell(
 
 double Transport::sigma() 
 {
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
         return 0.0;
 
@@ -517,10 +586,10 @@ double Transport::sigma()
     const double* const X = m_thermo.X();
     const double me = m_thermo.speciesMw(0)/NA;
 
-    const RealSymMat& Q11 = m_collisions.Q11(Th, Te, nd, X);
-    const RealSymMat& Q22 = m_collisions.Q22(Th, Te, nd, X);
-    const RealSymMat& B   = m_collisions.Bstar(Th, Te, nd, X);
-    const RealVector& Cei = m_collisions.Cstei(Th, Te, nd, X);
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& B   = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
     
     // Compute lambdas
     double lam00 = 0.0;

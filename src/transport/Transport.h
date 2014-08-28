@@ -23,7 +23,8 @@ public:
      */
     Transport(
         Mutation::Thermodynamics::Thermodynamics& thermo, 
-        const std::string& viscosity, const std::string& lambda);
+        const std::string& viscosity, const std::string& lambda,
+        const bool load_data = true);
     
     /**
      * Destructor.
@@ -40,7 +41,7 @@ public:
     void setViscosityAlgo(const std::string& algo) {
         delete mp_viscosity;
         mp_viscosity = Mutation::Utilities::Config::Factory<
-            ViscosityAlgorithm>::create(algo, m_collisions);
+            ViscosityAlgorithm>::create(algo, *mp_collisions);
     }
     
     /**
@@ -49,7 +50,7 @@ public:
     void setThermalConductivityAlgo(const std::string& algo) {
         delete mp_thermal_conductivity;
         mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
-            ThermalConductivityAlgorithm>::create(algo, m_collisions);
+            ThermalConductivityAlgorithm>::create(algo, *mp_collisions);
     }
     
     /**
@@ -57,7 +58,11 @@ public:
      * collision database.
      */
     int nCollisionPairs() const {
-        return m_collisions.nCollisionPairs();
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return 0;
+        }
+        return mp_collisions->nCollisionPairs();
     }
     
     void omega11ii(double* const p_omega);
@@ -67,6 +72,10 @@ public:
      * Returns the mixture viscosity.
      */
     double viscosity() {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return 0.0;
+        }
         return mp_viscosity->viscosity(
             m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
     }
@@ -75,6 +84,10 @@ public:
      * Returns the mixture thermal conductivity for a frozen mixture.
      */
     double frozenThermalConductivity() {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return 0.0;
+        }
         return (
             heavyThermalConductivity() + 
             electronThermalConductivity() +
@@ -87,6 +100,10 @@ public:
      * equilibrium.
      */
     double equilibriumThermalConductivity() {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return 0.0;
+        }
         return (
             frozenThermalConductivity() +
             reactiveThermalConductivity() +
@@ -99,6 +116,10 @@ public:
      * set algorithm.
      */
     double heavyThermalConductivity() {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return 0.0;
+        }
         return mp_thermal_conductivity->thermalConductivity(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
@@ -129,6 +150,10 @@ public:
      * Returns the thermal diffusion ratios for each species.
      */
     void thermalDiffusionRatios(double* const p_k) {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            return;
+        }
         return mp_thermal_conductivity->thermalDiffusionRatios(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
             m_thermo.X(), p_k);
@@ -138,6 +163,10 @@ public:
      * Returns the multicomponent diffusion coefficient matrix.
      */
     const Mutation::Numerics::RealMatrix& diffusionMatrix() {
+        if (mp_collisions == NULL) {
+            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+            exit(1);
+        }
         return mp_diffusion_matrix->diffusionMatrix(
             m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
     }
@@ -177,7 +206,7 @@ public:
 private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDB m_collisions;
+    CollisionDB* mp_collisions;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;
