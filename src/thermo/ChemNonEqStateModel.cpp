@@ -33,12 +33,18 @@ public:
         const int vars = 0)
     {
         const int ns = m_thermo.nSpecies();
-        const double tol = 1.0e-9;
+        const double tol = 1.0e-12;
+
+        // Check that temperature or energy is at least positive
+        assert(*p_energy > 0.0);
 
         // Compute the species concentrations which are used through out this
         // method regardless of variable set
-        for (int i = 0; i < ns; ++i)
+        for (int i = 0; i < ns; ++i) {
+            // Check that species densities are at least positive
+            assert(p_mass[i] >= 0.0);
             mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
+        }
 
         // Compute the temperature and make sure the variable set is implemented
         switch (vars) {
@@ -53,7 +59,7 @@ public:
                 f += mp_X[i]*(mp_work[i] - 1.0);
             f = RU*m_T*f - *p_energy;
 
-            while (std::abs(f) > tol) {
+            while (std::abs(f/p_energy[0]) > tol) {
                 // Compute df/dT
                 m_thermo.speciesCpOverR(m_T, mp_work);
                 fp = 0.0;
@@ -62,8 +68,9 @@ public:
                 fp *= RU;
 
                 // Update T
-                m_T -= f/fp;
-                if (m_T <= 0.0) m_T = 1.0;
+                dT = f/fp;
+                while (dT > m_T) dT *= 0.5; // prevent negative T
+                m_T -= dT;
 
                 // Recompute f
                 m_thermo.speciesHOverRT(m_T, mp_work);
