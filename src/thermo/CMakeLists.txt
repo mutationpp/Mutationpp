@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     ChemNonEqStateModel.cpp
-    EquilTPStateModel.cpp
+    #ChemNonEqTTvStateModel.cpp
+    EquilStateModel.cpp
     MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
     Nasa9Polynomial.cpp
