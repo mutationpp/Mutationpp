@@ -51,7 +51,7 @@ public:
         case 0: {
             // Solve nonlinear system to get T from rho*e using Newton's method
             // Use last state update as initial guess for T
-            double f, fp;
+            double f, fp, dT;
 
             m_thermo.speciesHOverRT(m_T, mp_work);
             f = 0.0;
