@@ -398,6 +398,11 @@ private:
         
         void printG();
         
+        /**
+         * Unpacks the current solution into an output array of mole fractions.
+         */
+        void unpackMoleFractions(double* const p_x, const MoleFracDef mfd);
+
     private:
     
         int m_np;

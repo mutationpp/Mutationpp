@@ -13,6 +13,8 @@
 
 //#define VERBOSE
 //#define SAVE_PATH
+//#define SAVE_IC
+
 #include "Utilities.h"
 
 using std::cout;
@@ -33,7 +35,7 @@ const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
 const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
 
 // A change in temperature more than this triggers an update in initial solution
-const double MultiPhaseEquilSolver::ms_temp_change_tol = 50.0;
+const double MultiPhaseEquilSolver::ms_temp_change_tol = 100.0;
 
 // A change in pressure more than this triggers an update in initial solution
 const double MultiPhaseEquilSolver::ms_pres_change_tol = 1000.0;
@@ -377,13 +379,44 @@ void MultiPhaseEquilSolver::Solution::printG()
              << mp_g[j] << endl;
 }
 
+void MultiPhaseEquilSolver::Solution::unpackMoleFractions(
+    double* const p_x, const MoleFracDef mfd)
+{
+    switch (mfd) {
+    case IN_PHASE:
+        for (int m = 0; m < npr(); ++m) {
+            const double nbar = std::exp(lnNbar()[m]);
+            for (int j = sizes()[m]; j < sizes()[m+1]; ++j)
+                p_x[sjr()[j]] = y()[j]*y()[j]/nbar;
+        }
+
+        for (int j = nsr(); j < m_ns; ++j)
+            p_x[sjr()[j]] = 0.0;
+        break;
+
+    case GLOBAL:
+        for (int j = 0; j < m_ns; ++j)
+            p_x[j] = 0.0;
+        double sum = 0.0;
+        for (int j = 0; j < nsr(); ++j) {
+            p_x[sjr()[j]] = y()[j]*y()[j];
+            sum += p_x[sjr()[j]];
+        }
+        for (int j = 0; j < m_ns; ++j)
+            p_x[j] /= sum;
+        break;
+    }
+}
 
 //==============================================================================
 
 MultiPhaseEquilSolver::MultiPhaseEquilSolver(
     const Thermodynamics& thermo, const bool pure_condensed) :
         m_thermo(thermo),
-        m_pure_condensed(pure_condensed), m_solution(thermo)
+        m_pure_condensed(pure_condensed),
+        m_solution(thermo),
+        m_T(0.0),
+        m_P(0.0)
 {
     // Sizing information
     m_ns  = m_thermo.nSpecies();
@@ -401,6 +434,8 @@ MultiPhaseEquilSolver::MultiPhaseEquilSolver(
     mp_g0      = new double [m_ns];
     mp_c       = new double [m_nc];
     
+    std::fill(mp_c, mp_c+m_nc, 0.0);
+
     // Compute phase information
     mp_phase = new int [m_ns];
     initPhases();
@@ -642,8 +677,18 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     
     // Compute the initial conditions lambda(0), Nbar(0), N(0), and g(0)
     initialConditions(T, P, p_cv);
-    
-    #ifdef VERBOSE
+#ifdef SAVE_IC
+    // Save the initial mole fractions
+    std::ofstream of("ic.dat", std::ios_base::app);
+    m_solution.unpackMoleFractions(p_sv, mfd);
+    of << setw(15) << m_T << setw(15) << m_P;
+    for (int i = 0; i < m_ns; ++i)
+        of << setw(15) << p_sv[i];
+    of << endl;
+    of.close();
+#endif
+
+#ifdef VERBOSE
 //    cout << "Gj/RT = " << endl;
 //    for (int j = 0; j < m_ns; ++j)
 //        cout << mp_g[j] << endl;
@@ -651,7 +696,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     cout << "Initial conditions: " << endl;
     m_solution.printSolution();
 //    m_solution.printG();
-    #endif
+#endif
 
 #ifdef SAVE_PATH
     std::ofstream of("path.dat");
@@ -787,31 +832,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     }
 
     // Finally, unwrap the solution for the user and return convergence stats
-    switch (mfd) {
-    case IN_PHASE:
-        for (int m = 0; m < m_solution.npr(); ++m) {
-            const double nbar = std::exp(m_solution.lnNbar()[m]);
-            for (int j = m_solution.sizes()[m]; j < m_solution.sizes()[m+1]; ++j)
-                p_sv[m_solution.sjr()[j]] =
-                        m_solution.y()[j]*m_solution.y()[j]/nbar;
-        }
-
-        for (int j = m_solution.nsr(); j < m_ns; ++j)
-            p_sv[m_solution.sjr()[j]] = 0.0;
-        break;
-
-    case GLOBAL:
-        for (int j = 0; j < m_ns; ++j)
-            p_sv[j] = 0.0;
-        double sum = 0.0;
-        for (int j = 0; j < m_solution.nsr(); ++j) {
-            p_sv[m_solution.sjr()[j]] = m_solution.y()[j]*m_solution.y()[j];
-            sum += p_sv[m_solution.sjr()[j]];
-        }
-        for (int j = 0; j < m_ns; ++j)
-            p_sv[j] /= sum;
-        break;
-    }
+    m_solution.unpackMoleFractions(p_sv, mfd);
     
 
 #ifdef SAVE_PATH
@@ -1182,7 +1203,7 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 
     m_solution.setupOrdering(species_group, zero_constraint);
 
-    return false;
+    return true;
 }
 
 //==============================================================================
@@ -1196,8 +1217,9 @@ void MultiPhaseEquilSolver::initialConditions(
     bool composition_change = false;
     for (int i = 0; i < m_nc; ++i)
         composition_change |= (p_c[i] != mp_c[i]);
-    bool temperature_change = (std::abs(T - m_T) < ms_temp_change_tol);
-    bool pressure_change    = (std::abs(P - m_P) < ms_pres_change_tol);
+    bool temperature_change = (std::abs(T - m_T) > ms_temp_change_tol);
+    bool pressure_change    = (std::abs(P - m_P) > ms_pres_change_tol);
+    pressure_change = false;
 
     // Initialize input variables
     m_T  = T;
@@ -1218,8 +1240,9 @@ void MultiPhaseEquilSolver::initialConditions(
     const int* const p_cir = m_solution.cir();
     const int* const p_sizes = m_solution.sizes();
 
-    // Check to see if we can reuse the previous solution
-    if (!(composition_change || temperature_change || pressure_change || order_change)) {
+    // Check to see if we can reuse the previous solution (only implemented for
+    // the gas phase for now...)
+    if (!(composition_change || temperature_change || pressure_change || m_np != 1)) {
         // Can use the previous solution (just need to get g(0) which is the
         // g* from the previous solution, which is the current g because s = 1)
         std::copy(m_solution.g(), m_solution.g()+m_ns, mp_g0);
