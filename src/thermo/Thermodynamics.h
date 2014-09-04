@@ -81,6 +81,14 @@ public:
     }
     
     /**
+     * Returns a pointer to the Equilibrium solver object owned by this
+     * Thermodynamics object.
+     */
+    MultiPhaseEquilSolver* const  equilSolver() const {
+        return mp_equil;
+    }
+
+    /**
      * Returns a pointer to the ThermoDB object owned by this Thermodynamics
      * object.
      */
@@ -562,14 +570,14 @@ public:
      * equilibrium mixture.
      * dxdt - on return, the dX_i/dT derivatives
      */
-    void dXidT(double* const dxdt);
+    void dXidT(double* const dxdt) const;
     
     /**
      * Returns the species derivatives of mole fraction w.r.t. pressure for the
      * given equilibrium mixture.  Note that it is assumed the state model is an
      * equilibrium one.
      */
-    void dXidP(double* const dxdp);
+    void dXidP(double* const dxdp) const;
 
     /**
      * Returns the density derivative with respect to pressure for the current

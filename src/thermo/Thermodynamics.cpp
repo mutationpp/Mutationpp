@@ -504,7 +504,7 @@ double Thermodynamics::mixtureEquilibriumCpMass()
 
 //==============================================================================
 
-void Thermodynamics::dXidT(double* const p_dxdt)
+void Thermodynamics::dXidT(double* const p_dxdt) const
 {   
     const double T = this->T();
 
@@ -516,7 +516,7 @@ void Thermodynamics::dXidT(double* const p_dxdt)
     mp_equil->dXdg(p_dxdt, p_dxdt);
 }
 
-void Thermodynamics::dXidP(double* const p_dxdp)
+void Thermodynamics::dXidP(double* const p_dxdp) const
 {
     const double P = this->P();
     for (int i = 0; i < nGas(); ++i)
