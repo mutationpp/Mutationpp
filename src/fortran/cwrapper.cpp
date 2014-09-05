@@ -229,6 +229,12 @@ double NAME_MANGLE(mixture_frozen_gamma)()
 }
 
 //==============================================================================
+double NAME_MANGLE(mixture_frozen_sound_speed)()
+{
+    return p_mix->frozenSoundSpeed();
+}
+
+//==============================================================================
 void NAME_MANGLE(species_h_mass)(double *const h)
 {
     p_mix->speciesHOverRT(h);

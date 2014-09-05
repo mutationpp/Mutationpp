@@ -52,6 +52,9 @@ module mutationpp
         real(kind=8) function mpp_mixture_frozen_gamma();
         end function
         
+        real(kind=8) function mpp_mixture_frozen_sound_speed();
+        end function
+        
         real(kind=8) function mpp_mixture_h_mass()
         end function
         

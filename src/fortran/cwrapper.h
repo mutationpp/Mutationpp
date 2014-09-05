@@ -230,6 +230,11 @@ double NAME_MANGLE(mixture_frozen_cv_mass)();
 double NAME_MANGLE(mixture_frozen_gamma)();
 
 /**
+ * Returns the mixture frozen sound speed in m/s.
+ */
+double NAME_MANGLE(mixture_frozen_sound_speed)();
+
+/**
  * Returns the species enthalpies in J/kg.
  *
  * @param h - species enthalpies on return
