@@ -25,6 +25,12 @@ for (int i = 0; i < m_ns; ++i) {\
     __op__ ;\
 }
 
+#define LOOP_ATOMS(__op__)\
+for (int i = 0, j = 0; i < m_na; ++i) {\
+    j = mp_indices[i];\
+    __op__ ;\
+}
+
 // Loops over molecules. Inside the loop, the index i is zero based and indexes
 // internal molecular data.  The index j is the index corresponding to the 
 // original species data.
@@ -71,7 +77,8 @@ class RrhoDB : public ThermoDB
 public:
 
     RrhoDB(int arg)
-        : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0), m_has_electron(false),
+        : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
+          m_has_electron(false),
           m_use_tables(false)
     { }
     
@@ -119,78 +126,47 @@ public:
         double* const cp, double* const cpt, double* const cpr, 
         double* const cpv, double* const cpel)
     {
-        const double deltaT = Th * 1.0E-6;
-    
         // Special case if we only want total Cp
         if (cp != NULL && cpt == NULL && cpr == NULL && cpv == NULL && 
             cpel == NULL)
         {
-            hT(Th + deltaT, Te + deltaT, cp, Eq());
-            hT(Th, Te, cp, MinusEq());
-            
-            hR(Tr + deltaT, cp, PlusEq());
-            hR(Tr, cp, MinusEq());
-            
-            hV(Tv + deltaT, cp, PlusEq());
-            hV(Tv, cp, MinusEq());
-            
-            //hE(Tel + deltaT, cp, PlusEq());
-            //hE(Tel, cp, MinusEq());
-            
-            LOOP(cp[i] /= deltaT);
-            
+            cpT(cp, Eq());
+            cpR(cp, PlusEq());
+            cpV(Tv, cp, PlusEq());
             cpE(Tel, cp, PlusEq());
-            //CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
             return;
         }
         
         // Otherwise we have to compute each component directly.
         // Translation
         if (cpt == NULL) {
-            if (cp != NULL) {
-                hT(Th + deltaT, Te + deltaT, cp, Eq());
-                hT(Th, Te, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpT(cp, PlusEq());
         } else {
-            hT(Th + deltaT, Te + deltaT, cpt, Eq());
-            hT(Th, Te, cpt, MinusEq());
+            cpT(cpt, Eq());
             if (cp != NULL) 
                 LOOP(cp[i] += cpt[i]);
-            LOOP(cpt[i] /= deltaT);
         }
         
         // Rotation
         if (cpr == NULL) {
-            if (cp != NULL) {
-                hR(Tr + deltaT, cp, PlusEq());
-                hR(Tr, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpR(cp, PlusEq());
         } else {
-            LOOP(cpr[i] = 0.0);
-            hR(Tr + deltaT, cpr, Eq());
-            hR(Tr, cpr, MinusEq());
+            cpR(cpr, Eq());
             if (cp != NULL) 
                 LOOP_MOLECULES(cp[j] += cpr[j]);
-            LOOP_MOLECULES(cpr[j] /= deltaT);
         }
         
         // Vibration
         if (cpv == NULL) {
-            if (cp != NULL) {
-                hV(Tv + deltaT, cp, PlusEq());
-                hV(Tv, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpV(Tv, cp, PlusEq());
         } else {
-            LOOP(cpv[i] = 0.0);
-            hV(Tv + deltaT, cpv, Eq());
-            hV(Tv, cpv, MinusEq());
+            cpV(Tv, cpv, Eq());
             if (cp != NULL) 
                 LOOP_MOLECULES(cp[j] += cpv[j]);
-            LOOP_MOLECULES(cpv[j] /= deltaT);
         }
-        
-        if (cp != NULL) 
-            LOOP(cp[i] /= deltaT);
         
         // Electronic
         if (cpel == NULL) {
@@ -203,6 +179,31 @@ public:
         }
     }
     
+    /**
+     * Computes the species vibrational specific heats at the given temperature
+     * nondimensionalized by Ru.
+     */
+    void cpv(double Tv, double* const p_cpv)
+    {
+        int ilevel = 0;
+        double sum, fac1, fac2;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                fac2 = std::exp(fac1);
+                fac1 = fac1 / (fac2 - 1.0);
+                sum += fac2*fac1;
+            }
+            p_cpv[j] = sum;
+        )
+    }
+
+    void cpel(double Tel, double* const p_cpel)
+    {
+        CpelFunctor()(Tel, p_cpel, m_elec_data, Eq());
+    }
+
     /**
      * Computes the unitless species enthalpy \f$ h_i/R_U T_h\f$ of each
      * species in thermal nonequilibrium, which is non-dimensionalized by the 
@@ -284,6 +285,25 @@ public:
         }
     }
     
+    void hv(double Tv, double* const p_hv)
+    {
+        int ilevel = 0;
+        double sum, fac1;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                sum += fac1 / (std::exp(fac1) - 1.0);
+            }
+            p_hv[j] = sum;
+        )
+    }
+
+    void hel(double Tel, double* const p_hel)
+    {
+        HelFunctor()(Tel, p_hel, m_elec_data, Eq());
+    }
+
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.
@@ -698,6 +718,60 @@ protected:
 private:
     
     /**
+     * Computes the translational Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpT(double* const cp, const OP& op) {
+        LOOP(op(cp[i], 2.5));
+    }
+
+    /**
+     * Computes the rotational Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpR(double* const cp, const OP& op) {
+        op(cp[0], 0.0);
+        LOOP_ATOMS(op(cp[j], 0.0));
+        LOOP_MOLECULES(op(cp[j], mp_rot_data[i].linearity));
+    }
+
+    /**
+     * Computes the vibratinoal Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpV(double Tv, double* const cp, const OP& op) {
+        int ilevel = 0;
+        double sum, fac1, fac2;
+        op(cp[0], 0.0);
+        LOOP_ATOMS(op(cp[j], 0.0));
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                fac2 = std::exp(fac1);
+                fac1 *= fac1*fac2;
+                fac2 -= 1.0;
+                sum += fac1/(fac2*fac2);
+            }
+            op(cp[j], sum);
+        )
+    }
+
+    /**
+     * Computes the electronic specific heat of each species and applies the
+     * value to the array using the given operation.
+     */
+    template <typename OP>
+    void cpE(double T, double* const cp, const OP& op)
+    {
+        if (m_use_tables)
+            mp_cpel_table->lookup(T, cp, op);
+        else
+            CpelFunctor()(T, cp, m_elec_data, op);
+    }
+
+
+    /**
      * Computes the translational enthalpy of each species in K.
      */
     template <typename OP>
@@ -742,19 +816,6 @@ private:
             mp_hel_table->lookup(T, h, op);
         else
             HelFunctor()(T, h, m_elec_data, op);
-    }
-    
-    /**
-     * Computes the electronic specific heat of each species and applies the
-     * value to the enthalpy array using the given operation.
-     */
-    template <typename OP>
-    void cpE(double T, double* const cp, const OP& op)
-    {
-        if (m_use_tables)
-            mp_cpel_table->lookup(T, cp, op);
-        else
-            CpelFunctor()(T, cp, m_elec_data, op);
     }
     
     /**
