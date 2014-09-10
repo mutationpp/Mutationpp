@@ -33,13 +33,18 @@ public:
         const int vars = 0)
     {
         const int ns = m_thermo.nSpecies();
+        const double atol = 1.0e-12;
+        const double rtol = 1.0e-12;
+        const int max_iters = 50;
 
         // Compute the species concentrations which are used throughout this
         // method regardless of variable set
+        double conc = 0.0;
         for (int i = 0; i < ns; ++i) {
             // Check that species densities are at least positive
             assert(p_mass[i] >= 0.0);
             mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
+            conc += mp_X[i];
         }
 
         // Compute the temperature and make sure the variable set is implemented
@@ -47,47 +52,42 @@ public:
         case 0: {
             // Solve nonlinear system to get T from rho*e using Newton's method
             // Use last state update as initial guess for T
-            const int max_iters = 50;
-            const double tol = 1.0e-12;
+            const double rhoe_over_Ru = p_energy[0]/RU;
             double f, fp, dT;
-
+            
             m_thermo.speciesHOverRT(m_T, mp_work);
-            f = 0.0;
+            f = -conc;
             for (int i = 0; i < ns; ++i)
-                f += mp_X[i]*(mp_work[i] - 1.0);
-            f = RU*m_T*f - *p_energy;
+                f += mp_X[i]*mp_work[i];
+            f = m_T*f - rhoe_over_Ru;
 
             int iter = 0;
-            while (std::abs(f) > tol * m_T) {
+            const double tol = rtol*std::abs(rhoe_over_Ru) + atol;
+            while (std::abs(f) > tol) {
                 // Print warning if this is taking too long
-                if (++iter % max_iters == 0) {
-                    cout << "setState() taking too many iterations for ChemNonEq1T StateModel!"
-                         << " It is likely that the input arguments are not feasible..." << endl;
-                    cout << "Species densities [kg/m^3]:" << endl;
-                    for (int i = 0; i < ns; ++i)
-                        cout << "  " << setw(20) << m_thermo.speciesName(i) << " " << p_mass[i] << endl;
-                    cout << "Energy density [J/m^3]:" << endl;
-                    cout << p_energy[0] << endl;
+                if (++iter == max_iters) {
+                    cout << "Reached maximum iterations in ChemNonEq1T::setState()!" << endl;
+                    cout << "f = " << f / rhoe_over_Ru << ", T = " << m_T << endl;
+                    break;
                 }
 
                 // Compute df/dT
                 m_thermo.speciesCpOverR(m_T, mp_work);
-                fp = 0.0;
+                fp = -conc;
                 for (int i = 0; i < ns; ++i)
-                    fp += mp_X[i]*(mp_work[i] - 1.0);
-                fp *= RU;
+                    fp += mp_X[i]*mp_work[i];
 
                 // Update T
                 dT = f/fp;
-                while (dT > m_T) dT *= 0.5; // prevent negative T
+                while (dT >= m_T) dT *= 0.5; // prevent nonpositive T
                 m_T -= dT;
 
                 // Recompute f
                 m_thermo.speciesHOverRT(m_T, mp_work);
-                f = 0.0;
+                f = -conc;
                 for (int i = 0; i < ns; ++i)
-                    f += mp_X[i]*(mp_work[i] - 1.0);
-                f = RU*m_T*f - *p_energy;
+                    f += mp_X[i]*mp_work[i];
+                f = m_T*f - rhoe_over_Ru;
             }
 
             break;
@@ -106,13 +106,9 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
 
         // Compute the pressure and species mole fractions from T and rho_i
-        m_P = 0.0;
         for (int i = 0; i < ns; ++i)
-            m_P += mp_X[i];
-
-        for (int i = 0; i < ns; ++i)
-            mp_X[i] /= m_P;
-        m_P *= RU * m_T;
+            mp_X[i] /= conc;
+        m_P = RU * m_T * conc;
     }
 
 private:
