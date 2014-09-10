@@ -33,12 +33,11 @@ public:
         const int vars = 0)
     {
         const int ns = m_thermo.nSpecies();
-        const double tol = 1.0e-12;
 
         // Check that temperature or energy is at least positive
         assert(*p_energy > 0.0);
 
-        // Compute the species concentrations which are used through out this
+        // Compute the species concentrations which are used throughout this
         // method regardless of variable set
         for (int i = 0; i < ns; ++i) {
             // Check that species densities are at least positive
@@ -51,6 +50,8 @@ public:
         case 0: {
             // Solve nonlinear system to get T from rho*e using Newton's method
             // Use last state update as initial guess for T
+            const int max_iters = 50;
+            const double tol = 1.0e-12;
             double f, fp, dT;
 
             m_thermo.speciesHOverRT(m_T, mp_work);
@@ -59,7 +60,19 @@ public:
                 f += mp_X[i]*(mp_work[i] - 1.0);
             f = RU*m_T*f - *p_energy;
 
+            int iter = 0;
             while (std::abs(f/p_energy[0]) > tol) {
+                // Print warning if this is taking too long
+                if (iter++ % max_iters == 0) {
+                    cout << "setState() taking too many iterations for ChemNonEq1T StateModel!"
+                         << " It is likely that the input arguments are not feasible..." << endl;
+                    cout << "Species densities [kg/m^3]:" << endl;
+                    for (int i = 0; i < ns; ++i)
+                        cout << "  " << setw(20) << m_thermo.speciesName(i) << " " << p_mass[i] << endl;
+                    cout << "Energy density [J/m^3]:" << endl;
+                    cout << p_energy[0] << endl;
+                }
+
                 // Compute df/dT
                 m_thermo.speciesCpOverR(m_T, mp_work);
                 fp = 0.0;
