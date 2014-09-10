@@ -34,9 +34,6 @@ public:
     {
         const int ns = m_thermo.nSpecies();
 
-        // Check that temperature or energy is at least positive
-        assert(*p_energy > 0.0);
-
         // Compute the species concentrations which are used throughout this
         // method regardless of variable set
         for (int i = 0; i < ns; ++i) {
@@ -61,9 +58,9 @@ public:
             f = RU*m_T*f - *p_energy;
 
             int iter = 0;
-            while (std::abs(f/p_energy[0]) > tol) {
+            while (std::abs(f) > tol * m_T) {
                 // Print warning if this is taking too long
-                if (iter++ % max_iters == 0) {
+                if (++iter % max_iters == 0) {
                     cout << "setState() taking too many iterations for ChemNonEq1T StateModel!"
                          << " It is likely that the input arguments are not feasible..." << endl;
                     cout << "Species densities [kg/m^3]:" << endl;
@@ -96,6 +93,8 @@ public:
             break;
         }
         case 1:
+            // Check that temperature is at least positive
+            assert(*p_energy > 0.0);
             m_T = *p_energy;
             break;
         default:

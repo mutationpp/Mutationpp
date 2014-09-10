@@ -77,7 +77,7 @@ public:
                 int iter = 0;
                 while (std::max(std::abs(f1/rhoe),std::abs(f2/rho)) > tol) {
                     // Print warning if this is taking too long
-                    if (iter++ % max_iters == 0) {
+                    if (++iter % max_iters == 0) {
                         cout << "setState() taking too many iterations for Equil StateModel!"
                              << " It is likely that the input arguments are not feasible..." << endl;
                         cout << "density [kg/m^3] = " << rho << ", energy [J/m^3] = " << rhoe << endl;
