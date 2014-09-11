@@ -14,6 +14,12 @@ module mutationpp
         integer function mpp_nreactions()
         end function
         
+        integer function mpp_n_mass_eqns()
+        end function
+        
+        integer function mpp_n_energy_eqns()
+        end function
+        
         integer function mpp_element_index(element)
             character(len=*) :: element
         end function

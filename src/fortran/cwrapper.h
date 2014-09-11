@@ -73,6 +73,16 @@ int NAME_MANGLE(nspecies)();
 int NAME_MANGLE(nreactions)();
 
 /**
+ * Returns the number of mass equations associated with the state model.
+ */
+int NAME_MANGLE(n_mass_eqns)();
+
+/**
+ * Returns the number of energy equations associated with the state model.
+ */
+int NAME_MANGLE(n_energy_eqns)();
+
+/**
  * Returns the index of the element with the given name.
  */
 int NAME_MANGLE(element_index)(
@@ -160,6 +170,16 @@ void NAME_MANGLE(x)(double* const X);
  * Returns the mass fractions for the current mixture state.
  */
 void NAME_MANGLE(y)(double* const Y);
+
+/**
+ * Fills the temperature vector with the current mixture state.
+ */
+void NAME_MANGLE(get_temperatures)(double* const T);
+
+/**
+ * Fills the energy density vector with the current mixture state.
+ */
+void NAME_MANGLE(get_energy_densities)(double* const rhoe);
 
 /**
  * Returns the number density of the mixture given the mixture temperature

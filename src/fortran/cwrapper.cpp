@@ -76,6 +76,18 @@ int NAME_MANGLE(nreactions)()
 }
 
 //==============================================================================
+int NAME_MANGLE(n_mass_eqns)()
+{
+    return p_mix->nMassEqns();
+}
+
+//==============================================================================
+int NAME_MANGLE(n_energy_eqns)()
+{
+    return p_mix->nEnergyEqns();
+}
+
+//==============================================================================
 int NAME_MANGLE(element_index)(F_STRING element, F_STRLEN element_length)
 {
     return p_mix->elementIndex(char_to_string(element, element_length)) + 1;
@@ -200,6 +212,18 @@ void NAME_MANGLE(x)(double *const X)
 void NAME_MANGLE(y)(double *const Y)
 {
     std::copy(p_mix->Y(), p_mix->Y()+p_mix->nSpecies(), Y);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_temperatures)(double* const T)
+{
+    p_mix->getTemperatures(T);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_energy_densities)(double* const rhoe)
+{
+    p_mix->getEnergyDensities(rhoe);
 }
 
 //==============================================================================
