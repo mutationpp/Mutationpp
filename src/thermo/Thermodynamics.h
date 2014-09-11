@@ -339,6 +339,18 @@ public:
     double Tel() const;
     
     /**
+     * Fills temperature array with tempertures belonging to the assigned
+     * StateModel.
+     */
+    void getTemperatures(double* const p_T) const;
+
+    /**
+     * Fills energy density array with energies belonging to the assigned
+     * StateModel.
+     */
+    void getEnergyDensities(double* const p_rhoe) const;
+
+    /**
      * Returns the current mixture static pressure in Pa.
      */
     double P() const;

@@ -207,6 +207,18 @@ double Thermodynamics::Tel() const {
 
 //==============================================================================
 
+void Thermodynamics::getTemperatures(double* const p_T) const {
+    mp_state->getTemperatures(p_T);
+}
+
+//==============================================================================
+
+void Thermodynamics::getEnergyDensities(double* const p_rhoe) const {
+    mp_state->getEnergyDensities(p_rhoe);
+}
+
+//==============================================================================
+
 double Thermodynamics::P() const {
     return mp_state->P();
 }

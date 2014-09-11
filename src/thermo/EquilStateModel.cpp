@@ -107,7 +107,7 @@ public:
                     // Update T
                     dT = -f1/dfdt;
                     while (dT > m_T) dT *= 0.5; // prevent negative T
-                    m_T = m_T - dT;
+                    m_T -= dT;
 
                     // Update P (lagging Mwmix)
                     m_P = rho*RU*m_T/mw;

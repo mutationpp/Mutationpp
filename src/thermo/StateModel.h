@@ -66,7 +66,14 @@ public:
     
 //    void addWatcher(StateModelWatcher* p_watcher);
     
+    /**
+     * Returns the number of energy equations represented by this StateModel.
+     */
     inline int nEnergyEqns() const { return m_nenergy; }
+
+    /**
+     * Returns the number of mass equations represented by this StateModel.
+     */
     inline int nMassEqns() const { return m_nmass; }
 
     /**
@@ -124,6 +131,24 @@ public:
         return m_P;
     }
     
+    /**
+     * Fills an array of the temperatures represented by this StateModel.
+     */
+    virtual void getTemperatures(double* const p_T) const {
+        std::cerr << "getTemperatures()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+    /**
+     * Fills an array of the energy densities represented by this StateModel.
+     */
+    virtual void getEnergyDensities(double* const p_rhoe) {
+        std::cerr << "getEnergyDensities()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
     /**
      * Returns the species mole fractions.
      */
