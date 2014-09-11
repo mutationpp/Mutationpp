@@ -67,7 +67,7 @@ public:
         switch (vars) {
         case 0:
             // Solve energy equation
-            getTFromRhoE(Cp(m_thermo), H(m_thermo), p_energy[0], m_T, -conc, 0.0);
+            getTFromRhoE(Cp(m_thermo), H(m_thermo), p_energy[0], m_T, -conc);
             break;
         case 1:
             // Check that temperature is at least positive
@@ -142,7 +142,7 @@ protected:
         f = T*f - rhoe_over_Ru;
 
         int iter = 0;
-        cout << iter << " " << f << " " << T << endl;
+        //cout << iter << " " << f << " " << T << endl;
         while (std::abs(f) > tol) {
             // Check for max iterations
             if (iter++ == max_iters) {
@@ -169,8 +169,7 @@ protected:
             for (int i = 0; i < ns; ++i)
                 f += mp_X[i]*mp_work[i];
             f = T*f - rhoe_over_Ru;
-
-            cout << iter << " " << f << " " << T << endl;
+            //cout << iter << " " << f << " " << T << endl;
         }
 
         // Let the user know if we converged or not
