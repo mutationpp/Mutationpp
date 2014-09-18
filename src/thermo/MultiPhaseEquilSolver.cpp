@@ -511,7 +511,7 @@ void MultiPhaseEquilSolver::dXdP(double *const p_dxdp) const
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::dSoldg(const double* const p_dg, RealVector& dx)
+void MultiPhaseEquilSolver::dSoldg(const double* const p_dg, RealVector& dx) const
 {
     const int ncr = m_solution.ncr();
     const int npr = m_solution.npr();
@@ -548,7 +548,7 @@ void MultiPhaseEquilSolver::dSoldg(const double* const p_dg, RealVector& dx)
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX)
+void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX) const
 {
     const int ncr = m_solution.ncr();
     const int nsr = m_solution.nsr();
@@ -585,7 +585,7 @@ void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX)
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::dNdg(const double* const p_dg, double* const p_dN)
+void MultiPhaseEquilSolver::dNdg(const double* const p_dg, double* const p_dN) const
 {
     const int ncr = m_solution.ncr();
     const int npr = m_solution.npr();

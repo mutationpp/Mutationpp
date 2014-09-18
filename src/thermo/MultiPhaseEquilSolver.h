@@ -162,11 +162,11 @@ public:
      * respect to some change in the species Gibbs energies.  For instance, to
      * compute dN/dT, supply the dg/dT vector.
      */
-    void dNdg(const double* const p_dg, double* const p_dNdg);
+    void dNdg(const double* const p_dg, double* const p_dNdg) const;
 
-    void dXdg(const double* const p_dg, double* const p_dXdg);
+    void dXdg(const double* const p_dg, double* const p_dXdg) const;
 
-    void dSoldg(const double* const p_dg, Numerics::RealVector& dx);
+    void dSoldg(const double* const p_dg, Numerics::RealVector& dx) const;
 
     /**
      * Returns the current element potentials as computed by the equilibrate
