@@ -24,7 +24,8 @@ public:\
 TEMPERATURE_SELECTOR(TSelector, state->T())
 
 /// Temperature selector which returns the current electron temperature
-TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
+//TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
+TEMPERATURE_SELECTOR(TeSelector, state->Te())
 
 /// Temperature selector which returns the current value of sqrt(T*Tv)
 TEMPERATURE_SELECTOR(ParkSelector, std::sqrt(state->T()*state->Tv()))
