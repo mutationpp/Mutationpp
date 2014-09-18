@@ -18,7 +18,7 @@ Kinetics::Kinetics(
     const Thermodynamics& thermo, string mechanism)
     : m_thermo(thermo),
       mp_rates(NULL),
-      m_thirdbodies(thermo.nSpecies()),
+      m_thirdbodies(thermo.nSpecies(), m_thermo.hasElectrons()),
       m_jacobian(thermo),
       mp_ropf(NULL),
       mp_ropb(NULL),

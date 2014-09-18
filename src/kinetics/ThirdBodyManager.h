@@ -48,8 +48,8 @@ public:
     /**
      * Constructor
      */
-    ThirdbodyManager(const size_t ns)
-        : m_ns(ns)
+    ThirdbodyManager(const size_t ns, const bool electrons)
+        : m_ns(ns), m_offset(electrons ? 1 : 0)
     { }
     
     /**
@@ -78,7 +78,7 @@ public:
     void multiplyThirdbodies(const double* const p_s, double* const p_r) const
     {
         double sum = 0.0;
-        for (int i = 0; i < m_ns; ++i)
+        for (size_t i = m_offset; i < m_ns; ++i)
             sum += p_s[i];
         
         std::vector<PartialThirdbodyEffs>::const_iterator iter = m_effs.begin();
@@ -89,6 +89,7 @@ public:
 private:
 
     const size_t m_ns;
+    const size_t m_offset;
     std::vector<PartialThirdbodyEffs> m_effs;
     
 }; // class ThirdbodyManager

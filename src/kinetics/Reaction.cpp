@@ -57,6 +57,11 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
                 String::tokenize(iter->text(), tokens, ":, ");
                 for (int i = 0; i < tokens.size(); i+=2) {
                     int index = thermo.speciesIndex(tokens[i]);
+                    if (index == 0 and thermo.hasElectrons()) {
+                        iter->parseError(
+                            "Electron cannot be a thirdbody species!");
+                    }
+
                     if (index >= 0) {
                         m_thirdbodies.push_back(
                             std::make_pair(index, atof(tokens[i+1].c_str())));
