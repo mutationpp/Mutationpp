@@ -7,7 +7,7 @@
 #include "Constants.h"
 #include "CollisionDB.h"
 
-//#define VERBOSE
+#define VERBOSE
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -83,7 +83,8 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
       m_Q22(m_ns),
       m_Ast(m_ns),
       m_Bst(m_ns),
-      m_Cst(m_ns),
+      m_Cstei(m_ns),
+      m_Cstij(m_nh),
       m_eta(m_ns),
       m_Dij(m_ns)
 {
@@ -200,25 +201,25 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     // If there are still collisions left over at this point then let the user 
     // know that they will be represented as zeros
     if (!collision_map.empty()) {
-#ifdef VERBOSE
+//#ifdef VERBOSE
         cout << endl;
         cout << "The following collision pairs were not found!" << endl;
-#endif
+//#endif
         //func = CollisionFunc4();
         iter = collision_map.begin();
         for ( ; iter != collision_map.end(); ++iter) {
-#ifdef VERBOSE
+//#ifdef VERBOSE
             cout << "\t" << iter->first.name() << endl;
-#endif
+//#endif
             Q11_funcs.push_back(Q11_funcs[0]); // they are not evaluated as
             Q22_funcs.push_back(Q22_funcs[0]); // zero anymore...
             Bst_funcs.push_back(Bst_funcs[0]);
             m_neutral_indices.push_back(iter->second);
         }
-#ifdef VERBOSE
+//#ifdef VERBOSE
         cout << "They will be evaluated as the first integral..." << endl;
         cout << endl;
-#endif
+//#endif
     }
     
     // Find collision pairs amongst those that were loaded which best resemble
@@ -336,9 +337,9 @@ void CollisionDB::updateCollisionData(
         
         case Q12EI: {
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
-            updateCollisionData(Th, Te, nd, p_x, CSTAR);
+            updateCollisionData(Th, Te, nd, p_x, CSTAREI);
             for (int i = 0; i < m_ns; ++i)
-                m_Q12ei(i) = m_Q11(i)*m_Cst(i);
+                m_Q12ei(i) = m_Q11(i)*m_Cstei(i);
             } break;
             
         case Q13EI: {
@@ -454,16 +455,16 @@ void CollisionDB::updateCollisionData(
                 m_Bst(m_attract_indices[i]) = Bst_att;
             } break;
             
-        case CSTAR: {        
+        case CSTAREI: {
             // Neutral-electron collisions are treated as 1 for now
-            m_Cst = 1.0;
+            m_Cstei = 1.0;
             
             // Ion-electron (repulsive) interactions
             int index = 0;
             int j = m_repulse_indices[index];
             const double Cst_rep = sm_Cst_rep(lnTste);
             while (j < m_ns && index < nr) {
-                m_Cst(j) = Cst_rep;
+                m_Cstei(j) = Cst_rep;
                 j = m_repulse_indices[++index];
             }
             
@@ -472,9 +473,13 @@ void CollisionDB::updateCollisionData(
             j = m_attract_indices[index];
             const double Cst_att = sm_Cst_att(lnTste);
             while (j < m_ns && index < na) {
-                m_Cst(j) = Cst_att;
+                m_Cstei(j) = Cst_att;
                 j = m_attract_indices[++index];
             }
+            } break;
+        
+        case CSTARIJ: {
+            m_Cstij = 1.0;
             } break;
         
         case ETAI: {

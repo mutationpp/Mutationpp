@@ -2,6 +2,7 @@
 #define THERMO_PARTICLE_RRHO_H
 
 #include <vector>
+#include <cstdlib>
 
 // Forward declartion of XmlElement
 namespace Mutation { 
@@ -31,7 +32,14 @@ public:
      * @todo Implement error checking, units conversion, and ParticleType
      * checking.
      */
-    ParticleRRHO(Mutation::Utilities::IO::XmlElement& xml_element);
+    ParticleRRHO(const Mutation::Utilities::IO::XmlElement& xml_element);
+    
+    /**
+     * Constructs a new set of RRHO parameters using the parameters from the 
+     * given object but with only one electronic energy level which is 
+     * specified.
+     */
+    ParticleRRHO(const ParticleRRHO& p_rrho, const size_t level);
     
     /**
      * Returns the formation enthalpy in J/mol.

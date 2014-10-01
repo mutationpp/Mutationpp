@@ -6,6 +6,7 @@
 #include "AutoRegistration.h"
 #include "Functors.h"
 #include "LookupTable.h"
+#include "Utilities.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -13,6 +14,7 @@
 
 using namespace std;
 using namespace Mutation::Numerics;
+using namespace Mutation::Utilities;
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -20,6 +22,12 @@ namespace Mutation {
 // Simple for loop over the species just to make life a little easier
 #define LOOP(__op__)\
 for (int i = 0; i < m_ns; ++i) {\
+    __op__ ;\
+}
+
+#define LOOP_ATOMS(__op__)\
+for (int i = 0, j = 0; i < m_na; ++i) {\
+    j = mp_indices[i];\
     __op__ ;\
 }
 
@@ -68,141 +76,11 @@ class RrhoDB : public ThermoDB
 {
 public:
 
-    /**
-     * Initializes the database from a list of species objects.  All species
-     * should have been given a ParticleRRHO model, otherwise an error is 
-     * presented to the user and the program exits.
-     */
-    RrhoDB(ThermoDB::ARGS species)
-        : ThermoDB(species), 
-          m_na(0), 
-          m_nm(0), 
-          m_has_electron(species[0].type() == ELECTRON),
-          m_use_tables(true)
-    {    
-        // First make sure that every species contains an RRHO model
-        bool complete = true;
-        LOOP(complete &= species[i].hasRRHOParameters())
-        
-        if (!complete) {
-            cout << "Error! not all species have RRHO thermodynamic models."
-                 << " The following species need RRHO models..." << endl;
-            
-            LOOP(
-                if (!species[i].hasRRHOParameters())
-                    cout << "   " << species[i].name() << endl;
-            )
-            
-            exit(1);
-        }
-        
-        // Determine the number and indices of the atoms and molecules
-        vector<int> atom_indices;
-        vector<int> molecule_indices;
-        
-        LOOP(
-            switch(species[i].type()) {
-                case ATOM:
-                    atom_indices.push_back(i);
-                    break;
-                case MOLECULE:
-                    molecule_indices.push_back(i);
-                    break;
-                default:
-                    break;
-            }
-        )
-        
-        m_na = atom_indices.size();
-        m_nm = molecule_indices.size();
-        
-        // Order the atoms first followed by the molecules
-        mp_indices = new int [m_na + m_nm];
-        copy(atom_indices.begin(), atom_indices.end(), mp_indices);
-        copy(molecule_indices.begin(), molecule_indices.end(), mp_indices+m_na);
-        
-        // Store the species constants found in the translational entropy term
-        mp_lnqtmw = new double [m_ns];
-        double qt = 2.5*std::log(KB) + 1.5*std::log(TWOPI/(NA*HP*HP));
-        LOOP(mp_lnqtmw[i] = qt + 1.5*std::log(species[i].molecularWeight()))
-        
-        // Store the species formation enthalpies in K
-        mp_hform = new double [m_ns];
-        LOOP(
-            mp_hform[i] = 
-                species[i].getRRHOParameters()->formationEnthalpy() / RU;
-        )
-        
-        // Store the molecule's rotational energy parameters
-        mp_rot_data = new RotData [m_nm];
-        LOOP_MOLECULES(
-            const ParticleRRHO* rrho = species[j].getRRHOParameters();
-            int linear = rrho->linearity();            
-            mp_rot_data[i].linearity  = linear / 2.0;
-            mp_rot_data[i].ln_omega_t = 
-                std::log(rrho->rotationalTemperature()) + 2.0 / linear * 
-                std::log(rrho->stericFactor());
-        )
-        
-        // Store the vibrational temperatures of all the molecules in a compact
-        // form
-        mp_nvib = new int [m_nm];
-        int nvib = 0;
-        LOOP_MOLECULES(
-            mp_nvib[i] = species[j].getRRHOParameters()->nVibrationalLevels();
-            nvib += mp_nvib[i];
-        )
-        
-        mp_vib_temps = new double [nvib];
-        int itemp = 0;
-        LOOP_MOLECULES(
-            const ParticleRRHO* rrho = species[j].getRRHOParameters();
-            for (int k = 0; k < mp_nvib[i]; ++k, itemp++) {
-                mp_vib_temps[itemp] = rrho->vibrationalEnergy(k);
-            }
-        )
-        
-        // Finally store the electronic energy levels in a compact form like the
-        // vibrational energy levels
-        m_elec_data.p_nelec = new int [m_na + m_nm];
-        int nelec = 0;
-        LOOP_HEAVY(
-            m_elec_data.p_nelec[i] = 
-                species[j].getRRHOParameters()->nElectronicLevels();
-            nelec += m_elec_data.p_nelec[i];
-        )
-        
-        m_elec_data.p_levels = new ElecLevel [nelec];
-        int ilevel = 0;
-        LOOP_HEAVY(
-            const ParticleRRHO* rrho = species[j].getRRHOParameters();
-            for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
-                m_elec_data.p_levels[ilevel].g = 
-                    rrho->electronicEnergy(k).first;
-                m_elec_data.p_levels[ilevel].theta = 
-                    rrho->electronicEnergy(k).second;
-            }
-        )        
-        
-        m_elec_data.offset = (m_has_electron ? 1 : 0);
-        m_elec_data.nheavy = m_na + m_nm;
-        
-        if (m_use_tables) {
-            mp_hel_table = new Mutation::Utilities::LookupTable
-                <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
-            mp_cpel_table = new Mutation::Utilities::LookupTable<
-                double, double, CpelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
-        }
-        
-        // Compute the contribution of the partition functions at the standard
-        // state temperature to the species enthalpies
-        mp_part_sst = new double [m_ns];
-        double Tss = standardTemperature();
-        hT(Tss, Tss, mp_part_sst, Eq());
-        hR(Tss, mp_part_sst, PlusEq());
-        hV(Tss, mp_part_sst, PlusEq());
-        hE(Tss, mp_part_sst, PlusEq());
-    }
+    RrhoDB(int arg)
+        : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
+          m_has_electron(false),
+          m_use_tables(false)
+    { }
     
     /**
      * Destructor.
@@ -227,20 +105,6 @@ public:
     }
     
     /**
-     * Returns the standard state temperature in K.
-     */
-    double standardTemperature() const {
-        return 298.15;
-    }
-    
-    /**
-     * Returns the standard state pressure in Pa.
-     */
-    double standardPressure() const {
-        return 101325.0;
-    }
-    
-    /**
      * Computes the unitless species specific heat at constant pressure
      * \f$ C_{P,i} / R_U\f$ in thermal nonequilibrium.
      *
@@ -262,77 +126,47 @@ public:
         double* const cp, double* const cpt, double* const cpr, 
         double* const cpv, double* const cpel)
     {
-        const double deltaT = Th * 1.0E-6;
-    
         // Special case if we only want total Cp
         if (cp != NULL && cpt == NULL && cpr == NULL && cpv == NULL && 
             cpel == NULL)
         {
-            hT(Th + deltaT, Te + deltaT, cp, Eq());
-            hT(Th, Te, cp, MinusEq());
-            
-            hR(Tr + deltaT, cp, PlusEq());
-            hR(Tr, cp, MinusEq());
-            
-            hV(Tv + deltaT, cp, PlusEq());
-            hV(Tv, cp, MinusEq());
-            
-            //hE(Tel + deltaT, cp, PlusEq());
-            //hE(Tel, cp, MinusEq());
-            
-            LOOP(cp[i] /= deltaT);
-            
-            CpelFunctor()(Tel, cp, m_elec_data, PlusEq());
+            cpT(cp, Eq());
+            cpR(cp, PlusEq());
+            cpV(Tv, cp, PlusEq());
+            cpE(Tel, cp, PlusEq());
             return;
         }
         
         // Otherwise we have to compute each component directly.
         // Translation
         if (cpt == NULL) {
-            if (cp != NULL) {
-                hT(Th + deltaT, Te + deltaT, cp, Eq());
-                hT(Th, Te, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpT(cp, PlusEq());
         } else {
-            hT(Th + deltaT, Te + deltaT, cpt, Eq());
-            hT(Th, Te, cpt, MinusEq());
+            cpT(cpt, Eq());
             if (cp != NULL) 
                 LOOP(cp[i] += cpt[i]);
-            LOOP(cpt[i] /= deltaT);
         }
         
         // Rotation
         if (cpr == NULL) {
-            if (cp != NULL) {
-                hR(Tr + deltaT, cp, PlusEq());
-                hR(Tr, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpR(cp, PlusEq());
         } else {
-            LOOP(cpr[i] = 0.0);
-            hR(Tr + deltaT, cpr, Eq());
-            hR(Tr, cpr, MinusEq());
+            cpR(cpr, Eq());
             if (cp != NULL) 
                 LOOP_MOLECULES(cp[j] += cpr[j]);
-            LOOP_MOLECULES(cpr[j] /= deltaT);
         }
         
         // Vibration
         if (cpv == NULL) {
-            if (cp != NULL) {
-                hV(Tv + deltaT, cp, PlusEq());
-                hV(Tv, cp, MinusEq());
-            }
+            if (cp != NULL)
+                cpV(Tv, cp, PlusEq());
         } else {
-            LOOP(cpv[i] = 0.0);
-            hV(Tv + deltaT, cpv, Eq());
-            hV(Tv, cpv, MinusEq());
+            cpV(Tv, cpv, Eq());
             if (cp != NULL) 
                 LOOP_MOLECULES(cp[j] += cpv[j]);
-            LOOP_MOLECULES(cpv[j] /= deltaT);
         }
-        
-        if (cp != NULL) 
-            LOOP(cp[i] /= deltaT);
         
         // Electronic
         if (cpel == NULL) {
@@ -345,6 +179,31 @@ public:
         }
     }
     
+    /**
+     * Computes the species vibrational specific heats at the given temperature
+     * nondimensionalized by Ru.
+     */
+    void cpv(double Tv, double* const p_cpv)
+    {
+        int ilevel = 0;
+        double sum, fac1, fac2;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                fac2 = std::exp(fac1);
+                fac1 = fac1 / (fac2 - 1.0);
+                sum += fac2*fac1;
+            }
+            p_cpv[j] = sum;
+        )
+    }
+
+    void cpel(double Tel, double* const p_cpel)
+    {
+        CpelFunctor()(Tel, p_cpel, m_elec_data, Eq());
+    }
+
     /**
      * Computes the unitless species enthalpy \f$ h_i/R_U T_h\f$ of each
      * species in thermal nonequilibrium, which is non-dimensionalized by the 
@@ -367,6 +226,7 @@ public:
         double* const ht, double* const hr, double* const hv, double* const hel,
         double* const hf)
     {
+        
         // Special case where we only want the total enthalpy
         if (ht == NULL && hr == NULL && hv == NULL && hel == NULL && 
             hf == NULL) 
@@ -425,6 +285,25 @@ public:
         }
     }
     
+    void hv(double Tv, double* const p_hv)
+    {
+        int ilevel = 0;
+        double sum, fac1;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                sum += fac1 / (std::exp(fac1) - 1.0);
+            }
+            p_hv[j] = sum;
+        )
+    }
+
+    void hel(double Tel, double* const p_hel)
+    {
+        HelFunctor()(Tel, p_hel, m_elec_data, Eq());
+    }
+
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.
@@ -592,7 +471,7 @@ private:
             
             for (unsigned int i = 0; i < data.nheavy; ++i) {
                 sum1 = sum2 = sum3 = 0.0;
-                if (data.p_nelec[i] > 0) {
+                if (data.p_nelec[i] > 1) {
                     for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
                         fac = data.p_levels[ilevel].g *
                             std::exp(-data.p_levels[ilevel].theta / T);
@@ -605,13 +484,293 @@ private:
                         (sum3*sum1 - sum2*sum2) / (T*T*sum1*sum1));
                 } else {
                     op(p_cp[i+data.offset], 0.0);
+                    ilevel += data.p_nelec[i];
                 }
             }
         }
     };
+    
+protected:
+
+    /**
+     * Loads all of the species from the RRHO database.
+     */
+    virtual void loadAvailableSpecies(
+        std::list<Species>& species, const std::vector<Element>& elements)
+    {
+        IO::XmlDocument species_doc(
+            getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
+        IO::XmlElement::const_iterator species_iter = species_doc.root().begin();
+        
+        for ( ; species_iter != species_doc.root().end(); ++species_iter) {
+            // Species name
+            std::string name;
+            species_iter->getAttribute("name", name);
+            
+            // Phase
+            std::string phase_str;
+            species_iter->getAttribute("phase", phase_str, string("gas"));
+            phase_str = String::toLowerCase(phase_str);
+            
+            PhaseType phase;
+            if (phase_str == "gas")
+                phase = GAS;
+            else if (phase_str == "liquid")
+                phase = LIQUID;
+            else if (phase_str == "solid")
+                phase = SOLID;
+            else {
+                cerr << "Invalid phase description for species \"" << name
+                     << "\", can be \"gas\", \"liquid\", or \"solid\"." << endl;
+                exit(1);
+            }
+            
+            // Elemental composition
+            IO::XmlElement::const_iterator stoich_iter =
+                species_iter->findTag("stoichiometry");
+            std::string stoich_str = stoich_iter->text();
+            
+            // Split up the string in the format "A:a, B:b, ..." into a vector of
+            // strings matching ["A", "a", "B", "b", ... ]
+            vector<string> stoich_tokens;
+            String::tokenize(stoich_str, stoich_tokens, " \t\f\v\n\r:,");
+            
+            // Check that the vector has an even number of tokens (otherwise there must
+            // be an error in the syntax)
+            if (stoich_tokens.size() % 2 != 0) {
+                cerr << "Error in species \"" << name << "\" stoichiometry "
+                     << "definition, invalid syntax!" << endl;
+                for (int i = 0; i < stoich_tokens.size(); ++i)
+                    cerr << "\"" << stoich_tokens[i] << "\"" << endl;
+                exit(1); 
+            }
+            
+            std::vector< std::pair<std::string, int> > stoich;
+            for (int i = 0; i < stoich_tokens.size(); i+=2)
+                stoich.push_back(
+                    std::make_pair(
+                        stoich_tokens[i], atoi(stoich_tokens[i+1].c_str())));
+            
+            // Add the species to the list
+            species.push_back(Species(name, phase, stoich, elements));
+            
+            // We can also add all of the excited states as implicitly defined
+            // species
+            IO::XmlElement::const_iterator rrho_iter =
+                species_iter->findTagWithAttribute(
+                    "thermodynamics", "type", "RRHO");
+            
+            if (rrho_iter == species_iter->end())
+                continue;
+            
+            Species& ground_state = species.back();
+            ParticleRRHO rrho(*rrho_iter);
+            for (size_t i = 0; i < rrho.nElectronicLevels(); ++i)
+                species.push_back(Species(ground_state, i));
+        }
+    }
+    
+    /**
+     * Load thermodynamic data from the species list.
+     */
+    virtual void loadThermodynamicData()
+    {
+        m_ns = species().size();
+        m_has_electron = (species()[0].type() == ELECTRON);
+        
+        // Load the RRHO models for each of the needed species
+        IO::XmlDocument species_doc(
+            getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
+        
+        vector<ParticleRRHO> rrhos;
+        map<std::string, const ParticleRRHO*> to_expand;
+        
+        for (int i = 0; i < m_ns; ++i) {
+            if (species()[i].name() == species()[i].groundStateName()) {
+                rrhos.push_back(*(species_doc.root().findTagWithAttribute(
+                    "species", "name", species()[i].groundStateName())->
+                        findTagWithAttribute("thermodynamics", "type", "RRHO")));
+            }
+            else {
+                const ParticleRRHO* p_rrho = to_expand[species()[i].groundStateName()];
+                if (p_rrho == NULL) {
+                    p_rrho = new ParticleRRHO(
+                        *(species_doc.root().findTagWithAttribute(
+                            "species", "name", species()[i].groundStateName())->
+                                findTagWithAttribute("thermodynamics", "type", "RRHO")));
+                    to_expand[species()[i].groundStateName()] = p_rrho;
+                }
+                
+                rrhos.push_back(ParticleRRHO(*p_rrho, species()[i].level()));
+            }
+        }
+        
+        map<std::string, const ParticleRRHO*>::iterator iter =
+            to_expand.begin();
+        while (iter != to_expand.end()) {
+            delete iter->second;
+            iter++;
+        }
+
+        // Determine the number and indices of the atoms and molecules
+        vector<int> atom_indices;
+        vector<int> molecule_indices;
+        
+        LOOP(
+            switch(species()[i].type()) {
+                case ATOM:
+                    atom_indices.push_back(i);
+                    break;
+                case MOLECULE:
+                    molecule_indices.push_back(i);
+                    break;
+                default:
+                    break;
+            }
+        )
+        
+        m_na = atom_indices.size();
+        m_nm = molecule_indices.size();
+        
+        // Order the atoms first followed by the molecules
+        mp_indices = new int [m_na + m_nm];
+        copy(atom_indices.begin(), atom_indices.end(), mp_indices);
+        copy(molecule_indices.begin(), molecule_indices.end(), mp_indices+m_na);
+        
+        // Store the species constants found in the translational entropy term
+        mp_lnqtmw = new double [m_ns];
+        double qt = 2.5*std::log(KB) + 1.5*std::log(TWOPI/(NA*HP*HP));
+        LOOP(mp_lnqtmw[i] = qt + 1.5*std::log(species()[i].molecularWeight()))
+        
+        // Store the species formation enthalpies in K
+        mp_hform = new double [m_ns];
+        LOOP(mp_hform[i] = rrhos[i].formationEnthalpy() / RU)
+        
+        // Store the molecule's rotational energy parameters
+        mp_rot_data = new RotData [m_nm];
+        LOOP_MOLECULES(
+            const ParticleRRHO& rrho = rrhos[j];
+            int linear = rrho.linearity();
+            mp_rot_data[i].linearity  = linear / 2.0;
+            mp_rot_data[i].ln_omega_t = 
+                std::log(rrho.rotationalTemperature()) + 2.0 / linear *
+                std::log(rrho.stericFactor());
+        )
+        
+        // Store the vibrational temperatures of all the molecules in a compact
+        // form
+        mp_nvib = new int [m_nm];
+        int nvib = 0;
+        LOOP_MOLECULES(
+            mp_nvib[i] = rrhos[j].nVibrationalLevels();
+            nvib += mp_nvib[i];
+        )
+        
+        mp_vib_temps = new double [nvib];
+        int itemp = 0;
+        LOOP_MOLECULES(
+            const ParticleRRHO& rrho = rrhos[j];
+            for (int k = 0; k < mp_nvib[i]; ++k, itemp++)
+                mp_vib_temps[itemp] = rrho.vibrationalEnergy(k);
+        )
+        
+        // Finally store the electronic energy levels in a compact form like the
+        // vibrational energy levels
+        m_elec_data.p_nelec = new int [m_na + m_nm];
+        int nelec = 0;
+        LOOP_HEAVY(
+            m_elec_data.p_nelec[i] = rrhos[j].nElectronicLevels();
+            nelec += m_elec_data.p_nelec[i];
+        )
+        
+        m_elec_data.p_levels = new ElecLevel [nelec];
+        int ilevel = 0;
+        LOOP_HEAVY(
+            const ParticleRRHO& rrho = rrhos[j];
+            for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
+                m_elec_data.p_levels[ilevel].g =
+                    rrho.electronicEnergy(k).first;
+                m_elec_data.p_levels[ilevel].theta = 
+                    rrho.electronicEnergy(k).second;
+            }
+        )        
+        
+        m_elec_data.offset = (m_has_electron ? 1 : 0);
+        m_elec_data.nheavy = m_na + m_nm;
+        
+        if (m_use_tables) {
+            mp_hel_table = new Mutation::Utilities::LookupTable
+                <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+            mp_cpel_table = new Mutation::Utilities::LookupTable<
+                double, double, CpelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+        }
+        
+        // Compute the contribution of the partition functions at the standard
+        // state temperature to the species enthalpies
+        mp_part_sst = new double [m_ns];
+        double Tss = standardTemperature();
+        hT(Tss, Tss, mp_part_sst, Eq());
+        hR(Tss, mp_part_sst, PlusEq());
+        hV(Tss, mp_part_sst, PlusEq());
+        hE(Tss, mp_part_sst, PlusEq());
+    }
 
 private:
     
+    /**
+     * Computes the translational Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpT(double* const cp, const OP& op) {
+        LOOP(op(cp[i], 2.5));
+    }
+
+    /**
+     * Computes the rotational Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpR(double* const cp, const OP& op) {
+        op(cp[0], 0.0);
+        LOOP_ATOMS(op(cp[j], 0.0));
+        LOOP_MOLECULES(op(cp[j], mp_rot_data[i].linearity));
+    }
+
+    /**
+     * Computes the vibratinoal Cp/Ru for each species.
+     */
+    template <typename OP>
+    void cpV(double Tv, double* const cp, const OP& op) {
+        int ilevel = 0;
+        double sum, fac1, fac2;
+        op(cp[0], 0.0);
+        LOOP_ATOMS(op(cp[j], 0.0));
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                fac2 = std::exp(fac1);
+                fac1 *= fac1*fac2;
+                fac2 -= 1.0;
+                sum += fac1/(fac2*fac2);
+            }
+            op(cp[j], sum);
+        )
+    }
+
+    /**
+     * Computes the electronic specific heat of each species and applies the
+     * value to the array using the given operation.
+     */
+    template <typename OP>
+    void cpE(double T, double* const cp, const OP& op)
+    {
+        if (m_use_tables)
+            mp_cpel_table->lookup(T, cp, op);
+        else
+            CpelFunctor()(T, cp, m_elec_data, op);
+    }
+
+
     /**
      * Computes the translational enthalpy of each species in K.
      */
@@ -657,19 +816,6 @@ private:
             mp_hel_table->lookup(T, h, op);
         else
             HelFunctor()(T, h, m_elec_data, op);
-    }
-    
-    /**
-     * Computes the electronic specific heat of each species and applies the
-     * value to the enthalpy array using the given operation.
-     */
-    template <typename OP>
-    void cpE(double T, double* const cp, const OP& op)
-    {
-        if (m_use_tables)
-            mp_cpel_table->lookup(T, cp, op);
-        else
-            CpelFunctor()(T, cp, m_elec_data, op);
     }
     
     /**
@@ -747,6 +893,7 @@ private:
 
 private:
     
+    int m_ns;
     int m_na;
     int m_nm;
     

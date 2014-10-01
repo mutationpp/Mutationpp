@@ -17,8 +17,11 @@ class ViscosityGuptaYos : public ViscosityAlgorithm, public GuptaYos
 public:
 
     ViscosityGuptaYos(CollisionDB& collisions) 
-        : ViscosityAlgorithm(collisions), a(collisions.nSpecies()-1), 
-          B(collisions.nSpecies()-1), A(collisions.nSpecies()-1)
+        : ViscosityAlgorithm(collisions),
+          m_shift(collisions.nSpecies()-collisions.nHeavy()),
+          a(collisions.nSpecies() - m_shift),
+          B(collisions.nSpecies() - m_shift),
+          A(collisions.nSpecies() - m_shift)
     { }
 
     /**
@@ -33,25 +36,27 @@ public:
         const RealVector& mass  = m_collisions.mass();
         
         // Compute the symmetric matrix a and vector A
-        for (int i = 1; i < ns; ++i) {
+        for (int i = m_shift; i < ns; ++i) {
             for (int j = i; j < ns; ++j) {
-                a(i-1,j-1) = (2.0 - 1.2 * Astar(i,j)) / 
+                a(i-m_shift,j-m_shift) = (2.0 - 1.2 * Astar(i,j)) /
                     ((mass(i) + mass(j)) * nDij(i,j));
-                B(i-1,j-1) = Astar(i,j) / nDij(i,j);
+                B(i-m_shift,j-m_shift) = Astar(i,j) / nDij(i,j);
             }
         }
                 
         // Leave B as symmetric and postpone dividing by m(i) until after B*x
         // which uses fewer divides and allows for sym-matrix-vector product
-        A = B * asVector(p_x, ns)(1,ns);
-        A = 1.2 * A / mass(1,ns);
+        A = B * asVector(p_x, ns)(m_shift,ns);
+        A = 1.2 * A / mass(m_shift,ns);
             
         // Now compute the viscosity using Gupta-Yos
-        return guptaYos(a, A, asVector(p_x, ns)(1,ns));
+        return guptaYos(a, A, asVector(p_x, ns)(m_shift,ns));
     }
     
 private:
     
+    int m_shift;
+
     RealSymMat a;
     RealSymMat B;
     RealVector A;

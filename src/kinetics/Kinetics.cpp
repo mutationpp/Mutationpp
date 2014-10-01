@@ -1,7 +1,6 @@
 #include "Kinetics.h"
 #include "Constants.h"
 #include "Utilities.h"
-#include "MillikanWhite.h"
 
 using namespace std;
 using namespace Mutation::Thermodynamics;
@@ -18,8 +17,12 @@ using Mutation::Thermodynamics::Thermodynamics;
 Kinetics::Kinetics(
     const Thermodynamics& thermo, string mechanism)
     : m_thermo(thermo),
-      m_thirdbodies(thermo.nSpecies()),
-      m_jacobian(thermo)
+      mp_rates(NULL),
+      m_thirdbodies(thermo.nSpecies(), m_thermo.hasElectrons()),
+      m_jacobian(thermo),
+      mp_ropf(NULL),
+      mp_ropb(NULL),
+      mp_rop(NULL)
 {
     if (mechanism == "none")
         return;
@@ -40,7 +43,7 @@ Kinetics::Kinetics(
     
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
-    IO::XmlElement::Iterator iter = root.begin();
+    IO::XmlElement::const_iterator iter = root.begin();
     for ( ; iter != root.end(); ++iter) {        
         if (iter->tag() == "reaction")
             addReaction(Reaction(*iter, thermo));
@@ -140,13 +143,16 @@ void Kinetics::closeReactions(const bool validate_mechanism)
 
 //==============================================================================
 
-/*void Kinetics::getReactionDelta(
+void Kinetics::getReactionDelta(
     const double* const p_s, double* const p_r) const
 {
+    if (nReactions() == 0)
+        return;
+
     m_reactants.decrReactions(p_s, p_r);
     m_rev_prods.incrReactions(p_s, p_r);
     m_irr_prods.incrReactions(p_s, p_r);
-}*/
+}
 
 //==============================================================================
 
@@ -179,24 +185,31 @@ void Kinetics::closeReactions(const bool validate_mechanism)
 
 //==============================================================================
 
-/*void Kinetics::forwardRateCoefficients(const double T, double* const p_kf)
+void Kinetics::forwardRateCoefficients(double* const p_kf)
 {
-    updateT(T);
-    const double* const p_lnkf = mp_rates->lnkff();
-    for (int i = 0; i < m_num_rxns; ++i)
+    if (nReactions() == 0)
+        return;
+
+    mp_rates->update(m_thermo);
+    const double* const p_lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
         p_kf[i] = std::exp(p_lnkf[i]);
 }
 
 //==============================================================================
 
-void Kinetics::backwardRateCoefficients(const double T, double* const p_kb)
+void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
-    updateT(T);
-    const double* const p_lnkf = mp_rates->lnkff();
-    for (int i = 0; i < m_num_rxns; ++i)
-        p_kb[i] = std::exp(p_lnkf[i] - mp_lnkeq[i]);
+    if (nReactions() == 0)
+        return;
+
+    mp_rates->update(m_thermo);
+    const double* const p_lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        p_kb[i] = std::exp(p_lnkb[i]);
 }
 
+/*
 //==============================================================================
 
 void Kinetics::forwardRatesOfProgress(
@@ -219,7 +232,7 @@ void Kinetics::backwardRatesOfProgress(
 
 //==============================================================================
 
-void Kinetics::netRatesOfProgress(
+void Kinetics::updateROP(
     const double T, const double* const p_conc, double* const p_rop)
 {
     forwardRateCoefficients(T, mp_ropf);
@@ -253,22 +266,32 @@ void Kinetics::netProductionRates(
 
 void Kinetics::netProductionRates(double* const p_wdot)
 {
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        for (int i = 0; i < m_thermo.nSpecies(); ++i)
+            p_wdot[i] = 0.0;
+        return;
+    }
+
     // Compute species concentrations (mol/m^3)
     const double mix_conc = m_thermo.numberDensity() / NA;
+    const double* const p_x = m_thermo.X();
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        p_wdot[i] = m_thermo.X()[i] * mix_conc;
+        p_wdot[i] = p_x[i] * mix_conc;
     
     // Update the forward and backward rate coefficients
     mp_rates->update(m_thermo);
     
     // Compute forward ROP
+    const double* const lnkf = mp_rates->lnkf();
     for (int i = 0; i < nReactions(); ++i)
-        mp_ropf[i] = std::exp(mp_rates->lnkf()[i]);
+        mp_ropf[i] = std::exp(lnkf[i]);
     m_reactants.multReactions(p_wdot, mp_ropf);
     
     // Compute reverse ROP
+    const double* const lnkb = mp_rates->lnkb();
     for (int i = 0; i < nReactions(); ++i)
-        mp_ropb[i] = std::exp(mp_rates->lnkb()[i]);
+        mp_ropb[i] = std::exp(lnkb[i]);
     m_rev_prods.multReactions(p_wdot, mp_ropb);
     
     // Compute net ROP
@@ -287,39 +310,46 @@ void Kinetics::netProductionRates(double* const p_wdot)
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);
-    
-//    cout << "Net production rates: ";
-//    for (int i = 0; i < m_thermo.nSpecies(); ++i)
-//        cout << p_wdot[i] << " ";
-//    cout << endl;
 }
 
 //==============================================================================
 
-/*void Kinetics::jacobianRho(
-    const double T, const double* const p_conc, double* const p_jac)
+void Kinetics::jacobianRho(double* const p_jac)
 {
-    updateT(T);
-    double* p_kf = new double [m_num_rxns];
-    double* p_kb = new double [m_num_rxns];
-    
-    for (int i = 0; i < m_num_rxns; ++i) {
-        p_kf[i] = std::exp(mp_rates->lnkff()[i]);
-        p_kb[i] = std::exp(mp_rates->lnkff()[i] - mp_lnkeq[i]);
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nSpecies(); ++i)
+            p_jac[i] = 0.0;
+        return;
     }
+
+    // Update reaction rate coefficients
+    mp_rates->update(m_thermo);
     
-    m_jacobian.computeJacobian(p_kf, p_kb, p_conc, p_jac);
+    const double* const lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropf[i] = std::exp(lnkf[i]);
     
-    delete [] p_kf;
-    delete [] p_kb;
-}*/
+    const double* const lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropb[i] = std::exp(lnkb[i]);
+    
+    // Compute species concentrations (mol/m^3)
+    const double mix_conc = m_thermo.numberDensity() / NA;
+    const double* const p_x = m_thermo.X();
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        mp_rop[i] = p_x[i] * mix_conc;
+    
+    // Compute the Jacobian matrix
+    m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);
+}
 
 //==============================================================================
 
 double Kinetics::omegaVT()
 {
     // Load Millikan-White model data on first call to this method
-    static MillikanWhite data(m_thermo);
+    /*static MillikanWhite data(m_thermo);
     
     const int nheavy = m_thermo.nHeavy();
     const int offset = m_thermo.hasElectrons() ? 1 : 0;
@@ -336,7 +366,7 @@ double Kinetics::omegaVT()
             cout << endl;
         }
         cout << endl;
-    }
+    }*/
     
     return 0.0;
 }

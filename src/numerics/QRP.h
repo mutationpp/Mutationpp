@@ -33,7 +33,8 @@ public:
     /**
      * Constructs the QR decomposition with column pivoting of A.
      */
-    QRP(const Matrix<Real> &A);
+    template <typename E>
+    QRP(const MatExpr<Real, E> &A);
     
     /**
      * Returns the estimated rank of matrix A as deduced from the QRP algorithm.
@@ -50,6 +51,8 @@ public:
     template <typename T>
     void pivot(Vector<T> &x, const bool transpose = false) const;
     
+    void pivot(double* const p_x, const bool transpose = false) const;
+    
     /**
      * Returns a Vector<int> whos i'th entry is the column in AP which was
      * the i'th column in A.
@@ -60,6 +63,7 @@ public:
      * Solves the linear system Ax = b via RP'x = Q'b.
      */
     void solve(Vector<Real> &x, Vector<Real> &b) const;
+    void solve(double* const p_x, double* const p_b) const;
     
     /**
      * Solves the system A'Ax = b via PR'RP'x = b.
@@ -81,7 +85,8 @@ private:
 //==============================================================================
 
 template <typename Real>
-QRP<Real>::QRP(const Matrix<Real> &A)
+template <typename E>
+QRP<Real>::QRP(const MatExpr<Real, E>& A)
     : QR<Real>(A, true), m_rank(0)
 {
     const size_t m = m_A.rows();
@@ -169,6 +174,22 @@ void QRP<Real>::pivot(Vector<T> &x, const bool transpose) const
 //==============================================================================
 
 template <typename Real>
+void QRP<Real>::pivot(double* const p_x, const bool transpose) const
+{
+    const int npiv = m_pivots.size();
+    
+    if (transpose) {
+        for(size_t i = 0; i < npiv; ++i)
+            std::swap(p_x[i], p_x[m_pivots[i]]);
+    } else {
+        for(int i = npiv-1; i >= 0; --i)
+            std::swap(p_x[i], p_x[m_pivots[i]]);
+    }
+}
+
+//==============================================================================
+
+template <typename Real>
 Vector<int> QRP<Real>::columnOrder() const
 {
     const int nc = m_A.cols();
@@ -198,6 +219,25 @@ void QRP<Real>::solve(Vector<Real> &x, Vector<Real> &b) const
     
     // Apply pivot matrix
     pivot(x);
+}
+
+//==============================================================================
+
+template <typename Real>
+void QRP<Real>::solve(double* const p_x, double* const p_b) const
+{
+    // Update Q'b
+    qTransposeB(p_b);
+    
+    // Back-substitution
+    for (int i = m_A.cols()-1; i >= 0; --i) {
+        for (int j = i+1; j < m_A.cols(); ++j)
+            p_b[i] -= m_A(i,j) * p_x[j];
+        p_x[i] = p_b[i] / m_A(i,i);
+    }
+    
+    // Apply pivot matrix
+    pivot(p_x);
 }
 
 //==============================================================================

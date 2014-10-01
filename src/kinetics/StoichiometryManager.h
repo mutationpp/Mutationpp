@@ -9,6 +9,7 @@
 #define KINETICS_STOICHIOMETRY_MANAGER_H
 
 #include <vector>
+#include <cstdlib>
 
 namespace Mutation {
     namespace Kinetics {

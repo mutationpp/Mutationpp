@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <XMLite.h>
+
 namespace Mutation {
 
 /**
@@ -25,10 +27,10 @@ public:
      * Copy constructor.
      */
     MixtureOptions(const MixtureOptions& options)
-        : m_species_names(options.m_species_names),
+        : m_species_descriptor(options.m_species_descriptor),
           m_default_composition(options.m_default_composition),
-          m_composition_setter(options.m_composition_setter),
           m_has_default_composition(options.m_has_default_composition),
+          m_source(options.m_source),
           m_state_model(options.m_state_model),
           m_thermo_db(options.m_thermo_db),
           m_mechanism(options.m_mechanism),
@@ -36,6 +38,32 @@ public:
           m_thermal_conductivity(options.m_thermal_conductivity)
     { }
     
+    /**
+	 * Constructs a new MixtureOptions object from a mixture file (without the
+	 * .xml extension).  The file is first assumed to reside in the relative
+	 * path from the local directory.  If it does not exist there, then
+	 * MPP_DATA_DIRECTORY/mixtures is checked.
+	 */
+	MixtureOptions(const std::string& mixture);
+
+	/**
+	 * Constructs a new MixtureOptions object from a mixture file (without the
+	 * .xml extension).  The file is first assumed to reside in the relative
+	 * path from the local directory.  If it does not exist there, then
+	 * MPP_DATA_DIRECTORY/mixtures is checked.
+	 */
+	MixtureOptions(const char* mixture);
+
+	/**
+	 * Constructs a new MixtureOptions from an XmlElement.
+	 */
+	MixtureOptions(Utilities::IO::XmlElement& element);
+
+	/**
+	 * Destructor.
+	 */
+	~MixtureOptions() {}
+
     /**
      * Assignment operator.
      */
@@ -46,20 +74,22 @@ public:
     }
     
     /**
-     * Constructs a new MixtureOptions object from a mixture file.
+     * Loads the mixture options from a mixture input file.
      */
-    MixtureOptions(const std::string& mixture);
-    
+    void loadFromFile(const std::string& mixture);
+
     /**
-     * Constructs a new MixtureOptions object from a mixture file.
+     * Loads the mixture options from an XmlElement.
      */
-    MixtureOptions(const char* mixture);
-    
+    void loadFromXmlElement(Utilities::IO::XmlElement& element);
+
     /**
-     * Destructor.
+     * Gets the source of this mixture options (mixture file name).
      */
-    ~MixtureOptions() {}
-    
+    const std::string& getSource() const {
+		return m_source;
+    }
+
     /**
      * Sets the options back to a default state.
      */
@@ -68,30 +98,16 @@ public:
     /**
      * Gets the list of species names.
      */
-    const std::vector<std::string>& getSpeciesNames() const {
-        return m_species_names;
-    }
-    
-    /**
-     * Adds a species name to the list.
-     */
-    void addSpeciesName(const std::string& species) {
-        m_species_names.push_back(species);
+    const std::string& getSpeciesDescriptor() const {
+        return m_species_descriptor;
     }
     
     /**
      * Sets the list of species names.
      */
-    void setSpeciesNames(const std::vector<std::string>& species) {
-        m_species_names = species;
+    void setSpeciesDescriptor(const std::string& descriptor) {
+        m_species_descriptor = descriptor;
     }
-    
-    /**
-     * Clears all of the species names.
-     */
-     void clearSpeciesNames() {
-        m_species_names.clear();
-     }
     
     /**
      * Gets the mixture state model to be used.
@@ -105,6 +121,10 @@ public:
      */
     void setStateModel(const std::string& state_model) {
         m_state_model = state_model;
+    }
+    
+    void setStateModel(const char* p_state_model) {
+        m_state_model = std::string(p_state_model);
     }
     
     /**
@@ -178,7 +198,7 @@ public:
      * Sets the default mole fraction for a single element.
      */
     void setDefaultComposition(const std::string& element, const double X) {
-        m_composition_setter(element, X);
+        m_default_composition.push_back(std::make_pair(element, X));
         m_has_default_composition = true;
     }
     
@@ -239,10 +259,10 @@ public:
      *     ("e-", 0.0);
      * @endcode
      */
-    CompositionSetter& setDefaultComposition() {
+    CompositionSetter setDefaultComposition() {
         m_default_composition.clear();
         m_has_default_composition = true;
-        return m_composition_setter;
+        return CompositionSetter(m_default_composition);
     }
     
     /**
@@ -268,19 +288,12 @@ public:
 
 private:
 
-    /**
-     * Loads the mixture options from a mixture input file.
-     */
-    void loadFromFile(const std::string& mixture);
-
-private:
-
-    std::vector<std::string> m_species_names;
+    std::string m_species_descriptor;
     
     std::vector<std::pair<std::string, double> > m_default_composition;
-    CompositionSetter m_composition_setter;
     bool m_has_default_composition;
 
+	std::string m_source;
     std::string m_state_model;
     std::string m_thermo_db;
     std::string m_mechanism;
@@ -292,17 +305,7 @@ private:
 /**
  * Performs a swap on two MixtureOption objects.
  */
-void swap(MixtureOptions& opt1, MixtureOptions& opt2)
-{
-    std::swap(opt1.m_species_names, opt2.m_species_names);
-    std::swap(opt1.m_composition_setter, opt2.m_composition_setter);
-    std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
-    std::swap(opt1.m_state_model, opt2.m_state_model);
-    std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
-    std::swap(opt1.m_mechanism, opt2.m_mechanism);
-    std::swap(opt1.m_viscosity, opt2.m_viscosity);
-    std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
-}
+void swap(MixtureOptions& opt1, MixtureOptions& opt2);
 
 } // namespace Mutation
 

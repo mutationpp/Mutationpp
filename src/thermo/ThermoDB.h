@@ -1,13 +1,14 @@
 #ifndef THERMO_THERMODB_H
 #define THERMO_THERMODB_H
 
+#include "SpeciesListDescriptor.h"
+#include "Species.h"
+
 #include <vector>
+#include <list>
 
 namespace Mutation {
     namespace Thermodynamics {
-
-// Forward declare the species class.
-class Species;
 
 /**
  * Abstract base class for all thermodynamic databases.  This provides the 
@@ -27,13 +28,19 @@ public:
      * Type of arguments required in constructor for all classes derived from
      * ThermoDB.
      */
-    typedef const std::vector<Species>& ARGS;
+    typedef int ARGS;
     
     /**
-     * Constructor for all ThermoDB types takes the list of species for which
-     * the the thermodynamic database should be created.
+     * Constructs an empty database with a given standard state temperature and 
+     * pressure.
      */
-    ThermoDB(ARGS species);
+    ThermoDB(double sst, double ssp);
+    
+    /**
+     * Loads the species from the database represented by the concrete class
+     * which extends this ThermoDB using the given SpeciesListDescriptor.
+     */
+    bool load(const SpeciesListDescriptor& descriptor);
     
     /**
      * Desctructor.
@@ -41,14 +48,40 @@ public:
     virtual ~ThermoDB() {};
     
     /**
+     * Returns the element list.
+     */
+    const std::vector<Element>& elements() const {
+        return m_elements;
+    }
+    
+    /**
+     * Returns the species list.
+     */
+    const std::vector<Species>& species() const {
+        return m_species;
+    }
+    
+    /**
      * Returns the standard state temperature in K employeed in this database.
      */
-    virtual double standardTemperature() const = 0;
+    double standardTemperature() const {
+        return m_sst;
+    }
     
     /**
      * Returns the standard state pressure in Pa employeed in this database.
      */
-    virtual double standardPressure() const = 0;
+    double standardPressure() const {
+        return m_ssp;
+    }
+    
+    /**
+     * Returns true if the thermodynaic data in this database is valid at the
+     * given temperature for the given species index.
+     */
+    virtual bool speciesThermoValidAtT(const size_t i, const double T) const {
+        return true;
+    }
     
     /**
      * Computes the unitless species specific heats at constant pressure
@@ -70,6 +103,18 @@ public:
         double* const cp, double* const cpt, double* const cpr,
         double* const cpv, double* const cpel) = 0;
     
+    /**
+     * Computes the species vibrational specific heats at the given temperature
+     * nondimensionalized by the universal gas constant.
+     */
+    virtual void cpv(double Tv, double* const p_cpv);
+
+    /**
+     * Returns the species electronic specific heats at the given temperature
+     * nondimensionalized by the universal gas constant.
+     */
+    virtual void cpel(double Tel, double* const p_cpel);
+
     /**
      * Computes the unitless species specific heats at constant volume
      * \f$ C_{v,i} / R_U\f$ of each species in thermal nonequilibrium.
@@ -113,6 +158,18 @@ public:
         double* const ht, double* const hr, double* const hv, double* const hel, 
         double* const hf) = 0;
     
+    /**
+     * Returns the species vibrational enthalpy at the given temperature
+     * nondimensionalized by the universal gas constant times the temperature.
+     */
+    virtual void hv(double Tv, double* const p_hv);
+
+    /**
+     * Returns the species electronic enthalpy at the given temperature
+     * nondimensionalized by the universal gas constant times the temperature.
+     */
+    virtual void hel(double Tel, double* const p_hel);
+
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.
@@ -158,7 +215,29 @@ public:
     
 protected:
 
-    int m_ns;
+    /**
+     * Implemented by the concrete class which fills the species vector with all
+     * of the species available in the database.  Note that this is only called
+     * once in the constructor.
+     */
+    virtual void loadAvailableSpecies(
+        std::list<Species>& species, const std::vector<Element>& elements) = 0;
+    
+    /**
+     * Implemented by the concrete class which loads any data from the database
+     * required to compute the necessary thermodynamic quantities.  This is 
+     * function is called during a call to load() after the list of species
+     * that are needed has been determined.
+     */
+    virtual void loadThermodynamicData() = 0;
+    
+private:
+
+    double m_sst;
+    double m_ssp;
+    
+    std::vector<Element> m_elements;
+    std::vector<Species> m_species;
     
 }; // class ThermoDB
 

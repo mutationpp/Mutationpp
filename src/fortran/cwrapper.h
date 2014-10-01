@@ -13,6 +13,9 @@
 // the name mangling that is performed in order to use the function in Fortran
 #define NAME_MANGLE(__name__) mpp_##__name__##_
 
+#define F_STRING char*
+#define F_STRLEN long int
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,56 +38,7 @@ extern "C" {
  * used as input or output to the functions.  These do not need to be included
  * when calling the function in a Fortran code.
  *
- * Below is an example Fortran snippit which illustrates how these functions may
- * be used.
- *
- * @code
- * program test
- *    use mutationpp ! Needed to use the wrapper
- *
- *    character(len=10) :: mixture
- *    integer :: ne, ns, nr
- *    real :: T, P, rho, n, cp, cv, h, mw, e
- *    real, dimension(:), allocatable :: element_x
- *    real, dimension(:), allocatable :: species_x
- *    real, dimension(:), allocatable :: species_y
- *
- *    ! Define the mixture to be used
- *    mixture = "air11"
- * 
- *    ! Initialize the Mutation++ library
- *    call mpp_initialize(mixture)
- *    ne = mpp_nelements()
- *    ns = mpp_nspecies()
- *    nr = mpp_nreactions()
- *    
- *    ! Allocate storage
- *    allocate(element_x(ne))
- *    allocate(species_x(ns))
- *    allocate(species_y(ns))
- *   
- *    ! Initialize elemental fractions for equilibrium calculation
- *    element = "N";  element_x(mpp_element_index(element)) = 0.79;
- *    element = "O";  element_x(mpp_element_index(element)) = 0.21;
- *    element = "e-"; element_x(mpp_element_index(element)) = 0.0;
- *
- *    ! Compute some properties at 1000K and 1atm
- *    T = 1000.0
- *    P = 101325.0
- *    call mpp_equilibrate_mole(T, P, element_x, species_x)
- *    call mpp_convert_x_to_y(species_x, species_y)        
- *    call mpp_number_density(T, P, n)
- *    call mpp_density(T, P, species_x, rho)
- *    call mpp_mixture_mw_mole(species_x, mw)
- *    call mpp_mixture_frozen_cp_mass(T, species_y, cp)
- *    call mpp_mixture_frozen_cv_mass(T, species_y, cv)
- *    call mpp_mixture_h_mass(T, species_y, h)
- *    call mpp_mixture_e_mass(T, rho, species_y, e)
- *
- *    ! Clean up the library memory (should be done once at the end)
- *    mpp_destroy()
- * end program test
- * @endcode
+ * See \ref wrapper_test.f90 for an example of a code which uses this wrapper.
  * 
  * @{
  */
@@ -94,7 +48,8 @@ extern "C" {
  * called once before calling any other function.
  */
 void NAME_MANGLE(initialize)(
-    char* mixture, char* state_model, int mixture_length, int state_length);
+    F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
+    F_STRLEN state_length);
 
 /**
  * Deallocates all data associated with the mutation++ library.  Should be
@@ -118,10 +73,20 @@ int NAME_MANGLE(nspecies)();
 int NAME_MANGLE(nreactions)();
 
 /**
+ * Returns the number of mass equations associated with the state model.
+ */
+int NAME_MANGLE(n_mass_eqns)();
+
+/**
+ * Returns the number of energy equations associated with the state model.
+ */
+int NAME_MANGLE(n_energy_eqns)();
+
+/**
  * Returns the index of the element with the given name.
  */
 int NAME_MANGLE(element_index)(
-    char* element, int element_length);
+    F_STRING element, F_STRLEN element_length);
 
 /**
  * Returns the index of the species with the given name or -1 if the species
@@ -130,7 +95,7 @@ int NAME_MANGLE(element_index)(
  * @param species - name of the species
  */
 int NAME_MANGLE(species_index)(
-    char* species, int species_length);
+    F_STRING species, F_STRLEN species_length);
 
 /**
  * Returns the name of the species with the given index.
@@ -140,12 +105,17 @@ int NAME_MANGLE(species_index)(
  * @param species - the name of the species on return
  */
 void NAME_MANGLE(species_name)(
-    int* index, char* species, int species_length);
+    int* index, F_STRING species, F_STRLEN species_length);
 
 /**
  * Returns the mixture molecular weight in kg/mol.
  */
 double NAME_MANGLE(mixture_mw)();
+
+/**
+ * Returns the mixture translational temperature in K.
+ */
+double NAME_MANGLE(mixture_t)();
 
 /**
  * Returns the array of species molecular weights in kg/mol.
@@ -162,6 +132,15 @@ void NAME_MANGLE(species_mw)(double* const mw);
  */
 void NAME_MANGLE(convert_x_to_y)(
     const double* species_x, double* species_y);
+
+/**
+ * Converts the element mole fractions to element mass fractions.
+ *
+ * @param element_x - element mole fractions
+ * @param element_y - element mass fractions on return
+ */
+void NAME_MANGLE(convert_xe_to_ye)(
+    const double* element_x, double* element_y);
 
 /**
  * Converts the species densities to species mole fractions.
@@ -193,6 +172,16 @@ void NAME_MANGLE(x)(double* const X);
 void NAME_MANGLE(y)(double* const Y);
 
 /**
+ * Fills the temperature vector with the current mixture state.
+ */
+void NAME_MANGLE(get_temperatures)(double* const T);
+
+/**
+ * Fills the energy density vector with the current mixture state.
+ */
+void NAME_MANGLE(get_energy_densities)(double* const rhoe);
+
+/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -213,7 +202,7 @@ double NAME_MANGLE(density)();
  * Returns the density of the mixture given the mixture temperature and
  * pressure and species mole fractions.
  */
-double NAME_MANGLE(density_tpx)(double* T, double* P, double* X);
+void NAME_MANGLE(density_tpx)(double* T, double* P, const double* const X, double* rho);
 
 /**
  * Returns the current species densities.
@@ -230,12 +219,13 @@ void NAME_MANGLE(species_densities)(
  * @param X - mole fractions
  */
 void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
+void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X);
     
 /**
  * Sets the current state of the mixture using temperature and species 
  * densities.
  */
-void NAME_MANGLE(set_state)(double* v1, double* v2);
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars);
 
 /**
  * Returns the species specific heats at constant pressure in J/kg-K given the
@@ -258,6 +248,11 @@ double NAME_MANGLE(mixture_frozen_cv_mass)();
  * quantity.
  */
 double NAME_MANGLE(mixture_frozen_gamma)();
+
+/**
+ * Returns the mixture frozen sound speed in m/s.
+ */
+double NAME_MANGLE(mixture_frozen_sound_speed)();
 
 /**
  * Returns the species enthalpies in J/kg.

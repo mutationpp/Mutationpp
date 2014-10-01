@@ -17,54 +17,80 @@ using namespace Mutation::Kinetics;
 
 int main(int argc, char** argv)
 {
-    if (argc <= 1) exit(1);
+    MixtureOptions opts;
     
-    /*cout << "Numerical constants:" << endl;
-    cout << "pi:   " << PI << endl;
-    cout << "2pi:  " << TWOPI << endl;
-    cout << "NA:   " << NA << endl;
-    cout << "KB:   " << KB << endl;
-    cout << "RU:   " << RU << endl;
-    cout << "MU0:  " << MU0 << endl;
-    cout << "C0:   " << C0 << endl;
-    cout << "EPS0: " << EPS0 << endl;
-    cout << "QE:   " << QE << endl;
-    cout << endl;*/
+    if (argc < 2 || argc > 3) {
+        cout << "- checkmix mixture-name" << endl;
+        cout << "           or          " << endl;
+        cout << "- checkmix database(NASA-7, NASA-9, RRHO) species-descriptor" << endl;
+        exit(1);
+    } else if (argc == 2) {
+        opts.loadFromFile(argv[1]);
+    } else {
+        opts.setThermodynamicDatabase(argv[1]);
+        opts.setSpeciesDescriptor(argv[2]);
+    }
     
-    std::string mix(argv[argc-1]);
-    cout << "Loading mixture file " << mix << " ..." << endl;
-    Mixture mixture(mix);
+    Mixture mixture(opts);
         
     const int ne = mixture.nElements();
     const int ns = mixture.nSpecies();
     const int nr = mixture.nReactions();
+    const int ng = mixture.nGas();
+    const int nc = mixture.nCondensed();
  
+    cout << "location: " << opts.getSource() << endl;
     cout << ns << " species containing " << ne << " elements" << endl;
     cout << nr << " reactions" << endl;
     cout << endl;
     
+    int width = 0;
+	for (int i = 0; i < ns; ++i)
+		width = std::max(width, (int) mixture.speciesName(i).size());
+	width++;
+
     cout << "Species info:" << endl;
     cout << "-------------" << endl;  
-    cout << setw(9) << " ";
+    cout << setw(width) << " ";
     for (int i = 0; i < ne; ++i)
         cout << setw(4) << mixture.elementName(i);
     
     cout << setw(12) << "Mw (g/mol)" << setw(10) << "Charge";
     cout << setw(12) << "Phase" << endl;
-    for (int i = 0; i < ns; ++i) {
+    cout << "Gas Species (" << ng << "):" << endl;
+    for (int i = 0; i < ng; ++i) {
         cout.setf(std::ios::left, std::ios::adjustfield);
-        cout << setw(9) << mixture.speciesName(i);
-        
-        cout.setf(std::ios::right, std::ios::adjustfield); 
+        cout << setw(width) << mixture.speciesName(i);
+
+        cout.setf(std::ios::right, std::ios::adjustfield);
         for (int j = 0; j < ne; ++j)
             cout << setw(4) << mixture.elementMatrix()(i,j);
-        
+
         cout << setw(12) << mixture.speciesMw(i) * 1000.0
              << setw(10) << mixture.species()[i].charge();
-        
+
         PhaseType phase = mixture.species()[i].phase();
-        cout << setw(12) << (phase == GAS ? "gas" : 
+        cout << setw(12) << (phase == GAS ? "gas" :
             (phase == LIQUID ? "liquid" : "solid")) << endl;
+    }
+
+    if (nc > 0) {
+        cout << "Condensed Species (" << nc << "):" << endl;
+        for (int i = ng; i < ns; ++i) {
+            cout.setf(std::ios::left, std::ios::adjustfield);
+            cout << setw(width) << mixture.speciesName(i);
+
+            cout.setf(std::ios::right, std::ios::adjustfield);
+            for (int j = 0; j < ne; ++j)
+                cout << setw(4) << mixture.elementMatrix()(i,j);
+
+            cout << setw(12) << mixture.speciesMw(i) * 1000.0
+                 << setw(10) << mixture.species()[i].charge();
+
+            PhaseType phase = mixture.species()[i].phase();
+            cout << setw(12) << (phase == GAS ? "gas" :
+                (phase == LIQUID ? "liquid" : "solid")) << endl;
+        }
     }
     
     cout << endl;

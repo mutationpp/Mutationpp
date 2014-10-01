@@ -35,20 +35,23 @@ public:
     LDLT(const SymMatExpr<T, E>& mat);
     
     /**
-     * Constructs a new LDLT decomposition using the new matrix.
+     * Constructs a new LDLT decomposition using the new matrix.  Returns false
+     * if the matrix is numerically singular.
      */
     template <typename E>
-    void setMatrix(const SymMatExpr<T, E>& mat);
+    bool setMatrix(const SymMatExpr<T, E>& mat);
     
     /**
      * Solves the SPD system Ax = b via forward and backward substitutions with
      * the LDLT decomposition.
      */
-    void solve(Vector<T>& x, const Vector<T>& b) const;
+    template <typename E>
+    void solve(Vector<T>& x, const VecExpr<T, E>& b) const;
     
 private:
 
     SymmetricMatrix<T> m_L;
+    Vector<T>          m_work;
     
 };
 
@@ -62,37 +65,40 @@ LDLT<T>::LDLT(const SymMatExpr<T, E>& mat)
 
 template <typename T>
 template <typename E>
-void LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
+bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
 {
     
     m_L = mat;
     const size_t n = m_L.rows();
-    
-    Vector<T> work(n);
+    m_work.resize(n);
     
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < i; ++j)
-            work(j) = m_L(j,j) * m_L(i,j);
+            m_work(j) = m_L(j,j) * m_L(i,j);
         
         for (int j = 0; j < i; ++j)
-            m_L(i,i) -= work(j) * m_L(i,j);
+            m_L(i,i) -= m_work(j) * m_L(i,j);
         
         if (m_L(i,i) == static_cast<T>(0)) {
-            std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
-            exit(1);
+            //std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
+            //exit(1);
+        	return false;
         }
         
         for (int j = 0; j < i; ++j)
             for (int k = i+1; k < n; ++k)
-                m_L(k,i) -= m_L(k,j) * work(j);
+                m_L(k,i) -= m_L(k,j) * m_work(j);
         
         for (int k = i+1; k < n; ++k)
             m_L(k,i) /= m_L(i,i);
     }
+
+    return true;
 }
 
 template <typename T>
-void LDLT<T>::solve(Vector<T>& x, const Vector<T>& b) const
+template <typename E>
+void LDLT<T>::solve(Vector<T>& x, const VecExpr<T, E>& b) const
 {
     const size_t n = m_L.rows();
     

@@ -59,7 +59,8 @@ public:
     /**
      * Computes the singular value decomposition of A = USV' in factored form.
      */
-    SVD(const Matrix<Real>& A, 
+    template <typename E>
+    SVD(const MatExpr<Real, E>& A,
         const bool wantu = true, 
         const bool wantv = true);
     
@@ -109,7 +110,13 @@ public:
      * Determines the minimum two norm solution of the least squares problem
      * A*x = b.
      */
-    void solve(Vector<Real> &x, Vector<Real> &b);
+    void solve(Vector<Real> &x, Vector<Real> &b) const;
+    
+    /**
+     * Determines the minimum two norm solution of the least squares problem
+     * A*x = b.
+     */
+    void solve(Real* const x, Real* const b) const;
     
     /**
      * Solves the system A'Ax = b via VS^2V'x = b
@@ -142,7 +149,8 @@ Real hypot(const Real &a, const Real &b)
 }
 
 template <typename Real>
-SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
+template <typename E>
+SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
     : m_A(A)
 {
     // Define size constants
@@ -554,7 +562,7 @@ SVD<Real>::SVD(const Matrix<Real> &A, const bool wantu, const bool wantv)
 } // SVD()
 
 template <typename Real>
-void SVD<Real>::solve(Vector<Real> &x, Vector<Real> &b)
+void SVD<Real>::solve(Vector<Real> &x, Vector<Real> &b) const
 {
     const int m = m_A.rows();
     const int n = m_A.cols();
@@ -572,12 +580,35 @@ void SVD<Real>::solve(Vector<Real> &x, Vector<Real> &b)
 }
 
 template <typename Real>
+void SVD<Real>::solve(Real* const x, Real* const b) const
+{
+    const int m = m_A.rows();
+    const int n = m_A.cols();
+    
+    for (int i = 0; i < m_rank; ++i) {
+        x[i] = 0.0;
+        for (int j = 0; j < m; ++j)
+            x[i] += b[j]*m_U(j,i);
+    }
+    
+    for (int k = 0; k < m_rank; ++k) {
+        b[k] = x[k] / m_s(k);
+        x[k] = Real(0.0);
+    }
+    
+    for (int i = 0; i < n; ++i)
+        for (int k = 0; k < m_rank; ++k)
+            x[i] += m_V(i,k) * b[k];
+}
+
+template <typename Real>
 void SVD<Real>::solveATA(Vector<Real> &x, Vector<Real> &b)
 {
     x = b * m_V;
     b = x / square(m_s);
     x = m_V * b;
 }
+
 
     } // namespace Numerics
 } // namespace Mutation

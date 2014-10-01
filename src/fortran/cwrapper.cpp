@@ -13,7 +13,7 @@ double* p_work_element;
 //RealVector work_species;
 
 //==============================================================================
-std::string char_to_string(char *str, int length)
+std::string char_to_string(F_STRING str, F_STRLEN length)
 {
     std::string string(str, length);
     string.erase(0, string.find_first_not_of(' '));
@@ -22,7 +22,7 @@ std::string char_to_string(char *str, int length)
 }
 
 //==============================================================================
-void string_to_char(std::string string, char* str, int length)
+void string_to_char(std::string string, F_STRING str, F_STRLEN length)
 {
     for (int i = 0; i < length; ++i)
         if (i < string.length())
@@ -33,7 +33,8 @@ void string_to_char(std::string string, char* str, int length)
 
 //==============================================================================
 void NAME_MANGLE(initialize)(
-    char* mixture, char* state_model, int mixture_length, int state_length)
+    F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
+    F_STRLEN state_length)
 {
     //feenableexcept(FE_INVALID);
     Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
@@ -75,19 +76,31 @@ int NAME_MANGLE(nreactions)()
 }
 
 //==============================================================================
-int NAME_MANGLE(element_index)(char* element, int element_length)
+int NAME_MANGLE(n_mass_eqns)()
+{
+    return p_mix->nMassEqns();
+}
+
+//==============================================================================
+int NAME_MANGLE(n_energy_eqns)()
+{
+    return p_mix->nEnergyEqns();
+}
+
+//==============================================================================
+int NAME_MANGLE(element_index)(F_STRING element, F_STRLEN element_length)
 {
     return p_mix->elementIndex(char_to_string(element, element_length)) + 1;
 }
 
 //==============================================================================
-int NAME_MANGLE(species_index)(char* species, int species_length)
+int NAME_MANGLE(species_index)(F_STRING species, F_STRLEN species_length)
 {
     return p_mix->speciesIndex(char_to_string(species, species_length)) + 1;
 }
 
 //==============================================================================
-void NAME_MANGLE(species_name)(int* index, char* species, int species_length)
+void NAME_MANGLE(species_name)(int* index, F_STRING species, F_STRLEN species_length)
 {
     string_to_char(p_mix->speciesName(*index-1), species, species_length);
 }
@@ -96,6 +109,12 @@ void NAME_MANGLE(species_name)(int* index, char* species, int species_length)
 double NAME_MANGLE(mixture_mw)()
 {
     return p_mix->mixtureMw();
+}
+
+//==============================================================================
+double NAME_MANGLE(mixture_t)()
+{
+    return p_mix->T();
 }
 
 //==============================================================================
@@ -110,6 +129,13 @@ void NAME_MANGLE(convert_x_to_y)(
     const double *const species_x, double *const species_y)
 {
     p_mix->convert<X_TO_Y>(species_x, species_y);
+}
+
+//==============================================================================
+void NAME_MANGLE(convert_xe_to_ye)(
+    const double* const element_x, double* const element_y)
+{
+    p_mix->convert<XE_TO_YE>(element_x, element_y);
 }
 
 //==============================================================================
@@ -145,9 +171,9 @@ double NAME_MANGLE(density)()
 }
 
 //==============================================================================
-double NAME_MANGLE(density_tpx)(double* T, double* P, double* X)
+void NAME_MANGLE(density_tpx)(double* T, double* P, const double* const X, double* rho)
 {
-    return p_mix->density(*T, *P, X);
+    *rho = p_mix->density(*T, *P, X);
 }
 
 //==============================================================================
@@ -165,9 +191,15 @@ void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X)
 }
 
 //==============================================================================
-void NAME_MANGLE(set_state)(double* v1, double* v2)
+void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X)
 {
-    p_mix->setState(v1, v2);
+    p_mix->equilibriumComposition(*T, *P, el, X);
+}
+
+//==============================================================================
+void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars)
+{
+    p_mix->setState(v1, v2, *vars);
 }
 
 //==============================================================================
@@ -180,6 +212,18 @@ void NAME_MANGLE(x)(double *const X)
 void NAME_MANGLE(y)(double *const Y)
 {
     std::copy(p_mix->Y(), p_mix->Y()+p_mix->nSpecies(), Y);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_temperatures)(double* const T)
+{
+    p_mix->getTemperatures(T);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_energy_densities)(double* const rhoe)
+{
+    p_mix->getEnergyDensities(rhoe);
 }
 
 //==============================================================================
@@ -206,6 +250,12 @@ double NAME_MANGLE(mixture_frozen_cv_mass)()
 double NAME_MANGLE(mixture_frozen_gamma)()
 {
     return p_mix->mixtureFrozenGamma();
+}
+
+//==============================================================================
+double NAME_MANGLE(mixture_frozen_sound_speed)()
+{
+    return p_mix->frozenSoundSpeed();
 }
 
 //==============================================================================

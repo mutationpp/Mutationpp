@@ -69,42 +69,72 @@ void XmlElement::_parseError(
 //==============================================================================
 
 template < >
-void XmlElement::getAttribute(
-    const std::string &name, std::string &value)
+std::string XmlElement::getAttribute(
+    const std::string& name, std::string& value) const
 {
-    value = m_attributes[name];
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = iter->second;
+    else
+        value = "";
+    return value;
 }
 
 //==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, int &value)
+int XmlElement::getAttribute(const std::string& name, int& value) const
 {
-    value = atoi(m_attributes[name].c_str());
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = atoi(iter->second.c_str());
+    else
+        value = 0;
+    return value;
 }
 
 //==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, float &value)
+float XmlElement::getAttribute(const std::string &name, float &value) const
 {
-    value = (float)atof(m_attributes[name].c_str());
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = (float)atof(iter->second.c_str());
+    else
+        value = 0.0f;
+    return value;
 }
 
 //==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, double &value)
+double XmlElement::getAttribute(const std::string &name, double &value) const
 {
-    value = atof(m_attributes[name].c_str());
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = atof(iter->second.c_str());
+    else
+        value = 0.0;
+    return value;
 }
 
 //==============================================================================
 
 template < >
-void XmlElement::getAttribute(const std::string &name, bool &value)
+bool XmlElement::getAttribute(const std::string &name, bool &value) const
 {
-    value = (String::toLowerCase(m_attributes[name]) == "true");
+    std::map<std::string, std::string>::const_iterator iter =
+        m_attributes.find(name);
+    if (iter != m_attributes.end())
+        value = (String::toLowerCase(iter->second) == "true");
+    else
+        value = false;
+    return value;
 }
 
 //==============================================================================

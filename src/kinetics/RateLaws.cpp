@@ -11,7 +11,7 @@ using namespace Mutation::Utilities::IO;
 namespace Mutation {
     namespace Kinetics {
 
-void Arrhenius::setUnits(XmlElement& node)
+void Arrhenius::setUnits(const XmlElement& node)
 {
     assert( node.tag() == "arrhenius_units" );
     std::string a, e;
@@ -41,7 +41,7 @@ std::vector<Units> _default_eunits() {
 std::vector<Units> Arrhenius::sm_aunits = std::vector<Units>();
 std::vector<Units> Arrhenius::sm_eunits = std::vector<Units>();
 
-Arrhenius::Arrhenius(XmlElement& node, const int order)
+Arrhenius::Arrhenius(const XmlElement& node, const int order)
 {
     assert( node.tag() == "arrhenius" );
     

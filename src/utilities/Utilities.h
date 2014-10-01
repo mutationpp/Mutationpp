@@ -19,6 +19,13 @@
 #include "Units.h"
 #include "XMLite.h"
 
+// Define a useful debug output function which does nothing unless VERBOSE is
+// defined
+#ifndef VERBOSE
+#define DEBUG(__out__) ;
+#else
+#define DEBUG(__out__) std::cout << __out__;
+#endif
 
 namespace Mutation {
     namespace Utilities {

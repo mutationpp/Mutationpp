@@ -28,8 +28,8 @@ def loadMechanism(filename):
     for line in lines:        
         if not thirdbody:
             tokens = line.split(":")
-            formula = tokens[0].strip().replace("p","+").replace("m","-")
-            constants = tokens[1].rstrip("\n").split("/")
+            formula = tokens[0].strip().replace("p","+").replace("m","-").replace(" ","")
+            constants = tokens[1].rstrip("\n").replace(" ","").split("/")
             
             if "M" in formula:
                 thirdbody = True

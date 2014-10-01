@@ -10,13 +10,14 @@
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
+#include "ThermoDB.h"
+#include "MultiPhaseEquilSolver.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
-class GfcEquilSolver;
+//class GfcEquilSolver;
 class MultiPhaseEquilSolver;
-class ThermoDB;
 class StateModel;
 
 /**
@@ -45,8 +46,6 @@ enum ConversionType {
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
 };
 
-
-
 /**
  * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
  */
@@ -60,8 +59,9 @@ public:
      * mutation++.
      */
     Thermodynamics(
-        const std::vector<std::string> &species_names, 
-        const std::string& database, const std::string& state_model);
+        const std::string& species_descriptor,
+        const std::string& database,
+        const std::string& state_model);
     
     /**
      * Destructor.
@@ -81,10 +81,26 @@ public:
     }
     
     /**
+     * Returns a pointer to the Equilibrium solver object owned by this
+     * Thermodynamics object.
+     */
+    MultiPhaseEquilSolver* const  equilSolver() const {
+        return mp_equil;
+    }
+
+    /**
+     * Returns a pointer to the ThermoDB object owned by this Thermodynamics
+     * object.
+     */
+    ThermoDB* thermoDB() const {
+        return mp_thermodb;
+    }
+
+    /**
      * Returns the number of species considered in the mixture.
      */
     int nSpecies() const { 
-        return m_species.size();
+        return mp_thermodb->species().size();
     }
     
     /**
@@ -112,7 +128,7 @@ public:
      * Returns the number of elements considered in the mixture.
      */
     int nElements() const {
-        return m_elements.size();
+        return mp_thermodb->elements().size();
     }
     
     /**
@@ -120,6 +136,28 @@ public:
      */
     int nPhases() const;
     
+    /**
+     *  Returns number of gas species in the mixture.
+     */
+    int nGas() const { return m_ngas; }
+
+    /**
+     * Returns the number of condensed phase species in the mixture.
+     */
+    int nCondensed() const { return nSpecies()-m_ngas; }
+
+    /**
+     * Returns the number of energy equations associated with the mixture
+     * StateModel.
+     */
+    int nEnergyEqns() const;
+
+    /**
+     * Returns the number of mass equations associated with the mixture
+     * StateModel.
+     */
+    int nMassEqns() const;
+
     /**
      * Returns true if this mixture includes electrons, false otherwise.
      */
@@ -132,8 +170,8 @@ public:
      */
     const Species& species(int i) const {
         assert(i >= 0);
-        assert(i < m_species.size());
-        return m_species[i];
+        assert(i < nSpecies());
+        return mp_thermodb->species()[i];
     }
     
     /**
@@ -141,6 +179,12 @@ public:
      */
     const Species& species(std::string name) const {
         return species(speciesIndex(name));
+    }
+    
+    const Element& element(int i) const {
+        assert(i >= 0);
+        assert(i < nElements());
+        return mp_thermodb->elements()[i];
     }
     
     /**
@@ -185,16 +229,14 @@ public:
      * array.
      */
     const std::string &speciesName(const int &index) const {
-        assert(index > -1);
-        assert(index < nSpecies());
-        return m_species[index].name();
+        return species(index).name();
     }
     
     /**
      * Returns the charge of the species with the given index.
      */
     double speciesCharge(const int &index) const {
-        return m_species[index].charge()*QE;
+        return species(index).charge()*QE;
     }
     
     /**
@@ -202,44 +244,39 @@ public:
      * array.
      */
     const std::string &elementName(const int &index) const {
-        return m_elements[index].name();
+        return element(index).name();
     }
     
     /**
-     * Sets the current state of the mixture using temperatures, pressure, and 
-     * species mole fractions.
+     * Returns true if the thermodynamic data in this database is valid at the
+     * given temperature for the given species index.
      */
-    //void setStateTPX(
-    //    const double* const T, const double* const P, const double* const X);
+    bool speciesThermoValidAtT(const size_t i, const double T) const;
     
     /**
-     * Sets the current state of the mixture using temperatures pressures, and 
-     * species mass fractions.
+     * Sets the state of the mixture using the StateModel belonging to the
+     * mixture.  The input variables depend on the type of StateModel being
+     * used.
      */
-    //void setStateTPY(
-    //    const double* const T, const double* const P, const double* const Y);
-    
-    void setState(const double* const p_v1, const double* const p_v2);
+    void setState(
+        const double* const p_v1, const double* const p_v2, const int vars = 0);
         
     /**
-     * Computes the equilibrium mole fractions of the mixture given the
-     * elemental composition.
+     * Computes the equilibrium composition of the mixture at the given fixed
+     * temperature and pressure using the default elemental composition.
      */
-    //void equilibrate(
-    //    double T, double P, const double* const p_c, double* const p_X = NULL,
-    //    bool set_state = true);
-    
-    /**
-     * Equilibrates the mixture to a given temperature and pressure using the 
-     * default elemental composition.
-     */
-    //void equilibrate(double T, double P);
-    
-    void equilibriumComposition(double T, double P, double* const p_X) const {
-        equilibriumComposition(T, P, mp_default_composition, p_X);
-    }
     void equilibriumComposition(
-        double T, double P, const double* const p_Xe, double* const p_X) const;
+        double T, double P, double* const p_X, MoleFracDef mdf = GLOBAL) const {
+        equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
+    }
+
+    /**
+     * Computes the equilibrium composition of the mixture at the given fixed
+     * temperature, pressure, and elemental moles/mole fractions.
+     */
+    void equilibriumComposition(
+        double T, double P, const double* const p_Xe, double* const p_X,
+        MoleFracDef mdf = GLOBAL) const;
     
     /**
      * Returns the element potentials calculated by the most recent call to 
@@ -252,6 +289,17 @@ public:
      * equilibrate().
      */
     void phaseMoles(double* const p_moles);
+    
+    /**
+     * Returns the number of continuation steps on the last call to equilibrate.
+     */
+    int nEquilibriumSteps() const;
+    
+    /**
+     * Returns the total number of newton iterations on the last call to
+     * equilibrate.
+     */
+    int nEquilibriumNewtons() const;
     
     /**
      * Adds a new set of linear constraints to the equilibrium solver.
@@ -290,6 +338,18 @@ public:
      */
     double Tel() const;
     
+    /**
+     * Fills temperature array with tempertures belonging to the assigned
+     * StateModel.
+     */
+    void getTemperatures(double* const p_T) const;
+
+    /**
+     * Fills energy density array with energies belonging to the assigned
+     * StateModel.
+     */
+    void getEnergyDensities(double* const p_rhoe) const;
+
     /**
      * Returns the current mixture static pressure in Pa.
      */
@@ -351,14 +411,14 @@ public:
      * in the element array.
      */
     double atomicMass(const int index) const {
-        return m_elements[index].atomicMass();
+        return element(index).atomicMass();
     }
     
     /**
      * Returns the species vector.
      */
-    const std::vector<Species> &species() const {
-        return m_species;
+    const std::vector<Species>& species() const {
+        return mp_thermodb->species();
     }
     
     /**
@@ -522,8 +582,15 @@ public:
      * equilibrium mixture.
      * dxdt - on return, the dX_i/dT derivatives
      */
-    void dXidT(double* const dxdt);
+    void dXidT(double* const dxdt) const;
     
+    /**
+     * Returns the species derivatives of mole fraction w.r.t. pressure for the
+     * given equilibrium mixture.  Note that it is assumed the state model is an
+     * equilibrium one.
+     */
+    void dXidP(double* const dxdp) const;
+
     /**
      * Returns the density derivative with respect to pressure for the current
      * equilibrium state.
@@ -648,6 +715,11 @@ private:
      * thermo database.
      */
     void loadSpeciesFromList(const std::vector<std::string> &species_names);
+    
+    /**
+     * Adds a single species to the thermodynamic list.
+     */
+    void addSpecies(const Species& species);
 
 private:
   
@@ -655,10 +727,7 @@ private:
     MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
     
-    std::vector<Species> m_species;    
     std::map<std::string, int> m_species_indices;
-    
-    std::vector<Element> m_elements;
     std::map<std::string, int> m_element_indices;
     
     Numerics::RealMatrix m_element_matrix;
@@ -672,6 +741,7 @@ private:
     bool m_has_electrons;
     int  m_natoms;
     int  m_nmolecules;
+    int  m_ngas;
     
 }; // class Thermodynamics
 

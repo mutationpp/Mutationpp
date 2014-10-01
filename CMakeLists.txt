@@ -10,10 +10,19 @@
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
-
 enable_language(CXX)
+
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
+endif()
+
+################################################################################
+# CTest
+################################################################################
+option (ENABLE_TESTING
+    "Enable regression testing with CTest (requires Boost testing library)" OFF)
+if (ENABLE_TESTING)
+    enable_testing()
 endif()
 
 

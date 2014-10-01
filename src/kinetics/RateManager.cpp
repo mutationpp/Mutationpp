@@ -24,6 +24,7 @@ public:\
 TEMPERATURE_SELECTOR(TSelector, state->T())
 
 /// Temperature selector which returns the current electron temperature
+//TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
 TEMPERATURE_SELECTOR(TeSelector, state->Te())
 
 /// Temperature selector which returns the current value of sqrt(T*Tv)
@@ -78,7 +79,8 @@ SELECT_RATE_LAWS(RECOMBINATION_M,            ArrheniusT,    ArrheniusPark)
 //==============================================================================
 
 RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
-    : m_ns(ns), m_nr(reactions.size())
+    : m_ns(ns), m_nr(reactions.size()), mp_lnkf(NULL), mp_lnkb(NULL),
+      mp_gibbs(NULL)
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
@@ -144,8 +146,8 @@ void RateManager::selectRate<0>(
     const size_t rxn, const Reaction& reaction)
 {
     addRate<
-        typename RateSelector<0>::ForwardGroup,
-        typename RateSelector<0>::ReverseGroup>(rxn, reaction);
+        RateSelector<0>::ForwardGroup,
+        RateSelector<0>::ReverseGroup>(rxn, reaction);
 }
 
 //==============================================================================

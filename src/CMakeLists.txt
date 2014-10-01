@@ -29,6 +29,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/kinetics
     ${CMAKE_CURRENT_SOURCE_DIR}/numerics
     ${CMAKE_CURRENT_SOURCE_DIR}/thermo
+    ${CMAKE_CURRENT_SOURCE_DIR}/transfer
     ${CMAKE_CURRENT_SOURCE_DIR}/transport
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
@@ -37,8 +38,13 @@ add_subdirectory(general)
 add_subdirectory(kinetics)
 add_subdirectory(numerics)
 add_subdirectory(thermo)
+add_subdirectory(transfer)
 add_subdirectory(transport)
 add_subdirectory(utilities)
+
+if (ENABLE_TESTING)
+    add_subdirectory(tests)
+endif()
 
 if (BUILD_FORTRAN_WRAPPER)
     add_subdirectory(fortran)

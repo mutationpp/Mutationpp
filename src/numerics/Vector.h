@@ -86,7 +86,7 @@ public:
     }
     
     template <typename E>
-    bool operator==(const VecExpr<T, E>& vec) {
+    bool operator==(const VecExpr<T, E>& vec) const {
         if (size() != vec.size())
             return false;
         for (int i = 0; i < size(); ++i)
@@ -97,7 +97,7 @@ public:
     }
     
     template <typename E>
-    bool operator!=(const VecExpr<T, E>& vec) {
+    bool operator!=(const VecExpr<T, E>& vec) const {
         return !operator==(vec);
     }
     
@@ -349,6 +349,13 @@ public:
      * Returns the size of this Vector.
      */
     size_t size() const { return m_data.size(); }
+    
+    /**
+     * Resizes the vector to the given size.
+     */
+    void resize(size_t n) {
+        m_data.resize(n);
+    }
     
     /**
      * Returns the Vector element at index i for writing.  Assertion error

@@ -41,7 +41,8 @@ public:
      * however if A is rank deficient, the SVD of the NxN R matrix is also 
      * computed and stored.
      */
-    LeastSquares(const Matrix<Real> &A)
+    template <typename E>
+    LeastSquares(const MatExpr<Real, E> &A)
         : m_rows(A.rows()), m_cols(A.cols()), mp_qrp(NULL), mp_svd(NULL)
     {
         assert( A.rows() >= A.cols() );
@@ -94,6 +95,22 @@ public:
             mp_qrp->qTransposeB(b);
             mp_svd->solve(x, b);
             mp_qrp->pivot(x);
+        }
+    }
+    
+    void solve(double* const p_x, double* const p_b)
+    {
+        if (m_full_rank)
+            mp_qrp->solve(p_x, p_b);
+        else {
+#ifdef LS_WARN_RANK_DEFICIENT
+            cout << "ls: A(" << m_rows << "x" << m_cols << ") is "
+                 << "rank-deficient (rank = " << mp_svd->rank() 
+                 << "), using SVD... "  << endl;
+#endif
+            mp_qrp->qTransposeB(p_b);
+            mp_svd->solve(p_x, p_b);
+            mp_qrp->pivot(p_x);
         }
     }
     

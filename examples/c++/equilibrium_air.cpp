@@ -1,5 +1,5 @@
 /**
- * @file equilibrium_air.cpp
+ * @example equilibrium_air.cpp
  *
  * Example program which makes use of the Mutation++ library to compute
  * equilibrium mole fractions, mixture frozen specific heat, enthalpy, and 
@@ -10,7 +10,6 @@
  * compute properties for an equilibrium mixture.  The output is a property
  * table written to standard output as a function of temperature.
  */
-
 
 // Must include this header file to use the Mutation++ library
 #include "mutation++.h"
@@ -53,7 +52,7 @@ int main()
         double T = 300.0 + static_cast<double>(i) * 100.0;
         
         // Set the mixture state equal to the equilibrium state for the given
-        // temprature and pressure
+        // temperature and pressure
         mix.setState(&T, &P);
         
         // Temperature
