@@ -262,6 +262,13 @@ double NAME_MANGLE(mixture_frozen_sound_speed)();
 void NAME_MANGLE(species_h_mass)(double *const h);
 
 /**
+ * Returns the species enthalpies in J/m^3 obtained from the State Model.
+ * 
+ * @param h - species enthalpies for each energy equation solved
+ */
+void NAME_MANGLE(species_h_density_vector)(double *const h);
+
+/**
  * Returns the mixture enthalpy in J/kg given the mixture temperature and
  * species mass fractions.
  */
@@ -368,6 +375,13 @@ void NAME_MANGLE(surface_mass_balance)
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs);
 
+/**
+ * Returns the pointer to the energy transfer between the internal energy modes 
+ */
+
+void NAME_MANGLE(source_energy_transfer)
+    (double* const p_source_transfer, const int *const n_int_energy);
+    
 /**
  * @}
  */

@@ -235,6 +235,12 @@ void NAME_MANGLE(species_cp_mass)(double* const cp)
 }
 
 //==============================================================================
+void NAME_MANGLE(species_cp_mass_vector)(double* const cp)
+{
+    p_mix->getCp(cp);
+}
+
+//==============================================================================
 double NAME_MANGLE(mixture_frozen_cp_mass)()
 {
     return p_mix->mixtureFrozenCpMass();
@@ -265,6 +271,13 @@ void NAME_MANGLE(species_h_mass)(double *const h)
     double T = p_mix->T();
     for (int i = 0; i < p_mix->nSpecies(); i++)
         h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
+}
+
+//==============================================================================
+
+void NAME_MANGLE(species_h_density_vector)(double *const h)
+{
+   p_mix->getEnergyDensities(h);
 }
 
 //==============================================================================
@@ -362,6 +375,17 @@ void NAME_MANGLE(surface_mass_balance)
     p_mix->surfaceMassBalance(p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
 }
 
-
+//==============================================================================
+void NAME_MANGLE(source_energy_transfer)
+     (double *const p_source_transfer, const int* const n_int_energy)
+{
+     for (int i_int_energy = 0; i_int_energy < *n_int_energy; i_int_energy++)
+     {
+         p_source_transfer[i_int_energy] = 0.0;
+     }
+}
+     
+     
+     
 
 

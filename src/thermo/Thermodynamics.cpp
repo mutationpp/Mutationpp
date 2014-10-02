@@ -216,7 +216,11 @@ void Thermodynamics::getTemperatures(double* const p_T) const {
 void Thermodynamics::getEnergyDensities(double* const p_rhoe) const {
     mp_state->getEnergyDensities(p_rhoe);
 }
+//==============================================================================
 
+void Thermodynamics::getEnthalpyDensities(double* const p_rhoh) const {
+    mp_state->getEnthalpyDensities(p_rhoh);
+}
 //==============================================================================
 
 double Thermodynamics::P() const {
@@ -829,6 +833,19 @@ void Thermodynamics::speciesHOverRT(double T, double* const h) const
 {
     mp_thermodb->enthalpy(
         T, T, T, T ,T, h, NULL, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+// Check this function one more time
+void Thermodynamics::speciesHOverRT(
+    double T, double Te, double Tr, double Tv, double Tel,
+    double* const h, double* const ht, double* const hr, double* const hv,
+    double* const hel, double* const hf) const
+{
+    mp_thermodb->enthalpy(
+//        T, T, T, T, T,
+        T, Te, Tr, Tv, Tel,
+        h, ht, hr, hv, hel, hf);
 }
 
 //==============================================================================

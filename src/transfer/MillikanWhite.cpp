@@ -23,20 +23,21 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     m_index = thermo.speciesIndex(name);
     
     // Get the limiting cross-section if available
-    node.getAttribute("omegav", m_omegav, 3.0E-17);
+    node.getAttribute("omegav", m_omegav, 3.0E-21);
     
     const Species& vibrator = thermo.species(name);
     
     // Get characteristic vibrational temperature
-    double theta;
-    //if (vibrator.hasRRHOParameters())
-   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+    
+    double theta=0.0;    //Probably the characteristic vibrational energy is not needed.
+    /*//if (vibrator.hasRRHOParameters())
+    //    theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
     //else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
-        exit(1);
-    //}
+    //    exit(1);
+    //}*/
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -72,7 +73,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 
 MillikanWhiteVibrator::MillikanWhiteVibrator(
     const std::string& name, const class Thermodynamics& thermo)
-    : m_omegav(3.0E-17), m_index(thermo.speciesIndex(name))
+    : m_omegav(3.0E-21), m_index(thermo.speciesIndex(name))
 {
     const Species& vibrator = thermo.species(name);
     
@@ -84,7 +85,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
-        exit(1);
+//        exit(1);
     //}
     
     // Loop over each heavy species in thermo
@@ -144,5 +145,5 @@ MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
 
 //==============================================================================
 
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation

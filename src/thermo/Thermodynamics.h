@@ -339,17 +339,31 @@ public:
     double Tel() const;
     
     /**
-     * Fills temperature array with tempertures belonging to the assigned
+     * Fills temperature array with tempertures according to the used
      * StateModel.
      */
     void getTemperatures(double* const p_T) const;
 
     /**
-     * Fills energy density array with energies belonging to the assigned
+     * Fills energy density array with energies according to the used
      * StateModel.
      */
     void getEnergyDensities(double* const p_rhoe) const;
 
+    /**
+     * Fills enthalpy density array with enthalpy according to the used
+     * StateModel
+     */
+
+    void getEnthalpyDensities(double* const p_rhoh) const;
+    
+    /**
+     * Fills the constant pressure specific heat according to the used
+     * StateModel
+     */
+    
+    void getCp(double* const p_Cp) const;
+    
     /**
      * Returns the current mixture static pressure in Pa.
      */
@@ -610,7 +624,17 @@ public:
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
-    
+
+     /**
+     * Computes the unitless species enthalpies and can optionally fill vectors
+     * for each energy mode by explicitly passing each individual temperature .  
+     */
+    void speciesHOverRT(
+        double T, double Te, double Tr, double Tv, double Tel,
+        double* const h, double* const ht = NULL, 
+        double* const hr = NULL, double* const hv = NULL,
+        double* const hel = NULL, double* const hf = NULL) const;
+
     void speciesEvibMass(double T, double* const p_evib);
     
     /**

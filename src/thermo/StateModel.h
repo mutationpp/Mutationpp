@@ -136,6 +136,25 @@ public:
     }
 
     /**
+     * Fills an array of the enthalpy densities represented by this StateModel.
+     */
+    virtual void getEnthalpyDensities(double* const p_rhoh) {
+        std::cerr << "getEnthalpyDensities()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
+     * Returns a vector with the constant pressure specific heats for the Statemodel
+     */
+    
+    virtual void getCp(double* const p_Cp){
+        std::cerr << "getCp()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
      * Returns the species mole fractions.
      */
     inline const double* const X() const {
