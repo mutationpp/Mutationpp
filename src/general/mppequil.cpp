@@ -343,7 +343,7 @@ Options parseOptions(int argc, char** argv)
     }
     
     // Must use the equilibirum state model
-    opts.p_mixture_opts->setStateModel("EquilTP");
+    opts.p_mixture_opts->setStateModel("Equil");
     
     // Elemental mole fractions
     if (optionExists(argc, argv, "--elem-x")) {
@@ -608,7 +608,7 @@ int main(int argc, char** argv)
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {
             // Compute the equilibrium composition
-            mix.setState(&T, &P);
+            mix.setState(&P, &T, 1);
             cw = 0;
 
             // Mixture properties
