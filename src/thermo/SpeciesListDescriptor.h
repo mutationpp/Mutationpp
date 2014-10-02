@@ -13,7 +13,7 @@ class Species;
 
 /**
  * This class is used by thermodynamic databases to decide which species they 
- * should load upon intialization.  The species list could be determined from
+ * should load upon initialization.  The species list could be determined from
  * a simple list of species names, or something more complex such as all gases
  * containing certain elements.
  */

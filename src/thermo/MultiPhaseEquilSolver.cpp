@@ -28,8 +28,8 @@ namespace Mutation {
     
 
 // Define static constants for class MultiPhaseEquilSolver
-const double MultiPhaseEquilSolver::ms_eps_rel = 0.001;
-const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-8;
+const double MultiPhaseEquilSolver::ms_eps_rel = 0.00001;
+const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-10;
 const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
 const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
@@ -38,7 +38,7 @@ const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
 const double MultiPhaseEquilSolver::ms_temp_change_tol = 100.0;
 
 // A change in pressure more than this triggers an update in initial solution
-const double MultiPhaseEquilSolver::ms_pres_change_tol = 1000.0;
+const double MultiPhaseEquilSolver::ms_pres_change_tol = 10000.0;
 
 //==============================================================================
 
