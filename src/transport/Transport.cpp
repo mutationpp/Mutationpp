@@ -453,7 +453,7 @@ void Transport::equilibriumFickXe(double* const p_F)
 
 //==============================================================================
 
-void Transport::stefanMaxwell(
+/*void Transport::stefanMaxwellRamshaw(
     const double* const p_dp, double* const p_V, double& E)
 {
     if (mp_collisions == NULL) {
@@ -467,7 +467,7 @@ void Transport::stefanMaxwell(
     const double nd = m_thermo.numberDensity();
     
     // Need to place a tolerance on X and Y
-    const double tol = 1.0e-12;
+    const double tol = 1.0e-16;
     static std::vector<double> X(ns);
     static std::vector<double> Y(ns);
     for (int i = 0; i < ns; ++i)
@@ -492,13 +492,6 @@ void Transport::stefanMaxwell(
     for (int i = 0; i < ns; ++i)
         p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
 
-    // Compute average binary diffusion coefficient
-    double a = 0.0;
-    for (int i = 0; i < nDij.size(); ++i)
-        a += nDij(i);
-    a /= ((double)nDij.size()*nd);
-    a = 1.0/a;
-
     // Compute ambipolar electric field
     E = (k > 0 ? p_dp[0]/p_V[0] : 0.0);
 
@@ -521,10 +514,22 @@ void Transport::stefanMaxwell(
         }
     }
 
+    // Compute average binary diffusion coefficient
+    double a = 0.0;
+    for (int i = 0; i < nDij.size(); ++i)
+        a += nDij(i);
+    a /= ((double)nDij.size()*nd);
+    a = 1.0/a;
+
+    // Compute the constraints that are applied to the matrix
+    fac = (k > 0 ? Y[0]/(X[0]*mp_wrk3[0]) : 0.0);
+    for (int i = k; i < ns; ++i)
+        p_V[i] = Y[i] - X[i]*mp_wrk3[i]*fac;
+
     // Add mass balance relation to make make matrix nonsigular
     for (int i = k; i < ns; ++i)
         for (int j = i; j < ns; ++j)
-            G(i-k,j-k) += a*Y[i]*Y[j];
+            G(i-k,j-k) += a*p_V[i]*p_V[j];
 
     // Solve for the velocities
     static RealVector V(ns-k);
@@ -537,8 +542,117 @@ void Transport::stefanMaxwell(
         p_V[i] = V(i-k);
 
     // Compute electron diffusion velocity if need be
-    if (k > 0)
-        p_V[0] = 0.0;
+    if (k == 0)
+        return;
+
+    p_V[0] = 0.0;
+    for (int i = k; i < ns; ++i)
+        p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
+    p_V[0] /= -mp_wrk3[0]*X[0];
+}*/
+
+// For now assume that we have ions and solve the full system in thermal
+// nonequilibrium with ambipolar assumption
+void Transport::stefanMaxwell(
+    const double* const p_dp, double* const p_V, double& E)
+{
+    // Determine some constants
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+
+    // Place a tolerance on X and Y
+    const double tol = 1.0e-10;
+    static std::vector<double> xy(2*ns);
+    double *X = &xy[0], *Y = &xy[ns];
+    for (int i = 0; i < ns; ++i)
+        X[i] = std::max(tol, m_thermo.X()[i]);
+    m_thermo.convert<X_TO_Y>(X, Y);
+
+    // Get reference to binary diffusion coefficients
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+
+    // Compute mixture charge (store species' charges in mp_wrk3 work array)
+    double q = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk3[i] = m_thermo.speciesCharge(i);
+        q += mp_wrk3[i] * X[i];
+    }
+
+    // Compute kappas (stored in p_V to avoid creating another array)
+    // also compute the 2-norm of the kappa vector
+    const double one_over_kbt = 1.0/(KB*Th);
+    double s = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+        s += p_V[i]*p_V[i];
+    }
+    s = std::sqrt(s);
+
+    // Compute the RHS vector
+    static RealVector b(ns+1);
+    for (int i = 0; i < ns; ++i)
+        b(i) = -p_dp[i];
+    b(0) *= Th/Te;
+    b(ns) = 0.0;
+
+    // Compute system matrix
+    static RealMatrix G(ns+1,ns+1);
+
+    // - electron contribution
+    double fac1 = Te/Th;
+    double fac2 = fac1*X[0]*nd;
+    G(0,0) = 0.0;
+    for (int j = 1; j < ns; ++j) {
+        G(0,j) =  -fac2*X[j]/nDij(0,j);
+        G(0,0) += G(0,j);
+        G(j,0) =  G(0,j);
+        G(j,j) =  -fac1*G(j,0);
+    }
+    G(0,0) /= -fac1;
+    G(0,ns) = -p_V[0]/(fac1*s);
+
+    // - heavy contribution
+    for (int i = 1; i < ns; ++i) {
+        for (int j = i+1; j < ns; ++j) {
+            G(i,j) =  -X[i]*X[j]/nDij(i,j)*nd;
+            G(i,i) -= G(i,j);
+            G(j,i) =  G(i,j);
+            G(j,j) -= G(j,i);
+        }
+        G(i,ns) = -p_V[i]/s;
+    }
+
+    // - mass constraint to non singularize the matrix
+    // first compute the average diffusion coefficient
+    double a = 0.0;
+    for (int i = 0; i < nDij.size(); ++i)
+        a += nDij(i);
+    a /= ((double)nDij.size()*nd);
+    a = 1.0/a;
+
+    // then apply the constraint
+    for (int i = 0; i < ns; ++i)
+        for (int j = 0; j < ns; ++j)
+            G(i,j) += a*Y[i]*Y[j];
+
+    // - ambipolar constraint
+    for (int j = 0; j < ns; ++j)
+        G(ns,j) = -p_V[j]/s;
+    G(ns,ns) = 0.0;
+
+    // Finally solve the system for Vi and E
+    //static QRP<double> qrp(G);
+    //static RealVector x(ns+1);
+    //qrp.solve(x, b);
+    static RealVector x(ns+1);
+    Numerics::gmres(G, x, b, Numerics::DiagonalPreconditioner<double>(G), 1.0e-12);
+
+    // Retrieve the solution
+    for (int i = 0; i < ns; ++i)
+        p_V[i] = x(i);
+    E = b(ns)/s;
 }
 
 //==============================================================================
