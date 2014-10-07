@@ -6,6 +6,7 @@
 #include "LeastSquares.h"
 #include "lp.h"
 #include "cg.h"
+#include "gmres.h"
 #include "LDLT.h"
 #include "NewtonSolver.h"
 
