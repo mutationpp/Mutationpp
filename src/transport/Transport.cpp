@@ -113,7 +113,7 @@ double Transport::electronThermalConductivity()
         return 0.0;
     }
 
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] == 0.0)
         return 0.0;
 
     // Get thermodynamic properties
@@ -154,6 +154,10 @@ double Transport::electronThermalConductivity()
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
+    assert(lam11 > 0.0);
+    assert(lam22 > 0.0);
+    assert(lam11*lam22 > lam12*lam12);
+
     // 2nd order solution
     //return (X[0]*X[0]/lam11);
     
@@ -563,11 +567,16 @@ void Transport::stefanMaxwell(
     const double nd = m_thermo.numberDensity();
 
     // Place a tolerance on X and Y
-    const double tol = 1.0e-10;
+    const double tol = 0.0;//1.0e-16;
     static std::vector<double> xy(2*ns);
     double *X = &xy[0], *Y = &xy[ns];
+    double sum = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        X[i] = tol + m_thermo.X()[i];
+        sum += X[i];
+    }
     for (int i = 0; i < ns; ++i)
-        X[i] = std::max(tol, m_thermo.X()[i]);
+        X[i] /= sum;
     m_thermo.convert<X_TO_Y>(X, Y);
 
     // Get reference to binary diffusion coefficients
@@ -596,7 +605,7 @@ void Transport::stefanMaxwell(
         b(i) = -p_dp[i];
     b(0) *= Th/Te;
     b(ns) = 0.0;
-
+    //cout << b << endl;
     // Compute system matrix
     static RealMatrix G(ns+1,ns+1);
 
@@ -608,7 +617,7 @@ void Transport::stefanMaxwell(
         G(0,j) =  -fac2*X[j]/nDij(0,j);
         G(0,0) += G(0,j);
         G(j,0) =  G(0,j);
-        G(j,j) =  -fac1*G(j,0);
+        G(j,j) = -fac1*G(j,0);
     }
     G(0,0) /= -fac1;
     G(0,ns) = -p_V[0]/(fac1*s);
@@ -624,34 +633,36 @@ void Transport::stefanMaxwell(
         G(i,ns) = -p_V[i]/s;
     }
 
-    // - mass constraint to non singularize the matrix
-    // first compute the average diffusion coefficient
-    double a = 0.0;
-    for (int i = 0; i < nDij.size(); ++i)
-        a += nDij(i);
-    a /= ((double)nDij.size()*nd);
-    a = 1.0/a;
-
-    // then apply the constraint
-    for (int i = 0; i < ns; ++i)
-        for (int j = 0; j < ns; ++j)
-            G(i,j) += a*Y[i]*Y[j];
-
     // - ambipolar constraint
     for (int j = 0; j < ns; ++j)
         G(ns,j) = -p_V[j]/s;
     G(ns,ns) = 0.0;
+
+    //cout << G << endl;
 
     // Finally solve the system for Vi and E
     //static QRP<double> qrp(G);
     //static RealVector x(ns+1);
     //qrp.solve(x, b);
     static RealVector x(ns+1);
-    Numerics::gmres(G, x, b, Numerics::DiagonalPreconditioner<double>(G), 1.0e-12);
+    std::pair<int, double> ret = Numerics::gmres2(
+        G, x, b, Numerics::DiagonalPreconditioner<double>(G));//, 1.0e-9, ns+1);
+    //cout << "GMRES iters = " << ret.first << " error = " << ret.second << endl;
+
+    // Compute mass constraint projector
+    static RealVector R(ns,1.0);
+    R(0) /= fac1;
+    double r = 0.0;
+    for (int i = 0; i < ns; ++i)
+        r += R(i)*Y[i];
+    double p = 0.0;
+    for (int i = 0; i < ns; ++i)
+        p += x(i)*Y[i];
+    p /= r;
 
     // Retrieve the solution
     for (int i = 0; i < ns; ++i)
-        p_V[i] = x(i);
+        p_V[i] = x(i) - p*R(i);
     E = b(ns)/s;
 }
 
