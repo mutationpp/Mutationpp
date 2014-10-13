@@ -24,7 +24,8 @@ Mixture::Mixture(const MixtureOptions& options)
         setDefaultComposition(options.getDefaultComposition());
     
     // Instatiate a new energy transfer model
-    mp_transfer = state()->createTransferModel(*this, *this, *this);
+    state()->initializeTransferModel(*this, *this, *this);
+    
 }
 
 //==============================================================================

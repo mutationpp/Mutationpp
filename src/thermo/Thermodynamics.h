@@ -351,18 +351,30 @@ public:
     void getEnergyDensities(double* const p_rhoe) const;
 
     /**
+     *  Add description
+     */
+    void getEnergyMass(double* const p_e) const;
+    
+    /**
      * Fills enthalpy density array with enthalpy according to the used
      * StateModel
      */
 
     void getEnthalpyDensities(double* const p_rhoh) const;
     
+    
+    /**
+     * Add description
+     */
+
+    void getEnthalpyMass(double* const p_h) const;
+    
     /**
      * Fills the constant pressure specific heat according to the used
      * StateModel
      */
     
-    void getCp(double* const p_Cp) const;
+    void getCp(double* const p_cp) const;
     
     /**
      * Returns the current mixture static pressure in Pa.

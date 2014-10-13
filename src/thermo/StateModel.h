@@ -136,10 +136,29 @@ public:
     }
 
     /**
+     * Add description
+     */
+    virtual void getEnergyMass(double* const p_e) {
+        std::cerr << "getEnthalpyMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
      * Fills an array of the enthalpy densities represented by this StateModel.
      */
     virtual void getEnthalpyDensities(double* const p_rhoh) {
         std::cerr << "getEnthalpyDensities()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    
+    /**
+     * Add description
+     */
+    virtual void getEnthalpyMass(double* const p_h) {
+        std::cerr << "getEnthalpyMass()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
@@ -165,13 +184,26 @@ public:
      * Creates a new TransferModel object which can compute the energy transfer
      * source terms for this state model.
      */
-    virtual Mutation::Transfer::TransferModel* createTransferModel(
+/*    virtual Mutation::Transfer::TransferModel* createTransferModel(
         Thermodynamics& thermo,
         Mutation::Transport::Transport& transport,
         Mutation::Kinetics::Kinetics& kinetics)
     {
         return NULL;
-    }
+    } */ // Probably will not be used.
+    
+    /**
+     * Initializes the energy transfer terms that will be used by each State Model.
+     */
+    virtual void initializeTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics) {}
+    
+    /**
+     * This functions provides the total energy transfer source terms
+     */
+    virtual void energyTransferSource(double* const omega){}
     
 protected:
 
@@ -213,7 +245,7 @@ protected:
         const double alpha = 0.0,
         const double atol = 1.0e-12,
         const double rtol = 1.0e-12,
-        const int max_iters = 10)
+        const int max_iters = 100)
     {
         const int ns = m_thermo.nSpecies();
         const double rhoe_over_Ru = rhoe/RU;

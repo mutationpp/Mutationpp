@@ -6,6 +6,7 @@
 #include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
+#include "StateModel.h"
 
 namespace Mutation {
 
@@ -38,23 +39,20 @@ public:
     /** 
      * Destructor.
      */
-    ~Mixture()
-    {
-        if (mp_transfer != NULL) delete mp_transfer;
-    }
+    ~Mixture(){}
+//        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
      * Provides energy transfer source terms based on the current state of the
      * mixture.
      */
     void energyTransferSource(double* const p_source) {
-        if (mp_transfer != NULL)
-            mp_transfer->source(p_source);
+         state()->energyTransferSource(p_source);
     }
 
-private:
+//private:
 
-    Transfer::TransferModel* mp_transfer;
+//    Transfer::TransferModel* mp_transfer;
     
 }; // class Mixture
 

@@ -7,7 +7,7 @@
 namespace Mutation {
     namespace Transfer {
       
-        double const TransferModelCV::compute_source_Candler()
+        double const OmegaCV::compute_source_Candler()
         {
       
         /**
@@ -25,7 +25,8 @@ namespace Mutation {
         // Getting Vibrational Energy
         double* const p_enthalpy = new double[p_thermo->nSpecies()];
         double* const p_vib_enthalpy = new double[p_thermo->nSpecies()];
-        p_thermo->speciesHOverRT(p_enthalpy, NULL, NULL, p_vib_enthalpy, NULL, NULL);
+	double mp_work[p_thermo->nSpecies()];
+        p_thermo->speciesHOverRT(p_enthalpy, mp_work, NULL, p_vib_enthalpy, NULL, NULL);
         
         // Getting Production Rate
         double* const p_prod_rate = new double[p_thermo->nSpecies()];
@@ -37,7 +38,7 @@ namespace Mutation {
         double sum = 0.E0; 
 
         for( int i_CV = 0 ; i_CV < p_thermo->nSpecies(); ++i_CV ){
-            sum += p_prod_rate[i_CV]* p_vib_enthalpy[i_CV] *p_thermo->T()*RU;
+            sum += p_prod_rate[i_CV]* p_vib_enthalpy[i_CV] *p_thermo->T()*RU/p_thermo->speciesMw(i_CV);
         }
 
         delete [] p_enthalpy;

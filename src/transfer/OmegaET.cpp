@@ -7,17 +7,9 @@
 namespace Mutation {
     namespace Transfer {
       
-      double const TransferModelET::compute_tau_ET(){
+      double const OmegaET::compute_tau_ET(){
 
       }
-      
-      
-      
-      
-      
-      
-      
-  
       
           } // namespace Kinetics
 } // namespace Mutation

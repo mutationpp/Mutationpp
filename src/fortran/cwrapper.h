@@ -182,6 +182,21 @@ void NAME_MANGLE(get_temperatures)(double* const T);
 void NAME_MANGLE(get_energy_densities)(double* const rhoe);
 
 /**
+ * Add description
+ */
+void NAME_MANGLE(get_energy_mass)(double* const e);
+
+/**
+ * Add description
+ */
+void NAME_MANGLE(get_enthalpy_mass)(double* const h);
+
+/**
+ * Add description
+ */
+void NAME_MANGLE(get_cp_mass)(double* const cp);
+
+/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -380,7 +395,7 @@ void NAME_MANGLE(surface_mass_balance)
  */
 
 void NAME_MANGLE(source_energy_transfer)
-    (double* const p_source_transfer, const int *const n_int_energy);
+    (double* const p_source_transfer);
     
 /**
  * @}

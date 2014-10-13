@@ -179,7 +179,7 @@ public:
     virtual void setState(
         const double* const p_T, const double* const p_P, const int vars = 1)
     {
-        assert(vars == 1);
+        //assert(vars == 1);
         EquilStateModel::setState(p_P, p_T, 1);
     }
 };

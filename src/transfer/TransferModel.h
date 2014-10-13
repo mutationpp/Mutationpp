@@ -19,49 +19,24 @@ public:
 /**
  * Represents a coupling between vibrational and translational energy modes.
  */
-class TransferModelVT : public TransferModel
+class OmegaVT : public TransferModel
 {
 public:
 
-    TransferModelVT(const Thermodynamics::Thermodynamics& thermo)
-        : m_mw(thermo){ // Member MillikanWhite
-  
+    OmegaVT(const Thermodynamics::Thermodynamics& thermo)
+        : m_mw(thermo){ 
+            mp_thermo = &thermo;
+            m_const_Park_correction = sqrt(PI* KB / (8.E0 * NA));
+
             n_species                 = thermo.nSpecies();
-            m_transfer_T              = thermo.T(); 
-            m_transfer_Tv             = thermo.Tv();
-            m_transfer_P              = thermo.P();
-            m_transfer_rho            = thermo.density();
-            p_transfer_Y              = thermo.Y();
-    
             m_transfer_nHeavy         = thermo.nHeavy();
             m_transfer_offset         = thermo.hasElectrons() ? 1 : 0;
     
-            p_transfer_h_total = new double[n_species];
-            p_transfer_h_vib_eq = new double[n_species];
-            p_transfer_h_vib_neq = new double[n_species];
-   
-           thermo.speciesHOverRT(m_transfer_T, m_transfer_T, m_transfer_T, 
-                                 m_transfer_T, m_transfer_T, p_transfer_h_total, NULL,NULL, 
-                                 p_transfer_h_vib_eq, NULL, NULL);
-
-           thermo.speciesHOverRT(m_transfer_Tv, m_transfer_Tv, m_transfer_Tv, 
-                                 m_transfer_Tv, m_transfer_Tv, p_transfer_h_total, NULL,NULL, 
-                                 p_transfer_h_vib_neq, NULL, NULL);
-   
-           m_total_h_vib_eq = 0.E0;
-           for(int i_h_vib = 0; i_h_vib < n_species; i_h_vib++){
-               m_total_h_vib_eq += p_transfer_h_vib_eq[i_h_vib];
-               m_total_h_vib_neq += p_transfer_h_vib_neq[i_h_vib];
-           }
-           m_total_h_vib_eq *= (RU*m_transfer_T);
-           m_total_h_vib_neq *= (RU*m_transfer_Tv);
-
-           delete [] p_transfer_h_total;
-           delete [] p_transfer_h_vib_eq;
-           delete [] p_transfer_h_vib_neq;
-
-           m_const_Park_correction = sqrt(PI* KB / (8.E0 * NA))/m_transfer_P;
-//            m_transfer_energy_neq     = thermo.speciesHOverRT()*RU*m_transfer_Tv;
+	    mp_Mw = new double [n_species];
+	    
+            for(int i_Mw = 0; i_Mw < n_species; ++i_Mw){
+                mp_Mw[i_Mw] = mp_thermo->speciesMw(i_Mw);               
+            }
     }
     
     /**
@@ -85,15 +60,42 @@ public:
      * 
      */
     
-    void source(double* const p_source){ // dimension of the array pointed by p_source is equal to the number of vibrational equations.
+    void source(double* const p_source){ 
       
-        //std::cout << compute_tau_VT_m() << endl;
-        *p_source = m_transfer_rho * /* Y */ (m_total_h_vib_eq - m_total_h_vib_neq) /compute_tau_VT_m();
-     
+    *p_source = 0.E0;
+    const double * p_transfer_Y = mp_thermo->Y();
+    double m_transfer_rho = mp_thermo->density();
+    // Compute the entalhpy here
+    double m_transfer_T = mp_thermo->T();
+    double m_transfer_Tv = mp_thermo->Tv();
+    
+    double h_transfer_total[n_species];  
+    double h_transfer_vib_eq[n_species];
+    double h_transfer_vib_neq[n_species];
+    double mp_work[n_species]; //CHECK IF THIS IS NEEDED
+    
+    mp_thermo->speciesHOverRT(m_transfer_T, m_transfer_T, m_transfer_T, 
+                              m_transfer_T, m_transfer_T, h_transfer_total, mp_work, NULL, 
+                              h_transfer_vib_eq, NULL, NULL);
+
+    mp_thermo->speciesHOverRT(m_transfer_T, m_transfer_Tv, m_transfer_T, 
+                              m_transfer_Tv, m_transfer_Tv, h_transfer_total, mp_work, NULL, 
+                              h_transfer_vib_neq, NULL, NULL);
+    
+    int i_no_vibrator = 0;
+    for (int i_vibrator = 0; i_vibrator-i_no_vibrator < m_mw.nVibrators(); ++i_vibrator){
+        if(mp_thermo->species(i_vibrator).type() == Mutation::Thermodynamics::ATOM){
+            i_no_vibrator++; 
+	} 
+        else {
+            *p_source += p_transfer_Y[i_vibrator] * m_transfer_rho *RU * m_transfer_T /mp_Mw[i_vibrator] * (h_transfer_vib_eq[i_vibrator] - h_transfer_vib_neq[i_vibrator]) /compute_tau_VT_m(i_vibrator-i_no_vibrator);
+	}
+    }
+	
     }
 
 private:
-    //const Thermodynamics::Thermodynamics& thermo;
+    const Thermodynamics::Thermodynamics* mp_thermo;
     MillikanWhite m_mw;
     
     // Declaring a function to compute \tau_VT_mj for each species. It returns a pointer to tau_VT_m.
@@ -102,7 +104,7 @@ private:
     /**
      * Computes the frequency avarage over heavy particles.
      */
-    double compute_tau_VT_m();
+    double compute_tau_VT_m(int const);
     
     /**
      * This function computes the Park correction for vibrational-translational energy trasfer.
@@ -116,19 +118,7 @@ private:
     int m_transfer_nHeavy; 
     int m_transfer_offset;
     
-    double MOLECULAR_THING;
-    double m_transfer_T;
-    double m_transfer_Tv;
-    double m_transfer_P;
-    double m_transfer_rho;
-    const double * p_transfer_Y;
-    
-    double* p_transfer_h_total;
-    double* p_transfer_h_vib_eq;
-    double* p_transfer_h_vib_neq;
-    
-    double m_total_h_vib_eq;
-    double m_total_h_vib_neq;
+    double* mp_Mw;
     
     double m_const_Park_correction;
     
@@ -137,7 +127,7 @@ private:
 /**
  * Represents a coupling between chemistry and vibational energy modes.
  */
-class TransferModelCV : public TransferModel
+class OmegaCV : public TransferModel
 {
    /**
     * The necessary functions for the computation of the  source terms for 
@@ -159,7 +149,7 @@ class TransferModelCV : public TransferModel
     */
 
 public:
-    TransferModelCV(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
+    OmegaCV(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
         p_thermo = &thermo; 
         p_kinetics = &kinetics;
     };
@@ -183,10 +173,10 @@ private:
 
 };
 
-class TransferModelET : public TransferModel
+class OmegaET : public TransferModel
 {
 public:
-    TransferModelET(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport){
+    OmegaET(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport){
       
     };
     
@@ -199,12 +189,12 @@ private:
     double const compute_tau_ET();
 };
 
-class TransferModelEV : public TransferModel
+class OmegaEV : public TransferModel
 {
   
 };
 
-class TransferModelI : public TransferModel
+class OmegaI : public TransferModel
 {
   
 };

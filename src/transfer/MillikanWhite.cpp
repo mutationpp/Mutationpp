@@ -50,7 +50,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Compute reduced mass of this pair
         mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight()) * 1.0E3;
+             (vibrator.molecularWeight() + partner.molecularWeight());
             
         // Use a and b data from data file or use the defaults if the pair
         // is not present in the file
@@ -97,7 +97,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Compute reduced mass of this pair
         mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight()) * 1.0E3;
+             (vibrator.molecularWeight() + partner.molecularWeight());
         
         // Add Millikan-White data using defaults
         m_partners.push_back(MillikanWhitePartner(mu, theta));

@@ -216,11 +216,30 @@ void Thermodynamics::getTemperatures(double* const p_T) const {
 void Thermodynamics::getEnergyDensities(double* const p_rhoe) const {
     mp_state->getEnergyDensities(p_rhoe);
 }
+
+
+void Thermodynamics::getEnergyMass(double* const p_e) const{
+    mp_state->getEnergyMass(p_e);     
+} 
+
 //==============================================================================
 
 void Thermodynamics::getEnthalpyDensities(double* const p_rhoh) const {
     mp_state->getEnthalpyDensities(p_rhoh);
 }
+
+//==============================================================================
+
+void Thermodynamics::getEnthalpyMass(double* const p_h) const {
+    mp_state->getEnthalpyMass(p_h);
+}
+
+//==============================================================================
+
+void Thermodynamics::getCp(double* const p_cp) const {
+    mp_state->getCp(p_cp);
+}
+
 //==============================================================================
 
 double Thermodynamics::P() const {

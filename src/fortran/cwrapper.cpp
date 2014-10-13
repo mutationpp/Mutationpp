@@ -227,6 +227,24 @@ void NAME_MANGLE(get_energy_densities)(double* const rhoe)
 }
 
 //==============================================================================
+void NAME_MANGLE(get_energy_mass)(double* const e)
+{
+    p_mix->getEnergyMass(e);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_enthalpy_mass)(double* const h)
+{
+    p_mix->getEnthalpyMass(h);
+}
+
+//==============================================================================
+void NAME_MANGLE(get_cp_mass)(double* const cp)
+{
+    p_mix->getCp(cp); 
+}
+
+//==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
     p_mix->speciesCpOverR(cp);
@@ -377,12 +395,9 @@ void NAME_MANGLE(surface_mass_balance)
 
 //==============================================================================
 void NAME_MANGLE(source_energy_transfer)
-     (double *const p_source_transfer, const int* const n_int_energy)
+     (double *const p_source_transfer)
 {
-     for (int i_int_energy = 0; i_int_energy < *n_int_energy; i_int_energy++)
-     {
-         p_source_transfer[i_int_energy] = 0.0;
-     }
+     p_mix->energyTransferSource(p_source_transfer);
 }
      
      
