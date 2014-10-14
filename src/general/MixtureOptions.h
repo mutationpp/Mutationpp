@@ -121,11 +121,7 @@ public:
      * Sets the mixture state model to be used.
      */
     void setStateModel(const std::string& state_model) {
-        m_state_model = state_model;
-    }
-    
-    void setStateModel(const char* p_state_model) {
-        m_state_model = std::string(p_state_model);
+        m_state_model.assign(state_model);
     }
     
     /**

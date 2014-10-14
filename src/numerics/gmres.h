@@ -25,7 +25,7 @@ std::pair<int, double> gmres2(
 
     // Initial guess is zero
     x = static_cast<T>(0.0);
-    V[0] = b;
+    V[0] = M.solve(b);
     double norm0 = V[0].norm2();
 
     // First term of the Hessenberg system
@@ -54,7 +54,7 @@ std::pair<int, double> gmres2(
             V[i1] /= H(i1,i);
 
         // Factorization of H
-        for (int j = 1; j < i; ++j) {
+        for (int j = 0; j < i; ++j) {
             t = H(j,i);
             H(j,i)   =  c(j)*t + s(j)*H(j+1,i);
             H(j+1,i) = -s(j)*t + c(j)*H(j+1,i);
@@ -65,13 +65,14 @@ std::pair<int, double> gmres2(
             t = std::numeric_limits<T>::epsilon();
 
         // Next plane rotation
-        c(i) = H(i,i)/t;
-        s(i) = H(i1,i)/t;
+        c(i)  = H(i,i)/t;
+        s(i)  = H(i1,i)/t;
         r(i1) = -s(i)*r(i);
         r(i)  = c(i)*r(i);
 
         // Residual norm
         H(i,i) = c(i)*H(i,i) + s(i)*H(i1,i);
+        H(i1,i) = static_cast<T>(0.0);
         norm = std::abs(r(i1));
         i = i1;
     }
@@ -88,7 +89,9 @@ std::pair<int, double> gmres2(
     V[0] *= r(0);
     for (int j = 1; j < i; ++j)
         V[0] += r(j)*V[j];
-    x += M.solve(V[0]);
+    //x += M.solve(V[0]);
+    x += V[0];
+    
     return std::make_pair(i,norm/norm0);
 }
 
@@ -109,7 +112,7 @@ std::pair<int, double> gmres(
         bnrm2 = static_cast<T>(1);
         
     x = static_cast<T>(0);
-    Vector<T> r = M.solve(b-A*x);
+    Vector<T> r = M.solve(b);
     T error = r.norm2()/bnrm2, temp;
     
     if (error < tol)
@@ -167,6 +170,11 @@ std::pair<int, double> gmres(
             s(i) = cs(i)*s(i);
             H(i,i) = cs(i)*H(i,i) + sn(i)*H(i+1,i);
             H(i+1,i) = static_cast<T>(0);
+            
+            cout << "H = " << endl;
+            cout << H << endl;
+            cout << "V[i]" << endl;
+            cout << V[i] << endl;
             
             error = std::abs(s(i+1)) / bnrm2;
             if (error <= tol) {

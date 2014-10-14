@@ -567,7 +567,7 @@ void Transport::stefanMaxwell(
     const double nd = m_thermo.numberDensity();
 
     // Place a tolerance on X and Y
-    const double tol = 0.0;//1.0e-16;
+    const double tol = 1.0e-16;
     static std::vector<double> xy(2*ns);
     double *X = &xy[0], *Y = &xy[ns];
     double sum = 0.0;
@@ -580,7 +580,7 @@ void Transport::stefanMaxwell(
     m_thermo.convert<X_TO_Y>(X, Y);
 
     // Get reference to binary diffusion coefficients
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, m_thermo.X());
 
     // Compute mixture charge (store species' charges in mp_wrk3 work array)
     double q = 0.0;
