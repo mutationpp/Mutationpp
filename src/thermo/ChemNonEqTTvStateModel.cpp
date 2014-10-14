@@ -16,12 +16,18 @@ public:
     ChemNonEqTTvStateModel(const Thermodynamics& thermo)
         : StateModel(thermo, 2, thermo.nSpecies())
     {
-        mp_work = new double [thermo.nSpecies()];
+        mp_work1 = new double [thermo.nSpecies()];
+        mp_work2 = new double [thermo.nSpecies()];
+        mp_work3 = new double [thermo.nSpecies()];
+        mp_work4 = new double [thermo.nSpecies()];
     }
 
     ~ChemNonEqTTvStateModel()
     {
-        delete [] mp_work;
+        delete [] mp_work1;
+        delete [] mp_work2;
+        delete [] mp_work3;
+        delete [] mp_work4;
         delete mp_omega_VT;
         delete mp_omega_CV;
 //        delete mp_omega_EV;
@@ -58,18 +64,15 @@ public:
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
 
-//            m_T = m_Tr = 300.e0;
-//            m_Tv = m_Te = m_Tv = 300.e0;
-
             getTFromRhoE(
-                Cpv(m_thermo), Hv(m_thermo), p_energy[1], m_Tv, mp_work, 0.0);
+                Cpv(m_thermo), Hv(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
 
             // Next compute the temperature using the total energy density
 
             m_Tel = m_Te = m_Tv;
 
             getTFromRhoE(
-                Cp(m_thermo, m_Tv), H(m_thermo, m_Tv), p_energy[0], m_T, mp_work, -conc);
+                Cp(m_thermo), H(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, -conc);
 
             break;
         }
@@ -110,7 +113,7 @@ public:
         Mutation::Kinetics::Kinetics& kinetics){
       
        mp_omega_VT = new Mutation::Transfer::OmegaVT(thermo);
-//       mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
+       mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
        //mp_omega_ET = new Mutation::Transfer::OmegaET();
        //mp_omega_EV = new Mutation::Transfer::OmegaEV();
        //mp_omega_I  = new Mutation::Transfer::OmegaI();
@@ -124,8 +127,8 @@ public:
             omega[0] = 0.E0;
             mp_omega_VT->source(&m_work); 
             omega[0] += m_work;
-//            mp_omega_CV->source(&m_work); 
-//            omega[0] += m_work;
+            mp_omega_CV->source(&m_work); 
+            omega[0] += m_work;
 //            mp_omega_ET->source(&m_work); 
 //            omega[0] += m_work;
 //            mp_omega_EV->source(&m_work); 
@@ -148,15 +151,16 @@ public:
     void getEnergyMass(double* const p_e) {
     
         int n_species = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(p_e, mp_work, NULL, p_e+n_species, NULL, NULL);
+        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
         double species_Mw[n_species];
         
         for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
             species_Mw[i_energy_mass] = m_thermo.speciesMw(i_energy_mass);
-            p_e[i_energy_mass] = p_e[i_energy_mass] * m_T * RU /species_Mw[i_energy_mass] - RU/species_Mw[i_energy_mass] *m_T;
+            p_e[i_energy_mass] = mp_work1[i_energy_mass] * m_T * RU /species_Mw[i_energy_mass] - RU/species_Mw[i_energy_mass] *m_T;
         }
         for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
-            p_e[i_energy_mass+n_species] *=  m_T * RU / species_Mw[i_energy_mass];
+            p_e[i_energy_mass+n_species] = (mp_work2[i_energy_mass] + mp_work3[i_energy_mass]) 
+                                            * m_T * RU / species_Mw[i_energy_mass];
         }
         
     }
@@ -171,15 +175,16 @@ public:
     void getEnthalpyMass(double* const p_h) {
         
         int n_species = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(p_h, mp_work, NULL, p_h+2, NULL, NULL);
+        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
         double species_Mw[n_species];
 
         for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
             species_Mw[i_enthalpy_mass] = m_thermo.speciesMw(i_enthalpy_mass);
-            p_h[i_enthalpy_mass] *= m_T * RU /species_Mw[i_enthalpy_mass];
+            p_h[i_enthalpy_mass] = mp_work1[i_enthalpy_mass] * m_T * RU /species_Mw[i_enthalpy_mass];
         }
         for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
-            p_h[i_enthalpy_mass+n_species] *= m_T * RU / species_Mw[i_enthalpy_mass];
+            p_h[i_enthalpy_mass+n_species] = (mp_work2[i_enthalpy_mass] + mp_work3[i_enthalpy_mass])
+                                              * m_T * RU / species_Mw[i_enthalpy_mass];
         }
 
     }
@@ -187,15 +192,15 @@ public:
     void getCp(double* const p_Cp) {
         
         int n_species = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, m_Te, m_Tr, m_Tv, m_Tel, p_Cp, NULL, NULL, p_Cp+n_species, NULL);
+        m_thermo.speciesCpOverR(m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
         double species_Mw[n_species];
 
         for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
             species_Mw[i_getCp] = m_thermo.speciesMw(i_getCp);
-            p_Cp[i_getCp] *= RU/species_Mw[i_getCp];
+            p_Cp[i_getCp] = (mp_work1[i_getCp] + mp_work2[i_getCp]) *RU/species_Mw[i_getCp];
         }
         for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
-            p_Cp[i_getCp + n_species] *= RU/species_Mw[i_getCp];
+            p_Cp[i_getCp + n_species] = (mp_work3[i_getCp] + mp_work4[i_getCp])*RU/species_Mw[i_getCp];
         }
         
     }
@@ -209,28 +214,22 @@ public:
     
     class Cp {
     public:
-        Cp(const Thermodynamics& t, const double& T_vibration) : thermo(t) {
-             Tv =  T_vibration;
-//             p_cpt = new double [thermo.nSpecies()]; //DELETE IT
-//             p_cpr = new double [thermo.nSpecies()]; //DELETE IT
-//             p_cpv = new double [thermo.nSpecies()]; //DELETE IT
-//             p_cpel = new double [thermo.nSpecies()]; //DELETE IT
+        Cp(const Thermodynamics& t) : thermo(t) {
+             p_cpt = new double [thermo.nSpecies()]; 
+             p_cpr = new double [thermo.nSpecies()]; 
+             p_cpv = new double [thermo.nSpecies()];
+             p_cpel = new double [thermo.nSpecies()];
         }
         void operator () (double T, double* const cp) const {
-            thermo.speciesCpOverR(cp);
-//          thermo.speciesCpOverR(T, Tv, T, Tv, Tv, cp, p_cpt, p_cpr, p_cpv, p_cpel);
-//          thermo.speciesCpOverR(T, cp);
-//          std::cout << "Cp_tot = " << cp[0]*RU/thermo.speciesMw(0) << "   " << cp[1]*RU/thermo.speciesMw(1) << endl;
-//          std::cout << "Cp_tr = " << p_cpt[0]*RU/thermo.speciesMw(0) << "   " << p_cpt[1]*RU/thermo.speciesMw(1) << endl;
-//          std::cout << "Cp_rot = " << p_cpr[0]*RU/thermo.speciesMw(0) << "   " << p_cpr[1]*RU/thermo.speciesMw(1) << endl;
-//          std::cout << "Cp_vib = " << p_cpv[0]*RU/thermo.speciesMw(0) << "   " << p_cpv[1]*RU/thermo.speciesMw(1) << endl;
-//          std::cout << "Cp_el = " << p_cpel[0]*RU/thermo.speciesMw(0) << "   " << p_cpel[1]*RU/thermo.speciesMw(1) << endl;
-//          std::cout << endl;
+          thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cpt, p_cpr, NULL, NULL);
+          int n_species = thermo.nSpecies();
+          for(int iCp = 0; iCp < n_species; ++iCp) {
+            cp[iCp] = p_cpt[iCp]+p_cpr[iCp];
+          }
         }
 
     private:
         const Thermodynamics& thermo;
-        double Tv;
 	double* p_cpt;
 	double* p_cpr;
 	double* p_cpv;
@@ -259,12 +258,7 @@ public:
             Tv = T_vibration;
         }
         void operator () (double T, double* const h) const {
-	  //std::cout << "Total Enthalpy = " << h[0] << endl;
-	  //T = 10000;
           thermo.speciesHOverRT(T, Tv, T, Tv, Tv, h, NULL, NULL, NULL, NULL, NULL);
-//	  std::cout << "T = " << T << endl;
-//	  std::cout << "Total Enthalpy = " << h[0] * 8.314/0.014 * 10000 << "    " << h[1] * 8.314/0.028 * 10000 << endl;
-          //thermo.speciesHOverRT(T, h);
         }
     private:
         const Thermodynamics& thermo;
@@ -273,25 +267,19 @@ public:
     
     class Hv {
     public:
-        Hv(const Thermodynamics& t) : thermo(t) {
-            p_enth = new double [t.nSpecies()];
-	    p_trans = new double [t.nSpecies()];
-        }
-        ~Hv(){
-            delete [] p_enth;
-	    delete [] p_trans;
-        }
+        Hv(const Thermodynamics& t) : thermo(t) { }
         void operator () (double T, double* const h) const {
-            thermo.speciesHOverRT(T, T, T, T, T, p_enth, p_trans, NULL, h, NULL, NULL);
+            thermo.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, h, NULL, NULL);
         }
     private:
         const Thermodynamics& thermo;
-        double* p_enth;
-	double* p_trans;
     }; // class Hv
 
 private:
-    double* mp_work;
+    double* mp_work1;
+    double* mp_work2;
+    double* mp_work3;
+    double* mp_work4;
     Mutation::Transfer::TransferModel* mp_omega_VT;
     Mutation::Transfer::TransferModel* mp_omega_CV;
 //    Mutation::Transfer::TransferModel* mp_omega_EV;

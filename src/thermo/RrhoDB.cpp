@@ -141,11 +141,12 @@ public:
         // Translation
         if (cpt == NULL) {
             if (cp != NULL)
-                cpT(cp, PlusEq());
+                //cpT(cp, PlusEq());
+                cpT(cp, Eq());
         } else {
             cpT(cpt, Eq());
             if (cp != NULL) 
-                LOOP(cp[i] += cpt[i]);
+                LOOP(cp[i] = cpt[i]);
         }
         
         // Rotation
@@ -229,7 +230,7 @@ public:
         
         // Special case where we only want the total enthalpy
         if (ht == NULL && hr == NULL && hv == NULL && hel == NULL && 
-            hf == NULL) 
+            hf == NULL && h != NULL) 
         {
             hT(Th, Te, h, Eq());
             hR(Tr, h, PlusEq());
@@ -242,46 +243,57 @@ public:
         
         // Otherwise selectively choose what we want
         // Translational enthalpy
-        if (ht == NULL)
-            hT(Th, Te, h, Eq());
-        else {
+        if (ht == NULL) {
+            //hT(Th, Te, h, Eq());
+            if (h != NULL)
+                hT(Th, Te, h, EqDiv(Th));
+        } else {
             hT(Th, Te, ht, EqDiv(Th));
-            LOOP(h[i] = ht[i]);
+            if (h != NULL)
+                LOOP(h[i] = ht[i]);
         }
         
         // Rotatonal enthalpy
-        if (hr == NULL)
-            hR(Tr, h, PlusEqDiv(Th));
-        else {
+        if (hr == NULL) {
+            if (h != NULL)
+                hR(Tr, h, PlusEqDiv(Th));
+        } else {
             LOOP(hr[i] = 0.0);
             hR(Tr, hr, EqDiv(Th));
-            LOOP_MOLECULES(h[j] += hr[j]);
+            if (h != NULL)
+                LOOP_MOLECULES(h[j] += hr[j]);
         }
         
         // Vibrational enthalpy
-        if (hv == NULL)
-            hV(Tv, h, PlusEqDiv(Th));
-        else {
+        if (hv == NULL) {
+            if (h != NULL)
+                hV(Tv, h, PlusEqDiv(Th));
+        } else {
             LOOP(hv[i] = 0.0);
             hV(Tv, hv, EqDiv(Th));
-            LOOP_MOLECULES(h[j] += hv[j]);
+            if (h != NULL)
+                LOOP_MOLECULES(h[j] += hv[j]);
         }
             
         // Electronic enthalpy
-        if (hel == NULL)
-            hE(Tel, h, PlusEqDiv(Th));
-        else {
+        if (hel == NULL) {
+            if (h != NULL)
+                hE(Tel, h, PlusEqDiv(Th));
+        } else {
             LOOP(hel[i] = 0.0);
             hE(Tel, hel, EqDiv(Th));
-            LOOP(h[i] += hel[i]);
+            if (h != NULL)
+                LOOP(h[i] += hel[i]);
         }
         
         // Formation enthalpy
-        if (hf == NULL)
-            hF(h, PlusEqDiv(Th));
-        else {
+        if (hf == NULL) {
+            if (h != NULL)
+                hF(h, PlusEqDiv(Th));
+        } else {
             hF(hf, EqDiv(Th));
-            LOOP(h[i] += hf[i]);
+            if (h != NULL)
+                LOOP(h[i] += hf[i]);
         }
     }
     

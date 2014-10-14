@@ -13,8 +13,13 @@ inline double const OmegaVT::compute_Park_correction_VT(int const i_vibrator, in
     // Limiting cross section for Park's Correction
     double m_transfer_P = mp_thermo->P(); 
     double m_transfer_T = mp_thermo->T();
-    
-    double sigma = m_mw[i_vibrator].omega() *(2.5E9/(m_transfer_T*m_transfer_T)); 
+
+    double sigma;
+    if (m_transfer_T > 20000.0) {
+      sigma = m_mw[i_vibrator].omega() * 6.25 ; // 6.25 = (50000/20000)^2
+    } else {
+      sigma = m_mw[i_vibrator].omega() *(2.5E9/(m_transfer_T*m_transfer_T));
+    }
     
     return(m_const_Park_correction * sqrt(m_mw[i_vibrator][i_partner].mu()*m_transfer_T)/(sigma*m_transfer_P));
 }
