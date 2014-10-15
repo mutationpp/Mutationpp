@@ -154,15 +154,19 @@ double Transport::electronThermalConductivity()
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
+    if (lam11 <= 0.0) {
+        for (int i = 1; i < ns; ++i)
+            cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
+    }
     assert(lam11 > 0.0);
-    assert(lam22 > 0.0);
-    assert(lam11*lam22 > lam12*lam12);
+    //assert(lam22 > 0.0);
+    //assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
-    //return (X[0]*X[0]/lam11);
+    return (X[0]*X[0]/lam11);
     
     // 3rd order solution
-    return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
+    //return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
 }
 
 //==============================================================================
@@ -580,7 +584,7 @@ void Transport::stefanMaxwell(
     m_thermo.convert<X_TO_Y>(X, Y);
 
     // Get reference to binary diffusion coefficients
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, m_thermo.X());
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
 
     // Compute mixture charge (store species' charges in mp_wrk3 work array)
     double q = 0.0;
@@ -641,13 +645,9 @@ void Transport::stefanMaxwell(
     //cout << G << endl;
 
     // Finally solve the system for Vi and E
-    //static QRP<double> qrp(G);
-    //static RealVector x(ns+1);
-    //qrp.solve(x, b);
     static RealVector x(ns+1);
-    std::pair<int, double> ret = Numerics::gmres2(
-        G, x, b, Numerics::DiagonalPreconditioner<double>(G));//, 1.0e-9, ns+1);
-    //cout << "GMRES iters = " << ret.first << " error = " << ret.second << endl;
+    std::pair<int, double> ret = Numerics::gmres(
+        G, x, b, Numerics::DiagonalPreconditioner<double>(G));
 
     // Compute mass constraint projector
     static RealVector R(ns,1.0);
