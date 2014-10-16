@@ -159,14 +159,14 @@ double Transport::electronThermalConductivity()
             cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
     }
     assert(lam11 > 0.0);
-    //assert(lam22 > 0.0);
-    //assert(lam11*lam22 > lam12*lam12);
+    assert(lam22 > 0.0);
+    assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
-    return (X[0]*X[0]/lam11);
+    //return (X[0]*X[0]/lam11);
     
     // 3rd order solution
-    //return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
+    return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
 }
 
 //==============================================================================
