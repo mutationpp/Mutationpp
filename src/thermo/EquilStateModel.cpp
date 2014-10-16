@@ -21,6 +21,7 @@ public:
 
         // Allocate work storage
         mp_h = new double [ns*3];
+        mp_work = new double [ns];
         mp_cp = mp_h + ns;
         mp_dxdt = mp_cp + ns;
 
@@ -33,6 +34,7 @@ public:
     virtual ~EquilStateModel()
     {
         delete [] mp_h; // other arrays allocated by this one
+        delete [] mp_work; 
     }
 
     /**
@@ -147,9 +149,50 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
     }
 
+    void getEnergyMass(double* const p_e) {
+
+        int n_species = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+        double species_Mw[n_species];
+
+        for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
+            species_Mw[i_energy_mass] = m_thermo.speciesMw(i_energy_mass);
+            p_e[i_energy_mass] = mp_work[i_energy_mass] * m_T * RU /species_Mw[i_energy_mass] - RU/species_Mw[i_energy_mass] *m_T;
+        }
+
+    }
+
+    void getEnthalpyMass(double* const p_h) {
+
+        int n_species = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+        double species_Mw[n_species];
+
+        for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
+            species_Mw[i_enthalpy_mass] = m_thermo.speciesMw(i_enthalpy_mass);
+            p_h[i_enthalpy_mass] = mp_work[i_enthalpy_mass] * m_T * RU /species_Mw[i_enthalpy_mass];
+        }
+
+    }
+
+    void getCpMass(double* const p_Cp) {
+
+        int n_species = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+        double species_Mw[n_species];
+
+        for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
+            species_Mw[i_getCp] = m_thermo.speciesMw(i_getCp);
+            p_Cp[i_getCp] = mp_work[i_getCp] *RU/species_Mw[i_getCp];
+        }
+
+    }
+
+
 private:
 
     double* mp_h;
+    double* mp_work;
     double* mp_cp;
     double* mp_dxdt;
 };

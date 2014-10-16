@@ -127,15 +127,6 @@ public:
     }
 
     /**
-     * Fills an array of the energy densities represented by this StateModel.
-     */
-    virtual void getEnergyDensities(double* const p_rhoe) {
-        std::cerr << "getEnergyDensities()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
-    }
-
-    /**
      * Add description
      */
     virtual void getEnergyMass(double* const p_e) {
@@ -143,16 +134,6 @@ public:
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
-    
-    /**
-     * Fills an array of the enthalpy densities represented by this StateModel.
-     */
-    virtual void getEnthalpyDensities(double* const p_rhoh) {
-        std::cerr << "getEnthalpyDensities()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
-    }
-    
     
     /**
      * Add description
@@ -167,12 +148,18 @@ public:
      * Returns a vector with the constant pressure specific heats for the Statemodel
      */
     
-    virtual void getCp(double* const p_Cp){
-        std::cerr << "getCp()"
+    virtual void getCpMass(double* const p_Cp){
+        std::cerr << "getCpMass()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
-    
+
+    virtual void getTagModes(int* const p_tag) {
+        std::cerr << "getTagModes()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
     /**
      * Returns the species mole fractions.
      */

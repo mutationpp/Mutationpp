@@ -221,41 +221,9 @@ void NAME_MANGLE(get_temperatures)(double* const T)
 }
 
 //==============================================================================
-void NAME_MANGLE(get_energy_densities)(double* const rhoe)
-{
-    p_mix->getEnergyDensities(rhoe);
-}
-
-//==============================================================================
-void NAME_MANGLE(get_energy_mass)(double* const e)
-{
-    p_mix->getEnergyMass(e);
-}
-
-//==============================================================================
-void NAME_MANGLE(get_enthalpy_mass)(double* const h)
-{
-    p_mix->getEnthalpyMass(h);
-}
-
-//==============================================================================
-void NAME_MANGLE(get_cp_mass)(double* const cp)
-{
-    p_mix->getCp(cp); 
-}
-
-//==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    p_mix->speciesCpOverR(cp);
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        cp[i] *= Mutation::RU / p_mix->speciesMw(i);
-}
-
-//==============================================================================
-void NAME_MANGLE(species_cp_mass_vector)(double* const cp)
-{
-    p_mix->getCp(cp);
+    p_mix->getCpMass(cp); 
 }
 
 //==============================================================================
@@ -283,19 +251,15 @@ double NAME_MANGLE(mixture_frozen_sound_speed)()
 }
 
 //==============================================================================
-void NAME_MANGLE(species_h_mass)(double *const h)
+void NAME_MANGLE(species_e_mass)(double* const e)
 {
-    p_mix->speciesHOverRT(h);
-    double T = p_mix->T();
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
+    p_mix->getEnergyMass(e);
 }
 
 //==============================================================================
-
-void NAME_MANGLE(species_h_density_vector)(double *const h)
+void NAME_MANGLE(species_h_mass)(double *const h)
 {
-   p_mix->getEnergyDensities(h);
+    p_mix->getEnthalpyMass(h);
 }
 
 //==============================================================================
@@ -330,9 +294,9 @@ double NAME_MANGLE(viscosity)()
 }
 
 //==============================================================================
-double NAME_MANGLE(frozen_thermal_conductivity)()
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 {
-    return p_mix->frozenThermalConductivity();
+    p_mix->frozenThermalConductivityVector(lambda); 
 }
 
 //==============================================================================
@@ -359,6 +323,11 @@ double NAME_MANGLE(internal_thermal_conductivity)()
     return p_mix->internalThermalConductivity();
 }
 
+//==============================================================================
+double NAME_MANGLE(vibrational_thermal_conductivity)()
+{
+    return p_mix->vibrationalThermalConductivity();
+}
 //==============================================================================
 double NAME_MANGLE(reactive_thermal_conductivity)()
 {

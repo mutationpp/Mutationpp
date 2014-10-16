@@ -177,26 +177,6 @@ void NAME_MANGLE(y)(double* const Y);
 void NAME_MANGLE(get_temperatures)(double* const T);
 
 /**
- * Fills the energy density vector with the current mixture state.
- */
-void NAME_MANGLE(get_energy_densities)(double* const rhoe);
-
-/**
- * Add description
- */
-void NAME_MANGLE(get_energy_mass)(double* const e);
-
-/**
- * Add description
- */
-void NAME_MANGLE(get_enthalpy_mass)(double* const h);
-
-/**
- * Add description
- */
-void NAME_MANGLE(get_cp_mass)(double* const cp);
-
-/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -270,18 +250,18 @@ double NAME_MANGLE(mixture_frozen_gamma)();
 double NAME_MANGLE(mixture_frozen_sound_speed)();
 
 /**
- * Returns the species enthalpies in J/kg.
+ * Returns the species energies (total + internal if multi temperature) in J/kg.
+ *
+ * @param e - species energies on return
+ */
+void NAME_MANGLE(species_e_mass)(double *const e);
+
+/**
+ * Returns the species enthalpies (total + internal if multi temperature) in J/kg.
  *
  * @param h - species enthalpies on return
  */
 void NAME_MANGLE(species_h_mass)(double *const h);
-
-/**
- * Returns the species enthalpies in J/m^3 obtained from the State Model.
- * 
- * @param h - species enthalpies for each energy equation solved
- */
-void NAME_MANGLE(species_h_density_vector)(double *const h);
 
 /**
  * Returns the mixture enthalpy in J/kg given the mixture temperature and
@@ -322,7 +302,7 @@ double NAME_MANGLE(viscosity)();
 /**
  * Returns the mixture thermal conductivity for a frozen mixture.
  */
-double NAME_MANGLE(frozen_thermal_conductivity)();
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -345,6 +325,11 @@ double NAME_MANGLE(electron_thermal_conductivity)();
  * Returns the internal energy thermal conductivity using Euken's formulas.
  */
 double NAME_MANGLE(internal_thermal_conductivity)();
+
+/**
+ * Returns the vibrational energy thermal conductivity using Euken's formulas.
+ */
+double NAME_MANGLE(vibrational_thermal_conductivity)();
 
 /**
  * Returns the reactive thermal conductivity which accounts for reactions

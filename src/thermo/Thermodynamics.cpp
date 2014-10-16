@@ -21,7 +21,7 @@ Thermodynamics::Thermodynamics(
     const string& species_descriptor,
     const string& thermo_db,
     const string& state_model )
-    : mp_work1(NULL), mp_work2(NULL), mp_default_composition(NULL),
+    : mp_work1(NULL), mp_work2(NULL), mp_wrkcp(NULL), mp_default_composition(NULL),
       m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
     // Load the thermodynamic database
@@ -64,6 +64,7 @@ Thermodynamics::Thermodynamics(
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];
     mp_work2 = new double [nSpecies()];
+    mp_wrkcp = new double [nSpecies()*nEnergyEqns()];
     mp_y     = new double [nSpecies()];
     
     // Default composition (every element has equal parts)
@@ -86,6 +87,7 @@ Thermodynamics::~Thermodynamics()
 {
     delete [] mp_work1;
     delete [] mp_work2;
+    delete [] mp_wrkcp;
     delete [] mp_default_composition;
     delete [] mp_y;
     
@@ -213,20 +215,9 @@ void Thermodynamics::getTemperatures(double* const p_T) const {
 
 //==============================================================================
 
-void Thermodynamics::getEnergyDensities(double* const p_rhoe) const {
-    mp_state->getEnergyDensities(p_rhoe);
-}
-
-
 void Thermodynamics::getEnergyMass(double* const p_e) const{
     mp_state->getEnergyMass(p_e);     
 } 
-
-//==============================================================================
-
-void Thermodynamics::getEnthalpyDensities(double* const p_rhoh) const {
-    mp_state->getEnthalpyDensities(p_rhoh);
-}
 
 //==============================================================================
 
@@ -236,8 +227,14 @@ void Thermodynamics::getEnthalpyMass(double* const p_h) const {
 
 //==============================================================================
 
-void Thermodynamics::getCp(double* const p_cp) const {
-    mp_state->getCp(p_cp);
+void Thermodynamics::getCpMass(double* const p_cp) const {
+    mp_state->getCpMass(p_cp);
+}
+
+//==============================================================================
+
+void Thermodynamics::getTagModes(int* const p_tag) const {
+    mp_state->getTagModes(p_tag);
 }
 
 //==============================================================================
@@ -378,9 +375,10 @@ double Thermodynamics::density() const
 
 void Thermodynamics::speciesCpOverR(double *const p_cp) const
 {
+    // WARNING: The total cp only makes sense at thermal equilibirum
     mp_thermodb->cp(
-        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), p_cp, NULL, NULL, NULL, NULL);
+        mp_state->T(), mp_state->T(), mp_state->T(), mp_state->T(),
+        mp_state->T(), p_cp, NULL, NULL, NULL, NULL);
 }
 
 //==============================================================================
@@ -410,7 +408,8 @@ void Thermodynamics::speciesCvOverR(
     double *const p_cvel) const
 {
     mp_thermodb->cp(Th, Te, Tr, Tv, Tel, p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
-    
+
+    // WARNING: the total cv only makes sense at thermal equilibrium    
     if (p_cv != NULL) {
         for (int i = 0; i < nSpecies(); ++i)
             p_cv[i] -= 1.0;
@@ -421,38 +420,30 @@ void Thermodynamics::speciesCvOverR(
             p_cvt[i] -= 1.0;
     }
     
-    if (p_cvr != NULL) {
-        for (int i = 0; i < nSpecies(); ++i)
-            p_cvr[i] -= 1.0;
-    }
-    
-    if (p_cvv != NULL) {
-        for (int i = 0; i < nSpecies(); ++i)
-            p_cvv[i] -= 1.0;
-    }
-    
-    if (p_cvel != NULL) {
-        for (int i = 0; i < nSpecies(); ++i)
-            p_cvel[i] -= 1.0;
-    }
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureFrozenCpMole() const
 {
-    double cp = 0.0;
-    speciesCpOverR(mp_work1);
-    for (int i = 0; i < nGas(); ++i)
-        cp += mp_work1[i] * X()[i];
-    return (cp * RU);
+    return mixtureFrozenCpMass() * mixtureMw();
+//    double cp = 0.0;
+//    speciesCpOverR(mp_work1);
+//    for (int i = 0; i < nGas(); ++i)
+//        cp += mp_work1[i] * X()[i];
+//    return (cp * RU);
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureFrozenCpMass() const 
 {
-    return mixtureFrozenCpMole() / mixtureMw();
+    double cp = 0.0;
+    getCpMass(mp_wrkcp);
+    for (int i = 0; i < nSpecies(); ++i)
+       cp += mp_wrkcp[i] * Y()[i];
+    return cp;
+//    return mixtureFrozenCpMole() / mixtureMw();
 }
 
 //==============================================================================
@@ -855,14 +846,12 @@ void Thermodynamics::speciesHOverRT(double T, double* const h) const
 }
 
 //==============================================================================
-// Check this function one more time
 void Thermodynamics::speciesHOverRT(
     double T, double Te, double Tr, double Tv, double Tel,
     double* const h, double* const ht, double* const hr, double* const hv,
     double* const hel, double* const hf) const
 {
     mp_thermodb->enthalpy(
-//        T, T, T, T, T,
         T, Te, Tr, Tv, Tel,
         h, ht, hr, hv, hel, hf);
 }

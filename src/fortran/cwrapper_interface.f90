@@ -73,8 +73,8 @@ module mutationpp
         real(kind=8) function mpp_viscosity()
         end function
 
-        real(kind=8) function mpp_frozen_thermal_conductivity()
-        end function
+        !real(kind=8) function mpp_frozen_thermal_conductivity()
+        !end function
 
         real(kind=8) function mpp_equilibrium_thermal_conductivity()
         end function
@@ -86,6 +86,9 @@ module mutationpp
         end function
 
         real(kind=8) function mpp_internal_thermal_conductivity()
+        end function
+
+        real(kind=8) function mpp_vibrational_thermal_conductivity()
         end function
 
         real(kind=8) function mpp_reactive_thermal_conductivity()

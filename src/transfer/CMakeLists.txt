@@ -6,6 +6,7 @@ add_sources(mutation++
     OmegaET.cpp
     OmegaEV.cpp
     OmegaCV.cpp
+    OmegaCE.cpp
     OmegaI.cpp
 )
 

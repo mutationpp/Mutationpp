@@ -173,6 +173,42 @@ private:
 
 };
 
+/**
+ * Represents a coupling between chemistry and electronic energy modes.
+ */
+class OmegaCE : public TransferModel
+{
+   /**
+    * The necessary functions for the computation of the  source terms for 
+    * Electronic-Chemistry-Electronic coupling are implemented. 
+    * 
+    */
+
+public:
+    OmegaCE(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
+        p_thermo = &thermo; 
+        p_kinetics = &kinetics;
+    };
+      
+    void source(double* const p_source){
+      static int i_transfer_model = 0;
+      switch (i_transfer_model){
+          case 0:
+              *p_source = compute_source_Candler();
+	      break;
+          default:
+              std::cerr << "The selected Electronic-Chemistry-Electronic model is not implemented yet";
+      }
+    };
+    
+private:
+    const Thermodynamics::Thermodynamics* p_thermo;
+    Kinetics::Kinetics* p_kinetics;
+
+    double const compute_source_Candler();
+
+};
+
 class OmegaET : public TransferModel
 {
 public:

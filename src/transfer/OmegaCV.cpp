@@ -23,10 +23,8 @@ namespace Mutation {
          */
 
         // Getting Vibrational Energy
-        double* const p_enthalpy = new double[p_thermo->nSpecies()];
         double* const p_vib_enthalpy = new double[p_thermo->nSpecies()];
-	double mp_work[p_thermo->nSpecies()];
-        p_thermo->speciesHOverRT(p_enthalpy, mp_work, NULL, p_vib_enthalpy, NULL, NULL);
+        p_thermo->speciesHOverRT(NULL, NULL, NULL, p_vib_enthalpy, NULL, NULL);
         
         // Getting Production Rate
         double* const p_prod_rate = new double[p_thermo->nSpecies()];
@@ -41,7 +39,6 @@ namespace Mutation {
             sum += p_prod_rate[i_CV]* p_vib_enthalpy[i_CV] *p_thermo->T()*RU/p_thermo->speciesMw(i_CV);
         }
 
-        delete [] p_enthalpy;
         delete [] p_vib_enthalpy;
         delete [] p_prod_rate;
 	

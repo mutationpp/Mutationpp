@@ -30,6 +30,7 @@ public:
         delete [] mp_work4;
         delete mp_omega_VT;
         delete mp_omega_CV;
+        delete mp_omega_CE;
 //        delete mp_omega_EV;
 //        delete mp_omega_ET;
 //        delete mp_omega_I;
@@ -114,6 +115,7 @@ public:
       
        mp_omega_VT = new Mutation::Transfer::OmegaVT(thermo);
        mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
+       mp_omega_CE = new Mutation::Transfer::OmegaCE(thermo, kinetics);
        //mp_omega_ET = new Mutation::Transfer::OmegaET();
        //mp_omega_EV = new Mutation::Transfer::OmegaEV();
        //mp_omega_I  = new Mutation::Transfer::OmegaI();
@@ -129,6 +131,8 @@ public:
             omega[0] += m_work;
             mp_omega_CV->source(&m_work); 
             omega[0] += m_work;
+            mp_omega_CE->source(&m_work); 
+            omega[0] += m_work;
 //            mp_omega_ET->source(&m_work); 
 //            omega[0] += m_work;
 //            mp_omega_EV->source(&m_work); 
@@ -140,12 +144,6 @@ public:
     void getTemperatures(double* const p_T) const {
         p_T[0] = T();
         p_T[1] = Tv();
-    }
-    
-    void getEnergyDensities(double* const p_rhoe) {
-        std::cerr << "getEnergyDensities()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
     }
     
     void getEnergyMass(double* const p_e) {
@@ -165,13 +163,6 @@ public:
         
     }
 
-    void getEnthalpyDensities(double* const p_rhoh) {
-        std::cerr << "getEnthalpyDensities()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
-    }
-
-
     void getEnthalpyMass(double* const p_h) {
         
         int n_species = m_thermo.nSpecies();
@@ -189,7 +180,7 @@ public:
 
     }
     
-    void getCp(double* const p_Cp) {
+    void getCpMass(double* const p_Cp) {
         
         int n_species = m_thermo.nSpecies();
         m_thermo.speciesCpOverR(m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
@@ -203,6 +194,16 @@ public:
             p_Cp[i_getCp + n_species] = (mp_work3[i_getCp] + mp_work4[i_getCp])*RU/species_Mw[i_getCp];
         }
         
+    }
+
+    void getTagModes(int* const p_tag) {
+
+      p_tag[0] = 1; p_tag[5] = 0; // Heavy translation
+      p_tag[1] = 0; p_tag[6] = 1; // Electron translation
+      p_tag[2] = 1; p_tag[7] = 0; // Rotation excitation
+      p_tag[3] = 0; p_tag[8] = 1; // Vibration excitation
+      p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
+
     }
     
     private:
@@ -238,13 +239,20 @@ public:
     
     class Cpv {
     public:
-        Cpv(const Thermodynamics& t) : thermo(t) {}
+        Cpv(const Thermodynamics& t) : thermo(t) {
+             p_cpv = new double [thermo.nSpecies()];
+             p_cpel = new double [thermo.nSpecies()];
+        }
         void operator () (double T, double* const cp) const {
-            thermo.speciesCpOverR(T, T, T, T, T, NULL, NULL, NULL, cp, NULL);
-//	    std::cout << "For the vibrational loop = " << cp[0]*RU/thermo.speciesMw(0) << "    " << cp[1]*RU/thermo.speciesMw(0)<< endl;
+            thermo.speciesCpOverR(T, T, T, T, T, NULL, NULL, NULL, p_cpv, p_cpel);
+            for(int iCpv = 0; iCpv < thermo.nSpecies(); ++iCpv){
+                cp[iCpv] = p_cpv[iCpv] + p_cpel[iCpv];
+            }
         }
     private:
         const Thermodynamics& thermo;
+	double* p_cpv;
+	double* p_cpel;
     }; // class Cpv
 
     /**
@@ -267,12 +275,20 @@ public:
     
     class Hv {
     public:
-        Hv(const Thermodynamics& t) : thermo(t) { }
+        Hv(const Thermodynamics& t) : thermo(t) { 
+             p_hv  = new double [thermo.nSpecies()]; 
+             p_hel = new double [thermo.nSpecies()]; 
+        }
         void operator () (double T, double* const h) const {
-            thermo.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, h, NULL, NULL);
+            thermo.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, p_hv, p_hel, NULL);
+            for(int ihv = 0; ihv < thermo.nSpecies(); ++ihv){
+                h[ihv] = p_hv[ihv] + p_hel[ihv];
+            }
         }
     private:
         const Thermodynamics& thermo;
+        double* p_hv;
+        double* p_hel;
     }; // class Hv
 
 private:
@@ -282,6 +298,7 @@ private:
     double* mp_work4;
     Mutation::Transfer::TransferModel* mp_omega_VT;
     Mutation::Transfer::TransferModel* mp_omega_CV;
+    Mutation::Transfer::TransferModel* mp_omega_CE;
 //    Mutation::Transfer::TransferModel* mp_omega_EV;
 //    Mutation::Transfer::TransferModel* mp_omega_ET;
 //    Mutation::Transfer::TransferModel* mp_omega_I;

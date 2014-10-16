@@ -345,26 +345,14 @@ public:
     void getTemperatures(double* const p_T) const;
 
     /**
-     * Fills energy density array with energies according to the used
-     * StateModel.
-     */
-    void getEnergyDensities(double* const p_rhoe) const;
-
-    /**
-     *  Add description
+     * Fills energy per mass array with energies according to the used
+     * StateModel (total + internal for each species).
      */
     void getEnergyMass(double* const p_e) const;
     
     /**
-     * Fills enthalpy density array with enthalpy according to the used
-     * StateModel
-     */
-
-    void getEnthalpyDensities(double* const p_rhoh) const;
-    
-    
-    /**
-     * Add description
+     * Fills enthalpy per mass array with enthalpy according to the used
+     * StateModel (total + internal for each species).
      */
 
     void getEnthalpyMass(double* const p_h) const;
@@ -374,7 +362,12 @@ public:
      * StateModel
      */
     
-    void getCp(double* const p_cp) const;
+    void getCpMass(double* const p_cp) const;
+
+    /**
+     * Fills the tag of the modes according toi the used StateModel
+     */
+    void getTagModes(int* const p_tag) const;
     
     /**
      * Returns the current mixture static pressure in Pa.
@@ -771,6 +764,7 @@ private:
     
     double* mp_work1;
     double* mp_work2;
+    double* mp_wrkcp;
     double* mp_y;
     double* mp_default_composition;
     

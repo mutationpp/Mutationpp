@@ -82,6 +82,7 @@ public:
     
     /**
      * Returns the mixture thermal conductivity for a frozen mixture.
+     * To be used only at thermal equilibrium.
      */
     double frozenThermalConductivity() {
         if (mp_collisions == NULL) {
@@ -94,6 +95,12 @@ public:
             internalThermalConductivity()
         );
     }
+
+    /**
+     * Returns the mixture thermal conductivity vector for a frozen mixture
+     * according to the state model.
+     */
+    void frozenThermalConductivityVector(double* const p_lambda);
     
     /**
      * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -133,6 +140,21 @@ public:
      * Returns the internal energy thermal conductivity using Euken's formulas.
      */
     double internalThermalConductivity();
+
+    /**
+     * Returns the rotational energy thermal conductivity using Euken's formulas.
+     */
+    double rotationalThermalConductivity();
+
+    /**
+     * Returns the vibrational energy thermal conductivity using Euken's formulas.
+     */
+    double vibrationalThermalConductivity();
+
+    /**
+     * Returns the electronic energy thermal conductivity using Euken's formulas.
+     */
+    double electronicThermalConductivity();
     
     /**
      * Returns the reactive thermal conductivity which accounts for reactions
@@ -215,6 +237,7 @@ private:
     double* mp_wrk1;
     double* mp_wrk2;
     double* mp_wrk3;
+    int* mp_tag;
 };
 
     } // namespace Transport

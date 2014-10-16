@@ -23,7 +23,8 @@ Transport::Transport(
       mp_viscosity(NULL),
       mp_thermal_conductivity(NULL),
       mp_diffusion_matrix(NULL),
-      mp_wrk1(NULL)
+      mp_wrk1(NULL),
+      mp_tag(NULL)
 { 
     if (!load_data)
         return;
@@ -48,6 +49,10 @@ Transport::Transport(
     mp_wrk1 = new double [m_thermo.nSpecies()*3];
     mp_wrk2 = mp_wrk1 + m_thermo.nSpecies();
     mp_wrk3 = mp_wrk2 + m_thermo.nSpecies();
+    if(m_thermo.nEnergyEqns() > 1) {
+        mp_tag  = new int [m_thermo.nEnergyEqns()*5];
+        m_thermo.getTagModes(mp_tag);
+    }
     
     //thermo.stateModel()->notifyOnUpdate(this);
 }
@@ -62,6 +67,7 @@ Transport::~Transport()
     delete mp_diffusion_matrix;
     
     delete [] mp_wrk1;
+    delete [] mp_tag;
 }
 
 //==============================================================================
@@ -102,6 +108,34 @@ void Transport::omega22ii(double* const p_omega)
     
     for (int i = 0; i < ns; ++i)
         p_omega[i] = Q22(i,i);
+}
+
+//==============================================================================
+
+void Transport::frozenThermalConductivityVector(double* const p_lambda)
+{
+
+    const int neq = m_thermo.nEnergyEqns();
+    double lambda_th, lambda_te, lambda_rot, lambda_vib, lambda_elec;
+
+    if(neq > 1) {
+        lambda_th   = heavyThermalConductivity(); 
+        lambda_te   = electronThermalConductivity(); 
+        lambda_rot  = rotationalThermalConductivity();
+        lambda_vib  = vibrationalThermalConductivity();
+        lambda_elec = electronicThermalConductivity();
+
+        for (int i_eq = 0; i_eq < neq; ++i_eq) {
+           p_lambda[i_eq] = mp_tag[i_eq*5+0] * lambda_th 
+                          + mp_tag[i_eq*5+1] * lambda_te 
+                          + mp_tag[i_eq*5+2] * lambda_rot
+                          + mp_tag[i_eq*5+3] * lambda_vib
+                          + mp_tag[i_eq*5+4] * lambda_elec;
+        }
+    } //else {
+      //  p_lambda[0] = frozenThermalConductivity();
+    //}
+
 }
 
 //==============================================================================
@@ -199,6 +233,113 @@ double Transport::internalThermalConductivity()
 
 //==============================================================================
 
+double Transport::rotationalThermalConductivity()
+{
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
+    const int ns     = m_thermo.nSpecies();
+    const int nh     = m_thermo.nHeavy();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double Tr  = m_thermo.Tr();
+    const double Tv  = m_thermo.Tv();
+    const double Tel = m_thermo.Tel();
+    const double nd  = m_thermo.numberDensity(); 
+    const double *const X = m_thermo.X();
+    
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
+    
+    m_thermo.speciesCpOverR(
+        Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, NULL, NULL);
+    
+    double lambda = 0.0;
+    for (int i = ns-nh; i < ns; ++i) {
+        double sum = 0.0;
+        for (int j = 0; j < ns; ++j)
+            sum += X[j] / nDij(i,j);
+        
+        lambda += X[i] * mp_wrk1[i] / sum;
+    }
+    
+    return (lambda * KB);
+}
+
+//==============================================================================
+
+double Transport::vibrationalThermalConductivity()
+{
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
+    const int ns     = m_thermo.nSpecies();
+    const int nh     = m_thermo.nHeavy();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double Tr  = m_thermo.Tr();
+    const double Tv  = m_thermo.Tv();
+    const double Tel = m_thermo.Tel();
+    const double nd  = m_thermo.numberDensity(); 
+    const double *const X = m_thermo.X();
+    
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
+    
+    m_thermo.speciesCpOverR(
+        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, mp_wrk1, NULL);
+    
+    double lambda = 0.0;
+    for (int i = ns-nh; i < ns; ++i) {
+        double sum = 0.0;
+        for (int j = 0; j < ns; ++j)
+            sum += X[j] / nDij(i,j);
+        
+        lambda += X[i] * mp_wrk1[i] / sum;
+    }
+    
+    return (lambda * KB);
+}
+
+//==============================================================================
+
+double Transport::electronicThermalConductivity()
+{
+    if (mp_collisions == NULL) {
+        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
+        return 0.0;
+    }
+
+    const int ns     = m_thermo.nSpecies();
+    const int nh     = m_thermo.nHeavy();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double Tr  = m_thermo.Tr();
+    const double Tv  = m_thermo.Tv();
+    const double Tel = m_thermo.Tel();
+    const double nd  = m_thermo.numberDensity(); 
+    const double *const X = m_thermo.X();
+    
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
+    
+    m_thermo.speciesCpOverR(
+        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, NULL, mp_wrk1);
+    
+    double lambda = 0.0;
+    for (int i = ns-nh; i < ns; ++i) {
+        double sum = 0.0;
+        for (int j = 0; j < ns; ++j)
+            sum += X[j] / nDij(i,j);
+        
+        lambda += X[i] * mp_wrk1[i] / sum;
+    }
+    
+    return (lambda * KB);
+}
+
+//==============================================================================
 /*double Transport::reactiveThermalConductivity()
 {
     ///
