@@ -41,9 +41,9 @@ protected:
             line = String::trim(line);
             if (line != "" && line[0] != '!') break;
         }
-        
+
         // Skip the "thermo" header if it exists
-        if (length > 6 && String::toLowerCase(line.substr(0,6)) == "thermo")
+        if (length > 5 && String::toLowerCase(line.substr(0,6)) == "thermo")
             std::getline(is, line);
         // Else put the curser back to the beginning of the line
         else
@@ -65,7 +65,9 @@ protected:
             return Species();
         
         // Species name
-        std::string name = Utilities::String::trim(line.substr(0,24));
+        std::vector<std::string> tokens;
+        std::string name =
+            Utilities::String::tokenize(line.substr(0,24), tokens, " ")[0];
 
         // Phase
         getline(is, line);
@@ -133,13 +135,16 @@ protected:
         // Keep reading species from file until we have found all the ones we
         // need
         std::string line, name;
+        std::vector<std::string> tokens;
         while (species_names.size() > 0) {
             // Read each line until encountering a species that we want
             std::getline(is, line);
             
             // Is this the first line of a species that we need?
-            iter = species_names.find(
-                Utilities::String::trim(line.substr(0,24)));                
+            tokens.clear();
+            name =
+                Utilities::String::tokenize(line.substr(0,24), tokens, " ")[0];
+            iter = species_names.find(name);
             if (iter != species_names.end()) {
                 is.seekg(
                     -static_cast<int>(line.length()+1), std::ios_base::cur) >>
