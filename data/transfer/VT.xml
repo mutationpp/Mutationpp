@@ -18,19 +18,26 @@ Data References:
     <Millikan-White>
     
         <!-- N2 data -->
-        <vibrator species="N2" omegav="3.0E-17">
+        <vibrator species="N2" omegav="3.0E-21">
+            <partner species="N" a="180.0" b ="0.0262" /><!-- Ref. [1] -->
             <partner species="O" a="72.4" b="0.015" /> <!-- Ref. [1] -->
+            <partner species="N2" a="221.0" b="0.0290" /> <!-- Ref. [1] -->
+            <partner species="O2" a="229" b="0.0295" /> <!-- Ref. [1] -->
+            <partner species="NO" a="225" b="0.0293" /> <!-- Ref. [1] -->
             <partner species="C" a="72.4" b="0.015" /> <!-- Ref. [2] -->
         </vibrator>
         
         <!-- O2 data from Ref. [1] -->
-        <vibrator species="O2" omegav="3.0E-17">
+        <vibrator species="O2" omegav="3.0E-21">
             <partner species="N" a="72.4" b="0.015" />
             <partner species="O" a="47.7" b="0.059" />
+            <partner species="N2" a="134" b="0.0295" />  
+            <partner species="O2" a="138" b="0.0300" />  
+            <partner species="NO" a="136" b="0.0298" />  
         </vibrator>
         
         <!-- NO data from Ref. [1] -->
-        <vibrator species="NO" omegav="3.0E-17">
+        <vibrator species="NO" omegav="3.0E-21">
             <partner species="N"  a="49.5" b="0.042" />
             <partner species="O"  a="49.5" b="0.042" />
             <partner species="N2" a="49.5" b="0.042" />
@@ -39,14 +46,14 @@ Data References:
         </vibrator>
         
         <!-- CO data from Ref. [2] -->
-        <vibrator species="CO" omegav="3.0E-18">
+        <vibrator species="CO" omegav="3.0E-22">
             <partner species="N" a="47.7" b="0.05" />
             <partner species="O" a="47.7" b="0.05" />
             <partner species="C" a="47.7" b="0.05" />
         </vibrator>
         
         <!-- CO2 data from Ref. [2] -->
-        <vibrator species="CO2" omegav="1.0E-16">
+        <vibrator species="CO2" omegav="1.0E-20">
             <partner species="CO2" a="36.5" b="-0.0193" />
         </vibrator>
         
