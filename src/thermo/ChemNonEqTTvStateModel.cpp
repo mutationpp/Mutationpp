@@ -97,15 +97,6 @@ public:
         for (int i = 0; i < ns; ++i)        
             mp_X[i] /= conc;
         m_P = RU * m_T * conc;
-
-        /* REMOVE ME
-        p_transfer_model = new Mutation::Transfer::TransferModelVT(m_thermo); // I include a copy of thermo
-        double output;
-        p_transfer_model->source(&output);
-
-        // std::cout << "Source VT = " << output << endl;
-        */
-
     }
     
     void initializeTransferModel(
@@ -146,64 +137,59 @@ public:
         p_T[1] = Tv();
     }
     
-    void getEnergyMass(double* const p_e) {
-    
-        int n_species = m_thermo.nSpecies();
+    void getEnergiesMass(double* const p_e)
+	{    
+        int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
-        double species_Mw[n_species];
         
-        for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
-            species_Mw[i_energy_mass] = m_thermo.speciesMw(i_energy_mass);
-            p_e[i_energy_mass] = mp_work1[i_energy_mass] * m_T * RU /species_Mw[i_energy_mass] - RU/species_Mw[i_energy_mass] *m_T;
-        }
-        for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
-            p_e[i_energy_mass+n_species] = (mp_work2[i_energy_mass] + mp_work3[i_energy_mass]) 
-                                            * m_T * RU / species_Mw[i_energy_mass];
-        }
-        
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_e[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getEnthalpyMass(double* const p_h) {
-        
-        int n_species = m_thermo.nSpecies();
+    void getEnthalpiesMass(double* const p_h)
+    {    
+        int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
-        double species_Mw[n_species];
-
-        for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
-            species_Mw[i_enthalpy_mass] = m_thermo.speciesMw(i_enthalpy_mass);
-            p_h[i_enthalpy_mass] = mp_work1[i_enthalpy_mass] * m_T * RU /species_Mw[i_enthalpy_mass];
-        }
-        for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
-            p_h[i_enthalpy_mass+n_species] = (mp_work2[i_enthalpy_mass] + mp_work3[i_enthalpy_mass])
-                                              * m_T * RU / species_Mw[i_enthalpy_mass];
-        }
-
+        
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_h[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
     }
     
-    void getCpMass(double* const p_Cp) {
-        
-        int n_species = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
-        double species_Mw[n_species];
+    void getCpsMass(double* const p_Cp)
+	{       
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(
+			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
-        for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
-            species_Mw[i_getCp] = m_thermo.speciesMw(i_getCp);
-            p_Cp[i_getCp] = (mp_work1[i_getCp] + mp_work2[i_getCp]) *RU/species_Mw[i_getCp];
-        }
-        for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
-            p_Cp[i_getCp + n_species] = (mp_work3[i_getCp] + mp_work4[i_getCp])*RU/species_Mw[i_getCp];
-        }
-        
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
     }
 
-    void getTagModes(int* const p_tag) {
+	void getCvsMass(double* const p_Cv)
+	{       
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(
+			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
-      p_tag[0] = 1; p_tag[5] = 0; // Heavy translation
-      p_tag[1] = 0; p_tag[6] = 1; // Electron translation
-      p_tag[2] = 1; p_tag[7] = 0; // Rotation excitation
-      p_tag[3] = 0; p_tag[8] = 1; // Vibration excitation
-      p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
+    }
 
+    void getTagModes(int* const p_tag)
+	{
+     	p_tag[0] = 1; p_tag[5] = 0; // Heavy translation
+     	p_tag[1] = 0; p_tag[6] = 1; // Electron translation
+     	p_tag[2] = 1; p_tag[7] = 0; // Rotation excitation
+     	p_tag[3] = 0; p_tag[8] = 1; // Vibration excitation
+     	p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
     }
     
     private:

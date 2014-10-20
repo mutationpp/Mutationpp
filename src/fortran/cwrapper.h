@@ -327,11 +327,6 @@ double NAME_MANGLE(electron_thermal_conductivity)();
 double NAME_MANGLE(internal_thermal_conductivity)();
 
 /**
- * Returns the vibrational energy thermal conductivity using Euken's formulas.
- */
-double NAME_MANGLE(vibrational_thermal_conductivity)();
-
-/**
  * Returns the reactive thermal conductivity which accounts for reactions
  * for mixtures in thermochemical equilibrium.
  */

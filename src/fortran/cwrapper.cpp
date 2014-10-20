@@ -223,7 +223,7 @@ void NAME_MANGLE(get_temperatures)(double* const T)
 //==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    p_mix->getCpMass(cp); 
+    p_mix->getCpsMass(cp); 
 }
 
 //==============================================================================
@@ -253,13 +253,13 @@ double NAME_MANGLE(mixture_frozen_sound_speed)()
 //==============================================================================
 void NAME_MANGLE(species_e_mass)(double* const e)
 {
-    p_mix->getEnergyMass(e);
+    p_mix->getEnergiesMass(e);
 }
 
 //==============================================================================
 void NAME_MANGLE(species_h_mass)(double *const h)
 {
-    p_mix->getEnthalpyMass(h);
+    p_mix->getEnthalpiesMass(h);
 }
 
 //==============================================================================
@@ -323,11 +323,6 @@ double NAME_MANGLE(internal_thermal_conductivity)()
     return p_mix->internalThermalConductivity();
 }
 
-//==============================================================================
-double NAME_MANGLE(vibrational_thermal_conductivity)()
-{
-    return p_mix->vibrationalThermalConductivity();
-}
 //==============================================================================
 double NAME_MANGLE(reactive_thermal_conductivity)()
 {

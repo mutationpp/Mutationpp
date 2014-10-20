@@ -215,20 +215,26 @@ void Thermodynamics::getTemperatures(double* const p_T) const {
 
 //==============================================================================
 
-void Thermodynamics::getEnergyMass(double* const p_e) const{
-    mp_state->getEnergyMass(p_e);     
+void Thermodynamics::getEnergiesMass(double* const p_e) const{
+    mp_state->getEnergiesMass(p_e);     
 } 
 
 //==============================================================================
 
-void Thermodynamics::getEnthalpyMass(double* const p_h) const {
-    mp_state->getEnthalpyMass(p_h);
+void Thermodynamics::getEnthalpiesMass(double* const p_h) const {
+    mp_state->getEnthalpiesMass(p_h);
 }
 
 //==============================================================================
 
-void Thermodynamics::getCpMass(double* const p_cp) const {
-    mp_state->getCpMass(p_cp);
+void Thermodynamics::getCpsMass(double* const p_cp) const {
+    mp_state->getCpsMass(p_cp);
+}
+
+//==============================================================================
+
+void Thermodynamics::getCvsMass(double* const p_cv) const {
+    mp_state->getCvsMass(p_cv);
 }
 
 //==============================================================================

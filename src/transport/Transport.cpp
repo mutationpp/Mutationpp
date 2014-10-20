@@ -132,9 +132,9 @@ void Transport::frozenThermalConductivityVector(double* const p_lambda)
                           + mp_tag[i_eq*5+3] * lambda_vib
                           + mp_tag[i_eq*5+4] * lambda_elec;
         }
-    } //else {
-      //  p_lambda[0] = frozenThermalConductivity();
-    //}
+    } else {
+        p_lambda[0] = frozenThermalConductivity();
+    }
 
 }
 
@@ -147,7 +147,7 @@ double Transport::electronThermalConductivity()
         return 0.0;
     }
 
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] == 0.0)
         return 0.0;
 
     // Get thermodynamic properties

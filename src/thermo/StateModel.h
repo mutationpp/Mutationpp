@@ -127,33 +127,54 @@ public:
     }
 
     /**
-     * Add description
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * energy per unit mass.  The first n_species values correspond to the total energy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
-    virtual void getEnergyMass(double* const p_e) {
-        std::cerr << "getEnthalpyMass()"
+    virtual void getEnergiesMass(double* const p_e) {
+        std::cerr << "getEnergiesMass()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
     
     /**
-     * Add description
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
-    virtual void getEnthalpyMass(double* const p_h) {
-        std::cerr << "getEnthalpyMass()"
+    virtual void getEnthalpiesMass(double* const p_h) {
+        std::cerr << "getEnthalpiesMass()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
     
     /**
-     * Returns a vector with the constant pressure specific heats for the Statemodel
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
      */
     
-    virtual void getCpMass(double* const p_Cp){
-        std::cerr << "getCpMass()"
+    virtual void getCpsMass(double* const p_Cp){
+        std::cerr << "getCpsMass()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
 
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
+     */
+    
+    virtual void getCvsMass(double* const p_Cp){
+        std::cerr << "getCvsMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+	/**
+	 * Assigns a unique temperature to each energy mode.
+     */
     virtual void getTagModes(int* const p_tag) {
         std::cerr << "getTagModes()"
                   << " not implemented by this StateModel!" << std::endl;

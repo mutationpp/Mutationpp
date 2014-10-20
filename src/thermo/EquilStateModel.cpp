@@ -149,43 +149,40 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
     }
 
-    void getEnergyMass(double* const p_e) {
-
-        int n_species = m_thermo.nSpecies();
+    void getEnergiesMass(double* const p_e)
+	{
+		const int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work);
-        double species_Mw[n_species];
 
-        for(int i_energy_mass = 0; i_energy_mass < m_thermo.nSpecies(); ++i_energy_mass){
-            species_Mw[i_energy_mass] = m_thermo.speciesMw(i_energy_mass);
-            p_e[i_energy_mass] = mp_work[i_energy_mass] * m_T * RU /species_Mw[i_energy_mass] - RU/species_Mw[i_energy_mass] *m_T;
-        }
-
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getEnthalpyMass(double* const p_h) {
-
-        int n_species = m_thermo.nSpecies();
+    void getEnthalpiesMass(double* const p_h) 
+    {
+		const int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work);
-        double species_Mw[n_species];
 
-        for(int i_enthalpy_mass = 0; i_enthalpy_mass < n_species; ++i_enthalpy_mass){
-            species_Mw[i_enthalpy_mass] = m_thermo.speciesMw(i_enthalpy_mass);
-            p_h[i_enthalpy_mass] = mp_work[i_enthalpy_mass] * m_T * RU /species_Mw[i_enthalpy_mass];
-        }
-
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getCpMass(double* const p_Cp) {
-
-        int n_species = m_thermo.nSpecies();
+    void getCpsMass(double* const p_Cp) 
+    {
+        const int ns = m_thermo.nSpecies();
         m_thermo.speciesCpOverR(m_T, mp_work);
-        double species_Mw[n_species];
 
-        for(int i_getCp = 0; i_getCp < n_species; ++i_getCp){
-            species_Mw[i_getCp] = m_thermo.speciesMw(i_getCp);
-            p_Cp[i_getCp] = mp_work[i_getCp] *RU/species_Mw[i_getCp];
-        }
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+    }
 
+	void getCvsMass(double* const p_Cv)
+	{
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
     }
 
 

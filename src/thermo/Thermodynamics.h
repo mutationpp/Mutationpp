@@ -348,21 +348,28 @@ public:
      * Fills energy per mass array with energies according to the used
      * StateModel (total + internal for each species).
      */
-    void getEnergyMass(double* const p_e) const;
+    void getEnergiesMass(double* const p_e) const;
     
     /**
      * Fills enthalpy per mass array with enthalpy according to the used
      * StateModel (total + internal for each species).
      */
 
-    void getEnthalpyMass(double* const p_h) const;
+    void getEnthalpiesMass(double* const p_h) const;
     
     /**
      * Fills the constant pressure specific heat according to the used
      * StateModel
      */
     
-    void getCpMass(double* const p_cp) const;
+    void getCpsMass(double* const p_cp) const;
+
+	/**
+     * Fills the constant volume specific heat according to the used
+     * StateModel
+     */
+    
+    void getCvsMass(double* const p_cv) const;
 
     /**
      * Fills the tag of the modes according toi the used StateModel
@@ -639,8 +646,6 @@ public:
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
-
-    void speciesEvibMass(double T, double* const p_evib);
     
     /**
      * Returns the mixture averaged enthalpy in J/mol.

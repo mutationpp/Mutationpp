@@ -52,13 +52,13 @@ module mutationpp
         real(kind=8) function mpp_mixture_frozen_cp_mass()
         end function
         
-        real(kind=8) function mpp_mixture_frozen_cv_mass();
+        real(kind=8) function mpp_mixture_frozen_cv_mass()
         end function
         
-        real(kind=8) function mpp_mixture_frozen_gamma();
+        real(kind=8) function mpp_mixture_frozen_gamma()
         end function
         
-        real(kind=8) function mpp_mixture_frozen_sound_speed();
+        real(kind=8) function mpp_mixture_frozen_sound_speed()
         end function
         
         real(kind=8) function mpp_mixture_h_mass()
@@ -73,9 +73,6 @@ module mutationpp
         real(kind=8) function mpp_viscosity()
         end function
 
-        !real(kind=8) function mpp_frozen_thermal_conductivity()
-        !end function
-
         real(kind=8) function mpp_equilibrium_thermal_conductivity()
         end function
         
@@ -86,9 +83,6 @@ module mutationpp
         end function
 
         real(kind=8) function mpp_internal_thermal_conductivity()
-        end function
-
-        real(kind=8) function mpp_vibrational_thermal_conductivity()
         end function
 
         real(kind=8) function mpp_reactive_thermal_conductivity()
