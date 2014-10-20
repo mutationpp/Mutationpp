@@ -221,17 +221,9 @@ void NAME_MANGLE(get_temperatures)(double* const T)
 }
 
 //==============================================================================
-void NAME_MANGLE(get_energy_densities)(double* const rhoe)
-{
-    p_mix->getEnergyDensities(rhoe);
-}
-
-//==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    p_mix->speciesCpOverR(cp);
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        cp[i] *= Mutation::RU / p_mix->speciesMw(i);
+    p_mix->getCpsMass(cp); 
 }
 
 //==============================================================================
@@ -259,12 +251,15 @@ double NAME_MANGLE(mixture_frozen_sound_speed)()
 }
 
 //==============================================================================
+void NAME_MANGLE(species_e_mass)(double* const e)
+{
+    p_mix->getEnergiesMass(e);
+}
+
+//==============================================================================
 void NAME_MANGLE(species_h_mass)(double *const h)
 {
-    p_mix->speciesHOverRT(h);
-    double T = p_mix->T();
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
+    p_mix->getEnthalpiesMass(h);
 }
 
 //==============================================================================
@@ -299,9 +294,9 @@ double NAME_MANGLE(viscosity)()
 }
 
 //==============================================================================
-double NAME_MANGLE(frozen_thermal_conductivity)()
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 {
-    return p_mix->frozenThermalConductivity();
+    p_mix->frozenThermalConductivityVector(lambda); 
 }
 
 //==============================================================================
@@ -362,6 +357,14 @@ void NAME_MANGLE(surface_mass_balance)
     p_mix->surfaceMassBalance(p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
 }
 
-
+//==============================================================================
+void NAME_MANGLE(source_energy_transfer)
+     (double *const p_source_transfer)
+{
+     p_mix->energyTransferSource(p_source_transfer);
+}
+     
+     
+     
 
 

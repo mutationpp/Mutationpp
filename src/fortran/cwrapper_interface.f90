@@ -73,9 +73,6 @@ module mutationpp
         real(kind=8) function mpp_viscosity()
         end function
 
-        real(kind=8) function mpp_frozen_thermal_conductivity()
-        end function
-
         real(kind=8) function mpp_equilibrium_thermal_conductivity()
         end function
         
@@ -93,7 +90,7 @@ module mutationpp
    
         real(kind=8) function mpp_sigma()
         end function
-   
+        
     end interface
 
 end module mutationpp

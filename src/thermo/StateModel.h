@@ -127,10 +127,56 @@ public:
     }
 
     /**
-     * Fills an array of the energy densities represented by this StateModel.
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * energy per unit mass.  The first n_species values correspond to the total energy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
-    virtual void getEnergyDensities(double* const p_rhoe) {
-        std::cerr << "getEnergyDensities()"
+    virtual void getEnergiesMass(double* const p_e) {
+        std::cerr << "getEnergiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
+     */
+    virtual void getEnthalpiesMass(double* const p_h) {
+        std::cerr << "getEnthalpiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
+     */
+    
+    virtual void getCpsMass(double* const p_Cp){
+        std::cerr << "getCpsMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
+     */
+    
+    virtual void getCvsMass(double* const p_Cp){
+        std::cerr << "getCvsMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+	/**
+	 * Assigns a unique temperature to each energy mode.
+     */
+    virtual void getTagModes(int* const p_tag) {
+        std::cerr << "getTagModes()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
@@ -146,13 +192,26 @@ public:
      * Creates a new TransferModel object which can compute the energy transfer
      * source terms for this state model.
      */
-    virtual Mutation::Transfer::TransferModel* createTransferModel(
+/*    virtual Mutation::Transfer::TransferModel* createTransferModel(
         Thermodynamics& thermo,
         Mutation::Transport::Transport& transport,
         Mutation::Kinetics::Kinetics& kinetics)
     {
         return NULL;
-    }
+    } */ // Probably will not be used.
+    
+    /**
+     * Initializes the energy transfer terms that will be used by each State Model.
+     */
+    virtual void initializeTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics) {}
+    
+    /**
+     * This functions provides the total energy transfer source terms
+     */
+    virtual void energyTransferSource(double* const omega){}
     
 protected:
 
@@ -194,7 +253,7 @@ protected:
         const double alpha = 0.0,
         const double atol = 1.0e-12,
         const double rtol = 1.0e-12,
-        const int max_iters = 10)
+        const int max_iters = 100)
     {
         const int ns = m_thermo.nSpecies();
         const double rhoe_over_Ru = rhoe/RU;

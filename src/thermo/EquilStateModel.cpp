@@ -21,6 +21,7 @@ public:
 
         // Allocate work storage
         mp_h = new double [ns*3];
+        mp_work = new double [ns];
         mp_cp = mp_h + ns;
         mp_dxdt = mp_cp + ns;
 
@@ -33,6 +34,7 @@ public:
     virtual ~EquilStateModel()
     {
         delete [] mp_h; // other arrays allocated by this one
+        delete [] mp_work; 
     }
 
     /**
@@ -147,9 +149,47 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
     }
 
+    void getEnergiesMass(double* const p_e)
+	{
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getEnthalpiesMass(double* const p_h) 
+    {
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getCpsMass(double* const p_Cp) 
+    {
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+    }
+
+	void getCvsMass(double* const p_Cv)
+	{
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
+    }
+
+
 private:
 
     double* mp_h;
+    double* mp_work;
     double* mp_cp;
     double* mp_dxdt;
 };
@@ -179,7 +219,7 @@ public:
     virtual void setState(
         const double* const p_T, const double* const p_P, const int vars = 1)
     {
-        assert(vars == 1);
+        //assert(vars == 1);
         EquilStateModel::setState(p_P, p_T, 1);
     }
 };

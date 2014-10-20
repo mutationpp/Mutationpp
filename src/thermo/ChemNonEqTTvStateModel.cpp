@@ -4,24 +4,37 @@ namespace Mutation {
     namespace Thermodynamics {
 
 /**
- * Chemical Non-equilibrium 2-T StateModel.  Thermal nonequilibrium with
+ * Chemical Non-equilibrium 2-T StateModel. Thermal nonequilibrium with
  * T = Tr and Tv = Tel = Te with finite rate chemistry.
  */
 class ChemNonEqTTvStateModel : public StateModel
 {
 public:
+  
+     //Mutation::Transfer::TransferModel* p_transfer_model;
 
     ChemNonEqTTvStateModel(const Thermodynamics& thermo)
         : StateModel(thermo, 2, thermo.nSpecies())
     {
-        // Allocate work storage in a single block
-        mp_work1 = new double [2*thermo.nSpecies()];
-        mp_work2 = mp_work1 + thermo.nSpecies();
+        mp_work1 = new double [thermo.nSpecies()];
+        mp_work2 = new double [thermo.nSpecies()];
+        mp_work3 = new double [thermo.nSpecies()];
+        mp_work4 = new double [thermo.nSpecies()];
     }
 
     ~ChemNonEqTTvStateModel()
     {
         delete [] mp_work1;
+        delete [] mp_work2;
+        delete [] mp_work3;
+        delete [] mp_work4;
+        delete mp_omega_VT;
+        delete mp_omega_CV;
+        delete mp_omega_CE;
+//        delete mp_omega_EV;
+//        delete mp_omega_ET;
+//        delete mp_omega_I;
+        //delete p_transfer_model;
     }
 
     /**
@@ -35,73 +48,44 @@ public:
         const int vars = 0)
     {
         const int ns = m_thermo.nSpecies();
-        const int offset = ns - m_thermo.nHeavy();
-        const double tol = 1.0e-8;
 
         // Compute the species concentrations which are used through out this
-        // method regardless of variable set (store in mole fraction array
-        // because it is efficient at the end to avoid a copy and does not
-        // require another work array).
-        for (int i = 0; i < ns; ++i)
+        // method regardless of variable set 
+        double conc = 0.0;
+        for (int i = 0; i < ns; ++i){
+            // Check that species densities are at least positive
+            assert(p_mass[i] >= 0.0);
             mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
+            conc += mp_X[i];
+        }
 
-        // Compute the temperatures and make sure the requested variable set is
-        // actually implemented
+        // Compute the temperatures and make sure the variable set is implemented
         switch (vars) {
         case 0: {
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
-            double fv, fvp;
-            ThermoDB* p_thermodb = m_thermo.thermoDB();
 
-            p_thermodb->hv(m_Tv, mp_work1);
-            fv = 0.0;
-            for (int i = offset; i < ns; ++i)
-                fv += mp_X[i]*mp_work1[i];
-            fv = RU*m_Tv*fv - p_energy[1];
+            getTFromRhoE(
+                Cpv(m_thermo), Hv(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
 
-            while (std::abs(fv) > tol) {
-                // Compute df/dT
-                p_thermodb->cpv(m_Tv, mp_work1);
-                fvp = 0.0;
-                for (int i = offset; i < ns; ++i)
-                    fvp += mp_X[i]*mp_work1[i];
-                fvp *= RU;
+            // Next compute the temperature using the total energy density
 
-                // Update T
-                m_Tv -= fv/fvp;
-                if (m_Tv <= 0.0) m_Tv = 1.0;
+            m_Tel = m_Te = m_Tv;
 
-                // Recompute f
-                p_thermodb->hv(m_Tv, mp_work1);
-                fv = 0.0;
-                for (int i = offset; i < ns; ++i)
-                    fv += mp_X[i]*mp_work1[i];
-                fv = RU*m_Tv*fv - p_energy[1];
-            }
-
-            // Next compute the (trans.-rot.) energy density
-            double ert_density = 0.0;
-            p_thermodb->hel(m_Tv, mp_work2);
-            for (int i = offset; i < ns; ++i)
-                ert_density += mp_X[i]*(mp_work1[i]+mp_work2[i]);
-            if (offset == 1)
-                ert_density += 1.5*mp_X[0];
-            ert_density = p_energy[0] - RU*m_Tv*ert_density;
-
-
-
-
-            m_T = m_Tv;
+            getTFromRhoE(
+                Cp(m_thermo), H(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, -conc);
 
             break;
         }
         case 1:
-            m_T  = p_energy[0];
+            // Check that temperature is at least positive
+            assert(p_energy[0] > 0.0);
+            assert(p_energy[1] > 0.0);
+            m_T = p_energy[0];
             m_Tv = p_energy[1];
             break;
         default:
-            cout << "Variable set not implemented in StateModel!" << endl;
+            cout << "Variable-set " << vars << " not implemented in StateModel!" << endl;
             exit(1);
         }
 
@@ -110,20 +94,201 @@ public:
         m_Tel = m_Te = m_Tv;
 
         // Compute the pressure and species mole fractions from T and rho_i
-        m_P = 0.0;
-        for (int i = 0; i < ns; ++i)
-            m_P += mp_X[i];
-
-        for (int i = 0; i < ns; ++i)
-            mp_X[i] /= m_P;
-        m_P *= RU * m_T;
+        for (int i = 0; i < ns; ++i)        
+            mp_X[i] /= conc;
+        m_P = RU * m_T * conc;
+    }
+    
+    void initializeTransferModel(
+        Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        Mutation::Kinetics::Kinetics& kinetics){
+      
+       mp_omega_VT = new Mutation::Transfer::OmegaVT(thermo);
+       mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
+       mp_omega_CE = new Mutation::Transfer::OmegaCE(thermo, kinetics);
+       //mp_omega_ET = new Mutation::Transfer::OmegaET();
+       //mp_omega_EV = new Mutation::Transfer::OmegaEV();
+       //mp_omega_I  = new Mutation::Transfer::OmegaI();
+       
+    }
+    
+    void energyTransferSource(double* const omega)
+    {
+            double m_work;
+      
+            omega[0] = 0.E0;
+            mp_omega_VT->source(&m_work); 
+            omega[0] += m_work;
+            mp_omega_CV->source(&m_work); 
+            omega[0] += m_work;
+            mp_omega_CE->source(&m_work); 
+            omega[0] += m_work;
+//            mp_omega_ET->source(&m_work); 
+//            omega[0] += m_work;
+//            mp_omega_EV->source(&m_work); 
+//            omega[0] += m_work;
+//            mp_omega_I->source(&m_work); 
+//            omega[0] += m_work;
+    }
+    
+    void getTemperatures(double* const p_T) const {
+        p_T[0] = T();
+        p_T[1] = Tv();
+    }
+    
+    void getEnergiesMass(double* const p_e)
+	{    
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
+        
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_e[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
     }
 
-private:
+    void getEnthalpiesMass(double* const p_h)
+    {    
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
+        
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_h[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
+    }
+    
+    void getCpsMass(double* const p_Cp)
+	{       
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(
+			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
+    }
+
+	void getCvsMass(double* const p_Cv)
+	{       
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(
+			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
+    }
+
+    void getTagModes(int* const p_tag)
+	{
+     	p_tag[0] = 1; p_tag[5] = 0; // Heavy translation
+     	p_tag[1] = 0; p_tag[6] = 1; // Electron translation
+     	p_tag[2] = 1; p_tag[7] = 0; // Rotation excitation
+     	p_tag[3] = 0; p_tag[8] = 1; // Vibration excitation
+     	p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
+    }
+    
+    private:
+
+    /**
+     * Small helper class which provides wrapper to
+     * Thermodynamics::speciesCpOverR() to be used with getTFromRhoE().
+     */
+    
+    class Cp {
+    public:
+        Cp(const Thermodynamics& t) : thermo(t) {
+             p_cpt = new double [thermo.nSpecies()]; 
+             p_cpr = new double [thermo.nSpecies()]; 
+             p_cpv = new double [thermo.nSpecies()];
+             p_cpel = new double [thermo.nSpecies()];
+        }
+        void operator () (double T, double* const cp) const {
+          thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cpt, p_cpr, NULL, NULL);
+          int n_species = thermo.nSpecies();
+          for(int iCp = 0; iCp < n_species; ++iCp) {
+            cp[iCp] = p_cpt[iCp]+p_cpr[iCp];
+          }
+        }
+
+    private:
+        const Thermodynamics& thermo;
+	double* p_cpt;
+	double* p_cpr;
+	double* p_cpv;
+	double* p_cpel;
+    }; // class Cp
+    
+    class Cpv {
+    public:
+        Cpv(const Thermodynamics& t) : thermo(t) {
+             p_cpv = new double [thermo.nSpecies()];
+             p_cpel = new double [thermo.nSpecies()];
+        }
+        void operator () (double T, double* const cp) const {
+            thermo.speciesCpOverR(T, T, T, T, T, NULL, NULL, NULL, p_cpv, p_cpel);
+            for(int iCpv = 0; iCpv < thermo.nSpecies(); ++iCpv){
+                cp[iCpv] = p_cpv[iCpv] + p_cpel[iCpv];
+            }
+        }
+    private:
+        const Thermodynamics& thermo;
+	double* p_cpv;
+	double* p_cpel;
+    }; // class Cpv
+
+    /**
+     * Small helper classes which provide wrapper to
+     * Thermodynamics::speciesHOverRT() to be used with getTFromRhoE().
+     */
+    
+    class H {
+    public:
+        H(const Thermodynamics& t, const double& T_vibration) : thermo(t) {
+            Tv = T_vibration;
+        }
+        void operator () (double T, double* const h) const {
+          thermo.speciesHOverRT(T, Tv, T, Tv, Tv, h, NULL, NULL, NULL, NULL, NULL);
+        }
+    private:
+        const Thermodynamics& thermo;
+        double Tv;
+    }; // class H
+    
+    class Hv {
+    public:
+        Hv(const Thermodynamics& t) : thermo(t) { 
+             p_hv  = new double [thermo.nSpecies()]; 
+             p_hel = new double [thermo.nSpecies()]; 
+        }
+        void operator () (double T, double* const h) const {
+            thermo.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, p_hv, p_hel, NULL);
+            for(int ihv = 0; ihv < thermo.nSpecies(); ++ihv){
+                h[ihv] = p_hv[ihv] + p_hel[ihv];
+            }
+        }
+    private:
+        const Thermodynamics& thermo;
+        double* p_hv;
+        double* p_hel;
+    }; // class Hv
+
+private:
     double* mp_work1;
     double* mp_work2;
-
+    double* mp_work3;
+    double* mp_work4;
+    Mutation::Transfer::TransferModel* mp_omega_VT;
+    Mutation::Transfer::TransferModel* mp_omega_CV;
+    Mutation::Transfer::TransferModel* mp_omega_CE;
+//    Mutation::Transfer::TransferModel* mp_omega_EV;
+//    Mutation::Transfer::TransferModel* mp_omega_ET;
+//    Mutation::Transfer::TransferModel* mp_omega_I;
+    
 }; // class ChemNonEqStateModel
 
 // Register the state model

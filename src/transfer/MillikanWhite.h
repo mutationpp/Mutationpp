@@ -25,7 +25,7 @@ public:
     {}
     
     /**
-     * Construct using default values of a and b based on mu and theta_v.
+     * Construct using default values of a and b based on mu and theta.
      */
     MillikanWhitePartner(double mu, double theta)
         : m_a(1.16E-3*std::sqrt(mu)*std::pow(theta, 4.0/3.0)),
@@ -78,7 +78,7 @@ public:
     
     /**
      * Returns the limiting cross-section for vibrational excitation at 50,000 K
-     * for this vibrator.  Defaults to 3.0E-17 unless given differently in the 
+     * for this vibrator.  Defaults to 3.0E-21 unless given differently in the 
      * data file.
      */
     double omega() const {

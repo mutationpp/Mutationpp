@@ -1,3 +1,28 @@
+/**
+ * @file Mixture.h
+ *
+ * @copyright
+ * Copyright 2014 James B. Scoggins
+ *
+ * @license
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef MUTATION_MIXTURE_H
 #define MUTATION_MIXTURE_H
 
@@ -6,6 +31,7 @@
 #include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
+#include "StateModel.h"
 
 namespace Mutation {
 
@@ -38,23 +64,20 @@ public:
     /** 
      * Destructor.
      */
-    ~Mixture()
-    {
-        if (mp_transfer != NULL) delete mp_transfer;
-    }
+    ~Mixture(){}
+//        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
      * Provides energy transfer source terms based on the current state of the
      * mixture.
      */
     void energyTransferSource(double* const p_source) {
-        if (mp_transfer != NULL)
-            mp_transfer->source(p_source);
+         state()->energyTransferSource(p_source);
     }
 
-private:
+//private:
 
-    Transfer::TransferModel* mp_transfer;
+//    Transfer::TransferModel* mp_transfer;
     
 }; // class Mixture
 

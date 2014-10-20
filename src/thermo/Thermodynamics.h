@@ -339,17 +339,43 @@ public:
     double Tel() const;
     
     /**
-     * Fills temperature array with tempertures belonging to the assigned
+     * Fills temperature array with tempertures according to the used
      * StateModel.
      */
     void getTemperatures(double* const p_T) const;
 
     /**
-     * Fills energy density array with energies belonging to the assigned
-     * StateModel.
+     * Fills energy per mass array with energies according to the used
+     * StateModel (total + internal for each species).
      */
-    void getEnergyDensities(double* const p_rhoe) const;
+    void getEnergiesMass(double* const p_e) const;
+    
+    /**
+     * Fills enthalpy per mass array with enthalpy according to the used
+     * StateModel (total + internal for each species).
+     */
 
+    void getEnthalpiesMass(double* const p_h) const;
+    
+    /**
+     * Fills the constant pressure specific heat according to the used
+     * StateModel
+     */
+    
+    void getCpsMass(double* const p_cp) const;
+
+	/**
+     * Fills the constant volume specific heat according to the used
+     * StateModel
+     */
+    
+    void getCvsMass(double* const p_cv) const;
+
+    /**
+     * Fills the tag of the modes according toi the used StateModel
+     */
+    void getTagModes(int* const p_tag) const;
+    
     /**
      * Returns the current mixture static pressure in Pa.
      */
@@ -610,8 +636,16 @@ public:
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
-    
-    void speciesEvibMass(double T, double* const p_evib);
+
+     /**
+     * Computes the unitless species enthalpies and can optionally fill vectors
+     * for each energy mode by explicitly passing each individual temperature .  
+     */
+    void speciesHOverRT(
+        double T, double Te, double Tr, double Tv, double Tel,
+        double* const h, double* const ht = NULL, 
+        double* const hr = NULL, double* const hv = NULL,
+        double* const hel = NULL, double* const hf = NULL) const;
     
     /**
      * Returns the mixture averaged enthalpy in J/mol.
@@ -735,6 +769,7 @@ private:
     
     double* mp_work1;
     double* mp_work2;
+    double* mp_wrkcp;
     double* mp_y;
     double* mp_default_composition;
     

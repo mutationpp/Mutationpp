@@ -177,11 +177,6 @@ void NAME_MANGLE(y)(double* const Y);
 void NAME_MANGLE(get_temperatures)(double* const T);
 
 /**
- * Fills the energy density vector with the current mixture state.
- */
-void NAME_MANGLE(get_energy_densities)(double* const rhoe);
-
-/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -255,7 +250,14 @@ double NAME_MANGLE(mixture_frozen_gamma)();
 double NAME_MANGLE(mixture_frozen_sound_speed)();
 
 /**
- * Returns the species enthalpies in J/kg.
+ * Returns the species energies (total + internal if multi temperature) in J/kg.
+ *
+ * @param e - species energies on return
+ */
+void NAME_MANGLE(species_e_mass)(double *const e);
+
+/**
+ * Returns the species enthalpies (total + internal if multi temperature) in J/kg.
  *
  * @param h - species enthalpies on return
  */
@@ -300,7 +302,7 @@ double NAME_MANGLE(viscosity)();
 /**
  * Returns the mixture thermal conductivity for a frozen mixture.
  */
-double NAME_MANGLE(frozen_thermal_conductivity)();
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -368,6 +370,13 @@ void NAME_MANGLE(surface_mass_balance)
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs);
 
+/**
+ * Returns the pointer to the energy transfer between the internal energy modes 
+ */
+
+void NAME_MANGLE(source_energy_transfer)
+    (double* const p_source_transfer);
+    
 /**
  * @}
  */

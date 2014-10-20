@@ -39,8 +39,8 @@ public:
         double conc = 0.0;
         for (int i = 0; i < ns; ++i) {
             // Check that species densities are at least positive
-            assert(p_mass[i] >= 0.0);
-            mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
+            ///assert(p_mass[i] >= 0.0);
+            mp_X[i] = std::max(p_mass[i] / m_thermo.speciesMw(i), 0.0);
             conc += mp_X[i];
         }
 
@@ -53,7 +53,7 @@ public:
             break;
         case 1:
             // Check that temperature is at least positive
-            assert(p_energy[0] > 0.0);
+            assert(p_energy[0] > 0.0 && "Temperature is negative!");
             m_T = p_energy[0];
             break;
         default:
@@ -68,6 +68,42 @@ public:
         for (int i = 0; i < ns; ++i)
             mp_X[i] /= conc;
         m_P = RU * m_T * conc;
+    }
+
+    void getEnergiesMass(double* const p_e)
+	{
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getEnthalpiesMass(double* const p_h) 
+    {
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getCpsMass(double* const p_Cp) 
+    {
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+    }
+
+	void getCvsMass(double* const p_Cv)
+	{
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
     }
 
 private:
