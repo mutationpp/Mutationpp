@@ -61,12 +61,6 @@ Thermodynamics::Thermodynamics(
     for (int i = 0; i < nSpecies(); ++i)
         m_species_mw(i) = species(i).molecularWeight();
     
-    // Allocate storage for the work array
-    mp_work1 = new double [nSpecies()];
-    mp_work2 = new double [nSpecies()];
-    mp_wrkcp = new double [nSpecies()*nEnergyEqns()];
-    mp_y     = new double [nSpecies()];
-    
     // Default composition (every element has equal parts)
     mp_default_composition = new double [nElements()];
     std::fill(
@@ -79,6 +73,12 @@ Thermodynamics::Thermodynamics(
     // Allocate a new state model
     mp_state = Config::Factory<StateModel>::create(state_model, *this);
     //mp_state->notifyOnUpdate(this);
+
+    // Allocate storage for the work array
+    mp_work1 = new double [nSpecies()];
+    mp_work2 = new double [nSpecies()];
+    mp_wrkcp = new double [nSpecies()*nEnergyEqns()];
+    mp_y     = new double [nSpecies()];
 }
 
 //==============================================================================
