@@ -17,12 +17,12 @@ public:
         : m_vec(mat.rows())
     {
         for (size_t i = 0; i < m_vec.size(); ++i)
-            m_vec(i) = 1.0 / mat(i,i);
+            m_vec(i) = (mat(i,i) != 0.0 ? 1.0 / mat(i,i) : 1.0);
     }
     
     template <typename E>
     inline const VecMultVec<T, Vector<T>, E> solve(const VecExpr<T, E>& rhs) const {
-        return rhs * m_vec;
+        return m_vec * rhs;
     }
 private:
     Vector<T> m_vec;   

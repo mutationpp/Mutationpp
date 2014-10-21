@@ -14,6 +14,7 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 {
     std::swap(opt1.m_species_descriptor, opt2.m_species_descriptor);
     std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
+    std::swap(opt1.m_load_transport, opt2.m_load_transport);
     std::swap(opt1.m_source, opt2.m_source);
     std::swap(opt1.m_state_model, opt2.m_state_model);
     std::swap(opt1.m_thermo_db, opt2.m_thermo_db);
@@ -52,8 +53,9 @@ void MixtureOptions::setDefaultOptions()
 {
     m_species_descriptor = "";
     m_source = "";
-    m_state_model = "EquilTP";
+    m_state_model = "ChemNonEq1T";
     m_thermo_db   = "RRHO";
+    m_load_transport = true;
     m_mechanism   = "none";
     m_viscosity   = "LDLT";
     m_thermal_conductivity = "LDLT";
@@ -105,6 +107,9 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
     // Get the state model
     element.getAttribute("state_model", m_state_model, m_state_model);
     
+    // Check if we should load the transport data at all
+    element.getAttribute("use_transport", m_load_transport, m_load_transport);
+
     // Loop over all of the mixture child elements
     IO::XmlElement::const_iterator iter;
     for (iter = element.begin(); iter != element.end(); ++iter) {

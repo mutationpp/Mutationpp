@@ -12,7 +12,7 @@ namespace Mutation {
  * Tokenizes a string into a vector of sub strings that are separated by the 
  * characters in teh delim string.
  */
-void tokenize(
+std::vector<std::string>& tokenize(
     const std::string &str, std::vector<std::string> &tokens, 
     const std::string &delim = " ", const bool multi_delim = true);
 

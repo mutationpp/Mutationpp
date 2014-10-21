@@ -188,11 +188,19 @@ double Transport::electronThermalConductivity()
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
+    if (lam11 <= 0.0) {
+        for (int i = 1; i < ns; ++i)
+            cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
+    }
+    assert(lam11 > 0.0);
+    //assert(lam22 > 0.0);
+    //assert(lam11*lam22 > lam12*lam12);
+
     // 2nd order solution
-    //return (X[0]*X[0]/lam11);
+    return (X[0]*X[0]/lam11);
     
     // 3rd order solution
-    return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
+    //return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
 }
 
 //==============================================================================
@@ -602,111 +610,202 @@ void Transport::stefanMaxwell(
         return;
     }
 
-    const double tol = 1.0e-30;
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
-    const double* const X = m_thermo.X();
-    const double* const Y = m_thermo.Y();
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
     
+    // Need to place a tolerance on X and Y
+    const double tol = 1.0e-16;
+    static std::vector<double> X(ns);
+    static std::vector<double> Y(ns);
+    for (int i = 0; i < ns; ++i)
+        X[i] = std::max(tol, m_thermo.X()[i]);
+    m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+
+    // Get reference to binary diffusion coefficients
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+
+    // Electron offset
+    const int k = m_thermo.hasElectrons() ? 1 : 0;
+
+    // Compute mixture charge
+    double q = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk3[i] = m_thermo.speciesCharge(i);
+        q += mp_wrk3[i] * X[i];
+    }
+
+    // Compute kappas
+    const double one_over_kbt = 1.0/(KB*Th);
+    for (int i = 0; i < ns; ++i)
+        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+
+    // Compute ambipolar electric field
+    E = (k > 0 ? p_dp[0]/p_V[0] : 0.0);
+
+    // Compute right hand side
+    static RealVector b(ns-k);
+    for (int i = k; i < ns; ++i)
+        b(i-k) = -p_dp[i] + p_V[i]*E;
+
+    // Compute singular system matrix
+    double fac;
+    static RealSymMat G(ns-k);
+    for (int i = k; i < ns; ++i)
+        G(i-k,i-k) = 0.0;
+    for (int i = k; i < ns; ++i) {
+        for (int j = i+1; j < ns; ++j) {
+            fac = X[i]*X[j]/nDij(i,j)*nd;
+            G(i-k,i-k) += fac;
+            G(j-k,j-k) += fac;
+            G(i-k,j-k) = -fac;
+        }
+    }
+
+    // Compute average binary diffusion coefficient
     double a = 0.0;
     for (int i = 0; i < nDij.size(); ++i)
         a += nDij(i);
     a /= ((double)nDij.size()*nd);
     a = 1.0/a;
-    
-    // static storage in order to prevent calls to new and delete every time
-    static RealSymMat G((m_thermo.hasElectrons() ? ns-1 : ns));
-    static RealVector V((m_thermo.hasElectrons() ? ns-1 : ns));
-    static RealVector b((m_thermo.hasElectrons() ? ns-1 : ns));
+
+    // Compute the constraints that are applied to the matrix
+    fac = (k > 0 ? Y[0]/(X[0]*mp_wrk3[0]) : 0.0);
+    for (int i = k; i < ns; ++i)
+        p_V[i] = Y[i] - X[i]*mp_wrk3[i]*fac;
+
+    // Add mass balance relation to make make matrix nonsigular
+    for (int i = k; i < ns; ++i)
+        for (int j = i; j < ns; ++j)
+            G(i-k,j-k) += a*p_V[i]*p_V[j];
+
+    // Solve for the velocities
+    static RealVector V(ns-k);
     static LDLT<double> ldlt;
-    
-    if (m_thermo.hasElectrons()) {
-        // Compute the diffusion transport system
-        //RealSymMat G(ns-1);
-        double temp;
-        for (int i = 1; i < ns; ++i) {
-            G(i-1,i-1) = 0.0;
-            
-            for (int j = 1; j < i; ++j)
-                G(i-1,i-1) -= G(j-1,i-1);
-                
-            for (int j = i+1; j < ns; ++j) {
-                temp = std::max(tol,X[i]*X[j])/nDij(i,j)*nd;
-                G(i-1,i-1) += temp;
-                G(i-1,j-1) = -temp;
-            }
-        }
-        
-        for (int i = 1; i < ns; ++i)
-            for (int j = i; j < ns; ++j)
-                G(i-1,j-1) += a*Y[i]*Y[j];
-        
-        // Compute mixture charge
-        double q = 0.0;
-        for (int i = 0; i < ns; ++i) {
-            mp_wrk3[i] = m_thermo.speciesCharge(i);
-            q += mp_wrk3[i] * X[i];
-        }
-        
-        // Electric field
-        const double kappae = X[0]*mp_wrk3[0]-Y[0]*q;
-        E = p_dp[0] / kappae * KB * Th;
-        
-        // Right-hand side
-        for (int i = 1; i < ns; ++i)
-            b(i-1) = -p_dp[i] + p_dp[0]*(X[i]*mp_wrk3[i]-Y[i]*q)/kappae;
-        
-        // Solve the linear system
-        ldlt.setMatrix(G);
-        ldlt.solve(V, b);
-        
-        // Compute the electron diffusion velocity
-        p_V[0] = 0.0;
-        for (int i = 1; i < ns; ++i) {
-            p_V[i]  = V(i-1);
-            p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
-        }
-        p_V[0] /= (X[0]*QE);
-    
-    // No electrons!!
-    } else {
-        // Compute the diffusion transport system
-        //RealSymMat G(ns);
-        double temp;
-        for (int i = 0; i < ns; ++i) {
-            G(i,i) = 0.0;
-            
-            for (int j = 0; j < i; ++j)
-                G(i,i) -= G(j,i);
-                
-            for (int j = i+1; j < ns; ++j) {
-                temp = std::max(tol, X[i]*X[j])/nDij(i,j)*nd;
-                G(i,i) += temp;
-                G(i,j) = -temp;
-            }
-        }
-        
-        for (int i = 0; i < ns; ++i)
-            for (int j = i; j < ns; ++j)
-                G(i,j) += a*Y[i]*Y[j];
-        
-        // Right-hand side
-        for (int i = 0; i < ns; ++i)
-            b(i) = -p_dp[i];
-        
-        // Solve the linear system
-        ldlt.setMatrix(G);
-        ldlt.solve(V, b);
-        for (int i = 0; i < ns; ++i)
-            p_V[i] = V(i);
-        
-        // Compute mixture charge
-        E = 0.0;
-    }
+    ldlt.setMatrix(G);
+    ldlt.solve(V, b);
+
+    // Copy to output vector
+    for (int i = k; i < ns; ++i)
+        p_V[i] = V(i-k);
+
+    // Compute electron diffusion velocity if need be
+    if (k == 0)
+        return;
+
+    p_V[0] = 0.0;
+    for (int i = k; i < ns; ++i)
+        p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
+    p_V[0] /= -mp_wrk3[0]*X[0];
 }
+
+// For now assume that we have ions and solve the full system in thermal
+// nonequilibrium with ambipolar assumption
+/*void Transport::stefanMaxwell(
+    const double* const p_dp, double* const p_V, double& E)
+{
+    // Determine some constants
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+
+    // Place a tolerance on X and Y
+    const double tol = 1.0e-16;
+    static std::vector<double> xy(2*ns);
+    double *X = &xy[0], *Y = &xy[ns];
+    double sum = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        X[i] = tol + m_thermo.X()[i];
+        sum += X[i];
+    }
+    for (int i = 0; i < ns; ++i)
+        X[i] /= sum;
+    m_thermo.convert<X_TO_Y>(X, Y);
+
+    // Get reference to binary diffusion coefficients
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+
+    // Compute mixture charge (store species' charges in mp_wrk3 work array)
+    double q = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk3[i] = m_thermo.speciesCharge(i);
+        q += mp_wrk3[i] * X[i];
+    }
+
+    // Compute kappas (stored in p_V to avoid creating another array)
+    // also compute the 2-norm of the kappa vector
+    const double one_over_kbt = 1.0/(KB*Th);
+    double s = 0.0;
+    for (int i = 0; i < ns; ++i) {
+        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+        s += p_V[i]*p_V[i];
+    }
+    s = std::sqrt(s);
+
+    // Compute the RHS vector
+    static RealVector b(ns+1);
+    for (int i = 0; i < ns; ++i)
+        b(i) = -p_dp[i];
+    b(0) *= Th/Te;
+    b(ns) = 0.0;
+    //cout << b << endl;
+    // Compute system matrix
+    static RealMatrix G(ns+1,ns+1);
+
+    // - electron contribution
+    double fac1 = Te/Th;
+    double fac2 = fac1*X[0]*nd;
+    G(0,0) = 0.0;
+    for (int j = 1; j < ns; ++j) {
+        G(0,j) =  -fac2*X[j]/nDij(0,j);
+        G(0,0) += G(0,j);
+        G(j,0) =  G(0,j);
+        G(j,j) = -fac1*G(j,0);
+    }
+    G(0,0) /= -fac1;
+    G(0,ns) = -p_V[0]/(fac1*s);
+
+    // - heavy contribution
+    for (int i = 1; i < ns; ++i) {
+        for (int j = i+1; j < ns; ++j) {
+            G(i,j) =  -X[i]*X[j]/nDij(i,j)*nd;
+            G(i,i) -= G(i,j);
+            G(j,i) =  G(i,j);
+            G(j,j) -= G(j,i);
+        }
+        G(i,ns) = -p_V[i]/s;
+    }
+
+    // - ambipolar constraint
+    for (int j = 0; j < ns; ++j)
+        G(ns,j) = -p_V[j]/s;
+    G(ns,ns) = 0.0;
+
+    //cout << G << endl;
+
+    // Finally solve the system for Vi and E
+    static RealVector x(ns+1);
+    std::pair<int, double> ret = Numerics::gmres(
+        G, x, b, Numerics::DiagonalPreconditioner<double>(G));
+
+    // Compute mass constraint projector
+    static RealVector R(ns,1.0);
+    R(0) /= fac1;
+    double r = 0.0;
+    for (int i = 0; i < ns; ++i)
+        r += R(i)*Y[i];
+    double p = 0.0;
+    for (int i = 0; i < ns; ++i)
+        p += x(i)*Y[i];
+    p /= r;
+
+    // Retrieve the solution
+    for (int i = 0; i < ns; ++i)
+        p_V[i] = x(i) - p*R(i);
+    E = b(ns)/s;
+}*/
 
 //==============================================================================
 

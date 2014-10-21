@@ -11,11 +11,11 @@ namespace Mutation {
 
 //==============================================================================
 
-void tokenize(
+std::vector<std::string>& tokenize(
     const string &str, vector<string> &tokens, const string &delim,
     const bool multi_delim)
 {
-    if (str.empty()) return;
+    if (str.empty()) return tokens;
     
     string::size_type last_pos  = 0;
     string::size_type delim_pos;
@@ -49,7 +49,9 @@ void tokenize(
             
             last_pos = delim_pos;
         }
-    }        
+    }
+
+    return tokens;
 }
 
 //==============================================================================

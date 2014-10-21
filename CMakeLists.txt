@@ -16,15 +16,6 @@ if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
 endif()
 
-################################################################################
-# CTest
-################################################################################
-option (ENABLE_TESTING
-    "Enable regression testing with CTest (requires Boost testing library)" OFF)
-if (ENABLE_TESTING)
-    enable_testing()
-endif()
-
 
 ################################################################################
 # Build types
@@ -127,6 +118,15 @@ endif()
 # Source code
 ################################################################################
 # Descend into the src directory to build all targets and libraries
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/general
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/numerics
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thermo
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/transfer
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/transport
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities
+)
 add_subdirectory(src)
 
 
@@ -142,4 +142,14 @@ FILE(GLOB mechanisms data/mechanisms/*.xml)
 install(FILES ${mechanisms} DESTINATION include/mutation++_data/mechanisms)
 FILE(GLOB mixtures data/mixtures/*.xml)
 install(FILES ${mixtures} DESTINATION include/mutation++_data/mixtures)
+
+################################################################################
+# CTest
+################################################################################
+option (ENABLE_TESTING
+    "Enable regression testing with CTest (requires Boost.Test library)" OFF)
+if (ENABLE_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 

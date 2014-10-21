@@ -445,7 +445,7 @@ double Thermodynamics::mixtureFrozenCpMole() const
 double Thermodynamics::mixtureFrozenCpMass() const 
 {
     double cp = 0.0;
-    getCpMass(mp_wrkcp);
+    getCpsMass(mp_wrkcp);
     for (int i = 0; i < nSpecies(); ++i)
        cp += mp_wrkcp[i] * Y()[i];
     return cp;

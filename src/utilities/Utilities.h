@@ -10,6 +10,7 @@
 
 #include <string>
 #include <cstdlib>
+#include <iostream>
 
 #include "AutoRegistration.h"
 #include "IteratorWrapper.h"
@@ -36,7 +37,11 @@ namespace Mutation {
 static std::string getEnvironmentVariable(const std::string& key)
 {
     char* value = std::getenv(key.c_str());
-    return (value == NULL ? std::string() : std::string(value));
+    if (value == NULL) {
+        std::cout << "Warning: environment variable " << key << " not found" << std::endl;
+        return std::string();
+    }
+    return std::string(value);
 }
 
     } // namespace Utilities

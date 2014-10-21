@@ -30,6 +30,7 @@ public:
         : m_species_descriptor(options.m_species_descriptor),
           m_default_composition(options.m_default_composition),
           m_has_default_composition(options.m_has_default_composition),
+          m_load_transport(options.m_load_transport),
           m_source(options.m_source),
           m_state_model(options.m_state_model),
           m_thermo_db(options.m_thermo_db),
@@ -120,11 +121,7 @@ public:
      * Sets the mixture state model to be used.
      */
     void setStateModel(const std::string& state_model) {
-        m_state_model = state_model;
-    }
-    
-    void setStateModel(const char* p_state_model) {
-        m_state_model = std::string(p_state_model);
+        m_state_model.assign(state_model);
     }
     
     /**
@@ -155,6 +152,20 @@ public:
         m_mechanism = mechanism;
     }
     
+    /**
+     * Get option to load the transport data.
+     */
+    bool loadTransport() const {
+        return m_load_transport;
+    }
+
+    /**
+     * Set option to load the transport data.
+     */
+    void loadTransport(bool load) {
+        m_load_transport = load;
+    }
+
     /**
      * Gets the viscosity algorithm to use.
      */
@@ -292,6 +303,8 @@ private:
     
     std::vector<std::pair<std::string, double> > m_default_composition;
     bool m_has_default_composition;
+
+    bool m_load_transport;
 
 	std::string m_source;
     std::string m_state_model;
