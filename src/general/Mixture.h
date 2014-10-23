@@ -55,7 +55,7 @@ public:
 private:
 
     Transfer::TransferModel* mp_transfer;
-    
+
 }; // class Mixture
 
 } // namespace Mutation

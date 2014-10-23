@@ -1,0 +1,12 @@
+<mixture mechanism="air5" thermo_db="RRHO" gsi_mechanism="gsi_air5">
+    
+    <default_element_fractions>
+        N  : 0.79,
+        O  : 0.21
+    </default_element_fractions>
+    
+    <species>
+        N O NO N2 O2
+    </species>
+    
+</mixture>

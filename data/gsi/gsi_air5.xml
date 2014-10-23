@@ -1,0 +1,31 @@
+<!-- This is an example on how to define the wall reactions in a catalytic wall boundary condition with gamma model. -->
+<gsi_mechanism category= "catalysis" model= "gamma">
+
+<!-- This reaction mechanism is an example where only N recombination is taken into account f -->
+
+    <!-- 1 -->
+    <reaction formula="N + N => N2">
+        <gamma_const gamma = "0.01"/>
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N + O => NO">
+        <gamma_const gamma = "0.01"/>
+    </reaction>
+
+    <!-- 3 -->
+    <reaction formula="O + O => O2">
+        <gamma_const gamma = "0.01"/>
+    </reaction>
+
+    <!-- 4
+    <reaction formula="O + O => O2">
+        <gamma_T gamma = "0.01"/>
+    </reaction> -->
+
+    <!-- 5
+    <reaction formula="O + O => O2">
+        <gamma_TP gamma = "0.01"/>
+    </reaction> -->
+
+</gsi_mechanism>

@@ -1,0 +1,39 @@
+<!-- This is a template example on how to define the wall reactions in a catalytic wall boundary condition with finite rate chemistry. -->
+
+<mechanism category= "finite_rate_chemistry" name="guerta">
+
+    <general_parameters c = "1"   />
+
+<!-- This reaction mechanism is an example where only N recombination is taken into account f -->
+
+    <!-- 1 -->
+    <reaction formula="N(g) + A(p) -> N(p)">
+        <physisorption id = "guerta2007" b = ""/>
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N(p) -> N(g) + A(p)">
+        <phys_desorption a = "" b = ""       />
+    </reaction>
+
+    <!-- 3 -->
+    <reaction formula="N(g) + A(c) -> N(c)">
+        <chemisorption a = "" b = "" />
+    </reaction>
+
+    <!-- 4 -->
+    <reaction formula="N(g) + N(c) -> N2 + A(c)">
+        <E-R   a = "" b = ""       > 
+    </reaction>
+
+    <!-- 5 -->
+    <reaction formula="N(p) + A(c) -> N(s) + A(p)">
+         <chem_to_phys     a = "" b = ""          />
+    </reaction>
+
+    <!-- 6 -->
+    <reaction formula="N(c)+ N(p) -> N2 + A(c) + A(p)">
+          <L-H  a = "" b = ""   >
+    </reaction>
+
+</mechanism>

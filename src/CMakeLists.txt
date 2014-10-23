@@ -32,6 +32,11 @@ add_subdirectory(transfer)
 add_subdirectory(transport)
 add_subdirectory(utilities)
 
+if (ENABLE_GSI)
+    add_subdirectory(gsi)
+    add_definitions(-DGSIFLAG=1)
+endif()
+
 #if (ENABLE_TESTING)
 #    add_subdirectory(tests)
 #endif()

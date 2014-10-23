@@ -8,7 +8,7 @@ CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
 
 EXAMPLES  = \
 	equilibrium_air \
-	O2_dissociation
+	O2_dissociation 
 
 all : $(EXAMPLES)
 

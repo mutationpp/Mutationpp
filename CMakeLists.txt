@@ -126,6 +126,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/transfer
     ${CMAKE_CURRENT_SOURCE_DIR}/src/transport
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gsi
 )
 add_subdirectory(src)
 
@@ -153,3 +154,8 @@ if (ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
 
+################################################################################
+# Gas-Surface Interaction
+################################################################################
+option (ENABLE_GSI
+     "Enable Gas-Surface Interaction Module" OFF)
