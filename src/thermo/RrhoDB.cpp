@@ -79,7 +79,7 @@ public:
     RrhoDB(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
-          m_use_tables(false)
+          m_use_tables(true)
     { }
     
     /**

@@ -30,11 +30,11 @@ public:
         delete [] mp_work4;
         delete mp_omega_VT;
         delete mp_omega_CV;
+        delete mp_omega_CElec;
         delete mp_omega_CE;
 //        delete mp_omega_EV;
 //        delete mp_omega_ET;
-//        delete mp_omega_I;
-        //delete p_transfer_model;
+        delete mp_omega_I;
     }
 
     /**
@@ -58,6 +58,9 @@ public:
             mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
             conc += mp_X[i];
         }
+        double elec = 0.0;
+        if(m_thermo.hasElectrons())
+            elec = mp_X[0];
 
         // Compute the temperatures and make sure the variable set is implemented
         switch (vars) {
@@ -66,7 +69,7 @@ public:
             // vibrational energy density equation
 
             getTFromRhoE(
-                Cpv(m_thermo), Hv(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
+                Cpv(m_thermo), Hv(m_thermo), p_energy[1], m_Tv, mp_work1, -elec);
 
             // Next compute the temperature using the total energy density
 
@@ -106,30 +109,23 @@ public:
       
        mp_omega_VT = new Mutation::Transfer::OmegaVT(thermo);
        mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
+       mp_omega_CElec = new Mutation::Transfer::OmegaCE(thermo, kinetics);
        mp_omega_CE = new Mutation::Transfer::OmegaCE(thermo, kinetics);
        //mp_omega_ET = new Mutation::Transfer::OmegaET();
        //mp_omega_EV = new Mutation::Transfer::OmegaEV();
-       //mp_omega_I  = new Mutation::Transfer::OmegaI();
-       
+       mp_omega_I  = new Mutation::Transfer::OmegaI(thermo, kinetics);
     }
     
     void energyTransferSource(double* const omega)
     {
-            double m_work;
-      
-            omega[0] = 0.E0;
-            mp_omega_VT->source(&m_work); 
-            omega[0] += m_work;
-            mp_omega_CV->source(&m_work); 
-            omega[0] += m_work;
-            mp_omega_CE->source(&m_work); 
-            omega[0] += m_work;
-//            mp_omega_ET->source(&m_work); 
-//            omega[0] += m_work;
-//            mp_omega_EV->source(&m_work); 
-//            omega[0] += m_work;
-//            mp_omega_I->source(&m_work); 
-//            omega[0] += m_work;
+         omega[0]  = mp_omega_VT->source(); 
+         omega[0] += mp_omega_CV->source();
+         omega[0] += mp_omega_CElec->source(); 
+         if (m_thermo.hasElectrons()){
+             omega[0] += mp_omega_CE->source();
+             //omega[0] += mp_omega_ET->source();
+             omega[0] += mp_omega_I->source();
+         }
     }
     
     void getTemperatures(double* const p_T) const {
@@ -138,14 +134,19 @@ public:
     }
     
     void getEnergiesMass(double* const p_e)
-	{    
+    {    
         int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
+        int offset = (m_thermo.hasElectrons() ? 1 : 0);
         
-        for(int i = 0; i < ns; ++i)
+        for(int i = offset; i < ns; ++i)
             p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
         for(int i = 0; i < ns; ++i)
             p_e[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
+        if(m_thermo.hasElectrons()){
+            p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
+            p_e[ns] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
+        }
     }
 
     void getEnthalpiesMass(double* const p_h)
@@ -157,34 +158,42 @@ public:
             p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
         for(int i = 0; i < ns; ++i)
             p_h[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
+        if(m_thermo.hasElectrons())
+            p_h[ns] = mp_work1[0]*m_T*RU/m_thermo.speciesMw(0);
     }
     
     void getCpsMass(double* const p_Cp)
-	{       
+    {       
         int ns = m_thermo.nSpecies();
+        int offset = (m_thermo.hasElectrons() ? 1 : 0);
         m_thermo.speciesCpOverR(
 			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
-        for(int i = 0; i < ns; ++i)
+        for(int i = offset; i < ns; ++i)
             p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_thermo.speciesMw(i);
         for(int i = 0; i < ns; ++i)
             p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
+        if(m_thermo.hasElectrons())
+            p_Cp[ns] = mp_work1[0]*RU/m_thermo.speciesMw(0);
     }
 
-	void getCvsMass(double* const p_Cv)
-	{       
+    void getCvsMass(double* const p_Cv)
+    {       
         int ns = m_thermo.nSpecies();
+        int offset = (m_thermo.hasElectrons() ? 1 : 0);
         m_thermo.speciesCpOverR(
 			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
-        for(int i = 0; i < ns; ++i)
+        for(int i = offset; i < ns; ++i)
             p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
         for(int i = 0; i < ns; ++i)
             p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
+        if(m_thermo.hasElectrons())
+            p_Cv[ns] = (mp_work1[0]-1.0)*RU/m_thermo.speciesMw(0);
     }
 
     void getTagModes(int* const p_tag)
-	{
+    {
      	p_tag[0] = 1; p_tag[5] = 0; // Heavy translation
      	p_tag[1] = 0; p_tag[6] = 1; // Electron translation
      	p_tag[2] = 1; p_tag[7] = 0; // Rotation excitation
@@ -204,39 +213,47 @@ public:
         Cp(const Thermodynamics& t) : thermo(t) {
              p_cpt = new double [thermo.nSpecies()]; 
              p_cpr = new double [thermo.nSpecies()]; 
-             p_cpv = new double [thermo.nSpecies()];
-             p_cpel = new double [thermo.nSpecies()];
+        }
+        ~Cp() {
+             delete [] p_cpt;
+             delete [] p_cpr;
         }
         void operator () (double T, double* const cp) const {
           thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cpt, p_cpr, NULL, NULL);
           int n_species = thermo.nSpecies();
-          for(int iCp = 0; iCp < n_species; ++iCp) {
-            cp[iCp] = p_cpt[iCp]+p_cpr[iCp];
-          }
+          int offset = (thermo.hasElectrons() ? 1 : 0);
+          for(int iCp = offset; iCp < n_species; ++iCp) 
+              cp[iCp] = p_cpt[iCp]+p_cpr[iCp];
         }
 
     private:
         const Thermodynamics& thermo;
 	double* p_cpt;
 	double* p_cpr;
-	double* p_cpv;
-	double* p_cpel;
     }; // class Cp
     
     class Cpv {
     public:
         Cpv(const Thermodynamics& t) : thermo(t) {
+             p_cpt = new double [thermo.nSpecies()]; 
              p_cpv = new double [thermo.nSpecies()];
              p_cpel = new double [thermo.nSpecies()];
         }
+        ~Cpv() {
+             delete [] p_cpt;
+             delete [] p_cpv;
+             delete [] p_cpel;
+        }
         void operator () (double T, double* const cp) const {
-            thermo.speciesCpOverR(T, T, T, T, T, NULL, NULL, NULL, p_cpv, p_cpel);
-            for(int iCpv = 0; iCpv < thermo.nSpecies(); ++iCpv){
+            thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cpt, NULL, p_cpv, p_cpel);
+            for(int iCpv = 0; iCpv < thermo.nSpecies(); ++iCpv)
                 cp[iCpv] = p_cpv[iCpv] + p_cpel[iCpv];
-            }
+            if(thermo.hasElectrons())
+                cp[0] = p_cpt[0];
         }
     private:
         const Thermodynamics& thermo;
+	double* p_cpt;
 	double* p_cpv;
 	double* p_cpel;
     }; // class Cpv
@@ -262,17 +279,26 @@ public:
     class Hv {
     public:
         Hv(const Thermodynamics& t) : thermo(t) { 
+             p_ht  = new double [thermo.nSpecies()]; 
              p_hv  = new double [thermo.nSpecies()]; 
              p_hel = new double [thermo.nSpecies()]; 
         }
+        ~Hv() {
+             delete [] p_ht;
+             delete [] p_hv;
+             delete [] p_hel;
+        }
         void operator () (double T, double* const h) const {
-            thermo.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, p_hv, p_hel, NULL);
+            thermo.speciesHOverRT(T, T, T, T, T, NULL, p_ht, NULL, p_hv, p_hel, NULL);
             for(int ihv = 0; ihv < thermo.nSpecies(); ++ihv){
                 h[ihv] = p_hv[ihv] + p_hel[ihv];
+            if(thermo.hasElectrons())
+                h[0] = p_ht[0];
             }
         }
     private:
         const Thermodynamics& thermo;
+        double* p_ht;
         double* p_hv;
         double* p_hel;
     }; // class Hv
@@ -284,10 +310,11 @@ private:
     double* mp_work4;
     Mutation::Transfer::TransferModel* mp_omega_VT;
     Mutation::Transfer::TransferModel* mp_omega_CV;
+    Mutation::Transfer::TransferModel* mp_omega_CElec;
     Mutation::Transfer::TransferModel* mp_omega_CE;
 //    Mutation::Transfer::TransferModel* mp_omega_EV;
 //    Mutation::Transfer::TransferModel* mp_omega_ET;
-//    Mutation::Transfer::TransferModel* mp_omega_I;
+    Mutation::Transfer::TransferModel* mp_omega_I;
     
 }; // class ChemNonEqStateModel
 

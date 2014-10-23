@@ -227,6 +227,12 @@ void NAME_MANGLE(species_cp_mass)(double* const cp)
 }
 
 //==============================================================================
+void NAME_MANGLE(species_cv_mass)(double* const cv)
+{
+    p_mix->getCvsMass(cv); 
+}
+
+//==============================================================================
 double NAME_MANGLE(mixture_frozen_cp_mass)()
 {
     return p_mix->mixtureFrozenCpMass();
