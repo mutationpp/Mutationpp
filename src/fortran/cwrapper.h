@@ -1,13 +1,32 @@
 /**
  * @file cwrapper.h
  *
- * This is the header file for the C wrapper to the Mutation++ library.  It
- * provides a subset of the functionality in C so that it may be used in Fortran
- * codes as well.
+ * @brief This is the header file for the C-wrapper to the Mutation++ library.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
  
-#ifndef CWRAPPER_H
-#define CWRAPPER_H
+#ifndef FORTRAN_CWRAPPER_H
+#define FORTRAN_CWRAPPER_H
 
 // Converts the base function name in mpp_function(_) where the (_) represents
 // the name mangling that is performed in order to use the function in Fortran
