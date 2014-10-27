@@ -227,9 +227,10 @@ private:
 class OmegaET : public TransferModel
 {
 public:
-    OmegaET(const Thermodynamics::Thermodynamics& thermo, Transport::CollisionDB& collisions){
+    OmegaET(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport){
         mp_thermo = &thermo;
-        mp_collisions = &collisions;
+        mp_transport = &transport;
+        mp_collisions = transport.collisionData();
     };
     
     double source()
@@ -250,6 +251,7 @@ public:
     
 private:
     const Thermodynamics::Thermodynamics* mp_thermo;
+    Transport::Transport* mp_transport;
     Transport::CollisionDB* mp_collisions;
 
     double const compute_tau_ET();
@@ -332,15 +334,14 @@ public:
         // Get Formation enthalpy
         mp_thermo->speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
         for (int i=0; i< m_ns-1; ++i)
-            mp_hf[i]*= -RU*mp_thermo->T();
+            mp_hf[i]*= RU*mp_thermo->T();
 
         // Get reaction enthapies
-        for (int i=0; i<m_nr; i++)
-            mp_delta[i]=0;
+        std::fill(mp_delta, mp_delta+m_nr, 0.0);
         mp_kinetics->getReactionDelta(mp_hf,mp_delta);
 
         // Get molar rates of progress
-        //mp_kinetics->netRatesOfProgress(mp_rate);
+        mp_kinetics->netRatesOfProgress(mp_rate);
 
         double src=0;
         for (int i=0; i< m_nr; i++) {

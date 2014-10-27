@@ -22,7 +22,8 @@ Kinetics::Kinetics(
       m_jacobian(thermo),
       mp_ropf(NULL),
       mp_ropb(NULL),
-      mp_rop(NULL)
+      mp_rop(NULL),
+      mp_wdot(NULL)
 {
     if (mechanism == "none")
         return;
@@ -68,6 +69,8 @@ Kinetics::~Kinetics()
         delete [] mp_ropb;
     if (mp_rop != NULL)
         delete [] mp_rop;
+    if (mp_wdot != NULL)
+        delete [] mp_wdot;
 }
 
 //==============================================================================
@@ -138,6 +141,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     mp_ropf  = new double [nReactions()];
     mp_ropb  = new double [nReactions()];
     mp_rop   = new double [nReactions()];
+    mp_wdot  = new double [m_thermo.nSpecies()];
     
 }
 
@@ -244,8 +248,53 @@ void Kinetics::updateROP(
         p_rop[i] = (mp_ropf[i] - mp_ropb[i]);
     
     m_thirdbodies.multiplyThirdbodies(p_conc, p_rop);
+}*/
+
+//==============================================================================
+
+void Kinetics::netRatesOfProgress(double* const p_rop)
+{
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        for (int i = 0; i < nReactions(); ++i)
+            p_rop[i] = 0.0;
+        return;
+    }
+
+    // Compute species concentrations (mol/m^3)
+    const double mix_conc = m_thermo.numberDensity() / NA;
+    const double* const p_x = m_thermo.X();
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        mp_wdot[i] = p_x[i] * mix_conc;
+    
+    // Update the forward and backward rate coefficients
+    mp_rates->update(m_thermo);
+    
+    // Compute forward ROP
+    const double* const lnkf = mp_rates->lnkf();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropf[i] = std::exp(lnkf[i]);
+    m_reactants.multReactions(mp_wdot, mp_ropf);
+    
+    // Compute reverse ROP
+    const double* const lnkb = mp_rates->lnkb();
+    for (int i = 0; i < nReactions(); ++i)
+        mp_ropb[i] = std::exp(lnkb[i]);
+    m_rev_prods.multReactions(mp_wdot, mp_ropb);
+    
+    // Compute net ROP
+    for (int i = 0; i < nReactions(); ++i)
+        mp_rop[i] = mp_ropf[i] - mp_ropb[i];
+    
+    // Thirdbody efficiencies
+    m_thirdbodies.multiplyThirdbodies(mp_wdot, mp_rop);
+    
+    // Multiply by species molecular weights
+    for (int i = 0; i < nReactions(); ++i)
+        p_rop[i] = mp_rop[i];
 }
 
+/*
 //==============================================================================
 
 void Kinetics::netProductionRates(

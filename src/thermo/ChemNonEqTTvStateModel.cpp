@@ -32,8 +32,7 @@ public:
         delete mp_omega_CV;
         delete mp_omega_CElec;
         delete mp_omega_CE;
-//        delete mp_omega_EV;
-//        delete mp_omega_ET;
+        delete mp_omega_ET;
         delete mp_omega_I;
     }
 
@@ -111,8 +110,7 @@ public:
        mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
        mp_omega_CElec = new Mutation::Transfer::OmegaCE(thermo, kinetics);
        mp_omega_CE = new Mutation::Transfer::OmegaCE(thermo, kinetics);
-       //mp_omega_ET = new Mutation::Transfer::OmegaET();
-       //mp_omega_EV = new Mutation::Transfer::OmegaEV();
+       mp_omega_ET = new Mutation::Transfer::OmegaET(thermo, transport);
        mp_omega_I  = new Mutation::Transfer::OmegaI(thermo, kinetics);
     }
     
@@ -123,7 +121,7 @@ public:
          omega[0] += mp_omega_CElec->source(); 
          if (m_thermo.hasElectrons()){
              omega[0] += mp_omega_CE->source();
-             //omega[0] += mp_omega_ET->source();
+             omega[0] += mp_omega_ET->source();
              omega[0] += mp_omega_I->source();
          }
     }
@@ -312,8 +310,7 @@ private:
     Mutation::Transfer::TransferModel* mp_omega_CV;
     Mutation::Transfer::TransferModel* mp_omega_CElec;
     Mutation::Transfer::TransferModel* mp_omega_CE;
-//    Mutation::Transfer::TransferModel* mp_omega_EV;
-//    Mutation::Transfer::TransferModel* mp_omega_ET;
+    Mutation::Transfer::TransferModel* mp_omega_ET;
     Mutation::Transfer::TransferModel* mp_omega_I;
     
 }; // class ChemNonEqStateModel

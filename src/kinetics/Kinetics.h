@@ -113,12 +113,9 @@ public:
      * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
      *
-     * @param T     the temperature in K
-     * @param conc  the species concentration vector in mol/m^3
      * @param rop   on return, the net rates of progress in mol/m^3-s
      */
-    //void netRatesOfProgress(
-    //    const double T, const double* const p_conc, double* const p_rop);
+    void netRatesOfProgress(double* const p_rop);
     
     /**
      * Fills the vector wdot with the net species production rates due to the
@@ -190,6 +187,7 @@ private:
     double* mp_ropf;
     double* mp_ropb;
     double* mp_rop;
+    double* mp_wdot;
 };
 
 

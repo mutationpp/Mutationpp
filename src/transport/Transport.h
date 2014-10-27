@@ -30,6 +30,13 @@ public:
      * Destructor.
      */
     ~Transport();
+
+    /**
+    * Returns a pointer to the collision data object.
+    */
+    CollisionDB* collisionData() {
+        return mp_collisions;
+    }
     
     void stateUpdated() {
         std::cout << "stateUpdated: Transport" << std::endl;
