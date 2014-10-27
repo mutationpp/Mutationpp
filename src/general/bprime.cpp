@@ -1,3 +1,30 @@
+/**
+ * @file bprime.cpp
+ *
+ * @brief Computes the solution of the surface mass balance equation and prints
+ * a table to the console. @see @ref bprime.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 #include "mutation++.h"
 #include <iostream>
@@ -9,7 +36,21 @@
 using namespace std;
 using namespace Mutation;
 
-
+/**
+ * @page bprime B' Solver (bprime)
+ * __Usage__:
+ *
+ *    bprime \f$T_1\f$ \f$T_2\f$ \f$\Delta T\f$ \f$p\f$ \f$B'_g\f$ mixture
+ *
+ * This program generates a so-called "B-prime" table for a given temperature
+ * range and stepsize in K, a fixed pressure in atm, a value of \f$B'_g\f$
+ * (pyrolysis mass flux, nondimensionalized by the boundary layer edge mass
+ * flux), and a given mixture name.  Currently, this program assumes the char
+ * composition to be solid graphite (which must be included in the mixture file)
+ * and a boundary layer edge composition of Air.  The produced table provides
+ * values of \f$B'_c\f$, the wall enthalpy in MJ/kg, and the species mole
+ * fractions at the wall versus temperature.
+ */
 
 int main(int argc, char* argv[])
 {

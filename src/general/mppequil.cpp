@@ -1,3 +1,30 @@
+/**
+ * @file mppequil.cpp
+ *
+ * @brief Utility which provides equilibrium properties for a given mixture.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "mutation++.h"
 #include <iostream>
 #include <fstream>
@@ -563,6 +590,23 @@ void writeHeader(
         cout << endl;
 }
 
+
+/**
+ * @page mppequil Mutation++ Equilibrium Properties (mppequil)
+ *
+ * __Usage:__
+ *
+ * mppequil [OPTIONS] mixture
+ *
+ * Compute equilibrium properties for mixture over a set of temperatures and
+ * pressures using the Mutation++ library.  Use
+ *
+ *     mppequil -h
+ *
+ * for a full list of options.
+ */
+
+
 int main(int argc, char** argv)
 {
 #ifdef _GNU_SOURCE
@@ -570,8 +614,6 @@ int main(int argc, char** argv)
     feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
-    
-    
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);

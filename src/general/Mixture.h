@@ -1,10 +1,12 @@
 /**
  * @file Mixture.h
  *
- * @copyright
- * Copyright 2014 James B. Scoggins
+ * @brief Provides Mixture class declaration. @see Mutation::Mixture
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
- * @license
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
  *
@@ -41,9 +43,9 @@ namespace Mutation {
  * Thermodynamics, Transport, and Kinetics classes.  A Mixture object can be
  * constructed using a mixture file name or a MixtureOptions object.
  *
- * @see Thermodynamics
- * @see Transport
- * @see Kinetics
+ * @see Thermodynamics::Thermodynamics
+ * @see Transport::Transport
+ * @see Kinetics::Kinetics
  */
 class Mixture
     : public Thermodynamics::Thermodynamics, 
@@ -75,10 +77,10 @@ public:
          state()->energyTransferSource(p_source);
     }
 
-//private:
+private:
 
-//    Transfer::TransferModel* mp_transfer;
     
+
 }; // class Mixture
 
 } // namespace Mutation

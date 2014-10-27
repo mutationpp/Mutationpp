@@ -1,3 +1,31 @@
+/**
+ * @file checkmix.cpp
+ *
+ * @brief Loads a mixture and prints information about the mixture to the
+ * console. @see @ref checkmix
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <typeinfo>
@@ -14,6 +42,24 @@ using std::pair;
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Kinetics;
+
+/**
+ * @page checkmix
+ * __Usage 1__:
+ *
+ *    checkmix mixture
+ *
+ * __Usage 2__:
+ *
+ *    checkmix [NASA-7 | NASA-9 | RRHO] species-descriptor
+ *
+ * This program will load a mixture and print out information about the various
+ * elements, species, and reactions in the mixture.  A mixture is loaded just
+ * as it would be in any other application, so this tool is useful to check for
+ * any syntax errors or missing data in a given mixture before using it
+ * elsewhere.  It can also be used to see exactly which order species and
+ * reactions are stored internally in Mutation++ for a given mixture.
+ */
 
 int main(int argc, char** argv)
 {
