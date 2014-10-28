@@ -1,3 +1,30 @@
+/**
+ * @file cg.h
+ *
+ * @brief Conjugate Gradient solver.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef NUMERICS_CG_H
 #define NUMERICS_CG_H
 
@@ -7,11 +34,11 @@ namespace Mutation {
     namespace Numerics {
 
 /**
- * Solves the linear system Ax = b using the Preconditioned Conjugate Gradient 
- * method.
+ * @ingroup itsol
  *
- * A is an NxN symmetric positive definite matrix and x and b are Nx1 column
- * vectors.
+ * Solves the linear system \f$Ax = b\f$ using the Preconditioned Conjugate
+ * Gradient method. \f$A\f$ is an NxN symmetric positive definite matrix and
+ * \f$x\f$ and \f$b\f$ are Nx1 column vectors.
  */
 template <typename T, typename E1, typename E2, typename Preconditioner>
 void cg(const SymMatExpr<T, E1>& A, Vector<T>& x, const VecExpr<T, E2>& b, 
