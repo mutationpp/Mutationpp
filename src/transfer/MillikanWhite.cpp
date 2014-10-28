@@ -1,3 +1,30 @@
+/**
+ * @file MillikanWhite.cpp
+ *
+ * @brief Implementation of classes related to Millikan and White model.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 
 #include "MillikanWhite.h"
 #include "Utilities.h"
@@ -29,15 +56,15 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     
     // Get characteristic vibrational temperature
     
-    double theta=0.0;    //Probably the characteristic vibrational energy is not needed.
-    /*//if (vibrator.hasRRHOParameters())
-    //    theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-    //else {
+    double theta=0.0;
+//    if (vibrator.hasRRHOParameters())
+//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+//    else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
-    //    exit(1);
-    //}*/
+//        exit(1);
+//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -78,15 +105,15 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     const Species& vibrator = thermo.species(name);
     
     // Get characteristic vibrational temperature
-    double theta, mu;
-   // if (vibrator.hasRRHOParameters())
-   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-   // else {
+    double theta = 0.0, mu;
+//    if (vibrator.hasRRHOParameters())
+//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+//    else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
 //        exit(1);
-    //}
+//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
