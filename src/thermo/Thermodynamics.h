@@ -1,3 +1,30 @@
+/**
+ * @file Thermodynamics.h
+ *
+ * @brief Declaration of the Thermodynamics class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef THERMO_THERMODYNAMICS_H
 #define THERMO_THERMODYNAMICS_H
 
@@ -6,7 +33,6 @@
 #include <string>
 #include <vector>
 
-//#include "StateModel.h"
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
@@ -16,8 +42,6 @@
 namespace Mutation {
     namespace Thermodynamics {
 
-//class GfcEquilSolver;
-class MultiPhaseEquilSolver;
 class StateModel;
 
 /**
@@ -47,7 +71,7 @@ enum ConversionType {
 };
 
 /**
- * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
+ * Provides functions which are related to the thermodynamics of a mixture.
  */
 class Thermodynamics //: public StateModelUpdateHandler
 {
