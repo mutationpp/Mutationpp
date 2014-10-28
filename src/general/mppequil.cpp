@@ -206,7 +206,6 @@ void printHelpMessage(const char* const name)
          << "temperatures and pressures using the Mutation++ library." << endl;
     cout << endl;
     cout << tab << "-h, --help          prints this help message" << endl;
-    cout << tab << "-v, --verbose       toggles verbosity on" << endl;
     cout << tab << "    --no-header     no table header will be printed" << endl;
     cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T" << endl;
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
