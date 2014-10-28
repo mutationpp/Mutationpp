@@ -36,7 +36,6 @@
 #include "StoichiometryManager.h"
 #include "ThirdBodyManager.h"
 #include "Numerics.h"
-#include "GfcEquilSolver.h"
 #include "Species.h"
 #include "ThermoDB.h"
 #include "Thermodynamics.h"
