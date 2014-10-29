@@ -134,8 +134,6 @@ public:
     void getEnergiesMass(double* const p_e)
     {    
         int ns = m_thermo.nSpecies();
-        double* mp_work5 = new double [ns];
-        double* mp_work6 = new double [ns];
         m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
 
@@ -156,7 +154,7 @@ public:
         
         for(int i = 0; i < ns; ++i)
             p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
-        for(int i = offset; i < ns; ++i)
+        for(int i = 0; i < ns; ++i)
             p_h[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
         if(m_thermo.hasElectrons())
             p_h[ns] = mp_work2[0]*m_T*RU/m_thermo.speciesMw(0);
