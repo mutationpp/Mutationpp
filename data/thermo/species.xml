@@ -1870,7 +1870,7 @@
 				<level degeneracy="180" energy="114241.0" />
 				<level degeneracy="20" energy="114547.0" />
 				<level degeneracy="108" energy="115015.0" />
-				<level degeneracy="18" energy="115467.0" >
+				<level degeneracy="18" energy="115467.0" />
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				472440

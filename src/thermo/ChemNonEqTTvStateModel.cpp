@@ -134,30 +134,32 @@ public:
     void getEnergiesMass(double* const p_e)
     {    
         int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
+        double* mp_work5 = new double [ns];
+        double* mp_work6 = new double [ns];
+        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
-        
+
         for(int i = offset; i < ns; ++i)
             p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
-        for(int i = 0; i < ns; ++i)
-            p_e[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = offset; i < ns; ++i)
+            p_e[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
         if(m_thermo.hasElectrons()){
             p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
-            p_e[ns] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
+            p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
         }
     }
 
     void getEnthalpiesMass(double* const p_h)
     {    
         int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, NULL, NULL, mp_work2, mp_work3, NULL);
+        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
         
         for(int i = 0; i < ns; ++i)
             p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
-        for(int i = 0; i < ns; ++i)
-            p_h[i+ns] = (mp_work2[i] + mp_work3[i])*m_T*RU/m_thermo.speciesMw(i);
+        for(int i = offset; i < ns; ++i)
+            p_h[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
         if(m_thermo.hasElectrons())
-            p_h[ns] = mp_work1[0]*m_T*RU/m_thermo.speciesMw(0);
+            p_h[ns] = mp_work2[0]*m_T*RU/m_thermo.speciesMw(0);
     }
     
     void getCpsMass(double* const p_Cp)
@@ -169,10 +171,12 @@ public:
 
         for(int i = offset; i < ns; ++i)
             p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_thermo.speciesMw(i);
-        for(int i = 0; i < ns; ++i)
+        for(int i = offset; i < ns; ++i)
             p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons())
+        if(m_thermo.hasElectrons()) {
+            p_Cp[0] = 0.0;
             p_Cp[ns] = mp_work1[0]*RU/m_thermo.speciesMw(0);
+        }
     }
 
     void getCvsMass(double* const p_Cv)
@@ -184,10 +188,12 @@ public:
 
         for(int i = offset; i < ns; ++i)
             p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
-        for(int i = 0; i < ns; ++i)
+        for(int i = offset; i < ns; ++i)
             p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons())
+        if(m_thermo.hasElectrons()) {
+            p_Cv[0] = 0.0;
             p_Cv[ns] = (mp_work1[0]-1.0)*RU/m_thermo.speciesMw(0);
+        }
     }
 
     void getTagModes(int* const p_tag)
@@ -219,9 +225,10 @@ public:
         void operator () (double T, double* const cp) const {
           thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cpt, p_cpr, NULL, NULL);
           int n_species = thermo.nSpecies();
-          int offset = (thermo.hasElectrons() ? 1 : 0);
-          for(int iCp = offset; iCp < n_species; ++iCp) 
+          for(int iCp = 0; iCp < n_species; ++iCp) 
               cp[iCp] = p_cpt[iCp]+p_cpr[iCp];
+          if(thermo.hasElectrons())
+              cp[0] = 0.0;
         }
 
     private:

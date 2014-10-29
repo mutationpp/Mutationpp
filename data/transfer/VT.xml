@@ -20,29 +20,86 @@ Data References:
         <!-- N2 data -->
         <vibrator species="N2" omegav="3.0E-21">
             <partner species="N" a="180.0" b ="0.0262" /><!-- Ref. [1] -->
+            <partner species="N+" a="180.0" b ="0.0262" /><!-- Ref. [1] -->
             <partner species="O" a="72.4" b="0.015" /> <!-- Ref. [1] -->
-            <partner species="N2" a="221.0" b="0.0290" /> <!-- Ref. [1] -->
+            <partner species="O+" a="72.4" b="0.015" /> <!-- Ref. [1] -->
+            <partner species="N2" a="221" b="0.0290" /> <!-- Ref. [1] -->
+            <partner species="N2+" a="221" b="0.0290" /> <!-- Ref. [1] -->
             <partner species="O2" a="229" b="0.0295" /> <!-- Ref. [1] -->
+            <partner species="O2+" a="229" b="0.0295" /> <!-- Ref. [1] -->
             <partner species="NO" a="225" b="0.0293" /> <!-- Ref. [1] -->
+            <partner species="NO+" a="225" b="0.0293" /> <!-- Ref. [1] -->
             <partner species="C" a="72.4" b="0.015" /> <!-- Ref. [2] -->
+        </vibrator>
+
+        <!-- N2+ data precomputed default values -->
+        <vibrator species="N2+" omegav="3.0E-21">
+            <partner species="N" a="170" b="0.0262" />
+            <partner species="N+" a="170" b="0.0262" />
+            <partner species="0" a="178" b="0.0268" />
+            <partner species="0+" a="178" b="0.0268" />
+            <partner species="N2" a="209" b="0.0290" />
+            <partner species="N2+" a="209" b="0.0290" />
+            <partner species="O2" a="216" b="0.0295" />
+            <partner species="O2+" a="216" b="0.0295" />
+            <partner species="NO" a="212" b="0.0293" />
+            <partner species="NO+" a="212" b="0.0293" />
         </vibrator>
         
         <!-- O2 data from Ref. [1] -->
         <vibrator species="O2" omegav="3.0E-21">
             <partner species="N" a="72.4" b="0.015" />
+            <partner species="N+" a="72.4" b="0.015" />
             <partner species="O" a="47.7" b="0.059" />
+            <partner species="O+" a="47.7" b="0.059" />
             <partner species="N2" a="134" b="0.0295" />  
+            <partner species="N2+" a="134" b="0.0295" />  
             <partner species="O2" a="138" b="0.0300" />  
+            <partner species="O2+" a="138" b="0.0300" />  
             <partner species="NO" a="136" b="0.0298" />  
+            <partner species="NO+" a="136" b="0.0298" />  
+        </vibrator>
+
+        <!-- O2+ data precomputed default values -->
+        <vibrator species="O2+" omegav="3.0E-21">
+            <partner species="N" a="148" b="0.0265" />
+            <partner species="N+" a="148" b="0.0265" />
+            <partner species="0" a="155" b="0.0271" />
+            <partner species="0+" a="155" b="0.0271" />
+            <partner species="N2" a="184" b="0.0295" />
+            <partner species="N2+" a="184" b="0.0295" />
+            <partner species="O2" a="190" b="0.0300" />
+            <partner species="O2+" a="190" b="0.0300" />
+            <partner species="NO" a="187" b="0.0298" />
+            <partner species="NO+" a="187" b="0.0298" />
         </vibrator>
         
         <!-- NO data from Ref. [1] -->
         <vibrator species="NO" omegav="3.0E-21">
             <partner species="N"  a="49.5" b="0.042" />
+            <partner species="N+"  a="49.5" b="0.042" />
             <partner species="O"  a="49.5" b="0.042" />
+            <partner species="O+"  a="49.5" b="0.042" />
             <partner species="N2" a="49.5" b="0.042" />
+            <partner species="N2+" a="49.5" b="0.042" />
             <partner species="O2" a="49.5" b="0.042" />
+            <partner species="O2+" a="49.5" b="0.042" />
             <partner species="NO" a="49.5" b="0.042" />
+            <partner species="NO+" a="49.5" b="0.042" />
+        </vibrator>
+        
+        <!-- NO+ data precomputed default values -->
+        <vibrator species="NO+" omegav="3.0E-21">
+            <partner species="N" a="188" b="0.0264" />
+            <partner species="N+" a="188" b="0.0264" />
+            <partner species="0" a="197" b="0.0270" />
+            <partner species="0+" a="197" b="0.0270" />
+            <partner species="N2" a="231" b="0.0293" />
+            <partner species="N2+" a="231" b="0.0293" />
+            <partner species="O2" a="239" b="0.0298" />
+            <partner species="O2+" a="239" b="0.0298" />
+            <partner species="NO" a="236" b="0.0295" />
+            <partner species="NO+" a="236" b="0.0295" />
         </vibrator>
         
         <!-- CO data from Ref. [2] -->

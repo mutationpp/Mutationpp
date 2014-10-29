@@ -34,7 +34,7 @@ public:
     /**
     * Returns a pointer to the collision data object.
     */
-    CollisionDB* collisionData() {
+    CollisionDB* const collisionData() {
         return mp_collisions;
     }
     

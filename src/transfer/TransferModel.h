@@ -232,6 +232,18 @@ public:
         mp_transport = &transport;
         mp_collisions = transport.collisionData();
     };
+
+    /**
+     * Computes the source term of the Electron-Heavy Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
+     * using a Landau-Teller formula:
+     * \f[ \Omega^{ET} = \rho_e \frac{e^T_e\left(T\right)-e^T_e\left(T_{e}\right)}
+     *      {\tau^{ET}}  \f]
+     * 
+     * The relaxation time \f$ \tau^{ET} \f$ is given by the expression:
+     *
+     * \f[ \tau^{ET} = \left( \sum_{j \in \mathcal{H}} \frac{2 M_e}{ M_i} \nu_{ei} \right)^{-1} \f]
+     *
+     */
     
     double source()
     {
@@ -241,12 +253,8 @@ public:
         double T = mp_thermo->T();
         double Tv = mp_thermo->Tv();
 
-        if (mp_thermo->hasElectrons()) {
-            double tau = compute_tau_ET();
-            return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
-        } else {
-            return 0.0;
-        }
+        double tau = compute_tau_ET();
+        return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
     }
     
 private:
@@ -320,6 +328,13 @@ public:
         mp_h = new double [m_ns];
         mp_rate = new double [m_nr];
         mp_delta = new double [m_nr];
+        for(int i=0; i<m_nr; ++i) {
+            if ( (kinetics.reactions()[i].type() == Kinetics::IONIZATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::ION_RECOMBINATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::DISSOCIATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::RECOMBINATION_E))
+                 m_rId.push_back(i);
+        }
     };
 
     ~OmegaI() {
@@ -329,8 +344,20 @@ public:
         delete [] mp_delta;
     };
 
-    double source()
-    {
+    /**
+      * Computes the Electron-Impact reactions heat Generation in \f$ [J/(m^3\cdot s)] \f$
+      * which acts as a shrink to the free electron energy equation.
+      *
+      * \f[ \Omega^{I} = - \sum_{r \in \mathcal{R}} \Delta h_r \xi_r \f]
+      * 
+      * \f[ \mathcal{R} \f] denotes the set of electron impact reactions.
+      * \f[ \Delta h_r \f] is the reaction enthalpy \f[ [J/mol] \f]
+      * \f[ \xi_r \f] is the molar rate of progress \f[ [mol/(m^3\cdot s)] \f]
+      *
+      */
+
+     double source()
+     {
         // Get Formation enthalpy
         mp_thermo->speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
         for (int i=0; i< m_ns-1; ++i)
@@ -344,21 +371,17 @@ public:
         mp_kinetics->netRatesOfProgress(mp_rate);
 
         double src=0;
-        for (int i=0; i< m_nr; i++) {
-            if ( (mp_kinetics->reactions()[i].type() == Kinetics::IONIZATION_E)
-              || (mp_kinetics->reactions()[i].type() == Kinetics::ION_RECOMBINATION_E)
-              || (mp_kinetics->reactions()[i].type() == Kinetics::DISSOCIATION_E)
-              || (mp_kinetics->reactions()[i].type() == Kinetics::RECOMBINATION_E));
-                     src -= mp_delta[i]*mp_rate[i];
-        }
+        for (int i=0; i< m_rId.size(); i++) 
+            src -= mp_delta[m_rId[i]]*mp_rate[m_rId[i]];
         return src;
-    };
+      };
 
 private:
     const Thermodynamics::Thermodynamics* mp_thermo;
     Kinetics::Kinetics* mp_kinetics;
     int m_ns;
     int m_nr;
+    std::vector<int> m_rId;
     double* mp_hf;
     double* mp_h;
     double* mp_rate;
