@@ -82,13 +82,8 @@ public:
      *
      * \f[ \tau^{VT}_m = \frac{ \sum_{j \in \mathcal{H}} \rho_j / M_j}{ \sum_{j \in \mathcal{H}} \rho_j / (M_j \tau^{VT}_{mj}) } \f]
      *
-     * More information about the above model can be found in @cite Park1993:
-     * 
-     * C. Park, Review of chemical kinetics problems of future NASA missions, I: Earth entries,
-     * Journal of Thermophysics and Heat Transfer, 1993, 7(3):385.
-     * 
-     * R. N. Schwarz, Z. I. Slawsky, K. F. Herzfeld, Calculation of vibrational relaxation times 
-     * in gases, Journal of Chemical Physics, 1952, 20:1591.
+     * More information about the above model can be found in @cite Park1993 and 
+     * @cite Schwarz1952 .
      * 
      */
     
