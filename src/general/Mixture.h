@@ -28,12 +28,15 @@
 #ifndef MUTATION_MIXTURE_H
 #define MUTATION_MIXTURE_H
 
+#include <vector>
+
 #include "Thermodynamics.h"
 #include "Kinetics.h"
 #include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
 #include "StateModel.h"
+#include "Composition.h"
 
 namespace Mutation {
 
@@ -79,7 +82,7 @@ public:
 
 private:
 
-    
+    std::vector<Mutation::Thermodynamics::Composition> m_compositions;
 
 }; // class Mixture
 

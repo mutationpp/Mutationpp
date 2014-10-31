@@ -373,17 +373,11 @@ Options parseOptions(int argc, char** argv)
     
     // Elemental mole fractions
     if (optionExists(argc, argv, "--elem-x")) {
-        std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--elem-x"), tokens, ":, ");
-        
-        if (tokens.size() % 2 == 0) {
-            for (int i = 0; i < tokens.size(); i += 2)
-                opts.p_mixture_opts->setDefaultComposition(
-                    tokens[i], std::atof(tokens[i+1].c_str()));
-        } else {
-            cout << "Bad format for element fractions!" << endl;
-            printHelpMessage(argv[0]);
-        }
+        opts.p_mixture_opts->addComposition(
+            Thermodynamics::Composition(
+                "elem-x", getOption(argc, argv, "--elem-x")),
+            true
+        );
     }
     
     // Thermodynamic database

@@ -44,11 +44,12 @@ Mixture::Mixture(const MixtureOptions& options)
         options.loadTransport()),
       Kinetics(
         static_cast<const Thermodynamics&>(*this),
-        options.getMechanism())
+        options.getMechanism()),
+      m_compositions(options.compositions())
 {
     // Set default composition if available
     if (options.hasDefaultComposition())
-        setDefaultComposition(options.getDefaultComposition());
+        setDefaultComposition(m_compositions[options.getDefaultComposition()]);
     
     // Instatiate a new energy transfer model
     state()->initializeTransferModel(*this, *this, *this);

@@ -28,6 +28,7 @@
 #include "Thermodynamics.h"
 #include "StateModel.h"
 #include "Utilities.h"
+#include "Composition.h"
 //#include "MultiPhaseEquilSolver.h"
 //#include "ParticleRRHO.h"
 
@@ -125,53 +126,11 @@ Thermodynamics::~Thermodynamics()
 
 //==============================================================================
 
-void Thermodynamics::setDefaultComposition(
-        const std::vector<std::pair<std::string, double> >& composition)
+void Thermodynamics::setDefaultComposition(const Composition& c)
 {
-    // Make sure all elements are included exactly once and 
-    bool set_element [nElements()];
-    std::fill(set_element, set_element+nElements(), false);
-    
-    vector< pair<string, double> >::const_iterator iter = 
-        composition.begin();
-    
-    for ( ; iter != composition.end(); ++iter) {
-        int index = elementIndex(iter->first);
-        if (index >= 0) {
-            if (set_element[index]) {
-                cerr << "Error: trying to set the default elemental"
-                     << " composition for element " << iter->first
-                     << " more than once!" << endl;
-                exit(1);
-            } else {
-                mp_default_composition[index] = iter->second;
-                set_element[index] = true;
-            }
-        } else {
-            cerr << "Error: trying to set the default elemental"
-                 << " composition for element " << iter->first
-                 << " which is not in this mixture!" << endl;
-            exit(1);
-        }
-    }
-    
-    for (int i = 0; i < nElements(); ++i) {
-        if (!set_element[i]) {
-            cerr << "Error: did not include element " << elementName(i)
-                 << " while setting the default elemental compsotion"
-                 << " of the mixture!" << endl;
-            exit(1);
-        }
-    }
-    
-    //cout << "Default Composition Set:" << endl;
-    //for (int i = 0; i < nElements(); ++i)
-    //    cout << elementName(i) << " " << mp_default_composition[i] << endl;
-        
-    
-    // Scale the fractions to sum to one
-    //RealVecWrapper wrapper(mp_default_composition, nElements());
-    //wrapper = wrapper / wrapper.sum();
+    c.getComposition(m_element_indices, mp_default_composition);
+    if (c.type() == Composition::MASS)
+        convert<YE_TO_XE>(mp_default_composition, mp_default_composition);
 }
 
 //==============================================================================

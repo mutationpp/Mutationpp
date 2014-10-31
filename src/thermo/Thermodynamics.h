@@ -43,6 +43,7 @@ namespace Mutation {
     namespace Thermodynamics {
 
 class StateModel;
+class Composition;
 
 /**
  * Possible conversion methods that can be used with the 
@@ -217,8 +218,9 @@ public:
      * result if each element is not included exactly once in the list or if an
      * element that does not exist in the mixture is included.
      */
-    void setDefaultComposition(
-        const std::vector<std::pair<std::string, double> >& composition);
+    //void setDefaultComposition(
+    //    const std::vector<std::pair<std::string, double> >& composition);
+    void setDefaultComposition(const Composition& c);
     
     /**
      * Returns the default elemental fraction for the element with a given

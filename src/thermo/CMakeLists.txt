@@ -24,6 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 add_sources(mutation++
     ChemNonEqStateModel.cpp
     ChemNonEqTTvStateModel.cpp
+    Composition.cpp
     EquilStateModel.cpp
     MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
@@ -38,6 +39,7 @@ add_sources(mutation++
     ThermoDB.cpp
 )
 
+install(FILES Composition.h DESTINATION include/mutation++)
 install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)

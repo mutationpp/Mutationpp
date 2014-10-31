@@ -47,5 +47,6 @@
 #include "IteratorWrapper.h"
 #include "LookupTable.h"
 #include "Units.h"
+#include "Composition.h"
 
 #endif // MUTATIONPP_H
