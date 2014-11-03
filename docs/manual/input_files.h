@@ -144,18 +144,24 @@ general, the following steps are taken to order the species:
 A good way to see how the species are actually ordered in Mutation++ is to check the
 mixture with the [checkmix](@ref checkmix) program.
 
-@subsection default_composition Default Elemental Composition
+@subsection compositions Named Elemental Compositions
 
-The default elemental composition of a mixture is used in the equilibrium solver
-when no composition is given.  Unless given in the mixture file, the default composition
-is taken as each element in equal parts.  To specify a different composition, use
-the format in the following example for air plasma.
+Named elemental compositions can be included in the mixture file which can then
+be retrieved inside Mutation++ (see Mutation::Mixture::getComposition()).  Many of the 
+tools included with Mutation++ can also use this information to simplify input
+on the command line.  An example of a list of element compositions for the 
+11-species Air mixture are shown below.
 
 @code{.xml}
-<default_element_fractions>
-    N : 0.79, O : 0.21 : e- : 0.0
-</default_element_fractions>
+<element_compositions default="air1">
+    <composition name="air1"> e-:0.0, N:0.79, O: 0.21 </composition>
+    <composition name="air2"> e-:0.0, N:0.80, O: 0.20 </composition>
+</element_compositions>
 @endcode
+
+Note that if the `default` attribute is used as above, the composition with the
+name in the `default` value will be use as the default composition when computing
+equilibrium calculations.
 
 ----
 @section elements Elements
@@ -181,24 +187,56 @@ modified.
 
 @subsection nasa_7 NASA 7-Coefficient Polynomials
 
-     N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1  
-      0.24159429E+01 0.17489065E-03-0.11902369E-06 0.30226244E-10-0.20360983E-14    2
-      0.56133775E+05 0.46496095E+01 0.25000000E+01 0.00000000E+00 0.00000000E+00    3
-      0.00000000E+00 0.00000000E+00 0.56104638E+05 0.41939088E+01 0.56850013E+05    4
+
+
+@code{.txt}
+N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1  
+ 0.24159429E+01 0.17489065E-03-0.11902369E-06 0.30226244E-10-0.20360983E-14    2
+ 0.56133775E+05 0.46496095E+01 0.25000000E+01 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.56104638E+05 0.41939088E+01 0.56850013E+05    4
+@endcode
 
 @subsection nasa_9 NASA 9-Coefficient Polynomials
 
-     N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.                      
-      3 tpis78 N   2.00    0.00    0.00    0.00    0.00 0   28.0134000          0.000
-         200.000   1000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
-      2.210371497D+04-3.818461820D+02 6.082738360D+00-8.530914410D-03 1.384646189D-05
-     -9.625793620D-09 2.519705809D-12                 7.108460860D+02-1.076003744D+01
-        1000.000   6000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
-      5.877124060D+05-2.239249073D+03 6.066949220D+00-6.139685500D-04 1.491806679D-07
-     -1.923105485D-11 1.061954386D-15                 1.283210415D+04-1.586640027D+01
-        6000.000  20000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
-      8.310139160D+08-6.420733540D+05 2.020264635D+02-3.065092046D-02 2.486903333D-06
-     -9.705954110D-11 1.437538881D-15                 4.938707040D+06-1.672099740D+03
+@cite McBride1996
+Constants                                               | Format       | Columns
+--------------------------------------------------------|--------------|--------
+<b>Line 1</b>                                           | -            | -
+Species name                                            | `A24`        | `1-24`
+Comments (data source)                                  | `A56`        | `25-80`
+<b>Line 2</b>                                           | -            | -
+Number of \f$T\f$ intervals                             | `I2`         | `2`  
+Optional identification code                            | `A6`         | `4-9`
+Chemical formulas, symbols, and numbers                 | `5(A2,F6.2)` | `11-50`
+Zero for gas, nonzero for condensed phases              | `I1`         | `52`
+Molecular weight                                        | `F13.5`      | `53-65`
+Heat of formation at 298.15 K, J/mol                    | `F13.5`      | `66-80`
+<b>Line 3</b>                                           | -            | -
+Temperature range                                       | `2F10.3`     | `2-21`
+Number of coefficients for \f$C_p^\circ/R_u\f$          | `I1`         | `23`
+\f$T\f$ exponents in polynomial for \f$C_p^\circ/R_u\f$ | `8F5.1`      | `24-63`
+\f$H^\circ (298.15)-H^\circ (0)\f$, J/mol               | `F15.3`      | `66-80`
+<b>Line 4</b>                                           | -            | -
+First five coefficients for \f$C_p^\circ/R_u\f$         | `5F16.8`     | `1-80`
+<b>Line 5</b>                                           | -            | -
+Last three coefficients for \f$C_p^\circ/R_u\f$         | `3F16.8`     | `1-48`
+Integration constants \f$ b_1 \f$ and \f$ b_2 \f$       | `2F16.8`     | `49-80`
+<i>Repeat 3, 4, and 5 for each interval...</i>          | -            | - 
+
+
+@code{.txt}
+N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.                      
+ 3 tpis78 N   2.00    0.00    0.00    0.00    0.00 0   28.0134000          0.000
+    200.000   1000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+ 2.210371497D+04-3.818461820D+02 6.082738360D+00-8.530914410D-03 1.384646189D-05
+-9.625793620D-09 2.519705809D-12                 7.108460860D+02-1.076003744D+01
+   1000.000   6000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+ 5.877124060D+05-2.239249073D+03 6.066949220D+00-6.139685500D-04 1.491806679D-07
+-1.923105485D-11 1.061954386D-15                 1.283210415D+04-1.586640027D+01
+   6000.000  20000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+ 8.310139160D+08-6.420733540D+05 2.020264635D+02-3.065092046D-02 2.486903333D-06
+-9.705954110D-11 1.437538881D-15                 4.938707040D+06-1.672099740D+03
+@endcode
 
 @subsection rrho Rigid-Rotator Harmonic-Oscillators
 
@@ -307,7 +345,7 @@ Att. | Value
 `A`  | pre-exponential factor
 `n`  | temperature exponent
 `Ea` | activation energy
-`T`  |characteristic temperature (\f$E_a/R_u\f$)
+`T`  | characteristic temperature (\f$E_a/R_u\f$)
 _note: only one of `Ea` or `T` may be used, not both_
 
 
