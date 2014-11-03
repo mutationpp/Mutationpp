@@ -15,7 +15,7 @@ directory as follows:
   + __transfer__ internal energy [transfer model databases](@ref transfer_databases)
   + __transport__ [collision integral database](@ref collision_integrals)
 
-The path to the __data__ directory is given by the `MPP_DATA_DIRECTORY` environment
+The path to the `data` directory is given by the `MPP_DATA_DIRECTORY` environment
 variable which should have been setup during the [installation](@ref installation) of Mutation++.
 Note that [mixture files](@ref mixtures) may also be in the local directory where
 an excutable that utilizes Mutation++ is being run.
@@ -23,7 +23,7 @@ an excutable that utilizes Mutation++ is being run.
 @subsection simple_xml Simplified XML Language
 Many of these files are written in a simplified version of the Extensible Markup 
 Language (XML).  XML provides a human readable, yet complex and extensible format for data
-to be stored with only a few, limited rules.
+to be stored with only a few, limited rules.  An example XML fragment is shown below.
 
 \code{.xml}
 <!-- Comment string -->
@@ -35,25 +35,129 @@ to be stored with only a few, limited rules.
 </root_tag>
 \endcode
 
-The above code fragment shows a small example of how the simplified XML format works for 
-Mutation++.  An XML document begins with a root XML element.  Every element must begin 
-with a tag that identifies what type of element it is.  The root element depicted in 
-the example is of type `root_tag`.  Every element also ends with an end-tag 
-which signifies the end of the element.  Each element may have as many attribute/value 
-pairs as is desired following the element's tag.  Each pair must consist of an attribute 
-name followed by an equal sign and the value of the attribute in quotations.  Between the 
-begin- and end-tags of an element, an element may also contain one or more child elements 
-or text (but not both).  From the figure, the root element contains two child elements 
+An XML document begins with a __root element__.  Every __element__ (or __node__) must begin 
+with a __tag__ that identifies what type of element it is.  The root element depicted in 
+the example is of type `root_tag`.  Every element also ends with an __end-tag__ 
+which signifies the end of the element.  Each element may have as many __attribute/value 
+pairs__ as is desired following the element's tag.  Each pair must consist of an attribute 
+name followed by an equal sign and the value of the attribute in quotations.  
+
+Between the tag and end-tag of an element, an element may also contain one or more __child elements__
+or __text__ (but not both).  From the figure, the root element contains two child elements 
 named `child_tag` and `child2_tag`.  Note that the first child element is an example of an 
 element which contains text instead of more child elements.  The second child element is 
 an example of a short-hand format for elements which only contain attributes.  For such 
 elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute 
-list is sufficient to end the element.  Finally, comments can be inserted anywhere outside
+list is sufficient to end the element.  Finally, __comments__ can be inserted anywhere outside
 of element tags.  Comment strings begin with `<!-``-` and end with `-``->` and can be spread 
 over multiple lines.
 
+----
 @section mixtures Mixtures
 
+Mixture files are located in the `data/mixtures` directory.  They are the primary
+input mode in Mutation++ because they provide the list of species to be loaded as
+well as any options that can be used to control the behavior of Mutation++.
+
+@code{.xml}
+<!-- Example mixture file -->
+<mixture thermo_db="RRHO">
+    <!-- Species list -->
+    <species>
+        N2 N2+ N N+ e-
+    </species>
+</mixture>
+@endcode
+
+@subsection miture_opts Mixture Options
+
+The following options are available as attributes in the `mixture` element.  If an
+attribute is not given, then the __bold value__ is taken as the __default__.
+
+Attribute              | Possible Values                                     | Description
+-----------------------|-----------------------------------------------------|------------
+`mechanism`            | __none__, name                                      | name of [reaction mechanism](@ref reaction_mechanisms)
+`thermal_conductivity` | `CG`, __LDLT__, `Wilke`                             | choice of heavy particle translational thermal conductivity algorithm
+`thermo_db`            | __RRHO__, `NASA-7`, `NASA-9`                        | choice of [thermodynamic database](@ref thermodynamic_databases)
+`state_model`          | __ChemNonEq1T__, `ChemNonEqTTv`, `Equil`, `EquilTP` | choice of [state model](@ref statemodels)
+`use_transport`        | `no`, __yes__                                       | whether or not to load transport data
+`viscosity`            | `CG`, `Gupta-Yos`, __LDLT__, `Wilke`                | choice of viscosity algorithm
+
+@subsection species_list Species List Descriptor
+
+A _species list descriptor_ tells Mutation++ which species to load from the chosen
+thermodynamic database.  The simplest version of a descriptor is a list of species
+names separated by white space as in the example mixture above.
+
+A species list can also contain a more generic descriptor which allows the user to
+choose species based on a given set of rules.  For now, the rule simply allows
+to choose all species in a particular category which contian certain elements from a
+list.  The format for this descriptor is
+
+     { category with element_list }
+
+where `category` can be one of the following strings:
+- __gases__ selects from all gases in the database
+- __liquids__ selects from all liquids in the database
+- __solids__ selects from all solids in the database
+- __condensed__ combines __liquids__ and __solids__
+- __all__ selects from all species in the database
+
+The `element_list` should be a comma-separated list of [element names](@ref elements).
+A rule can also be combined with a list of species names.  For example, if you
+want a mixture with all gas species containing the elements C,H,O and graphite, the
+species node would look like the following:
+
+@code{.xml}
+<species>
+    {gases with C,H,O,e-} C(gr)
+<species>
+@endcode
+
+Note that the electron is also included in the above example.  This allows ions in
+the mixture because they are treated as species with the fake "electron element"
+(see the [Elements](@ref elements) section for more details).
+
+@subsubsection species_names Species Names
+
+Species names given in any data file, must obey the following rules:
+- the characters `"`, `{`, `}`, `=`, `<`, `>`, and spaces are __not allowed__
+- the first character __cannot be__ a numeric digit
+- placing `(#)` (where `#` represents a whole number) at the end of a name indicates the
+  `#`<sup>th</sup> electronic energy level of that species.
+  + example: `N2(3)` is the 4<sup>th</sup> electronic level of N<sub>2</sub> because
+    the index begins at 0
+  + note that this only works if the thermodynamic database being used includes
+    electronic energy levels for that species
+
+@subsubsection species_order Species Order
+
+A list of species may not be represented internally in Mutation++ in the order they
+are specified in the species list descriptor.  Mutation++ places
+the species in an order which makes indexing the species the most convenient.  In
+general, the following steps are taken to order the species:
+-# if present, the electron is placed at the beginning of the list
+-# gas species are placed in front of condensed phase species
+-# if electronic states are specified for any species, they are expanded in place
+-# finally, species take the order given in the [list descriptor](@ref species_list)
+
+A good way to see how the species are actually ordered in Mutation++ is to check the
+mixture with the [checkmix](@ref checkmix) program.
+
+@subsection default_composition Default Elemental Composition
+
+The default elemental composition of a mixture is used in the equilibrium solver
+when no composition is given.  Unless given in the mixture file, the default composition
+is taken as each element in equal parts.  To specify a different composition, use
+the format in the following example for air plasma.
+
+@code{.xml}
+<default_element_fractions>
+    N : 0.79, O : 0.21 : e- : 0.0
+</default_element_fractions>
+@endcode
+
+----
 @section elements Elements
 
 Element names and molecular weights are stored in the `elements.xml` file in the
@@ -72,15 +176,77 @@ changed__ in the `elements.xml` file.  In general, most of the known elements ar
 already given in `elements.xml` and it is unlikely that it should need to be 
 modified.
 
+----
 @section thermodynamic_databases Thermodynamic Databases
 
 @subsection nasa_7 NASA 7-Coefficient Polynomials
 
+     N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1  
+      0.24159429E+01 0.17489065E-03-0.11902369E-06 0.30226244E-10-0.20360983E-14    2
+      0.56133775E+05 0.46496095E+01 0.25000000E+01 0.00000000E+00 0.00000000E+00    3
+      0.00000000E+00 0.00000000E+00 0.56104638E+05 0.41939088E+01 0.56850013E+05    4
+
 @subsection nasa_9 NASA 9-Coefficient Polynomials
+
+     N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.                      
+      3 tpis78 N   2.00    0.00    0.00    0.00    0.00 0   28.0134000          0.000
+         200.000   1000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+      2.210371497D+04-3.818461820D+02 6.082738360D+00-8.530914410D-03 1.384646189D-05
+     -9.625793620D-09 2.519705809D-12                 7.108460860D+02-1.076003744D+01
+        1000.000   6000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+      5.877124060D+05-2.239249073D+03 6.066949220D+00-6.139685500D-04 1.491806679D-07
+     -1.923105485D-11 1.061954386D-15                 1.283210415D+04-1.586640027D+01
+        6000.000  20000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
+      8.310139160D+08-6.420733540D+05 2.020264635D+02-3.065092046D-02 2.486903333D-06
+     -9.705954110D-11 1.437538881D-15                 4.938707040D+06-1.672099740D+03
 
 @subsection rrho Rigid-Rotator Harmonic-Oscillators
 
+@code{.xml}
+<!-- Nitrogen diatomic -->
+<species name="N2">
+	<stoichiometry>
+		N: 2
+	</stoichiometry>
+	<thermodynamics type="RRHO">
+		<linear>
+			yes
+		</linear>
+		<rotational_temperature units="K">
+			2.886
+		</rotational_temperature>
+		<steric_factor>
+			2
+		</steric_factor>
+		<vibrational_temperatures units="K">
+			3408.464
+		</vibrational_temperatures>
+		<electronic_levels units="1/cm">
+			<level degeneracy="1" energy="0.0" />
+			<level degeneracy="3" energy="50203.5" />
+			<level degeneracy="6" energy="59619.2" />
+			<level degeneracy="6" energy="59808.0" />
+			<level degeneracy="3" energy="66272.5" />
+			<level degeneracy="1" energy="68152.7" />
+			<level degeneracy="2" energy="69283.0" />
+			<level degeneracy="2" energy="72097.6" />
+			<level degeneracy="5" energy="77600.0" />
+			<level degeneracy="1" energy="85200.0" />
+			<level degeneracy="6" energy="86800.0" />
+			<level degeneracy="6" energy="89136.7" />
+			<level degeneracy="10" energy="93000.0" />
+			<level degeneracy="6" energy="97603.0" />
+			<level degeneracy="6" energy="104600.0" />
+		</electronic_levels>
+		<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+			0.0
+		</formation_enthalpy>
+	</thermodynamics>
+</species>
+@endcode
 
+
+----
 @section reaction_mechanisms Reaction Mechanisms
 
 A __mechanism name__ _referenced in a mixture file will correspond to a file with an .xml 
@@ -214,7 +380,7 @@ resulting mechanism file `example.xml` is given below.
 </mechanism>
 \endcode
 
-
+----
 @section collision_integrals Collision Integrals
 
 Collision integral data is currently the only input data which does not use the
@@ -237,6 +403,7 @@ of two Nitrogen molecules.
                 0           0           0      0.1398
 
 
+----
 @section transfer_databases Energy Transfer Model Data
 
 */
