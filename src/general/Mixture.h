@@ -80,6 +80,24 @@ public:
          state()->energyTransferSource(p_source);
     }
 
+    /**
+     * Add a named element composition to the mixture which may be retrieved
+     * with getComposition().
+     */
+    void addComposition(
+        const Mutation::Thermodynamics::Composition& c,
+        bool make_default = false);
+
+    /**
+     * Gets the element mole or mass fractions associated with a named
+     * composition in the mixture.  Returns false if the composition does not
+     * exist in the list, true otherwise.
+     */
+    bool getComposition(
+        const std::string& name, double* const p_vec,
+        Mutation::Thermodynamics::Composition::Type type =
+            Mutation::Thermodynamics::Composition::MOLE) const;
+
 private:
 
     std::vector<Mutation::Thermodynamics::Composition> m_compositions;

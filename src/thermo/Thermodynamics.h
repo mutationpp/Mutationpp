@@ -781,14 +781,16 @@ private:
      */
     void addSpecies(const Species& species);
 
+protected:
+
+    std::map<std::string, int> m_species_indices;
+    std::map<std::string, int> m_element_indices;
+
 private:
   
     ThermoDB* mp_thermodb;
     MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
-    
-    std::map<std::string, int> m_species_indices;
-    std::map<std::string, int> m_element_indices;
     
     Numerics::RealMatrix m_element_matrix;
     Numerics::RealVector m_species_mw;

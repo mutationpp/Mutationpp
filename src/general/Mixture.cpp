@@ -28,6 +28,8 @@
 #include "Mixture.h"
 #include "StateModel.h"
 
+using namespace Mutation::Thermodynamics;
+
 namespace Mutation {
 
 //==============================================================================
@@ -44,9 +46,12 @@ Mixture::Mixture(const MixtureOptions& options)
         options.loadTransport()),
       Kinetics(
         static_cast<const Thermodynamics&>(*this),
-        options.getMechanism()),
-      m_compositions(options.compositions())
+        options.getMechanism())
 {
+    // Add all the compositions given in mixture options to the composition list
+    for (int i = 0; i < options.compositions().size(); ++i)
+        addComposition(options.compositions()[i]);
+
     // Set default composition if available
     if (options.hasDefaultComposition())
         setDefaultComposition(m_compositions[options.getDefaultComposition()]);
@@ -54,6 +59,53 @@ Mixture::Mixture(const MixtureOptions& options)
     // Instatiate a new energy transfer model
     state()->initializeTransferModel(*this, *this, *this);
     
+}
+
+//==============================================================================
+
+void Mixture::addComposition(const Composition& c, bool make_default)
+{
+    // Make sure all the components are valid elements for this mixture
+    for (int i = 0; i < c.size(); ++i) {
+        if (elementIndex(c[i].name) < 0) {
+            std::cerr << "Error: composition '" << c.name()
+                      << "'has an element which does not exist in mixture!"
+                      << std::endl;
+            std::exit(1);
+        }
+    }
+
+    m_compositions.push_back(c);
+
+    if (make_default)
+        setDefaultComposition(c);
+}
+
+//==============================================================================
+
+bool Mixture::getComposition(
+    const std::string& name, double* const p_vec, Composition::Type type) const
+{
+    int i = 0;
+    for ( ; i < m_compositions.size(); ++i)
+        if (m_compositions[i].name() == name) break;
+
+    // Check if there is a composition with the given name
+    if (i == m_compositions.size())
+        return false;
+
+    // Get the composition
+    m_compositions[i].getComposition(m_element_indices, p_vec);
+
+    // Convert if necessary
+    if (m_compositions[i].type() != type) {
+        if (type == Composition::MOLE)
+            convert<YE_TO_XE>(p_vec, p_vec);
+        else
+            convert<XE_TO_YE>(p_vec, p_vec);
+    }
+
+    return true;
 }
 
 //==============================================================================
