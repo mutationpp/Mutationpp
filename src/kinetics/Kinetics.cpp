@@ -54,9 +54,16 @@ Kinetics::Kinetics(
     if (mechanism == "none")
         return;
     
-    mechanism = 
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/mechanisms/" +
-        mechanism + ".xml";
+    // Check if the file is in the local directory
+    mechanism = mechanism + ".xml";
+    {
+        ifstream file(mechanism.c_str(), ios::in);
+
+        // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mechanisms
+        if (!file.is_open())
+            mechanism = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
+                "/mechanisms/" + mechanism;
+    }
 
     // Open the mechanism file as an XML document
     IO::XmlDocument doc(mechanism);        
