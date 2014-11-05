@@ -3,6 +3,8 @@ body {
   background-color: #CCCCCC;
 }
 
+div.top { background-color: white; }
+
 div.contents {
   margin-top: 0px;
   margin-left: 0px;
@@ -40,20 +42,16 @@ div.header
   -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.15);
 }
 
-div.headertitle {
-  padding-left: 0px;
-  font-size: 150%;
-}
 
-table.pageheader {
-  background-color: #2C4AA8;
+table {
+  background-color: white;
 }
 
 h1 { font-size: 150%; }
 h2 { font-size: 135%; }
 h3 { font-size: 120%; }
 
-header { background-color: white; }
+div.titlearea { background-color: white; }
 
 hr.footer {
         display: none;

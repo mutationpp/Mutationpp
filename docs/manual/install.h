@@ -1,6 +1,8 @@
 /**
 @page installation Installation
 
+@tableofcontents
+
 @section prerequisits Prerequisits
 
 Mutation++ is designed from the ground up to be self sufficient and does not

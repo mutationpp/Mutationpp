@@ -187,6 +187,29 @@ modified.
 
 @subsection nasa_7 NASA 7-Coefficient Polynomials
 
+Constants                                                        | Format       | Columns
+-----------------------------------------------------------------|--------------|--------
+<b>Line 1</b>                                                    | -            | -
+Species name                                                     | `A18`        | `1-18`
+Date code                                                        | `A6`         | `19-24`
+Atomic symbols and formula                                       | `4(A2,I3)`   | `25-44`
+Phase of species (S, L, G for solid, liquid, gas)                | `A1`         | `45`
+Low temperature                                                  | `F10.0`      | `46-55`
+High temperature                                                 | `F10.0`      | `56-65`
+Common temperature (blank for default of 1000 K)                 | `F8.0`       | `66-73`
+Atomic symbols and formula (blank if not needed)                 | `A2,I3`      | `74-78`
+The integer '1'                                                  | `I1`         | `80`
+<b>Line 2</b>                                                    | -            | -
+Coefficients \f$a_1-a_5\f$ for upper temperature range           | `5(F15.8)`   | `1-75`
+The integer '2'                                                  | `I1`         | `80`
+<b>Line 3</b>                                                    | -            | -
+Coefficients \f$b_1\f$ and \f$b_2\f$ for upper temperature range | `2(F15.8)`   | `1-30`
+Coefficients \f$ a_1-a_3\f$ for lower temperature range          | `3(F15.8)`   | `31-75`
+The integer '3'                                                  | `I1`         | `80`
+<b>Line 4</b>                                                    | -            | -
+Coefficients \f$a_4-a_5\f$ for lower temperature range           | `2(F15.8)`   | `1-30`
+Coefficients \f$b_1\f$ and \f$b_2\f$ for lower temperature range | `2(F15.8)`   | `31-60`
+The integer '4'                                                  | `I1`         | `80`
 
 
 @code{.txt}

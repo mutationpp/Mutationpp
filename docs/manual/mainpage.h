@@ -1,6 +1,7 @@
 /**
-
 @mainpage Mutation++
+
+@tableofcontents
 
 The Multicomponent Thermodynamic And Transport properties for
 Ionized gases in C++ (Mutation++) library is designed to provided efficient 
@@ -11,13 +12,16 @@ hypersonics and combustion Computational Fluid Dynamics (CFD) including:
 - Finite rate chemistry in thermal nonequilibrium
 - A highly robust multiphase equilibrium solver
 
-@section Manual
+@section manual Manual
 
 The Mutation++ manual is divided into the following sections:
-- [Installation](@ref installation) describes the installation process including 
+- Section [Installation](@ref installation) describes the installation process including 
   how to verify a successful install
-- [Input Files](@ref input_files) describes all of the different data files which
+- Section [Input Files](@ref input_files) describes all of the different data files which
   are used in Mutation++
+- Section [Tools](@ref tools) lists all of the available tools that come built-in to the Mutation++ package
+- Section [Bibliography](@ref citelist) lists all of the citations used throughout the manual
+  and reference documentation
 
 @section license Mutation++ License
 
@@ -35,9 +39,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 for more details.
 
 @section developers Developers
+
 Mutation++ was originally developed by __J.B. Scoggins__ at the 
 [von Karman Institute for Fluid Dynamics](https://www.vki.ac.be) and based on its Fortran
-predecessor called %Mutation which was developed by __Thierry Magin__.  Mutation++
+predecessor called %Mutation which was developed by [Thierry Magin](https://www.vki.ac.be/aerospacephys).  Mutation++
 is continually improved and extended and currently includes contributions from the following
 individuals:
 - J.B. Scoggins _creator and main developer_
