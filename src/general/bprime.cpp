@@ -86,9 +86,11 @@ int main(int argc, char* argv[])
     mix.getComposition(argv[7], p_Yke, Composition::MASS);
     mix.getComposition(argv[8], p_Ykg, Composition::MASS);
     
-    cout << endl << setw(10) << "Tw[K]" << setw(15) << "B'c" << setw(15) << "hw[MJ/kg]";
+    cout << setw(10) << "\"Tw[K]\""
+         << setw(15) << "\"B'c\""
+         << setw(15) << "\"hw[MJ/kg]\"";
     for (int i = 0; i < ns; ++i)
-        cout << setw(15) << mix.speciesName(i);
+        cout << setw(15) << "\"" << mix.speciesName(i) << "\"";
     cout << endl;
     
     for (double T = T1; T < T2 + 1.0e-6; T += dt) {
