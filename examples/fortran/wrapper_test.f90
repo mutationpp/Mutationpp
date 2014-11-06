@@ -1,5 +1,26 @@
 !!
-!> \example wrapper_test.f90
+!! Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+!!
+!! This file is part of MUlticomponent Thermodynamic And Transport
+!! properties for IONized gases in C++ (Mutation++) software package.
+!!
+!! Mutation++ is free software: you can redistribute it and/or modify
+!! it under the terms of the GNU Lesser General Public License as
+!! published by the Free Software Foundation, either version 3 of the
+!! License, or (at your option) any later version.
+!!
+!! Mutation++ is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!! GNU Lesser General Public License for more details.
+!!
+!! You should have received a copy of the GNU Lesser General Public
+!! License along with Mutation++.  If not, see
+!! <http://www.gnu.org/licenses/>.
+!!
+
+!!
+!> @file wrapper_test.f90
 !!
 !! Example Fortran90 program which makes use of the \ref FortranWrapper to 
 !! mutation++.  Computes equilibrium properties for the air11 mixture.
@@ -9,14 +30,15 @@ program main
     implicit none
     character(len=10) :: mixture, state_model
     character(len=12) :: species
-    integer :: i, j, ne, ns, nr
+    integer :: i, j, ne, ns, nr, var
     
-    real :: T, P, rho, n, cp, cv, h, mw, e
-    real, dimension(:), allocatable :: species_x, wdot, species_y
-    real, dimension(:), allocatable :: mwi
+    real(8) :: T, P, rho, n, cp, cv, h, mw, e
+    real(8), dimension(:), allocatable :: species_x, wdot, species_y
+    real(8), dimension(:), allocatable :: mwi
     
     mixture     = "air11"
-    state_model = "EquilTP"
+    state_model = "Equil"
+    var = 1
     
     call mpp_initialize(mixture, state_model)
     ne = mpp_nelements()
@@ -52,7 +74,7 @@ program main
     do i = 1,295
         T = dble(i-1)*50.0 + 300.0
         
-        call mpp_set_state(T, P)
+        call mpp_set_state(T, P, var)
         call mpp_x(species_x)
             
         write(*,'(E12.4)',advance='no') T

@@ -39,6 +39,19 @@ namespace Mutation {
 
 //=============================================================================
 
+Composition::Composition(const char* const list)
+    : m_name(""), m_type(MOLE)
+{
+    std::string error = componentsFromList(list);
+    if (error != "") {
+        std::cerr << "Bad composition: " << list << std::endl;
+        std::cerr << error << std::endl;
+        std::exit(1);
+    }
+}
+
+//=============================================================================
+
 Composition::Composition(
     const std::string& name, const std::string& list, Composition::Type type)
     : m_name(name), m_type(type)
@@ -49,7 +62,6 @@ Composition::Composition(
         std::cerr << error << std::endl;
         std::exit(1);
     }
-
 }
 
 //=============================================================================

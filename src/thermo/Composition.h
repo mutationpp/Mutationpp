@@ -59,23 +59,22 @@ public:
         double fraction;
     };
 
+    // Constructors
+    Composition(const char* const list);
     Composition(
         const std::string& name, const std::string& list, Type type = MOLE);
     Composition(const Mutation::Utilities::IO::XmlElement& element);
 
+    // Property getters
     const std::string& name() const { return m_name; }
-
     Type type() const { return m_type; }
-
     const Component& operator [] (int i) const {
         assert(i >= 0);
         assert(i < size());
         return m_components[i];
     }
-
     void getComposition(
         const std::map<std::string, int>& map, double* const p_vec) const;
-
     int size() const { return m_components.size(); }
 
 private:

@@ -234,10 +234,9 @@ void NAME_MANGLE(species_densities)(
  */
 void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
 void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X);
-    
+
 /**
- * Sets the current state of the mixture using temperature and species 
- * densities.
+ * Sets the current state of the mixture with the appropriate variable set.
  */
 void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars);
 

@@ -401,7 +401,7 @@ controlled by an Arrhenius rate law.
 3  | \f$N_2 + N^+ \rightleftharpoons 2N + N^+ \f$ | 1.0e21         | -1.6  | 113200
 4  | \f$N_2 + e^- \rightleftharpoons 2N + e^-\f$  | 7.0e22         | -1.6  | 113200
 5  | \f$N+e^-\rightleftharpoons N^++e^-+e^-\f$    | 2.5e30         | -3.82 | 168200
-6  | \f$N+N\rightleftharpoons N2^++e^-\f$         | 4.4e7          | 1.5   | 67500
+6  | \f$N+N\rightleftharpoons N_2^++e^-\f$        | 4.4e7          | 1.5   | 67500
 
 Reactions 1-4 in the above example have the same rate constants except for the
 pre-exponential factor differ only by the thirdbody species, making them good candidates 
@@ -458,10 +458,12 @@ an exponential polynomial curve-fit versus temperature with units of Angstroms s
 An example entry in the `heavy.dat` file is given below for the binary collision
 of two Nitrogen molecules.
 
-     .N2-N2.
-       -0.0065954     0.13921     -1.1559      6.9352
-       -0.0087373     0.19482     -1.6023      8.1845
-                0           0           0      0.1398
+@code{.unparsed}
+.N2-N2.
+ -0.0065954     0.13921     -1.1559      6.9352
+ -0.0087373     0.19482     -1.6023      8.1845
+          0           0           0      0.1398
+@endcode
 
 
 ----

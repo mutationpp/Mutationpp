@@ -19,7 +19,10 @@ The Mutation++ manual is divided into the following sections:
   how to verify a successful install
 - Section [Input Files](@ref input_files) describes all of the different data files which
   are used in Mutation++
-- Section [Tools](@ref tools) lists all of the available tools that come built-in to the Mutation++ package
+- Section [Tools](@ref tools) lists all of the available tools that come built-in to the 
+  Mutation++ package
+- Section [Examples](@ref examples) provides several example codes in both C++ and FORTRAN
+  which demonstrate key features of the library
 - Section [Bibliography](@ref citelist) lists all of the citations used throughout the manual
   and reference documentation
 

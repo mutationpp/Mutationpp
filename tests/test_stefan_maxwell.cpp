@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
     std::vector<double> dp(mix().nSpecies());
     std::vector<double> Ji(mix().nSpecies());
 
-    const double tol = 1.0e-9;//10.0*std::numeric_limits<double>::epsilon();
+    const double tol = 1.0e-8;//10.0*std::numeric_limits<double>::epsilon();
 
     // Loop over range of pressures and temperatures
     for (int ip = 0.0; ip < 10; ++ip) {
