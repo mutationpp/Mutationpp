@@ -47,7 +47,7 @@ class NasaDB : public ThermoDB
 {
 public:
     NasaDB()
-        : ThermoDB(298.15, 1.0E5), m_ns(0)
+        : ThermoDB(298.15, 101325.0), m_ns(0)
     { }
     
     virtual ~NasaDB() {};
