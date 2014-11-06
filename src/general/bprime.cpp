@@ -35,21 +35,24 @@
 
 using namespace std;
 using namespace Mutation;
+using namespace Mutation::Thermodynamics;
 
 /**
  * @page bprime B' Solver (bprime)
  * __Usage__:
  *
- *    bprime \f$T_1\f$ \f$T_2\f$ \f$\Delta T\f$ \f$p\f$ \f$B'_g\f$ mixture
+ *    bprime \f$T_1\f$ \f$T_2\f$ \f$\Delta T\f$ \f$p\f$ \f$B'_g\f$ mixture BL Pyrolysis
  *
  * This program generates a so-called "B-prime" table for a given temperature
  * range and stepsize in K, a fixed pressure in atm, a value of \f$B'_g\f$
  * (pyrolysis mass flux, nondimensionalized by the boundary layer edge mass
- * flux), and a given mixture name.  Currently, this program assumes the char
- * composition to be solid graphite (which must be included in the mixture file)
- * and a boundary layer edge composition of Air.  The produced table provides
- * values of \f$B'_c\f$, the wall enthalpy in MJ/kg, and the species mole
- * fractions at the wall versus temperature.
+ * flux), a given mixture name.  Currently, this program assumes the char
+ * composition to be solid graphite (which must be included in the mixture file).
+ * The `BL` and `Pyrolysis` arguments are the names of the
+ * [elemental compositions](@ref compositions) in the mixture file which
+ * represent the boundary layer edge and pyrolysis gases respectively. The
+ * produced table provides values of \f$B'_c\f$, the wall enthalpy in MJ/kg, and
+ * the species mole fractions at the wall versus temperature.
  */
 
 int main(int argc, char* argv[])
@@ -57,6 +60,11 @@ int main(int argc, char* argv[])
 #ifdef _GNU_SOURCE
     feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 #endif
+
+    if (argc != 9) {
+        cout << "Usage: bprime T1 T2 dT P bg mixture BL_comp Pyro_comp" << endl;
+        exit(1);
+    }
 
     Mixture mix(argv[6]);
     
@@ -75,17 +83,8 @@ int main(int argc, char* argv[])
     double Bg = atof(argv[5]);
     double Bc, hw;
     
-    p_Yke[mix.elementIndex("C")] = 0.0;
-    p_Yke[mix.elementIndex("H")] = 0.0;
-    p_Yke[mix.elementIndex("O")] = 0.21;
-    p_Yke[mix.elementIndex("N")] = 0.79;
-    mix.convert<Thermodynamics::XE_TO_YE>(p_Yke, p_Yke);
-    
-    p_Ykg[mix.elementIndex("C")] = 0.206;
-    p_Ykg[mix.elementIndex("H")] = 0.679;
-    p_Ykg[mix.elementIndex("O")] = 0.115;
-    p_Ykg[mix.elementIndex("N")] = 0.0;
-    mix.convert<Thermodynamics::XE_TO_YE>(p_Ykg, p_Ykg);
+    mix.getComposition(argv[7], p_Yke, Composition::MASS);
+    mix.getComposition(argv[8], p_Ykg, Composition::MASS);
     
     cout << endl << setw(10) << "Tw[K]" << setw(15) << "B'c" << setw(15) << "hw[MJ/kg]";
     for (int i = 0; i < ns; ++i)
