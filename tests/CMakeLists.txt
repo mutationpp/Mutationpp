@@ -31,11 +31,50 @@ target_link_libraries(stefan_maxwell mutation++ ${Boost_LIBRARIES})
 add_executable(wdot test_wdot.cpp)
 target_link_libraries(wdot mutation++ ${Boost_LIBRARIES})
 
-# Define the tests to be run
-add_test(checkmix_air5 checkmix air5)
-add_test(checkmix_air11 checkmix air11)
-add_test(stefan-maxwell_air5 stefan_maxwell air5)
-add_test(stefan-maxwell_air11 stefan_maxwell air11)
-add_test(wdot_air5  wdot air5)
-add_test(wdot_air11 wdot air11)
+#####################################
+# TESTS
+#####################################
+set(mixtures_to_test
+    air5_RRHO_ChemNonEq1T
+    air5_RRHO_ChemNonEqTTv
+    air5_NASA-7_ChemNonEq1T
+    air5_NASA-9_ChemNonEq1T
+    air11_RRHO_ChemNonEq1T
+    air11_RRHO_ChemNonEqTTv
+    air11_NASA-7_ChemNonEq1T
+    air11_NASA-9_ChemNonEq1T )
+    
+function(test_all_mixtures test)
+    foreach(mixture ${mixtures_to_test})
+        add_test(
+            NAME ${test}_${mixture}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
+            COMMAND ${test} ${mixture} )
+    endforeach(mixture)
+endfunction()
+
+# Make sure mixtures load
+test_all_mixtures(checkmix)
+
+# Make sure examples compile and run
+function(test_example name subdir)    
+    add_test(
+        NAME example_${name}_compile
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
+        COMMAND make -B ${name} )
+    add_test(
+        NAME example_${name}_run
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
+        COMMAND ${name} )
+endfunction()
+
+test_example(equilibrium_air c++)
+test_example(O2_dissociation c++)
+test_example(wrapper_test fortran)
+
+# Transport property tests
+test_all_mixtures(stefan_maxwell)
+
+# Kinetics tests
+test_all_mixtures(wdot)
 

@@ -1,0 +1,53 @@
+<!-- Park Air-11 Reaction Mechanism from  Park 2001: Journal of Thermophysics and Heat Transfer Vol. 15 No. 1-->
+<mechanism name="air11_park01">
+    
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+    
+    <!-- 1a Park 2001-->
+    <reaction formula="N2+M=2N+M">
+        <arrhenius A="7.0E+21" n="-1.6" T="113200." />
+        <M>N:4.28571428571, O:4.28571428571, O2+:0.0</M>
+    </reaction>
+    
+    <!-- 1b Park 2001-->
+    <reaction formula="N2+e-=2N+e-">
+        <arrhenius A="3.0E+24" n="-1.6" T="113200." />
+    </reaction>
+
+    <!-- 2 Park 2001-->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="2.0E+21" n="-1.5" T="59360."/>
+        <M>N:5.0, O:5.0, O2+:0.0</M>
+    </reaction>
+
+    <!-- 3 Park 2001-->
+    <reaction formula="O+e-=O++e-+e-">
+        <arrhenius A="3.9E+33" n="-3.78" T="158500." />
+    </reaction>
+
+    <!-- 4 Park 2001-->
+    <reaction formula="N+e-=N++e-+e-">
+        <arrhenius A="2.5E+34" n="-3.82" T="168200." />
+    </reaction>
+
+    <!-- 5 Park 2001-->
+    <reaction formula="N+O=NO++e-">
+        <arrhenius A="5.3E+12" n="+0.00" T="31900." />
+    </reaction>
+
+    <!-- 6 Park 2001-->
+    <reaction formula="N+N=N2++e-">
+        <arrhenius A="4.4E+07" n="+1.50" T="67500." />
+    </reaction>
+
+    <!-- 7 Park 2001-->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="5.70E+12" n="+0.42" T="42938." />
+    </reaction>
+
+    <!-- 8 Park 2001-->
+    <reaction formula="O+NO=O2+N">
+        <arrhenius A="8.40E+12" n="+0.00" T="19400." />
+    </reaction>
+
+</mechanism>
