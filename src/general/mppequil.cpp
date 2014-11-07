@@ -215,6 +215,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-o                  list of other values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
+    cout << tab << "    --elem-comp     set elemental composition with a name from the mixture file" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
     cout << tab << "    --scientific    outputs in scientific format with given precision" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
@@ -372,14 +373,28 @@ Options parseOptions(int argc, char** argv)
     opts.p_mixture_opts->setStateModel("Equil");
     
     // Elemental mole fractions
+    bool comp_set = false;
     if (optionExists(argc, argv, "--elem-x")) {
+        comp_set = true;
         opts.p_mixture_opts->addComposition(
-            Thermodynamics::Composition(
-                "elem-x", getOption(argc, argv, "--elem-x")),
+            Thermodynamics::Composition(getOption(argc, argv, "--elem-x").c_str()),
             true
         );
     }
     
+    // Elemental composition
+    if (optionExists(argc, argv, "--elem-comp")) {
+        if (comp_set) {
+            cout << "Only one method of setting element composition can be used!" << endl;
+            exit(1);
+        }
+        std::string comp = getOption(argc, argv, "--elem-comp");
+        if (!opts.p_mixture_opts->setDefaultComposition(comp.c_str())) {
+            cout << "Composition " << comp << " does not exist in the mixture!" << endl;
+            exit(1);
+        }
+    }
+
     // Thermodynamic database
     if (optionExists(argc, argv, "--thermo-db")) {
         opts.p_mixture_opts->setThermodynamicDatabase(
