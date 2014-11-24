@@ -157,5 +157,5 @@ endif()
 ################################################################################
 # Gas-Surface Interaction
 ################################################################################
-option (ENABLE_GSI
-     "Enable Gas-Surface Interaction Module" OFF)
+#option (ENABLE_GSI
+#     "Enable Gas-Surface Interaction Module" OFF)

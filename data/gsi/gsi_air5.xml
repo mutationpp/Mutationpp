@@ -4,26 +4,31 @@
 <!-- This reaction mechanism is an example where only N recombination is taken into account f -->
 
     <!-- 1 -->
-    <reaction formula="N + N => N2">
+    <reaction formula="N + N-s => N2 + s">
         <gamma_const gamma = "0.01"/>
     </reaction>
 
     <!-- 2 -->
-    <reaction formula="N + O => NO">
+    <reaction formula="O + O-s => O2 + s">
         <gamma_const gamma = "0.01"/>
     </reaction>
-
-    <!-- 3 -->
-    <reaction formula="O + O => O2">
+    
+    <!-- 3 
+    <reaction formula="N + O-s => NO + s">
         <gamma_const gamma = "0.01"/>
     </reaction>
-
-    <!-- 4
+    
+    4 
+    <reaction formula="O + N-s => NO + s">
+        <gamma_const gamma = "0.01"/>
+    </reaction>
+    
+    <! 5
     <reaction formula="O + O => O2">
         <gamma_T gamma = "0.01"/>
     </reaction> -->
 
-    <!-- 5
+    <!-- 6
     <reaction formula="O + O => O2">
         <gamma_TP gamma = "0.01"/>
     </reaction> -->

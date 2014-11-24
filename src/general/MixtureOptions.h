@@ -36,10 +36,8 @@ public:
           m_thermo_db(options.m_thermo_db),
           m_mechanism(options.m_mechanism),
           m_viscosity(options.m_viscosity),
-          m_thermal_conductivity(options.m_thermal_conductivity)
-	  #ifdef GSIFLAG
-          ,m_gsi_mechanism(options.m_gsi_mechanism)
-          #endif //GSIFLAG
+          m_thermal_conductivity(options.m_thermal_conductivity),
+          m_gsi_mechanism(options.m_gsi_mechanism)
     { }
     
     /**
@@ -199,7 +197,6 @@ public:
         m_thermal_conductivity = thermal_conductivity;
     }
     
-#ifdef GSIFLAG
     /**
      * Gets the Gas-Surface Interaction mechanism to use.
      */
@@ -212,7 +209,6 @@ public:
     void setGSIMechanism(const std::string& gsi_mechanism) {
         m_gsi_mechanism = gsi_mechanism;
     }
-#endif
     
     /**
      * Sets the default mixture composition in elemental mole fractions.
@@ -330,9 +326,7 @@ private:
     std::string m_mechanism;
     std::string m_viscosity;
     std::string m_thermal_conductivity;
-#ifdef GSIFLAG
     std::string m_gsi_mechanism;
-#endif
     
 }; // class MixtureOptions
 

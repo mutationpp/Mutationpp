@@ -59,9 +59,7 @@ void MixtureOptions::setDefaultOptions()
     m_mechanism   = "none";
     m_viscosity   = "LDLT";
     m_thermal_conductivity = "LDLT";
-#ifdef GSIFLAG
     m_gsi_mechanism = "none";
-#endif //GSIFLAG
 }
 
 void MixtureOptions::loadFromFile(const string& mixture)
@@ -108,9 +106,7 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
         "thermal_conductivity", m_thermal_conductivity, m_thermal_conductivity);
     
     // Get the type of Gas-Surface Interaction for the wall
-#ifdef GSIFLAG
     element.getAttribute("gsi_mechanism", m_gsi_mechanism, m_gsi_mechanism);
-#endif  // GSIFLAG
     
     // Get the state model
     element.getAttribute("state_model", m_state_model, m_state_model);

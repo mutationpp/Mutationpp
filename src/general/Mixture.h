@@ -6,6 +6,7 @@
 #include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
+#include "GasSurfaceInteraction.h"
 
 namespace Mutation {
 
@@ -22,7 +23,8 @@ namespace Mutation {
 class Mixture
     : public Thermodynamics::Thermodynamics, 
       public Transport::Transport, 
-      public Kinetics::Kinetics
+      public Kinetics::Kinetics,
+      public gsi::GasSurfaceInteraction
 {
 public:
 
@@ -40,7 +42,7 @@ public:
      */
     ~Mixture()
     {
-        if (mp_transfer != NULL) delete mp_transfer;
+       if (mp_transfer != NULL) delete mp_transfer;
     }
     
     /**
@@ -55,6 +57,13 @@ public:
 private:
 
     Transfer::TransferModel* mp_transfer;
+    
+/**
+ * @todo To remover the following lines
+ */
+//    #ifdef GSIFLAG
+//        gsi::GasSurfaceInteraction* mp_gsi;
+//    #endif
 
 }; // class Mixture
 

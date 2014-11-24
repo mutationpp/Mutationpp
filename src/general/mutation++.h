@@ -21,5 +21,6 @@
 #include "IteratorWrapper.h"
 #include "LookupTable.h"
 #include "Units.h"
+#include "GasSurfaceInteraction.h"
 
 #endif // MUTATIONPP_H

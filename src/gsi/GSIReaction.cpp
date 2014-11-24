@@ -5,14 +5,18 @@
 using namespace Mutation::Utilities;
 using namespace Mutation::Thermodynamics;
 
-GSIReaction::GSIReaction(const IO::XmlElement& node, const Thermodynamics& thermo):
-                      m_formula("")
+namespace Mutation{
+    namespace gsi{
+      
+GSIReaction::GSIReaction(const IO::XmlElement& node, const class Thermodynamics& thermo):
+                      m_formula(""),
+                      m_conserves(true)
 {
     // Make sure this is a reaction type XML element
     assert( node.tag() == "reaction" );
 }
 
-void GSIReaction::parseFormula(const IO::XmlElement& node, const Thermodynamics& thermo)
+void GSIReaction::parseFormula(const IO::XmlElement& node, const class Thermodynamics& thermo)
 {
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction
@@ -97,18 +101,27 @@ void GSIReaction::parseSpecies(
         
         // If we found the start and end position of a species, add it to
         // the list nu times (unless it is the special case of 'M')
+        int index;
         if (add_species) {
-            /*if (str.substr(s,e-s+1) == "M") {
-                m_thirdbody = true;
-            } else {*/
-                int index = thermo.speciesIndex(str.substr(s,e-s+1));
-                if (index >= 0)
-                    for (int i = 0; i < nu; ++i)
-                        species.push_back(index);
-                else
-                    node.parseError(("Species " + str.substr(s,e-s+1) +
-                        " is not in the mixture list!").c_str());
-            //}
+            if(e-s+1 >= 3){
+                if(str.substr(e-1,2) == "-s")
+                    index = thermo.speciesIndex(str.substr(s,e-s-1)) + thermo.nSpecies();
+                /** @todo add for the bulk species 
+                    @todo what happens if I have more than one [s] **/
+                //else if(str.substr(e-1,2) == "-b") 
+                //    index = thermo.speciesIndex(str.substr(s,e-s-1));
+                else index = thermo.speciesIndex(str.substr(s,e-s+1));
+            } else {
+                if(str.substr(s,e-s+1) == "s") index = 2 * thermo.nSpecies();
+                else index = thermo.speciesIndex(str.substr(s,e-s+1));
+            }
+            
+            if (index >= 0)
+                for (int i = 0; i < nu; ++i)
+                    species.push_back(index);
+            else
+                node.parseError(("Species " + str.substr(s,e-s+1) +
+                    " is not in the mixture list!").c_str());
             add_species = false;
         }
         
@@ -124,9 +137,11 @@ void GSIReaction::parseSpecies(
  *********************************************************************************************
  */
 
-CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const Thermodynamics& thermo, const std::string m_category)
-                       : GSIReaction(node, thermo)//,
-                         //mp_catalysis_rate(NULL)
+CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const class Thermodynamics& thermo, const std::string m_category)
+                       : GSIReaction(node, thermo),
+                         mp_catalysis_rate(NULL),
+                         m_conserves_active_sites(true),
+                         m_has_active_sites(false)
 {
     // Make sure this is a reaction type XML element
     assert( node.tag() == "reaction" );
@@ -145,12 +160,85 @@ CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const Thermodyn
     for ( ; iter != node.end(); ++iter) {
         if (m_category == "gamma"){
             if (iter->tag() == "gamma_const"){
-                //mp_catalysis_rate = new GammaModelConst(*iter);
+                mp_catalysis_rate = new GammaModelConst(*iter);
             } else if(iter->tag() == "gamma_T"){
-                /* Give an error here. Not implemented yet */;
+                std::cerr << "This category of gamma model, "           /** @todo */
+                          << iter->tag() << ", has not been implemented yet";      
+                     exit(1);
             } else if(iter->tag() == "gamma_TP"){
-                /* Give an error here. Not implemented yet */;
-            } else {;/* Give an error here. Not implemented yet */}
-        } else {/*Give an error here*/;}
+                std::cerr << "This category of gamma model, "           /** @todo */
+                          << iter->tag() << ", has not been implemented yet";      
+            } else {
+                std::cerr << "This category of gamma model, "
+                          << iter->tag() << ", has not been implemented yet";      
+            }
+        } else if (m_category == "finite_rate_chemistry") {
+            if (iter->tag() == "physisorption"){
+                     std::cerr << "This mechanism of the Finite Rate Chemistry, " /** @todo */
+                     << iter->tag() << ", has not been implemented yet";      
+                     exit(1);
+            } else if(iter->tag() == "chemisorption") {
+                     std::cerr << "This mechanism of the Finite Rate Chemistry, " /** @todo */
+                     << iter->tag() << ", has not been implemented yet";      
+                     exit(1);
+            } else { std::cerr << "This mechanism of the Finite Rate Chemistry, " 
+                     << iter->tag() << ", has not been implemented yet";      
+                     exit(1);
+            }
+        } else { std::cerr << "This category of Catalysis " << m_category << 
+                 " has not been implemented yet!" << endl; 
+                 exit(1);}
     }   
+    
+    // Make sure we got a RateLaw out of all that
+    //if (mp_catalysis_rate == NULL)
+    //    node.parseError("A rate law must be supplied with this reaction!");
+    
+    // Check that reactions conserve elements and active sites
+    /**
+     * @todo Add other controls according to Marschall
+     */
+    const size_t ne = thermo.nElements();
+    int sums [ne];
+    std::fill(sums, sums+ne, 0);
+    int activesites = 0; // @todo: again here add the multiple active sites.
+    int forthermo;
+    for (int i = 0; i < nReactants(); ++i)
+        for (int k = 0; k < ne; ++k){
+            if (m_reactants[i] != 2 * thermo.nSpecies()){
+                if (m_reactants[i] >= thermo.nSpecies()){
+                    forthermo = m_reactants[i] - thermo.nSpecies();
+                    ++activesites;
+                    m_has_active_sites = true;
+                } else
+                    forthermo = m_reactants[i];
+                sums[k] += thermo.elementMatrix()(forthermo, k);
+            } else {
+                ++activesites;
+                m_has_active_sites = true;
+            }
+        }
+    for (int i = 0; i < nProducts(); ++i)
+        for (int k = 0; k < ne; ++k){
+            if (m_products[i] != 2 * thermo.nSpecies()){
+                if (m_products[i] >= thermo.nSpecies()){
+                    forthermo = m_products[i] - thermo.nSpecies();
+                   --activesites;
+                } else
+                    forthermo = m_products[i];
+                sums[k] -= thermo.elementMatrix()(forthermo, k);
+            } else {
+                --activesites;
+            }
+        }
+    for (int i = 0; i < ne; ++i){
+        m_conserves &= (sums[i] == 0);
+        m_conserves_active_sites &= (activesites == 0);
+    }
+    
 }
+
+
+
+    } // namespace gsi
+} //namespace Mutation

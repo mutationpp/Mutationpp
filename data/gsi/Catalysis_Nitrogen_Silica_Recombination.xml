@@ -1,0 +1,33 @@
+<!-- Data for nitrogen recombination on silica. -->
+
+<FRC_data data= "data">
+
+<!-- Nitrogen -->
+<!-- Surface Properties -->
+<surface nb_active_sites = "1" 
+         surface_site_concentration = "4.5166E18"/> <!-- [sites/m^2] -->
+
+<physisorption steric_factor_for_phys_sites = "1.0E0"
+               activation_energy_for_phys = "0.0E0" /> <!-- J/mol-->
+
+<thermal_desorption frequency_factor = "1.0E15"
+                    activation_energy_for_th_desorp = "51.0E3" />
+
+<!--chemisorption steric_factor_for_chem_sites = "1.0E0"
+               activation_energy_for_chem = "0.0E0" /-->
+
+<E-R steric_factor_for_phys_site
+
+
+/>
+
+<phys_to_chem 
+
+
+/>
+
+<L-H      
+
+
+/>
+                    

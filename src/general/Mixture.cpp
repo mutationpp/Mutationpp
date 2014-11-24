@@ -2,9 +2,11 @@
 #include "Mixture.h"
 #include "StateModel.h"
 
-#ifdef GSIFLAG
-    #include "GasSurfaceInteraction.h"
-#endif
+/**
+ * @todo Check if this is needed
+ */
+
+#include "GasSurfaceInteraction.h"
 
 namespace Mutation {
 
@@ -22,7 +24,11 @@ Mixture::Mixture(const MixtureOptions& options)
         options.loadTransport()),
       Kinetics(
         static_cast<const Thermodynamics&>(*this),
-        options.getMechanism())
+        options.getMechanism()),
+      GasSurfaceInteraction(
+        static_cast<const Thermodynamics&>(*this),
+        options.getGSIMechanism() 
+        /** @todo ablation , options.get*/)
 {
     // Set default composition if available
     if (options.hasDefaultComposition())
@@ -35,10 +41,9 @@ Mixture::Mixture(const MixtureOptions& options)
     /**
      * @todo remove GSIFLAG. Make it compile by default 
      */ 
-    #ifdef GSIFLAG
-        gsi::GasSurfaceInteraction(static_cast<const Thermodynamics&>(*this), options.getGSIMechanism() /** @todo ablation , options.get*/);
-    #endif
-      
+//    #ifdef GSIFLAG
+//        gsi::GasSurfaceInteraction* mp_gsi = new gsi::GasSurfaceInteraction(static_cast<const Thermodynamics&>(*this), options.getGSIMechanism() /** @todo ablation , options.get*/);
+//    #endif
 }
 
 //==============================================================================
