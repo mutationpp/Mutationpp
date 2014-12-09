@@ -32,6 +32,9 @@ target_link_libraries(set_state mutation++ ${Boost_LIBRARIES})
 add_executable(stefan_maxwell test_stefan_maxwell.cpp)
 target_link_libraries(stefan_maxwell mutation++ ${Boost_LIBRARIES})
 
+add_executable(transfer_source test_transfer_source.cpp)
+target_link_libraries(transfer_source mutation++ ${Boost_LIBRARIES})
+
 add_executable(wdot test_wdot.cpp)
 target_link_libraries(wdot mutation++ ${Boost_LIBRARIES})
 
@@ -82,7 +85,9 @@ test_all_mixtures(stefan_maxwell)
 # Kinetics tests
 test_all_mixtures(wdot)
 
-
 # StateModel tests
 test_all_mixtures(set_state)
+
+# TransferModel tests
+test_all_mixtures(transfer_source)
 
