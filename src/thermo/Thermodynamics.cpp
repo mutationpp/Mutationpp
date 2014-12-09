@@ -268,11 +268,11 @@ double Thermodynamics::mixtureMw() const
 
 //==============================================================================
 
-void Thermodynamics::equilibriumComposition(
+std::pair<int, int> Thermodynamics::equilibriumComposition(
     double T, double P, const double* const p_Xe, double* const p_X,
     MoleFracDef mdf) const
 {
-    mp_equil->equilibrate(T, P, p_Xe, p_X, mdf);
+    return mp_equil->equilibrate(T, P, p_Xe, p_X, mdf);
 }
 
 //==============================================================================
@@ -359,8 +359,8 @@ double Thermodynamics::density(
 
 double Thermodynamics::density() const
 {
-    //return numberDensity() * mixtureMw() / NA;
-    return density(mp_state->T(), mp_state->P(), mp_state->X());
+    return numberDensity() * mixtureMw() / NA;
+    //return density(mp_state->T(), mp_state->P(), mp_state->X());
 }
 
 //==============================================================================
@@ -641,6 +641,11 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     const double drdp = dMwdP/Mwmix + 1.0/P; // here also
 
     return (cp + (P/rho - dedp/drdp)*drdt);
+}
+
+void Thermodynamics::mixtureEnergies(double* const p_e) const
+{
+    mp_state->getMixtureEnergiesMass(p_e);
 }
 
 

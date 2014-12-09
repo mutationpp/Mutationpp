@@ -291,16 +291,16 @@ public:
      * Computes the equilibrium composition of the mixture at the given fixed
      * temperature and pressure using the default elemental composition.
      */
-    void equilibriumComposition(
+    std::pair<int, int> equilibriumComposition(
         double T, double P, double* const p_X, MoleFracDef mdf = GLOBAL) const {
-        equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
+        return equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
     }
 
     /**
      * Computes the equilibrium composition of the mixture at the given fixed
      * temperature, pressure, and elemental moles/mole fractions.
      */
-    void equilibriumComposition(
+    std::pair<int, int> equilibriumComposition(
         double T, double P, const double* const p_Xe, double* const p_X,
         MoleFracDef mdf = GLOBAL) const;
     
@@ -376,6 +376,7 @@ public:
      */
     void getEnergiesMass(double* const p_e) const;
     
+
     /**
      * Fills enthalpy per mass array with enthalpy according to the used
      * StateModel (total + internal for each species).
@@ -697,6 +698,11 @@ public:
         return mixtureHMass() - P() / density();
     }
     
+    /**
+     * Returns the mixture energy vector in J/kg.
+     */
+    void mixtureEnergies(double* const p_e) const;
+
     /**
      * Returns the frozen sound speed of the mixture in m/s.
      */
