@@ -327,8 +327,10 @@ double Thermodynamics::numberDensity(const double T, const double P) const
 double Thermodynamics::numberDensity() const 
 {
     double Xe = (hasElectrons() ? mp_state->X()[0] : 0.0);
-    return mp_state->P() / KB * 
-        ((1.0 - Xe) / mp_state->T() + Xe / mp_state->Te());
+    double Th = mp_state->T();
+    double Te = mp_state->Te();
+    double P  = mp_state->P();
+    return P / (KB * (Th + Xe*(Te - Th)));
 }
 
 //==============================================================================

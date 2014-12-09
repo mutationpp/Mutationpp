@@ -253,11 +253,8 @@ public:
     {
         for (int i = 0; i < m_nenergy-1; ++i) {
             p_omega[i] = 0.0;
-            for (int k = 0; k < m_transfer_models[i].size(); ++k) {
-                double val;
-                m_transfer_models[i][k]->source(&val);
-                p_omega[i] += val;
-            }
+            for (int k = 0; k < m_transfer_models[i].size(); ++k)
+                p_omega[i] += m_transfer_models[i][k]->source();
         }
     }
     

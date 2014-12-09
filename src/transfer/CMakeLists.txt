@@ -25,10 +25,9 @@ add_sources(mutation++
     MillikanWhite.cpp
     OmegaVT.cpp
     OmegaET.cpp
-    OmegaEV.cpp
     OmegaCV.cpp
+    OmegaCElec.cpp
     OmegaCE.cpp
-    OmegaI.cpp
 )
 
 install(FILES MillikanWhite.h DESTINATION include/mutation++)

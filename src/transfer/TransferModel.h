@@ -45,7 +45,8 @@ class TransferModel
 {
 public:
     virtual ~TransferModel() { }
-    virtual void source(double* const p_source) = 0; 
+    //virtual void source(double* const p_source) = 0; 
+    virtual double source() = 0; 
 };
 
 /**
@@ -60,17 +61,17 @@ public:
             mp_thermo = &thermo;
             m_const_Park_correction = sqrt(PI* KB / (8.E0 * NA));
 
-            n_species                 = thermo.nSpecies();
-            m_transfer_nHeavy         = thermo.nHeavy();
-            m_transfer_offset         = thermo.hasElectrons() ? 1 : 0;
-    
-	    mp_Mw = new double [n_species];
-	    
-            for(int i_Mw = 0; i_Mw < n_species; ++i_Mw){
-                mp_Mw[i_Mw] = mp_thermo->speciesMw(i_Mw);               
-            }
+            m_ns              = thermo.nSpecies();
+            m_transfer_nHeavy = thermo.nHeavy();
+            m_transfer_offset = thermo.hasElectrons() ? 1 : 0;
+ 
+	    mp_Mw = new double [m_ns];
+            for(int i = 0; i < m_ns; ++i)
+                mp_Mw[i] = thermo.speciesMw(i);               
+            mp_hv = new double [m_ns];
+            mp_hveq = new double [m_ns];
     }
-    
+ 
     /**
      * Computes the source terms of the Vibration-Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
      * using a Landau-Teller formula taking into account Park's correction (default; can be disabled by making zero the appropriate flag, see below):
@@ -86,39 +87,27 @@ public:
      * @cite Schwarz1952 .
      * 
      */
-    
-    void source(double* const p_source){ 
-      
-    *p_source = 0.E0;
-    const double * p_transfer_Y = mp_thermo->Y();
-    double m_transfer_rho = mp_thermo->density();
-    // Compute the entalhpy here
-    double m_transfer_T = mp_thermo->T();
-    double m_transfer_Tv = mp_thermo->Tv();
-    
-    double h_transfer_total[n_species];  
-    double h_transfer_vib_eq[n_species];
-    double h_transfer_vib_neq[n_species];
-    double mp_work[n_species]; //CHECK IF THIS IS NEEDED
-    
-    mp_thermo->speciesHOverRT(m_transfer_T, m_transfer_T, m_transfer_T, 
-                              m_transfer_T, m_transfer_T, h_transfer_total, mp_work, NULL, 
-                              h_transfer_vib_eq, NULL, NULL);
 
-    mp_thermo->speciesHOverRT(m_transfer_T, m_transfer_Tv, m_transfer_T, 
-                              m_transfer_Tv, m_transfer_Tv, h_transfer_total, mp_work, NULL, 
-                              h_transfer_vib_neq, NULL, NULL);
+    double source()
+    { 
+        const double * p_Y = mp_thermo->Y();
+        double rho = mp_thermo->density();
+        double T = mp_thermo->T();
+        double Tv = mp_thermo->Tv();
     
-    int i_no_vibrator = 0;
-    for (int i_vibrator = 0; i_vibrator-i_no_vibrator < m_mw.nVibrators(); ++i_vibrator){
-        if(mp_thermo->species(i_vibrator).type() == Mutation::Thermodynamics::ATOM){
-            i_no_vibrator++; 
-	} 
-        else {
-            *p_source += p_transfer_Y[i_vibrator] * m_transfer_rho *RU * m_transfer_T /mp_Mw[i_vibrator] * (h_transfer_vib_eq[i_vibrator] - h_transfer_vib_neq[i_vibrator]) /compute_tau_VT_m(i_vibrator-i_no_vibrator);
-	}
-    }
-	
+        mp_thermo->speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, mp_hveq, NULL, NULL);
+        mp_thermo->speciesHOverRT(T, Tv, T, Tv, Tv, NULL, NULL, NULL, mp_hv, NULL, NULL);
+
+        int inv = 0;
+        double src = 0.0;
+        for (int iv = 0; iv-inv < m_mw.nVibrators(); ++iv){
+            if(mp_thermo->species(iv).type() != Mutation::Thermodynamics::MOLECULE){
+                inv++; 
+	    } else {
+                src += p_Y[iv]*rho*RU*T/mp_Mw[iv]*(mp_hveq[iv] - mp_hv[iv])/compute_tau_VT_m(iv-inv);
+	    }
+        }
+        return src;
     }
 
 private:
@@ -141,14 +130,14 @@ private:
     /**
      * Necesseary variables
      */
-    int n_species;
+    int m_ns;
     int m_transfer_nHeavy; 
     int m_transfer_offset;
-    
     double* mp_Mw;
+    double* mp_hv;
+    double* mp_hveq;
     
     double m_const_Park_correction;
-    
 };
 
 /**
@@ -177,33 +166,46 @@ class OmegaCV : public TransferModel
 
 public:
     OmegaCV(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
-        p_thermo = &thermo; 
-        p_kinetics = &kinetics;
+        mp_thermo = &thermo; 
+        mp_kinetics = &kinetics;
+        m_ns = thermo.nSpecies();
+        mp_wrk1 = new double [m_ns];
+        mp_wrk2 = new double [m_ns];
+    };
+
+    ~OmegaCV()
+    {
+        delete [] mp_wrk1;
+        delete [] mp_wrk2;
     };
       
-    void source(double* const p_source){
-      static int i_transfer_model = 0;
-      switch (i_transfer_model){
-          case 0:
-              *p_source = compute_source_Candler();
+    double source()
+    {
+        static int i_transfer_model = 0;
+        switch (i_transfer_model){
+           case 0:
+              return compute_source_Candler();
 	      break;
-          default:
+           default:
               std::cerr << "The selected Chemistry-Vibration-Chemistry model is not implemented yet";
-      }
+              return 0.0;
+        }
     };
     
 private:
-    const Thermodynamics::Thermodynamics* p_thermo;
-    Kinetics::Kinetics* p_kinetics;
+    const Thermodynamics::Thermodynamics* mp_thermo;
+    Kinetics::Kinetics* mp_kinetics;
+    int m_ns;
+    double* mp_wrk1;
+    double* mp_wrk2;
 
     double const compute_source_Candler();
-
 };
 
 /**
  * Represents a coupling between chemistry and electronic energy modes.
  */
-class OmegaCE : public TransferModel
+class OmegaCElec : public TransferModel
 {
    /**
     * The necessary functions for the computation of the  source terms for 
@@ -212,45 +214,128 @@ class OmegaCE : public TransferModel
     */
 
 public:
-    OmegaCE(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
-        p_thermo = &thermo; 
-        p_kinetics = &kinetics;
+    OmegaCElec(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
+        mp_thermo = &thermo; 
+        mp_kinetics = &kinetics;
+        m_ns = thermo.nSpecies();
+        mp_wrk1 = new double [m_ns];
+        mp_wrk2 = new double [m_ns];
+    };
+
+    ~OmegaCElec()
+    {
+        delete [] mp_wrk1;
+        delete [] mp_wrk2;
     };
       
-    void source(double* const p_source){
+    double source()
+    {
       static int i_transfer_model = 0;
       switch (i_transfer_model){
           case 0:
-              *p_source = compute_source_Candler();
+              return compute_source_Candler();
 	      break;
           default:
               std::cerr << "The selected Electronic-Chemistry-Electronic model is not implemented yet";
+              return 0.0;
       }
     };
     
 private:
-    const Thermodynamics::Thermodynamics* p_thermo;
-    Kinetics::Kinetics* p_kinetics;
+    const Thermodynamics::Thermodynamics* mp_thermo;
+    Kinetics::Kinetics* mp_kinetics;
+    int m_ns;
+    double* mp_wrk1;
+    double* mp_wrk2;
 
     double const compute_source_Candler();
-
 };
 
 class OmegaET : public TransferModel
 {
 public:
     OmegaET(const Thermodynamics::Thermodynamics& thermo, Transport::Transport& transport){
-      
+        mp_thermo = &thermo;
+        mp_transport = &transport;
+        mp_collisions = transport.collisionData();
     };
+
+    /**
+     * Computes the source term of the Electron-Heavy Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
+     * using a Landau-Teller formula:
+     * \f[ \Omega^{ET} = \rho_e \frac{e^T_e\left(T\right)-e^T_e\left(T_{e}\right)}
+     *      {\tau^{ET}}  \f]
+     * 
+     * The relaxation time \f$ \tau^{ET} \f$ is given by the expression:
+     *
+     * \f[ \tau^{ET} = \left( \sum_{j \in \mathcal{H}} \frac{2 M_e}{ M_i} \nu_{ei} \right)^{-1} \f]
+     *
+     */
     
-    void source(double* const p_source){
-        //*p_source = 3.E0/2.E0*KB;
-      
+    double source()
+    {
+        const double * p_Y = mp_thermo->Y();
+        double rho = mp_thermo->density();
+        double me = mp_thermo->speciesMw(0);
+        double T = mp_thermo->T();
+        double Tv = mp_thermo->Tv();
+
+        double tau = compute_tau_ET();
+        return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
     }
     
 private:
+    const Thermodynamics::Thermodynamics* mp_thermo;
+    Transport::Transport* mp_transport;
+    Transport::CollisionDB* mp_collisions;
+
     double const compute_tau_ET();
 };
+
+/**
+ *  * Represents a coupling between chemistry and electrons.
+ *   */
+class OmegaCE : public TransferModel
+{
+
+public:
+    OmegaCE(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics){
+        mp_thermo = &thermo;
+        mp_kinetics = &kinetics;
+        m_ns = thermo.nSpecies();
+        mp_wrk1 = new double [m_ns];
+        mp_wrk2 = new double [m_ns];
+    };
+
+    ~OmegaCE()
+    {
+        delete [] mp_wrk1;
+        delete [] mp_wrk2;
+    };
+
+    double source()
+    {
+      static int i_transfer_model = 0;
+      switch (i_transfer_model){
+          case 0:
+              return compute_source_Candler();
+              break;
+          default:
+              std::cerr << "The selected Electron-Chemistry-Electron model is not implemented yet";
+              return 0.0;
+      }
+    };
+
+private:
+    const Thermodynamics::Thermodynamics* mp_thermo;
+    Kinetics::Kinetics* mp_kinetics;
+    int m_ns;
+    double* mp_wrk1;
+    double* mp_wrk2;
+
+    double const compute_source_Candler();
+};
+
 
 class OmegaEV : public TransferModel
 {
@@ -259,7 +344,75 @@ class OmegaEV : public TransferModel
 
 class OmegaI : public TransferModel
 {
-  
+
+public:
+    OmegaI(const Thermodynamics::Thermodynamics& thermo, Kinetics::Kinetics& kinetics) {
+        mp_thermo = &thermo;
+        mp_kinetics = &kinetics;
+        m_ns = thermo.nSpecies();
+        m_nr = kinetics.nReactions();
+        mp_hf = new double [m_ns];
+        mp_h = new double [m_ns];
+        mp_rate = new double [m_nr];
+        mp_delta = new double [m_nr];
+        for(int i=0; i<m_nr; ++i) {
+            if ( (kinetics.reactions()[i].type() == Kinetics::IONIZATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::ION_RECOMBINATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::DISSOCIATION_E)
+              || (kinetics.reactions()[i].type() == Kinetics::RECOMBINATION_E))
+                 m_rId.push_back(i);
+        }
+    };
+
+    ~OmegaI() {
+        delete [] mp_hf;
+        delete [] mp_h;
+        delete [] mp_rate;
+        delete [] mp_delta;
+    };
+
+    /**
+      * Computes the Electron-Impact reactions heat Generation in \f$ [J/(m^3\cdot s)] \f$
+      * which acts as a shrink to the free electron energy equation.
+      *
+      * \f[ \Omega^{I} = - \sum_{r \in \mathcal{R}} \Delta h_r \xi_r \f]
+      * 
+      * \f[ \mathcal{R} \f] denotes the set of electron impact reactions.
+      * \f[ \Delta h_r \f] is the reaction enthalpy \f[ [J/mol] \f]
+      * \f[ \xi_r \f] is the molar rate of progress \f[ [mol/(m^3\cdot s)] \f]
+      *
+      */
+
+     double source()
+     {
+        // Get Formation enthalpy
+        mp_thermo->speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
+        for (int i=0; i< m_ns-1; ++i)
+            mp_hf[i]*= RU*mp_thermo->T();
+
+        // Get reaction enthapies
+        std::fill(mp_delta, mp_delta+m_nr, 0.0);
+        mp_kinetics->getReactionDelta(mp_hf,mp_delta);
+
+        // Get molar rates of progress
+        mp_kinetics->netRatesOfProgress(mp_rate);
+
+        double src=0;
+        for (int i=0; i< m_rId.size(); i++) 
+            src -= mp_delta[m_rId[i]]*mp_rate[m_rId[i]];
+        return src;
+      };
+
+private:
+    const Thermodynamics::Thermodynamics* mp_thermo;
+    Kinetics::Kinetics* mp_kinetics;
+    int m_ns;
+    int m_nr;
+    std::vector<int> m_rId;
+    double* mp_hf;
+    double* mp_h;
+    double* mp_rate;
+    double* mp_delta;
 };
 
 /// @}
