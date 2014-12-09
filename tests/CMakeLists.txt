@@ -26,8 +26,12 @@ find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
+add_executable(set_state test_set_state.cpp)
+target_link_libraries(set_state mutation++ ${Boost_LIBRARIES})
+
 add_executable(stefan_maxwell test_stefan_maxwell.cpp)
 target_link_libraries(stefan_maxwell mutation++ ${Boost_LIBRARIES})
+
 add_executable(wdot test_wdot.cpp)
 target_link_libraries(wdot mutation++ ${Boost_LIBRARIES})
 
@@ -77,4 +81,8 @@ test_all_mixtures(stefan_maxwell)
 
 # Kinetics tests
 test_all_mixtures(wdot)
+
+
+# StateModel tests
+test_all_mixtures(set_state)
 
