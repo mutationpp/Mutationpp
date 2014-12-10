@@ -25,9 +25,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
-#include "Thermodynamics.h"
-#include "MillikanWhite.h"
+#include "Mixture.h"
 #include "TransferModel.h"
 #include <cmath>
 
@@ -35,32 +33,74 @@
 namespace Mutation {
     namespace Transfer {
       
-      double const OmegaET::compute_tau_ET(){
+class OmegaET : public TransferModel
+{
+public:
+	OmegaET(Mutation::Mixture& mix)
+		: TransferModel(mix), mp_collisions(mix.collisionData())
+	{ }
 
-        const double T = mp_thermo->T();
-        const double Te = mp_thermo->Te();
-        const double nd = mp_thermo->numberDensity();    
-        const double ns = mp_thermo->nSpecies();
-        const double *const p_X = mp_thermo->X();
-        const double mwel = mp_thermo->speciesMw(0);
-        double mwis, nu, sum, tau; 
+	/**
+	 * Computes the source term of the Electron-Heavy Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
+	 * using a Landau-Teller formula:
+	 * \f[ \Omega^{ET} = \rho_e \frac{e^T_e\left(T\right)-e^T_e\left(T_{e}\right)}
+	 *      {\tau^{ET}}  \f]
+	 *
+	 * The relaxation time \f$ \tau^{ET} \f$ is given by the expression:
+	 *
+	 * \f[ \tau^{ET} = \left( \sum_{j \in \mathcal{H}} \frac{2 M_e}{ M_i} \nu_{ei} \right)^{-1} \f]
+	 *
+	 */
 
-        // Collisional integrals
-        const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
+	double source()
+	{
+		const double * p_Y = m_mixture.Y();
+		double rho = m_mixture.density();
+		double me = m_mixture.speciesMw(0);
+		double T = m_mixture.T();
+		double Tv = m_mixture.Tv();
 
-        // Compute mass averaged collision frequency 
-        sum = 0.0;
-        for (int is = 1; is < ns; ++is) {
-            mwis = mp_thermo->speciesMw(is);
-            nu = sqrt(RU*8.0*Te/(PI*mwis))*p_X[is]*ns*Q11(is);
-            sum += nu/mwis;
-        } 
-        sum *= 2.0*mwel;
+		double tau = compute_tau_ET();
+		return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
+	}
 
-        // Return tau
-        tau = 1.0/sum;
-        return tau;
-      }
-      
+private:
+	Transport::CollisionDB* mp_collisions;
+
+	double const compute_tau_ET();
+};
+
+
+double const OmegaET::compute_tau_ET()
+{
+	const double T = m_mixture.T();
+	const double Te = m_mixture.Te();
+	const double nd = m_mixture.numberDensity();
+	const double ns = m_mixture.nSpecies();
+	const double *const p_X = m_mixture.X();
+	const double mwel = m_mixture.speciesMw(0);
+	double mwis, nu, sum, tau;
+
+	// Collisional integrals
+	const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
+
+	// Compute mass averaged collision frequency
+	sum = 0.0;
+	for (int is = 1; is < ns; ++is) {
+		mwis = m_mixture.speciesMw(is);
+		nu = std::sqrt(RU*8.0*Te/(PI*mwis))*p_X[is]*ns*Q11(is);
+		sum += nu/mwis;
+	}
+	sum *= 2.0*mwel;
+
+	// Return tau
+	tau = 1.0/sum;
+	return tau;
+}
+
+// Register the transfer model
+Mutation::Utilities::Config::ObjectProvider<
+    OmegaET, TransferModel> omegaET("OmegaET");
+
     } // namespace Transfer
 } // namespace Mutation

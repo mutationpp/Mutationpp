@@ -25,47 +25,62 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
-#include "Thermodynamics.h"
-#include "MillikanWhite.h"
+#include "Mixture.h"
 #include "TransferModel.h"
 #include <cmath>
 
-
 namespace Mutation {
     namespace Transfer {
+
+/**
+ * Represents a coupling between chemistry and electrons.
+ **/
+class OmegaCE : public TransferModel
+{
+public:
+	OmegaCE(Mutation::Mixture& mix)
+		: TransferModel(mix)
+	{
+		mp_wrk1 = new double [mix.nSpecies()];
+		mp_wrk2 = new double [mix.nSpecies()];
+	};
+
+	~OmegaCE()
+	{
+		delete [] mp_wrk1;
+		delete [] mp_wrk2;
+	};
+
+	double source()
+	{
+	  static int i_transfer_model = 0;
+	  switch (i_transfer_model){
+		  case 0:
+			  return compute_source_Candler();
+			  break;
+		  default:
+			  std::cerr << "The selected Electron-Chemistry-Electron model is not implemented yet";
+			  return 0.0;
+	  }
+	};
+
+private:
+	double* mp_wrk1;
+	double* mp_wrk2;
+
+	double const compute_source_Candler();
+};
+
+
+ double const OmegaCE::compute_source_Candler()
+ {
+	 m_mixture.netProductionRates(mp_wrk1);
+	 return mp_wrk1[0]*1.5*RU*m_mixture.Te()/m_mixture.speciesMw(0);
+ }
+
+ // Register the transfer model
+ Mutation::Utilities::Config::ObjectProvider<
+     OmegaCE, TransferModel> omegaCE("OmegaCE");
       
-        /**
-         * Non-preferential Model with
-         * 
-         * \f[ \Omega^{CE} = e^T_{e} \dot{\omega}_e\f]
-         * 
-         * with \f$ c_1 \f$ equal to 1 for non-preferential models.
-         * 
-         */
-        /*double const OmegaCE::compute_source_Candler()
-        {
-
-         // Getting Electron Translational Energy
-         mp_thermo->speciesHOverRT(NULL, mp_wrk1, NULL, NULL, NULL, NULL);
-
-         // Getting Production Rate
-         mp_kinetics->netProductionRates(mp_wrk2);
-
-         // Inner Product
-         double c1 = 1.0E0;
-         double sum = 0.E0; 
-
-             sum += mp_wrk1[0]*mp_wrk2[0]*mp_thermo->T()*RU/mp_thermo->speciesMw(0);
-
-         return(c1*sum);
-         }*/
-
-         double const OmegaCE::compute_source_Candler()
-         {
-             mp_kinetics->netProductionRates(mp_wrk1);
-             return mp_wrk1[0] * 1.5*RU*mp_thermo->Te()/mp_thermo->speciesMw(0);
-         }
-      
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation

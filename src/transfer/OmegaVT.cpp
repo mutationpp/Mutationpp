@@ -25,15 +25,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #include "MillikanWhite.h"
 #include "Mixture.h"
 #include "TransferModel.h"
 #include <cmath>
 
+using namespace Mutation;
+
 namespace Mutation {
     namespace Transfer {
-
 
 /**
  * Represents a coupling between vibrational and translational energy modes.
@@ -42,11 +42,10 @@ class OmegaVT : public TransferModel
 {
 public:
 
-    OmegaVT(Mutation::Mixture& mix)
-        : TransferModel(mix),
-          m_mw(static_cast<Mutation::Thermodynamics::Thermodynamics&>(mix))
+    OmegaVT(Mixture& mix)
+        : TransferModel(mix), m_mw(mix)
     {
-        m_const_Park_correction = sqrt(PI* KB / (8.E0 * NA));
+        m_const_Park_correction = std::sqrt(PI* KB / (8.E0 * NA));
         m_ns              = m_mixture.nSpecies();
         m_transfer_nHeavy = m_mixture.nHeavy();
         m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
@@ -171,11 +170,11 @@ double OmegaVT::compute_tau_VT_m(int const i_vibrator)
 }
 
 
-// Register the state model
+// Register the transfer model
 Utilities::Config::ObjectProvider<
-    OmegaVT, TransferModel> chem_non_eq_TTv("OmegaVT");
+    OmegaVT, TransferModel> omegaVT("OmegaVT");
 
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation
       
       
