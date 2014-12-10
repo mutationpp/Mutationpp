@@ -30,7 +30,6 @@
 
 #include "Thermodynamics.h"
 #include "Kinetics.h"
-#include "TransferModel.h"
 #include "Transport.h"
 #include "TransferModel.h"
 
@@ -69,8 +68,7 @@ public:
      * @param ns - number of species
      */
     StateModel(ARGS thermo, const int nenergy, const int nmass)
-        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass),
-          m_transfer_models(nenergy-1)
+        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
     {
         m_T = m_Tr = m_Tv = m_Tel = m_Te = 300.0;
         m_P = 0.0;
@@ -88,12 +86,8 @@ public:
         delete [] mp_X;
 
         // Delete transfer models
-        for (int i = 0; i < m_nenergy-1; ++i) {
-            for (int k = 0; k < m_transfer_models[i].size(); ++k) {
-                delete m_transfer_models[i][k];
-                m_transfer_models[i][k] = NULL;
-            }
-        }
+        for (int i = 0; i < m_transfer_models.size(); ++i)
+            delete m_transfer_models[i].second;
     }
     
     /**
@@ -241,32 +235,28 @@ public:
     /**
      * Initializes the energy transfer terms that will be used by each State Model.
      */
-    virtual void initializeTransferModel(
-        Thermodynamics& thermo,
-        Mutation::Transport::Transport& transport,
-        Mutation::Kinetics::Kinetics& kinetics) {}
+    virtual void initializeTransferModel(Mutation::Mixture& mix) {}
     
     /**
      * This function provides the total energy transfer source terms
      */
     virtual void energyTransferSource(double* const p_omega)
     {
-        for (int i = 0; i < m_nenergy-1; ++i) {
+        for (int i = 0; i < m_nenergy-1; ++i)
             p_omega[i] = 0.0;
-            for (int k = 0; k < m_transfer_models[i].size(); ++k)
-                p_omega[i] += m_transfer_models[i][k]->source();
-        }
+
+        for (int i = 0; i < m_transfer_models.size(); ++i)
+            p_omega[m_transfer_models[i].first] +=
+                m_transfer_models[i].second->source();
     }
     
 protected:
 
     void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
     {
-        // Make sure i is in the correct range
         assert(i >= 0);
         assert(i < m_nenergy-1);
-
-        m_transfer_models[i].push_back(p_term);
+        m_transfer_models.push_back(std::make_pair(i, p_term));
     }
 
     /**
@@ -373,7 +363,7 @@ protected:
     double* mp_X;
     
 
-    std::vector< std::vector<Mutation::Transfer::TransferModel*> >
+    std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
         m_transfer_models;
 
 }; // class StateModel
