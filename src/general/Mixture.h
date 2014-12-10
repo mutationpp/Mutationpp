@@ -1,10 +1,12 @@
 /**
  * @file Mixture.h
  *
- * @copyright
- * Copyright 2014 James B. Scoggins
+ * @brief Provides Mixture class declaration. @see Mutation::Mixture
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
- * @license
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
  *
@@ -26,12 +28,15 @@
 #ifndef MUTATION_MIXTURE_H
 #define MUTATION_MIXTURE_H
 
+#include <vector>
+
 #include "Thermodynamics.h"
 #include "Kinetics.h"
 #include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
 #include "StateModel.h"
+#include "Composition.h"
 
 namespace Mutation {
 
@@ -41,9 +46,9 @@ namespace Mutation {
  * Thermodynamics, Transport, and Kinetics classes.  A Mixture object can be
  * constructed using a mixture file name or a MixtureOptions object.
  *
- * @see Thermodynamics
- * @see Transport
- * @see Kinetics
+ * @see Thermodynamics::Thermodynamics
+ * @see Transport::Transport
+ * @see Kinetics::Kinetics
  */
 class Mixture
     : public Thermodynamics::Thermodynamics, 
@@ -75,10 +80,28 @@ public:
          state()->energyTransferSource(p_source);
     }
 
-//private:
+    /**
+     * Add a named element composition to the mixture which may be retrieved
+     * with getComposition().
+     */
+    void addComposition(
+        const Mutation::Thermodynamics::Composition& c,
+        bool make_default = false);
 
-//    Transfer::TransferModel* mp_transfer;
-    
+    /**
+     * Gets the element mole or mass fractions associated with a named
+     * composition in the mixture.  Returns false if the composition does not
+     * exist in the list, true otherwise.
+     */
+    bool getComposition(
+        const std::string& name, double* const p_vec,
+        Mutation::Thermodynamics::Composition::Type type =
+            Mutation::Thermodynamics::Composition::MOLE) const;
+
+private:
+
+    std::vector<Mutation::Thermodynamics::Composition> m_compositions;
+
 }; // class Mixture
 
 } // namespace Mutation

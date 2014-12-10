@@ -1,11 +1,32 @@
 /**
- * @file Very simple XML library which enables loading XML data from a file into
+ * @file XMLite.h
+ *
+ * @brief Simple XML library which enables loading XML data from a file into
  * a simple data structure which can be mined.  The library consists of
  * minimal error handling but parses simple XML structures just fine.
- *
- * @author J.B. Scoggins (jbscoggi@gmail.com)
- * @date   January 24, 2012
  */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef XMLITE_H
 #define XMLITE_H
 
@@ -29,7 +50,7 @@ class XmlDocument;
  * Represents an XML element node which can contain (name,value) pair attributes
  * as well as either element children or a text value.
  *
- * @todo Should make the mp_document and mp_parent members be constatnt pointers
+ * @todo Should make the mp_document and mp_parent members be constant pointers
  * and then implement the = operator and clone stuff (forget the name of this
  * construct).
  */

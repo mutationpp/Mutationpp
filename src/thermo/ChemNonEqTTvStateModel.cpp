@@ -1,9 +1,38 @@
+/**
+ * @file ChemNonEqTTvStateModel.h
+ *
+ * @brief Provides ChemNonEqTTvStateModel.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "StateModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
 /**
+ * @ingroup statemodels
+ *
  * Chemical Non-equilibrium 2-T StateModel. Thermal nonequilibrium with
  * T = Tr and Tv = Tel = Te with finite rate chemistry.
  */
@@ -66,14 +95,11 @@ public:
         case 0: {
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
-
             getTFromRhoE(
                 Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
-
-            // Next compute the temperature using the total energy density
-
             m_Tel = m_Te = m_Tv;
 
+            // Next compute the temperature using the total energy density
             getTFromRhoE(
                 Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
 
@@ -98,7 +124,7 @@ public:
         // Compute the pressure and species mole fractions from T and rho_i
         for (int i = 0; i < ns; ++i)        
             mp_X[i] /= conc;
-        m_P = RU * (m_T * (conc-elec) + m_Tv * elec);
+        m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
     
     void initializeTransferModel(
@@ -145,6 +171,35 @@ public:
             p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
             p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
         }
+    }
+
+    void getMixtureEnergiesMass(double* const p_e)
+    {
+        int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
+        int offset = (m_thermo.hasElectrons() ? 1 : 0);
+
+        double mw = 0.0;
+        for (int i = 0; i < ns; ++i)
+            mw += mp_X[i]*m_thermo.speciesMw(i);
+
+        p_e[0] = 0.0;
+        p_e[1] = 0.0;
+        for(int i = offset; i < ns; ++i) {
+            p_e[0] += mp_X[i]*(mp_work1[i]-1.0);
+            p_e[1] += mp_X[i]*(mp_work3[i] + mp_work4[i]);
+        }
+
+        p_e[0] *= m_T;
+        p_e[1] *= m_T;
+
+        if (offset > 0) {
+            p_e[0] += mp_X[0]*(mp_work1[0]*m_T - m_Tv);
+            p_e[1] += mp_X[0]*(mp_work2[0]*m_T - m_Tv);
+        }
+
+        p_e[0] *= RU / mw;
+        p_e[1] *= RU / mw;
     }
 
     void getEnthalpiesMass(double* const p_h)

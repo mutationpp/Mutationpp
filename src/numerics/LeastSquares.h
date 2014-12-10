@@ -1,12 +1,29 @@
 /**
  * @file LeastSquares.h
  *
- * Implements the class LeastSquares which solves overdetermined linear systems.
+ * @brief Implements the class LeastSquares which solves overdetermined linear
+ * systems.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
- * @see class LeastSquares
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
  *
- * @author J.B. Scoggins (jbscoggi@gmail.com)
- * @date   February 2, 2012
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 #ifndef NUMERICS_LEASTSQUARES_H
@@ -25,6 +42,7 @@ namespace Mutation {
 
 
 /**
+ * @ingroup dirsol
  * Computes the minimum-norm least-squares solution to an overdetermined system 
  * Ax = b by storing intermediate calculations so that multiple (x,b) pairs do 
  * not require refactoring the matrix A.

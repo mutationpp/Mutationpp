@@ -1,3 +1,30 @@
+/**
+ * @file mppequil.cpp
+ *
+ * @brief Utility which provides equilibrium properties for a given mixture.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "mutation++.h"
 #include <iostream>
 #include <fstream>
@@ -179,7 +206,6 @@ void printHelpMessage(const char* const name)
          << "temperatures and pressures using the Mutation++ library." << endl;
     cout << endl;
     cout << tab << "-h, --help          prints this help message" << endl;
-    cout << tab << "-v, --verbose       toggles verbosity on" << endl;
     cout << tab << "    --no-header     no table header will be printed" << endl;
     cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T" << endl;
     cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
@@ -189,6 +215,7 @@ void printHelpMessage(const char* const name)
     cout << tab << "-o                  list of other values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
+    cout << tab << "    --elem-comp     set elemental composition with a name from the mixture file" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
     cout << tab << "    --scientific    outputs in scientific format with given precision" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
@@ -346,20 +373,28 @@ Options parseOptions(int argc, char** argv)
     opts.p_mixture_opts->setStateModel("Equil");
     
     // Elemental mole fractions
+    bool comp_set = false;
     if (optionExists(argc, argv, "--elem-x")) {
-        std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--elem-x"), tokens, ":, ");
-        
-        if (tokens.size() % 2 == 0) {
-            for (int i = 0; i < tokens.size(); i += 2)
-                opts.p_mixture_opts->setDefaultComposition(
-                    tokens[i], std::atof(tokens[i+1].c_str()));
-        } else {
-            cout << "Bad format for element fractions!" << endl;
-            printHelpMessage(argv[0]);
-        }
+        comp_set = true;
+        opts.p_mixture_opts->addComposition(
+            Thermodynamics::Composition(getOption(argc, argv, "--elem-x").c_str()),
+            true
+        );
     }
     
+    // Elemental composition
+    if (optionExists(argc, argv, "--elem-comp")) {
+        if (comp_set) {
+            cout << "Only one method of setting element composition can be used!" << endl;
+            exit(1);
+        }
+        std::string comp = getOption(argc, argv, "--elem-comp");
+        if (!opts.p_mixture_opts->setDefaultComposition(comp.c_str())) {
+            cout << "Composition " << comp << " does not exist in the mixture!" << endl;
+            exit(1);
+        }
+    }
+
     // Thermodynamic database
     if (optionExists(argc, argv, "--thermo-db")) {
         opts.p_mixture_opts->setThermodynamicDatabase(
@@ -563,6 +598,23 @@ void writeHeader(
         cout << endl;
 }
 
+
+/**
+ * @page mppequil Mutation++ Equilibrium Properties (mppequil)
+ *
+ * __Usage:__
+ *
+ * mppequil [OPTIONS] mixture
+ *
+ * Compute equilibrium properties for mixture over a set of temperatures and
+ * pressures using the Mutation++ library.  Use
+ *
+ *     mppequil -h
+ *
+ * for a full list of options.
+ */
+
+
 int main(int argc, char** argv)
 {
 #ifdef _GNU_SOURCE
@@ -570,8 +622,6 @@ int main(int argc, char** argv)
     feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
-    
-    
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);

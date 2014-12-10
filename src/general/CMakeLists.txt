@@ -1,3 +1,24 @@
+#
+# Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+#
+# This file is part of MUlticomponent Thermodynamic And Transport
+# properties for IONized gases in C++ (Mutation++) software package.
+#
+# Mutation++ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Mutation++ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Mutation++.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
 cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
@@ -18,28 +39,6 @@ install(TARGETS mppequil DESTINATION bin)
 add_executable(bprime bprime.cpp)
 target_link_libraries(bprime mutation++)
 install(TARGETS bprime DESTINATION bin)
-
-add_executable(reduce reduce.cpp)
-target_link_libraries(reduce mutation++)
-install(TARGETS reduce DESTINATION bin)
-
-# Build and install the test codes
-#option(BUILD_TEST_CODES "Build test executables" OFF)
-#if (BUILD_TEST_CODES)
-#    
-#    # profiling
-#    #add_executable(profiling profiling.cpp)
-#    #target_link_libraries(profiling mutation++ rt)
-#    #install(TARGETS profiling DESTINATION bin)
-#    
-#    add_executable(minres test_minres.cpp)
-#    #target_link_libraries(minres mutation++)
-#    install(TARGETS minres DESTINATION bin)
-#
-#    add_executable(mpgfc test_mpgfc.cpp)
-#    target_link_libraries(mpgfc mutation++)
-#    install(TARGETS mpgfc DESTINATION bin)
-#endif()
 
 # Install the header files
 install(FILES mutation++.h DESTINATION include/mutation++)

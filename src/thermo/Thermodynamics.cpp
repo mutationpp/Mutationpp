@@ -1,6 +1,34 @@
+/**
+ * @file Thermodynamics.cpp
+ *
+ * @brief Implementation of the Thermodynamics class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "Thermodynamics.h"
 #include "StateModel.h"
 #include "Utilities.h"
+#include "Composition.h"
 //#include "MultiPhaseEquilSolver.h"
 //#include "ParticleRRHO.h"
 
@@ -98,53 +126,11 @@ Thermodynamics::~Thermodynamics()
 
 //==============================================================================
 
-void Thermodynamics::setDefaultComposition(
-        const std::vector<std::pair<std::string, double> >& composition)
+void Thermodynamics::setDefaultComposition(const Composition& c)
 {
-    // Make sure all elements are included exactly once and 
-    bool set_element [nElements()];
-    std::fill(set_element, set_element+nElements(), false);
-    
-    vector< pair<string, double> >::const_iterator iter = 
-        composition.begin();
-    
-    for ( ; iter != composition.end(); ++iter) {
-        int index = elementIndex(iter->first);
-        if (index >= 0) {
-            if (set_element[index]) {
-                cerr << "Error: trying to set the default elemental"
-                     << " composition for element " << iter->first
-                     << " more than once!" << endl;
-                exit(1);
-            } else {
-                mp_default_composition[index] = iter->second;
-                set_element[index] = true;
-            }
-        } else {
-            cerr << "Error: trying to set the default elemental"
-                 << " composition for element " << iter->first
-                 << " which is not in this mixture!" << endl;
-            exit(1);
-        }
-    }
-    
-    for (int i = 0; i < nElements(); ++i) {
-        if (!set_element[i]) {
-            cerr << "Error: did not include element " << elementName(i)
-                 << " while setting the default elemental compsotion"
-                 << " of the mixture!" << endl;
-            exit(1);
-        }
-    }
-    
-    //cout << "Default Composition Set:" << endl;
-    //for (int i = 0; i < nElements(); ++i)
-    //    cout << elementName(i) << " " << mp_default_composition[i] << endl;
-        
-    
-    // Scale the fractions to sum to one
-    //RealVecWrapper wrapper(mp_default_composition, nElements());
-    //wrapper = wrapper / wrapper.sum();
+    c.getComposition(m_element_indices, mp_default_composition);
+    if (c.type() == Composition::MASS)
+        convert<YE_TO_XE>(mp_default_composition, mp_default_composition);
 }
 
 //==============================================================================
@@ -282,11 +268,11 @@ double Thermodynamics::mixtureMw() const
 
 //==============================================================================
 
-void Thermodynamics::equilibriumComposition(
+std::pair<int, int> Thermodynamics::equilibriumComposition(
     double T, double P, const double* const p_Xe, double* const p_X,
     MoleFracDef mdf) const
 {
-    mp_equil->equilibrate(T, P, p_Xe, p_X, mdf);
+    return mp_equil->equilibrate(T, P, p_Xe, p_X, mdf);
 }
 
 //==============================================================================
@@ -341,8 +327,10 @@ double Thermodynamics::numberDensity(const double T, const double P) const
 double Thermodynamics::numberDensity() const 
 {
     double Xe = (hasElectrons() ? mp_state->X()[0] : 0.0);
-    return mp_state->P() / KB * 
-        ((1.0 - Xe) / mp_state->T() + Xe / mp_state->Te());
+    double Th = mp_state->T();
+    double Te = mp_state->Te();
+    double P  = mp_state->P();
+    return P / (KB * (Th + Xe*(Te - Th)));
 }
 
 //==============================================================================
@@ -373,8 +361,8 @@ double Thermodynamics::density(
 
 double Thermodynamics::density() const
 {
-    //return numberDensity() * mixtureMw() / NA;
-    return density(mp_state->T(), mp_state->P(), mp_state->X());
+    return numberDensity() * mixtureMw() / NA;
+    //return density(mp_state->T(), mp_state->P(), mp_state->X());
 }
 
 //==============================================================================
@@ -655,6 +643,11 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     const double drdp = dMwdP/Mwmix + 1.0/P; // here also
 
     return (cp + (P/rho - dedp/drdp)*drdt);
+}
+
+void Thermodynamics::mixtureEnergies(double* const p_e) const
+{
+    mp_state->getMixtureEnergiesMass(p_e);
 }
 
 

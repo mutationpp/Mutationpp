@@ -1,3 +1,30 @@
+/**
+ * @file StateModel.h
+ *
+ * @brief Definition of the StateModel class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
@@ -5,10 +32,17 @@
 #include "Kinetics.h"
 #include "TransferModel.h"
 #include "Transport.h"
+#include "TransferModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
+
+/**
+ * @defgroup statemodels State Models
+ * List of available State Models.
+ * @{
+ */
 
 /**
  * Base class for all state models.  A mixture state is completely determined
@@ -35,7 +69,8 @@ public:
      * @param ns - number of species
      */
     StateModel(ARGS thermo, const int nenergy, const int nmass)
-        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
+        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass),
+          m_transfer_models(nenergy-1)
     {
         m_T = m_Tr = m_Tv = m_Tel = m_Te = 300.0;
         m_P = 0.0;
@@ -49,7 +84,16 @@ public:
      */
     virtual ~StateModel()
     {
+        // Delete data pointers
         delete [] mp_X;
+
+        // Delete transfer models
+        for (int i = 0; i < m_nenergy-1; ++i) {
+            for (int k = 0; k < m_transfer_models[i].size(); ++k) {
+                delete m_transfer_models[i][k];
+                m_transfer_models[i][k] = NULL;
+            }
+        }
     }
     
     /**
@@ -137,6 +181,12 @@ public:
         std::exit(1);
     }
     
+    virtual void getMixtureEnergiesMass(double* const p_e) {
+        std::cerr << "getMixtureEnergiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
 	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
@@ -189,18 +239,6 @@ public:
     }
     
     /**
-     * Creates a new TransferModel object which can compute the energy transfer
-     * source terms for this state model.
-     */
-/*    virtual Mutation::Transfer::TransferModel* createTransferModel(
-        Thermodynamics& thermo,
-        Mutation::Transport::Transport& transport,
-        Mutation::Kinetics::Kinetics& kinetics)
-    {
-        return NULL;
-    } */ // Probably will not be used.
-    
-    /**
      * Initializes the energy transfer terms that will be used by each State Model.
      */
     virtual void initializeTransferModel(
@@ -209,11 +247,27 @@ public:
         Mutation::Kinetics::Kinetics& kinetics) {}
     
     /**
-     * This functions provides the total energy transfer source terms
+     * This function provides the total energy transfer source terms
      */
-    virtual void energyTransferSource(double* const omega){}
+    virtual void energyTransferSource(double* const p_omega)
+    {
+        for (int i = 0; i < m_nenergy-1; ++i) {
+            p_omega[i] = 0.0;
+            for (int k = 0; k < m_transfer_models[i].size(); ++k)
+                p_omega[i] += m_transfer_models[i][k]->source();
+        }
+    }
     
 protected:
+
+    void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
+    {
+        // Make sure i is in the correct range
+        assert(i >= 0);
+        assert(i < m_nenergy-1);
+
+        m_transfer_models[i].push_back(p_term);
+    }
 
     /**
      * Solves the general form of an energy equation
@@ -318,7 +372,13 @@ protected:
     
     double* mp_X;
     
+
+    std::vector< std::vector<Mutation::Transfer::TransferModel*> >
+        m_transfer_models;
+
 }; // class StateModel
+
+/// @}
 
     } // namespace Thermodynamics
 } // namespace Mutation
