@@ -56,8 +56,8 @@ Mixture::Mixture(const MixtureOptions& options)
     if (options.hasDefaultComposition())
         setDefaultComposition(m_compositions[options.getDefaultComposition()]);
     
-    // Instatiate a new energy transfer model
-    state()->initializeTransferModel(*this, *this, *this);
+    // Instantiate a new energy transfer model
+    state()->initializeTransferModel(*this);
     
 }
 

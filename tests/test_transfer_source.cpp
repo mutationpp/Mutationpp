@@ -34,10 +34,99 @@
 #include <vector>
 #include <numeric>
 #include "MixtureFixtures.h"
-
+#include "AutoRegistration.h"
+#include "TransferModel.h"
 
 // Provide mixture fixture to all test cases in this suite
 BOOST_FIXTURE_TEST_SUITE(Omega, MixtureFromCommandLine)
+
+/**
+ * Small helper function to compute equilibrium mixtures and make sure the given
+ * energy transfer source is zero at several temperatures and pressures.
+ */
+void checkOmegaIsZeroInEquil(
+    MixtureFromCommandLine* p_fix, Mutation::Transfer::TransferModel* p_omega)
+{
+    Mutation::Mixture& mix = p_fix->mix();
+    const double tol = 1.0e-8 * mix.nSpecies();
+
+    // Loop over range of pressures and temperatures
+    for (int ip = 0.0; ip < 10; ++ip) {
+        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
+        for (int it = 0.0; it < 10; ++it) {
+            double T = 1000.0*it + 1000.0;
+
+            // Set an equilibrium state
+            p_fix->equilibrateMixture(T, P);
+
+            // Make sure the source term is near zero
+            double rhoe = mix.mixtureEnergyMass()*mix.density();
+            BOOST_CHECK_SMALL(p_omega->source()/rhoe, tol);
+        }
+    }
+}
+
+/*BOOST_AUTO_TEST_CASE(OmegaCE_is_zero_in_equil)
+{
+    if (!mix().hasElectrons())
+        return;
+
+    Mutation::Transfer::OmegaCE* omega =
+        new Mutation::Transfer::OmegaCE(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+/*BOOST_AUTO_TEST_CASE(OmegaCElec_is_zero_in_equil)
+{
+    Mutation::Transfer::OmegaCElec* omega =
+        new Mutation::Transfer::OmegaCElec(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+/*BOOST_AUTO_TEST_CASE(OmegaCV_is_zero_in_equil)
+{
+    Mutation::Transfer::OmegaCV* omega =
+        new Mutation::Transfer::OmegaCV(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+/*BOOST_AUTO_TEST_CASE(OmegaET_is_zero_in_equil)
+{
+    if (!mix().hasElectrons())
+        return;
+
+    Mutation::Transfer::OmegaET* omega =
+        new Mutation::Transfer::OmegaET(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+/*BOOST_AUTO_TEST_CASE(OmegaEV_is_zero_in_equil)
+{
+    Mutation::Transfer::OmegaEV* omega =
+        new Mutation::Transfer::OmegaEV(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+/*BOOST_AUTO_TEST_CASE(OmegaI_is_zero_in_equil)
+{
+    Mutation::Transfer::OmegaI* omega =
+        new Mutation::Transfer::OmegaI(mix(), mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}*/
+
+BOOST_AUTO_TEST_CASE(OmegaVT_is_zero_in_equil)
+{
+    Mutation::Transfer::TransferModel* omega =
+        Mutation::Utilities::Config::Factory<Mutation::Transfer::TransferModel>::create("OmegaVT", mix());
+    checkOmegaIsZeroInEquil(this, omega);
+    delete omega;
+}
 
 /*
  * Ensures that the total energy transfer source terms associated with the
@@ -51,7 +140,7 @@ BOOST_AUTO_TEST_CASE(Omega_is_zero_in_equil)
 
     // Tolerance must account for errors in equilibrium solution which are
     // propagated forward into the production rates
-    const double tol = 1.0e-10;
+    const double tol = 1.0e-8 * mix().nSpecies();
 
     // Loop over range of pressures and temperatures
     for (int ip = 0.0; ip < 10; ++ip) {

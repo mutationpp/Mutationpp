@@ -26,9 +26,13 @@
  */
 
 #include "StateModel.h"
+#include "AutoRegistration.h"
 
 namespace Mutation {
     namespace Thermodynamics {
+
+using namespace Mutation::Transfer;
+using namespace Mutation::Utilities;
 
 /**
  * @ingroup statemodels
@@ -57,12 +61,6 @@ public:
         delete [] mp_work2;
         delete [] mp_work3;
         delete [] mp_work4;
-        delete mp_omega_VT;
-        delete mp_omega_CV;
-        delete mp_omega_CElec;
-        delete mp_omega_CE;
-        delete mp_omega_ET;
-        delete mp_omega_I;
     }
 
     /**
@@ -127,29 +125,19 @@ public:
         m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
     
-    void initializeTransferModel(
-        Thermodynamics& thermo,
-        Mutation::Transport::Transport& transport,
-        Mutation::Kinetics::Kinetics& kinetics){
-      
-       mp_omega_VT = new Mutation::Transfer::OmegaVT(thermo);
-       mp_omega_CV = new Mutation::Transfer::OmegaCV(thermo, kinetics);
-       mp_omega_CElec = new Mutation::Transfer::OmegaCElec(thermo, kinetics);
-       mp_omega_CE = new Mutation::Transfer::OmegaCE(thermo, kinetics);
-       mp_omega_ET = new Mutation::Transfer::OmegaET(thermo, transport);
-       mp_omega_I  = new Mutation::Transfer::OmegaI(thermo, kinetics);
-    }
-    
-    void energyTransferSource(double* const omega)
+    void initializeTransferModel(Mutation::Mixture& mix)
     {
-         omega[0]  = mp_omega_VT->source(); 
-         omega[0] += mp_omega_CV->source();
-         omega[0] += mp_omega_CElec->source(); 
-         if (m_thermo.hasElectrons()){
-             omega[0] += mp_omega_CE->source();
-             omega[0] += mp_omega_ET->source();
-             omega[0] += mp_omega_I->source();
-         }
+        // Heavy particle terms
+        addTransferTerm(0, Config::Factory<TransferModel>::create("OmegaVT", mix));
+        //addTransferTerm(0, new OmegaCV(thermo, kinetics));
+        //addTransferTerm(0, new OmegaCElec(thermo, kinetics));
+
+        // Terms only included when electrons are present
+        //if (m_thermo.hasElectrons()) {
+        //    addTransferTerm(0, new OmegaCE(thermo, kinetics));
+        //    addTransferTerm(0, new OmegaET(thermo, transport));
+        //    addTransferTerm(0, new OmegaI(thermo, kinetics));
+        //}
     }
     
     void getTemperatures(double* const p_T) const {
@@ -373,12 +361,6 @@ private:
     double* mp_work2;
     double* mp_work3;
     double* mp_work4;
-    Mutation::Transfer::TransferModel* mp_omega_VT;
-    Mutation::Transfer::TransferModel* mp_omega_CV;
-    Mutation::Transfer::TransferModel* mp_omega_CElec;
-    Mutation::Transfer::TransferModel* mp_omega_CE;
-    Mutation::Transfer::TransferModel* mp_omega_ET;
-    Mutation::Transfer::TransferModel* mp_omega_I;
     
 }; // class ChemNonEqStateModel
 

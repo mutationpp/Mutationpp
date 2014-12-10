@@ -43,7 +43,7 @@ namespace Mutation {
          * with \f$ c_1 \f$ equal to 1 for non-preferential models.
          * 
          */
-        double const OmegaCE::compute_source_Candler()
+        /*double const OmegaCE::compute_source_Candler()
         {
 
          // Getting Electron Translational Energy
@@ -59,6 +59,12 @@ namespace Mutation {
              sum += mp_wrk1[0]*mp_wrk2[0]*mp_thermo->T()*RU/mp_thermo->speciesMw(0);
 
          return(c1*sum);
+         }*/
+
+         double const OmegaCE::compute_source_Candler()
+         {
+             mp_kinetics->netProductionRates(mp_wrk1);
+             return mp_wrk1[0] * 1.5*RU*mp_thermo->Te()/mp_thermo->speciesMw(0);
          }
       
     } // namespace Kinetics
