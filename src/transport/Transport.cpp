@@ -208,15 +208,16 @@ double Transport::electronThermalConductivity()
         lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
             210.0*Q14ei(i)+90.0*Q15ei(i));
     }
-    
+ 
     fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
     lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
-    if (lam11 <= 0.0) {
+    if (lam11 < 0.0) {
+        cout << "NEGATIVE ELECTRON CONDUCTIVITY " << lam11 << " " << X[0] << " " << Th << " " << Te << " " << endl;
         for (int i = 1; i < ns; ++i)
-            cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
+            cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << X[i]*Q11(i) << endl;
     }
     assert(lam11 > 0.0);
     //assert(lam22 > 0.0);

@@ -48,13 +48,16 @@ namespace Mutation {
         // Collisional integrals
         const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
 
+        // Electron velocity
+        double ve = sqrt(RU*8.0*Te/(PI*mwel));
+
         // Compute mass averaged collision frequency 
         sum = 0.0;
         for (int is = 1; is < ns; ++is) {
             mwis = mp_thermo->speciesMw(is);
-            nu = sqrt(RU*8.0*Te/(PI*mwis))*p_X[is]*ns*Q11(is);
+            nu = ve * p_X[is] * nd * Q11(is);
             sum += nu/mwis;
-        } 
+        }
         sum *= 2.0*mwel;
 
         // Return tau

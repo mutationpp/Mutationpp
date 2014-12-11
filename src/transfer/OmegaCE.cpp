@@ -46,9 +46,6 @@ namespace Mutation {
         double const OmegaCE::compute_source_Candler()
         {
 
-         // Getting Electron Translational Energy
-         mp_thermo->speciesHOverRT(NULL, mp_wrk1, NULL, NULL, NULL, NULL);
-
          // Getting Production Rate
          mp_kinetics->netProductionRates(mp_wrk2);
 
@@ -56,7 +53,7 @@ namespace Mutation {
          double c1 = 1.0E0;
          double sum = 0.E0; 
 
-             sum += mp_wrk1[0]*mp_wrk2[0]*mp_thermo->T()*RU/mp_thermo->speciesMw(0);
+             sum += 1.5E0*mp_wrk2[0]*mp_thermo->Te()*RU/mp_thermo->speciesMw(0);
 
          return(c1*sum);
          }

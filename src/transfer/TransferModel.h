@@ -274,14 +274,13 @@ public:
     
     double source()
     {
-        const double * p_Y = mp_thermo->Y();
-        double rho = mp_thermo->density();
-        double me = mp_thermo->speciesMw(0);
+        const double * p_X = mp_thermo->X();
+        double nd = mp_thermo->numberDensity();
         double T = mp_thermo->T();
-        double Tv = mp_thermo->Tv();
+        double Te = mp_thermo->Te();
 
         double tau = compute_tau_ET();
-        return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
+        return 1.5E0*KB*nd*p_X[0]*(T-Te)/tau;
     }
     
 private:
@@ -387,7 +386,7 @@ public:
      {
         // Get Formation enthalpy
         mp_thermo->speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
-        for (int i=0; i< m_ns-1; ++i)
+        for (int i=0; i < m_ns; ++i)
             mp_hf[i]*= RU*mp_thermo->T();
 
         // Get reaction enthapies
