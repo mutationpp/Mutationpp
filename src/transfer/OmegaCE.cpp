@@ -42,45 +42,27 @@ public:
 		: TransferModel(mix)
 	{
 		mp_wrk1 = new double [mix.nSpecies()];
-		mp_wrk2 = new double [mix.nSpecies()];
-	};
+	}
 
 	~OmegaCE()
 	{
 		delete [] mp_wrk1;
-		delete [] mp_wrk2;
-	};
+	}
 
 	double source()
 	{
-	  static int i_transfer_model = 0;
-	  switch (i_transfer_model){
-		  case 0:
-			  return compute_source_Candler();
-			  break;
-		  default:
-			  std::cerr << "The selected Electron-Chemistry-Electron model is not implemented yet";
-			  return 0.0;
-	  }
-	};
+		static const double cv = 1.5*RU/m_mixture.speciesMw(0);
+		m_mixture.netProductionRates(mp_wrk1);
+		return mp_wrk1[0]*cv*m_mixture.Te();
+	}
 
 private:
 	double* mp_wrk1;
-	double* mp_wrk2;
-
-	double const compute_source_Candler();
 };
 
-
- double const OmegaCE::compute_source_Candler()
- {
-	 m_mixture.netProductionRates(mp_wrk1);
-	 return mp_wrk1[0]*1.5*RU*m_mixture.Te()/m_mixture.speciesMw(0);
- }
-
- // Register the transfer model
- Mutation::Utilities::Config::ObjectProvider<
-     OmegaCE, TransferModel> omegaCE("OmegaCE");
+// Register the transfer model
+Mutation::Utilities::Config::ObjectProvider<
+    OmegaCE, TransferModel> omegaCE("OmegaCE");
       
     } // namespace Transfer
 } // namespace Mutation

@@ -32,7 +32,7 @@ namespace Mutation {
     namespace Thermodynamics {
 
 using namespace Mutation::Transfer;
-using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::Config;
 
 /**
  * @ingroup statemodels
@@ -128,16 +128,16 @@ public:
     void initializeTransferModel(Mutation::Mixture& mix)
     {
         // Heavy particle terms
-        addTransferTerm(0, Config::Factory<TransferModel>::create("OmegaVT", mix));
-        //addTransferTerm(0, new OmegaCV(thermo, kinetics));
-        //addTransferTerm(0, new OmegaCElec(thermo, kinetics));
+        addTransferTerm(0, Factory<TransferModel>::create("OmegaVT", mix));
+        addTransferTerm(0, Factory<TransferModel>::create("OmegaCV", mix));
+        addTransferTerm(0, Factory<TransferModel>::create("OmegaCElec", mix));
 
         // Terms only included when electrons are present
-        //if (m_thermo.hasElectrons()) {
-        //    addTransferTerm(0, new OmegaCE(thermo, kinetics));
-        //    addTransferTerm(0, new OmegaET(thermo, transport));
-        //    addTransferTerm(0, new OmegaI(thermo, kinetics));
-        //}
+        if (m_thermo.hasElectrons()) {
+            addTransferTerm(0, Factory<TransferModel>::create("OmegaET", mix));
+            addTransferTerm(0, Factory<TransferModel>::create("OmegaCE", mix));
+            addTransferTerm(0, Factory<TransferModel>::create("OmegaI", mix));
+        }
     }
     
     void getTemperatures(double* const p_T) const {
