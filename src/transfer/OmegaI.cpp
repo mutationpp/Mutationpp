@@ -79,20 +79,24 @@ public:
 	{
 		// Get Formation enthalpy
 		m_mixture.speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
-		for (int i=0; i< m_ns-1; ++i)
-			mp_hf[i]*= RU*m_mixture.T();
+		//for (int i = 0; i < m_ns; ++i)
+		//	mp_hf[i]*= RU*m_mixture.T();
 
-		// Get reaction enthapies
+		// Get reaction enthalpies
 		std::fill(mp_delta, mp_delta+m_nr, 0.0);
 		m_mixture.getReactionDelta(mp_hf,mp_delta);
 
 		// Get molar rates of progress
 		m_mixture.netRatesOfProgress(mp_rate);
 
-		double src=0;
-		for (int i=0; i< m_rId.size(); i++)
-			src -= mp_delta[m_rId[i]]*mp_rate[m_rId[i]];
-		return src;
+		double src = 0.0;
+		int j;
+		for (int i = 0; i < m_rId.size(); ++i) {
+		    j = m_rId[i];
+			src += mp_delta[j]*mp_rate[j];
+		}
+
+		return (-src*RU*m_mixture.T());
 	}
 
 private:

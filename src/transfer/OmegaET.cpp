@@ -54,14 +54,13 @@ public:
 
 	double source()
 	{
-		const double * p_Y = m_mixture.Y();
-		double rho = m_mixture.density();
-		double me = m_mixture.speciesMw(0);
-		double T = m_mixture.T();
-		double Tv = m_mixture.Tv();
+		const double * p_X = m_mixture.X();
+        double nd = m_mixture.numberDensity();
+        double T = m_mixture.T();
+        double Te = m_mixture.Te();
 
-		double tau = compute_tau_ET();
-		return 3.E0*RU*rho*p_Y[0]*(T-Tv)/(2.0*me*tau);
+        double tau = compute_tau_ET();
+        return 1.5E0*KB*nd*p_X[0]*(T-Te)/tau;
 	}
 
 private:
@@ -74,28 +73,31 @@ private:
 double const OmegaET::compute_tau_ET()
 {
 	const double T = m_mixture.T();
-	const double Te = m_mixture.Te();
-	const double nd = m_mixture.numberDensity();
-	const double ns = m_mixture.nSpecies();
-	const double *const p_X = m_mixture.X();
-	const double mwel = m_mixture.speciesMw(0);
-	double mwis, nu, sum, tau;
+    const double Te = m_mixture.Te();
+    const double nd = m_mixture.numberDensity();
+    const double ns = m_mixture.nSpecies();
+    const double *const p_X = m_mixture.X();
+    const double mwel = m_mixture.speciesMw(0);
+    double mwis, nu, sum, tau;
 
-	// Collisional integrals
-	const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
+    // Collisional integrals
+    const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
 
-	// Compute mass averaged collision frequency
-	sum = 0.0;
-	for (int is = 1; is < ns; ++is) {
-		mwis = m_mixture.speciesMw(is);
-		nu = std::sqrt(RU*8.0*Te/(PI*mwis))*p_X[is]*ns*Q11(is);
-		sum += nu/mwis;
-	}
-	sum *= 2.0*mwel;
+    // Electron velocity
+    double ve = sqrt(RU*8.0*Te/(PI*mwel));
 
-	// Return tau
-	tau = 1.0/sum;
-	return tau;
+    // Compute mass averaged collision frequency
+    sum = 0.0;
+    for (int is = 1; is < ns; ++is) {
+        mwis = m_mixture.speciesMw(is);
+        nu = ve * p_X[is] * nd * Q11(is);
+        sum += nu/mwis;
+    }
+    sum *= 2.0*mwel;
+
+    // Return tau
+    tau = 1.0/sum;
+    return tau;
 }
 
 // Register the transfer model
