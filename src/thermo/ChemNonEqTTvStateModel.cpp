@@ -81,7 +81,7 @@ public:
         for (int i = 0; i < ns; ++i){
             // Check that species densities are at least positive
             assert(p_mass[i] >= 0.0);
-            mp_X[i] = p_mass[i] / m_thermo.speciesMw(i);
+            mp_X[i] = std::max(p_mass[i] / m_thermo.speciesMw(i), 0.0);
             conc += mp_X[i];
         }
         double elec = 0.0;
