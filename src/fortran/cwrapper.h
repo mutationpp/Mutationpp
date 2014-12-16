@@ -241,10 +241,16 @@ void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el,
 void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars);
 
 /**
- * Returns the species specific heats at constant pressure in J/kg-K given the
- * mixture temperature.
+ * Returns the species specific heats at constant pressure in J/kg-K per species
+ * per each energy mode.
  */
 void NAME_MANGLE(species_cp_mass)(double* const cp);
+
+/**
+ * Returns the species specific heats at constant volume in J/kg-K per species
+ * per each energy mode.
+ */
+void NAME_MANGLE(species_cv_mass)(double* const cv);
 
 /**
  * Returns the mixture specific heat at constant pressure in J/kg-K.
