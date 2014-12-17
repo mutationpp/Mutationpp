@@ -28,14 +28,21 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-#include "Thermodynamics.h"
-#include "Kinetics.h"
-#include "Transport.h"
-#include "TransferModel.h"
+#include "Constants.h"
+
+#include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 
 namespace Mutation {
-    namespace Thermodynamics {
 
+class Mixture;
+
+	namespace Transfer { class TransferModel; }
+
+    namespace Thermodynamics {
 
 /**
  * @defgroup statemodels State Models
@@ -44,51 +51,25 @@ namespace Mutation {
  */
 
 /**
- * Base class for all state models.  A mixture state is completely determined
- * when enough thermodynamic values are combined with the mixture composition
- * such that all other mixture quantities can be successfully determined.  For 
- * example, with a simple mixture modeled in thermal equilibrium, the mixture
- * temperature, pressure, and species mole fractions are enough to fully
- * determine all other mixture quantities.
- *
- * A state model describes how a particular mixture is to be modeled.  For
- * example, a mixture could be modeled using a single temperature or multiple
- * temperatures that represent the various energy modes in the mixture.  This
- * base class provides the framework for defining new state models.
+ * Base class for all state models.
  */
 class StateModel
 {
 public:
 
-    typedef const Thermodynamics& ARGS;
+    typedef Mutation::Mixture& ARGS;
     
     /**
      * Constructor initializes state.
      *
      * @param ns - number of species
      */
-    StateModel(ARGS thermo, const int nenergy, const int nmass)
-        : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
-    {
-        m_T = m_Tr = m_Tv = m_Tel = m_Te = 300.0;
-        m_P = 0.0;
-        mp_X = new double [m_thermo.nSpecies()];
-        for (int i = 0; i < thermo.nSpecies(); ++i)
-            mp_X[i] = 0.0;
-    }
+    StateModel(ARGS mix, const int nenergy, const int nmass);
     
     /**
      * Destructor.
      */
-    virtual ~StateModel()
-    {
-        // Delete data pointers
-        delete [] mp_X;
-
-        // Delete transfer models
-        for (int i = 0; i < m_transfer_models.size(); ++i)
-            delete m_transfer_models[i].second;
-    }
+    virtual ~StateModel();
     
     /**
      * Returns the number of energy equations represented by this StateModel.
@@ -233,31 +214,13 @@ public:
     }
     
     /**
-     * Initializes the energy transfer terms that will be used by each State Model.
-     */
-    virtual void initializeTransferModel(Mutation::Mixture& mix) {}
-    
-    /**
      * This function provides the total energy transfer source terms
      */
-    virtual void energyTransferSource(double* const p_omega)
-    {
-        for (int i = 0; i < m_nenergy-1; ++i)
-            p_omega[i] = 0.0;
-
-        for (int i = 0; i < m_transfer_models.size(); ++i)
-            p_omega[m_transfer_models[i].first] +=
-                m_transfer_models[i].second->source();
-    }
+    virtual void energyTransferSource(double* const p_omega);
     
 protected:
 
-    void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
-    {
-        assert(i >= 0);
-        assert(i < m_nenergy-1);
-        m_transfer_models.push_back(std::make_pair(i, p_term));
-    }
+    void addTransferTerm(int i, const std::string& model);
 
     /**
      * Solves the general form of an energy equation
@@ -299,7 +262,6 @@ protected:
         const double rtol = 1.0e-12,
         const int max_iters = 100)
     {
-        const int ns = m_thermo.nSpecies();
         const double rhoe_over_Ru = rhoe/RU;
         const double tol = rtol*std::abs(rhoe_over_Ru) + atol;
 
@@ -308,7 +270,7 @@ protected:
         // Compute initial value of f
         h(T, p_work);
         f = alpha;
-        for (int i = 0; i < ns; ++i)
+        for (int i = 0; i < m_ns; ++i)
             f += mp_X[i]*p_work[i];
         f = T*f - rhoe_over_Ru;
 
@@ -318,15 +280,15 @@ protected:
             // Check for max iterations
             if (iter++ == max_iters) {
                 using std::cerr;
-                cerr << "Exceeded max iterations when computing temperature!\n";
-                cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << endl;
+                std::cerr << "Exceeded max iterations when computing temperature!\n";
+                std::cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << std::endl;
                 return false;
             }
 
             // Compute df/dT
             cp(T, p_work);
             fp = alpha;
-            for (int i = 0; i < ns; ++i)
+            for (int i = 0; i < m_ns; ++i)
                 fp += mp_X[i]*p_work[i];
 
             // Update T
@@ -337,7 +299,7 @@ protected:
             // Recompute f
             h(T, p_work);
             f = alpha;
-            for (int i = 0; i < ns; ++i)
+            for (int i = 0; i < m_ns; ++i)
                 f += mp_X[i]*p_work[i];
             f = T*f - rhoe_over_Ru;
             //cout << iter << " " << f << " " << T << endl;
@@ -349,7 +311,8 @@ protected:
 
 protected:
 
-    const Thermodynamics& m_thermo;
+    Mutation::Mixture& m_mix;
+    const int m_ns;
     const int m_nenergy;
     const int m_nmass;
     

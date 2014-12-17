@@ -35,6 +35,8 @@ add_sources(mutation++
     RrhoDB.cpp
     Species.cpp
     SpeciesListDescriptor.cpp
+    StateModel.cpp
+    StateModelInterface.cpp
     Thermodynamics.cpp
     ThermoDB.cpp
 )
@@ -44,5 +46,6 @@ install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)
 install(FILES StateModel.h DESTINATION include/mutation++)
+install(FILES StateModelInterface.h DESTINATION include/mutation++)
 install(FILES ThermoDB.h DESTINATION include/mutation++)
 install(FILES Thermodynamics.h DESTINATION include/mutation++)

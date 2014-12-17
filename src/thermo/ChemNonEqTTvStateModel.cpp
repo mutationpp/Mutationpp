@@ -26,6 +26,7 @@
  */
 
 #include "StateModel.h"
+#include "Mixture.h"
 #include "AutoRegistration.h"
 
 namespace Mutation {
@@ -43,16 +44,25 @@ using namespace Mutation::Utilities::Config;
 class ChemNonEqTTvStateModel : public StateModel
 {
 public:
-  
-     //Mutation::Transfer::TransferModel* p_transfer_model;
 
-    ChemNonEqTTvStateModel(const Thermodynamics& thermo)
-        : StateModel(thermo, 2, thermo.nSpecies())
+    ChemNonEqTTvStateModel(Mutation::Mixture& mix)
+        : StateModel(mix, 2, mix.nSpecies())
     {
-        mp_work1 = new double [thermo.nSpecies()];
-        mp_work2 = new double [thermo.nSpecies()];
-        mp_work3 = new double [thermo.nSpecies()];
-        mp_work4 = new double [thermo.nSpecies()];
+        mp_work1 = new double [mix.nSpecies()];
+        mp_work2 = new double [mix.nSpecies()];
+        mp_work3 = new double [mix.nSpecies()];
+        mp_work4 = new double [mix.nSpecies()];
+
+        // Add all the necessary energy transfer terms
+		addTransferTerm(0, "OmegaVT");
+		addTransferTerm(0, "OmegaCV");
+		addTransferTerm(0, "OmegaCElec");
+
+		if (m_mix.hasElectrons()) {
+			addTransferTerm(0, "OmegaET");
+			addTransferTerm(0, "OmegaCE");
+			addTransferTerm(0, "OmegaI");
+		}
     }
 
     ~ChemNonEqTTvStateModel()
@@ -73,7 +83,7 @@ public:
         const double* const p_mass, const double* const p_energy,
         const int vars = 0)
     {
-        const int ns = m_thermo.nSpecies();
+        const int ns = m_mix.nSpecies();
 
         // Compute the species concentrations which are used through out this
         // method regardless of variable set 
@@ -81,11 +91,11 @@ public:
         for (int i = 0; i < ns; ++i){
             // Check that species densities are at least positive
             assert(p_mass[i] >= 0.0);
-            mp_X[i] = std::max(p_mass[i] / m_thermo.speciesMw(i), 0.0);
+            mp_X[i] = std::max(p_mass[i] / m_mix.speciesMw(i), 0.0);
             conc += mp_X[i];
         }
         double elec = 0.0;
-        if(m_thermo.hasElectrons())
+        if(m_mix.hasElectrons())
             elec = mp_X[0];
 
         // Compute the temperatures and make sure the variable set is implemented
@@ -94,12 +104,12 @@ public:
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
             getTFromRhoE(
-                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
+                Cvv(m_mix), Ev(m_mix), p_energy[1], m_Tv, mp_work1, 0.0);
             m_Tel = m_Te = m_Tv;
 
             // Next compute the temperature using the total energy density
             getTFromRhoE(
-                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
+                Cv(m_mix), E(m_mix, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
 
             break;
         }
@@ -125,21 +135,6 @@ public:
         m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
     
-    void initializeTransferModel(Mutation::Mixture& mix)
-    {
-        // Heavy particle terms
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaVT", mix));
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaCV", mix));
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaCElec", mix));
-
-        // Terms only included when electrons are present
-        if (m_thermo.hasElectrons()) {
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaET", mix));
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaCE", mix));
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaI", mix));
-        }
-    }
-    
     void getTemperatures(double* const p_T) const {
         p_T[0] = T();
         p_T[1] = Tv();
@@ -147,29 +142,29 @@ public:
     
     void getEnergiesMass(double* const p_e)
     {    
-        int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
+        int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
+        int offset = (m_mix.hasElectrons() ? 1 : 0);
 
         for(int i = offset; i < ns; ++i)
-            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
+            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_mix.speciesMw(i);
         for(int i = offset; i < ns; ++i)
-            p_e[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons()){
-            p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
-            p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
+            p_e[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_mix.speciesMw(i);
+        if(m_mix.hasElectrons()){
+            p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_mix.speciesMw(0);
+            p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_mix.speciesMw(0);
         }
     }
 
     void getMixtureEnergiesMass(double* const p_e)
     {
-        int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
+        int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
+        int offset = (m_mix.hasElectrons() ? 1 : 0);
 
         double mw = 0.0;
         for (int i = 0; i < ns; ++i)
-            mw += mp_X[i]*m_thermo.speciesMw(i);
+            mw += mp_X[i]*m_mix.speciesMw(i);
 
         p_e[0] = 0.0;
         p_e[1] = 0.0;
@@ -192,48 +187,48 @@ public:
 
     void getEnthalpiesMass(double* const p_h)
     {    
-        int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
+        int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
         
         for(int i = 0; i < ns; ++i)
-            p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
+            p_h[i] = mp_work1[i]*m_T*RU/m_mix.speciesMw(i);
         for(int i = 0; i < ns; ++i)
-            p_h[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons())
-            p_h[ns] = mp_work2[0]*m_T*RU/m_thermo.speciesMw(0);
+            p_h[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_mix.speciesMw(i);
+        if(m_mix.hasElectrons())
+            p_h[ns] = mp_work2[0]*m_T*RU/m_mix.speciesMw(0);
     }
     
     void getCpsMass(double* const p_Cp)
     {       
-        int ns = m_thermo.nSpecies();
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
-        m_thermo.speciesCpOverR(
+        int ns = m_mix.nSpecies();
+        int offset = (m_mix.hasElectrons() ? 1 : 0);
+        m_mix.speciesCpOverR(
 			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
         for(int i = offset; i < ns; ++i)
-            p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_thermo.speciesMw(i);
+            p_Cp[i] = (mp_work1[i]+mp_work2[i])*RU/m_mix.speciesMw(i);
         for(int i = offset; i < ns; ++i)
-            p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons()) {
+            p_Cp[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_mix.speciesMw(i);
+        if(m_mix.hasElectrons()) {
             p_Cp[0] = 0.0;
-            p_Cp[ns] = mp_work1[0]*RU/m_thermo.speciesMw(0);
+            p_Cp[ns] = mp_work1[0]*RU/m_mix.speciesMw(0);
         }
     }
 
     void getCvsMass(double* const p_Cv)
     {       
-        int ns = m_thermo.nSpecies();
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
-        m_thermo.speciesCpOverR(
+        int ns = m_mix.nSpecies();
+        int offset = (m_mix.hasElectrons() ? 1 : 0);
+        m_mix.speciesCpOverR(
 			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
         for(int i = offset; i < ns; ++i)
-            p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
+            p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_mix.speciesMw(i);
         for(int i = offset; i < ns; ++i)
-            p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons()) {
+            p_Cv[i+ns] = (mp_work3[i]+mp_work4[i])*RU/m_mix.speciesMw(i);
+        if(m_mix.hasElectrons()) {
             p_Cv[0] = 0.0;
-            p_Cv[ns] = (mp_work1[0]-1.0)*RU/m_thermo.speciesMw(0);
+            p_Cv[ns] = (mp_work1[0]-1.0)*RU/m_mix.speciesMw(0);
         }
     }
 

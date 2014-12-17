@@ -27,6 +27,7 @@
 
 #include "Mixture.h"
 #include "StateModel.h"
+#include "Utilities.h"
 
 using namespace Mutation::Thermodynamics;
 
@@ -37,8 +38,7 @@ namespace Mutation {
 Mixture::Mixture(const MixtureOptions& options)
     : Thermodynamics::Thermodynamics(
         options.getSpeciesDescriptor(),
-        options.getThermodynamicDatabase(),
-        options.getStateModel()),
+        options.getThermodynamicDatabase()),
       Transport(
         *this,
         options.getViscosityAlgorithm(),
@@ -56,9 +56,17 @@ Mixture::Mixture(const MixtureOptions& options)
     if (options.hasDefaultComposition())
         setDefaultComposition(m_compositions[options.getDefaultComposition()]);
     
-    // Instantiate a new energy transfer model
-    state()->initializeTransferModel(*this);
+    // Initialize the state model
+    setStateModel(Utilities::Config::Factory<Mutation::Thermodynamics::StateModel>::create(
+    	options.getStateModel(), *this));
     
+}
+
+//==============================================================================
+
+void Mixture::energyTransferSource(double* const p_source)
+{
+	 stateModel()->energyTransferSource(p_source);
 }
 
 //==============================================================================

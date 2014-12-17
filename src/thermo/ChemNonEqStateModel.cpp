@@ -26,6 +26,7 @@
  */
 
 #include "StateModel.h"
+#include "Mixture.h"
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -40,10 +41,10 @@ class ChemNonEqStateModel : public StateModel
 {
 public:
 
-    ChemNonEqStateModel(const Thermodynamics& thermo)
-        : StateModel(thermo, 1, thermo.nSpecies())
+    ChemNonEqStateModel(Mutation::Mixture& mix)
+        : StateModel(mix, 1, mix.nSpecies())
     {
-        mp_work = new double [thermo.nSpecies()];
+        mp_work = new double [mix.nSpecies()];
     }
 
     ~ChemNonEqStateModel()
@@ -61,7 +62,7 @@ public:
         const double* const p_mass, const double* const p_energy,
         const int vars = 0)
     {
-        const int ns = m_thermo.nSpecies();
+        const int ns = m_mix.nSpecies();
 
         // Compute the species concentrations which are used throughout this
         // method regardless of variable set
@@ -69,7 +70,7 @@ public:
         for (int i = 0; i < ns; ++i) {
             // Check that species densities are at least positive
             ///assert(p_mass[i] >= 0.0);
-            mp_X[i] = std::max(p_mass[i] / m_thermo.speciesMw(i), 0.0);
+            mp_X[i] = std::max(p_mass[i] / m_mix.speciesMw(i), 0.0);
             conc += mp_X[i];
         }
 
@@ -78,7 +79,7 @@ public:
         case 0:
             // Solve energy equation
             getTFromRhoE(
-                Cp(m_thermo), H(m_thermo), p_energy[0], m_T, mp_work, -conc);
+                Cp(m_mix), H(m_mix), p_energy[0], m_T, mp_work, -conc);
             break;
         case 1:
             // Check that temperature is at least positive
@@ -106,22 +107,22 @@ public:
 
     void getEnergiesMass(double* const p_e)
 	{
-		const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
+		const int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_mix.speciesMw(i);
     }
 
     void getMixtureEnergiesMass(double* const p_e)
     {
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
+        const int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work);
 
         p_e[0] = 0.0;
         double mw = 0.0;
         for (int i = 0; i < ns; ++i) {
-            mw += mp_X[i]*m_thermo.speciesMw(i);
+            mw += mp_X[i]*m_mix.speciesMw(i);
             p_e[0] += mp_X[i]*(mp_work[i] - 1.0);
         }
 
@@ -130,29 +131,29 @@ public:
 
     void getEnthalpiesMass(double* const p_h) 
     {
-		const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
+		const int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
+            p_h[i] = mp_work[i]*m_T*RU/m_mix.speciesMw(i);
     }
 
     void getCpsMass(double* const p_Cp) 
     {
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, mp_work);
+        const int ns = m_mix.nSpecies();
+        m_mix.speciesCpOverR(m_T, mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+            p_Cp[i] = mp_work[i]*RU/m_mix.speciesMw(i);
     }
 
 	void getCvsMass(double* const p_Cv)
 	{
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, mp_work);
+        const int ns = m_mix.nSpecies();
+        m_mix.speciesCpOverR(m_T, mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_mix.speciesMw(i);
     }
 
 private:

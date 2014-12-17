@@ -213,7 +213,7 @@ void RateManager::addRate(const size_t rxn, const Reaction& reaction)
 void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
 {
     // Evaulate all of the different rate coefficients
-    m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
+    m_rate_groups.logOfRateCoefficients(thermo.stateModel(), mp_lnkf);
     
     // Copy rate coefficients which are the same as one of the previously
     // calculated ones

@@ -34,7 +34,7 @@
 #include "Kinetics.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
-#include "StateModel.h"
+//#include "StateModel.h"
 #include "Composition.h"
 
 namespace Mutation {
@@ -69,15 +69,12 @@ public:
      * Destructor.
      */
     ~Mixture(){}
-//        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
      * Provides energy transfer source terms based on the current state of the
      * mixture.
      */
-    void energyTransferSource(double* const p_source) {
-         state()->energyTransferSource(p_source);
-    }
+    void energyTransferSource(double* const p_source);
 
     /**
      * Add a named element composition to the mixture which may be retrieved

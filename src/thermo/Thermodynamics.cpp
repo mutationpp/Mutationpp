@@ -47,8 +47,7 @@ namespace Mutation {
 
 Thermodynamics::Thermodynamics(
     const string& species_descriptor,
-    const string& thermo_db,
-    const string& state_model )
+    const string& thermo_db)
     : mp_work1(NULL), mp_work2(NULL), mp_wrkcp(NULL), mp_default_composition(NULL),
       m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
@@ -97,15 +96,11 @@ Thermodynamics::Thermodynamics(
     
     // Allocate a new equilibrium solver
     mp_equil = new MultiPhaseEquilSolver(*this);
-    
-    // Allocate a new state model
-    mp_state = Config::Factory<StateModel>::create(state_model, *this);
-    //mp_state->notifyOnUpdate(this);
 
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];
     mp_work2 = new double [nSpecies()];
-    mp_wrkcp = new double [nSpecies()*nEnergyEqns()];
+    mp_wrkcp = new double [nSpecies()*2]; /// @todo Need to fix all issues with Cp and Cv definitions!!!
     mp_y     = new double [nSpecies()];
 }
 
@@ -121,7 +116,6 @@ Thermodynamics::~Thermodynamics()
     
     delete mp_thermodb;
     delete mp_equil;
-    delete mp_state;
 }
 
 //==============================================================================
@@ -140,11 +134,11 @@ int Thermodynamics::nPhases() const {
 }
 
 int Thermodynamics::nEnergyEqns() const {
-    return mp_state->nEnergyEqns();
+    return stateModel()->nEnergyEqns();
 }
 
 int Thermodynamics::nMassEqns() const {
-    return mp_state->nMassEqns();
+    return stateModel()->nMassEqns();
 }
 
 //==============================================================================
@@ -159,86 +153,86 @@ bool Thermodynamics::speciesThermoValidAtT(const size_t i, const double T) const
 void Thermodynamics::setState(
     const double* const p_v1, const double* const p_v2, const int vars)
 {
-    mp_state->setState(p_v1, p_v2, vars);
+    stateModel()->setState(p_v1, p_v2, vars);
     convert<X_TO_Y>(X(), mp_y);
 }
 
 //==============================================================================
 
 double Thermodynamics::T() const {
-    return mp_state->T();
+    return stateModel()->T();
 }
 
 //==============================================================================
 
 double Thermodynamics::Tr() const {
-    return mp_state->Tr();
+    return stateModel()->Tr();
 }
 
 //==============================================================================
 
 double Thermodynamics::Tv() const {
-    return mp_state->Tv();
+    return stateModel()->Tv();
 }
 
 //==============================================================================
 
 double Thermodynamics::Te() const {
-    return mp_state->Te();
+    return stateModel()->Te();
 }
 
 //==============================================================================
 
 double Thermodynamics::Tel() const {
-    return mp_state->Tel();
+    return stateModel()->Tel();
 }
 
 //==============================================================================
 
 void Thermodynamics::getTemperatures(double* const p_T) const {
-    mp_state->getTemperatures(p_T);
+    stateModel()->getTemperatures(p_T);
 }
 
 //==============================================================================
 
 void Thermodynamics::getEnergiesMass(double* const p_e) const{
-    mp_state->getEnergiesMass(p_e);     
+    stateModel()->getEnergiesMass(p_e);
 } 
 
 //==============================================================================
 
 void Thermodynamics::getEnthalpiesMass(double* const p_h) const {
-    mp_state->getEnthalpiesMass(p_h);
+    stateModel()->getEnthalpiesMass(p_h);
 }
 
 //==============================================================================
 
 void Thermodynamics::getCpsMass(double* const p_cp) const {
-    mp_state->getCpsMass(p_cp);
+    stateModel()->getCpsMass(p_cp);
 }
 
 //==============================================================================
 
 void Thermodynamics::getCvsMass(double* const p_cv) const {
-    mp_state->getCvsMass(p_cv);
+    stateModel()->getCvsMass(p_cv);
 }
 
 //==============================================================================
 
 void Thermodynamics::getTagModes(int* const p_tag) const {
-    mp_state->getTagModes(p_tag);
+    stateModel()->getTagModes(p_tag);
 }
 
 //==============================================================================
 
 double Thermodynamics::P() const {
-    return mp_state->P();
+    return stateModel()->P();
 }
 
 //==============================================================================
 
 const double* const Thermodynamics::X() const {
-    return mp_state->X();
+    return stateModel()->X();
 }
 
 //==============================================================================
@@ -263,7 +257,7 @@ double Thermodynamics::standardStateP() const {
 
 double Thermodynamics::mixtureMw() const 
 {
-    return dot(Numerics::asVector(mp_state->X(), nSpecies()), m_species_mw);
+    return dot(Numerics::asVector(stateModel()->X(), nSpecies()), m_species_mw);
 }
 
 //==============================================================================
@@ -326,10 +320,10 @@ double Thermodynamics::numberDensity(const double T, const double P) const
 
 double Thermodynamics::numberDensity() const 
 {
-    double Xe = (hasElectrons() ? mp_state->X()[0] : 0.0);
-    double Th = mp_state->T();
-    double Te = mp_state->Te();
-    double P  = mp_state->P();
+    double Xe = (hasElectrons() ? stateModel()->X()[0] : 0.0);
+    double Th = stateModel()->T();
+    double Te = stateModel()->Te();
+    double P  = stateModel()->P();
     return P / (KB * (Th + Xe*(Te - Th)));
 }
 
@@ -362,7 +356,7 @@ double Thermodynamics::density(
 double Thermodynamics::density() const
 {
     return numberDensity() * mixtureMw() / NA;
-    //return density(mp_state->T(), mp_state->P(), mp_state->X());
+    //return density(stateModel()->T(), stateModel()->P(), stateModel()->X());
 }
 
 //==============================================================================
@@ -371,8 +365,8 @@ void Thermodynamics::speciesCpOverR(double *const p_cp) const
 {
     // WARNING: The total cp only makes sense at thermal equilibirum
     mp_thermodb->cp(
-        mp_state->T(), mp_state->T(), mp_state->T(), mp_state->T(),
-        mp_state->T(), p_cp, NULL, NULL, NULL, NULL);
+        stateModel()->T(), stateModel()->T(), stateModel()->T(), stateModel()->T(),
+        stateModel()->T(), p_cp, NULL, NULL, NULL, NULL);
 }
 
 //==============================================================================
@@ -647,7 +641,7 @@ double Thermodynamics::mixtureEquilibriumCvMass()
 
 void Thermodynamics::mixtureEnergies(double* const p_e) const
 {
-    mp_state->getMixtureEnergiesMass(p_e);
+    stateModel()->getMixtureEnergiesMass(p_e);
 }
 
 
@@ -832,8 +826,8 @@ void Thermodynamics::speciesHOverRT(
     double* const hel, double* const hf) const
 {
     mp_thermodb->enthalpy(
-        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), h, ht, hr, hv, hel, hf);
+        stateModel()->T(), stateModel()->Te(), stateModel()->Tr(), stateModel()->Tv(),
+        stateModel()->Tel(), h, ht, hr, hv, hel, hf);
 }
 
 //==============================================================================
@@ -863,7 +857,7 @@ double Thermodynamics::mixtureHMole() const
     speciesHOverRT(mp_work1);
     for (int i = 0; i < nSpecies(); ++i)
         h += mp_work1[i] * X()[i];
-    return (h * RU * mp_state->T());
+    return (h * RU * stateModel()->T());
 }
 
 //==============================================================================
@@ -878,10 +872,10 @@ double Thermodynamics::mixtureHMass() const
 void Thermodynamics::speciesSOverR(double *const p_s) const
 {
     mp_thermodb->entropy(
-        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), standardStateP(), p_s, NULL, NULL, NULL, NULL);
+        stateModel()->T(), stateModel()->Te(), stateModel()->Tr(), stateModel()->Tv(),
+        stateModel()->Tel(), standardStateP(), p_s, NULL, NULL, NULL, NULL);
     
-    double lnp = std::log(mp_state->P() / standardStateP());
+    double lnp = std::log(stateModel()->P() / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
         if (species(i).phase() == GAS)
             p_s[i] -= lnp;
@@ -909,10 +903,10 @@ double Thermodynamics::mixtureSMass() const {
 void Thermodynamics::speciesGOverRT(double* const p_g) const
 {
     mp_thermodb->gibbs(
-        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
-        mp_state->Tel(), standardStateP(), p_g, NULL, NULL, NULL, NULL);
+        stateModel()->T(), stateModel()->Te(), stateModel()->Tr(), stateModel()->Tv(),
+        stateModel()->Tel(), standardStateP(), p_g, NULL, NULL, NULL, NULL);
     
-    double lnp = std::log(mp_state->P() / standardStateP());
+    double lnp = std::log(stateModel()->P() / standardStateP());
     for (int i = 0; i < nSpecies(); ++i)
         if (species(i).phase() == GAS)
             p_g[i] += lnp;

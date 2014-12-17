@@ -38,11 +38,12 @@
 #include "Constants.h"
 #include "ThermoDB.h"
 #include "MultiPhaseEquilSolver.h"
+#include "StateModelInterface.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
-class StateModel;
+//class StateModel;
 class Composition;
 
 /**
@@ -74,7 +75,7 @@ enum ConversionType {
 /**
  * Provides functions which are related to the thermodynamics of a mixture.
  */
-class Thermodynamics //: public StateModelUpdateHandler
+class Thermodynamics : virtual public StateModelInterface //: public StateModelUpdateHandler
 {
 public:
     
@@ -85,8 +86,7 @@ public:
      */
     Thermodynamics(
         const std::string& species_descriptor,
-        const std::string& database,
-        const std::string& state_model);
+        const std::string& database);
     
     /**
      * Destructor.
@@ -96,14 +96,6 @@ public:
     /*void stateUpdated() {
         std::cout << "stateUpdated: Thermodynamics" << std::endl;
     }*/
-    
-    /**
-     * Returns a pointer to the StateModel object owned by this thermodynamics
-     * object.
-     */
-    StateModel* const state() const {
-        return mp_state;
-    }
     
     /**
      * Returns a pointer to the Equilibrium solver object owned by this
@@ -796,7 +788,6 @@ private:
   
     ThermoDB* mp_thermodb;
     MultiPhaseEquilSolver* mp_equil;
-    StateModel* mp_state;
     
     Numerics::RealMatrix m_element_matrix;
     Numerics::RealVector m_species_mw;

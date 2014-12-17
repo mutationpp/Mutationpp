@@ -26,6 +26,7 @@
  */
 
 #include "StateModel.h"
+#include "Mixture.h"
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -41,10 +42,10 @@ public:
     /**
      * Constructor.
      */
-    EquilStateModel(const Thermodynamics& thermo)
-        : StateModel(thermo, 1, 1)
+    EquilStateModel(Mutation::Mixture& mix)
+        : StateModel(mix, 1, 1)
     {
-        const int ns = m_thermo.nSpecies();
+        const int ns = mix.nSpecies();
 
         // Allocate work storage
         mp_h = new double [ns*3];
@@ -83,7 +84,7 @@ public:
         switch (vars) {
             // Given density and energy density (conserved variables)
             case 0: {
-                const int ns = m_thermo.nSpecies();
+                const int ns = m_mix.nSpecies();
                 const int max_iters = 50;
                 const double tol = 1.0e-12;
                 const double rho  = p_mass[0];
@@ -92,9 +93,9 @@ public:
                 double mw, h, cpeq, dfdt, dmwdt, f1, f2, dT;
 
                 // Use the previous solution as the initial guess
-                //m_thermo.equilibriumComposition(m_T, m_P, mp_X);
-                m_thermo.speciesHOverRT(m_T, mp_h);
-                mw = m_thermo.mixtureMw();
+                //m_mix.equilibriumComposition(m_T, m_P, mp_X);
+                m_mix.speciesHOverRT(m_T, mp_h);
+                mw = m_mix.mixtureMw();
 
                 h = 0.0;
                 for (int i = 0; i < ns; ++i)
@@ -113,11 +114,11 @@ public:
                     }
 
                     // Compute df1/dT which is the main term
-                    m_thermo.speciesCpOverR(m_T, mp_cp);
+                    m_mix.speciesCpOverR(m_T, mp_cp);
 
                     for (int i = 0; i < ns; ++i)
                         mp_dxdt[i] = -mp_h[i] / m_T;
-                    m_thermo.equilSolver()->dXdg(mp_dxdt, mp_dxdt);
+                    m_mix.equilSolver()->dXdg(mp_dxdt, mp_dxdt);
 
                     cpeq = 0;
                     for (int i = 0; i < ns; ++i)
@@ -129,7 +130,7 @@ public:
 
                     dmwdt = 0.0;
                     for (int i = 0; i < ns; ++i)
-                        dmwdt += m_thermo.speciesMw(i)*mp_dxdt[i];
+                        dmwdt += m_mix.speciesMw(i)*mp_dxdt[i];
 
                     dfdt = rho*(cpeq*mw - h*dmwdt)/(mw*mw);
 
@@ -142,11 +143,11 @@ public:
                     m_P = rho*RU*m_T/mw;
 
                     // Update the composition
-                    m_thermo.equilibriumComposition(m_T, m_P, mp_X);
+                    m_mix.equilibriumComposition(m_T, m_P, mp_X);
 
                     // Recompute f (and mw, h)
-                    m_thermo.speciesHOverRT(m_T, mp_h);
-                    mw = m_thermo.mixtureMw();
+                    m_mix.speciesHOverRT(m_T, mp_h);
+                    mw = m_mix.mixtureMw();
 
                     h = 0.0;
                     for (int i = 0; i < ns; ++i)
@@ -163,7 +164,7 @@ public:
             case 1:
                 m_T = p_energy[0];
                 m_P = p_mass[0];
-                m_thermo.equilibriumComposition(m_T, m_P, mp_X);
+                m_mix.equilibriumComposition(m_T, m_P, mp_X);
                 break;
 
             // Unknown variable set
@@ -178,38 +179,38 @@ public:
 
     void getEnergiesMass(double* const p_e)
 	{
-		const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
+		const int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_mix.speciesMw(i);
     }
 
     void getEnthalpiesMass(double* const p_h) 
     {
-		const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
+		const int ns = m_mix.nSpecies();
+        m_mix.speciesHOverRT(mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
+            p_h[i] = mp_work[i]*m_T*RU/m_mix.speciesMw(i);
     }
 
     void getCpsMass(double* const p_Cp) 
     {
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, mp_work);
+        const int ns = m_mix.nSpecies();
+        m_mix.speciesCpOverR(m_T, mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+            p_Cp[i] = mp_work[i]*RU/m_mix.speciesMw(i);
     }
 
 	void getCvsMass(double* const p_Cv)
 	{
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesCpOverR(m_T, mp_work);
+        const int ns = m_mix.nSpecies();
+        m_mix.speciesCpOverR(m_T, mp_work);
 
         for(int i = 0; i < ns; ++i)
-            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_mix.speciesMw(i);
     }
 
 
@@ -238,8 +239,8 @@ Utilities::Config::ObjectProvider<
 class EquilTPStateModel : public EquilStateModel
 {
 public:
-    EquilTPStateModel(const Thermodynamics& thermo)
-        : EquilStateModel(thermo)
+    EquilTPStateModel(Mutation::Mixture& mix)
+        : EquilStateModel(mix)
     { }
 
     /**

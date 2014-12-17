@@ -1,7 +1,7 @@
 /**
- * @file StateModelInterface.h
+ * @file StateModelInterface.cpp
  *
- * @brief Definition of the StateModelInterface class.
+ * @brief Implementation of the StateModelInterface class.
  */
 
 /*
@@ -25,38 +25,29 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef THERMO_STATE_MODEL_INTERFACE_H
-#define THERMO_STATE_MODEL_INTERFACE_H
-
-#include <cassert>
+#include "StateModelInterface.h"
+#include "StateModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
-class StateModel;
-
-class StateModelInterface
+//==============================================================================
+StateModelInterface::~StateModelInterface()
 {
-public:
-    StateModelInterface()
-        : mp_model(0)
-	{ }
+	if (mp_model)
+		delete mp_model;
+}
 
-    ~StateModelInterface();
+//==============================================================================
+void StateModelInterface::setStateModel(StateModel* const p_model)
+{
+	assert(p_model);
+	if (mp_model != p_model) {
+		if (mp_model) delete mp_model;
+		mp_model = p_model;
+	}
+}
 
-    void setStateModel(StateModel* const p_model);
-
-    StateModel* const stateModel() const
-    {
-        assert(mp_model);
-        return mp_model;
-    }
-
-private:
-    StateModel* mp_model;
-};
-
+//==============================================================================
     } // namespace Thermodynamics
 } // namespace Mutation
-
-#endif // THERMO_STATE_MODEL_INTERFACE_H
