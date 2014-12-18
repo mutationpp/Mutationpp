@@ -323,10 +323,10 @@ int NAME_MANGLE(ncollision_pairs)();
  */
 double NAME_MANGLE(viscosity)();
 
-/**
+/*
  * Returns the mixture thermal conductivity for a frozen mixture.
  */
-void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
+//void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
  * Returns the mixture thermal conductivity for a mixture in thermochemical

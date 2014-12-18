@@ -28,6 +28,7 @@
 #include "Mixture.h"
 #include "StateModel.h"
 #include "Utilities.h"
+#include "MixtureOptions.h"
 
 using namespace Mutation::Thermodynamics;
 
@@ -45,7 +46,7 @@ Mixture::Mixture(const MixtureOptions& options)
         options.getThermalConductivityAlgorithm(),
         options.loadTransport()),
       Kinetics(
-        static_cast<const Thermodynamics&>(*this),
+        *this,
         options.getMechanism())
 {
     // Add all the compositions given in mixture options to the composition list

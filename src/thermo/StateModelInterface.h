@@ -29,6 +29,7 @@
 #define THERMO_STATE_MODEL_INTERFACE_H
 
 #include <cassert>
+#include <cstdlib>
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -39,7 +40,7 @@ class StateModelInterface
 {
 public:
     StateModelInterface()
-        : mp_model(0)
+        : mp_model(NULL)
 	{ }
 
     ~StateModelInterface();

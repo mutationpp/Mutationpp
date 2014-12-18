@@ -25,8 +25,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "SpeciesListDescriptor.h"
 #include "ThermoDB.h"
 #include "Utilities.h"
+#include "SpeciesListDescriptor.h"
 
 #include <algorithm>
 #include <cassert>

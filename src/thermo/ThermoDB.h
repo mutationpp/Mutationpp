@@ -28,7 +28,7 @@
 #ifndef THERMO_THERMODB_H
 #define THERMO_THERMODB_H
 
-#include "SpeciesListDescriptor.h"
+//#include "SpeciesListDescriptor.h"
 #include "Species.h"
 
 #include <vector>
@@ -36,6 +36,8 @@
 
 namespace Mutation {
     namespace Thermodynamics {
+
+class SpeciesListDescriptor;
 
 /**
  * Abstract base class for all thermodynamic databases.  This provides the 

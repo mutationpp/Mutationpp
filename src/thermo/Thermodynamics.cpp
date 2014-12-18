@@ -29,6 +29,7 @@
 #include "StateModel.h"
 #include "Utilities.h"
 #include "Composition.h"
+#include "SpeciesListDescriptor.h"
 //#include "MultiPhaseEquilSolver.h"
 //#include "ParticleRRHO.h"
 
@@ -57,7 +58,7 @@ Thermodynamics::Thermodynamics(
         cout << "Did not load all required species... Exiting." << endl;
         exit(1);
     }
-    
+
     // Store the species and element order information for easy access
     for (int i = 0; i < nElements(); ++i)
         m_element_indices[element(i).name()] = i;

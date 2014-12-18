@@ -33,11 +33,11 @@
 #include "Thermodynamics.h"
 #include "Kinetics.h"
 #include "Transport.h"
-#include "MixtureOptions.h"
-//#include "StateModel.h"
 #include "Composition.h"
 
 namespace Mutation {
+
+class MixtureOptions;
 
 /**
  * Packages all of the Mutation++ functionality pertaining to a mixture into a

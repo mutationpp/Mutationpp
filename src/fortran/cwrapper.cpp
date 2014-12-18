@@ -326,10 +326,10 @@ double NAME_MANGLE(viscosity)()
 }
 
 //==============================================================================
-void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
+/*void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 {
     p_mix->frozenThermalConductivityVector(lambda); 
-}
+}*/
 
 //==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()

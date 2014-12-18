@@ -29,6 +29,7 @@
 #include <iostream>
 #include <iomanip>
 #include <typeinfo>
+#include <set>
 
 #include "mutation++.h"
 

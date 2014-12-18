@@ -29,6 +29,7 @@
 #define GENERAL_MUTATIONPP_H
 
 #include "Mixture.h"
+#include "MixtureOptions.h"
 #include "Kinetics.h"
 #include "RateLaws.h"
 #include "RateManager.h"

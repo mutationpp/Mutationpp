@@ -49,8 +49,7 @@ Transport::Transport(
       mp_viscosity(NULL),
       mp_thermal_conductivity(NULL),
       mp_diffusion_matrix(NULL),
-      mp_wrk1(NULL),
-      mp_tag(NULL)
+      mp_wrk1(NULL)
 { 
     if (!load_data)
         return;
@@ -75,12 +74,6 @@ Transport::Transport(
     mp_wrk1 = new double [m_thermo.nSpecies()*3];
     mp_wrk2 = mp_wrk1 + m_thermo.nSpecies();
     mp_wrk3 = mp_wrk2 + m_thermo.nSpecies();
-    if(m_thermo.nEnergyEqns() > 1) {
-        mp_tag  = new int [m_thermo.nEnergyEqns()*5];
-        m_thermo.getTagModes(mp_tag);
-    }
-    
-    //thermo.stateModel()->notifyOnUpdate(this);
 }
     
 //==============================================================================
@@ -93,7 +86,6 @@ Transport::~Transport()
     delete mp_diffusion_matrix;
     
     delete [] mp_wrk1;
-    delete [] mp_tag;
 }
 
 //==============================================================================
@@ -138,7 +130,7 @@ void Transport::omega22ii(double* const p_omega)
 
 //==============================================================================
 
-void Transport::frozenThermalConductivityVector(double* const p_lambda)
+/*void Transport::frozenThermalConductivityVector(double* const p_lambda)
 {
 
     const int neq = m_thermo.nEnergyEqns();
@@ -162,7 +154,7 @@ void Transport::frozenThermalConductivityVector(double* const p_lambda)
         p_lambda[0] = frozenThermalConductivity();
     }
 
-}
+}*/
 
 //==============================================================================
 

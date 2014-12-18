@@ -56,7 +56,7 @@ namespace Mutation {
 
 // Define static constants for class MultiPhaseEquilSolver
 const double MultiPhaseEquilSolver::ms_eps_rel = 0.00001;
-const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-10;
+const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-12;
 const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
 const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;

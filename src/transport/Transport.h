@@ -130,11 +130,11 @@ public:
         );
     }
 
-    /**
+    /*
      * Returns the mixture thermal conductivity vector for a frozen mixture
      * according to the state model.
      */
-    void frozenThermalConductivityVector(double* const p_lambda);
+    //void frozenThermalConductivityVector(double* const p_lambda);
     
     /**
      * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -271,7 +271,6 @@ private:
     double* mp_wrk1;
     double* mp_wrk2;
     double* mp_wrk3;
-    int* mp_tag;
 };
 
     } // namespace Transport
