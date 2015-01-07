@@ -47,7 +47,6 @@ public:
     {
         m_const_Park_correction = std::sqrt(PI* KB / (8.E0 * NA));
         m_ns              = m_mixture.nSpecies();
-        m_transfer_nHeavy = m_mixture.nHeavy();
         m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
 
         mp_Mw = new double [m_ns];
@@ -88,9 +87,9 @@ public:
         for (int iv = 0; iv-inv < m_mw.nVibrators(); ++iv){
             if(m_mixture.species(iv).type() != Mutation::Thermodynamics::MOLECULE){
                 inv++;
-        } else {
+            } else {
                 src += p_Y[iv]*rho*RU*T/mp_Mw[iv]*(mp_hveq[iv] - mp_hv[iv])/compute_tau_VT_m(iv-inv);
-        }
+            }
         }
         return src;
     }
@@ -116,7 +115,6 @@ private:
      * Necesseary variables
      */
     int m_ns;
-    int m_transfer_nHeavy;
     int m_transfer_offset;
     double* mp_Mw;
     double* mp_hv;
@@ -148,7 +146,7 @@ inline double const OmegaVT::compute_tau_VT_mj(int const i_vibrator, int const i
 //    Enable in the future for multiple vibrational temperatures
       double P = m_mixture.P();
       double T = m_mixture.T();
-  
+
       return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,  -1.E0/3.E0) - m_mw[i_vibrator][i_partner].b()) -18.42E0) * 101325.E0/ P );                                
 }
       
@@ -160,7 +158,7 @@ double OmegaVT::compute_tau_VT_m(int const i_vibrator)
     double sum2 = 0.0;
     
     // Partner offset
-    for (int i_partner = m_transfer_offset; i_partner < m_transfer_nHeavy; ++i_partner){
+    for (int i_partner = m_transfer_offset; i_partner < m_ns; ++i_partner){
         double tau_j = compute_tau_VT_mj(i_vibrator, i_partner-m_transfer_offset) + compute_Park_correction_VT(i_vibrator, i_partner-m_transfer_offset);
         sum1 += p_Y[i_partner]/(mp_Mw[i_partner]);
         sum2 += p_Y[i_partner]/(mp_Mw[i_partner]*tau_j);
@@ -175,14 +173,4 @@ Utilities::Config::ObjectProvider<
     OmegaVT, TransferModel> omegaVT("OmegaVT");
 
     } // namespace Transfer
-} // namespace Mutation
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+} // namespace Mutation 

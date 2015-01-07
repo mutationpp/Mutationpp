@@ -55,8 +55,8 @@ public:
      * Construct using default values of a and b based on mu and theta.
      */
     MillikanWhitePartner(double mu, double theta)
-        : m_a(1.16E-3*std::sqrt(mu)*std::pow(theta, 4.0/3.0)),
-          m_b(0.015*std::pow(mu, 0.25)),
+        : m_a(1.16E-3*std::sqrt(mu*1000.0)*std::pow(theta, 4.0/3.0)),
+          m_b(0.015*std::pow(mu*1000.0, 0.25)),
           m_mu(mu)
     { }
     
