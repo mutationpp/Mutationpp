@@ -25,6 +25,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -130,8 +131,14 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
         }
     }
     
-    for (int i = 0; i < DATA_SIZE; ++i)
-        mp_last_T[i] = -1.0;
+    for (int i = 0; i < DATA_SIZE; ++i) {
+        mp_last_Th[i] = -1.0;
+        mp_last_Te[i] = -1.0;
+    }
+}
+
+bool compareIndices(std::pair<int,int> v1, std::pair<int,int> v2) {
+    return (v1.first < v2.first);
 }
 
 void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
@@ -249,6 +256,47 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
 //#endif
     }
     
+    // Sort the neutral data for optimum cache hits and to split integrals which
+    // are evaluated at Te from those at Th
+    // First build a sorting map from the index data
+    m_nn = m_neutral_indices.size();
+    std::vector<std::pair<int, int> > indices(m_nn);
+    for (int i = 0; i < m_nn; ++i)
+        indices[i] = std::make_pair(m_neutral_indices[i], i);
+    std::sort(indices.begin(), indices.end(), compareIndices);
+
+    for (int i = 0; i < m_nn; ++i)
+        m_neutral_indices[i] = indices[i].first;
+
+    std::vector<int> map(m_nn);
+    for (int i = 0; i < m_nn; ++i)
+        map[i] = indices[i].second;
+
+    // Reorder neutral data
+    std::vector<CollisionFunc4> temp_vec(Q11_funcs);
+    for (int i = 0; i < m_nn; ++i)
+        Q11_funcs[i] = temp_vec[map[i]];
+    temp_vec = Q22_funcs;
+    for (int i = 0; i < m_nn; ++i)
+        Q22_funcs[i] = temp_vec[map[i]];
+    temp_vec = Bst_funcs;
+    for (int i = 0; i < m_nn; ++i)
+        Bst_funcs[i] = temp_vec[map[i]];
+
+    // Compute indices
+    m_na = m_attract_indices.size();
+    m_nr = m_repulse_indices.size();
+
+    m_nne = m_nae = m_nre = 0;
+
+    if (m_nh < m_ns) {
+        for (int i = 0; i < std::min(m_ns,m_nn); ++i)
+            if (m_neutral_indices[i] < m_ns) m_nne = i+1;
+        for (int i = 0; i < std::min(m_ns,m_na); ++i)
+            if (m_attract_indices[i] < m_ns) m_nae = i+1;
+        m_nre = m_ns - m_nne - m_nae;
+    }
+
     // Find collision pairs amongst those that were loaded which best resemble
     // those that were not loaded
     /*int size_found = m_neutral_indices.size();
@@ -303,17 +351,14 @@ void CollisionDB::updateCollisionData(
     const CollisionData data)
 {
     // Return if we already computed this stuff for the same temperature
-    if (std::abs(Th - mp_last_T[data]) < std::sqrt(RealConsts::eps))
+    if (std::abs(Th - mp_last_Th[data]) < std::sqrt(RealConsts::eps) &&
+        std::abs(Te - mp_last_Te[data]) < std::sqrt(RealConsts::eps))
         return;
-    //if (mp_last_T[data] > 0.0) return;
     
     // Update the needed values
-    const double lnT = std::log(Th);
-    
-    const size_t nn = m_neutral_indices.size();
-    const size_t na = m_attract_indices.size();
-    const size_t nr = m_repulse_indices.size();
-    
+    const double lnTh = std::log(Th);
+    const double lnTe = std::log(Te);
+
     // Average closest impact parameters
     const double bfac = QE * QE / (8.0 * PI * EPS0 * KB);
     const double be   = bfac / Te;   // electron-electron
@@ -344,21 +389,32 @@ void CollisionDB::updateCollisionData(
         case Q11IJ: {
             // Neutral collisions
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Q11_table->lookup(lnT, mp_work, LINEAR);
-            for (int i = 0; i < nn; ++i)
+            mp_Q11_table->lookup(lnTh, mp_work, LINEAR);
+            for (int i = 0; i < m_nn; ++i)
                 m_Q11(m_neutral_indices[i]) = mp_work[i];
 #else
-            for (int i = 0; i < nn; ++i)
-                m_Q11(m_neutral_indices[i]) = 1.0E-20 * m_Q11_funcs[i](lnT);
+            // Electron-Neutral
+            for (int i = 0; i < m_nne; ++i)
+                m_Q11(m_neutral_indices[i]) = 1.0E-20 * m_Q11_funcs[i](lnTe);
+            // Neutral-Neutral
+            for (int i = m_nne; i < m_nn; ++i)
+                m_Q11(m_neutral_indices[i]) = 1.0E-20 * m_Q11_funcs[i](lnTh);
 #endif
-                
-            // Charged collisions
-            const double Q11_rep = hfac * sm_Q11_rep(lnTsth);
-            for (int i = 0; i < nr; ++i)
+            // Electron-Anion
+            double Q11_rep = efac * sm_Q11_rep(lnTste);
+            for (int i = 0; i < m_nre; ++i)
                 m_Q11(m_repulse_indices[i]) = Q11_rep;
-            
-            const double Q11_att = hfac * sm_Q11_att(lnTsth);
-            for (int i = 0; i < na; ++i)
+            // Heavy Repulsive
+            Q11_rep = hfac * sm_Q11_rep(lnTsth);
+            for (int i = m_nre; i < m_nr; ++i)
+                m_Q11(m_repulse_indices[i]) = Q11_rep;
+            // Electron-Cation
+            double Q11_att = efac * sm_Q11_att(lnTste);
+            for (int i = 0; i < m_nae; ++i)
+                m_Q11(m_attract_indices[i]) = Q11_att;
+            // Heavy Attractive
+            Q11_att = hfac * sm_Q11_att(lnTsth);
+            for (int i = m_nae; i < m_na; ++i)
                 m_Q11(m_attract_indices[i]) = Q11_att;
             } break;
         
@@ -382,22 +438,14 @@ void CollisionDB::updateCollisionData(
             m_Q14ei = m_Q13ei;
             
             // Ion-electron (repulsive) interactions
-            int index = 0;
-            int j = m_repulse_indices[index];
             const double rep = efac * sm_Q14_rep(lnTste);
-            while (j < m_ns && index < nr) {
-                m_Q14ei(j) = rep;
-                j = m_repulse_indices[++index];
-            }
+            for (int i = 0; i < m_nre; ++i)
+                m_Q14ei(m_repulse_indices[i]) = rep;
             
             // Ion-electron (attractive) interactions
-            index = 0;
-            j = m_attract_indices[index];
             const double att = efac * sm_Q14_att(lnTste);
-            while (j < m_ns && index < na) {
-                m_Q14ei(j) = att;
-                j = m_attract_indices[++index];
-            }
+            for (int i = 0; i < m_nae; ++i)
+                m_Q14ei(m_attract_indices[i]) = att;
             } break;
             
         case Q15EI: {
@@ -406,41 +454,44 @@ void CollisionDB::updateCollisionData(
             m_Q15ei = m_Q13ei;
             
             // Ion-electron (repulsive) interactions
-            int index = 0;
-            int j = m_repulse_indices[index];
             const double rep = efac * sm_Q15_rep(lnTste);
-            while (j < m_ns && index < nr) {
-                m_Q15ei(j) = rep;
-                j = m_repulse_indices[++index];
-            }
+            for (int i = 0; i < m_nre; ++i)
+                m_Q15ei(m_repulse_indices[i]) = rep;
             
             // Ion-electron (attractive) interactions
-            index = 0;
-            j = m_attract_indices[index];
             const double att = efac * sm_Q15_att(lnTste);
-            while (j < m_ns && index < na) {
-                m_Q15ei(j) = att;
-                j = m_attract_indices[++index];
-            }
+            for (int i = 0; i < m_nae; ++i)
+                m_Q15ei(m_attract_indices[i]) = att;
             } break;
         
         case Q22IJ: {
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Q22_table->lookup(lnT, mp_work, LINEAR);
-            for (int i = 0; i < nn; ++i)
+            mp_Q22_table->lookup(lnTh, mp_work, LINEAR);
+            for (int i = 0; i < m_nn; ++i)
                 m_Q22(m_neutral_indices[i]) = mp_work[i];
 #else
-            for (int i = 0; i < nn; ++i)
-                m_Q22(m_neutral_indices[i]) = 1.0E-20 * m_Q22_funcs[i](lnT);
+            // Electron-Neutral
+            for (int i = 0; i < m_nne; ++i)
+                m_Q22(m_neutral_indices[i]) = 1.0E-20 * m_Q22_funcs[i](lnTe);
+            // Neutral-Neutral
+            for (int i = m_nne; i < m_nn; ++i)
+                m_Q22(m_neutral_indices[i]) = 1.0E-20 * m_Q22_funcs[i](lnTh);
 #endif
-            
-            // Charged collisions
-            const double Q22_rep = hfac * sm_Q22_rep(lnTsth);
-            for (int i = 0; i < nr; ++i)
+            // Electron-Anion
+            double Q22_rep = efac * sm_Q22_rep(lnTste);
+            for (int i = 0; i < m_nre; ++i)
                 m_Q22(m_repulse_indices[i]) = Q22_rep;
-            
-            const double Q22_att = hfac * sm_Q22_att(lnTsth);
-            for (int i = 0; i < na; ++i)
+            // Heavy Repulsive
+            Q22_rep = hfac * sm_Q22_rep(lnTsth);
+            for (int i = m_nre; i < m_nr; ++i)
+                m_Q22(m_repulse_indices[i]) = Q22_rep;
+            // Electron-Cation
+            double Q22_att = efac * sm_Q22_att(lnTste);
+            for (int i = 0; i < m_nae; ++i)
+                m_Q22(m_attract_indices[i]) = Q22_att;
+            // Heavy Attractive
+            Q22_att = hfac * sm_Q22_att(lnTsth);
+            for (int i = m_nae; i < m_na; ++i)
                 m_Q22(m_attract_indices[i]) = Q22_att;
             } break;
         
@@ -462,23 +513,32 @@ void CollisionDB::updateCollisionData(
                 
         case BSTAR: {
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Bst_table->lookup(lnT, mp_work, LINEAR);
-            for (int i = 0; i < nn; ++i)
+            mp_Bst_table->lookup(lnTh, mp_work, LINEAR);
+            for (int i = 0; i < m_nn; ++i)
                 m_Bst(m_neutral_indices[i]) = mp_work[i];
 #else
-            // Neutral collisions from the database
-            for (int i = 0; i < nn; ++i)
-                m_Bst(m_neutral_indices[i]) = m_Bst_funcs[i](lnT);
+            // Electron-Neutral
+            for (int i = 0; i < m_nne; ++i)
+                m_Bst(m_neutral_indices[i]) = m_Bst_funcs[i](lnTe);
+            // Neutral-Neutral
+            for (int i = m_nne; i < m_nn; ++i)
+                m_Bst(m_neutral_indices[i]) = m_Bst_funcs[i](lnTh);
 #endif
-            
-            // Repulsive collisions
-            const double Bst_rep = sm_Bst_rep(lnTsth);
-            for (int i = 0; i < nr; ++i)
+            // Electron-Anion
+            double Bst_rep = efac * sm_Bst_rep(lnTste);
+            for (int i = 0; i < m_nre; ++i)
                 m_Bst(m_repulse_indices[i]) = Bst_rep;
-            
-            // Attractive collisions
-            const double Bst_att = sm_Bst_att(lnTsth);
-            for (int i = 0; i < na; ++i)
+            // Heavy Repulsive
+            Bst_rep = hfac * sm_Bst_rep(lnTsth);
+            for (int i = m_nre; i < m_nr; ++i)
+                m_Bst(m_repulse_indices[i]) = Bst_rep;
+            // Electron-Cation
+            double Bst_att = efac * sm_Bst_att(lnTste);
+            for (int i = 0; i < m_nae; ++i)
+                m_Bst(m_attract_indices[i]) = Bst_att;
+            // Heavy Attractive
+            Bst_att = hfac * sm_Bst_att(lnTsth);
+            for (int i = m_nae; i < m_na; ++i)
                 m_Bst(m_attract_indices[i]) = Bst_att;
             } break;
             
@@ -487,22 +547,14 @@ void CollisionDB::updateCollisionData(
             m_Cstei = 1.0;
             
             // Ion-electron (repulsive) interactions
-            int index = 0;
-            int j = m_repulse_indices[index];
-            const double Cst_rep = sm_Cst_rep(lnTste);
-            while (j < m_ns && index < nr) {
-                m_Cstei(j) = Cst_rep;
-                j = m_repulse_indices[++index];
-            }
+            const double rep = efac * sm_Cst_rep(lnTste);
+            for (int i = 0; i < m_nre; ++i)
+                m_Cstei(m_repulse_indices[i]) = rep;
             
             // Ion-electron (attractive) interactions
-            index = 0;
-            j = m_attract_indices[index];
-            const double Cst_att = sm_Cst_att(lnTste);
-            while (j < m_ns && index < na) {
-                m_Cstei(j) = Cst_att;
-                j = m_attract_indices[++index];
-            }
+            const double att = efac * sm_Cst_att(lnTste);
+            for (int i = 0; i < m_nae; ++i)
+                m_Cstei(m_attract_indices[i]) = att;
             } break;
         
         case CSTARIJ: {
@@ -513,7 +565,7 @@ void CollisionDB::updateCollisionData(
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
             
             // Electron does not contribute to viscosity
-            int k = nSpecies() - nHeavy();
+            int k = m_ns - m_nh;
             m_eta(0) = 0.0;
             
             // Heavy species
@@ -525,7 +577,7 @@ void CollisionDB::updateCollisionData(
         case NDIJ: {
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             
-            int k = nSpecies() - nHeavy();
+            int k = m_ns - m_nh;
             
             if (k == 1) {
                 // Electron-Electron
@@ -547,7 +599,8 @@ void CollisionDB::updateCollisionData(
             break;  // Will never get here
     }
     
-    mp_last_T[data] = Th;
+    mp_last_Th[data] = Th;
+    mp_last_Te[data] = Te;
 }
 
     } // namespace Transport

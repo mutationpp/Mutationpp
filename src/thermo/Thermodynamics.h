@@ -221,6 +221,7 @@ public:
     //void setDefaultComposition(
     //    const std::vector<std::pair<std::string, double> >& composition);
     void setDefaultComposition(const Composition& c);
+    void setDefaultComposition(const double* const p_vec);
     
     /**
      * Returns the default elemental fraction for the element with a given

@@ -545,6 +545,9 @@ private:
     // Sizing parameters
     int m_ns;
     int m_nh;
+    int m_nne, m_nn;
+    int m_nae, m_na;
+    int m_nre, m_nr;
     int m_ncollisions;
     int m_em_index;
     
@@ -608,7 +611,8 @@ private:
     
     // Keeps track of last temperature a particular set of collision data values
     // was updated
-    double mp_last_T [DATA_SIZE];
+    double mp_last_Th [DATA_SIZE];
+    double mp_last_Te [DATA_SIZE];
 };
 
     } // namespace Transport

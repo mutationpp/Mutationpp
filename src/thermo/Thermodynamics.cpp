@@ -133,6 +133,11 @@ void Thermodynamics::setDefaultComposition(const Composition& c)
         convert<YE_TO_XE>(mp_default_composition, mp_default_composition);
 }
 
+void Thermodynamics::setDefaultComposition(const double* const p_vec)
+{
+    std::copy(p_vec, p_vec + nElements(), mp_default_composition);
+}
+
 //==============================================================================
 
 int Thermodynamics::nPhases() const {
