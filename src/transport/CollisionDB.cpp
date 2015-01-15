@@ -312,11 +312,11 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
 #ifdef USE_COLLISION_INTEGRAL_TABLES
     // Tabulate the collision integral functions using 10 data points
     mp_Q11_table = new LookupTable<double, double, QijTableFunction>(
-        std::log(200.0), std::log(20100.0), 10, Q11_funcs.size(), Q11_funcs);//, 0.000001, LINEAR);
+        std::log(100.0), std::log(50100.0), 25, Q11_funcs.size(), Q11_funcs);//, 0.000001, LINEAR);
     mp_Q22_table = new LookupTable<double, double, QijTableFunction>(
-        std::log(200.0), std::log(20100.0), 10, Q22_funcs.size(), Q22_funcs);//, 0.000001, LINEAR);
+        std::log(100.0), std::log(50100.0), 25, Q22_funcs.size(), Q22_funcs);//, 0.000001, LINEAR);
     mp_Bst_table = new LookupTable<double, double, QRatioTableFunction>(
-        std::log(200.0), std::log(20100.0), 10, Bst_funcs.size(), Bst_funcs);//, 0.000001, LINEAR);
+        std::log(100.0), std::log(50100.0), 25, Bst_funcs.size(), Bst_funcs);//, 0.000001, LINEAR);
     mp_work = new double [Q11_funcs.size()];
     //mp_Q11_table->save("Q11Table.dat");
 #endif
@@ -387,9 +387,12 @@ void CollisionDB::updateCollisionData(
     switch (data) {
         
         case Q11IJ: {
-            // Neutral collisions
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Q11_table->lookup(lnTh, mp_work, LINEAR);
+            // Electron-Neutral
+            mp_Q11_table->lookup(lnTe, 0, m_nne, mp_work, LINEAR);
+            // Heavy Neutral
+            mp_Q11_table->lookup(lnTh, m_nne, m_nn, mp_work, LINEAR);
+            // Copy
             for (int i = 0; i < m_nn; ++i)
                 m_Q11(m_neutral_indices[i]) = mp_work[i];
 #else
@@ -466,7 +469,11 @@ void CollisionDB::updateCollisionData(
         
         case Q22IJ: {
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Q22_table->lookup(lnTh, mp_work, LINEAR);
+            // Electron-Neutral
+            mp_Q22_table->lookup(lnTe, 0, m_nne, mp_work, LINEAR);
+            // Heavy Neutral
+            mp_Q22_table->lookup(lnTh, m_nne, m_nn, mp_work, LINEAR);
+            // Copy
             for (int i = 0; i < m_nn; ++i)
                 m_Q22(m_neutral_indices[i]) = mp_work[i];
 #else
@@ -513,7 +520,11 @@ void CollisionDB::updateCollisionData(
                 
         case BSTAR: {
 #ifdef USE_COLLISION_INTEGRAL_TABLES
-            mp_Bst_table->lookup(lnTh, mp_work, LINEAR);
+            // Electron-Neutral
+            mp_Bst_table->lookup(lnTe, 0, m_nne, mp_work, LINEAR);
+            // Heavy Neutral
+            mp_Bst_table->lookup(lnTh, m_nne, m_nn, mp_work, LINEAR);
+            // Copy
             for (int i = 0; i < m_nn; ++i)
                 m_Bst(m_neutral_indices[i]) = mp_work[i];
 #else

@@ -167,13 +167,34 @@ public:
         const IndexType &index, DataType* const p_values, 
         const InterpolationScheme scheme = LINEAR) const
     {
-        lookup(index, p_values, Mutation::Numerics::Equals<DataType>(), scheme);
+        lookup(
+            index, 0, m_num_functions, p_values,
+            Mutation::Numerics::Equals<DataType>(), scheme);
     }
-    
+
+    void lookup(
+        const IndexType& index, const int start, const int end,
+        DataType* const p_values, const InterpolationScheme scheme = LINEAR) const
+    {
+        lookup(
+            index, start, end, p_values,
+            Mutation::Numerics::Equals<DataType>(), scheme);
+    }
+
     template <typename OP>
     void lookup(
-        const IndexType& index, DataType* const p_values,
-        const OP& op, const InterpolationScheme scheme = LINEAR) const;
+        const IndexType& index, DataType* const p_values, const OP& op,
+        const InterpolationScheme scheme = LINEAR) const
+    {
+        lookup(
+            index, 0, m_num_functions, p_values, op, scheme);
+    }
+
+    template <typename OP>
+    void lookup(
+        const IndexType& index, const int start, const int end,
+        DataType* const p_values, const OP& op, const InterpolationScheme scheme)
+        const;
          
     
     /**
@@ -283,10 +304,10 @@ private:
 template<typename DataType, typename OP>
 inline static void _interpolateNearestIndex(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length, const OP& op)
+    DataType *const p_out, const int &start, const int &end, const OP& op)
 {
     const DataType* const p_values = (ratio < 0.5 ? p_y1 : p_y2);
-    for (int i = 0; i < length; ++i)
+    for (int i = start; i < end; ++i)
         op(p_out[i], p_values[i]);
 }
 
@@ -295,9 +316,9 @@ inline static void _interpolateNearestIndex(
 template<typename DataType, typename OP>
 inline static void _interpolateLinear(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length, const OP& op)
+    DataType *const p_out, const int &start, const int &end, const OP& op)
 {
-    for (int i = 0; i < length; ++i)
+    for (int i = start; i < end; ++i)
         op(p_out[i], p_y1[i] + ratio * (p_y2[i] - p_y1[i]));
 }
 
@@ -306,11 +327,11 @@ inline static void _interpolateLinear(
 template<typename DataType, typename OP>
 inline static void _interpolateExponential(
     const double &ratio, const DataType *const p_y1, const DataType *const p_y2, 
-    DataType *const p_out, const int &length, const OP& op)
+    DataType *const p_out, const int &start, const int &end, const OP& op)
 {
     DataType log1;
     
-    for (int i = 0; i < length; i++) {
+    for (int i = start; i < end; ++i) {
         log1 = std::log(p_y1[i]);
         op(p_out[i], exp(log1 + ratio * (std::log(p_y2[i]) - log1)));
     }
@@ -544,17 +565,17 @@ void LookupTable<IndexType, DataType, FunctionType>::populateTable(
         switch(scheme) {
             case NEAREST_INDEX:
                 _interpolateNearestIndex(
-                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    ratio, low->second, high->second, p_interp_values, 0, nfuncs,
                     Mutation::Numerics::Equals<DataType>());
                 break;
             case LINEAR:
                 _interpolateLinear(
-                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    ratio, low->second, high->second, p_interp_values, 0, nfuncs,
                     Mutation::Numerics::Equals<DataType>());
                 break;
             case EXPONENTIAL:
                 _interpolateExponential(
-                    ratio, low->second, high->second, p_interp_values, nfuncs,
+                    ratio, low->second, high->second, p_interp_values, 0, nfuncs,
                     Mutation::Numerics::Equals<DataType>());
                 break;
         }
@@ -640,12 +661,14 @@ void LookupTable<IndexType, DataType, FunctionType>::save(
     file.close();
 } // save()
 
+//==============================================================================
+
 template<typename IndexType, typename DataType, typename FunctionType>
 template<typename OP>
 void LookupTable<IndexType, DataType, FunctionType>::lookup(
-    const IndexType &index, DataType * const p_values, 
-    const OP& op, InterpolationScheme scheme) const 
-{    
+    const IndexType &index, const int start, const int end,
+    DataType * const p_values, const OP& op, InterpolationScheme scheme) const
+{
     unsigned int lower_row = 0;
     unsigned int upper_row = 1;
         
@@ -681,17 +704,17 @@ void LookupTable<IndexType, DataType, FunctionType>::lookup(
     switch (scheme) {    
         case NEAREST_INDEX:
             _interpolateNearestIndex(
-                ratio, p_y1, p_y2, p_values, m_num_functions, op);
+                ratio, p_y1, p_y2, p_values, start, end, op);
             break;   
                  
         case LINEAR:
             _interpolateLinear(
-                ratio, p_y1, p_y2, p_values, m_num_functions, op);
+                ratio, p_y1, p_y2, p_values, start, end, op);
             break;   
                  
         case EXPONENTIAL:
             _interpolateExponential(
-                ratio, p_y1, p_y2, p_values, m_num_functions, op);
+                ratio, p_y1, p_y2, p_values, start, end, op);
             break;
     }
 } // lookup()
