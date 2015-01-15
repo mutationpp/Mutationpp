@@ -223,10 +223,10 @@ double Transport::electronThermalConductivity()
     //assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
-    return (X[0]*X[0]/lam11);
+    //return (X[0]*X[0]/lam11);
     
     // 3rd order solution
-    //return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
+    return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
 }
 
 //==============================================================================
