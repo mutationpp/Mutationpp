@@ -525,19 +525,19 @@ void CollisionDB::updateCollisionData(
                 m_Bst(m_neutral_indices[i]) = m_Bst_funcs[i](lnTh);
 #endif
             // Electron-Anion
-            double Bst_rep = efac * sm_Bst_rep(lnTste);
+            double Bst_rep = sm_Bst_rep(lnTste);
             for (int i = 0; i < m_nre; ++i)
                 m_Bst(m_repulse_indices[i]) = Bst_rep;
             // Heavy Repulsive
-            Bst_rep = hfac * sm_Bst_rep(lnTsth);
+            Bst_rep = sm_Bst_rep(lnTsth);
             for (int i = m_nre; i < m_nr; ++i)
                 m_Bst(m_repulse_indices[i]) = Bst_rep;
             // Electron-Cation
-            double Bst_att = efac * sm_Bst_att(lnTste);
+            double Bst_att = sm_Bst_att(lnTste);
             for (int i = 0; i < m_nae; ++i)
                 m_Bst(m_attract_indices[i]) = Bst_att;
             // Heavy Attractive
-            Bst_att = hfac * sm_Bst_att(lnTsth);
+            Bst_att = sm_Bst_att(lnTsth);
             for (int i = m_nae; i < m_na; ++i)
                 m_Bst(m_attract_indices[i]) = Bst_att;
             } break;
@@ -547,12 +547,12 @@ void CollisionDB::updateCollisionData(
             m_Cstei = 1.0;
             
             // Ion-electron (repulsive) interactions
-            const double rep = efac * sm_Cst_rep(lnTste);
+            const double rep = sm_Cst_rep(lnTste);
             for (int i = 0; i < m_nre; ++i)
                 m_Cstei(m_repulse_indices[i]) = rep;
             
             // Ion-electron (attractive) interactions
-            const double att = efac * sm_Cst_att(lnTste);
+            const double att = sm_Cst_att(lnTste);
             for (int i = 0; i < m_nae; ++i)
                 m_Cstei(m_attract_indices[i]) = att;
             } break;
