@@ -98,7 +98,6 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
     : m_ns(thermo.nSpecies()),
       m_nh(thermo.nHeavy()),
       m_ncollisions((m_ns*(m_ns + 1))/2),
-      m_em_index(thermo.speciesIndex("e-")),
       m_mass(m_ns),
       m_mass_sum(m_ns),
       m_mass_prod(m_ns),
@@ -134,6 +133,7 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
     for (int i = 0; i < DATA_SIZE; ++i) {
         mp_last_Th[i] = -1.0;
         mp_last_Te[i] = -1.0;
+        mp_last_ne[i] = -1.0;
     }
 }
 
@@ -283,17 +283,28 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     for (int i = 0; i < m_nn; ++i)
         Bst_funcs[i] = temp_vec[map[i]];
 
-    // Compute indices
-    m_na = m_attract_indices.size();
-    m_nr = m_repulse_indices.size();
+     // Sort charged indices just to be sure
+     std::sort(m_attract_indices.begin(), m_attract_indices.end());
+     std::sort(m_repulse_indices.begin(), m_repulse_indices.end());
 
-    m_nne = m_nae = m_nre = 0;
+    // Compute indices
+    m_na  = m_attract_indices.size();
+    m_nr  = m_repulse_indices.size();
+    m_nne = 0;
+    m_nae = 0;
+    m_nre = 0;
 
     if (m_nh < m_ns) {
-        for (int i = 0; i < std::min(m_ns,m_nn); ++i)
-            if (m_neutral_indices[i] < m_ns) m_nne = i+1;
-        for (int i = 0; i < std::min(m_ns,m_na); ++i)
-            if (m_attract_indices[i] < m_ns) m_nae = i+1;
+        for (int i = 0; i < std::min(m_ns,m_nn); ++i) {
+            if (m_neutral_indices[i] < m_ns)
+                m_nne = i+1;
+            else break;
+        }
+        for (int i = 0; i < std::min(m_ns,m_na); ++i) {
+            if (m_attract_indices[i] < m_ns)
+                m_nae = i+1;
+            else break;
+        }
         m_nre = m_ns - m_nne - m_nae;
     }
 
@@ -351,8 +362,12 @@ void CollisionDB::updateCollisionData(
     const CollisionData data)
 {
     // Return if we already computed this stuff for the same temperature
-    if (std::abs(Th - mp_last_Th[data]) < std::sqrt(RealConsts::eps) &&
-        std::abs(Te - mp_last_Te[data]) < std::sqrt(RealConsts::eps))
+    const double change = std::sqrt(RealConsts::eps);
+    const double ne = (m_ns > m_nh ? nd * std::max(p_x[0], 1.0e-99) : 0.0);
+
+    if (std::abs(Th - mp_last_Th[data]) < change &&
+        std::abs(Te - mp_last_Te[data]) < change &&
+        std::abs(ne - mp_last_ne[data]) < change)
         return;
     
     // Update the needed values
@@ -366,13 +381,8 @@ void CollisionDB::updateCollisionData(
     
     // Compute quantities needed for the Debye-Huckel potential integrals
     // Debye length (set to zero if there are no electrons)
-    const double lambdaD = 
-        (m_em_index >= 0 ?
-        std::min(
-            std::sqrt(EPS0 * KB * Te / 
-                (2.0 * nd * std::max(p_x[m_em_index], 1.0e-99) * QE * QE)),
-            10000.0 * (be + bh)) :
-        0.0); 
+    const double lambdaD = (m_ns > m_nh ?
+        std::min(std::sqrt(EPS0*KB*Te/(2.0*ne*QE*QE)), 10000.0*(be+bh)) : 0.0);
     
     // Reduced temperatures
     const double Tste = std::max(0.5 * lambdaD / be, 0.1);
@@ -612,6 +622,7 @@ void CollisionDB::updateCollisionData(
     
     mp_last_Th[data] = Th;
     mp_last_Te[data] = Te;
+    mp_last_ne[data] = ne;
 }
 
     } // namespace Transport

@@ -549,7 +549,6 @@ private:
     int m_nae, m_na;
     int m_nre, m_nr;
     int m_ncollisions;
-    int m_em_index;
     
     // Keeps track of which collisions are neutral and which are charged
     std::vector<int> m_neutral_indices;
@@ -613,6 +612,7 @@ private:
     // was updated
     double mp_last_Th [DATA_SIZE];
     double mp_last_Te [DATA_SIZE];
+    double mp_last_ne [DATA_SIZE];
 };
 
     } // namespace Transport
