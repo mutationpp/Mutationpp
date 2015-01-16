@@ -361,6 +361,7 @@ void Kinetics::netProductionRates(double* const p_wdot)
     const double* const p_x = m_thermo.X();
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] = p_x[i] * mix_conc;
+
     
     // Update the forward and backward rate coefficients
     mp_rates->update(m_thermo);
@@ -380,7 +381,7 @@ void Kinetics::netProductionRates(double* const p_wdot)
     // Compute net ROP
     for (int i = 0; i < nReactions(); ++i)
         mp_rop[i] = mp_ropf[i] - mp_ropb[i];
-    
+
     // Thirdbody efficiencies
     m_thirdbodies.multiplyThirdbodies(p_wdot, mp_rop);
     
@@ -389,7 +390,8 @@ void Kinetics::netProductionRates(double* const p_wdot)
     m_reactants.decrSpecies(mp_rop, p_wdot);
     m_rev_prods.incrSpecies(mp_rop, p_wdot);
     m_irr_prods.incrSpecies(mp_rop, p_wdot);
-    
+
+
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);

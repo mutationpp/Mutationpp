@@ -273,12 +273,17 @@ void Reaction::parseSpecies(
 
 void Reaction::determineType(const class Thermodynamics& thermo)
 {
+   
     bool reactant_ion      = false;
     bool reactant_electron = false;
     bool product_ion       = false;
     bool product_electron  = false;
     bool m_inert           = isThirdbody();
-    bool m_inert_e	       = false;
+    bool m_inert_e	   = false;
+    bool excited_react     = false;
+    bool excited_prod      = false;
+    bool excited           = false;
+    bool exciting	   = false;
     
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
@@ -308,8 +313,46 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     
     // Is there an inert electron?
     m_inert_e = (product_electron && reactant_electron);
-    
-    // Logic tree for ground electronic state reactions
+
+    // Are there any excited states ?
+     for (int i=0; i < nReactants(); ++i) {
+        const Species& species = thermo.species(m_reactants[i]);
+        if (species.level() >0)
+           excited_react = true;
+          
+    }
+       for (int i=0; i < nProducts(); ++i) {
+        const Species& species = thermo.species(m_products[i]);
+        if (species.level() >0)
+           excited_prod = true;
+    }
+    if (excited_prod or excited_react)
+           excited = true;
+
+
+
+    // Logic tree for ground electronic state reactions || reactions involving excited states
+    if (excited) {
+    // excited state reactions
+        if (m_inert_e) {
+           if (product_ion)
+              m_type = IONIZATION_E;
+           else if (reactant_ion)
+              m_type = ION_RECOMBINATION_E;
+           else 
+              m_type = EXCITATION_E;
+           
+       } else {
+            if (product_ion)
+               m_type = IONIZATION_M;
+            else if (reactant_ion)
+               m_type = ION_RECOMBINATION_M;
+            else 
+               m_type = EXCITATION_M;
+            }
+
+      }else {
+    // ground electronic state reactions
     if (reactant_ion) {
         if (product_ion)
             m_type = CHARGE_EXCHANGE;
@@ -354,6 +397,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
                 m_type = EXCHANGE;
         }
     }
+  }
 }
 
 //==============================================================================
