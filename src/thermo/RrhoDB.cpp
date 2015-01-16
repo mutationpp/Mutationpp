@@ -472,7 +472,7 @@ private:
             op(p_h[0], 0.0);
             
             for (unsigned int i = 0; i < data.nheavy; ++i) {
-                sum1 = sum2 = 0.0;
+                sum1 = sum2 = 1.0e-16;
                 if (data.p_nelec[i] > 0) {
                     for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
                         fac = data.p_levels[ilevel].g *

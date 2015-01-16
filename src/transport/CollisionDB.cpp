@@ -155,14 +155,17 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     
     // First step is to determine all of the collision pairs that are needed and
     // what index they belong to in the collision function lists
-    map<CollisionPair, int> collision_map;
+    std::list< std::pair<CollisionPair, int> > collision_list;
+    //map<CollisionPair, int> collision_map;
     int index = 0;
     
     for (int i = 0; i < m_ns; ++i) {
         for (int j = i; j < m_ns; ++j, ++index)
-             collision_map[
-                CollisionPair(species[i], species[j])
-             ] = index;
+             //collision_map[
+             //   CollisionPair(species[i], species[j])
+             //] = index;
+             collision_list.push_back(
+                 std::make_pair(CollisionPair(species[i], species[j]), index));
     }
     
     // With the collision map generated, look through the database and load all
@@ -180,30 +183,42 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     string str;    
     file >> str;
     
-    CollisionFunc4 func;
-    std::map<CollisionPair, int>::iterator iter;
+    CollisionFunc4 Q11;
+    CollisionFunc4 Q22;
+    CollisionFunc4 Bst;
+    std::list< std::pair<CollisionPair, int> >::iterator iter;
     
-    while (str != "STOP" && !collision_map.empty()) {
+    while (str != "STOP" && !collision_list.empty()) {
         // Check if we have landed on a collision identifier
         if (isValidCollisionString(str)) {
             // If so, is this a collision we need to load?
-            if ((iter = collision_map.find(str)) != collision_map.end()) {
-                // Load Q11, Q22, and B* functions
-                file >> func;
-                Q11_funcs.push_back(func);
-                
-                file >> func;
-                Q22_funcs.push_back(func);
-                
-                file >> func;
-                Bst_funcs.push_back(func);
+            iter = collision_list.begin();
+            CollisionPair pair(str);
+            for ( ; iter != collision_list.end(); ++iter)
+                if (iter->first == pair) break;
+
+            if (iter != collision_list.end()) {
+                file >> Q11;
+                file >> Q22;
+                file >> Bst;
+            }
+
+            while (iter != collision_list.end()) {
+                // Save Q11, Q22, and B* functions
+                Q11_funcs.push_back(Q11);
+                Q22_funcs.push_back(Q22);
+                Bst_funcs.push_back(Bst);
                 
                 // Add the collision to the list of found indices
                 m_neutral_indices.push_back(iter->second);
                 
-                // Remove collision from collision map to speed up search of
-                // remaining collisions
-                collision_map.erase(iter);
+                // Remove collision from collision list
+                iter = collision_list.erase(iter);
+
+                // Check if there are any other pairs that correspond to this
+                // one
+                for ( ; iter != collision_list.end(); ++iter)
+                    if (iter->first == pair) break;
             }
         }
         
@@ -217,9 +232,9 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     // database should use integrals computed with a Coulomb potential screened
     // with the Debye length.  These are split up into attractive and repulsive
     // collisions.
-    if (!collision_map.empty()) {
-        iter = collision_map.begin();
-        while (iter != collision_map.end()) {
+    if (!collision_list.empty()) {
+        iter = collision_list.begin();
+        while (iter != collision_list.end()) {
             if (iter->first.charge() == 0)
                 iter++;
             else {
@@ -227,21 +242,21 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
                     m_attract_indices.push_back(iter->second);
                 else
                     m_repulse_indices.push_back(iter->second);
-                collision_map.erase(iter++);
+                iter = collision_list.erase(iter);
             }
         }
     }
     
     // If there are still collisions left over at this point then let the user 
     // know that they will be represented as zeros
-    if (!collision_map.empty()) {
+    if (!collision_list.empty()) {
 //#ifdef VERBOSE
         cout << endl;
         cout << "The following collision pairs were not found!" << endl;
 //#endif
         //func = CollisionFunc4();
-        iter = collision_map.begin();
-        for ( ; iter != collision_map.end(); ++iter) {
+        iter = collision_list.begin();
+        for ( ; iter != collision_list.end(); ++iter) {
 //#ifdef VERBOSE
             cout << "\t" << iter->first.name() << endl;
 //#endif
