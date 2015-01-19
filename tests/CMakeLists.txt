@@ -49,7 +49,9 @@ set(mixtures_to_test
     air11_RRHO_ChemNonEq1T
     air11_RRHO_ChemNonEqTTv
     air11_NASA-7_ChemNonEq1T
-    air11_NASA-9_ChemNonEq1T )
+    air11_NASA-9_ChemNonEq1T
+    argon_CR_ChemNonEq1T
+    argon_CR_ChemNonEqTTv)
     
 function(test_all_mixtures test)
     foreach(mixture ${mixtures_to_test})

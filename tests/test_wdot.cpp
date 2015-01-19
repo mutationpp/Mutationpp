@@ -56,7 +56,8 @@ BOOST_AUTO_TEST_CASE(wdot_sum_equals_zero)
     std::vector<double> rhoi(mix().nSpecies());
     std::vector<double> tmps(mix().nEnergyEqns());
 
-    const double tol = 10.0*std::numeric_limits<double>::epsilon();
+    const double tol = 10.0*std::numeric_limits<double>::epsilon()*
+            mix().nSpecies();
 
     // Check conditions with all temperatures the same ranging from 500 to
     // 10,000K
@@ -103,7 +104,7 @@ BOOST_AUTO_TEST_CASE(wdot_is_zero_in_equil)
 
     // Tolerance must account for errors in equilibrium solution which are
     // propagated forward into the production rates
-    const double tol = 1.0e-10;
+    const double tol = 1.0e-7;
 
     // Loop over range of pressures and temperatures
     for (int ip = 0.0; ip < 10; ++ip) {
@@ -114,12 +115,10 @@ BOOST_AUTO_TEST_CASE(wdot_is_zero_in_equil)
             // Set an equilibrium state
             equilibrateMixture(T, P);
 
-            // First compute the forward rate coefficient in order to scale the
-            // results
-            mix().forwardRateCoefficients(&rhoi[0]);
-            double max = std::abs(rhoi[0]);
+            mix().densities(&rhoi[0]);
+            double max = rhoi[0];
             for (int i = 1; i < mix().nSpecies(); ++i)
-                max = std::max(std::abs(max), rhoi[i]);
+                max = std::max(max, rhoi[i]);
 
             // Now compute the net production rates and make sure that the
             // scaled values are sufficiently small

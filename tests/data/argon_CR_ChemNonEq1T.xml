@@ -1,0 +1,11 @@
+<mixture state_model="ChemNonEq1T" thermo_db="RRHO" mechanism="argon_CR_mech">
+
+    <species>
+        e- Ar(*) Ar+
+    </species>
+    
+    <element_compositions default="Ar">
+        <composition name="Ar"> Ar: 1.0 </composition>
+    </element_compositions>
+
+</mixture>
