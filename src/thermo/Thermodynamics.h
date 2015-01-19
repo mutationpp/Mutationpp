@@ -515,6 +515,11 @@ public:
     double density() const;
 
     /**
+     * Returns the current species densities.
+     */
+    void densities(double* const p_rho) const;
+
+    /**
      * Returns the unitless vector of species specific heats at constant
      * pressure \f$ C_{p,i} / R_u \f$.
      */

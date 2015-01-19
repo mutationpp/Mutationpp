@@ -372,6 +372,20 @@ double Thermodynamics::density() const
 
 //==============================================================================
 
+void Thermodynamics::densities(double* const p_rho) const
+{
+    const double pt = mp_state->P() / (RU * mp_state->T());
+    const double* const X = mp_state->X();
+
+    for (int i = 0; i < nSpecies(); ++i)
+        p_rho[i] = X[i]*speciesMw(i)*pt;
+
+    if (hasElectrons())
+        p_rho[0] *= mp_state->T() / mp_state->Te();
+}
+
+//==============================================================================
+
 void Thermodynamics::speciesCpOverR(double *const p_cp) const
 {
     // WARNING: The total cp only makes sense at thermal equilibirum
@@ -899,7 +913,7 @@ double Thermodynamics::mixtureSMole() const
     double s = 0;
     speciesSOverR(mp_work1);
     for (int i = 0; i < nSpecies(); ++i)
-        s += (mp_work1[i] - std::log(X()[i])) * X()[i];
+        s += (X()[i] > 0.0 ? (mp_work1[i] - std::log(X()[i])) * X()[i] : 0.0);
     return (s * RU);
 }
 
