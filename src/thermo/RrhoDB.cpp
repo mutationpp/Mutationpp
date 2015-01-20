@@ -738,9 +738,9 @@ protected:
         
         if (m_use_tables) {
             mp_hel_table = new Mutation::Utilities::LookupTable
-                <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+                <double, double, HelFunctor>(100.0, 30100.0, m_ns, m_elec_data, 0.005);
             mp_cpel_table = new Mutation::Utilities::LookupTable<
-                double, double, CpelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+                double, double, CpelFunctor>(100.0, 30100.0, m_ns, m_elec_data, 0.005);
         }
         
         // Compute the contribution of the partition functions at the standard

@@ -50,10 +50,11 @@ public:
 		mp_delta = new double [m_nr];
 		for(int i=0; i<m_nr; ++i) {
 			if ( (mix.reactions()[i].type() == Kinetics::IONIZATION_E)
-			  || (mix.reactions()[i].type() == Kinetics::ION_RECOMBINATION_E)
-			  || (mix.reactions()[i].type() == Kinetics::DISSOCIATION_E)
+			  || (mix.reactions()[i].type() == Kinetics::DISSOCIATION_E))
+				 m_rId.push_back(std::make_pair(i,1));
+			if ( (mix.reactions()[i].type() == Kinetics::ION_RECOMBINATION_E)
 			  || (mix.reactions()[i].type() == Kinetics::RECOMBINATION_E))
-				 m_rId.push_back(i);
+				 m_rId.push_back(std::make_pair(i,-1));
 		}
 	};
 
@@ -92,8 +93,8 @@ public:
 		double src = 0.0;
 		int j;
 		for (int i = 0; i < m_rId.size(); ++i) {
-		    j = m_rId[i];
-			src += mp_delta[j]*mp_rate[j];
+		    j = m_rId[i].first;
+	            src += m_rId[i].second*mp_delta[j]*mp_rate[j];
 		}
 
 		return (-src*RU*m_mixture.T());
@@ -102,7 +103,7 @@ public:
 private:
 	int m_ns;
 	int m_nr;
-	std::vector<int> m_rId;
+        std::vector<std::pair<int, int> > m_rId;
 	double* mp_hf;
 	double* mp_h;
 	double* mp_rate;
