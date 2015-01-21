@@ -684,12 +684,22 @@ public:
      * Returns the mixture averaged enthalpy in J/mol.
      */
     double mixtureHMole() const;
+
+    /**
+     * Returns the mixture averaged enthalpy in J/mol at the given temperature.
+     */
+    double mixtureHMole(double T) const;
     
     /**
      * Returns the mixture averaged enthalpy in J/kg.
      */
     double mixtureHMass() const;
-    
+
+    /**
+     * Returns the mixture averaged enthalpy in J/kg at the given temperature.
+     */
+    double mixtureHMass(double T) const;
+
     /**
      * Returns the mixture energy in J/mol.
      */

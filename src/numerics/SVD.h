@@ -178,7 +178,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
     const int nrt = std::max(0, std::min(n-2,m)); // number of row x-forms for bidiag
         
     m_s = Vector<Real>(std::min(m+1,n));
-    m_U = Matrix<Real>(m, m);
+    m_U = Matrix<Real>(m, m);  //**** 65
     m_V = Matrix<Real>(n, n);
 
     Vector<Real> e(n);
@@ -350,6 +350,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
     while (p > 0) {
 		int kase = 0;
 		Real eps = NumConst<Real>::eps;
+		Real tiny = eps*eps;
 
         // This section of the program inspects for
         // negligible elements in the s and e arrays.  On
@@ -365,7 +366,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
             if (k == -1) 
                 break;
             
-            if (std::abs(e(k)) <= eps*(std::abs(m_s(k)) + std::abs(m_s(k+1)))) {
+            if (std::abs(e(k)) <= tiny + eps*(std::abs(m_s(k)) + std::abs(m_s(k+1)))) {
                e(k) = NumConst<Real>::zero;
                break;
             }
@@ -381,7 +382,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
                 double t = (ks != p ? std::abs(e(ks)) : NumConst<Real>::zero) + 
                            (ks != k+1 ? std::abs(e(ks-1)) : NumConst<Real>::zero);
                
-                if (std::abs(m_s(ks)) <= eps * t)  {
+                if (std::abs(m_s(ks)) <= tiny + eps * t)  {
                     m_s(ks) = NumConst<Real>::zero;
                     break;
                 }

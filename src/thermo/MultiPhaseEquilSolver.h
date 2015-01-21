@@ -203,8 +203,12 @@ public:
      * Returns the current phase moles as computed by the equilibrate function.
      */
     void phaseMoles(double* const p_moles) const {
-//        for (int m = 0; m < m_npr; ++m)
-//            p_moles[m] = std::exp(m_solution.lnNbar(m));
+        for (int m = 0; m < m_np; ++m)
+            p_moles[m] = 0.0;
+        for (int mr = 0; mr < m_solution.npr(); ++mr) {
+            int m = mp_phase[m_solution.sjr()[m_solution.sizes()[mr]]];
+            p_moles[m] = std::exp(m_solution.lnNbar()[mr]);
+        }
     }
     
     /*
@@ -346,8 +350,9 @@ private:
         /**
          * Initializes the ordering based on defined species "groups" and zero
          * constraints.
+         * @retval true if internal ordering information changed after this call
          */
-        void setupOrdering(int* species_group, bool* zero_constraint);
+        bool setupOrdering(int* species_group, bool* zero_constraint);
         
         /**
          * Updates the solution by adding dx to lambda and dlnNbar and

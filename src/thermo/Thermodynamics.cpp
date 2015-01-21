@@ -374,14 +374,9 @@ double Thermodynamics::density() const
 
 void Thermodynamics::densities(double* const p_rho) const
 {
-    const double pt = mp_state->P() / (RU * mp_state->T());
-    const double* const X = mp_state->X();
-
-    for (int i = 0; i < nSpecies(); ++i)
-        p_rho[i] = X[i]*speciesMw(i)*pt;
-
-    if (hasElectrons())
-        p_rho[0] *= mp_state->T() / mp_state->Te();
+    double rho = density();
+    for (int i = 0; i < nGas(); ++i)
+        p_rho[i] = rho * Y()[i];
 }
 
 //==============================================================================
@@ -887,9 +882,27 @@ double Thermodynamics::mixtureHMole() const
 
 //==============================================================================
 
+double Thermodynamics::mixtureHMole(double T) const
+{
+    double h = 0.0;
+    speciesHOverRT(T, mp_work1);
+    for (int i = 0; i < nSpecies(); ++i)
+        h += mp_work1[i] * X()[i];
+    return (h * RU * T);
+}
+
+//==============================================================================
+
 double Thermodynamics::mixtureHMass() const 
 {
     return mixtureHMole() / mixtureMw();
+}
+
+//==============================================================================
+
+double Thermodynamics::mixtureHMass(double T) const
+{
+    return mixtureHMole(T) / mixtureMw();
 }
 
 //==============================================================================

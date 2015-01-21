@@ -56,7 +56,7 @@ namespace Mutation {
 
 // Define static constants for class MultiPhaseEquilSolver
 const double MultiPhaseEquilSolver::ms_eps_rel = 0.00001;
-const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-10;
+const double MultiPhaseEquilSolver::ms_eps_abs = 1.0e-12;
 const double MultiPhaseEquilSolver::ms_ds_inc  = 4.0;
 const double MultiPhaseEquilSolver::ms_ds_dec  = 0.25;
 const double MultiPhaseEquilSolver::ms_max_ds  = 1.0;//0.01;
@@ -114,9 +114,11 @@ void MultiPhaseEquilSolver::Solution::initialize(int np, int nc, int ns)
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::Solution::setupOrdering(
+bool MultiPhaseEquilSolver::Solution::setupOrdering(
         int* species_group, bool* zero_constraint)
 {
+    static std::vector<int> previous_order(m_np+m_nc+4, 0);
+
     // Count the number of species in each group and order the species such that
     // the groups are contiguous
     for (int i = 0; i < m_np+2; ++i)
@@ -150,6 +152,31 @@ void MultiPhaseEquilSolver::Solution::setupOrdering(
             removePhase(i);
         i--;
     }
+
+    // Check and see if the ordering information has changed since the last call
+    // Note this assumes that any change in species order garuntees at least one
+    // of the following will change also: npr, ncr, sizes of each group, or
+    // ordering of constraints.
+    bool order_change =
+            (previous_order[0] != m_npr) && (previous_order[1] != m_ncr);
+    if (!order_change) {
+        for (int i = 0; i < m_np+2; ++i)
+            order_change |= (previous_order[i+2] != mp_sizes[i]);
+        for (int i = 0; i < m_nc; ++i)
+            order_change |= (previous_order[i+4+m_np] != mp_cir[i]);
+    }
+
+    // Save the new ordering information
+    if (order_change) {
+        previous_order[0] = m_npr;
+        previous_order[1] = m_ncr;
+        for (int i = 0; i < m_np+2; ++i)
+            previous_order[i+2] = mp_sizes[i];
+        for (int i = 0; i < m_nc; ++i)
+            previous_order[i+4+m_np] = mp_cir[i];
+    }
+
+    return order_change;
 }
 
 //==============================================================================
@@ -706,11 +733,19 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     initialConditions(T, P, p_cv);
 #ifdef SAVE_IC
     // Save the initial mole fractions
-    std::ofstream of("ic.dat", std::ios_base::app);
+    std::ofstream of("ic_mf.dat", std::ios_base::app);
     m_solution.unpackMoleFractions(p_sv, mfd);
     of << setw(15) << m_T << setw(15) << m_P;
     for (int i = 0; i < m_ns; ++i)
         of << setw(15) << p_sv[i];
+    of << endl;
+    of.close();
+
+    // Save the initial solution
+    of.open("ic_sol.dat", std::ios_base::app);
+    of << setw(15) << m_T << setw(15) << m_P;
+    for (int i = 0; i < m_solution.ncr(); ++i)
+        of << setw(15) << m_solution.lambda()[i];
     of << endl;
     of.close();
 #endif
@@ -823,9 +858,11 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         #endif
 
         int phase = m_solution.checkCondensedPhase(m_B);
-            if (phase > 0) {
-                cout << "Ooops! Phase " << m_thermo.speciesName(m_solution.sjr()[m_solution.sizes()[phase]]) << " should have been included..." << endl;
-            }
+        #ifdef VERBOSE
+        if (phase > 0) {
+            cout << "Ooops! Phase " << m_thermo.speciesName(m_solution.sjr()[m_solution.sizes()[phase]]) << " should have been included..." << endl;
+        }
+        #endif
 
         s += ds;
         ds = std::min(ms_max_ds, std::min(ds*ms_ds_inc, 1.0-s));
@@ -1186,8 +1223,8 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 {
     // First determine which species must be zero (either due to constraints or
     // to temperature limits on condensed species)
-    int species_group [m_ns];
-    bool zero_constraint [m_nc];
+    int  species_group[m_ns];
+    bool zero_constraint[m_nc];
     
     // Group each species
     for (int i = 0; i < m_ns; ++i) {
@@ -1228,8 +1265,7 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
         }
     }
 
-    m_solution.setupOrdering(species_group, zero_constraint);
-
+    m_solution.setupOrdering(&species_group[0], zero_constraint);
     return true;
 }
 
@@ -1267,9 +1303,8 @@ void MultiPhaseEquilSolver::initialConditions(
     const int* const p_cir = m_solution.cir();
     const int* const p_sizes = m_solution.sizes();
 
-    // Check to see if we can reuse the previous solution (only implemented for
-    // the gas phase for now...)
-    if (!(composition_change || temperature_change || pressure_change || m_np != 1)) {
+    // Check to see if we can reuse the previous solution
+    if (!(composition_change || temperature_change || pressure_change || m_np != 1)) {//order_change)) {
         // Can use the previous solution (just need to get g(0) which is the
         // g* from the previous solution, which is the current g because s = 1)
         std::copy(m_solution.g(), m_solution.g()+m_ns, mp_g0);
@@ -1284,7 +1319,7 @@ void MultiPhaseEquilSolver::initialConditions(
     double* p_lambda = p_Nbar + npr;
     int j, jk;
 
-    // A composition change triggers a complete reinitialization
+    // A composition change or order change triggers a complete reinitialization
     if (composition_change || order_change)
         updateMaxMinSolution();
 
@@ -1382,7 +1417,11 @@ void MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
     
     // Error check
     if (ret != 0) {
-        cout << "Error in computing the min-g solution!" << endl;
+        cout << "Error in computing the min-g solution in equilibrium solver!" << endl;
+        if (ret < 0)
+            cout << "--> no solution exists for the given problem" << endl;
+        else
+            cout << "--> solution is unbounded" << endl;
         exit(1);
     }
     
@@ -1435,15 +1474,19 @@ void MultiPhaseEquilSolver::updateMaxMinSolution()
     // 0 0 0
     for (int i = 0; i < nsr+2; ++i)
         *p++ = 0.0;
-    
+
     // Use the simplex algorithm to get the max-min solution
     int izrov [nsr];
     int iposv [ncr];
     int ret = simplex(mp_tableau, ncr, nsr+1, 0, 0, izrov, iposv, 1.0E-9);
-    
+
     // Error check
     if (ret != 0) {
-        cout << "Error in computing the max-min solution!" << endl;
+        cout << "Error in computing the max-min solution in equilibrium solver!" << endl;
+        if (ret < 0)
+            cout << "--> no solution exists for the given problem" << endl;
+        else
+            cout << "--> solution is unbounded" << endl;
         exit(1);
     }
     
