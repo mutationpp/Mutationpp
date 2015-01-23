@@ -173,7 +173,7 @@ double Transport::electronThermalConductivity()
         return 0.0;
     }
 
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] == 0.0)
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
 
     // Get thermodynamic properties
@@ -214,19 +214,23 @@ double Transport::electronThermalConductivity()
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
-    if (lam11 <= 0.0) {
+    /*if (lam11 <= 0.0) {
         for (int i = 1; i < ns; ++i)
             cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
-    }
+    }*/
     assert(lam11 > 0.0);
     //assert(lam22 > 0.0);
+
+    //if (lam11*lam22 <= lam12*lam12)
+    //    cout << lam11*lam22 << " " << lam12*lam12 << " " << X[0] << endl;
     //assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
     //return (X[0]*X[0]/lam11);
     
     // 3rd order solution
-    return (X[0]*X[0]*lam22/(lam11*lam22-lam12*lam12));
+    double denom = (lam11*lam22 > lam12*lam12 ? lam11*lam22-lam12*lam12 : 1.0e-30);
+    return std::max(0.0, (X[0]*X[0]*lam22/denom));
 }
 
 //==============================================================================

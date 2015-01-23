@@ -205,6 +205,20 @@ public:
     }
 
     /**
+     * Computes the vector of mixture averaged specific heats at constant
+     * pressure, \f$c_{p,m}=\left.\frac{\partial h_m}{\partial T_m}\right|_p\f$.
+     * Input vector should be at least nEnergyEqns() long.
+     */
+    //void getMixtureCpsMass(double* const cp);
+
+    /**
+     * Computes the species specific heats at constant pressure for each energy
+     * mode, \f$c_{p,im}=\left.\frac{\partial h_{im}}{\partial T_m}\right|_p\f$.
+     * Input vector should be at least nEnergyEqns()*nSpecies() long.
+     */
+    //virtual void getSpeciesCpsMass(double* const p_cp);
+
+    /**
      * Returns a vector of length n_species times n_energies with each corresponding
 	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
      * model. The first one is associated with the heavy particle translational temperature. 
@@ -297,8 +311,9 @@ protected:
         const double alpha = 0.0,
         const double atol = 1.0e-12,
         const double rtol = 1.0e-12,
-        const int max_iters = 100)
+        const int max_iters = 50)
     {
+        using std::cerr;
         const int ns = m_thermo.nSpecies();
         const double rhoe_over_Ru = rhoe/RU;
         const double tol = rtol*std::abs(rhoe_over_Ru) + atol;
@@ -317,7 +332,6 @@ protected:
         while (std::abs(f) > tol) {
             // Check for max iterations
             if (iter++ == max_iters) {
-                using std::cerr;
                 cerr << "Exceeded max iterations when computing temperature!\n";
                 cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << endl;
                 return false;
@@ -331,7 +345,12 @@ protected:
 
             // Update T
             dT = f/fp;
-            while (dT >= T) dT *= 0.5; // prevent non-positive T
+            if (T == 50.0 && dT > 0) {
+                cerr << "Clamping T at 50 K, energy is too low for the "
+                     << "given species densities..." << endl;
+                return false;
+            }
+            while (T - dT < 50.0) dT *= 0.5; // prevent non-positive T
             T -= dT;
 
             // Recompute f
@@ -365,6 +384,9 @@ protected:
 
     std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
         m_transfer_models;
+private:
+
+   //double* mp_work1;
 
 }; // class StateModel
 

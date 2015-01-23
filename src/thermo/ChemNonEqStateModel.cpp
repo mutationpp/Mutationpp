@@ -101,7 +101,6 @@ public:
 
     void getTemperatures(double* const p_T) const {
         p_T[0] = m_T;
-        cout << m_T << endl;
     }
 
     void getEnergiesMass(double* const p_e)
