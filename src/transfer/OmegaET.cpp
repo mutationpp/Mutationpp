@@ -93,7 +93,7 @@ double const OmegaET::compute_tau_ET()
         nu = ve * p_X[is] * nd * Q11(is);
         sum += nu/mwis;
     }
-    sum *= 2.0*mwel;
+    sum *= mwel*8.0/3.0;
 
     // Return tau
     tau = 1.0/sum;
