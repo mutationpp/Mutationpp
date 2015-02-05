@@ -698,7 +698,7 @@ protected:
         if (m_use_tables) {
             mp_el_bfac_table = new Mutation::Utilities::LookupTable
                 <double, double, ElecBFacsFunctor>(
-                10.0, 20100.0, 3*(m_na+m_nm), m_elec_data, 1.0e-2);
+                100.0, 30100.0, 3*(m_na+m_nm), m_elec_data, 0.005);
         }
         
         mp_el_bfacs = new double [3*(m_na+m_nm)];
