@@ -588,14 +588,20 @@ double Thermodynamics::dRhodP()
 
 double Thermodynamics::mixtureFrozenCvMole() const
 {
-    return mixtureFrozenCpMole() - RU;
+    return mixtureFrozenCvMass() * mixtureMw();
+    //return mixtureFrozenCpMole() - RU; // Wrong in the T-Tv case !!!
 }
 
 //==============================================================================
 
 double Thermodynamics::mixtureFrozenCvMass() const
 {
-    return (mixtureFrozenCpMole() - RU) / mixtureMw();
+    double cv = 0.0;
+    getCvsMass(mp_wrkcp);
+    for (int i = 0; i < nSpecies(); ++i)
+       cv += mp_wrkcp[i] * Y()[i];
+    return cv;
+    //return (mixtureFrozenCpMole() - RU) / mixtureMw(); // Wrong in the T-Tv case !!!
 }
 
 //==============================================================================
@@ -717,7 +723,9 @@ void Thermodynamics::mixtureEnergies(double* const p_e) const
 double Thermodynamics::mixtureFrozenGamma() const 
 {
     double cp = mixtureFrozenCpMole();
-    return (cp / (cp - RU));
+    double cv = mixtureFrozenCvMole();
+    return (cp / cv);
+    //return (cp / (cp - RU));
 }
 
 //==============================================================================
