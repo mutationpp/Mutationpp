@@ -106,7 +106,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
 };
 
 // List of all species output quantities
-#define NSPECIES 18
+#define NSPECIES 19
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
     OutputQuantity("dX/dT", "1/K", "partial of mole fraction w.r.t. temperature"),
@@ -125,7 +125,8 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions"),
     OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
     OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals"),
-    OutputQuantity("Chi", "?", "species thermal diffusion ratios")
+    OutputQuantity("Chi", "?", "species thermal diffusion ratios"),
+    OutputQuantity("Dm", "", "mixture averaged diffusion coefficients")
 };
 
 // List of reaction output quantities
@@ -845,6 +846,8 @@ int main(int argc, char** argv)
                     mix.omega22ii(species_values);
                 } else if (name == "Chi") {
                     mix.thermalDiffusionRatios(species_values);
+                } else if (name == "Dm") {
+                    mix.averageDiffusionCoeffs(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
