@@ -724,7 +724,7 @@ private:
         if (m_use_tables)
             mp_el_bfac_table->lookup(T, mp_el_bfacs);
         else
-            ElecBFacsFunctor()(T, mp_el_bfacs, m_elec_data, Equals<double>());
+            ElecBFacsFunctor()(T, mp_el_bfacs, m_elec_data);
 
         last_T = T;
     }

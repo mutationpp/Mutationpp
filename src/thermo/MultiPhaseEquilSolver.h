@@ -468,7 +468,7 @@ private:
     
     void initialConditions(
         const double T, const double P, const double* const p_c);
-    void rates(Numerics::RealVector& dx);
+    void rates(Numerics::RealVector& dx, bool save = false);
     double newton();
     void updateMinGSolution(const double* const p_g);
     void updateMaxMinSolution();

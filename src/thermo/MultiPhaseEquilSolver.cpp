@@ -41,6 +41,7 @@
 //#define VERBOSE
 //#define SAVE_PATH
 //#define SAVE_IC
+//#define SAVE_EIGEN_SCRIPT
 
 #include "Utilities.h"
 
@@ -895,6 +896,10 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     	     << resk << "!";
     }
 
+    #ifdef SAVE_EIGEN_SCRIPT
+        rates(dx, true);
+    #endif
+
     // Finally, unwrap the solution for the user and return convergence stats
     m_solution.unpackMoleFractions(p_sv, mfd);
     
@@ -986,7 +991,7 @@ bool MultiPhaseEquilSolver::phaseRedistribution()
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::rates(RealVector& dx)
+void MultiPhaseEquilSolver::rates(RealVector& dx, bool save)
 {
     using std::sqrt;
     using std::exp;
@@ -1002,10 +1007,19 @@ void MultiPhaseEquilSolver::rates(RealVector& dx)
     
     const double* const p_y = m_solution.y();
 
+    //cout << "y = [" << endl;
+    //cout << asVector(p_y, m_solution.nsr()) << "]" << endl;
+
     // Compute a least squares factorization of H
     HMatrix H = m_solution.hMatrix(m_B);
+    //cout << "H = [" << endl;
+    //cout << H << "]" << endl;
     LeastSquares<double> ls(H);
     
+    //SVD<double> svdb(H);
+    //cout << "U = [" << endl;
+    //cout << svdb.U() << "]" << endl;
+
     // Use tableau for temporary storage
     double* p_rhs   = mp_tableau;
     double* p_dlamg = p_rhs + nsr;
@@ -1065,6 +1079,43 @@ void MultiPhaseEquilSolver::rates(RealVector& dx)
     cout << b << endl;
     #endif
     
+    if (save) {
+    // Print out the matrix
+    cout << "i = i + 1;\n";
+    cout << "T(i) = " << m_T << ";\n";
+    cout << "phases{i} = [0";
+    for (int m = 1; m < npr; ++m)
+        cout << " " << p_sjr[p_sizes[m]] - m_thermo.nGas() + 1;
+    cout << "];\n";
+    //cout << "M{i} = [\n" << A << "];\n";
+//    cout << "e = sort(eig(M), 'descend');\n";
+//    cout << "Nbars = sort(exp([" << asVector(m_solution.lnNbar(), npr) << "]'), 'descend');\n";
+//    cout << "for j = 1:size(e,1) eigs(i+j,1) = " << m_T << "; eigs(i+j,2) = e(j); eigs(i+j,3) = Nbars(j); eigs(i+j,4) = min(Nbars); eigs(i+j,5) = max(Nbars); end;\n";
+//    cout << "i = i + size(e,1);\n";
+    cout << "B{i} = [\n" << H << "];\n";
+    cout << "P{i} = [" << endl;
+    for (int m = 0; m < npr; ++m) {
+        for (int i = p_sizes[m]; i < p_sizes[m+1]; ++i) {
+            for (int j = 0; j < m; ++j)
+                cout << "0 ";
+            cout << p_y[i] << " ";
+            for (int j = m+1; j < npr; ++j)
+                cout << "0 ";
+            cout << endl;
+        }
+    }
+    cout << "];\n";
+//    //cout << "bounds(i,:) = diag(P(1:" << ncr << ",:)'*P(1:" << ncr << ",:));\n";
+//    //cout << "maxN(i) = max(P)^2;\n";
+//    cout << "conds(i) = cond(H);\n";
+//    cout << "rhols(i) = max(eig(P'*(H*(H\\P)-P)));\n";
+//    cout << "lssens(i) = conds(i) + rhols(i)*conds(i)^2;\n";
+//    cout << "g = [\n" << asVector(mp_g, m_ns) << "];\n";
+//    cout << "g0 = [\n" << asVector(mp_g0, m_ns) << "];\n";
+//    cout << "gnorm(i) = norm(g-g0);\n";
+    }
+
+
     // Solve the linear system to get d(lnNbar)/ds
     switch (npr) {
         case 1:
@@ -1094,13 +1145,34 @@ void MultiPhaseEquilSolver::rates(RealVector& dx)
                 b(0)*c13)/det;
             break;
         } default:
+            //cout << "A = [" << endl;
+            //cout << A << "]" << endl;
             RealVector x(npr);
             //QRP<double> qrp(A);
             //qrp.solve(x, b);
             SVD<double> svd(A);
             svd.solve(x, b);
             dx(ncr,ncr+npr) = x;
-        }
+
+            /*cout << "Nbar = [" << endl;
+            for (int m = 0; m < npr; ++m)
+                cout << std::exp(m_solution.lnNbar()[m]) << " ";
+            cout << "]'" << endl;
+
+            cout << "P = [" << endl;
+            for (int m = 0; m < npr; ++m) {
+                for (int i = p_sizes[m]; i < p_sizes[m+1]; ++i) {
+                    for (int j = 0; j < m; ++j)
+                        cout << "0 ";
+                    cout << "1 ";
+                    for (int j = m+1; j < npr; ++j)
+                        cout << "0 ";
+                    cout << endl;
+                }
+            }
+            cout << "]" << endl;
+            exit(1);*/
+    }
     
     // Finally compute the d(lambda)/ds vector
     for (int i = 0; i < ncr; ++i)
