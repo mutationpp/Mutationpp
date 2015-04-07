@@ -363,7 +363,7 @@ private:
             const Numerics::VecExpr<double, E>& dx,
             const Numerics::RealMatrix& B)
         {
-            for (int i = 0; i < m_ncr; ++i)
+        	for (int i = 0; i < m_ncr; ++i)
                 mp_lambda[i] += dx(i);
             for (int m = 0; m < m_npr; ++m)
                 mp_lnNbar[m] = std::min(300.0, mp_lnNbar[m]+dx(m+m_ncr));
@@ -466,20 +466,59 @@ private:
      */
     bool checkForDeterminedSpecies();
     
+    /**
+     * Sets up the initial conditions of the equilibrium problem.
+     */
     void initialConditions(
         const double T, const double P, const double* const p_c);
+
+    /**
+     * Computes \f$\bar{N}(0)\f$, \f$\lambda(0)\f$, and \f$\tilde{g}(0)\f$ given
+     * an initial set of species moles.
+     */
+    void initZeroResidualSolution(
+    	double* const p_N, double* const p_Nbar, double* const p_lambda);
+
+    /**
+     * Computes the solution derivative with respect to \f$s\f$ at constant
+     * residual.
+     */
     void rates(Numerics::RealVector& dx, bool save = false);
+
+    /**
+     * Tries to reduce the solution residual (at a fixed value of \f$s\f$) below
+     * a given tolerance using Newton's method.
+     */
     double newton();
+
+    /**
+     * Updates the Min-G solution based on the current temperature and
+     * constraints.
+     */
     void updateMinGSolution(const double* const p_g);
+
+    /**
+     * Updates the Max-Min solution based on the current constraints.
+     */
     void updateMaxMinSolution();
+
+    /**
+     * Computes the Jacobian of hte system for the Newton's method.
+     */
     void formSystemMatrix(Numerics::RealSymMat& A) const;
+
+    /**
+     * Computes the current value of the residual vector.
+     */
     void computeResidual(Numerics::RealVector& r) const;
 
     /**
      * Adjusts the phase ordering according to the vapor pressure test and phase
-     * rule based on the current (converged) solution parameters.
+     * rule based on the current (converged) solution parameters.  If a phase
+     * is added, then the solution is reinitialized based after adding some
+     * small amount of moles of the new phase.
      *
-     * @return True if the phase ordering changed, false otherwise
+     * @return true if a phase was added, false otherwise
      */
     bool phaseRedistribution();
      
@@ -507,7 +546,6 @@ private:
     
 //    std::vector<Numerics::RealVector> m_constraints;
     
-    // ** new data **
     Solution m_solution;
     
     size_t  m_tableau_capacity;

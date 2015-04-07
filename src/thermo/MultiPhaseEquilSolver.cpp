@@ -37,6 +37,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <vector>
+#include <algorithm>
 
 //#define VERBOSE
 //#define SAVE_PATH
@@ -260,10 +262,10 @@ MultiPhaseEquilSolver::Solution::operator=(const Solution& state)
 
 int MultiPhaseEquilSolver::Solution::removePhase(int phase)
 {
-//            cout << "removing phase:";
-//            for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//                cout << " " << m_thermo.speciesName(mp_sjr[j]);
-//            cout << endl;
+//    cout << "removing phase:";
+//    for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
+//        cout << " " << m_thermo.speciesName(mp_sjr[j]);
+//    cout << endl;
 
     // Check that the phase number is feasible
     assert(phase >= 0);
@@ -315,10 +317,10 @@ int MultiPhaseEquilSolver::Solution::removePhase(int phase)
 
 int MultiPhaseEquilSolver::Solution::addPhase(int phase)
 {
-//            cout << "adding phase:";
-//            for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
-//                cout << " " << m_thermo.speciesName(mp_sjr[j]);
-//            cout << endl;
+//	cout << "adding phase:";
+//    for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
+//        cout << " " << m_thermo.speciesName(mp_sjr[j]);
+//    cout << endl;
 
     assert(phase >= m_npr);
     assert(phase < m_np);
@@ -791,7 +793,6 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         last_solution = m_solution;
         
         // Compute the rates for lambda and Nbar
-        
         rates(dx);
         #ifdef VERBOSE
         cout << "iter = " << m_niters << ", s = " << s << ", ds = " << ds << endl;
@@ -841,16 +842,6 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
                 ds *= ms_ds_dec;
                 m_solution = last_solution;
             }
-            
-//            if (m_niters + m_nnewts > 1000) {
-//                cout << "equil iter: " << m_niters << ", newt: " << m_nnewts << endl;
-//                cout << "s = " << s << ", ds = " << log(ds) << ", res = " << res << ", resk = " << resk << endl;
-//                std::cout << "equilibrate(" << T << " K, " << P << " Pa,";
-//                    for (int i = 0; i < m_ne; ++i)
-//                        std::cout << m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ",");
-//                    std::cout << std::endl;
-//                exit(1);
-//            }
         }
         
         // We found the solution at s, increase step size and move forward
@@ -858,16 +849,15 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
         cout << "Step succeded, increasing step size" << endl;
         #endif
 
-        int phase = m_solution.checkCondensedPhase(m_B);
-        #ifdef VERBOSE
-        if (phase > 0) {
-            cout << "Ooops! Phase " << m_thermo.speciesName(m_solution.sjr()[m_solution.sizes()[phase]]) << " should have been included..." << endl;
-        }
-        #endif
-
         s += ds;
         ds = std::min(ms_max_ds, std::min(ds*ms_ds_inc, 1.0-s));
         m_niters++;
+
+        // If we have finished then check for a phase redistribution
+        if (s >= 1.0 && phaseRedistribution()) {
+        	s = 0.0;
+        	ds = ms_max_ds;
+        }
     }
     
     // Check one last newton
@@ -913,80 +903,112 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 
 //==============================================================================
 
+// Simple comparison function for sorting which is used in the nex function.
+bool sortLargestSpecies(
+	const std::pair<int, double>& s1, const std::pair<int, double>& s2)
+{
+	return (s1.second > s2.second);
+}
+
+//==============================================================================
+
 bool MultiPhaseEquilSolver::phaseRedistribution()
 {
-    #ifdef VERBOSE
-    cout << "Phase redistribution:" << endl;
-    #endif
+    const int new_phase = m_solution.checkCondensedPhase(m_B);
     
-    const double phase_tol = std::log(1.0e-20);
+    // Return false if there is nothing to do
+    if (new_phase < 0)
+    	return false;
 
-    const int* const p_sizes = m_solution.sizes();
-    const int* const p_sjr   = m_solution.sjr();
-    const int* const p_cir   = m_solution.cir();
-    
-    // Remove any phase which has negligable moles
-    int m;
-//    int m = 1;
-//    while (m < m_solution.npr()) {
-//        if (m_solution.lnNbar()[m] < phase_tol)
-//            m_solution.removePhase(m);
-//        else
-//            m++;
-//    }
-    
-    // Check to see if there are any condensed phases that could reduce the
-    // residual further as the phase rule allows
-    int j = p_sizes[m_solution.npr()], jk, lowest_phase = m_solution.npr()-1;
-    double test, lowest_value = 1.0;
-    
-    for (m = m_solution.npr(); m < m_np; ++m) {
-        for ( ; j < p_sizes[m+1]; ++j) {
-            jk = p_sjr[j];
-            test = m_solution.g()[jk];
-            for (int i = 0; i < m_solution.ncr(); ++i)
-                test -= m_solution.lambda()[i]*m_B(jk,p_cir[i]);
-            
-            if (test < lowest_value) {
-                lowest_value = test;
-                lowest_phase = m;
-            }
-        }
-    }
-    
-    bool phase_redist = (lowest_value < 0.0);
-    
-    // Add the phase with the most negative vapor pressure test value
-    if (phase_redist) {
-        int phase = m_solution.addPhase(lowest_phase);
-        double lambda [m_solution.ncr()];
-        double lnNbar [m_solution.npr()];
-        
-        std::copy(m_solution.lambda(), m_solution.lambda()+m_solution.ncr(), lambda);
-        std::copy(m_solution.lnNbar(), m_solution.lnNbar()+m_solution.npr(), lnNbar);
-        lnNbar[phase] = std::log(1.0e-4);
-        
-        for (int i = 0; i < m_solution.npr(); ++i)
-            lnNbar[i] = std::exp(lnNbar[i]);
-        m_solution.setSolution(lambda, lnNbar, m_B);
+    // Add the phase with the most negative vapor pressure test value to the end
+    // of the species list in the solution object
+	const int phase = m_solution.addPhase(new_phase);
 
-        // Adhere to the phase rule (npr <= ncr)
-        if (m_solution.npr() > m_solution.ncr()) {
-            lowest_phase = 1;
-            lowest_value = m_solution.lnNbar()[1];
-            
-            for (int m = 2; m < m_solution.npr()-1; ++m) {
-                if (m_solution.lnNbar()[m] < lowest_value) {
-                    lowest_value = m_solution.lnNbar()[m];
-                    lowest_phase = m;
-                }
-            }
-            
-            m_solution.removePhase(lowest_phase);
-        }
-    }
-    
-    return phase_redist;
+	// Get the updated sizing information
+	const int ncr = m_solution.ncr();
+	const int npr = m_solution.npr();
+	const int nsr = m_solution.nsr();
+
+	const int* const p_sizes = m_solution.sizes();
+	const int* const p_sjr   = m_solution.sjr();
+	const int* const p_cir   = m_solution.cir();
+
+	const double* p_y = m_solution.y();
+
+	// Use the tableau as temporary storage
+	double* p_N = mp_tableau;
+	double* p_Nbar = p_N + nsr;
+	double* p_lambda = p_Nbar + npr;
+
+	// Compute the current moles vector for the phases already present
+	for (int j = 0; j < p_sizes[npr-1]; ++j)
+		p_N[j] = p_y[j]*p_y[j];
+
+	// Add some moles to the new phase which is scaled based on the amount of
+	// elements in the new phase
+	double Nbar_new = 1.0e-6;
+	int size = p_sizes[npr] - p_sizes[npr-1];
+	for (int j = p_sizes[npr-1]; j < p_sizes[npr]; ++j)
+		p_N[j] = Nbar_new / size;
+
+	// Distribute some moles from ncr largest species into the moles of the new
+	// phase. First gather the ncr largest species...
+	std::vector< std::pair<int, double> > largest(
+		m_solution.ncr(), std::make_pair(-1, 0.0));
+	for (int j = 0; j < p_sizes[npr-1]; ++j) {
+		if (p_N[j] >= largest.back().second) {
+			largest.back() = std::make_pair(j, p_N[j]);
+			std::sort(largest.begin(), largest.end(), sortLargestSpecies);
+		}
+	}
+
+	// Form the system matrix to be solved
+	RealMatrix Blarge(ncr, ncr);
+	int jk;
+	for (int j = 0; j < ncr; ++j) {
+		jk = p_sjr[largest[j].first];
+		for (int i = 0; i < ncr; ++i)
+			Blarge(i,j) = m_B(jk,i);
+	}
+
+	// Compute the RHS which is B'*N
+	RealVector rhs = -asVector(p_N, nsr) * m_solution.reducedMatrix(m_B);
+	for (int i = 0; i < ncr; ++i)
+		rhs(i) += mp_c[p_cir[i]];
+
+	// Solve the linear system for the update in the species moles vector
+	SVD<double> svd(Blarge);
+	RealVector x(ncr);
+	svd.solve(x, rhs);
+
+	// Finally update the species moles vector
+	for (int j = 0; j < ncr; ++j)
+		p_N[largest[j].first] += x(j);
+
+	// Initialize the solution with residual of zero, based on the redistributed
+	// species moles
+	initZeroResidualSolution(p_N, p_Nbar, p_lambda);
+
+	// Update the solution
+	m_solution.setG(mp_g0, mp_g, 0.0);
+	m_solution.setSolution(p_lambda, p_Nbar, m_B);
+
+//        // Adhere to the phase rule (npr <= ncr)
+//        if (m_solution.npr() > m_solution.ncr()) {
+//            int lowest_phase = 1;
+//            int lowest_value = m_solution.lnNbar()[1];
+//
+//            for (int m = 2; m < m_solution.npr()-1; ++m) {
+//                if (m_solution.lnNbar()[m] < lowest_value) {
+//                    lowest_value = m_solution.lnNbar()[m];
+//                    lowest_phase = m;
+//                }
+//            }
+//
+//            m_solution.removePhase(lowest_phase);
+//        }
+
+    return true;
 }
 
 //==============================================================================
@@ -1007,18 +1029,9 @@ void MultiPhaseEquilSolver::rates(RealVector& dx, bool save)
     
     const double* const p_y = m_solution.y();
 
-    //cout << "y = [" << endl;
-    //cout << asVector(p_y, m_solution.nsr()) << "]" << endl;
-
     // Compute a least squares factorization of H
     HMatrix H = m_solution.hMatrix(m_B);
-    //cout << "H = [" << endl;
-    //cout << H << "]" << endl;
     LeastSquares<double> ls(H);
-    
-    //SVD<double> svdb(H);
-    //cout << "U = [" << endl;
-    //cout << svdb.U() << "]" << endl;
 
     // Use tableau for temporary storage
     double* p_rhs   = mp_tableau;
@@ -1026,16 +1039,12 @@ void MultiPhaseEquilSolver::rates(RealVector& dx, bool save)
     double* p_dlamy = p_dlamg + ncr;
 
     // Compute dlamg
-    int jk;
-    for (int j = 0; j < nsr; ++j) {
-        jk = p_sjr[j];
+    for (int j = 0, jk = p_sjr[0]; j < nsr; jk = p_sjr[++j])
         p_rhs[j] = p_y[j] * (mp_g[jk] - mp_g0[jk]);
-    }
     ls.solve(p_dlamg, p_rhs);
     
     // Compute dlambda_m for each phase m
-    int j;
-    for (int m = 0; m < npr; ++m) {
+    for (int m = 0, j; m < npr; ++m) {
         for (j = 0 ; j < p_sizes[m]; ++j)
             p_rhs[j] = 0.0;
         for ( ; j < p_sizes[m+1]; ++j)
@@ -1061,6 +1070,7 @@ void MultiPhaseEquilSolver::rates(RealVector& dx, bool save)
     }
     
     RealVector b(npr);
+    int jk;
     for (int m = 0; m < npr; ++m) {
         b(m) = 0.0;
         for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j) {
@@ -1144,34 +1154,12 @@ void MultiPhaseEquilSolver::rates(RealVector& dx, bool save)
                 A(1)*(A(3)*b(2)-b(1)*A(6))+
                 b(0)*c13)/det;
             break;
-        } default:
-            //cout << "A = [" << endl;
-            //cout << A << "]" << endl;
-            RealVector x(npr);
-            //QRP<double> qrp(A);
-            //qrp.solve(x, b);
+        } default: {
             SVD<double> svd(A);
+            RealVector x(npr);
             svd.solve(x, b);
             dx(ncr,ncr+npr) = x;
-
-            /*cout << "Nbar = [" << endl;
-            for (int m = 0; m < npr; ++m)
-                cout << std::exp(m_solution.lnNbar()[m]) << " ";
-            cout << "]'" << endl;
-
-            cout << "P = [" << endl;
-            for (int m = 0; m < npr; ++m) {
-                for (int i = p_sizes[m]; i < p_sizes[m+1]; ++i) {
-                    for (int j = 0; j < m; ++j)
-                        cout << "0 ";
-                    cout << "1 ";
-                    for (int j = m+1; j < npr; ++j)
-                        cout << "0 ";
-                    cout << endl;
-                }
-            }
-            cout << "]" << endl;
-            exit(1);*/
+        }
     }
     
     // Finally compute the d(lambda)/ds vector
@@ -1190,7 +1178,7 @@ double MultiPhaseEquilSolver::newton()
     cout << "newton:" << endl;
     #endif
     const int    max_iters = 5;
-    const double phase_tol = std::sqrt(1.0e-6);
+    const double phase_tol = std::log(1.0e-6);
     
     int npr = m_solution.npr();
     const int ncr = m_solution.ncr();
@@ -1222,10 +1210,10 @@ double MultiPhaseEquilSolver::newton()
         // First check if a phase needs to be removed (always include gas phase)
         int m = 1;
         while(m < m_solution.npr()) {
-            double sum = 0.0;
-            for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j)
-                sum += m_solution.y()[j];
-            if (sum < phase_tol)
+            //double sum = 0.0;
+            //for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j)
+            //    sum += m_solution.y()[j];
+            if (m_solution.lnNbar()[m] < phase_tol)
                 m_solution.removePhase(m);
             else
                 m++;
@@ -1402,33 +1390,8 @@ void MultiPhaseEquilSolver::initialConditions(
     for (j = 0; j < nsr; ++j)
         p_N[j] = mp_ming[j]*(1.0-alpha) + mp_maxmin[j]*alpha;
 
-    // Compute initial phase moles
-    for (int m = 0, j = 0; m < npr; ++m) {
-        p_Nbar[m] = 0.0;
-        for ( ; j < p_sizes[m+1]; ++j)
-            p_Nbar[m] += p_N[j];
-    }
-    
-    // Compute RHS of lambda least-squares problem (temporarily store in g0)
-    for (int m = 0, j = 0; m < npr; ++m) {
-        const double nbar = p_Nbar[m];
-        for ( ; j < p_sizes[m+1]; ++j) {
-            p_N[j] = std::log(p_N[j] / nbar);
-            mp_g0[j] = p_N[j] + mp_g[p_sjr[j]];
-        }
-    }
-    
-    // Compute SVD of Br
-    SVD<double> svd(m_solution.reducedMatrix(m_B));
-    svd.solve(p_lambda, mp_g0);
-    
-    // Now compute the g0 which satisfies the constraints
-    for (int j = 0; j < nsr; ++j) {
-        jk = p_sjr[j];
-        mp_g0[jk] = -p_N[j];
-        for (int i = 0; i < ncr; ++i)
-            mp_g0[jk] += m_B(jk,p_cir[i])*p_lambda[i];
-    }
+    // Compute the initial solution which makes sure the residual is zero
+    initZeroResidualSolution(p_N, p_Nbar, p_lambda);
     
     m_solution.setG(mp_g0, mp_g, 0.0);
     m_solution.setSolution(p_lambda, p_Nbar, m_B);
@@ -1450,6 +1413,49 @@ void MultiPhaseEquilSolver::initialConditions(
         }
         m_solution.removePhase(min_index);
     }
+}
+
+//==============================================================================
+
+void MultiPhaseEquilSolver::initZeroResidualSolution(
+	double* const p_N, double* const p_Nbar, double* const p_lambda)
+{
+	int npr = m_solution.npr();
+	int nsr = m_solution.nsr();
+	int ncr = m_solution.ncr();
+
+	const int* const p_sizes = m_solution.sizes();
+	const int* const p_sjr   = m_solution.sjr();
+	const int* const p_cir   = m_solution.cir();
+
+	// Compute initial phase moles
+	for (int m = 0, j = 0; m < npr; ++m) {
+		p_Nbar[m] = 0.0;
+		for ( ; j < p_sizes[m+1]; ++j)
+			p_Nbar[m] += p_N[j];
+	}
+
+	// Compute RHS of lambda least-squares problem (temporarily store in g0)
+	for (int m = 0, j = 0; m < npr; ++m) {
+		const double nbar = p_Nbar[m];
+		for ( ; j < p_sizes[m+1]; ++j) {
+			p_N[j] = std::log(p_N[j] / nbar);
+			mp_g0[j] = p_N[j] + mp_g[p_sjr[j]];
+		}
+	}
+
+	// Compute SVD of Br
+	SVD<double> svd(m_solution.reducedMatrix(m_B));
+	svd.solve(p_lambda, mp_g0);
+
+	// Now compute the g0 which satisfies the constraints
+	int jk;
+	for (int j = 0; j < nsr; ++j) {
+		jk = p_sjr[j];
+		mp_g0[jk] = -p_N[j];
+		for (int i = 0; i < ncr; ++i)
+			mp_g0[jk] += m_B(jk,p_cir[i])*p_lambda[i];
+	}
 }
 
 //==============================================================================
