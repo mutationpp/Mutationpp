@@ -544,7 +544,7 @@ private:
 
     Numerics::RealMatrix  m_B;
     
-//    std::vector<Numerics::RealVector> m_constraints;
+    std::vector<Numerics::RealVector> m_constraints;
     
     Solution m_solution;
     

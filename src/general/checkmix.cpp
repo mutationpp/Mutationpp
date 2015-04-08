@@ -188,8 +188,11 @@ int main(int argc, char** argv)
 	width++;
 
     cout << "Species info:" << endl;
-    cout << "-------------" << endl;  
-    cout << setw(width) << " ";
+    cout << "-------------" << endl;
+    cout << setw(4) << "#" << "  ";
+    cout.setf(std::ios::left, std::ios::adjustfield);
+    cout << setw(width) << "Name";
+    cout.setf(std::ios::right, std::ios::adjustfield);
     for (int i = 0; i < ne; ++i)
         cout << setw(4) << mixture.elementName(i);
     
@@ -197,6 +200,8 @@ int main(int argc, char** argv)
     cout << setw(12) << "Phase" << endl;
     cout << "Gas Species (" << ng << "):" << endl;
     for (int i = 0; i < ng; ++i) {
+        cout.setf(std::ios::right, std::ios::adjustfield);
+        cout << setw(4) << i+1 << ": ";
         cout.setf(std::ios::left, std::ios::adjustfield);
         cout << setw(width) << mixture.speciesName(i);
 
@@ -215,6 +220,8 @@ int main(int argc, char** argv)
     if (nc > 0) {
         cout << "Condensed Species (" << nc << "):" << endl;
         for (int i = ng; i < ns; ++i) {
+            cout.setf(std::ios::right, std::ios::adjustfield);
+            cout << setw(4) << i+1 << ": ";
             cout.setf(std::ios::left, std::ios::adjustfield);
             cout << setw(width) << mixture.speciesName(i);
 

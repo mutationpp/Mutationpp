@@ -43,7 +43,7 @@
 //#define VERBOSE
 //#define SAVE_PATH
 //#define SAVE_IC
-//#define SAVE_EIGEN_SCRIPT
+#define SAVE_EIGEN_SCRIPT
 
 #include "Utilities.h"
 
@@ -518,24 +518,40 @@ MultiPhaseEquilSolver::~MultiPhaseEquilSolver()
 
 void MultiPhaseEquilSolver::addConstraint(const double *const p_A)
 {
-//    // Save constraints
-//    m_constraints.push_back(asVector(p_A, m_ns));
-//    
-//    // Update the B matrix
-//    m_B = zeros<double>(m_ns, ++m_nc);
-//    m_B(0,m_ns,0,m_ne) = m_thermo.elementMatrix();
-//    
-//    for (int i = 0; i < m_nc-m_ne; ++i)
-//        m_B.col(m_ne+i) = m_constraints[i];
+    // Save constraints
+    m_constraints.push_back(asVector(p_A, m_ns));
+
+    // Update the B matrix
+    m_B = zeros<double>(m_ns, ++m_nc);
+    m_B(0,m_ns,0,m_ne) = m_thermo.elementMatrix();
+
+    for (int i = 0; i < m_nc-m_ne; ++i)
+        m_B.col(m_ne+i) = m_constraints[i];
+
+    // Resize the tableau used in the simplex solver
+    size_t size = (m_nc+2)*(m_ns+2);
+    if (m_tableau_capacity < size) {
+        delete [] mp_tableau;
+        mp_tableau = new double [size];
+        m_tableau_capacity = size;
+    }
+
+    // Resize the c vector
+    delete [] mp_c;
+    mp_c = new double [m_nc];
+    std::fill(mp_c, mp_c+m_nc, 0.0);
+
+    // The solution should also be reinitialized
+    m_solution.initialize(m_np, m_nc, m_ns);
 }
 
 //==============================================================================
         
 void MultiPhaseEquilSolver::clearConstraints()
 {
-//    m_constraints.clear();
-//    m_B = m_thermo.elementMatrix();
-//    m_nc = m_ne;
+    m_constraints.clear();
+    m_B = m_thermo.elementMatrix();
+    m_nc = m_ne;
 }
 
 //==============================================================================
@@ -722,9 +738,10 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
 {
 
     DEBUG("equilibrate(" << T << " K, " << P << " Pa,")
-    for (int i = 0; i < m_ne; ++i)
+    for (int i = 0; i < m_nc; ++i)
 		DEBUG(m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ","))
 	DEBUG(endl)
+	//exit(1);
     
     // Special case for 1 species
     if (m_ns == 1) {
