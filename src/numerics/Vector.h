@@ -821,7 +821,7 @@ template <typename T, typename ArrayType>
 void setFancyFormat(std::ostream& os, const ArrayType& array, size_t& width, 
     std::ios::fmtflags& flags)
 {
-    const size_t max_width = 11;
+    const size_t max_width = 20;
     const size_t n = array.size();
     
     bool all_ints = true;
@@ -853,18 +853,18 @@ void setFancyFormat(std::ostream& os, const ArrayType& array, size_t& width,
         } 
             // Otherwise, integers that fit in the maximum width
     } else {
-        width = sig_upper - sig_lower + 5;
-        if (width > max_width) {
+        width = std::max(sig_upper - sig_lower, 5) + 5;
+        //if (width > max_width) {
             // Floating point numbers that must use exponential form to fit with
             // desired precision
             width = max_width;
             os.precision(max_width-8);
             os.setf(std::ios::scientific, std::ios::floatfield);
-        } else {
-            // Floating point numbers that can fit with desired precision
-            os.precision(2-sig_lower);
-            os.setf(std::ios::fixed, std::ios::floatfield);
-        }
+       // } else {
+       //     // Floating point numbers that can fit with desired precision
+       //     os.precision(std::max(2-sig_lower, 5));
+       //     os.setf(std::ios::fixed, std::ios::floatfield);
+       // }
     }
     
     os.setf(std::ios::right, std::ios::adjustfield);
