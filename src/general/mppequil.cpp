@@ -59,10 +59,11 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 42
+#define NMIXTURE 52
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
+    OutputQuantity("B", "T", "magnitude of magnetic field"),
     OutputQuantity("rho", "kg/m^3", "density"),
     OutputQuantity("nd", "1/m^3", "number density"),
     OutputQuantity("Mw", "kg/mol", "molecular weight"),
@@ -98,11 +99,20 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
     OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
-    OutputQuantity("sigma", "S/m", "electric conductivity"),
+    OutputQuantity("sigma", "S/m", "electric conductivity (B=0)"),
+    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
+    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
+    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
-    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure"),
+    OutputQuantity("l", "m", "mean free path"),
+    OutputQuantity("le", "m", "mean free path of electrons"),
+    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
+    OutputQuantity("Ve", "m/s", "electron thermal speed"),
+    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
+    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
 };
 
 // List of all species output quantities
@@ -158,6 +168,7 @@ typedef struct {
     double P1;
     double P2;
     double dP;
+    double B;
     
     std::vector<int> mixture_indices;
     std::vector<int> species_indices;
@@ -208,8 +219,9 @@ void printHelpMessage(const char* const name)
     cout << endl;
     cout << tab << "-h, --help          prints this help message" << endl;
     cout << tab << "    --no-header     no table header will be printed" << endl;
-    cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T" << endl;
-    cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
+    cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T (default = 300:100:15000 K)" << endl;
+    cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P (default = 1 atm)" << endl;
+    cout << tab << "-B                  magnitude of the magnetic field in teslas (default = 0 T)" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
     cout << tab << "-r                  list of reaction values to output (see below)" << endl;
@@ -428,6 +440,13 @@ Options parseOptions(int argc, char** argv)
         opts.dP = ONEATM;
     }
     
+    // Get the magnetic field strength
+    if (optionExists(argc, argv, "-B")) {
+        opts.B = atof(getOption(argc, argv, "-B").c_str());
+    } else {
+        opts.B = 0.0;
+    }
+
     // Get the mixture properties to print
     if (optionExists(argc, argv, "-m")) {
         if (!parseIndices(
@@ -626,6 +645,7 @@ int main(int argc, char** argv)
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);
+    mix.setBField(opts.B);
     delete opts.p_mixture_opts;
     
     // Write out the column headers (and compute the column sizes)
@@ -672,6 +692,8 @@ int main(int argc, char** argv)
                     value = mix.T();
                 else if (name == "P")
                     value = mix.P();
+                else if (name == "B")
+                    value = mix.getBField();
                 else if (name == "rho")
                     value = mix.density();
                 else if (name == "nd")
@@ -725,6 +747,12 @@ int main(int argc, char** argv)
                     value = mix.electronThermalConductivity();
                 else if (name == "sigma")
                     value = mix.sigma();
+                else if (name == "sigma_para")
+                    value = mix.sigmaParallel();
+                else if (name == "sigma_perp")
+                    value = mix.sigmaPerpendicular();
+                else if (name == "sigma_trans")
+                    value = mix.sigmaTransverse();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
                     value = 0.0;
@@ -775,6 +803,18 @@ int main(int argc, char** argv)
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
+                else if (name == "l")
+                    value = mix.meanFreePath();
+                else if (name == "le")
+                    value = mix.electronMeanFreePath();
+                else if (name == "Vh")
+                    value = mix.averageHeavyThermalSpeed();
+                else if (name == "Ve")
+                    value = mix.electronThermalSpeed();
+                else if (name == "tau_eh")
+                    value = mix.electronHeavyCollisionFreq();
+                else if (name == "tau_a")
+                    value = mix.averageHeavyCollisionFreq();
                 
                 cout << setw(column_widths[cw++]) << value;
             }
