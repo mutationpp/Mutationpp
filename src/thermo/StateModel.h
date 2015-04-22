@@ -114,6 +114,20 @@ public:
         const int vars = 0) = 0;
     
     /**
+     * Sets the current magnitude of the magnetic field in teslas.
+     */
+    void setBField(const double B) {
+        m_B = B;
+    }
+
+    /**
+     * Gets the magnitude of the magnetic field in teslas.
+     */
+    double getBField() const {
+        return m_B;
+    }
+
+    /**
      * Returns the mixture translational temperature.
      */
     inline double T() const {
@@ -378,6 +392,7 @@ protected:
     double m_Tel;
     double m_Te;
     double m_P;
+    double m_B;
     
     double* mp_X;
     
