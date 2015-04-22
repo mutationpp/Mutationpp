@@ -39,7 +39,7 @@ Momentum conservation is written as
 where \f$\matrix{\tau}\f$ is the second order shear stress tensor
 \f[
 \matrix{\tau} = \eta \left[ \nabla \vec{v} + (\nabla \vec{v})^T -
-    \frac{2}{3} \nabla \vec{v} \matrix{I} \right].
+    \frac{2}{3} (\nabla\cdot \vec{v}) \matrix{I} \right].
 \f]
 The total density is defined simply as \f$\rho = \sum_{i\in\mathscr{M}} \rho_i\f$.
 Pressure is given by Dalton's Law as \f$p = \sum_{k\in\mathscr{S}} p_k =
@@ -84,8 +84,7 @@ close the system.  They may be written as
 where \f$\delta\f$ is the Kronecker delta function and \f$\mathscr{I_e}\f$ is
 the index of the energy mode which includes the free electron energy contribution.
 \f$\Omega^m\f$ is the energy transfered into the energy mode \f$m\f$ (and out of
-all other modes).  Total energy conservation dictates that
-\f$\sum_{m\in\mathscr{E}} \Omega^m=0\f$
+all other modes).
 
 @section sm_interface StateModel Interface
 
