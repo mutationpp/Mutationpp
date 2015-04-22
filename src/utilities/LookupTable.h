@@ -529,7 +529,7 @@ void LookupTable<IndexType, DataType, FunctionType>::populateTable(
     typename std::list< std::pair<IndexType, DataType *> >::iterator &high,
     int nfuncs, double error_tolerance, InterpolationScheme scheme) const
 {
-    const int num_points = 100;
+    const int num_points = 3;
     
     typename std::list< std::pair<IndexType, DataType *> >::iterator low = high;
     low--;
