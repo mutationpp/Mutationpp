@@ -170,6 +170,18 @@ void Thermodynamics::setState(
 
 //==============================================================================
 
+void Thermodynamics::setBField(const double B) {
+    mp_state->setBField(B);
+}
+
+//==============================================================================
+
+double Thermodynamics::getBField() const {
+    return mp_state->getBField();
+}
+
+//==============================================================================
+
 double Thermodynamics::T() const {
     return mp_state->T();
 }

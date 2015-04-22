@@ -113,6 +113,7 @@ public:
         return mp_equil;
     }
 
+
     /**
      * Returns a pointer to the ThermoDB object owned by this Thermodynamics
      * object.
@@ -212,6 +213,16 @@ public:
         return mp_thermodb->elements()[i];
     }
     
+    /**
+     * Sets the current magnitude of the magnetic field in teslas.
+     */
+    void setBField(const double B);
+
+    /**
+     * Gets the magnitude of the magnetic field in teslas.
+     */
+    double getBField() const;
+
     /**
      * Sets the default elemental composition of the mixture from a given
      * vector of (element name, mole fraction) pairs.  Note that an error will
