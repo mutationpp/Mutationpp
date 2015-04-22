@@ -149,6 +149,11 @@ public:
      * species mole-fraction array is computed based on the value of the
      * MoleFracDef parameter.  The default method defines the mole fractions
      * globally, though they can also be defined in-phase.
+     *
+     * @return A pair representing the number of iterations and Newton
+     * iterations used to compute the solution.  If the solution procedure fails
+     * because the feasible region is empty or unbounded, then the iterations
+     * are negative.
      */
     std::pair<int,int> equilibrate(
         double T, double P, const double *const p_ev, double *const p_sv,
@@ -468,8 +473,10 @@ private:
     
     /**
      * Sets up the initial conditions of the equilibrium problem.
+     * @return true if a set of initial conditions could be computed, false
+     * otherwise
      */
-    void initialConditions(
+    bool initialConditions(
         const double T, const double P, const double* const p_c);
 
     /**
@@ -494,13 +501,15 @@ private:
     /**
      * Updates the Min-G solution based on the current temperature and
      * constraints.
+     * @return true if Min-G solution exists, false otherwise
      */
-    void updateMinGSolution(const double* const p_g);
+    bool updateMinGSolution(const double* const p_g);
 
     /**
      * Updates the Max-Min solution based on the current constraints.
+     * @return true if Max-Min solution exists, false otherwise
      */
-    void updateMaxMinSolution();
+    bool updateMaxMinSolution();
 
     /**
      * Computes the Jacobian of hte system for the Newton's method.

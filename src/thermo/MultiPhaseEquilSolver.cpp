@@ -43,7 +43,7 @@
 //#define VERBOSE
 //#define SAVE_PATH
 //#define SAVE_IC
-#define SAVE_EIGEN_SCRIPT
+//#define SAVE_EIGEN_SCRIPT
 
 #include "Utilities.h"
 
@@ -750,7 +750,11 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     }
     
     // Compute the initial conditions lambda(0), Nbar(0), N(0), and g(0)
-    initialConditions(T, P, p_cv);
+    if (!initialConditions(T, P, p_cv)) {
+        for (int i = 0; i < m_ns; ++i)
+            p_sv[i] = 0;
+        return std::make_pair(-1,-1);
+    }
 #ifdef SAVE_IC
     // Save the initial mole fractions
     std::ofstream of("ic_mf.dat", std::ios_base::app);
@@ -1348,7 +1352,7 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::initialConditions(
+bool MultiPhaseEquilSolver::initialConditions(
         const double T, const double P, const double* const p_c)
 {
     const double alpha = 1.0e-3;
@@ -1387,7 +1391,7 @@ void MultiPhaseEquilSolver::initialConditions(
         std::copy(m_solution.g(), m_solution.g()+m_ns, mp_g0);
 
         // Nothing left to do
-        return;
+        return true;
     }
 
     // Use the tableau as temporary storage
@@ -1398,10 +1402,10 @@ void MultiPhaseEquilSolver::initialConditions(
 
     // A composition change or order change triggers a complete reinitialization
     if (composition_change || order_change)
-        updateMaxMinSolution();
+        if (!updateMaxMinSolution()) return false;
 
     // Otherwise only update the MinG solution
-    updateMinGSolution(mp_g);
+    if (!updateMinGSolution(mp_g)) return false;
 
     // Form estimate of species moles from min-g and max-min vectors
     for (j = 0; j < nsr; ++j)
@@ -1430,6 +1434,8 @@ void MultiPhaseEquilSolver::initialConditions(
         }
         m_solution.removePhase(min_index);
     }
+
+    return true;
 }
 
 //==============================================================================
@@ -1477,7 +1483,7 @@ void MultiPhaseEquilSolver::initZeroResidualSolution(
 
 //==============================================================================
 
-void MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
+bool MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
 {
     // Use the current solution's ordering
     const int nsr = m_solution.nsr();
@@ -1517,7 +1523,7 @@ void MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
             cout << "--> no solution exists for the given problem" << endl;
         else
             cout << "--> solution is unbounded" << endl;
-        exit(1);
+        return false;
     }
     
     // Unravel the solution
@@ -1528,16 +1534,18 @@ void MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
             mp_ming[iposv[i]] = mp_tableau[(nsr+1)*(i+1)];
         else {
             cout << "Linearly dependent in min-g!" << endl;
-            exit(1);
+            return false;
         }
     }
     
+    return true;
+
 //    cout << "min-g solution:" << endl;
 //    for (int i = 0; i < nsr; ++i)
 //        cout << m_thermo.speciesName(p_sjr[i]) << " " << mp_ming[i] << endl;
 }
 
-void MultiPhaseEquilSolver::updateMaxMinSolution()
+bool MultiPhaseEquilSolver::updateMaxMinSolution()
 {    
     // Use the current solution's ordering
     const int nsr = m_solution.nsr();
@@ -1582,7 +1590,7 @@ void MultiPhaseEquilSolver::updateMaxMinSolution()
             cout << "--> no solution exists for the given problem" << endl;
         else
             cout << "--> solution is unbounded" << endl;
-        exit(1);
+        return false;
     }
     
     // Unravel the solution
@@ -1593,6 +1601,8 @@ void MultiPhaseEquilSolver::updateMaxMinSolution()
             mp_maxmin[iposv[i]] += mp_tableau[(nsr+2)*(i+1)];
     }
     
+    return true;
+
 //    cout << "max-min solution:" << endl;
 //    for (int i = 0; i < nsr; ++i)
 //        cout << m_thermo.speciesName(p_sjr[i]) << " " << mp_maxmin[i] << endl;
