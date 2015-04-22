@@ -202,16 +202,20 @@ private:
         m_s2 = name2;
         
         // Just some simple logic to make sure the names match in the database
-        // This will eventually be fased out by using an XML database
-        if (m_s1[m_s1.size()-1] == '+')
-            m_s1[m_s1.size()-1] = 'p';
-        else if (m_s1[m_s1.size()-1] == '-')
-            m_s1[m_s1.size()-1] = 'm';
-        
-        if (m_s2[m_s2.size()-1] == '+')
-            m_s2[m_s2.size()-1] = 'p';
-        else if (m_s2[m_s2.size()-1] == '-')
-            m_s2[m_s2.size()-1] = 'm';
+        // This will eventually be phased out by using an XML database
+        int i = m_s1.size();
+        while (m_s1[--i] == '+')
+            m_s1[i] = 'p';
+        i = m_s1.size();
+        while (m_s1[--i] == '-')
+            m_s1[i] = 'm';
+
+        i = m_s2.size();
+        while (m_s2[--i] == '+')
+            m_s2[i] = 'p';
+        i = m_s2.size();
+        while (m_s2[--i] == '-')
+            m_s2[i] = 'm';
         
         if (m_s1 < m_s2)
             m_collision = "." + m_s1 + "-" + m_s2 + ".";
