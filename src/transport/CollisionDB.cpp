@@ -550,7 +550,9 @@ void CollisionDB::updateCollisionData(
             // Heavy Neutral
             mp_Bst_table->lookup(lnTh, m_nne, m_nn, mp_work, LINEAR);
             // Copy
-            for (int i = 0; i < m_nn; ++i)
+            for (int i = 0; i < m_nne; ++i)
+                m_Bst(m_neutral_indices[i]) = std::min(mp_work[i], 6.25/3.0);
+            for (int i = m_nne; i < m_nn; ++i)
                 m_Bst(m_neutral_indices[i]) = mp_work[i];
 #else
             // Electron-Neutral

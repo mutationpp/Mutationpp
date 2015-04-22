@@ -224,7 +224,7 @@ public:
             exit(1);
         }
         return mp_diffusion_matrix->diffusionMatrix(
-            m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
     
     /**
@@ -254,11 +254,64 @@ public:
      */
     void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
         
-    /**
-     * Returns the electric conductivity.
-     */
+    /// Electric conductivity in S/m (no magnetic field).
     double sigma();
-    
+    /// Electric conductivity parallel to the magnetic field in S/m.
+    double sigmaParallel();
+    /// Electric conductivity perpendicular to the magnetic field in S/m.
+    double sigmaPerpendicular();
+    /// Electriic conductivity transverse to the magnetic field in S/m.
+    double sigmaTransverse();
+
+    /// Mean free path of the mixture in m.
+    double meanFreePath();
+    /// Mean free path of electrons in m.
+    double electronMeanFreePath();
+
+    /// Average heavy particle thermal speed of mixture in m/s.
+    double averageHeavyThermalSpeed();
+    /// Electron thermal speed of mixture in m/s.
+    double electronThermalSpeed();
+
+    /// Electron-heavy collision frequency in 1/s.
+    double electronHeavyCollisionFreq();
+    /// Average collision frequency of heavy particles in mixture in 1/s.
+    double averageHeavyCollisionFreq();
+
+    /// Coulomb mean collision time of the mixture in s.
+    double coulombMeanCollisionTime();
+    /// Hall parameter.
+    double hallParameter();
+
+    // Anisotropic Diffusion Coefficient
+    double parallelDiffusionCoefficient();
+    double perpDiffusionCoefficient();
+    double transverseDiffusionCoefficient();
+
+    // Anisotropic Thermal Diffusion Coefficient
+    double parallelThermalDiffusionCoefficient();
+    double perpThermalDiffusionCoefficient();
+    double transverseThermalDiffusionCoefficient();
+
+
+    //Anisotropic Electron Thermal Conductivity
+    double parallelElectronThermalConductivity();
+    double perpElectronThermalConductivity();
+    double transverseElectronThermalConductivity();
+
+    // Thermal diffusion ratios
+    std::vector<double> parallelThermalDiffusionRatio();
+    std::vector<double> perpThermalDiffusionRatio();
+    std::vector<double> transverseThermalDiffusionRatio();
+
+    // Return ratios of anisotropic properties
+    double ratioSigmaPerpPar();
+    double ratioSigmaTransPar();
+    double ratioLambdaPerpPar();
+    double ratioLambdaTransPar();
+    std::vector<double> ratiokTPerpPar();
+    std::vector<double> ratiokTTransPar();
+
 private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;

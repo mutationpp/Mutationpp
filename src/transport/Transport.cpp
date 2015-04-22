@@ -214,10 +214,16 @@ double Transport::electronThermalConductivity()
     lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
-    /*if (lam11 <= 0.0) {
+    if (lam11 <= 0.0) {
+        cout << "Negative electron thermal conductivity!" << endl;
+        cout << "electron mole fraction: " << X[0] << endl;
+        cout << "heavy temperature: " << Th << endl;
+        cout << "electron temperature: " << Te << endl;
+        cout << "Q22(0): " << Q22(0) << endl;
+        cout << "species, 6.25 - 3.0*B(i) > 0, Q11(i) > 0" << endl;
         for (int i = 1; i < ns; ++i)
-            cout << m_thermo.speciesName(i) << " " << 6.25 - 3.0*B(i) << " " << Q11(i)*X[i] << endl;
-    }*/
+            cout << m_thermo.speciesName(i) << ", " << 6.25 - 3.0*B(i) << ", " << Q11(i) << endl;
+    }
     assert(lam11 > 0.0);
     //assert(lam22 > 0.0);
 
@@ -226,11 +232,11 @@ double Transport::electronThermalConductivity()
     //assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
-    //return (X[0]*X[0]/lam11);
+    return (X[0]*X[0]/std::max(lam11, 1.0e-20));
     
     // 3rd order solution
-    double denom = (lam11*lam22 > lam12*lam12 ? lam11*lam22-lam12*lam12 : 1.0e-30);
-    return std::max(0.0, (X[0]*X[0]*lam22/denom));
+    //double denom = (lam11*lam22 > lam12*lam12 ? lam11*lam22-lam12*lam12 : 1.0e-30);
+    //return std::max(0.0, (X[0]*X[0]*lam22/denom));
 }
 
 //==============================================================================
@@ -886,6 +892,953 @@ double Transport::sigma()
     return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*(lam00-lam01*lam01/lam11)));
 }
 
+//==============================================================================
+
+double Transport::meanFreePath()
+{
+    // Thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+
+    // Get Q11 Collision integral
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+
+    // Loop to sum over electrons and all species
+    double sum = 0.0;
+
+    for (int i = 0; i < ns; ++i)
+        for (int j = 0; j < ns; ++j)
+            sum += X[i]*X[j]*Q11(i,j);
+
+    return 1.0/(nd*sum);
+}
+
+
+//==============================================================================
+
+double Transport::electronMeanFreePath()
+{
+    if (!m_thermo.hasElectrons())
+        return 0.0;
+
+    // Thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+
+    // Get Q11 Collision integral
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+
+    // Loop to sum over electrons and all species
+    double sum = 0.0;
+
+    for (int i = 0; i < ns; ++i)
+        sum = X[i]*X[0]*Q11(i);
+
+    return 1.0/(nd*sum);
+}
+
+//==============================================================================
+
+double Transport::averageHeavyThermalSpeed()
+{
+    const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
+    const double Th = m_thermo.T();
+    const double* const X = m_thermo.X();
+
+    // Loop to get average mass of heavy species
+    double ave_mw = 0.0;
+    for (int i = ns-nh; i < ns; ++i)
+        ave_mw += X[i] * m_thermo.speciesMw(i);
+
+    return sqrt(8.0*RU*Th/(PI*ave_mw));
+}
+
+//==============================================================================
+
+double Transport::electronThermalSpeed()
+{
+    // Thermo properties
+    const double Te = m_thermo.Te();
+    const double Me = m_thermo.speciesMw(0);
+    return sqrt(8*RU*Te/(PI*Me));
+}
+
+
+//==============================================================================
+double Transport::averageHeavyCollisionFreq()
+{
+    return meanFreePath()/averageHeavyThermalSpeed();
+
+}
+
+//==============================================================================
+
+double Transport::electronHeavyCollisionFreq()
+{
+    if (!m_thermo.hasElectrons())
+        return 0.0;
+    return electronThermalSpeed()/electronMeanFreePath();
+}
+
+//==============================================================================
+
+double Transport::coulombMeanCollisionTime()
+{
+    if (!m_thermo.hasElectrons())
+        return 0.0;
+
+    // Thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+
+    // Get Q11 Collision integral
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+
+    // Loop to sum over electrons and all species
+    double sum = 0.0;
+
+    for (int i = 0; i < ns; ++i) {
+        sum = X[i]*Q11(i);
+    }
+
+    return (3.0/16.0)*1.0/(nd*sum);
+}
+
+//==============================================================================
+
+double Transport::hallParameter()
+{
+    if (!m_thermo.hasElectrons())
+        return 0.0;
+
+    // Thermo
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double B = m_thermo.getBField();
+
+    return QE*B*coulombMeanCollisionTime()/me;
+}
+
+//==============================================================================
+
+double Transport::parallelDiffusionCoefficient()
+{
+    // Get thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double P = m_thermo.P();
+
+    // Get collision information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac1  = 0.0;
+    double fac2  = 0.0;
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam02 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    double lamB00;
+    double lamB11;
+    double lamB22;
+
+    for (int i = 1; i < ns; ++i) {
+        fac1 = X[i]*Q11(i);
+        lam00 += fac1;
+        lam01 += fac1*(2.5-3.0*Cei(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam02 = fac*lam02;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+
+    // First order
+    //return 1.0/lam00;
+
+    //Second order
+    //return 1/(lam00-lam01*lam01/lam11);
+
+    // Third order
+    return -(lam12*lam12-lam11*lam22)/(lam00*lam11*lam22-lam00*lam12*lam12-lam22*lam01*lam01+2.0*lam01*lam02*lam12-lam11*lam02*lam02);
+}
+
+//==============================================================================
+
+double Transport::perpDiffusionCoefficient()
+{
+    // Get thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double P = m_thermo.P();
+    const double B = m_thermo.getBField();
+
+    // Get collision information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac1  = 0.0;
+    double fac2 = 0.0;
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam02 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    double lamB00;
+    double lamB11;
+    double lamB22;
+
+    for (int i = 1; i < ns; ++i) {
+        fac1 = X[i]*Q11(i);
+        lam00 += fac1;
+        lam01 += fac1*(2.5-3.0*Cei(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam02 = fac*lam02;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+
+    // First order
+    //return lam00/(lam00*lam00+lamB00*lamB00);
+
+    // Second order
+   /* double denominator = (lam00*lam11-lamB00*lamB11-lam01*lam01)*(lam00*lam11-lamB00*lamB11-lam01*lam01) + (lamB00*lam11+lamB11*lam00)*(lamB00*lam11+lamB11*lam00);
+    double numerator = lam11*(lam00*lam11-lamB00*lamB11-lam01*lam01) + lamB11*(lamB00*lam11+lamB11*lam00);
+    return numerator/denominator;
+    */
+    // Third Order
+
+    double denominator = (lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02)*(lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02) + (lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02)*(lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02);
+    double numerator = -((lam12*lam12-lam11*lam22+lamB11*lamB22)*(lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02) - (lam11*lamB22+lam22*lamB11)*(lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02));
+    return numerator/denominator;
+
+}
+
+//==============================================================================
+
+double Transport::transverseDiffusionCoefficient()
+{
+    // Get thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double P = m_thermo.P();
+    const double B = m_thermo.getBField();
+
+    // Get collision information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac1  = 0.0;
+    double fac2 = 0.0;
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam02 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    double lamB00;
+    double lamB11;
+    double lamB22;
+
+    for (int i = 1; i < ns; ++i) {
+        fac1 = X[i]*Q11(i);
+        lam00 += fac1;
+        lam01 += fac1*(2.5-3.0*Cei(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam02 = fac*lam02;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+    // First order
+    //return -lamB00/(lam00*lam00+lamB00*lamB00);
+
+    // Second order
+   /* double denominator = (lam00*lam11-lamB00*lamB11-lam01*lam01)*(lam00*lam11-lamB00*lamB11-lam01*lam01) + (lamB00*lam11+lamB11*lam00)*(lamB00*lam11+lamB11*lam00);
+    double numerator = lamB11*(lam00*lam11-lamB00*lamB11-lam01*lam01) - lam11*(lamB00*lam11+lamB11*lam00);
+    return numerator/denominator;
+    */
+    // Third order
+
+    double denominator = (lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02)*(lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02) + (lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02)*(lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02);
+    double numerator = ((lam11*lamB22+lam22*lamB11)*(lam00*lam11*lam22-lam22*lamB00*lamB11-lamB22*(lam00*lamB11+lam11*lamB00)-lam00*lam12*lam12-lam01*lam01*lam22+2.0*lam01*lam02*lam12-lam11*lam02*lam02) + (lam12*lam12-lam11*lam22+lamB11*lamB22)*(lam22*(lam00*lamB11+lam11*lamB00)+lamB22*(lam00*lam11-lamB00*lamB11)-lamB00*lam12*lam12-lamB22*lam01*lam01-lamB11*lam02*lam02));
+    return numerator/denominator;
+
+}
+//==============================================================================
+
+double Transport::parallelThermalDiffusionCoefficient()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    // Get thermodynamic properties
+    const int ns     = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double me  = m_thermo.speciesMw(0)/NA;
+    const double *const X = m_thermo.X();
+
+    // Get collision integral information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac2 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    for (int i = 1; i < ns; ++i) {
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    // Second order
+    return (lam22/(lam11*lam22-lam12*lam12));
+}
+
+//==============================================================================
+
+double Transport::perpThermalDiffusionCoefficient()
+{
+
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    // Get thermodynamic properties
+    const int ns     = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double me  = m_thermo.speciesMw(0)/NA;
+    const double *const X = m_thermo.X();
+    const double P   = m_thermo.P();
+    const double B = m_thermo.getBField();
+
+    // Get collision integral information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac2 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    double lamB00;
+    double lamB11;
+    double lamB22;
+
+    for (int i = 1; i < ns; ++i) {
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+
+    // Second Order
+    double numerator = lam22*(lam11*lam22-lamB11*lamB22-lam12*lam12) + lamB22*(lam11*lamB22+lam22*lamB11);
+    double denominator = (lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11);
+
+    return numerator/denominator;
+}
+
+//==============================================================================
+
+double Transport::transverseThermalDiffusionCoefficient()
+{
+
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    // Get thermodynamic properties
+    const int ns     = m_thermo.nSpecies();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+    const double nd  = m_thermo.numberDensity();
+    const double me  = m_thermo.speciesMw(0)/NA;
+    const double *const X = m_thermo.X();
+    const double P   = m_thermo.P();
+    const double B = m_thermo.getBField();
+
+    // Get collision integral information
+    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute the lambdas
+    double fac;
+    double fac2 = 0.0;
+    double lam11 = 0.0;
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+
+    double lamB00;
+    double lamB11;
+    double lamB22;
+
+    for (int i = 1; i < ns; ++i) {
+        lam11 += X[i]*Q11(i)*(25.0/4.0-3.0*Bstar(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+
+    // Second Order
+    double numerator = lamB22*(lam11*lam22-lamB11*lamB22-lam12*lam12) - lam22*(lam11*lamB22+lam22*lamB11);
+    double denominator = (lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11);
+
+    return numerator/denominator;
+}
+//==============================================================================
+
+double Transport::sigmaParallel()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double* const X = m_thermo.X();
+    const double nd = m_thermo.numberDensity();
+    const double P = m_thermo.P();
+
+
+    return 4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te)*(nd*KB*Te/P)* parallelDiffusionCoefficient();
+
+}
+//==============================================================================
+
+double Transport::sigmaPerpendicular()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double* const X = m_thermo.X();
+    const double nd = m_thermo.numberDensity();
+    const double P = m_thermo.P();
+
+    return 4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te)*(nd*KB*Te/P)* perpDiffusionCoefficient();
+
+}
+
+//==============================================================================
+
+double Transport::sigmaTransverse()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double* const X = m_thermo.X();
+    const double nd = m_thermo.numberDensity();
+    const double P = m_thermo.P();
+
+    return -4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te)*(nd*KB*Te/P)* transverseDiffusionCoefficient();
+
+}
+
+//==============================================================================
+
+double Transport::parallelElectronThermalConductivity()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+
+    const double* const X = m_thermo.X();
+    const double nd  = m_thermo.numberDensity();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+
+
+    double Kt_parallel = parallelThermalDiffusionCoefficient();
+    return (X[0]*X[0])*Kt_parallel;
+
+}
+
+//==============================================================================
+
+double Transport::perpElectronThermalConductivity()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+
+    const double* const X = m_thermo.X();
+    const double nd  = m_thermo.numberDensity();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+
+
+    return (X[0]*X[0])*perpThermalDiffusionCoefficient();
+
+}
+
+//==============================================================================
+
+double Transport::transverseElectronThermalConductivity()
+{
+    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
+
+
+    const double* const X = m_thermo.X();
+    const double nd  = m_thermo.numberDensity();
+    const double Th  = m_thermo.T();
+    const double Te  = m_thermo.Te();
+
+
+    return -(X[0]*X[0])*transverseThermalDiffusionCoefficient();
+
+}
+
+//==============================================================================
+
+double Transport::ratioSigmaPerpPar()
+{
+    return sigmaPerpendicular()/sigmaParallel();
+}
+//==============================================================================
+
+double Transport::ratioSigmaTransPar()
+{
+    return sigmaTransverse()/sigmaParallel();
+}
+//==============================================================================
+
+double Transport::ratioLambdaPerpPar()
+{
+    return perpElectronThermalConductivity()/parallelElectronThermalConductivity();
+}
+//==============================================================================
+
+double Transport::ratioLambdaTransPar()
+{
+    return transverseElectronThermalConductivity()/parallelElectronThermalConductivity();
+}
+//==============================================================================
+
+std::vector<double> Transport::parallelThermalDiffusionRatio()
+{
+    double* species_values = new double [m_thermo.nSpecies()];
+
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute lambdas
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam11 = 0.0;
+    double lam02 = 0.0;
+    std::vector<double> lam01ei(ns);
+    std::vector<double> lam02ei(ns);
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+    double fac   = 0.0;
+
+
+    for (int i = 1; i < ns; ++i) {
+        fac = X[i]*Q11(i);
+        lam00 += fac;
+        lam01 += fac*(2.5-3.0*Cei(i));
+        lam11 += fac*(25.0/4.0-3.0*Bstar(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+    for (int i = 0; i < ns; ++i) {
+    lam01ei[i] = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(2.5*Q11(i)-3.0*Q12ei(i));
+    lam02ei[i] =64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(35.0/8.0*Q11(i) - 21.0/2.0*Q12ei(i) + 6.0*Q13ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam02 = fac*lam02;
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    std::vector<double> kTi(ns);
+    // Second Order
+   /* kTi[0] = 2.5*Te/Th*X[0]*lam01/lam11;
+    for (int i = 1; i < ns; ++i){
+        kTi[i] = -2.5*Te/Th*X[0]*lam01ei[i]/lam11;
+    }
+    */
+
+    // Third Order
+    kTi[0] = 2.5*Te/Th*X[0]*(lam01*lam22 - lam02*lam12)/(lam11*lam22 - lam12*lam12);
+    for (int i = 1; i < ns; ++i){
+        kTi[i] = -2.5*Te/Th*X[0]*(lam01ei[i]*lam22 - lam02ei[i]*lam12)/(lam11*lam22 - lam12*lam12);
+    }
+    return kTi;
+
+}
+//==============================================================================
+std::vector<double> Transport::perpThermalDiffusionRatio()
+{
+    // Get thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double B = m_thermo.getBField();
+
+    // Get collision integrals
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute lambdas
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam11 = 0.0;
+    double lam02 = 0.0;
+    std::vector<double> lam01ei(ns);
+    std::vector<double> lam02ei(ns);
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+    double fac   = 0.0;
+    double fac2 = 0.0;
+
+    double lamB00 = 0.0;
+    double lamB11 = 0.0;
+    double lamB22 = 0.0;
+
+    for (int i = 1; i < ns; ++i) {
+        fac = X[i]*Q11(i);
+        lam00 += fac;
+        lam01 += fac*(2.5-3.0*Cei(i));
+        lam11 += fac*(25.0/4.0-3.0*Bstar(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+
+    for (int i = 0; i < ns; ++i) {
+        lam01ei[i] = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(2.5*Q11(i)-3.0*Q12ei(i));
+        lam02ei[i] = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(35.0/8.0*Q11(i) - 21.0/2.0*Q12ei(i) + 6.0*Q13ei(i));
+    }
+
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam02 = fac*lam02;
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+
+    std::vector<double> kTi(ns);
+
+    // Third Order
+
+    kTi[0] = 2.5*Te/Th*X[0]*(lam01*(lam22*(lam11*lam22-lamB11*lamB22-lam12*lam12) + lamB22*(lam11*lamB22+lam22*lamB11)) - lam02*lam12*(lam11*lam22-lamB11*lamB22-lam12*lam12)) / ((lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11));
+
+    for (int i = 1; i < ns; ++i){
+        kTi[i] = -2.5*Te/Th*X[0]*(lam01ei[i]*(lam22*(lam11*lam22-lamB11*lamB22-lam12*lam12) + lamB22*(lam11*lamB22+lam22*lamB11)) - lam02ei[i]*lam12*(lam11*lam22-lamB11*lamB22-lam12*lam12)) / ((lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11));
+    }
+    return kTi;
+
+}
+//==============================================================================
+
+std::vector<double> Transport::transverseThermalDiffusionRatio()
+{
+    // Get thermo properties
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const double B = m_thermo.getBField();
+
+    // Get collision integrals
+    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+
+    // Compute lambdas
+    double lam00 = 0.0;
+    double lam01 = 0.0;
+    double lam11 = 0.0;
+    double lam02 = 0.0;
+    std::vector<double> lam01ei(ns);
+    std::vector<double> lam02ei(ns);
+    double lam12 = 0.0;
+    double lam22 = 0.0;
+    double fac   = 0.0;
+    double fac2 = 0.0;
+
+    double lamB00 = 0.0;
+    double lamB11 = 0.0;
+    double lamB22 = 0.0;
+
+    for (int i = 1; i < ns; ++i) {
+        fac = X[i]*Q11(i);
+        lam00 += fac;
+        lam01 += fac*(2.5-3.0*Cei(i));
+        lam11 += fac*(25.0/4.0-3.0*Bstar(i));
+        lam02 += X[i]*(35.0/8.0*Q11(i)-21.0/2.0*Q12ei(i)+6*Q13ei(i));
+        lam12 += X[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
+                       Q14ei(i));
+        lam22 += X[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
+                       210.0*Q14ei(i)+90.0*Q15ei(i));
+    }
+
+    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    fac2 = 25.0/4.0*nd*KB*(Th/(X[0]*Te)+(1.0-Th/Te));
+
+    for (int i = 0; i < ns; ++i) {
+        lam01ei[i] = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(2.5*Q11(i)-3.0*Q12ei(i));
+        lam02ei[i] = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0]*X[i]*(35.0/8.0*Q11(i) - 21.0/2.0*Q12ei(i) + 6.0*Q13ei(i));
+    }
+
+    lam00 = fac*lam00;
+    lam01 = fac*lam01;
+    lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
+    lam02 = fac*lam02;
+    lam12 = fac*(lam12 + SQRT2*X[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
+    lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
+
+    lamB00 = QE*B/(KB*Te*fac2);
+    lamB11 = 2.5*lamB00;
+    lamB22 = 1.75*lamB11;
+
+    std::vector<double> kTi(ns);
+
+    // Third Order
+
+    kTi[0] = -2.5*Te/Th*X[0]*(lam01*(lamB22*(lam11*lam22-lamB11*lamB22-lam12*lam12) - lam22*(lam11*lamB22+lam22*lamB11)) + lam02*lam12*(lam11*lamB22+lam22*lamB11)) / ((lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11));
+
+    for (int i = 1; i < ns; ++i){
+        kTi[i] = 2.5*Te/Th*X[0]*(lam01ei[i]*(lamB22*(lam11*lam22-lamB11*lamB22-lam12*lam12) - lam22*(lam11*lamB22+lam22*lamB11)) + lam02ei[i]*lam12*(lam11*lamB22+lam22*lamB11)) / ((lam11*lam22-lamB11*lamB22-lam12*lam12)*(lam11*lam22-lamB11*lamB22-lam12*lam12) + (lam11*lamB22+lam22*lamB11)*(lam11*lamB22+lam22*lamB11));
+    }
+    return kTi;
+
+}
+//==============================================================================
+std::vector<double> Transport::ratiokTPerpPar()
+{
+    const int ns = m_thermo.nSpecies();
+
+    std::vector<double> ratio(ns);
+    for (int i = 0; i < ns; ++i){
+        ratio[i] = perpThermalDiffusionRatio()[i]/parallelThermalDiffusionRatio()[i];
+    }
+    return ratio;
+}
+//==============================================================================
+std::vector<double> Transport::ratiokTTransPar()
+{
+    const int ns = m_thermo.nSpecies();
+
+    std::vector<double> ratio(ns);
+    for (int i = 0; i < ns; ++i){
+        ratio[i] = transverseThermalDiffusionRatio()[i]/parallelThermalDiffusionRatio()[i];
+    }
+    return ratio;
+}
 //==============================================================================
 
     } // namespace Transport

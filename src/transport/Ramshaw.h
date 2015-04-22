@@ -54,13 +54,13 @@ public:
      * would be faster to compute and use.
      */
     const Mutation::Numerics::RealMatrix& diffusionMatrix(
-        const double T, const double nd, const double *const p_x)
+        const double T, const double Te, const double nd, const double *const p_x)
     {
         const int ns = m_thermo.nSpecies();
     
         // First step is to compute nDij and Y
         const Mutation::Numerics::RealSymMat& nDij = 
-            m_collisions.nDij(T, T, nd, p_x);
+            m_collisions.nDij(T, Te, nd, p_x);
         double* Y = new double [ns];
         m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(p_x, Y);
         
