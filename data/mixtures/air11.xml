@@ -5,7 +5,7 @@
     </species>
     
     <element_compositions default="air">
-        <composition name="air"> e-:0.0, N:0.79, O: 0.21 </composition>
+        <composition name="air"> N:0.79, O: 0.21 </composition>
     </element_compositions>
     
 </mixture>

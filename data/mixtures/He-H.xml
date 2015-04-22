@@ -1,0 +1,12 @@
+<mixture thermo_db="RRHO">
+    
+    <element_compositions default="sun">
+        <composition name="sun"> e-:0.0, H:0.9418, He:0.0582 </composition>
+    </element_compositions>
+    
+    <species>
+        e- He He+ H H2 H+ He++ H2+
+    </species>
+    
+</mixture>
+

@@ -1,13 +1,11 @@
 <mixture mechanism="none" thermo_db="RRHO">
-
-    <default_element_fractions>
-        C  : 1
-        O  : 2
-        e- : 0
-    </default_element_fractions>
     
     <species>
         e- C O CO CO2 O2 C+ O+
     </species>
+    
+    <element_compositions default="default">
+        <composition name="default"> C:1.0, O:2.0 </composition>
+    </element_compositions>
     
 </mixture>

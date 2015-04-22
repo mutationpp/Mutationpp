@@ -1,0 +1,11 @@
+<mixture thermo_db="RRHO">
+    
+    <element_compositions default="default">
+        <composition name="default"> e-:0.0, He:1.0 </composition>
+    </element_compositions>
+    
+    <species>
+        e- He He+ He++
+    </species>
+    
+</mixture>
