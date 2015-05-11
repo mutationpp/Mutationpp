@@ -594,7 +594,10 @@ public:
      * Constructs an m by n matrix with all elements equal to init.
      */
     SymmetricMatrix(const size_t n, const T& init = T())
-        : m_cols(n), m_data((n*n - n) / 2 + n, init) { }
+        : m_cols(n), m_data((n*n - n) / 2 + n, init)
+    {
+        updateDiagonalIndices();
+    }
     
     /**
      * Copy constructor.
@@ -637,8 +640,9 @@ public:
     T& operator()(const size_t i, const size_t j) {
         ASSERT_IN_RANGE(0, i, m_cols);
         ASSERT_IN_RANGE(0, j, m_cols);
-        return m_data[( i <= j ? i*m_cols - (i*i+i)/2 + j :
-                                 j*m_cols - (j*j+j)/2 + i )];
+        //return m_data[( i <= j ? i*m_cols - (i*i+i)/2 + j :
+        //                         j*m_cols - (j*j+j)/2 + i )];
+        return m_data[i <= j ? m_ii[i]+(j-i) : m_ii[j]+(i-j)];
     }
 
     /**
@@ -648,8 +652,9 @@ public:
     T operator()(const size_t i, const size_t j) const {
         ASSERT_IN_RANGE(0, i, m_cols);
         ASSERT_IN_RANGE(0, j, m_cols);
-        return m_data[( i <= j ? i*m_cols - (i*i+i)/2 + j :
-                                 j*m_cols - (j*j+j)/2 + i )];
+        //return m_data[( i <= j ? i*m_cols - (i*i+i)/2 + j :
+        //                         j*m_cols - (j*j+j)/2 + i )];
+        return m_data[i <= j ? m_ii[i]+(j-i) : m_ii[j]+(i-j)];
     }
     
     /**
@@ -702,12 +707,19 @@ public:
         const E& m = mat;
         m_cols = m.cols();
         m_data.resize((m_cols*m_cols - m_cols)/2 + m_cols);
-        for (size_t i = 0; i < rows(); ++i)
-            for (size_t j = i; j < cols(); ++j)
-                (*this)(i,j) = static_cast<T>(m(i,j));
+        for (int i = 0; i < m_data.size(); ++i)
+            m_data[i] = m(i);
+        updateDiagonalIndices();
         return *this;
     }
     
+    SymmetricMatrix<T>& operator=(const SymmetricMatrix<T>& mat) {
+        m_cols = mat.cols();
+        m_data = mat.m_data;
+        m_ii   = mat.m_ii;
+        return *this;
+    }
+
     #define MAT_EQ_SCALAR(__op__,__assertion__)\
     SymmetricMatrix<T>& operator __op__ (const T& scalar) {\
         assert( __assertion__ );\
@@ -775,8 +787,16 @@ private:
     typedef Mutation::Utilities::ReferenceServer<
         MatrixSlice<T, Matrix<T> >, 5> SliceServer;
 
+    // Store indices to diagonal elements
+    void updateDiagonalIndices() {
+        m_ii.resize(m_cols);
+        for (int i = 0; i < m_cols; ++i)
+            m_ii[i] = i*(m_cols+1) - (i*i+i)/2;
+    }
+
     size_t m_cols;
     std::vector<T> m_data;
+    std::vector<size_t> m_ii;
     
 }; // class SymmetricMatrix
 

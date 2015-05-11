@@ -95,7 +95,6 @@ template <typename T>
 template <typename E>
 bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
 {
-    
     m_L = mat;
     const size_t n = m_L.rows();
     m_work.resize(n);
@@ -104,21 +103,22 @@ bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
         for (int j = 0; j < i; ++j)
             m_work(j) = m_L(j,j) * m_L(i,j);
         
+        double& Lii = m_L(i,i);
         for (int j = 0; j < i; ++j)
-            m_L(i,i) -= m_work(j) * m_L(i,j);
+            Lii -= m_work(j) * m_L(i,j);
         
-        if (m_L(i,i) == static_cast<T>(0)) {
+        if (Lii == static_cast<T>(0)) {
             //std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
             //exit(1);
         	return false;
         }
         
-        for (int j = 0; j < i; ++j)
-            for (int k = i+1; k < n; ++k)
-                m_L(k,i) -= m_L(k,j) * m_work(j);
-        
-        for (int k = i+1; k < n; ++k)
-            m_L(k,i) /= m_L(i,i);
+        for (int k = i+1; k < n; ++k) {
+            double& Lki = m_L(k,i);
+            for (int j = 0; j < i; ++j)
+                Lki -= m_L(k,j) * m_work(j);
+            Lki /= Lii;
+        }
     }
 
     return true;
