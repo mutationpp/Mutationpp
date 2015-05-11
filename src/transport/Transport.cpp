@@ -939,7 +939,7 @@ double Transport::electronMeanFreePath()
     double sum = 0.0;
 
     for (int i = 0; i < ns; ++i)
-        sum = X[i]*X[0]*Q11(i);
+        sum += X[i]*X[0]*Q11(i);
 
     return 1.0/(nd*sum);
 }
