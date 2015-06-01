@@ -377,7 +377,7 @@ void CollisionDB::updateCollisionData(
     const CollisionData data)
 {
     // Return if we already computed this stuff for the same temperature
-    const double change = std::sqrt(RealConsts::eps);
+    const double change = 0.001*std::sqrt(RealConsts::eps);
     const double ne = (m_ns > m_nh ? nd * std::max(p_x[0], 1.0e-99) : 0.0);
 
     if (std::abs(Th - mp_last_Th[data]) < change &&

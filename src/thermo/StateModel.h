@@ -359,7 +359,7 @@ protected:
 
             // Update T
             dT = f/fp;
-            if (T == 50.0 && dT > 0) {
+            if (std::abs(T - 50.0) < 1.0e-10 && dT > 0) {
                 cerr << "Clamping T at 50 K, energy is too low for the "
                      << "given species densities..." << endl;
                 return false;
