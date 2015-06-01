@@ -70,19 +70,20 @@ public:
      * can be the following:
      *   0: conserved variables (mixture density, static energy density)
      *   1: primitive set 1 (pressure, temperature)
+     *   2: primitive set 2 (elemental mole fractions,  {P, T} array)
      */
     virtual void setState(
         const double* const p_mass, const double* const p_energy,
         const int vars = 0)
     {
-        assert(p_mass[0] > 0.0);
-        assert(p_energy[0] > 0.0);
-
         // Determine temperature, pressure, and mole fractions depending on
         // variable set
         switch (vars) {
             // Given density and energy density (conserved variables)
             case 0: {
+                assert(p_mass[0]   > 0.0);
+                assert(p_energy[0] > 0.0);
+
                 const int ns = m_thermo.nSpecies();
                 const int max_iters = 50;
                 const double tol = 1.0e-12;
@@ -159,11 +160,24 @@ public:
             }
             break;
 
-            // Given pressure and temperature
+            // Given pressure and temperature (using default elemental fractions)
             case 1:
+                assert(p_mass[0]   > 0.0);
+                assert(p_energy[0] > 0.0);
+
                 m_T = p_energy[0];
                 m_P = p_mass[0];
                 m_thermo.equilibriumComposition(m_T, m_P, mp_X);
+                break;
+
+            // Given elemental mole fractions and temperature and pressure
+            case 2:
+                assert(p_energy[0] > 0.0);
+                assert(p_energy[1] > 0.0);
+
+                m_T = p_energy[1];
+                m_P = p_energy[0];
+                m_thermo.equilibriumComposition(m_T, m_P, p_mass, mp_X);
                 break;
 
             // Unknown variable set

@@ -274,8 +274,8 @@ public:
 
     private:
         const Thermodynamics& thermo;
-	double* p_cvt;
-	double* p_cvr;
+        double* p_cvt;
+        double* p_cvr;
     }; // class Cp
     
     class Cvv {
