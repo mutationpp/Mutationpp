@@ -161,6 +161,11 @@ void NAME_MANGLE(convert_x_to_y)(
 void NAME_MANGLE(convert_xe_to_ye)(
     const double* element_x, double* element_y);
 
+void NAME_MANGLE(convert_ye_to_xe)(
+    const double* element_y, double* element_x);
+
+
+
 /**
  * Converts the species densities to species mole fractions.
  *
@@ -390,9 +395,15 @@ double NAME_MANGLE(sigma)();
  * Solves the surface mass balance at an ablating surface.
  */
 void NAME_MANGLE(surface_mass_balance)
-    (const double *const p_Yke, const double *const p_Ykg, const double* const T,
+    (const double *const p_Ykc, const double *const p_Yke, const double *const p_Ykg, const double* const T,
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs);
+
+/**
+ * Solves the surface mass balance at an ablating surface.
+ */
+void NAME_MANGLE(surface_mass_balance_stag_line)
+    (F_STRING mixture_name, double*  T, double*  P, double* p_Xg, double& ykf, F_STRLEN mixture_name_length);
 
 /**
  * Returns the pointer to the energy transfer between the internal energy modes 
@@ -400,6 +411,11 @@ void NAME_MANGLE(surface_mass_balance)
 
 void NAME_MANGLE(source_energy_transfer)
     (double* const p_source_transfer);
+
+void NAME_MANGLE(convert_ys_to_ye)(
+    const double* species_y, double* elements_y);
+
+void NAME_MANGLE(number_of_elements)(int& element);
     
 /**
  * @}

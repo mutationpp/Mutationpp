@@ -40,11 +40,21 @@ add_executable(bprime bprime.cpp)
 target_link_libraries(bprime mutation++)
 install(TARGETS bprime DESTINATION bin)
 
+add_executable(BSolver2 BSolver2.cpp)
+target_link_libraries(BSolver2 mutation++)
+install(TARGETS BSolver2 DESTINATION bin)
+
+
+add_executable(BSolver2_Milos BSolver2_Milos.cpp)
+target_link_libraries(BSolver2_Milos mutation++)
+install(TARGETS BSolver2_Milos DESTINATION bin)
+
+
 # Install the header files
 install(FILES mutation++.h DESTINATION include/mutation++)
 install(FILES Mixture.h DESTINATION include/mutation++)
 install(FILES MixtureOptions.h DESTINATION include/mutation++)
 install(FILES Constants.h DESTINATION include/mutation++)
-
+install(FILES Newtow_Solver_Bruno.h DESTINATION include/mutation++)
 
 

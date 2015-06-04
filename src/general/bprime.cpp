@@ -26,6 +26,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+
+
 #include "mutation++.h"
 #include <iostream>
 
@@ -61,19 +63,33 @@ int main(int argc, char* argv[])
     feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 #endif
 
-    if (argc != 9) {
-        cout << "Usage: bprime T1 T2 dT P bg mixture BL_comp Pyro_comp" << endl;
+
+    if (argc != 10) {
+        cout << "Usage: bprime T1 T2 dT P bg mixture BLedge Pyro Char" << endl;
         exit(1);
     }
 
+
+   /* string mixture_name = argv[6];
+    string wall_name = "_wall";
+    string total_mixture_name = mixture_name+wall_name;
+            cout<<total_mixture_name<<endl;*/
+
     Mixture mix(argv[6]);
-    
+
+
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
     
+    double* p_Ykc = new double [ne];
     double* p_Yke = new double [ne];
     double* p_Ykg = new double [ne];
     double* p_Xw  = new double [ns];
+    double* p_Xkw  = new double [ne];
+
+
+
+
     
     // Run conditions
     double T1 = atof(argv[1]);
@@ -82,26 +98,61 @@ int main(int argc, char* argv[])
     double P  = atof(argv[4])*ONEATM;
     double Bg = atof(argv[5]);
     double Bc, hw;
+
     
     mix.getComposition(argv[7], p_Yke, Composition::MASS);
-    mix.getComposition(argv[8], p_Ykg, Composition::MASS);
-    
-    cout << setw(10) << "\"Tw[K]\""
+    mix.getComposition(argv[8] , p_Ykg, Composition::MASS);
+    mix.getComposition(argv[9] , p_Ykc, Composition::MASS);
+
+
+
+ #ifdef Debug
+
+    for(int i=0; i<ne; ++i){
+        cout<<"p_Yke("<<mix.elementName(i)<<"): " <<p_Yke[i]<<endl;
+        }
+    for(int i=0; i<ne; ++i){
+        cout<<"p_Ykg("<<mix.elementName(i)<<"): " <<p_Ykg[i]<<endl;
+        }
+    for(int i=0; i<ne; ++i){
+        cout<<"p_Ykc("<<mix.elementName(i)<<"): " <<p_Ykc[i]<<endl;
+        }
+    cout<<"Bg: "<<Bg<<endl;
+
+ #endif
+   cout << setw(10) << "Variables =" <<setw(10) << "\"Tw[K]\""
          << setw(15) << "\"B'c\""
          << setw(15) << "\"hw[MJ/kg]\"";
-    for (int i = 0; i < ns; ++i)
-        cout << setw(15) << "\"" << mix.speciesName(i) << "\"";
+    for (int i = 0; i < ns; ++i){
+        cout << setw(15) << "\"" << mix.speciesName(i) << "\"";}
+    for (int i = 0; i < ne; ++i){
+        cout << setw(15) << "\"element_" << mix.elementName(i) << "\"";}
     cout << endl;
-    
+
+   /* cout<< "Variables =" <<setw(10)<<"\"Tw[K]\"" <<setw(15);
+    for (int i = 0; i<ne;++i){
+    cout<<"\""<<mix.elementName(i)<<"\""<<setw(15);
+    }cout<<endl;*/
+
+
+
     for (double T = T1; T < T2 + 1.0e-6; T += dt) {
-        mix.surfaceMassBalance(p_Yke, p_Ykg, T, P, Bg, Bc, hw, p_Xw);
+        for (int i = 0; i<ne; ++i){
+            p_Xkw[i] = 0;
+        }
+        mix.surfaceMassBalance(p_Ykc, p_Yke, p_Ykg, T, P, Bg, Bc, hw, p_Xkw, p_Xw);
+
         cout << setw(10) << T << setw(15) << Bc << setw(15) << hw / 1.0e6;
-        for (int i = 0; i < ns; ++i)
-            cout << setw(15) << p_Xw[i];
+        for (int i = 0; i < ns; ++i){
+            cout << setw(15) << p_Xw[i];}
+        for (int i = 0; i < ne; ++i){
+            cout << setw(15) << p_Xkw[i];}
+
         cout << endl;
     }
-    
+    delete [] p_Xkw;
     delete [] p_Yke;
     delete [] p_Ykg;
     delete [] p_Xw;
+    delete [] p_Ykc;
 }
