@@ -65,8 +65,7 @@ public:
           m_thermo_db(options.m_thermo_db),
           m_mechanism(options.m_mechanism),
           m_viscosity(options.m_viscosity),
-          m_thermal_conductivity(options.m_thermal_conductivity),
-          m_constraint(options.m_constraint)
+          m_thermal_conductivity(options.m_thermal_conductivity)
     { }
     
     /**
@@ -182,13 +181,6 @@ public:
         m_mechanism = mechanism;
     }
     
-    /**
-     * Get option to impose the constraint.
-     */
-    bool constraint() const {
-        return m_constraint;
-    }
-
     /**
      * Get option to load the transport data.
      */
@@ -355,7 +347,6 @@ private:
     //bool m_has_default_composition;
 
     bool m_load_transport;
-    bool m_constraint;
 
 	std::string m_source;
     std::string m_state_model;

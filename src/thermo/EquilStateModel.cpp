@@ -55,7 +55,7 @@ public:
         // Initial solution
         double T = 300.0;
         double P = ONEATM;
-        //setState(&P, &T, 1);
+        setState(&P, &T, 1);
     }
 
     virtual ~EquilStateModel()
