@@ -740,7 +740,7 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     DEBUG("equilibrate(" << T << " K, " << P << " Pa,")
     for (int i = 0; i < m_nc; ++i)
 		DEBUG(m_thermo.elementName(i) << " " << p_cv[i] << (i == m_ne-1 ? ")" : ","))
-	DEBUG(endl)
+    DEBUG(endl)
 	//exit(1);
     
     // Special case for 1 species

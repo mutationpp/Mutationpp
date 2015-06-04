@@ -163,8 +163,14 @@ void NAME_MANGLE(convert_xe_to_ye)(
 {
     p_mix->convert<XE_TO_YE>(element_x, element_y);
 }
-
 //==============================================================================
+void NAME_MANGLE(convert_ye_to_xe)(
+    const double* const element_y, double* const element_x)
+{
+    p_mix->convert<YE_TO_XE>(element_y, element_x);
+}
+//==============================================================================
+
 void NAME_MANGLE(convert_rho_to_x)(
     const double* species_rho, double* species_x)
 {
@@ -382,11 +388,11 @@ double NAME_MANGLE(sigma)()
 
 //==============================================================================
 void NAME_MANGLE(surface_mass_balance)
-    (const double *const p_Yke, const double *const p_Ykg, const double* const T,
+    (const double *const p_Ykc, const double *const p_Yke, const double *const p_Ykg, const double* const T,
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs)
 {
-    p_mix->surfaceMassBalance(p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
+    p_mix->surfaceMassBalance(p_Ykc, p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
 }
 
 //==============================================================================
@@ -395,7 +401,87 @@ void NAME_MANGLE(source_energy_transfer)
 {
      p_mix->energyTransferSource(p_source_transfer);
 }
-     
+//==============================================================================
+void NAME_MANGLE(surface_mass_balance_stag_line)
+    (F_STRING mixture_name, double*  T, double*  P, double * p_Xg, double& ykf,F_STRLEN mixture_name_length)
+{
+   // string mixture_name = "Sio2";
+   // string mixture_name = "Iron_meteor5";
+    string name_name =char_to_string(mixture_name, mixture_name_length);
+    string wall_name = "_wall";
+    string total_mixture_name = name_name+wall_name;
+
+
+    Mutation::Mixture mix_stagline (total_mixture_name);
+
+
+    const int ne = mix_stagline.nElements();
+    const int ns = mix_stagline.nSpecies();
+    const int ng = mix_stagline.nGas();
+    const int nc = mix_stagline.nCondensed();
+
+    double* p_Ykc = new double [ne];
+    double* p_Yke = new double [ne];
+    double* p_Ykg = new double [ne];
+    double* p_Xs = new double [ns];
+    double* p_Ycond = new double [nc];
+
+
+    mix_stagline.getComposition("BLedge", p_Yke, Composition::MASS);
+    mix_stagline.getComposition("Gas", p_Ykg, Composition::MASS);
+    mix_stagline.getComposition("Char" , p_Ykc, Composition::MASS);
+
+
+    mix_stagline.surfaceMassBalance_CFD(p_Ykc, p_Yke, p_Ykg, *T, *P, p_Xs);
+
+    for(int i = 0; i<ng;++i){
+        p_Xg[i] = p_Xs[i];
+    }
+
+   /* for(int i = 0; i<ng;++i){
+        cout<<"p_Xg("<<mix_stagline.speciesName(i)<<") :"<<p_Xg[i]<<endl;
+    }*/
+
+     mix_stagline.convert<X_TO_Y> (p_Xs,p_Xs);
+
+     int spe =0;
+     int ele =0;
+
+     if (name_name == "Sio2"){
+      spe = mix_stagline.speciesIndex("SiO2(L)");
+      ele = mix_stagline.elementIndex("Si"); }
+
+     else if(name_name == "Iron_meteor"){
+          spe = mix_stagline.speciesIndex("Fe(L)");
+          ele = mix_stagline.elementIndex("Fe");}
+
+
+    ykf = (mix_stagline.elementMatrix()(spe,ele)*mix_stagline.atomicMass(ele)*p_Xs[spe])/ mix_stagline.speciesMw(spe);
+
+
+    //ykf = 0.;p_Xs[spe
+
+    delete [] p_Ycond;
+    delete [] p_Yke;
+    delete [] p_Ykg;
+    delete [] p_Ykc;
+    delete [] p_Xs;
+}
+//==============================================================================
+void NAME_MANGLE(convert_ys_to_ye)(
+    const double* species_y, double* elements_y)
+{
+
+    p_mix->convert<Y_TO_YE>(species_y, elements_y);
+}
+
+//==============================================================================
+void NAME_MANGLE(number_of_elements)(int& element)
+{
+    element = p_mix->nElements();
+}
+
+//==============================================================================
      
      
 

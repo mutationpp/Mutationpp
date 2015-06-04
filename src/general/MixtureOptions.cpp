@@ -86,6 +86,7 @@ void MixtureOptions::setDefaultOptions()
     m_mechanism   = "none";
     m_viscosity   = "LDLT";
     m_thermal_conductivity = "LDLT";
+    m_constraint = false;
 }
 
 void MixtureOptions::loadFromFile(const string& mixture)
@@ -136,6 +137,9 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
     
     // Check if we should load the transport data at all
     element.getAttribute("use_transport", m_load_transport, m_load_transport);
+
+    // Check if we should impose the multiphase solver
+    element.getAttribute("use_constraint", m_constraint, m_constraint);
 
     // Loop over all of the mixture child elements
     IO::XmlElement::const_iterator iter;

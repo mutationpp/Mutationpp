@@ -38,6 +38,7 @@
 #include "Constants.h"
 #include "ThermoDB.h"
 #include "MultiPhaseEquilSolver.h"
+//#define Debug
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -69,6 +70,8 @@ enum ConversionType {
     // Mixed quantities
     Y_TO_XE,     ///< species mass fractions to elemental mole fractions
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
+    Y_TO_YE,     ///< species mass fractions to elemental mass fractions
+
 };
 
 /**
@@ -86,7 +89,8 @@ public:
     Thermodynamics(
         const std::string& species_descriptor,
         const std::string& database,
-        const std::string& state_model);
+        const std::string& state_model,
+        const bool& constraint);
     
     /**
      * Destructor.
@@ -796,11 +800,13 @@ public:
      * Solves the surface mass balance equation for a pure Carbon char and
      * returns the non-dimensional ablation mass flux and wall enthalpy.
      */
-    void surfaceMassBalance(
-        const double *const p_Yke, const double *const p_Ykg, const double T, 
-        const double P, const double Bg, double &Bc, double &hw,
+    void surfaceMassBalance(const double * const p_Ykc,
+        const double *const p_Yke, const double *const p_Ykg, const double T,
+        const double P, const double Bg, double &Bc, double &hw, double *p_Xkkw,
         double *const p_Xs = NULL);
-    
+
+    void surfaceMassBalance_CFD(const double *const p_Ykc, const double *const p_Yke, const double *const p_Ykg,
+                                const double T, const double P, double *const p_Xs = NULL);
 private:
     
     /**
@@ -833,7 +839,7 @@ private:
     double* mp_wrkcp;
     double* mp_y;
     double* mp_default_composition;
-    
+    bool mp_constraint;
     bool m_has_electrons;
     int  m_natoms;
     int  m_nmolecules;
@@ -918,11 +924,40 @@ inline void Thermodynamics::convert<YE_TO_XE>(
         b[i] /= sum;
 }
 
-//template <>
-//inline void Thermodynamics::convert<Y_TO_XE>(
-//    const double *const a, double *const b) const {
-//
-//}
+template <>
+inline void Thermodynamics::convert<Y_TO_YE>(
+    const double *const a, double *const b) const {
+
+   /* for (int i = 0; i<nSpecies(); ++i){
+    std::cout<<"ys("<<speciesName(i)<<") :"<<a[i]<<std::endl;
+    }
+
+    for (int i = 0; i<nSpecies(); ++i){
+     std::cout<<"Mw("<<speciesName(i)<<") :"<<speciesMw(i)<<std::endl;}*/
+
+    for (int i = 0; i < nElements(); ++i){
+        b[i] = 0.;
+    }
+
+    for (int i = 0; i < nElements(); ++i){
+        for (int j =0; j < nSpecies(); ++j){
+        b[i] += (elementMatrix()(j,i)* a[j]*atomicMass(i))/speciesMw(j);}}
+
+    const double sum = std::accumulate(b, b + nElements(), 0.0);
+
+    if (sum > 1.E-5){
+    for (int i = 0; i < nElements(); ++i)
+        b[i] /= sum;}
+
+  /* for (int j = 0; j<nElements(); ++j){
+    std::cout<<"ye("<<elementName(j)<<") :"<<b[j]<<std::endl;
+    }
+
+
+    for (int j = 0; j<nElements(); ++j){
+    std::cout<<"Me("<<elementName(j)<<") :"<<atomicMass(j)<<std::endl;
+    }*/
+}
 /// @endcond
 
     } // namespace Thermodynamics

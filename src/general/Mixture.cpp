@@ -38,7 +38,8 @@ Mixture::Mixture(const MixtureOptions& options)
     : Thermodynamics::Thermodynamics(
         options.getSpeciesDescriptor(),
         options.getThermodynamicDatabase(),
-        options.getStateModel()),
+        options.getStateModel(),
+        options.constraint()),
       Transport(
         *this,
         options.getViscosityAlgorithm(),

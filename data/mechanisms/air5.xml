@@ -1,5 +1,5 @@
 <!-- Park Air-5 Reaction Mechanism -->
-<mechanism name="air5">
+<mechanism name="air5_park">
     
     <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
     

@@ -34,6 +34,7 @@
 
 #include <set>
 
+
 using namespace std;
 using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
@@ -48,7 +49,8 @@ namespace Mutation {
 Thermodynamics::Thermodynamics(
     const string& species_descriptor,
     const string& thermo_db,
-    const string& state_model )
+    const string& state_model,
+    const bool& constraint)
     : mp_work1(NULL), mp_work2(NULL), mp_wrkcp(NULL), mp_default_composition(NULL),
       m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
@@ -101,7 +103,7 @@ Thermodynamics::Thermodynamics(
     // Allocate a new state model
     mp_state = Config::Factory<StateModel>::create(state_model, *this);
     //mp_state->notifyOnUpdate(this);
-
+    mp_constraint =  constraint;
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];
     mp_work2 = new double [nSpecies()];
@@ -1035,65 +1037,364 @@ void Thermodynamics::elementFractions(
 
 //==============================================================================
 
-void Thermodynamics::surfaceMassBalance(
-    const double *const p_Yke, const double *const p_Ykg, const double T, 
-    const double P, const double Bg, double &Bc, double &hw, double *const p_Xs)
+void Thermodynamics::surfaceMassBalance(const double *const p_Ykc, const double *const p_Yke, const double *const p_Ykg, const double T,
+    const double P, const double Bg, double &Bc, double &hw, double* p_Xkkw, double *const p_Xs)
 {
     const int ne = nElements();
     const int ng = nGas();
-    
-    double p_Xw [ne];
+    const int ns = nSpecies();
+
+
     double* p_X  = (p_Xs != NULL ? p_Xs : mp_work1);
     double* p_h  = mp_work2;
-    
-    // Initialize the wall element fractions to be the pyrolysis gas fractions
-    double sum = 0.0;
-    for (int i = 0; i < ne; ++i) {
-        p_Xw[i] = p_Yke[i] + Bg*p_Ykg[i];
-        sum += p_Xw[i];
+
+
+   std::vector<std::string> Solid_index;
+
+
+    // Element index of the solid species
+
+
+    for(int i = 0; i<ne; ++i){
+        if (p_Ykc[i]>0){
+    Solid_index.push_back(elementName(i));
+        }
     }
-    
-    // Use "large" amount of carbon to simulate infinite char
-    int ic = elementIndex("C");
-    //double carbon = std::min(1000.0, std::max(100.0,1000.0*Bg));
-    double carbon = std::max(100.0*Bg, 200.0);
-    p_Xw[ic] += carbon;
-    sum += carbon;
-    
-    for (int i = 0; i < ne; ++i)
+
+
+    // Initializing the pointer p_Xw to the number of elements + number of contraints
+    int n_Condensed_elements = Solid_index.size();
+    int n_constraints = 0;
+
+
+
+    if(mp_constraint==true){
+
+    double* p_A = new double [ns];
+    double* p_Xkc = new double [ne];
+
+
+    if(Solid_index.size()>1){
+        n_constraints = n_Condensed_elements-2;
+    }
+
+
+      convert<YE_TO_XE>(p_Ykc, p_Xkc);
+
+     for (int j = 0; j<n_constraints;++j){
+        double alpha = p_Xkc[elementIndex(Solid_index[j])]/p_Xkc[elementIndex(Solid_index[j+1])];
+        for(int i=0; i<ng;++i){
+        p_A[i]= 0;
+        }
+
+        for (int i = ng; i <nSpecies(); ++i){
+        p_A[i]=elementMatrix()(i,elementIndex(Solid_index[j]))
+              -alpha*elementMatrix()(i,elementIndex(Solid_index[j+1]));
+        }
+
+
+
+     addEquilibriumConstraint(p_A);
+
+      #ifdef Debug
+      for(int i=0; i<ns;++i){
+
+          cout<<"p_A("<<speciesName(i)<<"): "<<p_A[i]<<endl;
+      }
+    for(int i=0; i<ne;++i){
+
+          cout<<"p_Xkc("<<elementName(i)<<"): "<<p_Xkc[i]<<endl;
+      }
+         cout<<"alpha: "<<alpha<<endl;
+      #endif
+
+     }
+
+      delete [] p_A;
+      delete [] p_Xkc;
+
+    }
+
+
+    double* p_Xw = new double [ne+n_constraints];
+
+    // Initialize the wall element fractions to be the pyrolysis gas fractions
+
+
+   Bc= 10000;
+
+  // double* p_Ykc_orig = new double [ne];
+   /*for (int i = 0; i<ne;++i){
+       p_Ykc_orig[i] = p_Ykc[i] * 1000;
+   }*/
+
+   double sum = 0.0;
+    for (int i = 0; i < ne; ++i){
+        p_Xw[i] = (p_Yke[i]+Bg*p_Ykg[i]+Bc*p_Ykc[i])/(1.+Bg+Bc);
+        sum += p_Xw[i];}
+
+
+    for (int i = 0; i < ne; ++i){
         p_Xw[i] /= sum;
-    
+    }
+
+
+    if(mp_constraint == true){
+       for(int i = ne; i<n_constraints+ne; ++i)
+       p_Xw[i] = 0.;
+    }
+
+  #ifdef Debug
+   for (int i = 0; i < ne; ++i){
+    cout<<"P_Xw("<<elementName(i)<<") :"<<p_Xw[i]<<endl;
+    }
+  #endif
     // Compute equilibrium
+
     convert<YE_TO_XE>(p_Xw, p_Xw);
-    equilibriumComposition(T, P, p_Xw, p_X, IN_PHASE);
-    
+
+
+ equilibriumComposition(T, P, p_Xw, p_X, GLOBAL);
+
+ sum = 0.0;
+
+   for (int i = 0; i < ng; ++i){
+       sum += p_X[i];
+    }
+
+
+   for (int i = 0; i < ng; ++i){
+     p_X[i] /= sum;
+   }
+
+
     // Compute the gas mass fractions at the wall
     double mwg = 0.0;
     double ywc = 0.0;
-    
-    for (int j = 0; j < ng; ++j) {
+    double* p_Yw = new double[ne];
+
+    for (int i = 0; i < ne; ++i) {
+        p_Yw[i] = 0.;
+        for (int j = 0; j < ng; ++j){
+            p_Yw[i] += elementMatrix()(j,i) * p_X[j];
+            mwg += speciesMw(j) * p_X[j];}
+        p_Yw[i] *= atomicMass(i) / mwg;
+       mwg = 0.;
+    }
+
+    convert<YE_TO_XE>(p_Yw, p_Xkkw);
+
+
+    int ic = elementIndex(Solid_index[0]);
+
+   for (int j = 0; j < ng; ++j) {
         mwg += speciesMw(j) * p_X[j];
         ywc += elementMatrix()(j,ic) * p_X[j];
         //for (int i = 0; i < ne; ++i)
         //    p_Yw[i] += elementMatrix()(j,i) * p_X[j];
     }
-    
+
     //for (int i = 0; i < ne; ++i)
     //    p_Yw[i] *= atomicMass(i) / mwg;
     ywc *= atomicMass(ic) / mwg;
-    
+
+
+    /*for (int i = 0; i < ne; ++i) {
+
+        for (int j = 0; j < ng; ++j){
+            p_Yw[i] += elementMatrix()(j,i) * p_X[j];
+            mwg += speciesMw(j) * p_X[j];}
+        p_Yw[i] *= atomicMass(i) / mwg;
+       mwg = 0.;
+    }*/
+
+
+
+
     // Compute char mass blowing rate
-    Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - ywc*(1.0 + Bg)) / (ywc - 1.0);
+    /*Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - p_Yw[ic]*(1.0 + Bg)) / (p_Yw[ic] - 1.0);*/
+    Bc = (p_Yke[ic] + Bg*p_Ykg[ic] - ywc*(1.0 + Bg)) / (ywc - p_Ykc[ic]);
     Bc = std::max(Bc, 0.0);
-    
+
+
+
     // Compute the gas enthalpy
     speciesHOverRT(T, p_h);
-    
+/*
+    for (int j = 0; j < ng; ++j) {
+            mwg += speciesMw(j) * p_X[j];}*/
+
     hw = 0.0;
     for (int i = 0; i < ng; ++i)
         hw += p_X[i] * p_h[i];
     hw *= RU * T / mwg;
+
+
+    //delete []  p_Ykc_orig;
+    delete [] p_Yw;
+    delete [] p_Xw;
+     Solid_index.clear();
+    if(mp_constraint == true){
+    clearEquilibriumContraints();}
+
 }
+
+
+
+//==============================================================================
+
+void Thermodynamics::surfaceMassBalance_CFD(const double *const p_Ykc, const double *const p_Yke, const double *const p_Ykg,
+                                            const double T, const double P, double *const p_Xs)
+{
+
+    const int ne = nElements();
+    const int ng = nGas();
+    const int ns = nSpecies();
+    const double Bg = 0.;
+
+    double* p_X  = (p_Xs != NULL ? p_Xs : mp_work1);
+
+
+
+
+
+   std::vector<std::string> Solid_index;
+
+
+    // Element index of the solid species
+
+
+    for(int i = 0; i<ne; ++i){
+        if (p_Ykc[i]>0){
+    Solid_index.push_back(elementName(i));
+        }
+    }
+
+
+    // Initializing the pointer p_Xw to the number of elements + number of contraints
+    int n_Condensed_elements = 0;
+    int n_constraints = n_Condensed_elements;
+
+    if(Solid_index.size()>1){
+        n_Condensed_elements = Solid_index.size();
+        n_constraints = n_Condensed_elements- 2;
+    }
+
+
+    if(mp_constraint==true){
+
+    double* p_A = new double [ns];
+    double* p_Xkc = new double [ne];
+
+
+
+
+      convert<YE_TO_XE>(p_Ykc, p_Xkc);
+
+
+
+    /*
+      cout<<"alpha "<<alpha<<endl;
+      cout<<"p_Ykc("<<elementName(elementIndex(Solid_index[0]))<<"): "<<
+                    p_Ykc[elementIndex(Solid_index[0])]<<endl;
+
+      cout<<"p_Ykc("<<elementName(elementIndex(Solid_index[1]))<<"): "<<
+                    p_Ykc[elementIndex(Solid_index[1])]<<endl;*/
+
+     for (int j = 0; j<n_constraints;++j){
+        double alpha = p_Xkc[elementIndex(Solid_index[j])]/p_Xkc[elementIndex(Solid_index[j+1])];
+        for(int i=0; i<ng;++i){
+        p_A[i]= 0;
+        }
+
+        for (int i = ng; i <nSpecies(); ++i){
+        p_A[i]=elementMatrix()(i,elementIndex(Solid_index[j]))
+              -alpha*elementMatrix()(i,elementIndex(Solid_index[j+1]));
+        }
+
+
+
+     addEquilibriumConstraint(p_A);
+
+      #ifdef Debug
+      for(int i=0; i<ns;++i){
+
+          cout<<"p_A("<<speciesName(i)<<"): "<<p_A[i]<<endl;
+      }
+    for(int i=0; i<ne;++i){
+
+          cout<<"p_Xkc("<<elementName(i)<<"): "<<p_Xkc[i]<<endl;
+      }
+         cout<<"alpha: "<<alpha<<endl;
+      #endif
+
+     }
+
+
+
+
+
+
+
+      delete [] p_A;
+      delete [] p_Xkc;
+
+    }
+
+
+    double* p_Xw = new double [ne+n_constraints];
+
+    // Initialize the wall element fractions to be the pyrolysis gas fractions
+
+
+   double Bc= 100000;
+\
+   double sum = 0.0;
+    for (int i = 0; i < ne; ++i){
+        p_Xw[i] = (p_Yke[i]+Bg*p_Ykg[i]+Bc*p_Ykc[i])/(1.+Bg+Bc);
+        sum += p_Xw[i];}
+
+
+    for (int i = 0; i < ne; ++i){
+        p_Xw[i] /= sum;
+    }
+
+
+    if(mp_constraint == true){
+       for(int i = ne; i<n_constraints+ne; ++i)
+       p_Xw[i] = 0.;
+    }
+
+  #ifdef Debug
+   for (int i = 0; i < ne; ++i){
+    cout<<"P_Xw("<<elementName(i)<<") :"<<p_Xw[i]<<endl;
+    }
+  #endif
+    // Compute equilibrium
+
+    convert<YE_TO_XE>(p_Xw, p_Xw);
+
+
+
+ equilibriumComposition(T, P, p_Xw, p_X, GLOBAL);
+
+ sum = 0.0;
+
+   for (int i = 0; i < ng; ++i){
+       sum += p_X[i];
+    }
+
+
+   for (int i = 0; i < ng; ++i){
+     p_X[i] /= sum;
+   }
+
+    delete [] p_Xw;
+
+    if(mp_constraint == true){
+    clearEquilibriumContraints();}
+}
+
 
 //==============================================================================
 
