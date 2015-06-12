@@ -42,6 +42,14 @@ using Mutation::Thermodynamics::Thermodynamics;
 
 //==============================================================================
 
+#define ERROR_IF_INTEGRALS_ARE_NOT_LOADED(__RET__)\
+if (mp_collisions == NULL) {\
+	cout << "Error! Trying to use transport without loading collision integrals!!" << endl;\
+	return __RET__;\
+}
+
+//==============================================================================
+
 Transport::Transport(
     Thermodynamics& thermo, const std::string& viscosity, const std::string& lambda, const bool load_data)
     : m_thermo(thermo),
@@ -100,10 +108,7 @@ Transport::~Transport()
 
 void Transport::omega11ii(double* const p_omega)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const double ns  = m_thermo.nSpecies();
     const double Th  = m_thermo.T();
@@ -120,10 +125,7 @@ void Transport::omega11ii(double* const p_omega)
 
 void Transport::omega22ii(double* const p_omega)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const double ns  = m_thermo.nSpecies();
     const double Th  = m_thermo.T();
@@ -140,6 +142,7 @@ void Transport::omega22ii(double* const p_omega)
 
 void Transport::frozenThermalConductivityVector(double* const p_lambda)
 {
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int neq = m_thermo.nEnergyEqns();
     double lambda_th, lambda_te, lambda_rot, lambda_vib, lambda_elec;
@@ -168,10 +171,7 @@ void Transport::frozenThermalConductivityVector(double* const p_lambda)
 
 double Transport::electronThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
@@ -232,21 +232,18 @@ double Transport::electronThermalConductivity()
     //assert(lam11*lam22 > lam12*lam12);
 
     // 2nd order solution
-    return (X[0]*X[0]/std::max(lam11, 1.0e-20));
+    //return (X[0]*X[0]/std::max(lam11, 1.0e-20));
     
     // 3rd order solution
-    //double denom = (lam11*lam22 > lam12*lam12 ? lam11*lam22-lam12*lam12 : 1.0e-30);
-    //return std::max(0.0, (X[0]*X[0]*lam22/denom));
+    double denom = (lam11*lam22 > lam12*lam12 ? lam11*lam22-lam12*lam12 : 1.0e-30);
+    return std::max(0.0, (X[0]*X[0]*lam22/denom));
 }
 
 //==============================================================================
 
 double Transport::internalThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     const int ns     = m_thermo.nSpecies();
     const int nh     = m_thermo.nHeavy();
@@ -279,10 +276,7 @@ double Transport::internalThermalConductivity()
 
 double Transport::rotationalThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     const int ns     = m_thermo.nSpecies();
     const int nh     = m_thermo.nHeavy();
@@ -315,10 +309,7 @@ double Transport::rotationalThermalConductivity()
 
 double Transport::vibrationalThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     const int ns     = m_thermo.nSpecies();
     const int nh     = m_thermo.nHeavy();
@@ -351,10 +342,7 @@ double Transport::vibrationalThermalConductivity()
 
 double Transport::electronicThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     const int ns     = m_thermo.nSpecies();
     const int nh     = m_thermo.nHeavy();
@@ -427,10 +415,7 @@ double Transport::electronicThermalConductivity()
 
 double Transport::reactiveThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
@@ -461,10 +446,7 @@ double Transport::reactiveThermalConductivity()
 
 double Transport::soretThermalConductivity()
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
@@ -491,10 +473,7 @@ double Transport::soretThermalConductivity()
 
 void Transport::averageDiffusionCoeffs(double *const p_Di)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
@@ -517,123 +496,118 @@ void Transport::averageDiffusionCoeffs(double *const p_Di)
         p_Di[i] = (1.0 - p_X[i]) / (p_Di[i] * nd);
 }
 
-void Transport::equilibriumFickP(double* const p_F)
+//==============================================================================
+
+void Transport::equilDiffFluxFacs(double* const p_F)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	// Get some state data
+	const int ns = m_thermo.nSpecies();
+	const int ne = m_thermo.nElements();
+	const double* const p_Y = m_thermo.Y();
+	const double* const p_X = m_thermo.X();
+	const double rho = m_thermo.density();
+	const double p   = m_thermo.P();
 
-    // Get some state data
-    const int ns = m_thermo.nSpecies();
-    const int ne = m_thermo.nElements();
-    const double* const p_Y = m_thermo.Y();
-    const double* const p_X = m_thermo.X();
-    const double rho = m_thermo.density();
-    const double p   = m_thermo.P();
+	const RealMatrix& Dij = diffusionMatrix();
+	const RealMatrix& nu  = m_thermo.elementMatrix();
 
-    const RealMatrix& Dij = diffusionMatrix();
-    const RealMatrix& nu  = m_thermo.elementMatrix();
+	for (int i = 0; i < ns; ++i) {
+		mp_wrk2[i] = 0.0;
+		for (int j = 0; j < ns; ++j)
+			mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
+		mp_wrk2[i] *= -rho*p_Y[i]/m_thermo.speciesMw(i);
+	}
+
+	for (int k = 0; k < ne; ++k) {
+		p_F[k] = 0.0;
+		double mwk = m_thermo.atomicMass(k);
+		for (int i = 0; i < ns; ++i)
+			p_F[k] += nu(i,k)*mwk*mp_wrk2[i];
+	}
+
+	m_thermo.speciesHOverRT(mp_wrk1);
+	p_F[ne] = 0.0;
+	for (int i = 0; i < ns; ++i)
+		p_F[ne] += mp_wrk1[i]*mp_wrk2[i];
+	p_F[ne] *= RU * m_thermo.T();
+}
+
+//==============================================================================
+
+void Transport::equilDiffFluxFacsP(double* const p_F)
+{
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
+
+	const int ns = m_thermo.nSpecies();
+	const double p = m_thermo.P();
+	const double* const p_Y = m_thermo.Y();
+	const double* const p_X = m_thermo.X();
 
     // Compute the dXj/dP term
     m_thermo.dXidP(mp_wrk1);
 
-    for (int i = 0; i < ns; ++i) {
-        mp_wrk2[i] = 0.0;
-        for (int j = 0; j < ns; ++j)
-            mp_wrk2[i] += Dij(i,j)*(p_X[j]/p + mp_wrk1[j]);
-        mp_wrk2[i] *= -rho*p_Y[i];
-    }
+	// Add the (x_j - y_j)/p term
+	for (int i = 0; i < ns; ++i)
+		mp_wrk1[i] += (p_X[i] - p_Y[i])/p;
 
-    for (int k = 0; k < ne; ++k) {
-        p_F[k] = 0.0;
-        for (int i = 0; i < ns; ++i)
-            p_F[k] += nu(i,k)*mp_wrk2[i];
-    }
+    // Compute the element averaged diffusion coefficients
+	equilDiffFluxFacs(p_F);
 }
 
-void Transport::equilibriumFickT(double* const p_F)
+//==============================================================================
+
+void Transport::equilDiffFluxFacsT(double* const p_F)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
-    // Get some state data
-    const int ns = m_thermo.nSpecies();
-    const int ne = m_thermo.nElements();
-    const double* const p_Y = m_thermo.Y();
-    const double* const p_X = m_thermo.X();
-    const double rho = m_thermo.density();
+	const int ns = m_thermo.nSpecies();
+	const double T  = m_thermo.T();
+	const double nd = m_thermo.numberDensity();
+	const double* const p_X = m_thermo.X();
 
-    const RealMatrix& Dij = diffusionMatrix();
-    const RealMatrix& nu  = m_thermo.elementMatrix();
-
-    // Compute the dXj/dP term
+    // Compute the dXj/dT term
     m_thermo.dXidT(mp_wrk1);
 
-    for (int i = 0; i < ns; ++i) {
-        mp_wrk2[i] = 0.0;
-        for (int j = 0; j < ns; ++j)
-            mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
-        mp_wrk2[i] *= -rho*p_Y[i];
-    }
+	// Add thermal diffusion ratio term
+	mp_thermal_conductivity->thermalDiffusionRatios(T, T, nd, p_X, mp_wrk2);
+	for (int i = 0; i < ns; ++i)
+		mp_wrk1[i] += mp_wrk2[i]/T;
 
-    for (int k = 0; k < ne; ++k) {
-        p_F[k] = 0.0;
-        for (int i = 0; i < ns; ++i)
-            p_F[k] += nu(i,k)*mp_wrk2[i];
-    }
+    // Compute the element averaged diffusion coefficients
+	equilDiffFluxFacs(p_F);
 }
 
-void Transport::equilibriumFickXe(double* const p_F)
-{
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+//==============================================================================
 
-    // Get some state data
-    const int ns = m_thermo.nSpecies();
-    const int ne = m_thermo.nElements();
-    const double* const p_Y = m_thermo.Y();
-    const double* const p_X = m_thermo.X();
-    const double rho = m_thermo.density();
+void Transport::equilDiffFluxFacsZ(double* const p_F)
+{
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
+
+	const int ns = m_thermo.nSpecies();
+	const int ne = m_thermo.nElements();
+	const double* const p_X = m_thermo.X();
     const double T   = m_thermo.T();
     const double p   = m_thermo.P();
 
-    const RealMatrix& Dij = diffusionMatrix();
-    const RealMatrix& nu  = m_thermo.elementMatrix();
+	// Loop over each element
+	for (int l = 0; l < ne; ++l) {
+	   // Compute the dXj/dZl term using a finite difference
+	   m_thermo.elementFractions(p_X, mp_wrk1);
+	   double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-10);
+	   mp_wrk1[l] += h;
+	   m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
 
-    for (int l = 0; l < ne; ++l) {
-       // Compute the dXj/dZl term using a finite difference
-       m_thermo.elementFractions(p_X, mp_wrk1);
-       double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-6);
-       mp_wrk1[l] += h;
-       m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+	   for (int i = 0; i < ns; ++i)
+		   mp_wrk1[i] = (mp_wrk2[i]-p_X[i])/h;
 
-       for (int i = 0; i < ns; ++i)
-           mp_wrk1[i] = (mp_wrk2[i]-p_X[i])/h;
+	   // Compute the element averaged diffusion coefficients
+	   equilDiffFluxFacs(p_F + l*(ne+1));
+	}
 
-       for (int i = 0; i < ns; ++i) {
-           mp_wrk2[i] = 0.0;
-           for (int j = 0; j < ns; ++j)
-               mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
-           mp_wrk2[i] *= -rho*p_Y[i];
-       }
-
-       for (int k = 0; k < ne; ++k) {
-           double& Fkl = p_F[l*ne+k];
-           Fkl = 0.0;
-           for (int i = 0; i < ns; ++i)
-               Fkl += nu(i,k)*mp_wrk2[i];
-       }
-    }
-
-   // Be sure to set the state back in the equilibrium solver in case other
-   // calculations rely on the correct element potential values
-   m_thermo.elementFractions(p_X, mp_wrk1);
-   m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+	// Be sure to set the state back in the equilibrium solver in case other
+	// calculations rely on the correct element potential values
+	m_thermo.elementFractions(p_X, mp_wrk1);
+	m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
 }
 
 //==============================================================================
@@ -641,10 +615,7 @@ void Transport::equilibriumFickXe(double* const p_F)
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
@@ -847,10 +818,7 @@ void Transport::stefanMaxwell(
 
 double Transport::sigma() 
 {
-    if (mp_collisions == NULL) {
-        cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-        return 0.0;
-    }
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30) 
         return 0.0;
@@ -896,7 +864,9 @@ double Transport::sigma()
 
 double Transport::meanFreePath()
 {
-    // Thermo properties
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	// Thermo properties
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
@@ -922,7 +892,9 @@ double Transport::meanFreePath()
 
 double Transport::electronMeanFreePath()
 {
-    if (!m_thermo.hasElectrons())
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons())
         return 0.0;
 
     // Thermo properties
@@ -948,7 +920,9 @@ double Transport::electronMeanFreePath()
 
 double Transport::averageHeavyThermalSpeed()
 {
-    const int ns = m_thermo.nSpecies();
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	const int ns = m_thermo.nSpecies();
     const int nh = m_thermo.nHeavy();
     const double Th = m_thermo.T();
     const double* const X = m_thermo.X();
@@ -965,7 +939,9 @@ double Transport::averageHeavyThermalSpeed()
 
 double Transport::electronThermalSpeed()
 {
-    // Thermo properties
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	// Thermo properties
     const double Te = m_thermo.Te();
     const double Me = m_thermo.speciesMw(0);
     return sqrt(8*RU*Te/(PI*Me));
@@ -973,17 +949,21 @@ double Transport::electronThermalSpeed()
 
 
 //==============================================================================
+
 double Transport::averageHeavyCollisionFreq()
 {
-    return meanFreePath()/averageHeavyThermalSpeed();
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
+	return meanFreePath()/averageHeavyThermalSpeed();
 }
 
 //==============================================================================
 
 double Transport::electronHeavyCollisionFreq()
 {
-    if (!m_thermo.hasElectrons())
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons())
         return 0.0;
     return electronThermalSpeed()/electronMeanFreePath();
 }
@@ -992,7 +972,9 @@ double Transport::electronHeavyCollisionFreq()
 
 double Transport::coulombMeanCollisionTime()
 {
-    if (!m_thermo.hasElectrons())
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons())
         return 0.0;
 
     // Thermo properties
@@ -1019,7 +1001,9 @@ double Transport::coulombMeanCollisionTime()
 
 double Transport::hallParameter()
 {
-    if (!m_thermo.hasElectrons())
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons())
         return 0.0;
 
     // Thermo
@@ -1033,7 +1017,9 @@ double Transport::hallParameter()
 
 double Transport::parallelDiffusionCoefficient()
 {
-    // Get thermo properties
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	// Get thermo properties
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
@@ -1105,7 +1091,9 @@ double Transport::parallelDiffusionCoefficient()
 
 double Transport::perpDiffusionCoefficient()
 {
-    // Get thermo properties
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	// Get thermo properties
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
@@ -1188,7 +1176,9 @@ double Transport::perpDiffusionCoefficient()
 
 double Transport::transverseDiffusionCoefficient()
 {
-    // Get thermo properties
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	// Get thermo properties
     const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
@@ -1268,7 +1258,9 @@ double Transport::transverseDiffusionCoefficient()
 
 double Transport::parallelThermalDiffusionCoefficient()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
 
     // Get thermodynamic properties
@@ -1319,6 +1311,7 @@ double Transport::parallelThermalDiffusionCoefficient()
 
 double Transport::perpThermalDiffusionCoefficient()
 {
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
@@ -1384,6 +1377,7 @@ double Transport::perpThermalDiffusionCoefficient()
 
 double Transport::transverseThermalDiffusionCoefficient()
 {
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
@@ -1448,7 +1442,9 @@ double Transport::transverseThermalDiffusionCoefficient()
 
 double Transport::sigmaParallel()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
 
     const double Th = m_thermo.T();
@@ -1465,7 +1461,9 @@ double Transport::sigmaParallel()
 
 double Transport::sigmaPerpendicular()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
 
     const double Th = m_thermo.T();
@@ -1482,7 +1480,9 @@ double Transport::sigmaPerpendicular()
 
 double Transport::sigmaTransverse()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
 
     const double Th = m_thermo.T();
@@ -1499,28 +1499,28 @@ double Transport::sigmaTransverse()
 
 double Transport::parallelElectronThermalConductivity()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
-        return 0.0;
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
 
     const double* const X = m_thermo.X();
     const double nd  = m_thermo.numberDensity();
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
 
-
     double Kt_parallel = parallelThermalDiffusionCoefficient();
     return (X[0]*X[0])*Kt_parallel;
-
 }
 
 //==============================================================================
 
 double Transport::perpElectronThermalConductivity()
 {
-    if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
-        return 0.0;
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
 
+	if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
+        return 0.0;
 
     const double* const X = m_thermo.X();
     const double nd  = m_thermo.numberDensity();
@@ -1529,25 +1529,23 @@ double Transport::perpElectronThermalConductivity()
 
 
     return (X[0]*X[0])*perpThermalDiffusionCoefficient();
-
 }
 
 //==============================================================================
 
 double Transport::transverseElectronThermalConductivity()
 {
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
     if (!m_thermo.hasElectrons() || m_thermo.X()[0] < 1.0e-30)
         return 0.0;
-
 
     const double* const X = m_thermo.X();
     const double nd  = m_thermo.numberDensity();
     const double Th  = m_thermo.T();
     const double Te  = m_thermo.Te();
 
-
     return -(X[0]*X[0])*transverseThermalDiffusionCoefficient();
-
 }
 
 //==============================================================================

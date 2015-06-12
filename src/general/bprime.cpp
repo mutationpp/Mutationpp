@@ -90,14 +90,14 @@ int main(int argc, char* argv[])
          << setw(15) << "\"B'c\""
          << setw(15) << "\"hw[MJ/kg]\"";
     for (int i = 0; i < ns; ++i)
-        cout << setw(15) << "\"" << mix.speciesName(i) << "\"";
+        cout << setw(25) << "\"" + mix.speciesName(i) + "\"";
     cout << endl;
     
     for (double T = T1; T < T2 + 1.0e-6; T += dt) {
         mix.surfaceMassBalance(p_Yke, p_Ykg, T, P, Bg, Bc, hw, p_Xw);
         cout << setw(10) << T << setw(15) << Bc << setw(15) << hw / 1.0e6;
         for (int i = 0; i < ns; ++i)
-            cout << setw(15) << p_Xw[i];
+            cout << setw(25) << p_Xw[i];
         cout << endl;
     }
     

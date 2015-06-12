@@ -235,9 +235,144 @@ public:
      */
     void averageDiffusionCoeffs(double *const p_Di);
     
-    void equilibriumFickP(double* const p_F);
-    void equilibriumFickT(double* const p_F);
-    void equilibriumFickXe(double* const p_F);
+    /**
+     * Computes the vector of elemental mass and energy diffusion fluxes per
+     * pressure gradient for a mixture in equilibrium, \f$\mathcal{F}_k^p\f$ and
+     * \f$\mathcal{F}_h^p\f$,
+     * where
+     * \f[
+     * \mathcal{F}_k^p = -\sum_{i\in\mathcal{S}} \rho_i \frac{M_{w,k}}{M_{w,i}}
+     * 	   \nu_i^k \sum_{j\in\mathcal{S}} D_{ij} \left(
+     * 	   \frac{\partial x_j}{\partial p} +
+     * 	   \frac{x_j - y_j}{p} \right), \quad \forall\;k\in\mathcal{E},
+     * \f]
+     * and
+     * \f[
+     * \mathcal{F}_h^p = -\sum_{i\in\mathcal{S}} \rho_i h_i
+     * 	   \sum_{j\in\mathcal{S}} D_{ij} \left(
+     * 	   \frac{\partial x_j}{\partial p} +
+     * 	   \frac{x_j - y_j}{p} \right).
+     * \f]
+     *
+     * The total mass diffusion flux of element \f$k\f$ for a mixture at
+     * equilibrium can then be computed with
+     * \f[
+     * \rho_k V_k = \mathcal{F}_k^p \nabla p + \mathcal{F}_k^T \nabla T +
+     *     \sum_{l\in\mathcal{E}} \mathcal{F}_k^{z_l} \nabla z_l,
+     *     \quad \forall\;k\in\mathcal{E}.
+     * \f]
+     * The total energy diffusion flux is computed by
+     * \f[
+     * \sum_{i\in\mathcal{S}} \rho_i h_i V_i = \mathcal{F}_h^p \nabla p +
+     * 	   \mathcal{F}_h^T \nabla T +
+     *     \sum_{l\in\mathcal{E}} \mathcal{F}_h^{z_l} \nabla z_l.
+     * \f]
+     *
+     * @param p_F - A vector with length greater than the number of elements
+     * plus one.  On return, the vector will correspond to
+     * \f$\{\mathcal{F}^p_1, \cdots, \mathcal{F}^p_{N_e}, \mathcal{F}^p_h\}\f$.
+     *
+     * @see equilDiffFluxFacsT
+     *     for \f$\mathcal{F}_k^T\f$ and \f$\mathcal{F}_h^T\f$
+     * @see equilDiffFluxFacsZ
+     *     for \f$\mathcal{F}_k^{z_l}\f$ and \f$\mathcal{F}_h^{z_l}\f$
+     */
+    void equilDiffFluxFacsP(double* const p_F);
+
+    /**
+	 * Computes the vector of elemental mass and energy diffusion fluxes per
+	 * temperature gradient for a mixture in equilibrium, \f$\mathcal{F}_k^T\f$
+	 * and \f$\mathcal{F}_h^T\f$,
+	 * where
+	 * \f[
+	 * \mathcal{F}_k^T = -\sum_{i\in\mathcal{S}} \rho_i \frac{M_{w,k}}{M_{w,i}}
+	 * 	   \nu_i^k \sum_{j\in\mathcal{S}} D_{ij} \left(
+	 * 	   \frac{\partial x_j}{\partial T} +
+	 * 	   \frac{k_{Tj}}{T} \right), \quad \forall\;k\in\mathcal{E},
+	 * \f]
+	 * and
+	 * \f[
+	 * \mathcal{F}_h^T = -\sum_{i\in\mathcal{S}} \rho_i h_i
+	 * 	   \sum_{j\in\mathcal{S}} D_{ij} \left(
+	 * 	   \frac{\partial x_j}{\partial T} +
+	 * 	   \frac{k_{Tj}}{T} \right).
+	 * \f]
+	 *
+	 * The total mass diffusion flux of element \f$k\f$ for a mixture at
+	 * equilibrium can then be computed with
+	 * \f[
+	 * \rho_k V_k = \mathcal{F}_k^p \nabla p + \mathcal{F}_k^T \nabla T +
+	 *     \sum_{l\in\mathcal{E}} \mathcal{F}_k^{z_l} \nabla z_l,
+	 *     \quad \forall\;k\in\mathcal{E}.
+	 * \f]
+	 * The total energy diffusion flux is computed by
+	 * \f[
+	 * \sum_{i\in\mathcal{S}} \rho_i h_i V_i = \mathcal{F}_h^p \nabla p +
+	 * 	   \mathcal{F}_h^T \nabla T +
+	 *     \sum_{l\in\mathcal{E}} \mathcal{F}_h^{z_l} \nabla z_l.
+	 * \f]
+	 *
+	 * @param p_F - A vector with length greater than the number of elements
+	 * plus one.  On return, the vector will correspond to
+	 * \f$\{\mathcal{F}^T_1, \cdots, \mathcal{F}^T_{N_e}, \mathcal{F}^T_h\}\f$.
+	 *
+	 * @see equilDiffFluxFacsP
+	 *     for \f$\mathcal{F}_k^p\f$ and \f$\mathcal{F}_h^p\f$
+	 * @see equilDiffFluxFacsZ
+	 *     for \f$\mathcal{F}_k^{z_l}\f$ and \f$\mathcal{F}_h^{z_l}\f$
+	 */
+    void equilDiffFluxFacsT(double* const p_F);
+
+    /**
+	 * Computes the matrix of elemental mass and energy diffusion fluxes per
+	 * elemental mole fraction gradients for a mixture in equilibrium,
+	 * \f$\mathcal{F}_k^{z_l}\f$ and \f$\mathcal{F}_h^{z_l}\f$,
+	 * where
+	 * \f[
+	 * \mathcal{F}_k^{z_l} = -\sum_{i\in\mathcal{S}} \rho_i
+	 * 	   \frac{M_{w,k}}{M_{w,i}}
+	 * 	   \nu_i^k \sum_{j\in\mathcal{S}} D_{ij}
+	 * 	   \frac{\partial x_j}{\partial z_l}, \quad \forall\;k,l\in\mathcal{E},
+	 * \f]
+	 * and
+	 * \f[
+	 * \mathcal{F}_h^{z_l} = -\sum_{i\in\mathcal{S}} \rho_i h_i
+	 * 	   \sum_{j\in\mathcal{S}} D_{ij} \frac{\partial x_j}{\partial z_l},
+	 * 	   \quad \forall\;l\in\mathcal{E}.
+	 * \f]
+	 *
+	 * The total mass diffusion flux of element \f$k\f$ for a mixture at
+	 * equilibrium can then be computed with
+	 * \f[
+	 * \rho_k V_k = \mathcal{F}_k^p \nabla p + \mathcal{F}_k^T \nabla T +
+	 *     \sum_{l\in\mathcal{E}} \mathcal{F}_k^{z_l} \nabla z_l,
+	 *     \quad \forall\;k\in\mathcal{E}.
+	 * \f]
+	 * The total energy diffusion flux is computed by
+	 * \f[
+	 * \sum_{i\in\mathcal{S}} \rho_i h_i V_i = \mathcal{F}_h^p \nabla p +
+	 * 	   \mathcal{F}_h^T \nabla T +
+	 *     \sum_{l\in\mathcal{E}} \mathcal{F}_h^{z_l} \nabla z_l.
+	 * \f]
+	 *
+	 * @param p_F - A pointer to a (\f$N_e+1\times N_e\f$)
+	 * matrix stored in row-major order.  On return, the matrix will correspond
+	 * to
+	 * \f[
+	 * \begin{bmatrix}
+	 * \mathcal{F}_1^{z_1} & \cdots & \mathcal{F}_1^{z_{N_e}} \\
+	 * \vdots & \ddots & \vdots \\
+	 * \mathcal{F}_{N_e}^{z_1} & \cdots & \mathcal{F}_{N_e}^{z_{N_e}} \\
+	 * \mathcal{F}_h^{z_1} & \cdots & \mathcal{F}_h^{z_{N_e}}
+	 * \end{bmatrix}.
+	 * \f]
+	 *
+	 * @see equilDiffFluxFacsP
+	 *     for \f$\mathcal{F}_k^p\f$ and \f$\mathcal{F}_h^p\f$
+	 * @see equilDiffFluxFacsT
+	 *     for \f$\mathcal{F}_k^T\f$ and \f$\mathcal{F}_h^T\f$
+	 */
+    void equilDiffFluxFacsZ(double* const p_F);
 
     /**
      * Computes the species diffusion velocities and ambipolar electric field 
@@ -311,6 +446,26 @@ public:
     double ratioLambdaTransPar();
     std::vector<double> ratiokTPerpPar();
     std::vector<double> ratiokTTransPar();
+
+private:
+
+    /**
+	 * Helper function for computing
+	 * \f[
+	 * F_k^T = \sum_{i=1}^{N_S}\rho_i\frac{M_{wk}}{M_{wi}}\nu_{ik}
+	 *     \sum_{j=1}^{N_S} D_{ij}\alpha_j,
+	 * \f]
+	 * and
+	 * \f[
+	 * F^h = \sum_{i=1}^{N_S} h_i \rho_i \sum_{j=1}^{N_S} D_{ij}\alpha_j,
+	 * \f]
+	 * where \f$\alpha_j\f$ is some species-valued vector.
+	 *
+	 * @see equilibriumFickP
+	 * @see equilibriumFickT
+	 * @see equilibriumFickXe
+	 */
+	void equilDiffFluxFacs(double* const p_F);
 
 private:
 

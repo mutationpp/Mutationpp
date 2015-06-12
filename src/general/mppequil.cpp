@@ -659,7 +659,8 @@ int main(int argc, char** argv)
     std::string name, units;
     
     double* species_values = new double [mix.nSpecies()];
-    double* temp           = new double [mix.nSpecies()];
+    double* temp           = new double [
+		std::max(mix.nSpecies(), mix.nElements()*mix.nElements())];
     double* sjac_exact     = new double [mix.nSpecies()*mix.nSpecies()];
     double* sjac_fd        = new double [mix.nSpecies()*mix.nSpecies()];
     double* temp2          = new double [mix.nSpecies()];
@@ -930,15 +931,15 @@ int main(int argc, char** argv)
                 } else if (name == "newts") {
                     cout << setw(column_widths[cw++]) << mix.nEquilibriumNewtons();
                 } else if (name == "Fp_k") {
-                    mix.equilibriumFickP(temp);
+                    mix.equilDiffFluxFacsP(temp);
                     for (int i = 0; i < mix.nElements(); ++i)
                         cout << setw(column_widths[cw++]) << temp[i];
                 } else if (name == "Ft_k") {
-                    mix.equilibriumFickT(temp);
+                    mix.equilDiffFluxFacsT(temp);
                     for (int i = 0; i < mix.nElements(); ++i)
                         cout << setw(column_widths[cw++]) << temp[i];
                 } else if (name == "Fz_k") {
-                    mix.equilibriumFickXe(temp);
+                    mix.equilDiffFluxFacsZ(temp);
                     for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
                         cout << setw(column_widths[cw++]) << temp[k];
                 }
