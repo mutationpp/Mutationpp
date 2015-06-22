@@ -1,0 +1,11 @@
+<mixture mechanism="O2_reac" thermo_db="RRHO" gsi_mechanism="gamma_O2">
+    
+    <default_element_fractions>
+        O  : 1.
+    </default_element_fractions>
+    
+    <species>
+        O O2
+    </species>
+    
+</mixture>

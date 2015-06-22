@@ -1,0 +1,11 @@
+<mixture mechanism="N2_frc_reac" thermo_db="RRHO" gsi_mechanism="N2_frc_gsi">
+    
+    <default_element_fractions>
+        N  : 1.0
+    </default_element_fractions>
+    
+    <species>
+        N N2 
+    </species>
+    
+</mixture>

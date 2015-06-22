@@ -1714,6 +1714,80 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<!-- Hydrogen diatomic cation -->
+	<species name="H2+">
+		<stoichiometry>
+			e-: -1,
+			H: 2
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+            <linear>
+				yes
+			</linear>
+            <rotational_temperature units="K">
+				43.068
+			</rotational_temperature>
+            <steric_factor>
+				2
+			</steric_factor>
+            <vibrational_temperatures units="K">
+				3341.327
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+                <level degeneracy="2" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				1494672.430
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+	
+	<!-- Helium -->
+    <species name="He">
+        <stoichiometry>
+            He: 1
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				0.0
+			</formation_enthalpy>
+		</thermodynamics>
+    </species>
+    
+    <!-- Helium Cation-->
+    <species name="He+">
+        <stoichiometry>
+            e-: -1,
+            He: 1
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="2" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				2378521.473
+			</formation_enthalpy>
+		</thermodynamics>
+    </species>
+    
+    <!-- Helium++ -->
+	<species name="He++">
+		<stoichiometry>
+			e-: -2,
+			He: 1
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				5250514.307
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
  
 	<!-- Water -->
 	<species name="H2O">

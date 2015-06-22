@@ -1,14 +1,12 @@
 <mixture mechanism="parkair01" thermo_db="RRHO" thermal_conductivity="LDLT" viscosity="LDLT">
 
-    <default_element_fractions>
-        e- : 0.0,
-        N  : 0.79,
-        O  : 0.21
-    </default_element_fractions>
-    
     <species>
         e- N N+ O O+ NO N2 N2+ O2 O2+ NO+
     </species>
+    
+    <element_compositions default="air">
+        <composition name="air"> N:0.79, O: 0.21 </composition>
+    </element_compositions>
     
 </mixture>
 

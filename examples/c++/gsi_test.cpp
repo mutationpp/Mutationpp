@@ -22,54 +22,64 @@ int main()
 {
 //================================================================================================================
     // Initializing the library
-    Mutation::MixtureOptions opts("air5gsi");
+    Mutation::MixtureOptions opts("O2_gamma_001");
     opts.setStateModel("ChemNonEq1T");
     opts.setThermodynamicDatabase("RRHO");
     Mutation::Mixture mix(opts);
 
-//================================================================================================================
-
     const int ns   = mix.nSpecies();
-    double* p_rhoi = new double [ns];
-    double* p_output = new double [ns];
-    double* p_rhoeint = new double [1];
+    std::vector<double> v_rhoi(ns);
+    std::vector<double> v_wall_production_rates(ns);
+    std::vector<double> v_mole_fractions(ns);
+    std::vector<double> v_mole_fractions_edge(ns);
 
-//================================================================================================================
-    // Useful to know the species indices
-    const int iN   = mix.speciesIndex("N");
+    std::vector<double> v_diffusion_velocities(ns);
+    std::vector<double> v_mole_gradients(ns);
+
+    std::vector<double> v_function(ns);
+
+    double bulk_temperature;
+    double wall_temperature;
+
     const int iO   = mix.speciesIndex("O");
-    const int iNO  = mix.speciesIndex("NO");
-    const int iN2  = mix.speciesIndex("N2");
     const int iO2  = mix.speciesIndex("O2");
 
-//============================================================================
-    // Conditions T = 10000K and p = 1000Pa
-    // Initial partial densities
-
-    p_rhoi[iN] = 0.000133077;
-    p_rhoi[iO] = 4.04114e-05;
-    p_rhoi[iNO] = 3.79216e-10;
-    p_rhoi[iN2] = 1.35089e-08;
-    p_rhoi[iO2] = 5.56891e-12;
-
-    double rho = p_rhoi[iN] + p_rhoi[iO] + p_rhoi[iNO] + p_rhoi[iN2] + p_rhoi[iO2];
+// Conditions T = 3000K and p = 100Pa
+    v_rhoi[iO]  = 6.00781e-05;
+    v_rhoi[iO2] = 8.12943e-06;
+    double total_rho = v_rhoi[iO] + v_rhoi[iO2];
+    wall_temperature = 300.e0;
     
-    *p_rhoeint = 10000.0e0;
+    int set_state_with_rhoi_T = 1;
+    mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T);
+    for (int i_ns ; i_ns < ns ; i_ns++){
+        v_mole_fractions_edge[i_ns] = mix.X()[i_ns];
+    }
 
-//===========================================================================
-    // Initializing Mutation++
-    
-    int state = 1;
-    //mix.setState(p_rhoi,p_rhoeint, state); 
-    mix.setWallState(p_rhoi, p_rhoeint);
-    //mix.netGSIProductionRates(p_output);
-    
-    std::cout << "Output = " << std::endl;
-    //std::cout << "Output = " << p_output[0] << endl;
- 
-//================================================================================================================ 
-    // Clean up
-    delete [] p_rhoi;
-    delete [] p_rhoeint;
-    delete [] p_output;
+    double gradient_distance_wall_bulk = 1.e0;
+    mix.solveWallMassBalance(&v_rhoi[0], &v_rhoi[0], &wall_temperature, gradient_distance_wall_bulk);
+    std::cout << "The result for the partial densities are: " << v_rhoi[0] << " " << v_rhoi[1] << std::endl;
+
+//================================================================================================================
+
+    //
+    mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
+    mix.setWallState(&v_rhoi[0], &wall_temperature);
+
+    for (int i_ns ; i_ns < ns ; i_ns++){
+        v_mole_fractions[i_ns] = mix.X()[i_ns];
+        v_mole_gradients[i_ns] = ( v_mole_fractions[i_ns] - v_mole_fractions_edge[i_ns] ) / gradient_distance_wall_bulk;
+    }
+
+    double electric_field = 0.E0;
+    mix.stefanMaxwell(&v_mole_gradients[0], &v_diffusion_velocities[0], electric_field);
+    mix.netGSIProductionRates(&v_wall_production_rates[0]);
+    std::cout << "The wall production rates are: " << v_wall_production_rates[0] << " " << v_wall_production_rates[1] << std::endl;
+
+    for( int i_ns ; i_ns < ns ; i_ns++){
+        v_function[i_ns] = v_rhoi[i_ns] * v_diffusion_velocities[i_ns] - v_wall_production_rates[i_ns];
+    }
+
+    std::cout << "The residual is equal to: "<< v_function[0] << " " << v_function[1] << std::endl;
+
 }

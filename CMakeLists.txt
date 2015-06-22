@@ -7,6 +7,27 @@
 # author: J.B. Scoggins (scoggins@vki.ac.be)
 #
 ################################################################################
+#
+# Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+#
+# This file is part of MUlticomponent Thermodynamic And Transport
+# properties for IONized gases in C++ (Mutation++) software package.
+#
+# Mutation++ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Mutation++ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Mutation++.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
@@ -143,6 +164,8 @@ FILE(GLOB mechanisms data/mechanisms/*.xml)
 install(FILES ${mechanisms} DESTINATION include/mutation++_data/mechanisms)
 FILE(GLOB mixtures data/mixtures/*.xml)
 install(FILES ${mixtures} DESTINATION include/mutation++_data/mixtures)
+FILE(GLOB gsi data/gsi/*.xml)
+install(FILES ${gsi} DESTINATION include/mutation++_data/gsi)
 
 ################################################################################
 # CTest
@@ -153,9 +176,3 @@ if (ENABLE_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()
-
-################################################################################
-# Gas-Surface Interaction
-################################################################################
-#option (ENABLE_GSI
-#     "Enable Gas-Surface Interaction Module" OFF)

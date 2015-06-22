@@ -1,12 +1,11 @@
 <mixture name="N2">
     
-    <default_element_fractions>
-        e- : 0.0,
-        N  : 1.0
-    </default_element_fractions>
-    
     <species>
         N N2 e- N+ N2+
     </species>
+    
+    <element_compositions default="default">
+        <composition name="default"> e-:0.0, N:1.0 </composition>
+    </element_compositions>
     
 </mixture>
