@@ -1,11 +1,41 @@
+/**
+ * @file Mixture.h
+ *
+ * @brief Provides Mixture class declaration. @see Mutation::Mixture
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef MUTATION_MIXTURE_H
 #define MUTATION_MIXTURE_H
 
+#include <vector>
+
 #include "Thermodynamics.h"
 #include "Kinetics.h"
-#include "TransferModel.h"
 #include "Transport.h"
 #include "MixtureOptions.h"
+#include "StateModel.h"
+#include "Composition.h"
 #include "GasSurfaceInteraction.h"
 
 namespace Mutation {
@@ -16,9 +46,10 @@ namespace Mutation {
  * Thermodynamics, Transport, and Kinetics classes.  A Mixture object can be
  * constructed using a mixture file name or a MixtureOptions object.
  *
- * @see Thermodynamics
- * @see Transport
- * @see Kinetics
+ * @see Thermodynamics::Thermodynamics
+ * @see Transport::Transport
+ * @see Kinetics::Kinetics
+ * @see gsi::GasSurfaceInteraction
  */
 class Mixture
     : public Thermodynamics::Thermodynamics, 
@@ -40,30 +71,38 @@ public:
     /** 
      * Destructor.
      */
-    ~Mixture()
-    {
-       if (mp_transfer != NULL) delete mp_transfer;
-    }
+    ~Mixture(){}
+//        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
      * Provides energy transfer source terms based on the current state of the
      * mixture.
      */
     void energyTransferSource(double* const p_source) {
-        if (mp_transfer != NULL)
-            mp_transfer->source(p_source);
+         state()->energyTransferSource(p_source);
     }
+
+    /**
+     * Add a named element composition to the mixture which may be retrieved
+     * with getComposition().
+     */
+    void addComposition(
+        const Mutation::Thermodynamics::Composition& c,
+        bool make_default = false);
+
+    /**
+     * Gets the element mole or mass fractions associated with a named
+     * composition in the mixture.  Returns false if the composition does not
+     * exist in the list, true otherwise.
+     */
+    bool getComposition(
+        const std::string& name, double* const p_vec,
+        Mutation::Thermodynamics::Composition::Type type =
+            Mutation::Thermodynamics::Composition::MOLE) const;
 
 private:
 
-    Transfer::TransferModel* mp_transfer;
-    
-/**
- * @todo To remover the following lines
- */
-//    #ifdef GSIFLAG
-//        gsi::GasSurfaceInteraction* mp_gsi;
-//    #endif
+    std::vector<Mutation::Thermodynamics::Composition> m_compositions;
 
 }; // class Mixture
 

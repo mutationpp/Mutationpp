@@ -1,3 +1,30 @@
+/**
+ * @file Vector.h
+ *
+ * @brief Defines the Vector classes.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef NUMERICS_VECTOR_H
 #define NUMERICS_VECTOR_H
 
@@ -12,7 +39,6 @@
 
 namespace Mutation {
     namespace Numerics {
-
 
 
 template<typename T, typename E> class MatExpr;
@@ -795,7 +821,7 @@ template <typename T, typename ArrayType>
 void setFancyFormat(std::ostream& os, const ArrayType& array, size_t& width, 
     std::ios::fmtflags& flags)
 {
-    const size_t max_width = 11;
+    const size_t max_width = 20;
     const size_t n = array.size();
     
     bool all_ints = true;
@@ -827,18 +853,18 @@ void setFancyFormat(std::ostream& os, const ArrayType& array, size_t& width,
         } 
             // Otherwise, integers that fit in the maximum width
     } else {
-        width = sig_upper - sig_lower + 5;
-        if (width > max_width) {
+        width = std::max(sig_upper - sig_lower, 5) + 5;
+        //if (width > max_width) {
             // Floating point numbers that must use exponential form to fit with
             // desired precision
             width = max_width;
             os.precision(max_width-8);
             os.setf(std::ios::scientific, std::ios::floatfield);
-        } else {
-            // Floating point numbers that can fit with desired precision
-            os.precision(2-sig_lower);
-            os.setf(std::ios::fixed, std::ios::floatfield);
-        }
+       // } else {
+       //     // Floating point numbers that can fit with desired precision
+       //     os.precision(std::max(2-sig_lower, 5));
+       //     os.setf(std::ios::fixed, std::ios::floatfield);
+       // }
     }
     
     os.setf(std::ios::right, std::ios::adjustfield);

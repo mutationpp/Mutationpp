@@ -1,3 +1,30 @@
+/**
+ * @file MillikanWhite.cpp
+ *
+ * @brief Implementation of classes related to Millikan and White model.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 
 #include "MillikanWhite.h"
 #include "Utilities.h"
@@ -23,20 +50,21 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     m_index = thermo.speciesIndex(name);
     
     // Get the limiting cross-section if available
-    node.getAttribute("omegav", m_omegav, 3.0E-17);
+    node.getAttribute("omegav", m_omegav, 3.0E-21);
     
     const Species& vibrator = thermo.species(name);
     
     // Get characteristic vibrational temperature
-    double theta;
-    //if (vibrator.hasRRHOParameters())
-   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-    //else {
+    
+    double theta=0.0;
+//    if (vibrator.hasRRHOParameters())
+//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+//    else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
-        exit(1);
-    //}
+//        exit(1);
+//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -49,7 +77,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Compute reduced mass of this pair
         mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight()) * 1.0E3;
+             (vibrator.molecularWeight() + partner.molecularWeight());
             
         // Use a and b data from data file or use the defaults if the pair
         // is not present in the file
@@ -72,20 +100,20 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 
 MillikanWhiteVibrator::MillikanWhiteVibrator(
     const std::string& name, const class Thermodynamics& thermo)
-    : m_omegav(3.0E-17), m_index(thermo.speciesIndex(name))
+    : m_omegav(3.0E-21), m_index(thermo.speciesIndex(name))
 {
     const Species& vibrator = thermo.species(name);
     
     // Get characteristic vibrational temperature
-    double theta, mu;
-   // if (vibrator.hasRRHOParameters())
-   //     theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-   // else {
+    double theta = 0.0, mu;
+//    if (vibrator.hasRRHOParameters())
+//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
+//    else {
         cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
              << "RRHO data present in species.xml!" << endl;
-        exit(1);
-    //}
+//        exit(1);
+//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -96,7 +124,7 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Compute reduced mass of this pair
         mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight()) * 1.0E3;
+             (vibrator.molecularWeight() + partner.molecularWeight());
         
         // Add Millikan-White data using defaults
         m_partners.push_back(MillikanWhitePartner(mu, theta));
@@ -144,5 +172,5 @@ MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
 
 //==============================================================================
 
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation

@@ -1,3 +1,30 @@
+/**
+ * @file MillikanWhite.h
+ *
+ * @brief Declaration of classes related to Millikan and White model.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 
 #ifndef MILLIKAN_WHITE_H
 #define MILLIKAN_WHITE_H
@@ -25,11 +52,11 @@ public:
     {}
     
     /**
-     * Construct using default values of a and b based on mu and theta_v.
+     * Construct using default values of a and b based on mu and theta.
      */
     MillikanWhitePartner(double mu, double theta)
-        : m_a(1.16E-3*std::sqrt(mu)*std::pow(theta, 4.0/3.0)),
-          m_b(0.015*std::pow(mu, 0.25)),
+        : m_a(1.16E-3*std::sqrt(mu*1000.0)*std::pow(theta, 4.0/3.0)),
+          m_b(0.015*std::pow(mu*1000.0, 0.25)),
           m_mu(mu)
     { }
     
@@ -78,7 +105,7 @@ public:
     
     /**
      * Returns the limiting cross-section for vibrational excitation at 50,000 K
-     * for this vibrator.  Defaults to 3.0E-17 unless given differently in the 
+     * for this vibrator.  Defaults to 3.0E-21 unless given differently in the 
      * data file.
      */
     double omega() const {

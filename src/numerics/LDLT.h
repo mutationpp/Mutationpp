@@ -1,3 +1,30 @@
+/**
+ * @file LDLT.h
+ *
+ * @brief Provides LDLT class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef NUMERICS_LDLT_H
 #define NUMERICS_LDLT_H
 
@@ -12,6 +39,7 @@ namespace Mutation {
 
 
 /**
+ * @ingroup dirsol
  * Performs the LDLT decomposition of an NxN symmetric positive definite
  * matrix A = LDL' and provides the solution algorithm for solving the SPD 
  * system Ax = b.
@@ -67,7 +95,6 @@ template <typename T>
 template <typename E>
 bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
 {
-    
     m_L = mat;
     const size_t n = m_L.rows();
     m_work.resize(n);
@@ -76,21 +103,22 @@ bool LDLT<T>::setMatrix(const SymMatExpr<T, E>& mat)
         for (int j = 0; j < i; ++j)
             m_work(j) = m_L(j,j) * m_L(i,j);
         
+        double& Lii = m_L(i,i);
         for (int j = 0; j < i; ++j)
-            m_L(i,i) -= m_work(j) * m_L(i,j);
+            Lii -= m_work(j) * m_L(i,j);
         
-        if (m_L(i,i) == static_cast<T>(0)) {
+        if (Lii == static_cast<T>(0)) {
             //std::cerr << "Calling LDLT decomposition with singular matrix!" << std::endl;
             //exit(1);
         	return false;
         }
         
-        for (int j = 0; j < i; ++j)
-            for (int k = i+1; k < n; ++k)
-                m_L(k,i) -= m_L(k,j) * m_work(j);
-        
-        for (int k = i+1; k < n; ++k)
-            m_L(k,i) /= m_L(i,i);
+        for (int k = i+1; k < n; ++k) {
+            double& Lki = m_L(k,i);
+            for (int j = 0; j < i; ++j)
+                Lki -= m_L(k,j) * m_work(j);
+            Lki /= Lii;
+        }
     }
 
     return true;

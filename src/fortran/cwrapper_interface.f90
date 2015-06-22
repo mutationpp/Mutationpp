@@ -1,3 +1,26 @@
+!!> @file cwrapper_interface.f90
+
+!!
+!! Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+!!
+!! This file is part of MUlticomponent Thermodynamic And Transport
+!! properties for IONized gases in C++ (Mutation++) software package.
+!!
+!! Mutation++ is free software: you can redistribute it and/or modify
+!! it under the terms of the GNU Lesser General Public License as
+!! published by the Free Software Foundation, either version 3 of the
+!! License, or (at your option) any later version.
+!!
+!! Mutation++ is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!! GNU Lesser General Public License for more details.
+!!
+!! You should have received a copy of the GNU Lesser General Public
+!! License along with Mutation++.  If not, see
+!! <http://www.gnu.org/licenses/>.
+!!
+
 !!
 !! Provides an explicit interface for all Mutation++ functions which have a 
 !! non-void return value which is need to compile user fortran codes.
@@ -73,9 +96,6 @@ module mutationpp
         real(kind=8) function mpp_viscosity()
         end function
 
-        real(kind=8) function mpp_frozen_thermal_conductivity()
-        end function
-
         real(kind=8) function mpp_equilibrium_thermal_conductivity()
         end function
         
@@ -93,7 +113,7 @@ module mutationpp
    
         real(kind=8) function mpp_sigma()
         end function
-   
+        
     end interface
 
 end module mutationpp

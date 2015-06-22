@@ -1,17 +1,6 @@
 #include "GasSurfaceInteraction.h"
 #include "Utilities.h"
-
-/**
- * @todo list:
- * -> Make compilation of GSI obligatory. DONE
- * -> Add Ablation file. And everything that this includes.
- * -> Update the branch with trunk.
- * -> Finish with the SurfaceProperties parser.
- * -> Finish with the Rate Manager.
- * -> Finish with the Rate Laws.
- * -> Add the ability to understand "wall" phase species. Discuss about the generality of this implementation with the index.
- * -> In GSIReaction change thermo.nSpecies -> a member in order to reduce cost.
- */
+#include "Vector.h"
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -19,117 +8,155 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace gsi {
       
-      using Mutation::Thermodynamics::Thermodynamics;
-      
 //==============================================================================
       
-GasSurfaceInteraction::GasSurfaceInteraction(const Thermodynamics& thermo, std::string gsi_catalysis_mechanism_file/** @todo ablation , std::string gsi_ablation_mechanism_file*/):
-                                              m_thermo(thermo)
+GasSurfaceInteraction::GasSurfaceInteraction(Mutation::Thermodynamics::Thermodynamics& thermo,
+                                             Mutation::Transport::Transport& transport,
+                                             std::string gsi_catalysis_mechanism_file)
+                                             : m_thermo(thermo),
+                                               m_transport(transport),
+                                               m_wall_state_set(false),
+                                               // mp_builder_gassurfaceinteraction(NULL),
+                                               mp_wall_solver(NULL)
 {
-    if (gsi_catalysis_mechanism_file == "none" /** @todo ablation && gsi_ablation_mechanism_file == "none"*/){ return;}
+
+    if (gsi_catalysis_mechanism_file == "none"){ return; }
     
-    if (gsi_catalysis_mechanism_file != "none"){
-    
-        gsi_catalysis_mechanism_file = 
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/gsi/" +
-        gsi_catalysis_mechanism_file + ".xml";
-    
-        IO::XmlDocument doc(gsi_catalysis_mechanism_file);        
-        IO::XmlElement root = doc.root();
-    
-        if (root.tag() != "gsi_mechanism") {
-            std::cout << "Root element in gsi_mechanism file " << gsi_catalysis_mechanism_file
-                      << " is not of 'gsi_mechanism' type!";
-            exit(1); 
+    gsi_catalysis_mechanism_file =
+    getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/gsi/" +
+    gsi_catalysis_mechanism_file + ".xml";
+
+    IO::XmlDocument doc(gsi_catalysis_mechanism_file);
+    IO::XmlElement root = doc.root();
+
+    if (root.tag() != "gsi_mechanism") {
+        std::cout << "Root element in gsi_mechanism file " << gsi_catalysis_mechanism_file
+                  << " is not of 'gsi_mechanism' type!" << std::endl;
+        exit(1);
+    }
+
+    root.getAttribute("category", m_category, m_category);
+    if (m_category != "catalysis") {
+        std::cout << "The Gas-Surface interaction category in the "
+           << gsi_catalysis_mechanism_file << " file is not of 'catalysis' type!" << std::endl;
+        exit(1);
+    }
+
+    root.getAttribute("model", m_catalytic_model, m_catalytic_model);
+
+    // mp_builder_gassurfaceinteraction = new BuilderGasSurfaceInteraction( m_catalytic_model, m_thermo );
+
+    if (m_catalytic_model == "gamma"){
+        mp_surface_properties = NULL;
+
+        IO::XmlElement::const_iterator iter = root.begin();
+        for ( ; iter != root.end(); ++iter) {
+            if (iter->tag() == "reaction")
+                addCatalyticReaction(CatalysisReaction(*iter, thermo, m_catalytic_model, mp_surface_properties));
         }
-        
-        root.getAttribute("category", m_category, m_category);
-        if (m_category != "catalysis") {
-            std::cout << "The Gas-Surface interaction category in the " 
-	              << gsi_catalysis_mechanism_file << " file is not of 'catalysis' type!";
-            exit(1); 
-        }
-        
-        /** @todo There are two ifs for the m_catalytic_model. One here and one in GSIReaction. Remove the other and only keep this one.*/
-        root.getAttribute("model", m_catalytic_model, m_catalytic_model);
-        if (m_catalytic_model == "gamma"){
-	    /** @todo Here the rate manager should be added. */ 
-            IO::XmlElement::const_iterator iter = root.begin();
-            for ( ; iter != root.end(); ++iter) {        
-                if (iter->tag() == "reaction")
-                    addCatalyticReaction(CatalysisReaction(*iter, thermo, m_catalytic_model));
-            }
-        }
-        else if (m_catalytic_model == "finite_rate_chemistry"){ 
-	    /** @todo Here the rate manager should be added. */
-            ;
-        }
-        else{
-            std::cout << "The catalytic model " << m_catalytic_model 
-            << " has not been implemented yet!";
-            exit(1);  
-        }
-        
+
         // Setup the rate manager
-        // mp_rates = new RateManager(thermo.nSpecies(), m_reactions);
+        mp_catalysis_rates = new CatalysisGammaRateManager( m_thermo, v_catalytic_reactions );
+        mp_wall_state = new WallState( m_thermo );
+    }
+    else if (m_catalytic_model == "finite_rate_chemistry"){
+        root.getAttribute("surface", m_surface, m_surface);
+        mp_surface_properties = new CatalysisSurfaceProperties(m_surface, m_thermo);
+
+        IO::XmlElement::const_iterator iter = root.begin();
+        for ( ; iter!=root.end(); ++iter) {
+            if (iter->tag() == "reaction")
+                addCatalyticReaction(CatalysisReaction(*iter, thermo, m_catalytic_model, mp_surface_properties));
+        }
+        mp_catalysis_rates = new CatalysisFRCRateManager( thermo, mp_surface_properties, v_catalytic_reactions );
+        mp_wall_state = new WallStateFRC( *mp_surface_properties, m_thermo );
+    }
+    else{
+        std::cout << "The catalytic model " << m_catalytic_model
+        << " has not been implemented yet!";
+        exit(1);
+    }
         
-    }       
-    
-    /** @todo ablation if (gsi_ablation_mechanism_file != "none"){ 
-        std::cerr << "Ablation Module has not been implemented yet" << endl;
-        exit(1);}*/
-    
     //Closing the GSI reaction mechanisms
     closeGSIReactions(true);
-        
 }
 
 //==============================================================================
 
 GasSurfaceInteraction::~GasSurfaceInteraction()
 {
-    delete [] mp_rhoi;
-    delete [] mp_Twall;
+    if (!mp_catalysis_rates) delete mp_catalysis_rates;
+    if (!mp_wall_state) delete mp_wall_state;
+    if (!mp_surface_properties) delete mp_surface_properties;
+    if (!mp_wall_solver) delete mp_wall_solver;
+//    if (!mp_builder_gassurfaceinteraction) delete mp_builder_gassurfaceinteraction;
 }
 
 
+//==============================================================================
+//
+//void GasSurfaceInteraction::getGammaCoefficientforReactioni(const int& i_reaction, double* p_gamma_coefficients){
+//
+//    p_gamma_coefficients = v_catalytic_reactions[i_reaction].CatalysisrateLaw()->getgammaCoefficient();
+//
+//}
+//
 //==============================================================================
 
 void GasSurfaceInteraction::netGSIProductionRates(double * const p_wdot)
 {
-  /**
-   * @todo The general expression for the production rate for the gamma model it is 
-   *
-   *   omega_i = m_i M_i \sum_{reactions} \nu_ri * gamma_r - \sum_{r = reactions} \sum_{k = species} \mu_rik m_k M_k
-   */
+    if (!m_wall_state_set){
+       std::cerr << "Gas-Surface Interaction Error: The state of the wall should be set before calling for the gas-surface interaction production rates." << endl;
+       std::cerr << "Gas-Surface Interaction Error: Call the setWallState function with the partial densities and the wall temperatures" << endl;
+       exit(1);
+    }
   
-  
-    // Special case of no reactions
-//    if (nCatalyticReactions() == 0) {
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
-             p_wdot[i] = 0.;
-//    }
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        p_wdot[i] = 0.;
     
-    
+    if (nCatalyticReactions() != 0) {
+        mp_catalysis_rates->computeRate(*mp_wall_state, p_wdot);
+    }
+
 }
 
 //==============================================================================
-/**
- * @todo Passing a pointer. In the future maybe passing by reference, but create 
- *       the copy constructor.
- */
+
+void GasSurfaceInteraction::solveWallMassBalance(double * const p_rhoi_wall, const double * const p_rhoi_edge,
+                                                 const double * const p_Twall, const double& dx_gradient_distance_wall_edge)
+{
+    int m_ns = m_thermo.nSpecies();
+
+    if (mp_wall_solver == NULL){
+        mp_wall_solver = new WallSolver(m_thermo, m_transport, mp_wall_state, mp_catalysis_rates);
+    }
+
+    mp_wall_solver->setDataSolver(p_rhoi_edge, p_Twall, dx_gradient_distance_wall_edge); 
+    Mutation::Numerics::RealVector v_solution(m_thermo.nSpecies());
+    for (int i_ns = 0 ; i_ns < m_ns ; i_ns++){
+        v_solution(i_ns) = p_rhoi_wall[i_ns];
+    }
+
+    // This is something that can be done internally I guess! Maybe method of mp_wall_solver-> solveUsingPartialDensities(double * const p_rhoi_wall);
+    mp_wall_solver->initializeSolutionwithPartialDensities( v_solution );
+
+    mp_wall_solver->retrieveInitialMolarFractions( v_solution );
+    v_solution = mp_wall_solver->solve( v_solution );
+
+    mp_wall_solver->returnSolutioninPartialDensities( v_solution );
+
+    for (int i_ns = 0; i_ns < m_ns ; i_ns++){
+        p_rhoi_wall[i_ns] = v_solution(i_ns);
+    }
+
+}
+
+//==============================================================================
 
 void GasSurfaceInteraction::addCatalyticReaction(const CatalysisReaction& catalytic_reaction)
 {
-    m_catalytic_reactions.push_back(catalytic_reaction);
+    v_catalytic_reactions.push_back(catalytic_reaction);
 }
-
-//==============================================================================
-
-//void GasSurfaceInteraction::addGSIReaction(const GSIReaction& gsi_reaction)
-//{
-//    m_gsi_reactions.push_back(gsi_reaction);
-//}
 
 //==============================================================================
 
@@ -142,10 +169,11 @@ void GasSurfaceInteraction::closeGSIReactions(const bool validate_gsi_mechanism)
    
        bool is_valid = true;
        
-       /**
-	* @todo For this in the GSIReaction the Big Three should be implemented
-	*  http://stackoverflow.com/questions/4172722/what-is-the-rule-of-three
-	*/
+/**
+ * @todo For this in the GSIReaction the Big Three should be implemented
+ *  http://stackoverflow.com/questions/4172722/what-is-the-rule-of-three
+ */
+       
        //Check for duplicate gsi reactions
        //for (size_t i = 0; i < nCatalyticReactions()-1; i++) {
        //    for (size_t j = i+1; j < nGSIReactions(); ++j) {
@@ -193,23 +221,11 @@ void GasSurfaceInteraction::closeGSIReactions(const bool validate_gsi_mechanism)
       
 void GasSurfaceInteraction::setWallState(const double* const p_rhoi, const double* const p_rhoie)
 {
-    /**
-     * @todo Make it more general in case of multi temperature models.
-     * @todo Overload it if needed
-     * @todo Here I get a segmentation fault
-     */
-    mp_rhoi = new double (m_thermo.nSpecies());
-    mp_Twall = new double (1);
-    
-    mp_Twall[0] = p_rhoie[0];
-    
-    
-    for (int i = 0; i < m_thermo.nSpecies(); ++i) {
-        mp_rhoi[i] = p_rhoi[i];
-    }
-    
+    mp_wall_state->setWallState(p_rhoi, p_rhoie);
+    m_wall_state_set = true;
 }
-
       
     }// namespace GSI
 } // namespace Mutation
+
+//==============================================================================

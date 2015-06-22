@@ -1,3 +1,29 @@
+/**
+ * @file Nasa9DB.cpp
+ *
+ * @brief Provides Nasa-9 thermodynamic database.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 #include "NasaDB.h"
 #include "Nasa9Polynomial.h"
@@ -41,9 +67,9 @@ protected:
             line = String::trim(line);
             if (line != "" && line[0] != '!') break;
         }
-        
+
         // Skip the "thermo" header if it exists
-        if (length > 6 && String::toLowerCase(line.substr(0,6)) == "thermo")
+        if (length > 5 && String::toLowerCase(line.substr(0,6)) == "thermo")
             std::getline(is, line);
         // Else put the curser back to the beginning of the line
         else
@@ -65,7 +91,9 @@ protected:
             return Species();
         
         // Species name
-        std::string name = Utilities::String::trim(line.substr(0,24));
+        std::vector<std::string> tokens;
+        std::string name =
+            Utilities::String::tokenize(line.substr(0,24), tokens, " ")[0];
 
         // Phase
         getline(is, line);
@@ -133,13 +161,16 @@ protected:
         // Keep reading species from file until we have found all the ones we
         // need
         std::string line, name;
+        std::vector<std::string> tokens;
         while (species_names.size() > 0) {
             // Read each line until encountering a species that we want
             std::getline(is, line);
             
             // Is this the first line of a species that we need?
-            iter = species_names.find(
-                Utilities::String::trim(line.substr(0,24)));                
+            tokens.clear();
+            name =
+                Utilities::String::tokenize(line.substr(0,24), tokens, " ")[0];
+            iter = species_names.find(name);
             if (iter != species_names.end()) {
                 is.seekg(
                     -static_cast<int>(line.length()+1), std::ios_base::cur) >>

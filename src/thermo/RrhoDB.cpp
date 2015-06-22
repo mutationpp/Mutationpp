@@ -1,3 +1,29 @@
+/**
+ * @file RrhoDB.cpp
+ *
+ * @brief Provides a Rigid-Rotator Harmonic Oscillator thermodynamic database.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 #include "Constants.h"
 #include "ThermoDB.h"
@@ -62,6 +88,7 @@ typedef struct {
 typedef struct {
     unsigned int offset;
     unsigned int nheavy;
+    unsigned int nlevels;
     int* p_nelec;
     ElecLevel* p_levels;
 } ElectronicData;
@@ -79,7 +106,7 @@ public:
     RrhoDB(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
-          m_use_tables(false)
+          m_use_tables(true)
     { }
     
     /**
@@ -97,10 +124,10 @@ public:
         delete [] m_elec_data.p_nelec;
         delete [] m_elec_data.p_levels;
         delete [] mp_part_sst;
+        delete [] mp_el_bfacs;
         
         if (m_use_tables) {
-            delete mp_hel_table;
-            delete mp_cpel_table;
+            delete mp_el_bfac_table;
         }
     }
     
@@ -141,11 +168,12 @@ public:
         // Translation
         if (cpt == NULL) {
             if (cp != NULL)
-                cpT(cp, PlusEq());
+                //cpT(cp, PlusEq());
+                cpT(cp, Eq());
         } else {
             cpT(cpt, Eq());
             if (cp != NULL) 
-                LOOP(cp[i] += cpt[i]);
+                LOOP(cp[i] = cpt[i]);
         }
         
         // Rotation
@@ -179,30 +207,30 @@ public:
         }
     }
     
-    /**
-     * Computes the species vibrational specific heats at the given temperature
-     * nondimensionalized by Ru.
-     */
-    void cpv(double Tv, double* const p_cpv)
-    {
-        int ilevel = 0;
-        double sum, fac1, fac2;
-        LOOP_MOLECULES(
-            sum = 0.0;
-            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
-                fac1 = mp_vib_temps[ilevel] / Tv;
-                fac2 = std::exp(fac1);
-                fac1 = fac1 / (fac2 - 1.0);
-                sum += fac2*fac1;
-            }
-            p_cpv[j] = sum;
-        )
-    }
-
-    void cpel(double Tel, double* const p_cpel)
-    {
-        CpelFunctor()(Tel, p_cpel, m_elec_data, Eq());
-    }
+//    /**
+//     * Computes the species vibrational specific heats at the given temperature
+//     * nondimensionalized by Ru.
+//     */
+//    void cpv(double Tv, double* const p_cpv)
+//    {
+//        int ilevel = 0;
+//        double sum, fac1, fac2;
+//        LOOP_MOLECULES(
+//            sum = 0.0;
+//            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+//                fac1 = mp_vib_temps[ilevel] / Tv;
+//                fac2 = std::exp(fac1);
+//                fac1 = fac1 / (fac2 - 1.0);
+//                sum += fac2*fac1;
+//            }
+//            p_cpv[j] = sum;
+//        )
+//    }
+//
+//    void cpel(double Tel, double* const p_cpel)
+//    {
+//        CpelFunctor()(Tel, p_cpel, m_elec_data, Eq());
+//    }
 
     /**
      * Computes the unitless species enthalpy \f$ h_i/R_U T_h\f$ of each
@@ -229,7 +257,7 @@ public:
         
         // Special case where we only want the total enthalpy
         if (ht == NULL && hr == NULL && hv == NULL && hel == NULL && 
-            hf == NULL) 
+            hf == NULL && h != NULL) 
         {
             hT(Th, Te, h, Eq());
             hR(Tr, h, PlusEq());
@@ -242,67 +270,78 @@ public:
         
         // Otherwise selectively choose what we want
         // Translational enthalpy
-        if (ht == NULL)
-            hT(Th, Te, h, Eq());
-        else {
+        if (ht == NULL) {
+            //hT(Th, Te, h, Eq());
+            if (h != NULL)
+                hT(Th, Te, h, EqDiv(Th));
+        } else {
             hT(Th, Te, ht, EqDiv(Th));
-            LOOP(h[i] = ht[i]);
+            if (h != NULL)
+                LOOP(h[i] = ht[i]);
         }
         
         // Rotatonal enthalpy
-        if (hr == NULL)
-            hR(Tr, h, PlusEqDiv(Th));
-        else {
+        if (hr == NULL) {
+            if (h != NULL)
+                hR(Tr, h, PlusEqDiv(Th));
+        } else {
             LOOP(hr[i] = 0.0);
             hR(Tr, hr, EqDiv(Th));
-            LOOP_MOLECULES(h[j] += hr[j]);
+            if (h != NULL)
+                LOOP_MOLECULES(h[j] += hr[j]);
         }
         
         // Vibrational enthalpy
-        if (hv == NULL)
-            hV(Tv, h, PlusEqDiv(Th));
-        else {
+        if (hv == NULL) {
+            if (h != NULL)
+                hV(Tv, h, PlusEqDiv(Th));
+        } else {
             LOOP(hv[i] = 0.0);
             hV(Tv, hv, EqDiv(Th));
-            LOOP_MOLECULES(h[j] += hv[j]);
+            if (h != NULL)
+                LOOP_MOLECULES(h[j] += hv[j]);
         }
             
         // Electronic enthalpy
-        if (hel == NULL)
-            hE(Tel, h, PlusEqDiv(Th));
-        else {
+        if (hel == NULL) {
+            if (h != NULL)
+                hE(Tel, h, PlusEqDiv(Th));
+        } else {
             LOOP(hel[i] = 0.0);
             hE(Tel, hel, EqDiv(Th));
-            LOOP(h[i] += hel[i]);
+            if (h != NULL)
+                LOOP(h[i] += hel[i]);
         }
         
         // Formation enthalpy
-        if (hf == NULL)
-            hF(h, PlusEqDiv(Th));
-        else {
+        if (hf == NULL) {
+            if (h != NULL)
+                hF(h, PlusEqDiv(Th));
+        } else {
             hF(hf, EqDiv(Th));
-            LOOP(h[i] += hf[i]);
+            if (h != NULL)
+                LOOP(h[i] += hf[i]);
         }
     }
     
-    void hv(double Tv, double* const p_hv)
-    {
-        int ilevel = 0;
-        double sum, fac1;
-        LOOP_MOLECULES(
-            sum = 0.0;
-            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
-                fac1 = mp_vib_temps[ilevel] / Tv;
-                sum += fac1 / (std::exp(fac1) - 1.0);
-            }
-            p_hv[j] = sum;
-        )
-    }
-
-    void hel(double Tel, double* const p_hel)
-    {
-        HelFunctor()(Tel, p_hel, m_elec_data, Eq());
-    }
+//    void hv(double Tv, double* const p_hv)
+//    {
+//        int ilevel = 0;
+//        double sum, fac1;
+//        LOOP_MOLECULES(
+//            sum = 0.0;
+//            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+//                fac1 = mp_vib_temps[ilevel] / Tv;
+//                sum += fac1 / (std::exp(fac1) - 1.0);
+//            }
+//            p_hv[j] = sum;
+//        )
+//    }
+//
+//    void hel(double Tel, double* const p_hel)
+//    {
+//        HelFunctor()(Tel, p_hel, m_elec_data, Eq());
+//    }
 
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
@@ -414,77 +453,35 @@ private:
     typedef PlusEquals<double> PlusEq;
     typedef MinusEquals<double> MinusEq;
 
-    class HelFunctor
+    class ElecBFacsFunctor
     {
     public:
         typedef ElectronicData DataProvider;
-        
-        void operator() (double T, double* p_h, const DataProvider& data) const
+
+        void operator() (double T, double* p_f, const DataProvider& data) const
         {
-            (*this)(T, p_h, data, Equals<double>());
+            (*this)(T, p_f, data, Equals<double>());
         }
-        
+
         template <typename OP>
         void operator () (
-            double T, double* p_h, const DataProvider& data, const OP& op) const
+            double T, double* p_f, const DataProvider& data, const OP& op) const
         {
-            double sum1, sum2, fac;
-            unsigned int ilevel = 0;
-            
-            op(p_h[0], 0.0);
-            
+            double fac;
+            int ilevel = 0;
+
             for (unsigned int i = 0; i < data.nheavy; ++i) {
-                sum1 = sum2 = 0.0;
-                if (data.p_nelec[i] > 0) {
-                    for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
-                        fac = data.p_levels[ilevel].g *
-                            std::exp(-data.p_levels[ilevel].theta / T);
-                        sum1 += fac;
-                        sum2 += fac * data.p_levels[ilevel].theta;
-                    }
-                    op(p_h[i+data.offset], sum2 / sum1);
-                } else {
-                    op(p_h[i+data.offset], 0.0);
-                }
-            }
-        }
-    };
-    
-    class CpelFunctor
-    {
-    public:
-        typedef ElectronicData DataProvider;
-        
-        void operator() (double T, double* p_cp, const DataProvider& data) const
-        {
-            (*this)(T, p_cp, data, Equals<double>());
-        }
-        
-        template <typename OP>
-        void operator () (
-            double T, double* p_cp, const DataProvider& data, const OP& op) const
-        {
-            double sum1, sum2, sum3, fac;
-            unsigned int ilevel = 0;
-            
-            op(p_cp[0], 0.0);
-            
-            for (unsigned int i = 0; i < data.nheavy; ++i) {
-                sum1 = sum2 = sum3 = 0.0;
-                if (data.p_nelec[i] > 1) {
-                    for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
-                        fac = data.p_levels[ilevel].g *
-                            std::exp(-data.p_levels[ilevel].theta / T);
-                        sum1 += fac;
-                        sum2 += fac * data.p_levels[ilevel].theta;
-                        sum3 += fac * data.p_levels[ilevel].theta *
-                            data.p_levels[ilevel].theta;
-                    }
-                    op(p_cp[i+data.offset], 
-                        (sum3*sum1 - sum2*sum2) / (T*T*sum1*sum1));
-                } else {
-                    op(p_cp[i+data.offset], 0.0);
-                    ilevel += data.p_nelec[i];
+                p_f[3*i+0] = 0.0;
+                p_f[3*i+1] = 0.0;
+                p_f[3*i+2] = 0.0;
+
+                for (int k = 0; k < data.p_nelec[i]; ++k, ilevel++) {
+                    fac = data.p_levels[ilevel].g *
+                        std::exp(-data.p_levels[ilevel].theta / T);
+                    p_f[3*i+0] += fac;
+                    p_f[3*i+1] += fac * data.p_levels[ilevel].theta;
+                    p_f[3*i+2] += fac * data.p_levels[ilevel].theta *
+                        data.p_levels[ilevel].theta;
                 }
             }
         }
@@ -677,13 +674,13 @@ protected:
         // Finally store the electronic energy levels in a compact form like the
         // vibrational energy levels
         m_elec_data.p_nelec = new int [m_na + m_nm];
-        int nelec = 0;
+        m_elec_data.nlevels = 0;
         LOOP_HEAVY(
             m_elec_data.p_nelec[i] = rrhos[j].nElectronicLevels();
-            nelec += m_elec_data.p_nelec[i];
+            m_elec_data.nlevels += m_elec_data.p_nelec[i];
         )
         
-        m_elec_data.p_levels = new ElecLevel [nelec];
+        m_elec_data.p_levels = new ElecLevel [m_elec_data.nlevels];
         int ilevel = 0;
         LOOP_HEAVY(
             const ParticleRRHO& rrho = rrhos[j];
@@ -699,12 +696,13 @@ protected:
         m_elec_data.nheavy = m_na + m_nm;
         
         if (m_use_tables) {
-            mp_hel_table = new Mutation::Utilities::LookupTable
-                <double, double, HelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
-            mp_cpel_table = new Mutation::Utilities::LookupTable<
-                double, double, CpelFunctor>(100.0, 20100.0, m_ns, m_elec_data);
+            mp_el_bfac_table = new Mutation::Utilities::LookupTable
+                <double, double, ElecBFacsFunctor>(
+                50.0, 50000.0, 3*(m_na+m_nm), m_elec_data, 0.005);
         }
         
+        mp_el_bfacs = new double [3*(m_na+m_nm)];
+
         // Compute the contribution of the partition functions at the standard
         // state temperature to the species enthalpies
         mp_part_sst = new double [m_ns];
@@ -716,6 +714,21 @@ protected:
     }
 
 private:
+
+    void updateElecBoltzmannFactors(double T)
+    {
+        static double last_T = 0.0;
+        if (std::abs(1.0 - last_T/T) < 1.0e-16)
+            return;
+
+        if (m_use_tables)
+            mp_el_bfac_table->lookup(T, mp_el_bfacs);
+        else
+            ElecBFacsFunctor()(T, mp_el_bfacs, m_elec_data);
+
+        last_T = T;
+    }
+
     
     /**
      * Computes the translational Cp/Ru for each species.
@@ -762,12 +775,19 @@ private:
      * value to the array using the given operation.
      */
     template <typename OP>
-    void cpE(double T, double* const cp, const OP& op)
+    void cpE(double T, double* const p_cp, const OP& op)
     {
-        if (m_use_tables)
-            mp_cpel_table->lookup(T, cp, op);
-        else
-            CpelFunctor()(T, cp, m_elec_data, op);
+        updateElecBoltzmannFactors(T);
+        op(p_cp[0], 0.0);
+
+        double* facs = mp_el_bfacs;
+        for (unsigned int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
+            if (m_elec_data.p_nelec[i] > 1)
+                op(p_cp[i+m_elec_data.offset],
+                    (facs[2]*facs[0]-facs[1]*facs[1])/(T*T*facs[0]*facs[0]));
+            else
+                op(p_cp[i+m_elec_data.offset], 0.0);
+        }
     }
 
 
@@ -810,12 +830,18 @@ private:
      * value to the enthalpy array using the given operation.
      */
     template <typename OP>
-    void hE(double T, double* const h, const OP& op)
+    void hE(double T, double* const p_h, const OP& op)
     {
-        if (m_use_tables)
-            mp_hel_table->lookup(T, h, op);
-        else
-            HelFunctor()(T, h, m_elec_data, op);
+        updateElecBoltzmannFactors(T);
+        op(p_h[0], 0.0);
+
+        double* facs = mp_el_bfacs;
+        for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
+            if (facs[0] > 0)
+                op(p_h[i+m_elec_data.offset], facs[1]/facs[0]);
+            else
+                op(p_h[i+m_elec_data.offset], 0.0);
+        }
     }
     
     /**
@@ -872,23 +898,18 @@ private:
      * Computes the unitless electronic entropy of each species.
      */
     template <typename OP>
-    void sE(double T, double* const s, const OP& op) {
-        int ilevel = 0;
-        double fac, sum1, sum2;
-        LOOP_HEAVY(
-            sum1 = 0.0;
-            sum2 = 0.0;
-            if (m_elec_data.p_nelec[i] > 0) {
-                for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
-                    fac = m_elec_data.p_levels[ilevel].g * 
-                        std::exp(-m_elec_data.p_levels[ilevel].theta / T);
-                    sum1 += fac;
-                    sum2 += m_elec_data.p_levels[ilevel].theta * fac;
-                }
-                op(s[j], (sum2 / (sum1 * T) + std::log(sum1)));
-            } else
-                op(s[j], 0.0);
-        )
+    void sE(double T, double* const p_s, const OP& op) {
+        updateElecBoltzmannFactors(T);
+        op(p_s[0], 0.0);
+
+        double* facs = mp_el_bfacs;
+        for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
+            if (facs[0] > 0)
+                op(p_s[i+m_elec_data.offset],
+                    (facs[1]/(facs[0]*T) + std::log(facs[0])));
+            else
+                op(p_s[i+m_elec_data.offset], 0.0);
+        }
     }
 
 private:
@@ -911,8 +932,12 @@ private:
     double*    mp_vib_temps;
     
     ElectronicData m_elec_data;
-    Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
-    Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
+    Mutation::Utilities::LookupTable<double, double, ElecBFacsFunctor>* mp_el_bfac_table;
+    double* mp_el_bfacs;
+
+    //Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
+    //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;
+    //Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
 
 }; // class RrhoDB
 

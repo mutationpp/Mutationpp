@@ -1,14 +1,47 @@
+/**
+ * @file StateModel.h
+ *
+ * @brief Definition of the StateModel class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
 #include "Thermodynamics.h"
 #include "Kinetics.h"
-#include "TransferModel.h"
 #include "Transport.h"
+#include "TransferModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
+
+/**
+ * @defgroup statemodels State Models
+ * List of available State Models.
+ * @{
+ */
 
 /**
  * Base class for all state models.  A mixture state is completely determined
@@ -49,7 +82,12 @@ public:
      */
     virtual ~StateModel()
     {
+        // Delete data pointers
         delete [] mp_X;
+
+        // Delete transfer models
+        for (int i = 0; i < m_transfer_models.size(); ++i)
+            delete m_transfer_models[i].second;
     }
     
     /**
@@ -75,6 +113,20 @@ public:
         const double* const p_mass, const double* const p_energy,
         const int vars = 0) = 0;
     
+    /**
+     * Sets the current magnitude of the magnetic field in teslas.
+     */
+    void setBField(const double B) {
+        m_B = B;
+    }
+
+    /**
+     * Gets the magnitude of the magnetic field in teslas.
+     */
+    double getBField() const {
+        return m_B;
+    }
+
     /**
      * Returns the mixture translational temperature.
      */
@@ -127,10 +179,76 @@ public:
     }
 
     /**
-     * Fills an array of the energy densities represented by this StateModel.
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * energy per unit mass.  The first n_species values correspond to the total energy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
-    virtual void getEnergyDensities(double* const p_rhoe) {
-        std::cerr << "getEnergyDensities()"
+    virtual void getEnergiesMass(double* const p_e) {
+        std::cerr << "getEnergiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    virtual void getMixtureEnergiesMass(double* const p_e) {
+        std::cerr << "getMixtureEnergiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
+	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
+     */
+    virtual void getEnthalpiesMass(double* const p_h) {
+        std::cerr << "getEnthalpiesMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+    
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
+     */
+    
+    virtual void getCpsMass(double* const p_Cp){
+        std::cerr << "getCpsMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+    /**
+     * Computes the vector of mixture averaged specific heats at constant
+     * pressure, \f$c_{p,m}=\left.\frac{\partial h_m}{\partial T_m}\right|_p\f$.
+     * Input vector should be at least nEnergyEqns() long.
+     */
+    //void getMixtureCpsMass(double* const cp);
+
+    /**
+     * Computes the species specific heats at constant pressure for each energy
+     * mode, \f$c_{p,im}=\left.\frac{\partial h_{im}}{\partial T_m}\right|_p\f$.
+     * Input vector should be at least nEnergyEqns()*nSpecies() long.
+     */
+    //virtual void getSpeciesCpsMass(double* const p_cp);
+
+    /**
+     * Returns a vector of length n_species times n_energies with each corresponding
+	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature. 
+     */
+    
+    virtual void getCvsMass(double* const p_Cp){
+        std::cerr << "getCvsMass()"
+                  << " not implemented by this StateModel!" << std::endl;
+        std::exit(1);
+    }
+
+	/**
+	 * Assigns a unique temperature to each energy mode.
+     */
+    virtual void getTagModes(int* const p_tag) {
+        std::cerr << "getTagModes()"
                   << " not implemented by this StateModel!" << std::endl;
         std::exit(1);
     }
@@ -143,18 +261,31 @@ public:
     }
     
     /**
-     * Creates a new TransferModel object which can compute the energy transfer
-     * source terms for this state model.
+     * Initializes the energy transfer terms that will be used by each State Model.
      */
-    virtual Mutation::Transfer::TransferModel* createTransferModel(
-        Thermodynamics& thermo,
-        Mutation::Transport::Transport& transport,
-        Mutation::Kinetics::Kinetics& kinetics)
+    virtual void initializeTransferModel(Mutation::Mixture& mix) {}
+    
+    /**
+     * This function provides the total energy transfer source terms
+     */
+    virtual void energyTransferSource(double* const p_omega)
     {
-        return NULL;
+        for (int i = 0; i < m_nenergy-1; ++i)
+            p_omega[i] = 0.0;
+
+        for (int i = 0; i < m_transfer_models.size(); ++i)
+            p_omega[m_transfer_models[i].first] +=
+                m_transfer_models[i].second->source();
     }
     
 protected:
+
+    void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
+    {
+        assert(i >= 0);
+        assert(i < m_nenergy-1);
+        m_transfer_models.push_back(std::make_pair(i, p_term));
+    }
 
     /**
      * Solves the general form of an energy equation
@@ -194,8 +325,9 @@ protected:
         const double alpha = 0.0,
         const double atol = 1.0e-12,
         const double rtol = 1.0e-12,
-        const int max_iters = 10)
+        const int max_iters = 100)
     {
+        using std::cerr;
         const int ns = m_thermo.nSpecies();
         const double rhoe_over_Ru = rhoe/RU;
         const double tol = rtol*std::abs(rhoe_over_Ru) + atol;
@@ -214,7 +346,6 @@ protected:
         while (std::abs(f) > tol) {
             // Check for max iterations
             if (iter++ == max_iters) {
-                using std::cerr;
                 cerr << "Exceeded max iterations when computing temperature!\n";
                 cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << endl;
                 return false;
@@ -228,7 +359,12 @@ protected:
 
             // Update T
             dT = f/fp;
-            while (dT >= T) dT *= 0.5; // prevent non-positive T
+            if (std::abs(T - 50.0) < 1.0e-10 && dT > 0) {
+                cerr << "Clamping T at 50 K, energy is too low for the "
+                     << "given species densities..." << endl;
+                return false;
+            }
+            while (T - dT < 50.0) dT *= 0.5; // prevent non-positive T
             T -= dT;
 
             // Recompute f
@@ -256,10 +392,20 @@ protected:
     double m_Tel;
     double m_Te;
     double m_P;
+    double m_B;
     
     double* mp_X;
     
+
+    std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
+        m_transfer_models;
+private:
+
+   //double* mp_work1;
+
 }; // class StateModel
+
+/// @}
 
     } // namespace Thermodynamics
 } // namespace Mutation

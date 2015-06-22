@@ -1,3 +1,30 @@
+/**
+ * @file Kinetics.h
+ *
+ * @brief Declaration of Kinetics class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef KINETICS_H
 #define KINETICS_H
 
@@ -113,12 +140,9 @@ public:
      * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
      *
-     * @param T     the temperature in K
-     * @param conc  the species concentration vector in mol/m^3
      * @param rop   on return, the net rates of progress in mol/m^3-s
      */
-    //void netRatesOfProgress(
-    //    const double T, const double* const p_conc, double* const p_rop);
+    void netRatesOfProgress(double* const p_rop);
     
     /**
      * Fills the vector wdot with the net species production rates due to the
@@ -190,6 +214,7 @@ private:
     double* mp_ropf;
     double* mp_ropb;
     double* mp_rop;
+    double* mp_wdot;
 };
 
 

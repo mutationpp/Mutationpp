@@ -1,3 +1,30 @@
+/**
+ * @file CollisionDB.h
+ *
+ * @brief Declaration of CollisionDB class and associated helper classes.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef TRANSPORT_COLLISIONDB_H
 #define TRANSPORT_COLLISIONDB_H
 
@@ -13,7 +40,7 @@
 namespace Mutation {
     namespace Transport {
 
-//#define USE_COLLISION_INTEGRAL_TABLES
+#define USE_COLLISION_INTEGRAL_TABLES
 
 
 /**
@@ -175,16 +202,20 @@ private:
         m_s2 = name2;
         
         // Just some simple logic to make sure the names match in the database
-        // This will eventually be fased out by using an XML database
-        if (m_s1[m_s1.size()-1] == '+')
-            m_s1[m_s1.size()-1] = 'p';
-        else if (m_s1[m_s1.size()-1] == '-')
-            m_s1[m_s1.size()-1] = 'm';
-        
-        if (m_s2[m_s2.size()-1] == '+')
-            m_s2[m_s2.size()-1] = 'p';
-        else if (m_s2[m_s2.size()-1] == '-')
-            m_s2[m_s2.size()-1] = 'm';
+        // This will eventually be phased out by using an XML database
+        int i = m_s1.size();
+        while (m_s1[--i] == '+')
+            m_s1[i] = 'p';
+        i = m_s1.size();
+        while (m_s1[--i] == '-')
+            m_s1[i] = 'm';
+
+        i = m_s2.size();
+        while (m_s2[--i] == '+')
+            m_s2[i] = 'p';
+        i = m_s2.size();
+        while (m_s2[--i] == '-')
+            m_s2[i] = 'm';
         
         if (m_s1 < m_s2)
             m_collision = "." + m_s1 + "-" + m_s2 + ".";
@@ -518,8 +549,10 @@ private:
     // Sizing parameters
     int m_ns;
     int m_nh;
+    int m_nne, m_nn;
+    int m_nae, m_na;
+    int m_nre, m_nr;
     int m_ncollisions;
-    int m_em_index;
     
     // Keeps track of which collisions are neutral and which are charged
     std::vector<int> m_neutral_indices;
@@ -581,7 +614,9 @@ private:
     
     // Keeps track of last temperature a particular set of collision data values
     // was updated
-    double mp_last_T [DATA_SIZE];
+    double mp_last_Th [DATA_SIZE];
+    double mp_last_Te [DATA_SIZE];
+    double mp_last_ne [DATA_SIZE];
 };
 
     } // namespace Transport

@@ -1,3 +1,29 @@
+/**
+ * @file cwrapper.cpp
+ *
+ * @brief Implements the C-wrapper to the Mutation++ library.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 #include "cwrapper.h"
 #include "mutation++.h"
@@ -221,17 +247,15 @@ void NAME_MANGLE(get_temperatures)(double* const T)
 }
 
 //==============================================================================
-void NAME_MANGLE(get_energy_densities)(double* const rhoe)
+void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    p_mix->getEnergyDensities(rhoe);
+    p_mix->getCpsMass(cp); 
 }
 
 //==============================================================================
-void NAME_MANGLE(species_cp_mass)(double* const cp)
+void NAME_MANGLE(species_cv_mass)(double* const cv)
 {
-    p_mix->speciesCpOverR(cp);
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        cp[i] *= Mutation::RU / p_mix->speciesMw(i);
+    p_mix->getCvsMass(cv); 
 }
 
 //==============================================================================
@@ -259,12 +283,15 @@ double NAME_MANGLE(mixture_frozen_sound_speed)()
 }
 
 //==============================================================================
+void NAME_MANGLE(species_e_mass)(double* const e)
+{
+    p_mix->getEnergiesMass(e);
+}
+
+//==============================================================================
 void NAME_MANGLE(species_h_mass)(double *const h)
 {
-    p_mix->speciesHOverRT(h);
-    double T = p_mix->T();
-    for (int i = 0; i < p_mix->nSpecies(); i++)
-        h[i] *= (Mutation::RU * T / p_mix->speciesMw(i));
+    p_mix->getEnthalpiesMass(h);
 }
 
 //==============================================================================
@@ -299,9 +326,9 @@ double NAME_MANGLE(viscosity)()
 }
 
 //==============================================================================
-double NAME_MANGLE(frozen_thermal_conductivity)()
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 {
-    return p_mix->frozenThermalConductivity();
+    p_mix->frozenThermalConductivityVector(lambda); 
 }
 
 //==============================================================================
@@ -362,6 +389,14 @@ void NAME_MANGLE(surface_mass_balance)
     p_mix->surfaceMassBalance(p_Yke, p_Ykg, *T, *P, *Bg, *Bc, *hw, p_Xs);
 }
 
-
+//==============================================================================
+void NAME_MANGLE(source_energy_transfer)
+     (double *const p_source_transfer)
+{
+     p_mix->energyTransferSource(p_source_transfer);
+}
+     
+     
+     
 
 

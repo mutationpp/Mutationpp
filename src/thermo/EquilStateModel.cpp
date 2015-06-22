@@ -1,12 +1,39 @@
+/**
+ * @file EquilStateModel.h
+ *
+ * @brief Provides EquilStateModel class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "StateModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
 /**
+ * @ingroup statemodels
+ *
  * StateModel for thermochemical equilibrium.
- * @author J.B. Scoggins
- * @author Pierre Schrooyen
  */
 class EquilStateModel : public StateModel
 {
@@ -21,6 +48,7 @@ public:
 
         // Allocate work storage
         mp_h = new double [ns*3];
+        mp_work = new double [ns];
         mp_cp = mp_h + ns;
         mp_dxdt = mp_cp + ns;
 
@@ -33,6 +61,7 @@ public:
     virtual ~EquilStateModel()
     {
         delete [] mp_h; // other arrays allocated by this one
+        delete [] mp_work; 
     }
 
     /**
@@ -41,19 +70,20 @@ public:
      * can be the following:
      *   0: conserved variables (mixture density, static energy density)
      *   1: primitive set 1 (pressure, temperature)
+     *   2: primitive set 2 (elemental mole fractions,  {P, T} array)
      */
     virtual void setState(
         const double* const p_mass, const double* const p_energy,
         const int vars = 0)
     {
-        assert(p_mass[0] > 0.0);
-        assert(p_energy[0] > 0.0);
-
         // Determine temperature, pressure, and mole fractions depending on
         // variable set
         switch (vars) {
             // Given density and energy density (conserved variables)
             case 0: {
+                assert(p_mass[0]   > 0.0);
+                assert(p_energy[0] > 0.0);
+
                 const int ns = m_thermo.nSpecies();
                 const int max_iters = 50;
                 const double tol = 1.0e-12;
@@ -130,11 +160,24 @@ public:
             }
             break;
 
-            // Given pressure and temperature
+            // Given pressure and temperature (using default elemental fractions)
             case 1:
+                assert(p_mass[0]   > 0.0);
+                assert(p_energy[0] > 0.0);
+
                 m_T = p_energy[0];
                 m_P = p_mass[0];
                 m_thermo.equilibriumComposition(m_T, m_P, mp_X);
+                break;
+
+            // Given elemental mole fractions and temperature and pressure
+            case 2:
+                assert(p_energy[0] > 0.0);
+                assert(p_energy[1] > 0.0);
+
+                m_T = p_energy[1];
+                m_P = p_energy[0];
+                m_thermo.equilibriumComposition(m_T, m_P, p_mass, mp_X);
                 break;
 
             // Unknown variable set
@@ -147,9 +190,47 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
     }
 
+    void getEnergiesMass(double* const p_e)
+	{
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getEnthalpiesMass(double* const p_h) 
+    {
+		const int ns = m_thermo.nSpecies();
+        m_thermo.speciesHOverRT(mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
+    }
+
+    void getCpsMass(double* const p_Cp) 
+    {
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cp[i] = mp_work[i]*RU/m_thermo.speciesMw(i);
+    }
+
+	void getCvsMass(double* const p_Cv)
+	{
+        const int ns = m_thermo.nSpecies();
+        m_thermo.speciesCpOverR(m_T, mp_work);
+
+        for(int i = 0; i < ns; ++i)
+            p_Cv[i] = (mp_work[i]-1.0)*RU/m_thermo.speciesMw(i);
+    }
+
+
 private:
 
     double* mp_h;
+    double* mp_work;
     double* mp_cp;
     double* mp_dxdt;
 };
@@ -160,6 +241,8 @@ Utilities::Config::ObjectProvider<
 
 
 /**
+ * @ingroup statemodels
+ *
  * This class is just provided for backward compatibility purposes and may be
  * removed in the future.  Use the EquilStateModel instead which is more general
  * and will continue to be maintained in the future.
@@ -179,7 +262,7 @@ public:
     virtual void setState(
         const double* const p_T, const double* const p_P, const int vars = 1)
     {
-        assert(vars == 1);
+        //assert(vars == 1);
         EquilStateModel::setState(p_P, p_T, 1);
     }
 };

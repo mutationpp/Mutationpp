@@ -1,3 +1,30 @@
+/**
+ * @file Thermodynamics.h
+ *
+ * @brief Declaration of the Thermodynamics class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef THERMO_THERMODYNAMICS_H
 #define THERMO_THERMODYNAMICS_H
 
@@ -6,7 +33,6 @@
 #include <string>
 #include <vector>
 
-//#include "StateModel.h"
 #include "Species.h"
 #include "Numerics.h"
 #include "Constants.h"
@@ -16,9 +42,8 @@
 namespace Mutation {
     namespace Thermodynamics {
 
-//class GfcEquilSolver;
-class MultiPhaseEquilSolver;
 class StateModel;
+class Composition;
 
 /**
  * Possible conversion methods that can be used with the 
@@ -47,7 +72,7 @@ enum ConversionType {
 };
 
 /**
- * @todo Fix the gibbsOverRT funtion to take a pointer instead of vector.
+ * Provides functions which are related to the thermodynamics of a mixture.
  */
 class Thermodynamics //: public StateModelUpdateHandler
 {
@@ -87,6 +112,7 @@ public:
     MultiPhaseEquilSolver* const  equilSolver() const {
         return mp_equil;
     }
+
 
     /**
      * Returns a pointer to the ThermoDB object owned by this Thermodynamics
@@ -188,13 +214,25 @@ public:
     }
     
     /**
+     * Sets the current magnitude of the magnetic field in teslas.
+     */
+    void setBField(const double B);
+
+    /**
+     * Gets the magnitude of the magnetic field in teslas.
+     */
+    double getBField() const;
+
+    /**
      * Sets the default elemental composition of the mixture from a given
      * vector of (element name, mole fraction) pairs.  Note that an error will
      * result if each element is not included exactly once in the list or if an
      * element that does not exist in the mixture is included.
      */
-    void setDefaultComposition(
-        const std::vector<std::pair<std::string, double> >& composition);
+    //void setDefaultComposition(
+    //    const std::vector<std::pair<std::string, double> >& composition);
+    void setDefaultComposition(const Composition& c);
+    void setDefaultComposition(const double* const p_vec);
     
     /**
      * Returns the default elemental fraction for the element with a given
@@ -265,16 +303,16 @@ public:
      * Computes the equilibrium composition of the mixture at the given fixed
      * temperature and pressure using the default elemental composition.
      */
-    void equilibriumComposition(
+    std::pair<int, int> equilibriumComposition(
         double T, double P, double* const p_X, MoleFracDef mdf = GLOBAL) const {
-        equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
+        return equilibriumComposition(T, P, mp_default_composition, p_X, mdf);
     }
 
     /**
      * Computes the equilibrium composition of the mixture at the given fixed
      * temperature, pressure, and elemental moles/mole fractions.
      */
-    void equilibriumComposition(
+    std::pair<int, int> equilibriumComposition(
         double T, double P, const double* const p_Xe, double* const p_X,
         MoleFracDef mdf = GLOBAL) const;
     
@@ -339,17 +377,44 @@ public:
     double Tel() const;
     
     /**
-     * Fills temperature array with tempertures belonging to the assigned
+     * Fills temperature array with tempertures according to the used
      * StateModel.
      */
     void getTemperatures(double* const p_T) const;
 
     /**
-     * Fills energy density array with energies belonging to the assigned
-     * StateModel.
+     * Fills energy per mass array with energies according to the used
+     * StateModel (total + internal for each species).
      */
-    void getEnergyDensities(double* const p_rhoe) const;
+    void getEnergiesMass(double* const p_e) const;
+    
 
+    /**
+     * Fills enthalpy per mass array with enthalpy according to the used
+     * StateModel (total + internal for each species).
+     */
+
+    void getEnthalpiesMass(double* const p_h) const;
+    
+    /**
+     * Fills the constant pressure specific heat according to the used
+     * StateModel
+     */
+    
+    void getCpsMass(double* const p_cp) const;
+
+	/**
+     * Fills the constant volume specific heat according to the used
+     * StateModel
+     */
+    
+    void getCvsMass(double* const p_cv) const;
+
+    /**
+     * Fills the tag of the modes according toi the used StateModel
+     */
+    void getTagModes(int* const p_tag) const;
+    
     /**
      * Returns the current mixture static pressure in Pa.
      */
@@ -459,6 +524,11 @@ public:
      * Returns the current mixture density in kg/m^3.
      */
     double density() const;
+
+    /**
+     * Returns the current species densities.
+     */
+    void densities(double* const p_rho) const;
 
     /**
      * Returns the unitless vector of species specific heats at constant
@@ -610,19 +680,37 @@ public:
         double* const h, double* const ht = NULL, 
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
-    
-    void speciesEvibMass(double T, double* const p_evib);
+
+     /**
+     * Computes the unitless species enthalpies and can optionally fill vectors
+     * for each energy mode by explicitly passing each individual temperature .  
+     */
+    void speciesHOverRT(
+        double T, double Te, double Tr, double Tv, double Tel,
+        double* const h, double* const ht = NULL, 
+        double* const hr = NULL, double* const hv = NULL,
+        double* const hel = NULL, double* const hf = NULL) const;
     
     /**
      * Returns the mixture averaged enthalpy in J/mol.
      */
     double mixtureHMole() const;
+
+    /**
+     * Returns the mixture averaged enthalpy in J/mol at the given temperature.
+     */
+    double mixtureHMole(double T) const;
     
     /**
      * Returns the mixture averaged enthalpy in J/kg.
      */
     double mixtureHMass() const;
-    
+
+    /**
+     * Returns the mixture averaged enthalpy in J/kg at the given temperature.
+     */
+    double mixtureHMass(double T) const;
+
     /**
      * Returns the mixture energy in J/mol.
      */
@@ -637,6 +725,11 @@ public:
         return mixtureHMass() - P() / density();
     }
     
+    /**
+     * Returns the mixture energy vector in J/kg.
+     */
+    void mixtureEnergies(double* const p_e) const;
+
     /**
      * Returns the frozen sound speed of the mixture in m/s.
      */
@@ -721,20 +814,23 @@ private:
      */
     void addSpecies(const Species& species);
 
+protected:
+
+    std::map<std::string, int> m_species_indices;
+    std::map<std::string, int> m_element_indices;
+
 private:
   
     ThermoDB* mp_thermodb;
     MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
     
-    std::map<std::string, int> m_species_indices;
-    std::map<std::string, int> m_element_indices;
-    
     Numerics::RealMatrix m_element_matrix;
     Numerics::RealVector m_species_mw;
     
     double* mp_work1;
     double* mp_work2;
+    double* mp_wrkcp;
     double* mp_y;
     double* mp_default_composition;
     

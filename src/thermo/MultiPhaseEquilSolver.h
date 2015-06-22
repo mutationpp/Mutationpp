@@ -1,10 +1,29 @@
 /**
  * @file MultiPhaseEquilSolver.h
  *
- * Defines the MultiPhaseEquilSolver class which implements a Continuation-
- * Krylov based multiphase equilibrium solver.
+ * @brief Defines the MultiPhaseEquilSolver class which implements the
+ * multiphase Gibbs function continuation (MPGFC) method.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
- * @author J.B. Scoggins (scoggins@vki.ac.be)
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 #ifndef THERMO_MULTI_PHASE_EQUIL_SOLVER
@@ -130,6 +149,11 @@ public:
      * species mole-fraction array is computed based on the value of the
      * MoleFracDef parameter.  The default method defines the mole fractions
      * globally, though they can also be defined in-phase.
+     *
+     * @return A pair representing the number of iterations and Newton
+     * iterations used to compute the solution.  If the solution procedure fails
+     * because the feasible region is empty or unbounded, then the iterations
+     * are negative.
      */
     std::pair<int,int> equilibrate(
         double T, double P, const double *const p_ev, double *const p_sv,
@@ -184,8 +208,12 @@ public:
      * Returns the current phase moles as computed by the equilibrate function.
      */
     void phaseMoles(double* const p_moles) const {
-//        for (int m = 0; m < m_npr; ++m)
-//            p_moles[m] = std::exp(m_solution.lnNbar(m));
+        for (int m = 0; m < m_np; ++m)
+            p_moles[m] = 0.0;
+        for (int mr = 0; mr < m_solution.npr(); ++mr) {
+            int m = mp_phase[m_solution.sjr()[m_solution.sizes()[mr]]];
+            p_moles[m] = std::exp(m_solution.lnNbar()[mr]);
+        }
     }
     
     /*
@@ -327,8 +355,9 @@ private:
         /**
          * Initializes the ordering based on defined species "groups" and zero
          * constraints.
+         * @retval true if internal ordering information changed after this call
          */
-        void setupOrdering(int* species_group, bool* zero_constraint);
+        bool setupOrdering(int* species_group, bool* zero_constraint);
         
         /**
          * Updates the solution by adding dx to lambda and dlnNbar and
@@ -339,7 +368,7 @@ private:
             const Numerics::VecExpr<double, E>& dx,
             const Numerics::RealMatrix& B)
         {
-            for (int i = 0; i < m_ncr; ++i)
+        	for (int i = 0; i < m_ncr; ++i)
                 mp_lambda[i] += dx(i);
             for (int m = 0; m < m_npr; ++m)
                 mp_lnNbar[m] = std::min(300.0, mp_lnNbar[m]+dx(m+m_ncr));
@@ -442,20 +471,63 @@ private:
      */
     bool checkForDeterminedSpecies();
     
-    void initialConditions(
+    /**
+     * Sets up the initial conditions of the equilibrium problem.
+     * @return true if a set of initial conditions could be computed, false
+     * otherwise
+     */
+    bool initialConditions(
         const double T, const double P, const double* const p_c);
-    void rates(Numerics::RealVector& dx);
+
+    /**
+     * Computes \f$\bar{N}(0)\f$, \f$\lambda(0)\f$, and \f$\tilde{g}(0)\f$ given
+     * an initial set of species moles.
+     */
+    void initZeroResidualSolution(
+    	double* const p_N, double* const p_Nbar, double* const p_lambda);
+
+    /**
+     * Computes the solution derivative with respect to \f$s\f$ at constant
+     * residual.
+     */
+    void rates(Numerics::RealVector& dx, bool save = false);
+
+    /**
+     * Tries to reduce the solution residual (at a fixed value of \f$s\f$) below
+     * a given tolerance using Newton's method.
+     */
     double newton();
-    void updateMinGSolution(const double* const p_g);
-    void updateMaxMinSolution();
+
+    /**
+     * Updates the Min-G solution based on the current temperature and
+     * constraints.
+     * @return true if Min-G solution exists, false otherwise
+     */
+    bool updateMinGSolution(const double* const p_g);
+
+    /**
+     * Updates the Max-Min solution based on the current constraints.
+     * @return true if Max-Min solution exists, false otherwise
+     */
+    bool updateMaxMinSolution();
+
+    /**
+     * Computes the Jacobian of hte system for the Newton's method.
+     */
     void formSystemMatrix(Numerics::RealSymMat& A) const;
+
+    /**
+     * Computes the current value of the residual vector.
+     */
     void computeResidual(Numerics::RealVector& r) const;
 
     /**
      * Adjusts the phase ordering according to the vapor pressure test and phase
-     * rule based on the current (converged) solution parameters.
+     * rule based on the current (converged) solution parameters.  If a phase
+     * is added, then the solution is reinitialized based after adding some
+     * small amount of moles of the new phase.
      *
-     * @return True if the phase ordering changed, false otherwise
+     * @return true if a phase was added, false otherwise
      */
     bool phaseRedistribution();
      
@@ -481,9 +553,8 @@ private:
 
     Numerics::RealMatrix  m_B;
     
-//    std::vector<Numerics::RealVector> m_constraints;
+    std::vector<Numerics::RealVector> m_constraints;
     
-    // ** new data **
     Solution m_solution;
     
     size_t  m_tableau_capacity;

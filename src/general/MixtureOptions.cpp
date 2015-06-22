@@ -1,3 +1,30 @@
+/**
+ * @file MixtureOptions.cpp
+ *
+ * @brief Provides MixtureOptions class definition.
+ * @see Mutation::MixtureOptions
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
 #include <fstream>
@@ -7,13 +34,16 @@
 
 using namespace std;
 using namespace Mutation::Utilities;
+using namespace Mutation::Thermodynamics;
 
 namespace Mutation {
 
 void swap(MixtureOptions& opt1, MixtureOptions& opt2)
 {
     std::swap(opt1.m_species_descriptor, opt2.m_species_descriptor);
-    std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
+    std::swap(opt1.m_compositions, opt2.m_compositions);
+    std::swap(opt1.m_default_composition, opt2.m_default_composition);
+    //std::swap(opt1.m_has_default_composition, opt2.m_has_default_composition);
     std::swap(opt1.m_load_transport, opt2.m_load_transport);
     std::swap(opt1.m_source, opt2.m_source);
     std::swap(opt1.m_state_model, opt2.m_state_model);
@@ -21,29 +51,26 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
     std::swap(opt1.m_mechanism, opt2.m_mechanism);
     std::swap(opt1.m_viscosity, opt2.m_viscosity);
     std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
+    std::swap(opt1.m_gsi_mechanism, opt2.m_gsi_mechanism);
 }
 
 MixtureOptions::MixtureOptions()
-    : m_has_default_composition(false),
-      m_source()
+    : m_source()
 { 
     setDefaultOptions();
 }
 
 MixtureOptions::MixtureOptions(const std::string& mixture)
-    : m_has_default_composition(false)
 {
     loadFromFile(mixture);
 }
 
 MixtureOptions::MixtureOptions(const char* mixture)
-    : m_has_default_composition(false)
 {
     loadFromFile(string(mixture));
 }
 
 MixtureOptions::MixtureOptions(IO::XmlElement& element)
-    : m_has_default_composition(false)
 {
     loadFromXmlElement(element);
 }
@@ -52,6 +79,7 @@ MixtureOptions::MixtureOptions(IO::XmlElement& element)
 void MixtureOptions::setDefaultOptions()
 {
     m_species_descriptor = "";
+    m_default_composition = -1;
     m_source = "";
     m_state_model = "ChemNonEq1T";
     m_thermo_db   = "RRHO";
@@ -107,7 +135,7 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
     
     // Get the type of Gas-Surface Interaction for the wall
     element.getAttribute("gsi_mechanism", m_gsi_mechanism, m_gsi_mechanism);
-    
+
     // Get the state model
     element.getAttribute("state_model", m_state_model, m_state_model);
     
@@ -118,37 +146,61 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
     IO::XmlElement::const_iterator iter;
     for (iter = element.begin(); iter != element.end(); ++iter) {
         // Load the species list
-        if (iter->tag() == "species") {
+        if (iter->tag() == "species")
             m_species_descriptor = String::trim(iter->text());
-        
-        // Load the default element fractions, note that we only check for valid
-        // format, not for valid elements or fractions, this is left up to the
-        // class that uses this information
-        } else if (iter->tag() == "default_element_fractions") {
-            vector<string> element_strings;
-            String::tokenize(iter->text(), element_strings, ":, \n\r\t\f");
-            
-            if (element_strings.size() % 2 != 0) {
-                iter->parseError(
-                    "Default element fractions should have the format:\n" +
-                    string("   name : fraction, name : fraction, ..."));
-            }
-            
-            m_default_composition.clear();
-            for (int i = 0; i < element_strings.size(); i+=2) {
-                if (String::isNumeric(element_strings[i+1])) {            
-                    m_default_composition.push_back(
-                        make_pair(element_strings[i], 
-                        atof(element_strings[i+1].c_str())));
-                } else {
-                    iter->parseError(
-                        "Element fraction should be a real value!");
-                }
-            }
-            
-            m_has_default_composition = true;
+        else if (iter->tag() == "element_compositions")
+            loadElementCompositions(*iter);
+    }
+}
+
+void MixtureOptions::loadElementCompositions(const IO::XmlElement& element)
+{
+    // Load the compositions
+    IO::XmlElement::const_iterator comps = element.begin();
+    while (comps != element.end()) {
+        if (comps->tag() == "composition")
+            if (!addComposition(Composition(*comps)))
+                comps->parseError("Redefinition of a named composition!");
+        comps++;
+    }
+
+    // Set the default composition
+    std::string name = "";
+    element.getAttribute("default", name, name);
+
+    if (name != "") {
+        if (!setDefaultComposition(name))
+            element.parseError(
+                "Default composition does not match one of named compositions!");
+    }
+}
+
+bool MixtureOptions::addComposition(const Composition& c, bool make_default)
+{
+    // Check that this composition has a unique name
+    const int n = m_compositions.size();
+    for (int i = 0; i < n; ++i)
+        if (c.name() == m_compositions[i].name())
+            return false;
+
+    m_compositions.push_back(c);
+    if (make_default)
+        m_default_composition = n;
+
+    return true;
+}
+
+bool MixtureOptions::setDefaultComposition(const std::string& name)
+{
+    m_default_composition = -1;
+    for (int i = 0; i < m_compositions.size(); ++i) {
+        if (name == m_compositions[i].name()) {
+            m_default_composition = i;
+            break;
         }
     }
+
+    return hasDefaultComposition();
 }
 
 

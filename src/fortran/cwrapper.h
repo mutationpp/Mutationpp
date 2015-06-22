@@ -1,13 +1,32 @@
 /**
  * @file cwrapper.h
  *
- * This is the header file for the C wrapper to the Mutation++ library.  It
- * provides a subset of the functionality in C so that it may be used in Fortran
- * codes as well.
+ * @brief This is the header file for the C-wrapper to the Mutation++ library.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
  
-#ifndef CWRAPPER_H
-#define CWRAPPER_H
+#ifndef FORTRAN_CWRAPPER_H
+#define FORTRAN_CWRAPPER_H
 
 // Converts the base function name in mpp_function(_) where the (_) represents
 // the name mangling that is performed in order to use the function in Fortran
@@ -177,11 +196,6 @@ void NAME_MANGLE(y)(double* const Y);
 void NAME_MANGLE(get_temperatures)(double* const T);
 
 /**
- * Fills the energy density vector with the current mixture state.
- */
-void NAME_MANGLE(get_energy_densities)(double* const rhoe);
-
-/**
  * Returns the number density of the mixture given the mixture temperature
  * and pressure.
  */
@@ -220,18 +234,23 @@ void NAME_MANGLE(species_densities)(
  */
 void NAME_MANGLE(equilibrium_composition)(double* T, double* P, double* X);
 void NAME_MANGLE(pyro_equilibrium_composition)(double* T, double* P, double* el, double* X);
-    
+
 /**
- * Sets the current state of the mixture using temperature and species 
- * densities.
+ * Sets the current state of the mixture with the appropriate variable set.
  */
 void NAME_MANGLE(set_state)(double* v1, double* v2, int* vars);
 
 /**
- * Returns the species specific heats at constant pressure in J/kg-K given the
- * mixture temperature.
+ * Returns the species specific heats at constant pressure in J/kg-K per species
+ * per each energy mode.
  */
 void NAME_MANGLE(species_cp_mass)(double* const cp);
+
+/**
+ * Returns the species specific heats at constant volume in J/kg-K per species
+ * per each energy mode.
+ */
+void NAME_MANGLE(species_cv_mass)(double* const cv);
 
 /**
  * Returns the mixture specific heat at constant pressure in J/kg-K.
@@ -255,7 +274,14 @@ double NAME_MANGLE(mixture_frozen_gamma)();
 double NAME_MANGLE(mixture_frozen_sound_speed)();
 
 /**
- * Returns the species enthalpies in J/kg.
+ * Returns the species energies (total + internal if multi temperature) in J/kg.
+ *
+ * @param e - species energies on return
+ */
+void NAME_MANGLE(species_e_mass)(double *const e);
+
+/**
+ * Returns the species enthalpies (total + internal if multi temperature) in J/kg.
  *
  * @param h - species enthalpies on return
  */
@@ -300,7 +326,7 @@ double NAME_MANGLE(viscosity)();
 /**
  * Returns the mixture thermal conductivity for a frozen mixture.
  */
-double NAME_MANGLE(frozen_thermal_conductivity)();
+void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -368,6 +394,13 @@ void NAME_MANGLE(surface_mass_balance)
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs);
 
+/**
+ * Returns the pointer to the energy transfer between the internal energy modes 
+ */
+
+void NAME_MANGLE(source_energy_transfer)
+    (double* const p_source_transfer);
+    
 /**
  * @}
  */

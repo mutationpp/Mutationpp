@@ -1,3 +1,30 @@
+/**
+ * @file Reaction.cpp
+ *
+ * @brief Implementation of Reaction class.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include <cstdlib>
 #include <iostream>
 #include <cassert>
@@ -246,12 +273,17 @@ void Reaction::parseSpecies(
 
 void Reaction::determineType(const class Thermodynamics& thermo)
 {
+   
     bool reactant_ion      = false;
     bool reactant_electron = false;
     bool product_ion       = false;
     bool product_electron  = false;
     bool m_inert           = isThirdbody();
-    bool m_inert_e	       = false;
+    bool m_inert_e	   = false;
+    bool excited_react     = false;
+    bool excited_prod      = false;
+    bool excited           = false;
+    bool exciting	   = false;
     
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
@@ -281,8 +313,46 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     
     // Is there an inert electron?
     m_inert_e = (product_electron && reactant_electron);
-    
-    // Logic tree for ground electronic state reactions
+
+    // Are there any excited states ?
+     for (int i=0; i < nReactants(); ++i) {
+        const Species& species = thermo.species(m_reactants[i]);
+        if (species.level() >0)
+           excited_react = true;
+          
+    }
+       for (int i=0; i < nProducts(); ++i) {
+        const Species& species = thermo.species(m_products[i]);
+        if (species.level() >0)
+           excited_prod = true;
+    }
+    if (excited_prod or excited_react)
+           excited = true;
+
+
+
+    // Logic tree for ground electronic state reactions || reactions involving excited states
+    if (excited) {
+    // excited state reactions
+        if (m_inert_e) {
+           if (product_ion)
+              m_type = IONIZATION_E;
+           else if (reactant_ion)
+              m_type = ION_RECOMBINATION_E;
+           else 
+              m_type = EXCITATION_E;
+           
+       } else {
+            if (product_ion)
+               m_type = IONIZATION_M;
+            else if (reactant_ion)
+               m_type = ION_RECOMBINATION_M;
+            else 
+               m_type = EXCITATION_M;
+            }
+
+      }else {
+    // ground electronic state reactions
     if (reactant_ion) {
         if (product_ion)
             m_type = CHARGE_EXCHANGE;
@@ -327,6 +397,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
                 m_type = EXCHANGE;
         }
     }
+  }
 }
 
 //==============================================================================

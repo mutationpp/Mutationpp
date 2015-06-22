@@ -1,39 +1,67 @@
+/**
+ * @file TransferModel.h
+ *
+ * @brief Energy Transfer Models
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef TRANSFER_TRANSFER_MODEL_H
 #define TRANSFER_TRANSFER_MODEL_H
 
-#include "Thermodynamics.h"
-#include "MillikanWhite.h"
-
 namespace Mutation {
+
+	// Forward declaration of Mixture type
+    class Mixture;
+
     namespace Transfer {
 
+/**
+ * @defgroup transfermodels Energy Transfer Models
+ * @{
+ */
+
+/**
+ * Base class for all energy transfer models.  Provides the abstract interface
+ * which must be implemented by concrete models.  Also enables self-registration
+ * of TransferModel objects.
+ */
 class TransferModel
 {
 public:
-    virtual ~TransferModel() { }
-    virtual void source(double* const p_source) = 0;
-};
+    // Allows self-registration of TransferModel objects
+    typedef Mutation::Mixture& ARGS;
 
-/**
- * Represents a coupling between vibrational and translational energy modes.
- */
-class TransferModelVT : public TransferModel
-{
-public:
-
-    TransferModelVT(const Thermodynamics::Thermodynamics& thermo)
-        : m_mw(thermo)
+    TransferModel(ARGS mix)
+        : m_mixture(mix)
     { }
-    
-    virtual void source(double* const p_source)
-    {
-    
-    }
+    virtual ~TransferModel() { }
+    virtual double source() = 0;
 
-private:
-
-    MillikanWhite m_mw;
+protected:
+    Mutation::Mixture& m_mixture;
 };
+
+/// @}
 
     } // namespace Transfer
 } // namespace Mutation

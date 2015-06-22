@@ -1,13 +1,31 @@
 /**
  * @file SVD.h
  *
- * Implements the SVD class which computes the singular value decomposition of a
- * matrix.
+ * @brief Implements the SVD class which computes the singular value
+ * decomposition of a matrix.
  *
- * @see class SVD.
+ * @see class SVD
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
- * @author J.B. Scoggins (jbscoggi@gmail.com)
- * @date   February 1, 2012
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 #ifndef NUMERICS_SVD_H
@@ -22,9 +40,8 @@
 namespace Mutation {
     namespace Numerics {
 
-
-
 /**
+ * @ingroup dirsol
  * Represents the singular value decomposition of a real MxN matrix A = U*S*V',
  * where U is a real MxN orthogonal matrix and V is a real NxN orthogonal matrix
  * and S is the diagonal matrix of singular values listed in decreasing order.
@@ -161,7 +178,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
     const int nrt = std::max(0, std::min(n-2,m)); // number of row x-forms for bidiag
         
     m_s = Vector<Real>(std::min(m+1,n));
-    m_U = Matrix<Real>(m, m);
+    m_U = Matrix<Real>(m, m);  //**** 65
     m_V = Matrix<Real>(n, n);
 
     Vector<Real> e(n);
@@ -333,6 +350,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
     while (p > 0) {
 		int kase = 0;
 		Real eps = NumConst<Real>::eps;
+		Real tiny = eps*eps;
 
         // This section of the program inspects for
         // negligible elements in the s and e arrays.  On
@@ -348,7 +366,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
             if (k == -1) 
                 break;
             
-            if (std::abs(e(k)) <= eps*(std::abs(m_s(k)) + std::abs(m_s(k+1)))) {
+            if (std::abs(e(k)) <= tiny + eps*(std::abs(m_s(k)) + std::abs(m_s(k+1)))) {
                e(k) = NumConst<Real>::zero;
                break;
             }
@@ -364,7 +382,7 @@ SVD<Real>::SVD(const MatExpr<Real, E> &A, const bool wantu, const bool wantv)
                 double t = (ks != p ? std::abs(e(ks)) : NumConst<Real>::zero) + 
                            (ks != k+1 ? std::abs(e(ks-1)) : NumConst<Real>::zero);
                
-                if (std::abs(m_s(ks)) <= eps * t)  {
+                if (std::abs(m_s(ks)) <= tiny + eps * t)  {
                     m_s(ks) = NumConst<Real>::zero;
                     break;
                 }

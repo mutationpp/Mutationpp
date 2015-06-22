@@ -1,3 +1,30 @@
+/**
+ * @file mppequil.cpp
+ *
+ * @brief Utility which provides equilibrium properties for a given mixture.
+ */
+
+/*
+ * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ *
+ * This file is part of MUlticomponent Thermodynamic And Transport
+ * properties for IONized gases in C++ (Mutation++) software package.
+ *
+ * Mutation++ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Mutation++ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with Mutation++.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include "mutation++.h"
 #include <iostream>
 #include <fstream>
@@ -32,10 +59,11 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 42
+#define NMIXTURE 52
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
+    OutputQuantity("B", "T", "magnitude of magnetic field"),
     OutputQuantity("rho", "kg/m^3", "density"),
     OutputQuantity("nd", "1/m^3", "number density"),
     OutputQuantity("Mw", "kg/mol", "molecular weight"),
@@ -71,15 +99,24 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
     OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
-    OutputQuantity("sigma", "S/m", "electric conductivity"),
+    OutputQuantity("sigma", "S/m", "electric conductivity (B=0)"),
+    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
+    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
+    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
-    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure"),
+    OutputQuantity("l", "m", "mean free path"),
+    OutputQuantity("le", "m", "mean free path of electrons"),
+    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
+    OutputQuantity("Ve", "m/s", "electron thermal speed"),
+    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
+    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
 };
 
 // List of all species output quantities
-#define NSPECIES 18
+#define NSPECIES 19
 OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("X", "", "mole fractions"),
     OutputQuantity("dX/dT", "1/K", "partial of mole fraction w.r.t. temperature"),
@@ -98,7 +135,8 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions"),
     OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
     OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals"),
-    OutputQuantity("Chi", "?", "species thermal diffusion ratios")
+    OutputQuantity("Chi", "?", "species thermal diffusion ratios"),
+    OutputQuantity("Dm", "", "mixture averaged diffusion coefficients")
 };
 
 // List of reaction output quantities
@@ -130,6 +168,7 @@ typedef struct {
     double P1;
     double P2;
     double dP;
+    double B;
     
     std::vector<int> mixture_indices;
     std::vector<int> species_indices;
@@ -179,16 +218,17 @@ void printHelpMessage(const char* const name)
          << "temperatures and pressures using the Mutation++ library." << endl;
     cout << endl;
     cout << tab << "-h, --help          prints this help message" << endl;
-    cout << tab << "-v, --verbose       toggles verbosity on" << endl;
     cout << tab << "    --no-header     no table header will be printed" << endl;
-    cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T" << endl;
-    cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P" << endl;
+    cout << tab << "-T                  temperature range in K \"T1:dT:T2\" or simply T (default = 300:100:15000 K)" << endl;
+    cout << tab << "-P                  pressure range in Pa \"P1:dP:P2\" or simply P (default = 1 atm)" << endl;
+    cout << tab << "-B                  magnitude of the magnetic field in teslas (default = 0 T)" << endl;
     cout << tab << "-m                  list of mixture values to output (see below)" << endl;
     cout << tab << "-s                  list of species values to output (see below)" << endl;
     cout << tab << "-r                  list of reaction values to output (see below)" << endl;
     cout << tab << "-o                  list of other values to output (see below)" << endl;
     cout << tab << "    --species-list  instead of mixture name, use this to list species in mixture" << endl;
     cout << tab << "    --elem-x        set elemental mole fractions (ex: N:0.8,O:0.2)" << endl;
+    cout << tab << "    --elem-comp     set elemental composition with a name from the mixture file" << endl;
     cout << tab << "    --thermo-db     overrides thermodynamic database type (NASA-7, NASA-9, RRHO)" << endl;
     cout << tab << "    --scientific    outputs in scientific format with given precision" << endl;
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
@@ -346,20 +386,28 @@ Options parseOptions(int argc, char** argv)
     opts.p_mixture_opts->setStateModel("Equil");
     
     // Elemental mole fractions
+    bool comp_set = false;
     if (optionExists(argc, argv, "--elem-x")) {
-        std::vector<std::string> tokens;
-        String::tokenize(getOption(argc, argv, "--elem-x"), tokens, ":, ");
-        
-        if (tokens.size() % 2 == 0) {
-            for (int i = 0; i < tokens.size(); i += 2)
-                opts.p_mixture_opts->setDefaultComposition(
-                    tokens[i], std::atof(tokens[i+1].c_str()));
-        } else {
-            cout << "Bad format for element fractions!" << endl;
-            printHelpMessage(argv[0]);
-        }
+        comp_set = true;
+        opts.p_mixture_opts->addComposition(
+            Thermodynamics::Composition(getOption(argc, argv, "--elem-x").c_str()),
+            true
+        );
     }
     
+    // Elemental composition
+    if (optionExists(argc, argv, "--elem-comp")) {
+        if (comp_set) {
+            cout << "Only one method of setting element composition can be used!" << endl;
+            exit(1);
+        }
+        std::string comp = getOption(argc, argv, "--elem-comp");
+        if (!opts.p_mixture_opts->setDefaultComposition(comp.c_str())) {
+            cout << "Composition " << comp << " does not exist in the mixture!" << endl;
+            exit(1);
+        }
+    }
+
     // Thermodynamic database
     if (optionExists(argc, argv, "--thermo-db")) {
         opts.p_mixture_opts->setThermodynamicDatabase(
@@ -392,6 +440,13 @@ Options parseOptions(int argc, char** argv)
         opts.dP = ONEATM;
     }
     
+    // Get the magnetic field strength
+    if (optionExists(argc, argv, "-B")) {
+        opts.B = atof(getOption(argc, argv, "-B").c_str());
+    } else {
+        opts.B = 0.0;
+    }
+
     // Get the mixture properties to print
     if (optionExists(argc, argv, "-m")) {
         if (!parseIndices(
@@ -563,6 +618,23 @@ void writeHeader(
         cout << endl;
 }
 
+
+/**
+ * @page mppequil Mutation++ Equilibrium Properties (mppequil)
+ *
+ * __Usage:__
+ *
+ * mppequil [OPTIONS] mixture
+ *
+ * Compute equilibrium properties for mixture over a set of temperatures and
+ * pressures using the Mutation++ library.  Use
+ *
+ *     mppequil -h
+ *
+ * for a full list of options.
+ */
+
+
 int main(int argc, char** argv)
 {
 #ifdef _GNU_SOURCE
@@ -570,11 +642,10 @@ int main(int argc, char** argv)
     feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
-    
-    
     // Parse the command line options and load the mixture
     Options opts = parseOptions(argc, argv);
     Mutation::Mixture mix(*opts.p_mixture_opts);
+    mix.setBField(opts.B);
     delete opts.p_mixture_opts;
     
     // Write out the column headers (and compute the column sizes)
@@ -588,7 +659,8 @@ int main(int argc, char** argv)
     std::string name, units;
     
     double* species_values = new double [mix.nSpecies()];
-    double* temp           = new double [mix.nSpecies()];
+    double* temp           = new double [
+		std::max(mix.nSpecies(), mix.nElements()*mix.nElements())];
     double* sjac_exact     = new double [mix.nSpecies()*mix.nSpecies()];
     double* sjac_fd        = new double [mix.nSpecies()*mix.nSpecies()];
     double* temp2          = new double [mix.nSpecies()];
@@ -621,6 +693,8 @@ int main(int argc, char** argv)
                     value = mix.T();
                 else if (name == "P")
                     value = mix.P();
+                else if (name == "B")
+                    value = mix.getBField();
                 else if (name == "rho")
                     value = mix.density();
                 else if (name == "nd")
@@ -674,6 +748,12 @@ int main(int argc, char** argv)
                     value = mix.electronThermalConductivity();
                 else if (name == "sigma")
                     value = mix.sigma();
+                else if (name == "sigma_para")
+                    value = mix.sigmaParallel();
+                else if (name == "sigma_perp")
+                    value = mix.sigmaPerpendicular();
+                else if (name == "sigma_trans")
+                    value = mix.sigmaTransverse();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
                     value = 0.0;
@@ -724,6 +804,18 @@ int main(int argc, char** argv)
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
+                else if (name == "l")
+                    value = mix.meanFreePath();
+                else if (name == "le")
+                    value = mix.electronMeanFreePath();
+                else if (name == "Vh")
+                    value = mix.averageHeavyThermalSpeed();
+                else if (name == "Ve")
+                    value = mix.electronThermalSpeed();
+                else if (name == "tau_eh")
+                    value = mix.electronHeavyCollisionFreq();
+                else if (name == "tau_a")
+                    value = mix.averageHeavyCollisionFreq();
                 
                 cout << setw(column_widths[cw++]) << value;
             }
@@ -795,6 +887,8 @@ int main(int argc, char** argv)
                     mix.omega22ii(species_values);
                 } else if (name == "Chi") {
                     mix.thermalDiffusionRatios(species_values);
+                } else if (name == "Dm") {
+                    mix.averageDiffusionCoeffs(species_values);
                 }
                 
                 for (int i = 0; i < mix.nSpecies(); ++i)
@@ -837,15 +931,15 @@ int main(int argc, char** argv)
                 } else if (name == "newts") {
                     cout << setw(column_widths[cw++]) << mix.nEquilibriumNewtons();
                 } else if (name == "Fp_k") {
-                    mix.equilibriumFickP(temp);
+                    mix.equilDiffFluxFacsP(temp);
                     for (int i = 0; i < mix.nElements(); ++i)
                         cout << setw(column_widths[cw++]) << temp[i];
                 } else if (name == "Ft_k") {
-                    mix.equilibriumFickT(temp);
+                    mix.equilDiffFluxFacsT(temp);
                     for (int i = 0; i < mix.nElements(); ++i)
                         cout << setw(column_widths[cw++]) << temp[i];
                 } else if (name == "Fz_k") {
-                    mix.equilibriumFickXe(temp);
+                    mix.equilDiffFluxFacsZ(temp);
                     for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
                         cout << setw(column_widths[cw++]) << temp[k];
                 }
