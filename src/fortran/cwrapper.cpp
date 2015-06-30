@@ -403,7 +403,7 @@ void NAME_MANGLE(source_energy_transfer)
 }
 //==============================================================================
 void NAME_MANGLE(surface_mass_balance_stag_line)
-    (F_STRING mixture_name, double*  T, double*  P, double * p_Xg, double& ykf,F_STRLEN mixture_name_length)
+    (F_STRING mixture_name, double*  T, double*  P, double * p_Xg, F_STRLEN mixture_name_length)
 {
    // string mixture_name = "Sio2";
    // string mixture_name = "Iron_meteor5";
@@ -412,7 +412,7 @@ void NAME_MANGLE(surface_mass_balance_stag_line)
     string total_mixture_name = name_name+wall_name;
 
 
-    Mutation::Mixture mix_stagline (total_mixture_name);
+    static Mutation::Mixture mix_stagline (total_mixture_name);
 
 
     const int ne = mix_stagline.nElements();
@@ -438,28 +438,7 @@ void NAME_MANGLE(surface_mass_balance_stag_line)
         p_Xg[i] = p_Xs[i];
     }
 
-   /* for(int i = 0; i<ng;++i){
-        cout<<"p_Xg("<<mix_stagline.speciesName(i)<<") :"<<p_Xg[i]<<endl;
-    }*/
 
-     mix_stagline.convert<X_TO_Y> (p_Xs,p_Xs);
-
-     int spe =0;
-     int ele =0;
-
-     if (name_name == "Sio2"){
-      spe = mix_stagline.speciesIndex("SiO2(L)");
-      ele = mix_stagline.elementIndex("Si"); }
-
-     else if(name_name == "Iron_meteor"){
-          spe = mix_stagline.speciesIndex("Fe(L)");
-          ele = mix_stagline.elementIndex("Fe");}
-
-
-    ykf = (mix_stagline.elementMatrix()(spe,ele)*mix_stagline.atomicMass(ele)*p_Xs[spe])/ mix_stagline.speciesMw(spe);
-
-
-    //ykf = 0.;p_Xs[spe
 
     delete [] p_Ycond;
     delete [] p_Yke;

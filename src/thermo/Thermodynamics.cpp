@@ -1083,6 +1083,7 @@ void Thermodynamics::surfaceMassBalance(const double *const p_Ykc, const double 
 
      for (int j = 0; j<n_constraints;++j){
         double alpha = p_Xkc[elementIndex(Solid_index[j])]/p_Xkc[elementIndex(Solid_index[j+1])];
+
         for(int i=0; i<ng;++i){
         p_A[i]= 0;
         }
@@ -1121,7 +1122,7 @@ void Thermodynamics::surfaceMassBalance(const double *const p_Ykc, const double 
     // Initialize the wall element fractions to be the pyrolysis gas fractions
 
 
-   Bc= 10000;
+   Bc= 1000;
 
   // double* p_Ykc_orig = new double [ne];
    /*for (int i = 0; i<ne;++i){
@@ -1347,7 +1348,7 @@ void Thermodynamics::surfaceMassBalance_CFD(const double *const p_Ykc, const dou
     // Initialize the wall element fractions to be the pyrolysis gas fractions
 
 
-   double Bc= 100000;
+   double Bc= 1000;
 \
    double sum = 0.0;
     for (int i = 0; i < ne; ++i){

@@ -1,4 +1,4 @@
-<mixture mechanism="parkair01" thermo_db="RRHO" thermal_conductivity="LDLT" viscosity="LDLT">
+<mixture mechanism="parkair01" thermo_db="NASA-9" thermal_conductivity="LDLT" viscosity="LDLT">
 
     <species>
         e- N N+ O O+ NO N2 N2+ O2 O2+ NO+

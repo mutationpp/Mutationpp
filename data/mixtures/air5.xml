@@ -1,7 +1,7 @@
-<mixture mechanism="air5" thermo_db="RRHO">
+<mixture mechanism="air5_park" thermo_db="RRHO">
     
     <species>
-        N O NO N2 O2
+       N O O2 NO N2 
     </species>
     
     <element_compositions default="air">
@@ -9,3 +9,5 @@
     </element_compositions>
     
 </mixture>
+
+

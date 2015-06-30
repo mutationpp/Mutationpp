@@ -403,7 +403,7 @@ void NAME_MANGLE(surface_mass_balance)
  * Solves the surface mass balance at an ablating surface.
  */
 void NAME_MANGLE(surface_mass_balance_stag_line)
-    (F_STRING mixture_name, double*  T, double*  P, double* p_Xg, double& ykf, F_STRLEN mixture_name_length);
+    (F_STRING mixture_name, double*  T, double*  P, double* p_Xg, F_STRLEN mixture_name_length);
 
 /**
  * Returns the pointer to the energy transfer between the internal energy modes 
