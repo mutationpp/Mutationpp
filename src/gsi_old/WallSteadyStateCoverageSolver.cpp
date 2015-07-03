@@ -10,17 +10,18 @@ namespace Mutation{
 WallSteadyStateCoverageSolver::WallSteadyStateCoverageSolver( const Mutation::Thermodynamics::Thermodynamics& l_thermo, WallState& l_wall_state )
                                                             : m_wall_state(l_wall_state),
                                                               v_residual_function( l_thermo.nSpecies(), 0.E0),
-                                                              v_jacobian( l_thermo.nSpecies(), l_thermo.nSpecies(), 0.E0 )
-{
+                                                              v_jacobian( l_thermo.nSpecies(), l_thermo.nSpecies(), 0.E0 ){
+
+setMaxIterations(100);
+setWriteConvergenceHistory(false);
+
 }
 //=============================================================================
 WallSteadyStateCoverageSolver::~WallSteadyStateCoverageSolver(){ }
 //=============================================================================
 void WallSteadyStateCoverageSolver::updateFunction(){
 
-
-
-// computeProductionRates();
+// computeWallSpeciesProductionRates();
 
 // update v_residual_function
 //    for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
@@ -28,6 +29,7 @@ void WallSteadyStateCoverageSolver::updateFunction(){
 //    }
 
 }
+
 //=============================================================================
 void WallSteadyStateCoverageSolver::updateJacobian( Mutation::Numerics::RealVector& ){
 
@@ -41,7 +43,8 @@ void WallSteadyStateCoverageSolver::updateJacobian( Mutation::Numerics::RealVect
 
 // Exit
 
- }
+}
+
 //=============================================================================
 Mutation::Numerics::RealVector& WallSteadyStateCoverageSolver::WallSteadyStateCoverageSolver::systemSolution(){
 //    m_qr.solve(v_delta_mole_fractions, v_unperturbed_residual_function); // Unperturbed?
@@ -50,6 +53,25 @@ Mutation::Numerics::RealVector& WallSteadyStateCoverageSolver::WallSteadyStateCo
 //=============================================================================
 double WallSteadyStateCoverageSolver::WallSteadyStateCoverageSolver::norm(){ 
     return 0.0;//v_residual_function.normInf();
+}
+
+//=============================================================================
+
+void WallSteadyStateCoverageSolver::computeWallSpeciesProductionRates(){
+
+
+
+}
+
+//=============================================================================
+
+void WallSteadyStateCoverageSolver::convertWallNumberDensitiestoNumberDensityFractions(){
+
+}
+
+//=============================================================================
+
+void WallSteadyStateCoverageSolver::convertWallNumberDensityFractionstoNumberDensities(){
 }
 
 //=============================================================================

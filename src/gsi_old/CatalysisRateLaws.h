@@ -20,14 +20,13 @@ public:
     virtual ~CatalysisRateLaw() { }
     virtual CatalysisRateLaw* clone() const = 0;
     
-    virtual double forwardReactionRate(const double* const p_rhoi, const double* const p_rhoie) const = 0; /** @todo Messy passing p_rhoi **/
-//    virtual const double * getgammaCoefficient( ){ return NULL; } // Terrible
+    virtual double forwardReactionRate(const double* const lp_rhoi, const double* const lp_Twall) const = 0; 
 
     /**
      * This function computes the average thermal speed in the species at a given temperature . It has units $[m/s]$.
      */
-    inline double AverageThermalSpeed(const int& i_species, const double* const p_rhoie) const;
-    inline double Average2DThermalSpeed(const int& i_species, const double* const p_rhoie) const;
+    inline double computeAverageThermalSpeed( const int& l_sp, const double* const lp_Twall ) const;
+    inline double computeAverage2DThermalSpeed( const int& l_sp, const double* const lp_Twall ) const;
     
 protected:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
@@ -43,39 +42,34 @@ protected:
 class GammaModelConst: public CatalysisRateLaw{
   
 public:
-    GammaModelConst(const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo, std::vector<int> reactants);
+    GammaModelConst( const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo, std::vector<int> reactants );
     ~GammaModelConst() {}
   
     GammaModelConst* clone() const {
-        return new GammaModelConst(*this);
+        return new GammaModelConst( *this );
     }
     
-    double forwardReactionRate(const double* const p_rhoi, const double* const p_rhoie) const;
-//    const double * getgammaCoefficient() const;
+    double forwardReactionRate( const double* const lp_rhoi, const double* const lp_Twall ) const;
     
 private:
-    std::vector<double> m_gamma;
-    std::vector<int> m_reactants;
+
+    mutable int l_index_v_reactants; 
+    mutable int l_species_index;
+    mutable int l_stoichiometric_coefficient;
+
+    std::vector<double> v_gamma;
+
+    mutable std::vector<double> v_output_impinging_flux;
+    mutable std::vector<double> v_impinging_flux_per_stoichiometric_coefficient;
+
+    std::vector<int> v_reactants;
+
+    inline void getSpeciesIndexandStoichiometricCoefficient( int lp_reactants_index, int& l_species_index, int& l_stoichiometric_coefficient ) const;
+    inline double computeWallImpingingMassFlux( const int& l_sp, const double* const lp_rhoi, const double* const lp_Twall ) const;
+    inline double getLimitingImpingingMassFlux() const;
+
     
 };
-
-/**
- *class GammaModelT: public CatalysisRateLaw{
- *  
- *public:
- *    GammaModelT(const Mutation::Utilities::IO::XmlElement& node);
- *    ~GammaModelT();
- *  
- *};
- *
- *class GammaModelTP: public CatalysisRateLaw{
- *  
- *public:
- *    GammaModelTP(const Mutation::Utilities::IO::XmlElement& node);
- *    ~GammaModelTP();
- *  
- *};
-*/
 
 /**
  * @brief The Physisorption class
@@ -83,7 +77,7 @@ private:
 class Physisorption: public CatalysisRateLaw{
   
 public:
-    Physisorption(const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo);
+    Physisorption( const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo );
     ~Physisorption(){ }
   
     Physisorption* clone() const {

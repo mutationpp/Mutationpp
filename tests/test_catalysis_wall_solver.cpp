@@ -40,7 +40,8 @@ BOOST_AUTO_TEST_CASE(O2_rhois_at_wall)
     double discreteLengthforDerivative = 1.E-2;
 
     std::cout << "First rhois are = " << rhoi[0] << "      " << rhoi[1] << std::endl;
-    mix().solveWallMassBalance(&rhoi[0], &rhoi[0], &T_wall, discreteLengthforDerivative);
+    //mix().solveWallMassBalance(&rhoi[0], &rhoi[0], &T_wall, discreteLengthforDerivative);
+    mix().solveSurfaceBalance();
     std::cout << "Then rhoi becomes = " << rhoi[0] <<"      " << rhoi[1] << std::endl;
 
 //       BOOST_CHECK_CLOSE(p_production_rates[0], compute_production_rate_for_O_O2_recombination(gamma_coefficient, Mw, rhoi, v_temperature[i_temperature]), tol );

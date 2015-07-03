@@ -29,7 +29,7 @@ WallState m_wall_state;
 Mutation::Numerics::RealMatrix v_jacobian;
 Mutation::Numerics::RealMatrix v_residual_function;
 
-void computeProductionRates();
+void computeWallSpeciesProductionRates();
 void convertWallNumberDensitiestoNumberDensityFractions();
 void convertWallNumberDensityFractionstoNumberDensities();
 

@@ -45,12 +45,12 @@ void WallSolver::updateFunction( Mutation::Numerics::RealVector& lv_mole_fractio
     m_thermo.setState( &v_rhoi_wall(0), &m_Twall, set_state_with_rhoi_Twall );
     mp_wall_state->setWallState( &v_rhoi_wall(0), &m_Twall );
 
-    computeMoleFractionGradientatWall(lv_mole_fractions_wall);
-    m_transport.stefanMaxwell(&v_mole_fraction_gradients(0), &v_diffusion_velocities(0), zero_electric_conductivity); 
+    computeMoleFractionGradientatWall( lv_mole_fractions_wall );
+    m_transport.stefanMaxwell( &v_mole_fraction_gradients(0), &v_diffusion_velocities(0), zero_electric_conductivity ); 
 
-    mp_catalysis_rates->computeRate(*mp_wall_state, &v_wall_production_rates(0));
+    mp_catalysis_rates->computeRate( *mp_wall_state, &v_wall_production_rates(0) );
 
-    for(int i_ns = 0 ; i_ns < m_ns ; i_ns++){
+    for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         v_residual_function(i_ns) = v_rhoi_wall(i_ns) * v_diffusion_velocities(i_ns) - v_wall_production_rates(i_ns);
     }
 
@@ -74,7 +74,7 @@ void WallSolver::updateJacobian(Mutation::Numerics::RealVector& lv_mole_fraction
 
         // Update Jacobian column
         for( int i_equation = 0 ; i_equation < m_ns ; i_equation++ ){
-            v_jacobian(i_equation, i_ns) = (v_residual_function(i_equation) - v_unperturbed_residual_function(i_equation)) / m_perturbation ;
+            v_jacobian(i_equation, i_ns) = ( v_residual_function( i_equation ) - v_unperturbed_residual_function( i_equation ) ) / m_perturbation ;
         }
 
         lv_mole_fractions_wall(i_ns) = l_unperturbed_mole_fraction;

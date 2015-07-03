@@ -55,7 +55,7 @@ class Mixture
     : public Thermodynamics::Thermodynamics, 
       public Transport::Transport, 
       public Kinetics::Kinetics,
-      public gsi::GasSurfaceInteraction
+      public GasSurfaceInteraction::GasSurfaceInteraction
 {
 public:
 

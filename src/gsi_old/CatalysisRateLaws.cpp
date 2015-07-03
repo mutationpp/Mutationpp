@@ -10,11 +10,11 @@ using namespace Mutation::Utilities;
 namespace Mutation{
     namespace gsi{
 
-inline double CatalysisRateLaw::AverageThermalSpeed(const int& i_species, const double* const p_rhoie) const {
-    return sqrt( (8 * RU * p_rhoie[0]) / (PI * m_thermo.speciesMw(i_species))) ;
+inline double CatalysisRateLaw::computeAverageThermalSpeed( const int& l_sp, const double* const lp_Twall ) const {
+    return sqrt( ( 8 * Mutation::RU * lp_Twall[0] ) / ( Mutation::PI * m_thermo.speciesMw( l_sp ) ) ) ;
 }
 
-inline double CatalysisRateLaw::Average2DThermalSpeed(const int&  i_species, const double* const p_rhoie) const {
+inline double CatalysisRateLaw::computeAverage2DThermalSpeed(const int&  l_sp, const double* const p_Twall) const {
 //    for (int i = 0; i < nSpecies(); i++){
 //        double c = sqrt(PI * RU /* * mp_Tw */ / (PI * MolarMass));
 //    }
@@ -30,12 +30,12 @@ inline double CatalysisRateLaw::Average2DThermalSpeed(const int&  i_species, con
 
 GammaModelConst::GammaModelConst(const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo, std::vector<int> reactants)
                                 : CatalysisRateLaw(thermo),
-                                  m_reactants(reactants)
+                                  v_reactants(reactants)
 {
     assert( node.tag() == "gamma_const" );
 
     int l_diff_reac = 1;
-    for (int i_reac = 0; i_reac < reactants.size()-1; ++i_reac ){
+    for ( int i_reac = 0; i_reac < reactants.size() - 1; ++i_reac ){
         if (reactants[i_reac] != reactants[i_reac + 1]) l_diff_reac++;
     }
 
@@ -47,14 +47,14 @@ GammaModelConst::GammaModelConst(const Mutation::Utilities::IO::XmlElement& node
     for (int i = 0; i < tokens.size(); i+=2) {
         int index = thermo.speciesIndex(tokens[i]);
         if(index_ref > index){
-            m_gamma.insert(m_gamma.begin(), atof(tokens[i+1].c_str()));
+            v_gamma.insert(v_gamma.begin(), atof(tokens[i+1].c_str()));
         } else {
-            m_gamma.insert(m_gamma.end(), atof(tokens[i+1].c_str()));
+            v_gamma.insert(v_gamma.end(), atof(tokens[i+1].c_str()));
         }
         index_ref = index;
     } /** @todo: MOST UGLY THING IN MY LIFE. DEBUG IT WITH THE EXTREME CASES **/
 
-    if (l_diff_reac != m_gamma.size()){
+    if (l_diff_reac != v_gamma.size()){
         std::cerr << "ERROR @ GammaModelConst @ CatalysisRateLaws.cpp. #gammas should be = #different reactants." << std::endl; /** @todo cout better error */
         exit(1);
     }
@@ -63,64 +63,72 @@ GammaModelConst::GammaModelConst(const Mutation::Utilities::IO::XmlElement& node
      * @todo What should I add here?
      */
 
+    v_output_impinging_flux.resize(v_gamma.size());
+    v_impinging_flux_per_stoichiometric_coefficient.resize(v_gamma.size());
+
 }
 
 //==============================================================================
 
-double GammaModelConst::forwardReactionRate(const double * const p_rhoi, const double* const p_rhoie) const {
-    /** @todo Do it with pointer arithmetics if it called this way... */
+double GammaModelConst::forwardReactionRate(const double * const lp_rhoi, const double* const lp_Twall) const {
 
-    double l_test_flux;
-    double l_min_output_flux, l_test_output_flux;
-    int index = m_reactants[0];
-    int increase_index = 1;
-    while (index == m_reactants[increase_index] && increase_index < m_reactants.size() ) increase_index++;
+    l_index_v_reactants = 0;
 
-    l_min_output_flux = AverageThermalSpeed(index, p_rhoie) / (4.E0) * p_rhoi[index]
-                                                                     / m_thermo.speciesMw(index) ;
-    double l_minim_flux = l_min_output_flux / increase_index;
-    l_min_output_flux = l_minim_flux * m_gamma[0];
+    for( int i_gammas = 0 ; i_gammas < v_gamma.size() ; i_gammas++ ){
 
-    for(int i_diff_species = 1; i_diff_species < m_gamma.size(); ++i_diff_species){
-        int i_increase = 1;
-        index = m_reactants[increase_index];
+        getSpeciesIndexandStoichiometricCoefficient( l_index_v_reactants, l_species_index, l_stoichiometric_coefficient );
+        v_output_impinging_flux[ i_gammas ] = computeWallImpingingMassFlux( l_species_index, lp_rhoi, lp_Twall );
 
-        while (index == m_reactants[increase_index + 1] && increase_index < m_reactants.size() ) {increase_index++ ; i_increase++;}
+        v_impinging_flux_per_stoichiometric_coefficient[ i_gammas ] = v_output_impinging_flux[ i_gammas ] / l_stoichiometric_coefficient;
+        v_output_impinging_flux[ i_gammas ] = v_impinging_flux_per_stoichiometric_coefficient[ i_gammas ] * v_gamma[ i_gammas ];
 
-        l_test_output_flux = AverageThermalSpeed(index, p_rhoie) / (4.E0 ) * p_rhoi[index]
-                                                                     / m_thermo.speciesMw(index) ;
+        l_index_v_reactants += l_stoichiometric_coefficient;
 
-        l_test_flux = l_test_output_flux / i_increase ;
-
-        l_test_output_flux = l_test_flux * m_gamma[i_diff_species];
-        if ( l_minim_flux > l_test_flux ){
-            l_min_output_flux = l_test_output_flux;
-            l_minim_flux = l_test_flux;
-        }
     }
 
-    return l_min_output_flux; // It can be done with less variables. DEBUG!
+    return getLimitingImpingingMassFlux( );
+
 }
 
 //==============================================================================
-// 
-// const double* GammaModelConst::getgammaCoefficient() const
-// {
-//     return &m_gamma[0];
-// }
-// 
+
+inline void GammaModelConst::getSpeciesIndexandStoichiometricCoefficient( int l_index_v_reactants, int& l_species_index, int& l_stoichiometric_coefficient ) const {
+
+    l_species_index = v_reactants[l_index_v_reactants];
+    l_stoichiometric_coefficient = 1;
+    l_index_v_reactants++;
+    
+    while( l_index_v_reactants < v_reactants.size() ){
+        if ( l_species_index != v_reactants[ l_index_v_reactants ] ) {
+            break;
+        } 
+        l_stoichiometric_coefficient++;
+        l_index_v_reactants++;
+    }
+
+}
+
 //==============================================================================
-/*
-GammaModelT::GammaModelT(const Mutation::Utilities::IO::XmlElement& node){assert( node.tag() == "gamma_T" );}
-GammaModelTP::GammaModelTP(const Mutation::Utilities::IO::XmlElement& node){assert( node.tag() == "gamma_const" );}
-    */
+
+inline double GammaModelConst::computeWallImpingingMassFlux( const int& l_sp, const double* const lp_rhoi, const double* const lp_Twall ) const {
+
+    return computeAverageThermalSpeed( l_sp, lp_Twall ) / ( 4.E0 ) * lp_rhoi[ l_sp ] / m_thermo.speciesMw( l_sp );
+
+}
+
 //==============================================================================
-      
+
+inline double GammaModelConst::getLimitingImpingingMassFlux() const {
+
+    return v_output_impinging_flux[ min_element( v_impinging_flux_per_stoichiometric_coefficient.begin(), v_impinging_flux_per_stoichiometric_coefficient.end()) - v_impinging_flux_per_stoichiometric_coefficient.begin() ];
+
+}
+
 //==============================================================================
 //============================ Physisorption ===================================
 //==============================================================================
       
-Physisorption::Physisorption(const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo)
+Physisorption::Physisorption( const Mutation::Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo )
     : CatalysisRateLaw(thermo),
       m_S_coef(1.E0),
       m_beta(0.E0),
@@ -238,7 +246,7 @@ PhysisorptiontoChemisorption::PhysisorptiontoChemisorption(const Utilities::IO::
 //========================= L-H Recombination ==================================
 //==============================================================================
 
-LHRecombination::LHRecombination(const Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo)
+LHRecombination::LHRecombination( const Utilities::IO::XmlElement& node, const Mutation::Thermodynamics::Thermodynamics& thermo )
     : CatalysisRateLaw(thermo) //CHECK WHICH ONE NEEDS THERMO COPY
 {
     assert( node.tag() == "L-H" );

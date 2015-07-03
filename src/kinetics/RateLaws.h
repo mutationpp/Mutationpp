@@ -96,6 +96,36 @@ private:
     double m_temp;
 };
 
+/*
+ * Rate Law by Billing [23], [24] annaloro
+ */
+
+//    class BillingN2N2VibrationalDeexcitation : public RateLaw{
+//    
+//    public:
+//        CapN2N2VibrationalDeexcitation();
+//        virtual ~CapN2N2VibrationalDeexcitation();
+//        
+//        CapN2N2VibrationalDeexcitation* clone(0 const {
+//            return new CapN2N2VibrationalDeexcitation(*this);
+//        }
+//    
+//    };
+
+/*
+ * Rate Law by Billing and Capitelli [23], [25], [42] annaloro
+ */
+//    class BillingO2O2VibrationalDeexcitation : public RateLaw{
+//    
+//    public:
+//        CapN2N2VibrationalDeexcitation();
+//        virtual ~CapN2N2VibrationalDeexcitation();
+//        
+//        CapN2N2VibrationalDeexcitation* clone(0 const {
+//            return new CapN2N2VibrationalDeexcitation(*this);
+//        }
+//    
+//    };
 
     } // namespace Kinetics
 } // namespace Mutation

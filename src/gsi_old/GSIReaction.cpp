@@ -7,18 +7,22 @@ using namespace Mutation::Thermodynamics;
 
 namespace Mutation{
     namespace gsi{
-      
-GSIReaction::GSIReaction(const IO::XmlElement& node, const class Thermodynamics& thermo, const CatalysisSurfaceProperties* surf_props):
-                      m_formula(""),
-                      m_conserves(true),
-                      mp_surf_props(surf_props)
+  
+//==============================================================================
+
+GSIReaction::GSIReaction(const IO::XmlElement& node, const class Thermodynamics& thermo, const CatalysisSurfaceProperties* surf_props)
+                        : m_formula(""),
+                          m_conserves(true),
+                          mp_surf_props(surf_props)
 {
-    // Make sure this is a reaction type XML element
     assert( node.tag() == "reaction" );
 }
 
+//==============================================================================
+
 void GSIReaction::parseFormula(const IO::XmlElement& node, const class Thermodynamics& thermo)
 {
+
     // First step is to split the formula into reactant and product
     // strings and determine reversibility of the reaction
     size_t pos = m_formula.find("=");
@@ -42,8 +46,10 @@ void GSIReaction::parseFormula(const IO::XmlElement& node, const class Thermodyn
     // Now that we have reactant and product strings, we can parse each 
     // separately using the same algorithm
     parseSpecies(m_reactants, reactants, node, thermo);
-    parseSpecies(m_products,  products,  node, thermo);
+    parseSpecies(m_products, products, node, thermo);
 }
+
+//==============================================================================
 
 void GSIReaction::parseSpecies(
     std::vector<int>& species, std::string& str, const IO::XmlElement& node,
@@ -146,9 +152,7 @@ void GSIReaction::parseSpecies(
     std::sort(species.begin(), species.end()); 
 }
 
-/*
- *********************************************************************************************
- */
+//==============================================================================
 
 CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const class Thermodynamics& thermo, const std::string m_category, const CatalysisSurfaceProperties* surf_props)
                        : GSIReaction(node, thermo, surf_props), /** @todo Check again for the surf_props */
@@ -174,46 +178,43 @@ CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const class The
      */
     IO::XmlElement::const_iterator iter = node.begin();
     for ( ; iter != node.end(); ++iter) {
-        if (m_category == "gamma"){
-            if (iter->tag() == "gamma_const"){
+        if (m_category == "gamma") {
+            if (iter->tag() == "gamma_const") {
                 mp_catalysis_rate = new GammaModelConst(*iter, thermo, m_reactants);
-            } else if(iter->tag() == "gamma_T"){
-                std::cerr << "This category of gamma model, "           /** @todo */
-                          << iter->tag() << ", has not been implemented yet!" << std::endl;      
-                     exit(1);
-            } else if(iter->tag() == "gamma_TP"){
-                std::cerr << "This category of gamma model, "           /** @todo */
-                          << iter->tag() << ", has not been implemented yet!" << std::endl;      
             } else {
-                std::cerr << "This category of gamma model, "
-                          << iter->tag() << ", has not been implemented yet!" << std::endl;      
+                errorInvalidRateLawGamma( iter->tag() );
             }
         } else if (m_category == "finite_rate_chemistry") {
 
-            if (iter->tag() == "physisorption"){
-                     mp_catalysis_rate = new Physisorption(*iter, thermo);
-            } else if (iter->tag() == "thermal_desorption"){
-                     mp_catalysis_rate = new ThermalDesorption(*iter, thermo);
-            } else if(iter->tag() == "chemisorption") {
-                     mp_catalysis_rate = new Chemisorption(*iter, thermo);
-            } else if(iter->tag() == "E-R") {
-                     mp_catalysis_rate = new ERRecombination(*iter,thermo);
-            } else if(iter->tag() == "phys_to_chem") {
-                     mp_catalysis_rate = new PhysisorptiontoChemisorption(*iter, thermo);
-            } else if(iter->tag() == "L-H") {
-                     mp_catalysis_rate = new LHRecombination(*iter, thermo);
-            } else { std::cerr << "This mechanism of the Finite Rate Chemistry, " 
-                     << iter->tag() << ", has not been implemented yet!" << std::endl;      
-                     exit(1);
+            if ( iter->tag() == "physisorption" ){
+                mp_catalysis_rate = new Physisorption( *iter, thermo );
+            } else if ( iter->tag() == "thermal_desorption" ) {
+                mp_catalysis_rate = new ThermalDesorption( *iter, thermo );
+            } else if( iter->tag() == "chemisorption" ) {
+                mp_catalysis_rate = new Chemisorption( *iter, thermo );
+            } else if( iter->tag() == "E-R" ) {
+                mp_catalysis_rate = new ERRecombination( *iter, thermo );
+            } else if( iter->tag() == "phys_to_chem" ) {
+                mp_catalysis_rate = new PhysisorptiontoChemisorption( *iter, thermo );
+            } else if( iter->tag() == "L-H" ) {
+                mp_catalysis_rate = new LHRecombination( *iter, thermo );
+            } else { 
+                // errorInvalidRateLawFRC
+                std::cerr << "This mechanism of the Finite Rate Chemistry, " 
+                          << iter->tag() << ", has not been implemented yet!" << std::endl;      
+                             exit(1);
             }
-        } else { std::cerr << "This category of Catalysis " << m_category << 
-                 " has not been implemented yet!" << std::endl; 
-                 exit(1);}
+        } else { 
+            // errorInvalidCatalyticModel
+            std::cerr << "This category of Catalysis " << m_category
+                      << " has not been implemented yet!" << std::endl; 
+            exit(1);
+        }
     }   
     
-    // Make sure we got a RateLaw out of all that
-    if (mp_catalysis_rate == NULL)
-        node.parseError("A rate law must be supplied with this reaction!");
+    // errorRateLawisNull
+    if ( mp_catalysis_rate == NULL )
+        node.parseError( "A rate law must be provided for this reaction!" );
     
     // Check that reactions conserve elements and active sites
     /**
@@ -258,6 +259,27 @@ CatalysisReaction::CatalysisReaction(const IO::XmlElement& node, const class The
 //    }
     
 }
+
+//==============================================================================
+
+CatalysisReaction::~CatalysisReaction(){
+
+    if ( mp_catalysis_rate != NULL ){ delete mp_catalysis_rate; }
+    mp_catalysis_rate = NULL;
+
+}
+
+//==============================================================================
+
+void CatalysisReaction::errorInvalidRateLawGamma( const std::string& l_gamma_rate_law ){
+    
+    std::cerr << "This category of gamma model, "
+              << l_gamma_rate_law << ", has not been implemented yet!" << std::endl;      
+    exit(1);
+
+}
+
+//==============================================================================
 
     } // namespace gsi
 } //namespace Mutation
