@@ -1,0 +1,19 @@
+<gsi gsi_mechanism = "gamma">
+
+    <surface_properties name = "none" >
+    </surface_properties>
+    
+    <diffusion_model model="first_order">
+        <mass distance= "1"> </mass>
+    </diffusion_model>
+
+    <production_terms>
+        <surface_chemistry>
+            <!-- 1 -->
+            <reaction type= "catalysis" formula="O + O => O2">
+                <gamma_const> O:0.02 </gamma_const>
+            </reaction>
+        </surface_chemistry>
+    </production_terms>
+    
+</gsi>
