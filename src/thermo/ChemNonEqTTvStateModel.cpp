@@ -93,13 +93,32 @@ public:
         case 0: {
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
-            getTFromRhoE(
-                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
-            m_Tel = m_Te = m_Tv;
+            if (!getTFromRhoE(
+                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0)) {
+                cout << "was trying to compute Tv..." << endl;
+                cout << "rhoe_v = " << p_energy[1] << endl;
+                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+                    cout << m_thermo.speciesName(i) << p_mass[i] << endl;
+                cout << endl;
+            }
 
             // Next compute the temperature using the total energy density
-            getTFromRhoE(
-                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
+            m_Tel = m_Te = m_Tv;
+
+            if (!getTFromRhoE(
+                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
+                cout << "was trying to compute T..." << endl;
+                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+                    cout << p_mass[i] << endl;
+                cout << endl;
+            }
+//            getTFromRhoE(
+//                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
+//            m_Tel = m_Te = m_Tv;
+//
+//            // Next compute the temperature using the total energy density
+//            getTFromRhoE(
+//                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
 
             break;
         }
