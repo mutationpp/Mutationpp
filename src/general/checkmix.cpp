@@ -176,6 +176,9 @@ int main(int argc, char** argv)
     const int nr = mixture.nReactions();
     const int ng = mixture.nGas();
     const int nc = mixture.nCondensed();
+
+    std::vector<double> g(ns, 0.0);
+    mixture.speciesSTGOverRT(298.15, &g[0]);
  
     cout << "location: " << opts.getSource() << endl;
     cout << ns << " species containing " << ne << " elements" << endl;
@@ -196,8 +199,24 @@ int main(int argc, char** argv)
     for (int i = 0; i < ne; ++i)
         cout << setw(4) << mixture.elementName(i);
     
-    cout << setw(12) << "Mw (g/mol)" << setw(10) << "Charge";
-    cout << setw(12) << "Phase" << endl;
+    cout << setw(12) << "Mw";
+    cout << setw(10) << "Charge";
+    cout << setw(12) << "Phase";
+    cout << setw(12) << "Hf(298)";
+    cout << endl;
+
+    // Units
+    cout << setw(7)     << " "; // Number
+    cout << setw(width) << " "; // Name
+    for (int i = 0; i < ne; ++i)
+        cout << setw(4) << " "; // Element name
+    cout << setw(12)    << "[g/mol]";
+    cout << setw(10)    << " ";
+    cout << setw(12)    << " ";
+    cout << setw(12)    << "[kJ/mol]";
+    cout << endl;
+
+
     cout << "Gas Species (" << ng << "):" << endl;
     for (int i = 0; i < ng; ++i) {
         cout.setf(std::ios::right, std::ios::adjustfield);
@@ -214,7 +233,9 @@ int main(int argc, char** argv)
 
         PhaseType phase = mixture.species()[i].phase();
         cout << setw(12) << (phase == GAS ? "gas" :
-            (phase == LIQUID ? "liquid" : "solid")) << endl;
+            (phase == LIQUID ? "liquid" : "solid"));
+
+        cout << setw(12) << g[i] << endl;
     }
 
     if (nc > 0) {
@@ -234,7 +255,9 @@ int main(int argc, char** argv)
 
             PhaseType phase = mixture.species()[i].phase();
             cout << setw(12) << (phase == GAS ? "gas" :
-                (phase == LIQUID ? "liquid" : "solid")) << endl;
+                (phase == LIQUID ? "liquid" : "solid"));
+
+            cout << setw(12) << g[i] << endl;
         }
     }
     
