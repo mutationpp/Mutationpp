@@ -106,7 +106,8 @@ public:
     RrhoDB(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
-          m_use_tables(true)
+          m_use_tables(true),
+          m_last_bfacs_T(0.0)
     { }
     
     /**
@@ -433,13 +434,13 @@ public:
     {        
         // First compute the non-dimensional enthalpy
         enthalpy(Th, Te, Tr, Tv, Tel, g, NULL, NULL, NULL, NULL, NULL);
-        
+
         // Subtract the entropies
         sT(Th, Te, P, g, MinusEq());
         sR(Tr, g, MinusEq());
         sV(Tv, g, MinusEq());
         sE(Tel, g, MinusEq());
-        
+
         // Account for spin of free electrons
         if (m_has_electron)
             g[0] -= std::log(2.0);
@@ -642,7 +643,7 @@ protected:
         // Store the species formation enthalpies in K
         mp_hform = new double [m_ns];
         LOOP(mp_hform[i] = rrhos[i].formationEnthalpy() / RU)
-        
+
         // Store the molecule's rotational energy parameters
         mp_rot_data = new RotData [m_nm];
         LOOP_MOLECULES(
@@ -717,8 +718,7 @@ private:
 
     void updateElecBoltzmannFactors(double T)
     {
-        static double last_T = 0.0;
-        if (std::abs(1.0 - last_T/T) < 1.0e-16)
+        if (std::abs(1.0 - m_last_bfacs_T / T) < 1.0e-16)
             return;
 
         if (m_use_tables)
@@ -726,7 +726,7 @@ private:
         else
             ElecBFacsFunctor()(T, mp_el_bfacs, m_elec_data);
 
-        last_T = T;
+        m_last_bfacs_T = T;
     }
 
     
@@ -934,6 +934,7 @@ private:
     ElectronicData m_elec_data;
     Mutation::Utilities::LookupTable<double, double, ElecBFacsFunctor>* mp_el_bfac_table;
     double* mp_el_bfacs;
+    double m_last_bfacs_T;
 
     //Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
     //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;
