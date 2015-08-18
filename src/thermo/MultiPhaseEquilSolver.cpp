@@ -745,12 +745,14 @@ std::pair<int, int> MultiPhaseEquilSolver::equilibrate(
     
     // Special case for 1 species
     if (m_ns == 1) {
+        DEBUG("only one species..." << endl)
         p_sv[0] = 1.0;
         return std::make_pair(0,0);
     }
     
     // Compute the initial conditions lambda(0), Nbar(0), N(0), and g(0)
     if (!initialConditions(T, P, p_cv)) {
+        DEBUG("could not compute the initial conditions!" << endl)
         for (int i = 0; i < m_ns; ++i)
             p_sv[i] = 0;
         return std::make_pair(-1,-1);
@@ -1355,6 +1357,7 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 bool MultiPhaseEquilSolver::initialConditions(
         const double T, const double P, const double* const p_c)
 {
+    DEBUG("entering initialConditions()" << endl)
     const double alpha = 1.0e-3;
     
     // Determine which parameters have changed since the last equilibrate call
@@ -1372,6 +1375,10 @@ bool MultiPhaseEquilSolver::initialConditions(
 
     // Initialize the Gibbs energy vector (regardless of tolerance)
     m_thermo.speciesGOverRT(m_T, m_P, mp_g);
+    DEBUG("Species G: " << endl)
+    for (int i = 0; i < m_ns; ++i)
+        DEBUG(setw(20) << m_thermo.speciesName(i) << mp_g[i] << endl)
+    DEBUG(endl)
 
     // Setup species ordering and remove "determined" species from consideration
     // (depends on temperature and constraint changes regardless of tolerance)
@@ -1511,6 +1518,14 @@ bool MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
     for (int i = 0; i < nsr+1; ++i)
         *p++ = 0.0;
     
+    DEBUG("Tableau for Min-G composition:" << endl)
+    for (int i = 0; i < ncr+2; ++i) {
+        for (int j = i*(nsr+1); j < (i+1)*(nsr+1); ++j)
+            DEBUG(mp_tableau[j] << " ")
+        DEBUG(endl)
+    }
+    DEBUG(endl)
+
     // Use the simplex algorithm to get the min-g solution
     int izrov [nsr];
     int iposv [ncr];
@@ -1538,6 +1553,8 @@ bool MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
         }
     }
     
+    DEBUG("Successfully computed Min-G solution." << endl)
+
     return true;
 
 //    cout << "min-g solution:" << endl;
@@ -1578,6 +1595,14 @@ bool MultiPhaseEquilSolver::updateMaxMinSolution()
     for (int i = 0; i < nsr+2; ++i)
         *p++ = 0.0;
 
+    DEBUG("Tableau for Max-Min composition:" << endl)
+    for (int i = 0; i < ncr+2; ++i) {
+        for (int j = i*(nsr+2); j < (i+1)*(nsr+2); ++j)
+            DEBUG(mp_tableau[j] << " ")
+        DEBUG(endl)
+    }
+    DEBUG(endl)
+
     // Use the simplex algorithm to get the max-min solution
     int izrov [nsr];
     int iposv [ncr];
@@ -1601,6 +1626,8 @@ bool MultiPhaseEquilSolver::updateMaxMinSolution()
             mp_maxmin[iposv[i]] += mp_tableau[(nsr+2)*(i+1)];
     }
     
+    DEBUG("Successfully computed Max-Min solution." << endl)
+
     return true;
 
 //    cout << "max-min solution:" << endl;
