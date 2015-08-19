@@ -140,6 +140,7 @@ endif()
 ################################################################################
 # Descend into the src directory to build all targets and libraries
 include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/general
     ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
     ${CMAKE_CURRENT_SOURCE_DIR}/src/numerics
