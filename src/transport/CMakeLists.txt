@@ -26,7 +26,7 @@ add_sources(mutation++
     ThermalConductivityCG.cpp
     ThermalConductivityWilke.cpp
     Transport.cpp
-    ViscosityCG.cpp
+    ViscosityChapmannEnskog.cpp
     ViscosityGuptaYos.cpp
     ViscosityWilke.cpp
 )
