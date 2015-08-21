@@ -30,6 +30,7 @@
 #include "Numerics.h"
 
 #include <iostream>
+#include <Eigen/Dense>
 
 using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
@@ -615,6 +616,7 @@ void Transport::equilDiffFluxFacsZ(double* const p_F)
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
+	using namespace Eigen;
 	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int ns = m_thermo.nSpecies();
@@ -622,89 +624,70 @@ void Transport::stefanMaxwell(
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
     
+    // Electron offset
+    const int k = m_thermo.hasElectrons() ? 1 : 0;
+    const int nh = ns-k;
+
+    Map<const ArrayXd> dp(p_dp, ns);
+    Map<ArrayXd> V(p_V, ns), qi(mp_wrk3, ns);
+
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
-    static std::vector<double> X(ns);
-    static std::vector<double> Y(ns);
-    for (int i = 0; i < ns; ++i)
-        X[i] = std::max(tol, m_thermo.X()[i]);
+    static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
+    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
     // Get reference to binary diffusion coefficients
     const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
 
-    // Electron offset
-    const int k = m_thermo.hasElectrons() ? 1 : 0;
-
     // Compute mixture charge
-    double q = 0.0;
-    for (int i = 0; i < ns; ++i) {
-        mp_wrk3[i] = m_thermo.speciesCharge(i);
-        q += mp_wrk3[i] * X[i];
-    }
-
-    // Compute kappas
-    const double one_over_kbt = 1.0/(KB*Th);
     for (int i = 0; i < ns; ++i)
-        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+        qi[i] = m_thermo.speciesCharge(i);
+    const double q = (X*qi).sum();
+
+    // Compute kappas (store in V)
+    V = (X*qi - q*Y)/(KB*Th);
 
     // Compute ambipolar electric field
-    E = (k > 0 ? p_dp[0]/p_V[0] : 0.0);
+    E = (k > 0 ? dp[0]/V[0] : 0.0);
 
     // Compute right hand side
-    static RealVector b(ns-k);
-    for (int i = k; i < ns; ++i)
-        b(i-k) = -p_dp[i] + p_V[i]*E;
+    static VectorXd b; b.resize(nh);
+    b.array() = -dp.tail(nh) + E*V.tail(nh);
 
     // Compute singular system matrix
     double fac;
-    static RealSymMat G(ns-k);
-    for (int i = k; i < ns; ++i)
-        G(i-k,i-k) = 0.0;
-    for (int i = k; i < ns; ++i) {
-        for (int j = i+1; j < ns; ++j) {
-            fac = X[i]*X[j]/nDij(i,j)*nd;
-            G(i-k,i-k) += fac;
-            G(j-k,j-k) += fac;
-            G(i-k,j-k) = -fac;
+    static MatrixXd G; G = MatrixXd::Zero(nh, nh);
+
+    for (int i = 0; i < nh; ++i) {
+        for (int j = i+1; j < nh; ++j) {
+            fac = X[i+k]*X[j+k]/nDij(i+k,j+k)*nd;
+            G(i,i) += fac;
+            G(j,j) += fac;
+            G(i,j) = -fac;
         }
     }
 
     // Compute average binary diffusion coefficient
-    double a = 0.0;
-    for (int i = 0; i < nDij.size(); ++i)
-        a += nDij(i);
-    a /= ((double)nDij.size()*nd);
-    a = 1.0/a;
+    double a = nDij.size()*nd / Map<const ArrayXd>(&nDij(0), nDij.size()).sum();
 
     // Compute the constraints that are applied to the matrix
-    fac = (k > 0 ? Y[0]/(X[0]*mp_wrk3[0]) : 0.0);
-    for (int i = k; i < ns; ++i)
-        p_V[i] = Y[i] - X[i]*mp_wrk3[i]*fac;
+    fac = X[0]*qi[0];
+    V.tail(nh) = Y.tail(nh);
+    if (k > 0) V.tail(nh) -= X.tail(nh)*qi.tail(nh)*Y[0]/fac;
 
-    // Add mass balance relation to make make matrix nonsigular
-    for (int i = k; i < ns; ++i)
-        for (int j = i; j < ns; ++j)
-            G(i-k,j-k) += a*p_V[i]*p_V[j];
+    // Add mass balance relation to make matrix nonsigular
+    G.selfadjointView<Upper>().rankUpdate(V.matrix().tail(nh), a);
 
-    // Solve for the velocities
-    static RealVector V(ns-k);
-    static LDLT<double> ldlt;
-    ldlt.setMatrix(G);
-    ldlt.solve(V, b);
-
-    // Copy to output vector
-    for (int i = k; i < ns; ++i)
-        p_V[i] = V(i-k);
+    static Eigen::LDLT<MatrixXd, Upper> ldlt;
+    ldlt.compute(G);
+    V.tail(nh) = ldlt.solve(b).array();
 
     // Compute electron diffusion velocity if need be
     if (k == 0)
         return;
 
-    p_V[0] = 0.0;
-    for (int i = k; i < ns; ++i)
-        p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
-    p_V[0] /= -mp_wrk3[0]*X[0];
+    V[0] = -(X.tail(nh)*qi.tail(nh)*V.tail(nh)).sum() / fac;
 }
 
 // For now assume that we have ions and solve the full system in thermal

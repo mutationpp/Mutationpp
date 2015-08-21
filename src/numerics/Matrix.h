@@ -623,7 +623,7 @@ public:
     /**
      * Returns the element indexed at i in the underlying storage array.
      */
-    T operator()(const size_t i) const { 
+    const T& operator()(const size_t i) const {
         ASSERT_IN_RANGE(0, i, m_data.size())
         return m_data[i];
     }
