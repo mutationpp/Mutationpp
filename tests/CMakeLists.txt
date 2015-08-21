@@ -77,9 +77,14 @@ function(test_example name subdir)
         COMMAND ${name} )
 endfunction()
 
+# C++ examples
 test_example(equilibrium_air c++)
 test_example(O2_dissociation c++)
-test_example(wrapper_test fortran)
+
+# Fortran examples
+if (BUILD_FORTRAN_WRAPPER)
+    test_example(wrapper_test fortran)
+endif()
 
 # Transport property tests
 test_all_mixtures(stefan_maxwell)

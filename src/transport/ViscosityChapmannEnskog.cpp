@@ -38,6 +38,11 @@ using namespace Mutation::Utilities;
 namespace Mutation {
     namespace Transport {
 
+/**
+ * Computes the viscosity using the full Chapmann-Enskog formulation.
+ *
+ * @param Solver an Eigen linear system solver
+ */
 template <template <typename, int> class Solver>
 class ViscosityChapmannEnskog : public ViscosityAlgorithm
 {

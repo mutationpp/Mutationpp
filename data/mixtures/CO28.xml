@@ -1,4 +1,4 @@
-<mixture mechanism="none" thermo_db="RRHO">
+<mixture>
     
     <species>
         e- C O CO CO2 O2 C+ O+
