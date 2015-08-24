@@ -30,6 +30,7 @@
 #define JACOBIAN_MANAGER_H
 
 #include "Thermodynamics.h"
+#include <iostream>
 
 namespace Mutation {
     namespace Kinetics {

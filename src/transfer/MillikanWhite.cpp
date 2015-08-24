@@ -30,6 +30,8 @@
 #include "Utilities.h"
 #include "ParticleRRHO.h"
 
+#include <iostream>
+
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 using namespace Mutation::Thermodynamics;
@@ -60,9 +62,9 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 //    if (vibrator.hasRRHOParameters())
 //        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
 //    else {
-        cout << "Cannot get characteristic vibrational temperature for "
+        std::cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
-             << "RRHO data present in species.xml!" << endl;
+             << "RRHO data present in species.xml!" << std::endl;
 //        exit(1);
 //    }
     
@@ -109,9 +111,9 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 //    if (vibrator.hasRRHOParameters())
 //        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
 //    else {
-        cout << "Cannot get characteristic vibrational temperature for "
+        std::cout << "Cannot get characteristic vibrational temperature for "
              << "species " << vibrator.name() << " because there is no "
-             << "RRHO data present in species.xml!" << endl;
+             << "RRHO data present in species.xml!" << std::endl;
 //        exit(1);
 //    }
     

@@ -510,7 +510,7 @@ void Transport::equilDiffFluxFacs(double* const p_F)
 	const double p   = m_thermo.P();
 
 	const RealMatrix& Dij = diffusionMatrix();
-	const RealMatrix& nu  = m_thermo.elementMatrix();
+	const Eigen::MatrixXd& nu  = m_thermo.elementMatrix();
 
 	for (int i = 0; i < ns; ++i) {
 		mp_wrk2[i] = 0.0;

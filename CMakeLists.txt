@@ -151,6 +151,9 @@ include_directories(
 )
 add_subdirectory(src)
 
+# Install the Eigen files
+install(DIRECTORY Eigen DESTINATION include/mutation++)
+
 ################################################################################
 # CTest
 ################################################################################

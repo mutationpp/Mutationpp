@@ -34,10 +34,11 @@
 #include <vector>
 
 #include "Species.h"
-#include "Numerics.h"
 #include "Constants.h"
 #include "ThermoDB.h"
 #include "MultiPhaseEquilSolver.h"
+
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -447,7 +448,8 @@ public:
      * mass fractions.
      */
     double mixtureMwMass(const double *const Y) const {
-        return 1.0 / ((Numerics::asVector(Y, nSpecies()) / m_species_mw).sum());
+        //return 1.0 / ((Numerics::asVector(Y, nSpecies()) / m_species_mw).sum());
+        return 1.0/(Eigen::Map<const Eigen::ArrayXd>(Y, nSpecies()) / m_species_mw).sum();
     }
     
     /**
@@ -455,7 +457,8 @@ public:
      * mole fractions.
      */
     double mixtureMwMole(const double *const X) const {
-        return (Numerics::asVector(X, nSpecies()) * m_species_mw).sum();
+        //return (Numerics::asVector(X, nSpecies()) * m_species_mw).sum();
+        return (Eigen::Map<const Eigen::ArrayXd>(X, nSpecies()) * m_species_mw).sum();
     }
     
     /**
@@ -491,7 +494,7 @@ public:
      * component is equal to the number of atoms of the jth element in one
      * molecule of the ith species.
      */
-    const Numerics::RealMatrix &elementMatrix() const {
+    const Eigen::MatrixXd &elementMatrix() const {
         return m_element_matrix;
     }
     
@@ -825,8 +828,8 @@ private:
     MultiPhaseEquilSolver* mp_equil;
     StateModel* mp_state;
     
-    Numerics::RealMatrix m_element_matrix;
-    Numerics::RealVector m_species_mw;
+    Eigen::MatrixXd m_element_matrix;
+    Eigen::ArrayXd m_species_mw;
     
     double* mp_work1;
     double* mp_work2;

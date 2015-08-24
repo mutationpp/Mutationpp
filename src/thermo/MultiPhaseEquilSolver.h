@@ -29,7 +29,11 @@
 #ifndef THERMO_MULTI_PHASE_EQUIL_SOLVER
 #define THERMO_MULTI_PHASE_EQUIL_SOLVER
 
-#include "Numerics.h"
+//#include "Numerics.h"
+
+#include <Eigen/Dense>
+
+
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -53,57 +57,57 @@ enum MoleFracDef {
  * full one in order to avoid having to allocate and copy the reduced matrix
  * when taking the SVD.
  */
-class ReducedMatrix : public Numerics::MatExpr<double, ReducedMatrix>
-{
-public:
-    ReducedMatrix(
-        const Numerics::RealMatrix& A,
-        const int* const ir, const int* const jr, int nr, int nc)
-        : m_A(A), mp_ir(ir), mp_jr(jr), m_nr(nr), m_nc(nc)
-    { }
-    
-    size_t size() const { return m_nr*m_nc; }
-    size_t rows() const { return m_nr; }
-    size_t cols() const { return m_nc; }
-    
-    double operator()(size_t i, size_t j) const {
-        return m_A(mp_ir[i], mp_jr[j]);
-    }
-
-private:
-    const Numerics::RealMatrix& m_A;
-    const int* const mp_ir;
-    const int* const mp_jr;
-    size_t m_nr;
-    size_t m_nc;
-};
+//class ReducedMatrix : public Eigen::MatrixBase<ReducedMatrix>
+//{
+//public:
+//    ReducedMatrix(
+//        const Numerics::RealMatrix& A,
+//        const int* const ir, const int* const jr, int nr, int nc)
+//        : m_A(A), mp_ir(ir), mp_jr(jr), m_nr(nr), m_nc(nc)
+//    { }
+//
+//    size_t size() const { return m_nr*m_nc; }
+//    size_t rows() const { return m_nr; }
+//    size_t cols() const { return m_nc; }
+//
+//    double operator()(size_t i, size_t j) const {
+//        return m_A(mp_ir[i], mp_jr[j]);
+//    }
+//
+//private:
+//    const Numerics::RealMatrix& m_A;
+//    const int* const mp_ir;
+//    const int* const mp_jr;
+//    size_t m_nr;
+//    size_t m_nc;
+//};
 
 //==============================================================================
 
 /**
  * Represents the H matrix which is the reduced form of diag(y)*B.
  */
-class HMatrix : public Numerics::MatExpr<double, HMatrix>
-{
-public:
-    HMatrix(
-        const Numerics::RealMatrix& A, const double* const p_y,
-        const int* const ir, const int* const jr, int nr, int nc)
-        : m_Br(A, ir, jr, nr, nc), mp_y(p_y)
-    { }
-    
-    size_t size() const { return m_Br.size(); }
-    size_t rows() const { return m_Br.rows(); }
-    size_t cols() const { return m_Br.cols(); }
-    
-    double operator()(size_t i, size_t j) const {
-        return m_Br(i,j)*mp_y[i];
-    }
-
-private:
-    const ReducedMatrix m_Br;
-    const double* const mp_y;
-};
+//class HMatrix : public Numerics::MatExpr<double, HMatrix>
+//{
+//public:
+//    HMatrix(
+//        const Numerics::RealMatrix& A, const double* const p_y,
+//        const int* const ir, const int* const jr, int nr, int nc)
+//        : m_Br(A, ir, jr, nr, nc), mp_y(p_y)
+//    { }
+//
+//    size_t size() const { return m_Br.size(); }
+//    size_t rows() const { return m_Br.rows(); }
+//    size_t cols() const { return m_Br.cols(); }
+//
+//    double operator()(size_t i, size_t j) const {
+//        return m_Br(i,j)*mp_y[i];
+//    }
+//
+//private:
+//    const ReducedMatrix m_Br;
+//    const double* const mp_y;
+//};
 
 
 
@@ -119,9 +123,6 @@ private:
  * \li Implement change of basis set which will improve accuracy and prevent
  *     singular Jacobian matrices in some cases.  Could also improve Newton
  *     convergence.
- * \li Figure out how to correctly handle multiple phases in such a way that 
- *     infinite loops do not occur due to adding/removing the same phase over
- *     over.
  */
 class MultiPhaseEquilSolver
 {
@@ -162,12 +163,12 @@ public:
     /**
      * Adds an additional linear constraint to the equilibrium solver.
      */
-    void addConstraint(const double *const p_A);
+    //void addConstraint(const double *const p_A);
     
     /**
      * Removes all linear constraints from the equilibrium solver.
      */
-    void clearConstraints();
+    //void clearConstraints();
     
     /**
      * Returns the partial derivative of the equilibrium mole fractions with
@@ -190,7 +191,7 @@ public:
 
     void dXdg(const double* const p_dg, double* const p_dXdg) const;
 
-    void dSoldg(const double* const p_dg, Numerics::RealVector& dx) const;
+    void dSoldg(const double* const p_dg, Eigen::VectorXd& dx) const;
 
     /**
      * Returns the current element potentials as computed by the equilibrate
@@ -334,17 +335,26 @@ private:
         /**
          * Returns a reduced constraint matrix based on the solution ordering.
          */
-        const ReducedMatrix reducedMatrix(const Numerics::RealMatrix& B) const {
-            return ReducedMatrix(B, mp_sjr, mp_cir, m_nsr, m_ncr);
+        //const ReducedMatrix reducedMatrix(const Numerics::RealMatrix& B) const {
+        //    return ReducedMatrix(B, mp_sjr, mp_cir, m_nsr, m_ncr);
+        //}
+        Eigen::MatrixXd& reducedMatrix(
+            const Eigen::MatrixXd& B, Eigen::MatrixXd& Br) const
+        {
+            Br.resize(m_nsr, m_ncr);
+            for (int j = 0; j < m_nsr; ++j)
+                for (int i = 0; i < m_ncr; ++i)
+                    Br(j,i) = B(mp_sjr[j], mp_cir[i]);
+            return Br;
         }
         
         /**
          * Returns a reduced H matrix which is the reduced form of diag(y)*B
          * the solution's ordering.
          */
-        const HMatrix hMatrix(const Numerics::RealMatrix& B) const {
-            return HMatrix(B, mp_y, mp_sjr, mp_cir, m_nsr, m_ncr);
-        }
+        //const HMatrix hMatrix(const Numerics::RealMatrix& B) const {
+        //    return HMatrix(B, mp_y, mp_sjr, mp_cir, m_nsr, m_ncr);
+        //}
         
         /**
          * Initializes data storage for the solution.  Solution and ordering are
@@ -365,8 +375,7 @@ private:
          */
         template <typename E>
         void update(
-            const Numerics::VecExpr<double, E>& dx,
-            const Numerics::RealMatrix& B)
+            const Eigen::MatrixBase<E>& dx, const Eigen::MatrixXd& B)
         {
         	for (int i = 0; i < m_ncr; ++i)
                 mp_lambda[i] += dx(i);
@@ -387,13 +396,13 @@ private:
          */
         void setSolution(
             const double* const p_lambda, const double* const p_Nbar,
-            const Numerics::RealMatrix& B);
+            const Eigen::MatrixXd& B);
         
         /**
          * Updates the y vector based on the current solution variables and g
          * vector.
          */
-        void updateY(const Numerics::RealMatrix& B);
+        void updateY(const Eigen::MatrixXd& B);
         
         /**
          * Equality operator.  Reallocates only if the data size required is 
@@ -419,7 +428,7 @@ private:
          * most with the current solution.  If no phase will reduce further than
          * -1 is returned.
          */
-        int checkCondensedPhase(const Numerics::RealMatrix& B);
+        int checkCondensedPhase(const Eigen::MatrixXd& B);
 
         void printOrder();
         
@@ -490,7 +499,7 @@ private:
      * Computes the solution derivative with respect to \f$s\f$ at constant
      * residual.
      */
-    void rates(Numerics::RealVector& dx, bool save = false);
+    void rates(Eigen::VectorXd& dx, bool save = false);
 
     /**
      * Tries to reduce the solution residual (at a fixed value of \f$s\f$) below
@@ -514,12 +523,12 @@ private:
     /**
      * Computes the Jacobian of hte system for the Newton's method.
      */
-    void formSystemMatrix(Numerics::RealSymMat& A) const;
+    void formSystemMatrix(Eigen::MatrixXd& A) const;
 
     /**
      * Computes the current value of the residual vector.
      */
-    void computeResidual(Numerics::RealVector& r) const;
+    void computeResidual(Eigen::VectorXd& r) const;
 
     /**
      * Adjusts the phase ordering according to the vapor pressure test and phase
@@ -551,9 +560,11 @@ private:
     double m_T;
     double m_P;
 
-    Numerics::RealMatrix  m_B;
+    //Numerics::RealMatrix m_B;
+    Eigen::MatrixXd m_B;
+    Eigen::MatrixXd m_Br;
     
-    std::vector<Numerics::RealVector> m_constraints;
+    //std::vector<Numerics::RealVector> m_constraints;
     
     Solution m_solution;
     
