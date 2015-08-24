@@ -29,8 +29,7 @@
 #ifndef THERMO_MULTI_PHASE_EQUIL_SOLVER
 #define THERMO_MULTI_PHASE_EQUIL_SOLVER
 
-//#include "Numerics.h"
-
+#include <vector>
 #include <Eigen/Dense>
 
 
@@ -163,12 +162,12 @@ public:
     /**
      * Adds an additional linear constraint to the equilibrium solver.
      */
-    //void addConstraint(const double *const p_A);
+    void addConstraint(const double *const p_A);
     
     /**
      * Removes all linear constraints from the equilibrium solver.
      */
-    //void clearConstraints();
+    void clearConstraints();
     
     /**
      * Returns the partial derivative of the equilibrium mole fractions with
@@ -564,7 +563,7 @@ private:
     Eigen::MatrixXd m_B;
     Eigen::MatrixXd m_Br;
     
-    //std::vector<Numerics::RealVector> m_constraints;
+    std::vector<Eigen::VectorXd> m_constraints;
     
     Solution m_solution;
     

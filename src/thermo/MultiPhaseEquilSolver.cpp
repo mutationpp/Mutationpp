@@ -521,43 +521,43 @@ MultiPhaseEquilSolver::~MultiPhaseEquilSolver()
 
 //==============================================================================
 
-//void MultiPhaseEquilSolver::addConstraint(const double *const p_A)
-//{
-//    // Save constraints
-//    m_constraints.push_back(asVector(p_A, m_ns));
-//
-//    // Update the B matrix
-//    m_B = zeros<double>(m_ns, ++m_nc);
-//    m_B(0,m_ns,0,m_ne) = m_thermo.elementMatrix();
-//
-//    for (int i = 0; i < m_nc-m_ne; ++i)
-//        m_B.col(m_ne+i) = m_constraints[i];
-//
-//    // Resize the tableau used in the simplex solver
-//    size_t size = (m_nc+2)*(m_ns+2);
-//    if (m_tableau_capacity < size) {
-//        delete [] mp_tableau;
-//        mp_tableau = new double [size];
-//        m_tableau_capacity = size;
-//    }
-//
-//    // Resize the c vector
-//    delete [] mp_c;
-//    mp_c = new double [m_nc];
-//    std::fill(mp_c, mp_c+m_nc, 0.0);
-//
-//    // The solution should also be reinitialized
-//    m_solution.initialize(m_np, m_nc, m_ns);
-//}
+void MultiPhaseEquilSolver::addConstraint(const double *const p_A)
+{
+    // Save constraints
+    m_constraints.push_back(Map<const VectorXd>(p_A, m_ns));
+
+    // Update the B matrix
+    m_B.resize(m_ns, ++m_nc);
+    m_B.block(0,0,m_ns,m_ne) = m_thermo.elementMatrix();
+
+    for (int i = 0; i < m_nc-m_ne; ++i)
+        m_B.col(m_ne+i) = m_constraints[i];
+
+    // Resize the tableau used in the simplex solver
+    size_t size = (m_nc+2)*(m_ns+2);
+    if (m_tableau_capacity < size) {
+        delete [] mp_tableau;
+        mp_tableau = new double [size];
+        m_tableau_capacity = size;
+    }
+
+    // Resize the c vector
+    delete [] mp_c;
+    mp_c = new double [m_nc];
+    std::fill(mp_c, mp_c+m_nc, 0.0);
+
+    // The solution should also be reinitialized
+    m_solution.initialize(m_np, m_nc, m_ns);
+}
 
 //==============================================================================
         
-//void MultiPhaseEquilSolver::clearConstraints()
-//{
-//    m_constraints.clear();
-//    m_B = m_thermo.elementMatrix();
-//    m_nc = m_ne;
-//}
+void MultiPhaseEquilSolver::clearConstraints()
+{
+    m_constraints.clear();
+    m_B = m_thermo.elementMatrix();
+    m_nc = m_ne;
+}
 
 //==============================================================================
         
@@ -1046,171 +1046,71 @@ bool MultiPhaseEquilSolver::phaseRedistribution()
 
 void MultiPhaseEquilSolver::rates(VectorXd& dx, bool save)
 {
-    using std::sqrt;
-    using std::exp;
-    
     // Get some of the solution variables
     const int npr = m_solution.npr();
     const int ncr = m_solution.ncr();
     const int nsr = m_solution.nsr();
     
     const int* const p_sjr   = m_solution.sjr();
-    const int* const p_cir   = m_solution.cir();
     const int* const p_sizes = m_solution.sizes();
     
     //const double* const p_y = m_solution.y();
     Map<const VectorXd> y(m_solution.y(), nsr);
 
     // Compute a least squares factorization of H
-    //HMatrix H = m_solution.hMatrix(m_B);
-    //LeastSquares<double> ls(H);
-    MatrixXd H = y.asDiagonal()*m_solution.reducedMatrix(m_B, m_Br);
-    JacobiSVD<MatrixXd> svd(H, ComputeThinU | ComputeThinV);
+    static MatrixXd H; H = y.asDiagonal()*m_solution.reducedMatrix(m_B, m_Br);
+    static JacobiSVD<MatrixXd> svd; svd.compute(H, ComputeThinU | ComputeThinV);
 
     // Use tableau for temporary storage
-    double* p_rhs   = mp_tableau;
-    double* p_dlamg = p_rhs + nsr;
-    double* p_dlamy = p_dlamg + ncr;
+    Map<VectorXd> ydg(mp_tableau, nsr);
+    Map<VectorXd> dlamg(&ydg[0]+ydg.size(), ncr);
+    Map<MatrixXd> dlamy(&dlamg[0]+dlamg.size(), ncr, npr);
 
     // Compute dlamg
     for (int j = 0, jk = p_sjr[0]; j < nsr; jk = p_sjr[++j])
-        p_rhs[j] = y[j] * (mp_g[jk] - mp_g0[jk]);
-    //ls.solve(p_dlamg, p_rhs);
-    Map<VectorXd>(p_dlamg, ncr) = svd.solve(Map<VectorXd>(p_rhs, nsr));
+        ydg[j] = y[j] * (mp_g[jk] - mp_g0[jk]);
+    dlamg = svd.solve(ydg);
     
     // Compute dlambda_m for each phase m
-    for (int m = 0, j; m < npr; ++m) {
-        for (j = 0 ; j < p_sizes[m]; ++j)
-            p_rhs[j] = 0.0;
-        for ( ; j < p_sizes[m+1]; ++j)
-            p_rhs[j] = y[j];
-        for ( ; j < nsr; ++j)
-            p_rhs[j] = 0.0;
-        //ls.solve(p_dlamy+m*ncr, p_rhs);
-        Map<VectorXd>(p_dlamy+m*ncr, ncr) = svd.solve(Map<VectorXd>(p_rhs, nsr));
-    }
-    
+//    for (int m = 0; m < npr; ++m) {
+//        rhs.setZero();
+//        rhs.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]) =
+//            y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
+//        Map<VectorXd>(p_dlamy+m*ncr, ncr) = svd.solve(rhs);
+//    }
+    dlamy.setZero();
+    for (int m = 0; m < npr; ++m)
+        dlamy.block(p_sizes[m], m, p_sizes[m+1]-p_sizes[m], 1) =
+            y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
+    dlamy = svd.solve(dlamy);
+
     // Compute the linear system to be solved for the d(lnNbar)/ds variables
     MatrixXd A = MatrixXd::Zero(npr, npr);
-    
+
     double sum;
     for (int p = 0; p < npr; ++p) {
-        for (int m = 0; m < npr; ++m) {
+        for (int m = p; m < npr; ++m) {
             for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j) {
                 sum = 0.0;
                 for (int i = 0; i < ncr; ++i)
-                    sum += H(j,i)*p_dlamy[p*ncr+i];
+                    sum += H(j,i)*dlamy(i,p);
                 A(m,p) += y[j]*sum;
             }
         }
     }
     
     VectorXd b(npr);
-    int jk;
-    for (int m = 0; m < npr; ++m) {
-        b(m) = 0.0;
-        for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j) {
-            sum = 0.0;
-            for (int i = 0; i < ncr; ++i)
-                sum += H(j,i)*p_dlamg[i];
-            jk = p_sjr[j];
-            b(m) += y[j]*(sum - y[j]*(mp_g[jk]-mp_g0[jk]));
-        }
-    }
-    
-    #ifdef VERBOSE
-    cout << "A in rates: " << endl;
-    cout << A << endl;
-    cout << "b in rates: " << endl;
-    cout << b << endl;
-    #endif
-    
-    if (save) {
-    // Print out the matrix
-    cout << "i = i + 1;\n";
-    cout << "T(i) = " << m_T << ";\n";
-    cout << "phases{i} = [0";
-    for (int m = 1; m < npr; ++m)
-        cout << " " << p_sjr[p_sizes[m]] - m_thermo.nGas() + 1;
-    cout << "];\n";
-    //cout << "M{i} = [\n" << A << "];\n";
-//    cout << "e = sort(eig(M), 'descend');\n";
-//    cout << "Nbars = sort(exp([" << asVector(m_solution.lnNbar(), npr) << "]'), 'descend');\n";
-//    cout << "for j = 1:size(e,1) eigs(i+j,1) = " << m_T << "; eigs(i+j,2) = e(j); eigs(i+j,3) = Nbars(j); eigs(i+j,4) = min(Nbars); eigs(i+j,5) = max(Nbars); end;\n";
-//    cout << "i = i + size(e,1);\n";
-    cout << "B{i} = [\n" << H << "];\n";
-    cout << "P{i} = [" << endl;
-    for (int m = 0; m < npr; ++m) {
-        for (int i = p_sizes[m]; i < p_sizes[m+1]; ++i) {
-            for (int j = 0; j < m; ++j)
-                cout << "0 ";
-            cout << y[i] << " ";
-            for (int j = m+1; j < npr; ++j)
-                cout << "0 ";
-            cout << endl;
-        }
-    }
-    cout << "];\n";
-//    //cout << "bounds(i,:) = diag(P(1:" << ncr << ",:)'*P(1:" << ncr << ",:));\n";
-//    //cout << "maxN(i) = max(P)^2;\n";
-//    cout << "conds(i) = cond(H);\n";
-//    cout << "rhols(i) = max(eig(P'*(H*(H\\P)-P)));\n";
-//    cout << "lssens(i) = conds(i) + rhols(i)*conds(i)^2;\n";
-//    cout << "g = [\n" << asVector(mp_g, m_ns) << "];\n";
-//    cout << "g0 = [\n" << asVector(mp_g0, m_ns) << "];\n";
-//    cout << "gnorm(i) = norm(g-g0);\n";
+    int j, n;
+    for (int m = 0; m < npr; j = ++m) {
+        j = p_sizes[m]; n = p_sizes[m+1]-j;
+        b(m) = y.segment(j,n).dot((H*dlamg - ydg).segment(j,n));
     }
 
-
-    // Solve the linear system to get d(lnNbar)/ds
-//    switch (npr) {
-//        case 1:
-//            dx(ncr) = b(0)/A(0);
-//            break;
-//        case 2: {
-//            double det  = A(0)*A(3) - A(1)*A(2);
-//            dx(ncr)   = (A(3)*b(0)-A(1)*b(1))/det;
-//            dx(ncr+1) = (A(0)*b(1)-A(2)*b(0))/det;
-//            break;
-//        } case 3: {
-//            double c11 = A(4)*A(8)-A(5)*A(7);
-//            double c12 = A(3)*A(8)-A(5)*A(6);
-//            double c13 = A(3)*A(7)-A(4)*A(6);
-//            double det = A(0)*c11 - A(1)*c12 + A(2)*c13;
-//            dx(ncr) = (
-//                b(0)*c11-
-//                A(1)*(b(1)*A(8)-A(5)*b(2))+
-//                A(2)*(b(1)*A(7)-A(4)*b(2)))/det;
-//            dx(ncr+1) = (
-//                A(0)*(b(1)*A(8)-A(5)*b(2))-
-//                b(0)*c12+
-//                A(2)*(A(3)*b(2)-b(1)*A(6)))/det;
-//            dx(ncr+2) = (
-//                A(0)*(A(4)*b(2)-b(1)*A(5))-
-//                A(1)*(A(3)*b(2)-b(1)*A(6))+
-//                b(0)*c13)/det;
-//            break;
-//        } default: {
-//            SVD<double> svd(A);
-//            RealVector x(npr);
-//            svd.solve(x, b);
-//            dx(ncr,ncr+npr) = x;
-//        }
-//    }
-
-    //cout << "A = \n" << A << endl;
-    //cout << "b = \n" << b << endl;
+    // Solve for d(lnNbar)/ds
     dx.tail(npr) = A.selfadjointView<Upper>().ldlt().solve(b);
-    //cout << "dx = \n" << dx.tail(npr) << endl;
-    //exit(1);
-    
+
     // Finally compute the d(lambda)/ds vector
-    //for (int i = 0; i < ncr; ++i)
-    //    dx(i) = p_dlamg[i];
-    dx.head(ncr) = Map<VectorXd>(p_dlamg, ncr);
-    for (int m = 0; m < npr; ++m)
-        for (int i = 0; i < ncr; ++i)
-            dx(i) -= dx(ncr+m)*p_dlamy[m*ncr+i];
+    dx.head(ncr) = dlamg - dlamy*dx.tail(npr);
 }
 
 //==============================================================================
