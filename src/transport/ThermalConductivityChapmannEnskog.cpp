@@ -29,15 +29,14 @@
 
 #include "ThermalConductivityAlgorithm.h"
 #include "Constants.h"
-#include "Numerics.h"
 #include "CollisionDB.h"
 #include "Utilities.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
+using namespace Eigen;
 
 namespace Mutation {
     namespace Transport {
@@ -78,9 +77,9 @@ public:
         const int k  = ns - nh;
         int ik, jk;
 
-        const RealVector& mi   = m_collisions.mass();
-        const RealSymMat& nDij = m_collisions.nDij(Th, Te, nd, p_x);
-        const RealSymMat& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
+        const VectorXd& mi   = m_collisions.mass();
+        const MatrixXd& nDij = m_collisions.nDij(Th, Te, nd, p_x);
+        const MatrixXd& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
 
         // Compute heavy-particle thermal diffusion ratios
         double fac;
@@ -107,20 +106,20 @@ public:
 
         // Next compute the Lambda terms for the electron thermal diffusion
         // ratios
-        const RealSymMat& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
-        const RealSymMat& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
-        const RealSymMat& B     = m_collisions.Bstar(Th, Te, nd, p_x);
-        const RealVector& Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
-        const RealVector& Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
-        const RealVector& Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
-        const RealVector& Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
-        const double      Q23ee = m_collisions.Q23ee(Th, Te, nd, p_x);
-        const double      Q24ee = m_collisions.Q24ee(Th, Te, nd, p_x);
-        const double      me    = mi(0);
+        const MatrixXd& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
+        const MatrixXd& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
+        const MatrixXd& B     = m_collisions.Bstar(Th, Te, nd, p_x);
+        const VectorXd& Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
+        const VectorXd& Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
+        const VectorXd& Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
+        const VectorXd& Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
+        const double    Q23ee = m_collisions.Q23ee(Th, Te, nd, p_x);
+        const double    Q24ee = m_collisions.Q24ee(Th, Te, nd, p_x);
+        const double    me    = mi(0);
 
         // Compute the lambdas
-        static Eigen::VectorXd lam01; lam01 = Eigen::VectorXd::Zero(ns);
-        static Eigen::VectorXd lam02; lam02 = Eigen::VectorXd::Zero(ns);
+        static VectorXd lam01; lam01 = VectorXd::Zero(ns);
+        static VectorXd lam02; lam02 = VectorXd::Zero(ns);
 
         double lam11ee = 0.0;
         double lam12ee = 0.0;
@@ -158,11 +157,11 @@ private:
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
 
-        const RealVector& mi    = m_collisions.mass();
-        const RealSymMat& Astar = m_collisions.Astar(Th, Te, nd, p_x);
-        const RealSymMat& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
-        const RealSymMat& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
-        const RealVector& etai  = m_collisions.etai(Th, Te, nd, p_x);
+        const VectorXd& mi    = m_collisions.mass();
+        const MatrixXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
+        const MatrixXd& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
+        const MatrixXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
+        const VectorXd& etai  = m_collisions.etai(Th, Te, nd, p_x);
 
         // Compute the system matrix
         double fac = 4.0 / (15.0 * KB);
@@ -199,10 +198,10 @@ private:
 
 private:
 
-    Eigen::MatrixXd m_sys;
-    Eigen::VectorXd m_x;
-    Eigen::VectorXd m_alpha;
-    Solver<Eigen::MatrixXd, Eigen::Upper> solver;
+    MatrixXd m_sys;
+    VectorXd m_x;
+    VectorXd m_alpha;
+    Solver<MatrixXd, Upper> solver;
 
 }; // class ThermalConductivityChapmannEnskog
 
@@ -214,7 +213,7 @@ Config::ObjectProvider<
 // Register the Chapmann-Enskog solution using the Conjugate-Gradient algorithm.
 // Note the use of a proxy class CG to reduce the template arguments to 2
 template <typename MatrixType, int UpLo>
-class CG : public Eigen::ConjugateGradient<MatrixType, UpLo> { };
+class CG : public ConjugateGradient<MatrixType, UpLo> { };
 Config::ObjectProvider<
     ThermalConductivityChapmannEnskog<CG>, ThermalConductivityAlgorithm>
     lambda_CE_CG("Chapmann-Enskog_CG");

@@ -29,7 +29,7 @@
 #define TRANSPORT_GUPTAYOS_H
 
 #include "Constants.h"
-#include "Numerics.h"
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -43,11 +43,10 @@ class GuptaYos
 {
 protected:
     
-    template <typename T, typename E1, typename E2, typename E3>
+    template <typename E1, typename E2, typename E3>
     double guptaYos(
-        const Mutation::Numerics::MatExpr<T, E1>& a, 
-        const Mutation::Numerics::VecExpr<T, E2>& A, 
-        const Mutation::Numerics::VecExpr<T, E3>& x)
+        const Eigen::MatrixBase<E1>& a, const Eigen::MatrixBase<E2>& A,
+        const Eigen::MatrixBase<E3>& x)
     {
         const int ns = x.size();
     
@@ -56,7 +55,7 @@ protected:
         double sum2 = 0.0;
         double temp;
         
-        quotient = 1.0 / A;      
+        quotient.array() = 1.0 / A.array();
         
         for (int i = 0; i < ns-1; ++i) {
             for (int j = i+1; j < ns; ++j) {
@@ -79,7 +78,7 @@ protected:
 
 private:
     
-    Mutation::Numerics::RealVector quotient;
+    Eigen::VectorXd quotient;
     
 }; // class GuptaYos
 

@@ -28,19 +28,15 @@
 #include "ThermalConductivityAlgorithm.h"
 #include "Wilke.h"
 #include "Constants.h"
-#include "Numerics.h"
 #include "CollisionDB.h"
 #include "Utilities.h"
-
-using namespace Mutation::Numerics;
-using namespace Mutation::Utilities;
 
 namespace Mutation {
     namespace Transport {
 
 /**
  * Computes the translational thermal conductivity of a mixture using the Wilke 
- * mixture rule and Eucken's relation.
+ * mixture rule.
  */
 class ThermalConductivityWilke 
     : public ThermalConductivityAlgorithm, public Wilke
@@ -54,18 +50,21 @@ public:
     double thermalConductivity(
         double Th, double Te, double nd, const double* const p_x) 
     {
-        const size_t ns = m_collisions.nSpecies();
-        const RealVector Mw = m_collisions.mass() * NA;
-        
+        using namespace Eigen;
+        const int ns   = m_collisions.nSpecies();
+        const int nh   = m_collisions.nHeavy();
+        const ArrayXd& etai = m_collisions.etai(Th, Te, nd, p_x);
+        const ArrayXd& mass = m_collisions.mass();
+
         return wilke(
-            3.75 * RU * m_collisions.etai(Th, Te, nd, p_x) / Mw, 
-            m_collisions.mass(), asVector(p_x, ns));
+            (3.75*KB*etai/mass).tail(nh), mass.tail(nh),
+            Map<const ArrayXd>(p_x+(ns-nh),nh));
     }
 };
 
 // Register the algorithm
-Config::ObjectProvider<ThermalConductivityWilke, ThermalConductivityAlgorithm>
-    lambdaWilke("Wilke");
+Utilities::Config::ObjectProvider<
+    ThermalConductivityWilke, ThermalConductivityAlgorithm> lambdaWilke("Wilke");
 
     } // namespace Transport
 } // namespace Mutation

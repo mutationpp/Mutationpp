@@ -27,12 +27,11 @@
  */
 
 #include "ViscosityAlgorithm.h"
-#include "Numerics.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-using namespace Mutation::Numerics;
+using namespace Eigen;
 using namespace Mutation::Utilities;
 
 namespace Mutation {
@@ -60,10 +59,10 @@ public:
 		const int ns = m_collisions.nSpecies();
 		const int nh = m_collisions.nHeavy();
 
-		const RealVector& mi    = m_collisions.mass();
-		const RealSymMat& Astar = m_collisions.Astar(T, T, nd, p_x);
-		const RealSymMat& nDij  = m_collisions.nDij(T, T, nd, p_x);
-		const RealVector& etai  = m_collisions.etai(T, T, nd, p_x);
+		const VectorXd& mi    = m_collisions.mass();
+		const MatrixXd& Astar = m_collisions.Astar(T, T, nd, p_x);
+		const MatrixXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
+		const VectorXd& etai  = m_collisions.etai(T, T, nd, p_x);
 
 		// Form the symmetric positive definite system matrix
 		int k = ns-nh, ik, jk;
@@ -96,21 +95,21 @@ public:
 
 private:
 
-	Eigen::MatrixXd m_sys;
-	Eigen::VectorXd m_x;
-	Eigen::VectorXd m_alpha;
-	Solver<Eigen::MatrixXd, Eigen::Upper> m_solver;
+	MatrixXd m_sys;
+	VectorXd m_x;
+	VectorXd m_alpha;
+	Solver<MatrixXd, Upper> m_solver;
 };
 
 // Register the Chapmann-Enskog solution using the LDLT decomposition
 Config::ObjectProvider<
-	ViscosityChapmannEnskog<Eigen::LDLT>, ViscosityAlgorithm>
+	ViscosityChapmannEnskog<LDLT>, ViscosityAlgorithm>
 	visc_CE_LDLT("Chapmann-Enskog_LDLT");
 
 // Register the Chapmann-Enskog solution using the Conjugate-Gradient algorithm.
 // Note the use of a proxy class CG to reduce the template arguments to 2
 template <typename MatrixType, int UpLo>
-class CG : public Eigen::ConjugateGradient<MatrixType, UpLo> { };
+class CG : public ConjugateGradient<MatrixType, UpLo> { };
 Config::ObjectProvider<
 	ViscosityChapmannEnskog<CG>, ViscosityAlgorithm>
 	visc_CE_CG("Chapmann-Enskog_CG");

@@ -1133,16 +1133,10 @@ double MultiPhaseEquilSolver::newton()
     const double* const p_lnNbar = m_solution.lnNbar();
     
     // First compute the residual
-    //RealSymMat A(ncr+npr);
-    //RealVector r(ncr+npr);
-    //RealVector dx(ncr+npr);
     static VectorXd r; r.resize(ncr+npr);
     computeResidual(r);
     
     double res = r.norm();
-    
-    //LDLT<double> ldlt;
-    
     if (res > 1.0)
         return res;
 
@@ -1158,9 +1152,6 @@ double MultiPhaseEquilSolver::newton()
         // First check if a phase needs to be removed (always include gas phase)
         int m = 1;
         while(m < m_solution.npr()) {
-            //double sum = 0.0;
-            //for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j)
-            //    sum += m_solution.y()[j];
             if (m_solution.lnNbar()[m] < phase_tol)
                 m_solution.removePhase(m);
             else
@@ -1191,18 +1182,6 @@ double MultiPhaseEquilSolver::newton()
         static LDLT<MatrixXd, Upper> ldlt;
         ldlt.compute(A);
         dx = ldlt.solve(-r);
-        //if (ldlt.setMatrix(A))
-        //	ldlt.solve(dx, -r);
-        //else {
-		//	minres(A, dx, -r);
-        //}
-        //QRP<double> qrp(A);
-        //#ifdef VERBOSE
-        //cout << "R matrix = " << endl;
-        //cout << qrp.R() << endl;
-        //#endif
-        //r = -r;
-        //qrp.solve(dx, r);
         
         #ifdef VERBOSE
         cout << "dx = " << endl;
@@ -1404,13 +1383,9 @@ void MultiPhaseEquilSolver::initZeroResidualSolution(
 	}
 
 	// Compute SVD of Br
-	//SVD<double> svd(m_solution.reducedMatrix(m_B));
-	//svd.solve(p_lambda, mp_g0);
 	Map<VectorXd>(p_lambda, ncr) =
 	    m_solution.reducedMatrix(m_B, m_Br).jacobiSvd(
 	        ComputeThinU | ComputeThinV).solve(Map<VectorXd>(mp_g0, nsr));
-	//JacobiSVD<MatrixXd> svd(m_solution.reducedMatrix(m_B, m_Br));
-	//Map<VectorXd>(p_lambda, ncr) = svd.solve(Map<VectorXd>(mp_g0, nsr));
 
 	// Now compute the g0 which satisfies the constraints
 	int jk;

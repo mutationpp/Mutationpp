@@ -28,7 +28,7 @@
 #ifndef TRANSPORT_WILKE_H
 #define TRANSPORT_WILKE_H
 
-#include "Numerics.h"
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -47,21 +47,16 @@ protected:
 
     template <typename E1, typename E2, typename E3>
     double wilke(
-        const Mutation::Numerics::VecExpr<double, E1>& vals, 
-        const Mutation::Numerics::VecExpr<double, E2>& mass,
-        const Mutation::Numerics::VecExpr<double, E3>& x)
+        const Eigen::ArrayBase<E1>& vals, const Eigen::ArrayBase<E2>& mass,
+        const Eigen::ArrayBase<E3>& x)
     {
         const int ns = vals.size();
-
-        double average = 0.0;
-        double sum;
-        double ratio;
-        double temp;
+        double average = 0.0, sum, ratio, temp;
         
-        for (int i = 1; i < ns; ++i) {
+        for (int i = 0; i < ns; ++i) {
             sum = 0.0;
             
-            for (int j = 1; j < ns; ++j) {
+            for (int j = 0; j < ns; ++j) {
                 if (i == j)
                     sum += x(j);
                 else {

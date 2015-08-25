@@ -21,18 +21,6 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-install(FILES Numerics.h DESTINATION include/mutation++)
-install(FILES NumConst.h DESTINATION include/mutation++)
-install(FILES Vector.h DESTINATION include/mutation++)
-install(FILES Matrix.h DESTINATION include/mutation++)
-install(FILES LeastSquares.h DESTINATION include/mutation++)
 install(FILES lp.h DESTINATION include/mutation++)
-install(FILES cg.h DESTINATION include/mutation++)
-install(FILES gmres.h DESTINATION include/mutation++)
-install(FILES LDLT.h DESTINATION include/mutation++)
-install(FILES QR.h DESTINATION include/mutation++)
-install(FILES QRP.h DESTINATION include/mutation++)
-install(FILES SVD.h DESTINATION include/mutation++)
 install(FILES Functors.h DESTINATION include/mutation++)
-install(FILES Preconditioner.h DESTINATION include/mutation++)
 install(FILES NewtonSolver.h DESTINATION include/mutation++)

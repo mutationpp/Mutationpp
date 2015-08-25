@@ -28,14 +28,15 @@
 #ifndef TRANSPORT_COLLISIONDB_H
 #define TRANSPORT_COLLISIONDB_H
 
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
-
 #include "Thermodynamics.h"
 #include "Utilities.h"
-#include "Numerics.h"
+
+#include <cmath>
+#include <iostream>
+#include <vector>
+#include <string>
+
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -291,31 +292,8 @@ public:
      * Returns the mass of a single atom/molecule of each species as a NS 
      * dimensional Vector.
      */
-    const Mutation::Numerics::RealVector& mass() const {
+    const Eigen::ArrayXd& mass() const {
         return m_mass; 
-    }
-    
-    /**
-     * Returns the symmetric matrix \f$ A_{ij} = m_i + m_j \f$ where \f$ m_i \f$
-     * is the mass of one molecule of species i.  
-     */
-    const Mutation::Numerics::RealSymMat& massSum() const {
-        return m_mass_sum; 
-    }
-    
-    /**
-     * Returns the symmetric matrix \f$ A_{ij} = m_i * m_j \f$ where \f$ m_i \f$
-     * is the mass of one molecule of species i.
-     */
-    const Mutation::Numerics::RealSymMat& massProd() const {
-        return m_mass_prod; 
-    }
-    
-    /**
-     * Returns the reduced molecular mass as a symmetric matrix in kg/molecule.
-     */
-    const Mutation::Numerics::RealSymMat& reducedMass() const {
-        return m_red_mass;
     }
     
     /**
@@ -323,10 +301,11 @@ public:
      * determined by the constructor based on the order of the species listed in
      * the species vector. 
      */
-    const Mutation::Numerics::RealSymMat& Q11(
+    const Eigen::ArrayXXd& Q11(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, Q11IJ);
+        std::cout << "Q11 = \n" << m_Q11 << std::endl;
         return m_Q11;
     }
 
@@ -335,7 +314,7 @@ public:
      * determined by the constructor based on the order of the species listed in
      * the species vector. 
      */
-    const Mutation::Numerics::RealSymMat& Q22(
+    const Eigen::ArrayXXd& Q22(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, Q22IJ);
@@ -346,7 +325,7 @@ public:
      * Returns the dimensionless ratio \f$ Q_{ij}^{(2,2)} / Q_{ij}^{(1,1)} \f$
      * as a symmetric matrix.
      */
-    const Mutation::Numerics::RealSymMat& Astar(
+    const Eigen::ArrayXXd& Astar(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, ASTAR);
@@ -357,7 +336,7 @@ public:
      * Returns the dimensionless ratio \f$ (5Q_{ij}^{(1,2)} - 4Q_{ij}^{(1,3)}) /
      * Q_{ij}^{(1,1)} \f$ as a symmetric matrix.
      */
-    const Mutation::Numerics::RealSymMat& Bstar(
+    const Eigen::ArrayXXd& Bstar(
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, BSTAR);
@@ -367,7 +346,7 @@ public:
     /**
      * Returns the dimensionless ratio \f$ (Q_{ei}^{(1,2)} / Q_{ei}^{(1,1)} \f$.
      */
-    const Mutation::Numerics::RealVector& Cstei(
+    const Eigen::ArrayXd& Cstei(
         const double Th, const double Te, const double nd, 
         const double *const p_x)
     {
@@ -378,7 +357,7 @@ public:
     /**
      * Returns the dimensionless ratio \f$ (Q_{ij}^{(1,2)} / Q_{ij}^{(1,1)} \f$.
      */
-    const Mutation::Numerics::RealSymMat& Cstij(
+    const Eigen::ArrayXXd& Cstij(
         const double Th, const double Te, const double nd,
         const double* const p_x)
     {
@@ -389,7 +368,7 @@ public:
     /**
      * Returns the pure species shear viscosities.
      */
-    const Mutation::Numerics::RealVector& etai(
+    const Eigen::ArrayXd& etai(
         double Th, double Te, double nd, const double *const X) 
     {
         updateCollisionData(Th, Te, nd, X, ETAI);
@@ -399,7 +378,7 @@ public:
     /**
      * Returns the Q(1,2)_ei collision integral array.
      */
-    const Mutation::Numerics::RealVector& Q12ei(
+    const Eigen::ArrayXd& Q12ei(
         double Th, double Te, double nd, const double *const X) 
     {
         updateCollisionData(Th, Te, nd, X, Q12EI);
@@ -409,7 +388,7 @@ public:
     /**
      * Returns the Q(1,3)_ei collision integral array.
      */
-    const Mutation::Numerics::RealVector& Q13ei(
+    const Eigen::ArrayXd& Q13ei(
         double Th, double Te, double nd, const double *const X) 
     {
         updateCollisionData(Th, Te, nd, X, Q13EI);
@@ -419,7 +398,7 @@ public:
     /**
      * Returns the Q(1,4)_ei collision integral array.
      */
-    const Mutation::Numerics::RealVector& Q14ei(
+    const Eigen::ArrayXd& Q14ei(
         double Th, double Te, double nd, const double *const X) 
     {
         updateCollisionData(Th, Te, nd, X, Q14EI);
@@ -429,7 +408,7 @@ public:
     /**
      * Returns the Q(1,5)_ei collision integral array.
      */
-    const Mutation::Numerics::RealVector& Q15ei(
+    const Eigen::ArrayXd& Q15ei(
         double Th, double Te, double nd, const double *const X) 
     {
         updateCollisionData(Th, Te, nd, X, Q15EI);
@@ -457,10 +436,13 @@ public:
     /**
      * Returns binary diffusion coefficients.
      */
-    const Mutation::Numerics::RealSymMat& nDij(
+    const Eigen::ArrayXXd& nDij(
         const double Th, const double Te, const double nd,
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, NDIJ);
+        //std::cout << "Q11 = \n" << m_Q11 << std::endl;
+        //std::cout << "nDij = \n" << m_Dij << std::endl;
+        //exit(1);
         return m_Dij;
     }
     
@@ -591,26 +573,24 @@ private:
     static const CollisionFunc5 sm_Est_rep;
     
     // Mass quantities
-    Mutation::Numerics::RealVector m_mass;
-    Mutation::Numerics::RealSymMat m_mass_sum;
-    Mutation::Numerics::RealSymMat m_mass_prod;
-    Mutation::Numerics::RealSymMat m_red_mass;
+    Eigen::ArrayXd m_mass;
     
     // Stores the last computed collision integral data    
-    Mutation::Numerics::RealSymMat m_Q11;
-    Mutation::Numerics::RealVector m_Q12ei;
-    Mutation::Numerics::RealVector m_Q13ei;
-    Mutation::Numerics::RealVector m_Q14ei;
-    Mutation::Numerics::RealVector m_Q15ei;
-    Mutation::Numerics::RealSymMat m_Q22;
-    double               m_Q23ee;
-    double               m_Q24ee;
-    Mutation::Numerics::RealSymMat m_Ast;
-    Mutation::Numerics::RealSymMat m_Bst;
-    Mutation::Numerics::RealVector m_Cstei;
-    Mutation::Numerics::RealSymMat m_Cstij;
-    Mutation::Numerics::RealVector m_eta;
-    Mutation::Numerics::RealSymMat m_Dij;
+    Eigen::ArrayXXd m_Q11;
+    Eigen::ArrayXd  m_Q12ei;
+    Eigen::ArrayXd  m_Q13ei;
+    Eigen::ArrayXd  m_Q14ei;
+    Eigen::ArrayXd  m_Q15ei;
+    Eigen::ArrayXXd m_Q22;
+    double          m_Q23ee;
+    double          m_Q24ee;
+    Eigen::ArrayXXd m_Ast;
+    Eigen::ArrayXXd m_Bst;
+    Eigen::ArrayXd  m_Cstei;
+    Eigen::ArrayXXd m_Cstij;
+    Eigen::ArrayXd  m_eta;
+    Eigen::ArrayXXd m_Dij;
+    Eigen::ArrayXXd m_Dijfac;
     
     // Keeps track of last temperature a particular set of collision data values
     // was updated
