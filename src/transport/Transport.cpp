@@ -235,132 +235,48 @@ double Transport::electronThermalConductivity()
 
 double Transport::internalThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
     m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * (mp_wrk1[i] + mp_wrk2[i] + mp_wrk3[i]) / sum;
-    }
-    
-    return (lambda * KB);
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
+
+    return euken(
+        Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()) +
+        Map<const ArrayXd>(mp_wrk2, m_thermo.nSpecies()) +
+        Map<const ArrayXd>(mp_wrk3, m_thermo.nSpecies()));
 }
+
 
 //==============================================================================
 
 double Transport::rotationalThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, mp_wrk1, NULL, NULL);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, NULL, NULL);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================
 
 double Transport::vibrationalThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, NULL, mp_wrk1, NULL);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, mp_wrk1, NULL);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================
 
 double Transport::electronicThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, NULL, NULL, mp_wrk1);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, NULL, mp_wrk1);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================

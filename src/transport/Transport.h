@@ -164,6 +164,32 @@ public:
     double electronThermalConductivity();
     
     /**
+     * Returns the thermal conductivity of an internal energy mode using
+     * Euken's formula.
+     */
+    template <typename E>
+    double euken(const Eigen::ArrayBase<E>& cp)
+    {
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+        const int ns = m_thermo.nSpecies();
+        assert(cp.size() == ns);
+        const int nh = m_thermo.nHeavy();
+        const int k  = ns-nh;
+
+        Eigen::Map<const Eigen::ArrayXd> X(m_thermo.X()+k, nh);
+        const Eigen::MatrixXd& nDij = mp_collisions->nDij(
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+
+        Eigen::ArrayXd avDij(Eigen::ArrayXd::Zero(nh));
+        for (int j = 0; j < nh; ++j)
+            avDij += X(j) / (nDij+nDij.transpose()).col(j+k).tail(nh).array();
+        avDij += 0.5*X/nDij.diagonal().tail(nh).array();
+
+        return KB * (X * cp.tail(nh) / avDij).sum();
+    }
+
+    /**
      * Returns the internal energy thermal conductivity using Euken's formulas.
      */
     double internalThermalConductivity();

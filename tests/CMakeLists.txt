@@ -1,5 +1,5 @@
 #
-# Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2015 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -97,4 +97,19 @@ test_all_mixtures(set_state)
 
 # TransferModel tests
 test_all_mixtures(transfer_source)
+
+#####################################
+# Setup comparison tests
+#####################################
+add_executable(compare comparison.cpp)
+target_link_libraries(compare mutation++)
+
+file(GLOB files "comparisons/*.dat")
+foreach(file ${files})
+    get_filename_component(name ${file} NAME_WE)
+    add_test(
+        NAME compare_${name} 
+        COMMAND compare ${file} 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data )
+endforeach()
 

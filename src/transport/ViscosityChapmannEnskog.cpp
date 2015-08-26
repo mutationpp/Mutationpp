@@ -48,7 +48,7 @@ class ViscosityChapmannEnskog : public ViscosityAlgorithm
 public:
 	ViscosityChapmannEnskog(CollisionDB& collisions) :
 		ViscosityAlgorithm(collisions),
-		m_sys(collisions.nHeavy(), collisions.nHeavy()),
+		m_sys(MatrixXd::Zero(collisions.nHeavy(), collisions.nHeavy())),
 		m_x(collisions.nHeavy()),
 		m_alpha(collisions.nHeavy())
 	{ }
@@ -59,25 +59,22 @@ public:
 		const int ns = m_collisions.nSpecies();
 		const int nh = m_collisions.nHeavy();
 
-		const VectorXd& mi    = m_collisions.mass();
-		const MatrixXd& Astar = m_collisions.Astar(T, T, nd, p_x);
-		const MatrixXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
-		const VectorXd& etai  = m_collisions.etai(T, T, nd, p_x);
+		const ArrayXd&  mi    = m_collisions.mass();
+		const ArrayXXd& Astar = m_collisions.Astar(T, T, nd, p_x);
+		const ArrayXXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
+		const ArrayXd&  etai  = m_collisions.etai(T, T, nd, p_x);
 
 		// Form the symmetric positive definite system matrix
 		int k = ns-nh, ik, jk;
 		double fac;
 
-		for (int i = k; i < ns; ++i) {
-			ik = i-k;
-			m_x(ik) = std::max(p_x[i], 1.0e-16);
-			m_sys(ik,ik) = m_x(ik) * m_x(ik) / etai(i);
-		}
+		m_x = Map<const ArrayXd>(p_x+k,nh).max(1.0e-30);
+        m_sys.diagonal().array() = m_x * m_x / etai.tail(nh);
 
-		for (int i = k; i < ns; ++i) {
-			ik = i-k;
-			for (int j = i+1; j < ns; ++j) {
-				jk = j-k;
+		for (int j = k; j < ns; ++j) {
+			jk = j-k;
+			for (int i = j+1; i < ns; ++i) {
+				ik = i-k;
 				fac = m_x(ik)*m_x(jk) / (nDij(i,j) * (mi(i) + mi(j)));
 				m_sys(ik,jk) =  fac * (1.2 * Astar(i,j) - 2.0);
 				m_sys(ik,ik) += fac * (1.2 * mi(j) / mi(i) * Astar(i,j) + 2.0);
@@ -87,18 +84,18 @@ public:
 
 		// Solve the linear system
 		m_solver.compute(m_sys);
-		m_alpha = m_solver.solve(m_x);
+		m_alpha = m_solver.solve(m_x.matrix());
 
 		// Finally compute the dot product of alpha and X
-		return m_x.dot(m_alpha);
+		return m_x.matrix().dot(m_alpha);
 	}
 
 private:
 
 	MatrixXd m_sys;
-	VectorXd m_x;
+	ArrayXd m_x;
 	VectorXd m_alpha;
-	Solver<MatrixXd, Upper> m_solver;
+	Solver<MatrixXd, Lower> m_solver;
 };
 
 // Register the Chapmann-Enskog solution using the LDLT decomposition

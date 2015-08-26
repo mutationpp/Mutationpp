@@ -110,6 +110,7 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
       m_Cstei(ArrayXd::Zero(m_ns)),
       m_Cstij(ArrayXXd::Zero(m_nh, m_nh)),
       m_eta(ArrayXd::Zero(m_ns)),
+      m_etafac(ArrayXd::Zero(m_ns)),
       m_Dij(ArrayXXd::Zero(m_ns, m_ns)),
       m_Dijfac(ArrayXXd::Zero(m_ns, m_ns))
 {
@@ -121,15 +122,19 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
         m_mass(i) = thermo.speciesMw(i) / NA;
     
     // Compute the Dij factors
-    const double fac = 3./16.*std::sqrt(TWOPI*KB);
+    double fac = 3./16.*std::sqrt(TWOPI*KB);
     if (m_ns > m_nh) {
         m_Dijfac.col(0).fill(fac/std::sqrt(m_mass(0)));
         m_Dijfac(0) *= 2./SQRT2;
     }
     for (int j = m_ns-m_nh; j < m_ns; ++j)
         for (int i = j; i < m_ns; ++i)
-            m_Dijfac(i,j) = fac*std::sqrt(m_mass(i)+m_mass(j)/(m_mass(i)*m_mass(j)));
-    
+            m_Dijfac(i,j) = fac*std::sqrt(
+                (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
+
+    // Compute eta factors
+    m_etafac.tail(m_nh) = (5./16.*std::sqrt(PI*KB))*m_mass.tail(m_nh).sqrt();
+
     // Initialize save parameters
     for (int i = 0; i < DATA_SIZE; ++i) {
         mp_last_Th[i] = -1.0;
@@ -443,19 +448,17 @@ void CollisionDB::updateCollisionData(
             }
             break;
         
-        case Q12EI: {
+        case Q12EI:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             updateCollisionData(Th, Te, nd, p_x, CSTAREI);
-            for (int i = 0; i < m_ns; ++i)
-                m_Q12ei(i) = m_Q11(i)*m_Cstei(i);
-            } break;
+            m_Q12ei = m_Q11.col(0)*m_Cstei;
+            break;
             
-        case Q13EI: {
+        case Q13EI:
             updateCollisionData(Th, Te, nd, p_x, Q12EI);
             updateCollisionData(Th, Te, nd, p_x, BSTAR);
-            for (int i = 0; i < m_ns; ++i)
-                m_Q13ei(i) = 1.25*m_Q12ei(i) - 0.25*m_Q11(i)*m_Bst(i);
-            } break;
+            m_Q13ei = 1.25*m_Q12ei - 0.25*m_Q11.col(0)*m_Bst.col(0);
+            break;
         
         case Q14EI: {
             // Neutral-electron collisions take value of Q(1,3)
@@ -524,20 +527,19 @@ void CollisionDB::updateCollisionData(
                 m_Q22(m_attract_indices[i]) = Q22_att;
             } break;
         
-        case Q23EE: {
+        case Q23EE:
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
             m_Q23ee = m_Q22(0) * sm_Est_rep(lnTste);
-            } break;
+            break;
         
-        case Q24EE: {
+        case Q24EE:
             m_Q24ee = efac * sm_Q24_rep(lnTste);
-            } break;
+            break;
             
         case ASTAR:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
-            for (int i = 0; i < m_ncollisions; ++i)
-                m_Ast(i) = m_Q22(i) / m_Q11(i);
+            m_Ast.matrix().triangularView<Lower>() = (m_Q22 / m_Q11).matrix();
             break;
                 
         case BSTAR: {
@@ -592,29 +594,21 @@ void CollisionDB::updateCollisionData(
                 m_Cstei(m_attract_indices[i]) = att;
             } break;
         
-        case CSTARIJ: {
+        case CSTARIJ:
             m_Cstij.setOnes();
-            } break;
+            break;
         
-        case ETAI: {
+        case ETAI:
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
+            m_eta = std::sqrt(Th)*m_etafac/m_Q22.matrix().diagonal().array();
+            break;
             
-            // Electron does not contribute to viscosity
-            int k = m_ns - m_nh;
-            m_eta(0) = 0.0;
-            
-            // Heavy species
-            for (int i = k; i < m_ns; ++i)
-                m_eta(i) = 
-                    5.0 / 16.0 * sqrt(PI * KB * Th * m_mass(i)) / m_Q22(i,i);
-            } break;
-            
-        case NDIJ: {
+        case NDIJ:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             m_Dij.matrix().triangularView<Lower>() =
                 (std::sqrt(Th)*m_Dijfac/m_Q11).matrix();
             if (m_ns > m_nh) m_Dij.col(0) *= std::sqrt(Te/Th);
-            } break;
+            break;
         
         default:
             break;  // Will never get here

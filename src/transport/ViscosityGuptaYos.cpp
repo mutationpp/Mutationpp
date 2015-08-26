@@ -44,9 +44,9 @@ public:
     ViscosityGuptaYos(CollisionDB& collisions) 
         : ViscosityAlgorithm(collisions),
           m_shift(collisions.nSpecies()-collisions.nHeavy()),
-          a(collisions.nHeavy(), collisions.nHeavy()),
+          A(collisions.nHeavy(), collisions.nHeavy()),
           B(collisions.nHeavy(), collisions.nHeavy()),
-          A(collisions.nHeavy())
+          a(collisions.nHeavy())
     { }
 
     /**
@@ -57,36 +57,35 @@ public:
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
         
-        const MatrixXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
-        const MatrixXd& Astar = m_collisions.Astar(T, T, nd, p_x);
-        const VectorXd& mass  = m_collisions.mass();
-        const Map<const VectorXd> x(p_x+(ns-nh), nh);
+        const ArrayXXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
+        const ArrayXXd& Astar = m_collisions.Astar(T, T, nd, p_x);
+        const ArrayXd&  mass  = m_collisions.mass();
+        const Map<const ArrayXd> x(p_x+(ns-nh), nh);
         
-        // Compute the symmetric matrix a and vector A
-        for (int i = m_shift; i < ns; ++i) {
-            for (int j = i; j < ns; ++j) {
-                a(i-m_shift,j-m_shift) = (2.0 - 1.2 * Astar(i,j)) /
+        // Compute the symmetric matrix A and vector a
+        for (int j = m_shift; j < ns; ++j)
+            for (int i = j; i < ns; ++i)
+                A(i-m_shift,j-m_shift) = (2.0 - 1.2 * Astar(i,j)) /
                     ((mass(i) + mass(j)) * nDij(i,j));
-                B(i-m_shift,j-m_shift) = Astar(i,j) / nDij(i,j);
-            }
-        }
+        B.triangularView<Lower>() =
+                (Astar/nDij).bottomRightCorner(nh,nh).matrix();
                 
         // Leave B as symmetric and postpone dividing by m(i) until after B*x
         // which uses fewer divides and allows for sym-matrix-vector product
-        A = B.selfadjointView<Upper>() * x;
-        A = 1.2 * (A.array() / mass.tail(nh).array()).matrix();
+        a.matrix() = B.selfadjointView<Lower>() * x.matrix();
+        a *= 1.2 / mass.tail(nh);
             
         // Now compute the viscosity using Gupta-Yos
-        return guptaYos(a, A, x);
+        return guptaYos(A, a, x);
     }
     
 private:
     
     int m_shift;
 
-    MatrixXd a;
+    ArrayXXd A;
     MatrixXd B;
-    VectorXd A;
+    ArrayXd  a;
 };
 
 Config::ObjectProvider<ViscosityGuptaYos, ViscosityAlgorithm> 

@@ -52,7 +52,7 @@ public:
     double viscosity(const double T, const double nd, const double *const p_x) 
     {
         const int ns = m_collisions.nSpecies();
-        const int nh = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
         
         return wilke(
             m_collisions.etai(T, T, nd, p_x).tail(nh),

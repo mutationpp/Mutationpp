@@ -589,6 +589,7 @@ private:
     Eigen::ArrayXd  m_Cstei;
     Eigen::ArrayXXd m_Cstij;
     Eigen::ArrayXd  m_eta;
+    Eigen::ArrayXd  m_etafac;
     Eigen::ArrayXXd m_Dij;
     Eigen::ArrayXXd m_Dijfac;
     

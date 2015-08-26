@@ -53,7 +53,7 @@ class ThermalConductivityChapmannEnskog : public ThermalConductivityAlgorithm
 public:
     ThermalConductivityChapmannEnskog(CollisionDB& collisions) :
         ThermalConductivityAlgorithm(collisions),
-        m_sys(collisions.nHeavy(), collisions.nHeavy()),
+        m_sys(MatrixXd::Zero(collisions.nHeavy(), collisions.nHeavy())),
         m_x(collisions.nHeavy()),
         m_alpha(collisions.nHeavy())
     { }
@@ -62,7 +62,7 @@ public:
         double Th, double Te, double nd, const double *const p_x)
     {
         updateAlphas(Th, Te, nd, p_x);
-        return m_x.dot(m_alpha);
+        return m_x.matrix().dot(m_alpha);
     }
 
     void thermalDiffusionRatios(
@@ -157,27 +157,24 @@ private:
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
 
-        const VectorXd& mi    = m_collisions.mass();
-        const MatrixXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
-        const MatrixXd& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
-        const MatrixXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
-        const VectorXd& etai  = m_collisions.etai(Th, Te, nd, p_x);
+        const ArrayXd&  mi    = m_collisions.mass();
+        const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
+        const ArrayXXd& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
+        const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
+        const ArrayXd&  etai  = m_collisions.etai(Th, Te, nd, p_x);
 
         // Compute the system matrix
         double fac = 4.0 / (15.0 * KB);
         int k = ns - nh, ik, jk;
-        for (int i = k; i < ns; ++i) {
-            ik = i-k;
-            m_x(ik) = std::max(p_x[i], 1.0e-16);
-            m_sys(ik,ik) = fac * m_x(ik) * m_x(ik) * mi(i) / etai(i);
-        }
+        m_x = Map<const ArrayXd>(p_x+k,nh).max(1.0e-16);
+        m_sys.diagonal().array() = fac*m_x*m_x*mi.tail(nh)/etai.tail(nh);
 
         double miij;
         double mjij;
-        for (int i = k; i < ns; ++i) {
-            ik = i-k;
-            for (int j = i+1; j < ns; ++j) {
-                jk = j-k;
+        for (int j = k; j < ns; ++j) {
+            jk = j-k;
+            for (int i = j+1; i < ns; ++i) {
+                ik = i-k;
                 miij = mi(i) / (mi(i) + mi(j));
                 mjij = mi(j) / (mi(i) + mi(j));
                 fac  = m_x(ik) * m_x(jk) / (nDij(i,j) * 25.0 * KB);
@@ -193,15 +190,15 @@ private:
         // Solve the linear system using the type of system solution given in
         // template parameter
         solver.compute(m_sys);
-        m_alpha = solver.solve(m_x);
+        m_alpha = solver.solve(m_x.matrix());
     }
 
 private:
 
     MatrixXd m_sys;
-    VectorXd m_x;
+    ArrayXd m_x;
     VectorXd m_alpha;
-    Solver<MatrixXd, Upper> solver;
+    Solver<MatrixXd, Lower> solver;
 
 }; // class ThermalConductivityChapmannEnskog
 
