@@ -24,19 +24,20 @@ cmake_minimum_required(VERSION 2.6)
 # Require Boost.Test package 
 find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 add_executable(set_state test_set_state.cpp)
-target_link_libraries(set_state mutation++ ${Boost_LIBRARIES})
+target_link_libraries(set_state mutation++)
 
 add_executable(stefan_maxwell test_stefan_maxwell.cpp)
-target_link_libraries(stefan_maxwell mutation++ ${Boost_LIBRARIES})
+target_link_libraries(stefan_maxwell mutation++)
 
 add_executable(transfer_source test_transfer_source.cpp)
-target_link_libraries(transfer_source mutation++ ${Boost_LIBRARIES})
+target_link_libraries(transfer_source mutation++)
 
 add_executable(wdot test_wdot.cpp)
-target_link_libraries(wdot mutation++ ${Boost_LIBRARIES})
+target_link_libraries(wdot mutation++)
 
 #####################################
 # TESTS

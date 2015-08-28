@@ -122,10 +122,11 @@ Utilities::Config::ObjectProvider<\
     __NAME__, CompareFunc> op_##__NAME__(#__NAME__);
 
 // Available comparison functions
-ADD_FUNCTION(viscosity,                     v(0) = mix.viscosity())
-ADD_FUNCTION(heavy_thermal_conductivity,    v(0) = mix.heavyThermalConductivity())
 ADD_FUNCTION(electron_thermal_conductivity, v(0) = mix.electronThermalConductivity())
+ADD_FUNCTION(heavy_thermal_conductivity,    v(0) = mix.heavyThermalConductivity())
 ADD_FUNCTION(internal_thermal_conductivity, v(0) = mix.internalThermalConductivity())
+ADD_FUNCTION(sigma,                         v(0) = mix.sigma())
+ADD_FUNCTION(viscosity,                     v(0) = mix.viscosity())
 
 /**
  * Driver program for comparing a function to the values stored in the given
