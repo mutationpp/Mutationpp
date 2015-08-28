@@ -100,7 +100,6 @@ public:
         // Do we need to compute electron contributions?
         if (k == 0)
             return;
-        Map<ArrayXd>(p_k,ns).setZero();
 
         const ArrayXXd& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
         const ArrayXXd& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
