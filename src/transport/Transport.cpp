@@ -713,40 +713,38 @@ double Transport::sigma()
         return 0.0;
 
     const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
-    const double* const X = m_thermo.X();
     const double me = m_thermo.speciesMw(0)/NA;
+    Map<const ArrayXd> X(m_thermo.X(), ns);
 
-    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    const MatrixXd& B   = mp_collisions->Bstar(Th, Te, nd, X);
-    const VectorXd& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const ArrayXXd& Q11 = mp_collisions->Q11(Th, Te, nd, m_thermo.X());
+    const ArrayXXd& Q22 = mp_collisions->Q22(Th, Te, nd, m_thermo.X());
+    const ArrayXXd& B   = mp_collisions->Bstar(Th, Te, nd, m_thermo.X());
+    const ArrayXd&  Cei = mp_collisions->Cstei(Th, Te, nd, m_thermo.X());
     
     // Compute lambdas
-    double lam00 = 0.0;
-    double lam01 = 0.0;
-    double lam11 = 0.0;
-    double fac   = 0.0;
-    
-    for (int i = 1; i < ns; ++i) {
-        fac = X[i]*Q11(i);
-        lam00 += fac;
-        lam01 += fac*(2.5-3.0*Cei(i));
-        lam11 += fac*(25.0/4.0-3.0*B(i));
-    }
-    
-    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    double lam00 = (X * Q11.col(0)).tail(nh).sum();
+    double lam01 = 2.50*lam00 - 3.0*(X * Q11.col(0) * Cei).tail(nh).sum();
+    double lam11 = 6.25*lam00 - 3.0*(X * Q11.col(0) * B.col(0)).tail(nh).sum();
+
+    static const double c1 = 64./75./KB*std::sqrt(me/(TWOPI*KB));
+    double fac = c1*X(0)/std::sqrt(Te);
     lam00 = fac*lam00;
     lam01 = fac*lam01;
     lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
     
+    static const double c2 = 4./25.*QE*QE/(KB*KB);
+    fac = c2*X(0)*X(0)/Te;
     // First order
     //return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*lam00));
+    //return fac/lam00;
     
     // Second order
-    return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*(lam00-lam01*lam01/lam11)));
+    //return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*(lam00-lam01*lam01/lam11)));
+    return fac/(lam00-lam01*lam01/lam11);
 }
 
 //==============================================================================

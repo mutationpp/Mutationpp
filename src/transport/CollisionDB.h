@@ -305,7 +305,6 @@ public:
         const double Th, const double Te, const double nd, 
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, Q11IJ);
-        std::cout << "Q11 = \n" << m_Q11 << std::endl;
         return m_Q11;
     }
 
