@@ -77,77 +77,58 @@ public:
         const int k  = ns - nh;
         int ik, jk;
 
-        const VectorXd& mi   = m_collisions.mass();
-        const MatrixXd& nDij = m_collisions.nDij(Th, Te, nd, p_x);
-        const MatrixXd& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
+        const ArrayXd&  mi   = m_collisions.mass();
+        const ArrayXXd& nDij = m_collisions.nDij(Th, Te, nd, p_x);
+        const ArrayXXd& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
+        Map<const ArrayXd> xh(p_x+k, nh);
 
         // Compute heavy-particle thermal diffusion ratios
-        double fac;
-        for (int i = k; i < ns; ++i) {
-            ik = i-k;
-            p_k[i] = 0.0;
-            for (int j = k; j < ns; ++j) {
-                jk = j-k;
-                if (j == i) continue;
-                fac = 0.1*p_x[i]*p_x[j]*(12.0*Cij(ik,jk)-10.0)/
-                    (KB*nDij(i,j)*(mi(i)+mi(j)));
-                p_k[i] += fac*m_alpha(jk)*mi(i);
-                p_k[i] -= fac*m_alpha(ik)*mi(j);
-            }
-        }
+        m_sys.triangularView<StrictlyLower>() =
+            ((xh.matrix()*xh.matrix().transpose()).array()*
+            (1.2*Cij - 1.) / nDij.bottomRightCorner(nh, nh)).matrix();
+        m_sys.triangularView<StrictlyUpper>() =
+            m_sys.triangularView<StrictlyLower>().transpose();
+        m_sys.diagonal().setZero();
+
+        Map<ArrayXd>(p_k,ns).setZero();
+        for (int j = 0; j < nh; ++j)
+            Map<ArrayXd>(p_k+k,nh) += m_sys.col(j).array()*(
+                m_alpha(j)*mi.tail(nh)-mi(j+k)*m_alpha.array()) /
+                (mi.tail(nh) + mi(j+k));
+        Map<ArrayXd>(p_k+k,nh) /= KB;
 
         // Do we need to compute electron contributions?
         if (k == 0)
             return;
+        Map<ArrayXd>(p_k,ns).setZero();
 
-        p_k[0] = 0.0;
-        if (p_x[0] < 1.0e-16)
-            return;
-
-        // Next compute the Lambda terms for the electron thermal diffusion
-        // ratios
-        const MatrixXd& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
-        const MatrixXd& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
-        const MatrixXd& B     = m_collisions.Bstar(Th, Te, nd, p_x);
-        const VectorXd& Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
-        const VectorXd& Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
-        const VectorXd& Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
-        const VectorXd& Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
+        const ArrayXXd& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
+        const ArrayXXd& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
+        const ArrayXd&  Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
+        const ArrayXd&  Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
+        const ArrayXd&  Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
+        const ArrayXd&  Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
         const double    Q23ee = m_collisions.Q23ee(Th, Te, nd, p_x);
         const double    Q24ee = m_collisions.Q24ee(Th, Te, nd, p_x);
-        const double    me    = mi(0);
 
         // Compute the lambdas
-        static VectorXd lam01; lam01 = VectorXd::Zero(ns);
-        static VectorXd lam02; lam02 = VectorXd::Zero(ns);
+        static ArrayXd lam01; lam01.resize(ns);
+        static ArrayXd lam02; lam02.resize(ns);
 
-        double lam11ee = 0.0;
-        double lam12ee = 0.0;
-        double lam22ee = 0.0;
+        lam01.tail(nh) = Te/Th*xh*(3.*Q12ei-2.5*Q11.col(0)).tail(nh);
+        lam01(0) = -Th/Te*lam01.tail(nh).sum();
+        lam02.tail(nh) = Te/Th*xh*(10.5*Q12ei-6.*Q13ei-35./8.*Q11.col(0));
+        lam02(0) = -Th/Te*lam02.tail(nh).sum();
 
-        for (int i = 1; i < ns; ++i) {
-            lam01(i) = -p_x[i]*(2.5*Q11(i)-3.0*Q12ei(i));
-            lam01(0) -= lam01(i);
-            lam02(i) = -p_x[i]*(35.0/8.0*Q11(i)-10.5*Q12ei(i)+6.0*Q13ei(i));
-            lam02(0) -= lam02(i);
-            lam11ee += p_x[i]*Q11(i)*(25.0/4.0-3.0*B(i));
-            lam12ee += p_x[i]*(175.0/16.0*Q11(i)-315.0/8.0*Q12ei(i)+57.0*Q13ei(i)-30.0*
-                Q14ei(i));
-            lam22ee += p_x[i]*(1225.0/64.0*Q11(i)-735.0/8.0*Q12ei(i)+399.0/2.0*Q13ei(i)-
-                210.0*Q14ei(i)+90.0*Q15ei(i));
-        }
+        double lam11 = p_x[0]*SQRT2*Q22(0) +
+            (xh*(6.25*Q11.col(0)-15.*Q12ei+12.*Q13ei).tail(nh)).sum();
+        double lam12 = p_x[0]*SQRT2*(1.75*Q22(0)-2.*Q23ee) +
+            (xh*(175./16.*Q11.col(0)-315./8.*Q12ei+57.*Q13ei-30.*Q14ei).tail(nh)).sum();
+        double lam22 = p_x[0]*SQRT2*(77./16.*Q22(0)-7.*Q23ee+5.*Q24ee) +
+            (xh*(1225./64.*Q11.col(0)-735./8.*Q12ei+399./2.*Q13ei-210.*Q14ei+90.*Q15ei).tail(nh)).sum();
 
-
-        fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*p_x[0];
-        lam01   *= fac;
-        lam02   *= fac;
-        lam11ee = fac*(lam11ee + SQRT2*p_x[0]*Q22(0));
-        lam12ee = fac*(lam12ee + SQRT2*p_x[0]*(7.0/4.0*Q22(0)-2.0*Q23ee));
-        lam22ee = fac*(lam22ee + SQRT2*p_x[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
-
-        fac = 1.0/(lam11ee*lam22ee-lam12ee*lam12ee);
-        for (int i = 0; i < ns; ++i)
-            p_k[i] += 2.5*p_x[0]*(lam01(i)*lam22ee - lam02(i)*lam12ee)*fac;
+         Map<ArrayXd>(p_k,ns) += (2.5*Te/Th*p_x[0]/(lam11*lam22-lam12*lam12))*
+             (lam22*lam01 - lam12*lam02);
     }
 
 private:

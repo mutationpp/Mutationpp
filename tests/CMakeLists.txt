@@ -39,6 +39,9 @@ target_link_libraries(transfer_source mutation++)
 add_executable(wdot test_wdot.cpp)
 target_link_libraries(wdot mutation++)
 
+add_executable(thermal_diff_ratios test_thermal_diff_ratios.cpp)
+target_link_libraries(thermal_diff_ratios mutation++)
+
 #####################################
 # TESTS
 #####################################
@@ -88,6 +91,7 @@ if (BUILD_FORTRAN_WRAPPER)
 endif()
 
 # Transport property tests
+test_all_mixtures(thermal_diff_ratios)
 test_all_mixtures(stefan_maxwell)
 
 # Kinetics tests

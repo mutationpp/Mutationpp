@@ -113,7 +113,7 @@ public:
     double viscosity() {
         ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
         return mp_viscosity->viscosity(
-            m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
     
     /**

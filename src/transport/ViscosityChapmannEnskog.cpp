@@ -54,15 +54,15 @@ public:
 	{ }
 
 	double viscosity(
-	    const double T, const double nd, const double *const p_x)
+	    double Th, double Te, double nd, const double *const p_x)
 	{
 		const int ns = m_collisions.nSpecies();
 		const int nh = m_collisions.nHeavy();
 
 		const ArrayXd&  mi    = m_collisions.mass();
-		const ArrayXXd& Astar = m_collisions.Astar(T, T, nd, p_x);
-		const ArrayXXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
-		const ArrayXd&  etai  = m_collisions.etai(T, T, nd, p_x);
+		const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
+		const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
+		const ArrayXd&  etai  = m_collisions.etai(Th, Te, nd, p_x);
 
 		// Form the symmetric positive definite system matrix
 		int k = ns-nh, ik, jk;

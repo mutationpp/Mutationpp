@@ -52,13 +52,14 @@ public:
     /**
      * Returns the viscosity of the mixture in Pa-s.
      */
-    double viscosity(const double T, const double nd, const double *const p_x)
+   double viscosity(
+        double Th, double Te, double nd, const double *const p_x)
     {
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
         
-        const ArrayXXd& nDij  = m_collisions.nDij(T, T, nd, p_x);
-        const ArrayXXd& Astar = m_collisions.Astar(T, T, nd, p_x);
+        const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
+        const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
         const ArrayXd&  mass  = m_collisions.mass();
         const Map<const ArrayXd> x(p_x+(ns-nh), nh);
         
