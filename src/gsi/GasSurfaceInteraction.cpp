@@ -55,6 +55,14 @@ void GasSurfaceInteraction::setWallState( const double* const l_mass, const doub
 
 //======================================================================================
 
+void GasSurfaceInteraction::getWallState( double* const l_mass, double* const l_energy, const int state_variable ){
+
+    mp_surf_descr->getWallState( l_mass, l_energy, state_variable );
+
+}
+
+//======================================================================================
+
 void GasSurfaceInteraction::surfaceProductionRates( double* const lp_mass_prod_rate ){
 
     mp_surf_solver->computeGSIProductionRate( v_mass_prod_rate );
@@ -81,7 +89,7 @@ void GasSurfaceInteraction::setDiffusionModel( const double* const l_mole_frac_e
 
 void  GasSurfaceInteraction::solveSurfaceBalance(){
 
-//    mp_surf_solver->
+    mp_surf_solver->solveSurfaceBalance( mp_surf_descr->getWallRhoi(), mp_surf_descr->getWallT() );
 
 }
 
@@ -97,6 +105,9 @@ inline void GasSurfaceInteraction::locateGSIInputFile( std::string& l_gsi_input_
     if ( !file.is_open() ){
         l_gsi_input_file = Mutation::Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/gsi/" + l_gsi_input_file;
     }
+
+    /** @todo FIX IT HERE */
+    // Give and error
 
 }
 

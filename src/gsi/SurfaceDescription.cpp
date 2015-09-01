@@ -40,6 +40,20 @@ void SurfaceDescription::setWallState( const double* const p_rhoi, const double*
 
 //======================================================================================
 
+void SurfaceDescription::getWallState( double* const p_rhoi, double* const p_rhoie, const int state_variable ){
+
+    for ( int i_sp = 0; i_sp < mp_wall_state->getWallRhoi().size() ; ++i_sp ) { /** @todo This might be really really slow... */
+        p_rhoi[ i_sp ] = mp_wall_state->getWallRhoi()( i_sp );
+    }
+
+    for ( int i_T = 0; i_T < mp_wall_state->getWallRhoi().size() ; ++i_T ) {
+        p_rhoie[ i_T ] = mp_wall_state->getWallT()( i_T );
+    }
+
+}
+
+//======================================================================================
+
 bool SurfaceDescription::isWallStateSet() const {
 
     return mp_wall_state->isWallStateSet();

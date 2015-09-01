@@ -59,23 +59,29 @@ public:
         const int ns = m_thermo.nSpecies();
     
         // First step is to compute nDij and Y
-        const Mutation::Numerics::RealSymMat& nDij = 
-            m_collisions.nDij(T, Te, nd, p_x);
-        double* Y = new double [ns];
-        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(p_x, Y);
+        const double tol = 1.0e-16;
+	double* Y = new double [ns];
+        double* X = new double [ns];
+
+        for (int i = 0; i < ns; ++i){ X[i] = std::max(tol, p_x[i]); }
+
+        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(X, Y);
         
+        const Mutation::Numerics::RealSymMat& nDij = 
+            m_collisions.nDij(T, Te, nd, X);
+
         // Now we can compute the mixture averaged diffusion coefficient for the
         // ith species
         m_Di = 0.0;
         for (int i = 0, index = 1; i < ns; ++i, ++index) {
             for (int j = i + 1; j < ns; ++j, ++index) {
-                m_Di(i) += p_x[j] / nDij(index);
-                m_Di(j) += p_x[i] / nDij(index);
+                m_Di(i) += X[j] / nDij(index);
+                m_Di(j) += X[i] / nDij(index);
             }
         }
         
         for (int i = 0; i < ns; ++i)
-            m_Di(i) = (1.0 - Y[i]) / (m_Di(i) * p_x[i] * nd);
+            m_Di(i) = (1.0 - Y[i]) / (m_Di(i) * X[i] * nd);
         
         // Form the diffusion matrix
         for (int i = 0; i < ns; ++i) {
@@ -86,6 +92,7 @@ public:
         }
         
         delete [] Y;
+        delete [] X;
         return m_D;
     }
     

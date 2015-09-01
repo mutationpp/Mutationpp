@@ -612,6 +612,83 @@ void Transport::equilDiffFluxFacsZ(double* const p_F)
 
 //==============================================================================
 
+void Transport::exactDiffusionMatrix(double ** const p_Dij)
+{
+
+    ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
+
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    
+    // Need to place a tolerance on X and Y
+    const double tol = 1.0e-16;
+    static std::vector<double> X(ns);
+    static std::vector<double> Y(ns);
+    for (int i = 0; i < ns; ++i)
+        X[i] = std::max(tol, m_thermo.X()[i]);
+    m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+
+    // Get reference to binary diffusion coefficients
+    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+
+    // Fix this for charged particles
+    const int k = 0;
+
+    // Compute singular system matrix
+    double fac;
+    static RealSymMat G(ns-k);
+    for (int i = k; i < ns; ++i)
+        G(i-k,i-k) = 0.0;
+    for (int i = k; i < ns; ++i) {
+        for (int j = i+1; j < ns; ++j) {
+            fac = X[i]*X[j]/nDij(i,j)*nd;
+            G(i-k,i-k) += fac;
+            G(j-k,j-k) += fac;
+            G(i-k,j-k) = -fac;
+        }
+    }
+
+    // Compute average binary diffusion coefficient
+    double a = 0.0;
+    for (int i = 0; i < nDij.size(); ++i)
+        a += nDij(i);
+    a /= ((double)nDij.size()*nd);
+    a = 1.0/a;
+
+    // Add mass balance relation to make make matrix nonsigular
+    for (int i = k; i < ns; ++i)
+        for (int j = i; j < ns; ++j)
+            G(i-k,j-k) += a*Y[i]*Y[j]; // or just add a -> a*UxU
+
+    // Solve for the velocities
+    static RealVector alpha( ns - k );
+    static RealVector RHS( ns - k );
+    static LDLT<double> ldlt;
+    ldlt.setMatrix(G);
+
+    for ( int i = 0; i < ns; ++i ){
+        RHS(i) = Y[i];
+    }
+
+    int l = 0;
+    // Solve the system ns - 1 times
+    for ( int i = 0; i < ns ; ++i ){
+        RHS(i) += 1.0;
+        ldlt.solve( alpha, RHS );
+        RHS(i) -= 1.0;
+        for ( int j = l; j < ns; j++ ){
+            p_Dij[i][j] = alpha(j);
+            p_Dij[j][i] = alpha(j);
+        }
+        l++;
+    }
+
+}
+
+//==============================================================================
+
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {

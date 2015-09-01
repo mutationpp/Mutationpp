@@ -41,7 +41,30 @@ int main() {
     mix.setWallState( &v_rhoi[0], &wall_temperature, state_var );
     mix.setDiffusionModel( &v_mole_fractions_edge[0], gradient_distance_wall_bulk );
 
-//    std::cout << v_wall_production_rates[0] << " " << v_wall_production_rates[1] << " CHECK ME" << std::endl;
+    mix.solveSurfaceBalance();
+    mix.getWallState( &v_rhoi[0], &wall_temperature, state_var );
 
+    std::cout << "The result for the partial densities are: " << v_rhoi[0] << " " << v_rhoi[1] << std::endl;
+
+//================================================================================================================
+
+    mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
+    mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T );
+
+    for (int i_ns ; i_ns < ns ; i_ns++){
+        v_mole_fractions[i_ns] = mix.X()[i_ns];
+        v_mole_gradients[i_ns] = ( v_mole_fractions[i_ns] - v_mole_fractions_edge[i_ns] ) / gradient_distance_wall_bulk;
+    }
+
+    double electric_field = 0.E0;
+    mix.stefanMaxwell(&v_mole_gradients[0], &v_diffusion_velocities[0], electric_field);
+    mix.surfaceProductionRates( &v_wall_production_rates[0] );
+    std::cout << "The wall production rates are: " << v_wall_production_rates[0] << " " << v_wall_production_rates[1] << std::endl;
+
+    for( int i_ns ; i_ns < ns ; i_ns++){
+        v_function[i_ns] = v_rhoi[i_ns] * v_diffusion_velocities[i_ns] - v_wall_production_rates[i_ns];
+    }
+
+    std::cout << "The residual is equal to: "<< v_function[0] << " " << v_function[1] << std::endl;
 
 }

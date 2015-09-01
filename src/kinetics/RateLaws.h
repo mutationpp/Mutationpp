@@ -96,40 +96,72 @@ private:
     double m_temp;
 };
 
-/*
- * Rate Law by Billing [23], [24] annaloro
- */
+class O2vO2 : public RateLaw {
+public:
+    O2vO2 ( const Mutation::Utilities::IO::XmlElement& node );
+    ~O2vO2(){ }
 
-//    class BillingN2N2VibrationalDeexcitation : public RateLaw{
-//    
-//    public:
-//        CapN2N2VibrationalDeexcitation();
-//        virtual ~CapN2N2VibrationalDeexcitation();
-//        
-//        CapN2N2VibrationalDeexcitation* clone(0 const {
-//            return new CapN2N2VibrationalDeexcitation(*this);
-//        }
-//    
-//    };
+    O2vO2( const O2vO2& copy) : m_vib_level(copy.m_vib_level){}
+    O2vO2* clone() const { return new O2vO2(*this); }
 
-/*
- * Rate Law by Billing and Capitelli [23], [25], [42] annaloro
- */
-//    class BillingO2O2VibrationalDeexcitation : public RateLaw{
-//    
-//    public:
-//        CapN2N2VibrationalDeexcitation();
-//        virtual ~CapN2N2VibrationalDeexcitation();
-//        
-//        CapN2N2VibrationalDeexcitation* clone(0 const {
-//            return new CapN2N2VibrationalDeexcitation(*this);
-//        }
-//    
-//    };
+    inline double getLnRate( const double lnT, const double invT ) const {
+
+        const double l_lna = 6 * log(10.E0) + lnT - std::log( 1.8 ) - 12.E0 * std::log(10) - 122.E0 * std::pow( invT, 1.E0/3.E0 ) - std::log( 1.E0 - std::exp( - 2273.7E0 * invT )) ;
+        const double l_b = 2.99E0 * std::sqrt( invT );
+
+        return ( std::log(m_vib_level) + l_lna + l_b * ( m_vib_level - 1 ) );
+    }
+
+    double A() const { 
+        return 0.E0;
+    }
+    
+    double n() const {
+        return 0.E0;
+    }
+    
+    double T() const {
+        return 0.E0;
+    }
+
+private:
+    int m_vib_level;
+
+};
+
+class O2vO2w : public RateLaw {
+public:
+    O2vO2w ( const Mutation::Utilities::IO::XmlElement& node );
+    ~O2vO2w(){ }
+ 
+    O2vO2w( const O2vO2w& copy) : m_vib_level_v(copy.m_vib_level_v), 
+                                  m_vib_level_w(copy.m_vib_level_w){}
+    O2vO2w* clone() const { return new O2vO2w(*this); }
+
+    inline double getLnRate( const double lnT, const double invT ) const {
+
+	return ( std::log(2.8) - 24 * std::log(10) + std::log( m_vib_level_v ) + std::log(m_vib_level_w) + 1.5E0 * lnT + 2.4E0 * std::sqrt( invT ) * ( (m_vib_level_v - 1) - ( m_vib_level_w - 1 ) ) );
+    }
+
+    double A() const { 
+	return 0.E0;
+    }
+    
+    double n() const {
+	return 0.E0;
+    }
+    
+    double T() const {
+	return 0.E0;
+    }
+
+private:
+    int m_vib_level_v;
+    int m_vib_level_w;
+
+};
 
     } // namespace Kinetics
 } // namespace Mutation
 
-
-
-#endif // RATELAW_HPP
+#endif // RATELAW_H

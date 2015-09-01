@@ -372,7 +372,14 @@ public:
 	 * @see equilDiffFluxFacsT
 	 *     for \f$\mathcal{F}_k^T\f$ and \f$\mathcal{F}_h^T\f$
 	 */
+
     void equilDiffFluxFacsZ(double* const p_F);
+
+    /**
+     *
+     */
+ 
+    void exactDiffusionMatrix(double **  const p_Di);
 
     /**
      * Computes the species diffusion velocities and ambipolar electric field 

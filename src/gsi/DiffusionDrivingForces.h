@@ -17,7 +17,7 @@ public:
         if ( m_diff_model_set == 0 ) { std::cerr << "Error diffusion model!" << std::endl; exit(1); }
 
         for ( int i_ns = 0 ; i_ns < lv_mole_frac.size() ; ++i_ns ){
-            lv_driving_force( i_ns ) = ( v_mole_frac_edge( i_ns ) - lv_mole_frac( i_ns ) ) / m_dx;
+            lv_driving_force( i_ns ) = ( lv_mole_frac( i_ns ) - v_mole_frac_edge( i_ns ) ) / m_dx;
         }
 
     }

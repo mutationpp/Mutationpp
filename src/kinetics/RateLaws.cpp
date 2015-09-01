@@ -105,6 +105,21 @@ Arrhenius::Arrhenius(const XmlElement& node, const int order)
     }
 }
 
+O2vO2::O2vO2( const Mutation::Utilities::IO::XmlElement& node ){
+
+    node.getAttribute("vibrational_level", m_vib_level, "For O2 O2 deexcitation a vibrational level must be provided!");
+    
+    // Error v = 1
+
+}
+
+O2vO2w::O2vO2w( const Mutation::Utilities::IO::XmlElement& node ){
+
+    node.getAttribute("vibrational_level_v", m_vib_level_v, "For O2 O2 deexcitation a vibrational level must be provided!");
+    node.getAttribute("vibrational_level_w", m_vib_level_w, "For O2 O2 deexcitation a vibrational level must be provided!");
+
+}
+
     } // namespace Kinetics
 } // namespace Mutation
 

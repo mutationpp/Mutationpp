@@ -19,6 +19,7 @@ public:
     ~GasSurfaceInteraction();
 
     void setWallState( const double* const l_mass, const double* const l_energy, const int state_variable );
+    void getWallState( double* const l_mass, double* const l_energy, const int state_variable );
 
     void surfaceProductionRates( double * const lp_mass_prod_rate );
     

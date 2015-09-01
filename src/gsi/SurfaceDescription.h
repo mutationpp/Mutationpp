@@ -17,6 +17,7 @@ public:
     ~SurfaceDescription();
 
     void setWallState( const double* const p_rhoi, const double* const p_rhoie, const int state_variable );
+    void getWallState( double* const p_rhoi, double* const p_rhoie, const int state_variable );
     bool isWallStateSet() const;
 
     const Mutation::Numerics::RealVector& getWallRhoi() const { return mp_wall_state->getWallRhoi(); }

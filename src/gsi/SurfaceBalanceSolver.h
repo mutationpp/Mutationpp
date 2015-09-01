@@ -24,7 +24,7 @@ public:
     void computeGSIProductionRate( Mutation::Numerics::RealVector& lv_mass_prod_rate );
 
     void setDiffusionModel( const Mutation::Numerics::RealVector& lv_mole_frac_edge, const double& l_dx );
-    void solveSurfaceBalance();
+    void solveSurfaceBalance( const Mutation::Numerics::RealVector& lv_rhoi, const Mutation::Numerics::RealVector& lv_T );
 
     void updateFunction( Mutation::Numerics::RealVector& lv_mole_frac_wall );
     void updateJacobian( Mutation::Numerics::RealVector& lv_mole_frac_wall );
@@ -43,13 +43,30 @@ private:
 
     void addSurfaceProductionTerm( WallProductionTerms* lp_wall_prod_term );
 
+    // Solver Functions
+    void saveUnperturbedPressure( Mutation::Numerics::RealVector& lv_rhoi );
+    void computeMoleFracfromPartialDens( Mutation::Numerics::RealVector& lv_rhoi, Mutation::Numerics::RealVector& lv_xi );
+    void computePartialDensfromMoleFrac( Mutation::Numerics::RealVector& lv_xi, Mutation::Numerics::RealVector& lv_rhoi );
+
+    // Error Functions
     void errorEmptyWallProductionTerms() const;
     void errorWallStateNotSet() const;
 
     // VARIABLES FOR SOLVER
     const size_t m_ns;
-    Mutation::Numerics::RealVector v_mole_frac_wall;
-    Mutation::Numerics::RealVector v_d_mole_frac;
+    double m_Twall;
+    double m_Pwall;
+    Mutation::Numerics::RealVector v_rhoi;
+    Mutation::Numerics::RealVector v_work;
+    Mutation::Numerics::RealVector v_X;
+    Mutation::Numerics::RealVector v_dX;
+    Mutation::Numerics::RealVector v_f;
+    Mutation::Numerics::RealMatrix v_jac;
+    double m_pert;
+    double m_X_unpert;
+    Mutation::Numerics::RealVector v_f_unpert;
+
+    const int set_state_with_rhoi_T;
 
     // TEMPORARY
     Mutation::Numerics::RealVector v_sep_mass_prod_rate;
