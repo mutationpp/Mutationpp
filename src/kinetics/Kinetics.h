@@ -175,11 +175,7 @@ public:
      */
     //void getReactionDelta(
     //    const double* const p_s, double* const p_r) const;
-    
-    /**
-     * @todo Fill in this method.
-     */
-    double omegaVT();
+
 
 private:
 
