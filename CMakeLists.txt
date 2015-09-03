@@ -140,6 +140,7 @@ endif()
 ################################################################################
 # Descend into the src directory to build all targets and libraries
 include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/general
     ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
     ${CMAKE_CURRENT_SOURCE_DIR}/src/numerics
@@ -149,6 +150,9 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities
 )
 add_subdirectory(src)
+
+# Install the Eigen files
+install(DIRECTORY Eigen DESTINATION include/mutation++)
 
 ################################################################################
 # CTest

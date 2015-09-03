@@ -102,8 +102,8 @@ public:
             break;
 
         default:
-            cout << "Variable-set " << vars << " not implemented in StateModel!";
-            cout << endl;
+            std::cout << "Variable-set " << vars << " not implemented in StateModel!";
+            std::cout << std::endl;
             exit(1);
         }
 

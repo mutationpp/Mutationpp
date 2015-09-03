@@ -43,10 +43,11 @@
 #include <cassert>
 #include <cmath>
 
-#include "Vector.h"
-#include "Matrix.h"
+//#include "Vector.h"
+//#include "Matrix.h"
 
 #include <iostream>
+#include <iomanip>
 using std::cout;
 using std::endl;
 using std::setw;
@@ -158,132 +159,132 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
  * constructor for an LpProblem class could make the determination of which
  * solver to use based on the sparsity of the constraint matrix.
  *
- * @author J. B. Scoggins (jbscoggi@gmail.com)
+ * @author J.B. Scoggins (jbscoggi@gmail.com)
  * @date   November 27, 2011
  */ 
-template <typename Real>
-LpResult lp(const Vector<Real> &f, const LpObjective &objective, 
-            const Matrix<Real> &A, const Vector<Real> &b, const int m1, 
-            const int m2, Vector<Real> &x, Real &z, int** iposv_ret = NULL)
-{
-    assert( f.size() == x.size() );
-    assert( A.rows() == b.size() );
-    assert( A.cols() == x.size() );
-
-    const int m = A.rows();
-    const int n = A.cols();
-    
-    // Build the tableau for input into the simplex algorithm
-    Real tableau[m+2][n+1];
-    tableau[0][0] = static_cast<Real>(0);
-    
-    // Fill tableau with f vector
-    for (int j = 1; j < n+1; ++j)
-        tableau[0][j] = (objective == MINIMIZE ? -f(j-1) : f(j-1));
-    
-    // Fill tableau with A and b while ensuring that negative b values are 
-    // handled according to the constraint type (note that the simplex method
-    // only works for positive b values)
-    int offset = 0;
-    Real temp;
-    for (int i = 1; i < m+1; ++i) {
-        tableau[i][0] = b(i-1);
-        // If b value for this row is negative      
-        if (tableau[i][0] < static_cast<Real>(0)) {        
-            // Change <= constraint to >= constraint
-            if (i <= m1) {
-                tableau[m1][0] = -tableau[i][0];
-                for (int j = 1; j < n+1; ++j)
-                    tableau[m1][j] = A(i-1,j-1);
-                offset++;
-            // Change >= constraint to <= constraint
-            } else if (i <= m1+m2) {
-                offset--;
-                // Prefer swap rather than have to call b(i-1) again
-                temp = -tableau[i][0];
-                tableau[i][0] = tableau[m1-offset][i];
-                tableau[m1-offset][0] = temp;
-                // Negate row of A
-                for (int j = 1; j < n+1; ++j) {
-                    tableau[i][j] = tableau[m1-offset][j];
-                    tableau[m1-offset][j] = A(i-1,j-1);
-                }
-            // Change sign of = constraint row
-            } else {
-                tableau[i][0] = -tableau[i][0];
-                for (int j = 1; j < n+1; ++j)
-                    tableau[i][j] = A(i-1,j-1);
-            }
-        // b value is positive so just copy as normal
-        } else {
-            // If this is a <= constraint then we have to keep in mind the
-            // offset before copying
-            if (i <= m1) {
-                for (int j = 1; j < n+1; ++j)
-                    tableau[i-offset][j] = -A(i-1,j-1);
-            // Otherwise we can copy as normal
-            } else {
-                for (int j = 1; j < n+1; ++j)
-                    tableau[i][j] = -A(i-1,j-1);
-            }
-        }
-    }
-    
-    // Set the bottom row of the tableau to zero
-    for (int j = 0; j < n+1; ++j)
-        tableau[m+1][j] = static_cast<Real>(0);
-    
-    // Compute a scaled epsilon based on the average b value
-    Real eps = static_cast<Real>(0);
-    for (int i = 1; i < m+1; ++i)
-        eps += tableau[i][0];
-    
-    if (eps == static_cast<Real>(0))
-        eps = static_cast<Real>(1.0e-9);
-    else
-        eps *= static_cast<Real>(1.0e-9) / static_cast<Real>(m);
-    
-    // Perform the simplex algorithm on the tableau
-    int izrov[n];
-    int* iposv = new int [m];
-    int icase = simplex(&tableau[0][0], m, n, m1-offset, m2+offset, 
-                        izrov, iposv, eps);
-    
-    //cout << "final tableau" << endl;
-    //for (int i = 0; i < m+2; ++i) {
-    //    for (int j = 0; j < n+1; ++j)
-    //        cout << setw(10) << tableau[i][j];
-    //    cout << endl;
-    //}
-    //cout << endl;
-    
-    if (icase != 0) {
-        if (icase > 0) 
-            return UNBOUNDED_SOLUTION;
-        else
-            return NO_SOLUTION;
-    }
-    
-    // Now unravel the solution from the modified tableau
-    x = static_cast<Real>(0);
-    bool linind = false;
-    for (int i = 0; i < m; ++i) {
-        if (iposv[i] < n)
-            x(iposv[i]) = tableau[i+1][0];
-        else
-            linind = true;
-    }
-    
-    if (iposv_ret != NULL)
-        *iposv_ret = iposv;
-    else
-        delete [] iposv;
-    
-    // Also return value of z = min/max(f'*x)
-    z = tableau[0][0];
-    
-    return (linind ? LINEARLY_DEPENDENT : SOLUTION_FOUND);
-} // lp
+//template <typename Real>
+//LpResult lp(const Vector<Real> &f, const LpObjective &objective,
+//            const Matrix<Real> &A, const Vector<Real> &b, const int m1,
+//            const int m2, Vector<Real> &x, Real &z, int** iposv_ret = NULL)
+//{
+//    assert( f.size() == x.size() );
+//    assert( A.rows() == b.size() );
+//    assert( A.cols() == x.size() );
+//
+//    const int m = A.rows();
+//    const int n = A.cols();
+//
+//    // Build the tableau for input into the simplex algorithm
+//    Real tableau[m+2][n+1];
+//    tableau[0][0] = static_cast<Real>(0);
+//
+//    // Fill tableau with f vector
+//    for (int j = 1; j < n+1; ++j)
+//        tableau[0][j] = (objective == MINIMIZE ? -f(j-1) : f(j-1));
+//
+//    // Fill tableau with A and b while ensuring that negative b values are
+//    // handled according to the constraint type (note that the simplex method
+//    // only works for positive b values)
+//    int offset = 0;
+//    Real temp;
+//    for (int i = 1; i < m+1; ++i) {
+//        tableau[i][0] = b(i-1);
+//        // If b value for this row is negative
+//        if (tableau[i][0] < static_cast<Real>(0)) {
+//            // Change <= constraint to >= constraint
+//            if (i <= m1) {
+//                tableau[m1][0] = -tableau[i][0];
+//                for (int j = 1; j < n+1; ++j)
+//                    tableau[m1][j] = A(i-1,j-1);
+//                offset++;
+//            // Change >= constraint to <= constraint
+//            } else if (i <= m1+m2) {
+//                offset--;
+//                // Prefer swap rather than have to call b(i-1) again
+//                temp = -tableau[i][0];
+//                tableau[i][0] = tableau[m1-offset][i];
+//                tableau[m1-offset][0] = temp;
+//                // Negate row of A
+//                for (int j = 1; j < n+1; ++j) {
+//                    tableau[i][j] = tableau[m1-offset][j];
+//                    tableau[m1-offset][j] = A(i-1,j-1);
+//                }
+//            // Change sign of = constraint row
+//            } else {
+//                tableau[i][0] = -tableau[i][0];
+//                for (int j = 1; j < n+1; ++j)
+//                    tableau[i][j] = A(i-1,j-1);
+//            }
+//        // b value is positive so just copy as normal
+//        } else {
+//            // If this is a <= constraint then we have to keep in mind the
+//            // offset before copying
+//            if (i <= m1) {
+//                for (int j = 1; j < n+1; ++j)
+//                    tableau[i-offset][j] = -A(i-1,j-1);
+//            // Otherwise we can copy as normal
+//            } else {
+//                for (int j = 1; j < n+1; ++j)
+//                    tableau[i][j] = -A(i-1,j-1);
+//            }
+//        }
+//    }
+//
+//    // Set the bottom row of the tableau to zero
+//    for (int j = 0; j < n+1; ++j)
+//        tableau[m+1][j] = static_cast<Real>(0);
+//
+//    // Compute a scaled epsilon based on the average b value
+//    Real eps = static_cast<Real>(0);
+//    for (int i = 1; i < m+1; ++i)
+//        eps += tableau[i][0];
+//
+//    if (eps == static_cast<Real>(0))
+//        eps = static_cast<Real>(1.0e-9);
+//    else
+//        eps *= static_cast<Real>(1.0e-9) / static_cast<Real>(m);
+//
+//    // Perform the simplex algorithm on the tableau
+//    int izrov[n];
+//    int* iposv = new int [m];
+//    int icase = simplex(&tableau[0][0], m, n, m1-offset, m2+offset,
+//                        izrov, iposv, eps);
+//
+//    //cout << "final tableau" << endl;
+//    //for (int i = 0; i < m+2; ++i) {
+//    //    for (int j = 0; j < n+1; ++j)
+//    //        cout << setw(10) << tableau[i][j];
+//    //    cout << endl;
+//    //}
+//    //cout << endl;
+//
+//    if (icase != 0) {
+//        if (icase > 0)
+//            return UNBOUNDED_SOLUTION;
+//        else
+//            return NO_SOLUTION;
+//    }
+//
+//    // Now unravel the solution from the modified tableau
+//    x = static_cast<Real>(0);
+//    bool linind = false;
+//    for (int i = 0; i < m; ++i) {
+//        if (iposv[i] < n)
+//            x(iposv[i]) = tableau[i+1][0];
+//        else
+//            linind = true;
+//    }
+//
+//    if (iposv_ret != NULL)
+//        *iposv_ret = iposv;
+//    else
+//        delete [] iposv;
+//
+//    // Also return value of z = min/max(f'*x)
+//    z = tableau[0][0];
+//
+//    return (linind ? LINEARLY_DEPENDENT : SOLUTION_FOUND);
+//} // lp
 
 
 template <typename Real>

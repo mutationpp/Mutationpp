@@ -32,6 +32,8 @@
 #include <sstream>
 #include <cstdlib>
 
+#include <Eigen/Dense>
+
 #ifdef _GNU_SOURCE
 #include <fenv.h>
 #endif
@@ -42,7 +44,6 @@ using std::setw;
 
 using namespace Mutation;
 using namespace Mutation::Utilities;
-using namespace Mutation::Numerics;
 
 #define COLUMN_WIDTH 14
 
@@ -915,7 +916,7 @@ int main(int argc, char** argv)
                 name  = other_quantities[*iter].name;
                 
                 if (name == "Dij") {
-                    const RealMatrix& Dij = mix.diffusionMatrix();
+                    const Eigen::MatrixXd& Dij = mix.diffusionMatrix();
                     for (int i = 0; i < Dij.size(); ++i)
                         cout << setw(column_widths[cw++]) << Dij(i);
                 } else if (name == "pi_i") {

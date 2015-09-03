@@ -346,8 +346,8 @@ protected:
         while (std::abs(f) > tol) {
             // Check for max iterations
             if (iter++ == max_iters) {
-                cerr << "Exceeded max iterations when computing temperature!\n";
-                cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << endl;
+                std::cerr << "Exceeded max iterations when computing temperature!\n";
+                std::cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << std::endl;
                 return false;
             }
 
@@ -360,8 +360,8 @@ protected:
             // Update T
             dT = f/fp;
             if (std::abs(T - 50.0) < 1.0e-10 && dT > 0) {
-                cerr << "Clamping T at 50 K, energy is too low for the "
-                     << "given species densities..." << endl;
+                std::cerr << "Clamping T at 50 K, energy is too low for the "
+                     << "given species densities..." << std::endl;
                 return false;
             }
             while (T - dT < 50.0) dT *= 0.5; // prevent non-positive T
