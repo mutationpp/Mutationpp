@@ -152,7 +152,6 @@ Species::Species(const Mutation::Utilities::IO::XmlElement& xml_element) :
         xml_element.parseError(
             "Invalid phase description for species \"" + m_name +
             "\", must be \"gas\" (default), \"liquid\", or \"solid\".");
-    cout << "Species " << m_name << " (" << m_phase << ")" << endl;
 
     // Elemental stoichiometry
     IO::XmlElement::const_iterator stoich_iter =
