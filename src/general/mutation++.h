@@ -46,5 +46,6 @@
 #include "LookupTable.h"
 #include "Units.h"
 #include "Composition.h"
+#include "ParticleRRHO.h"
 
 #endif // MUTATIONPP_H
