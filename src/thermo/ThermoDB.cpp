@@ -54,21 +54,9 @@ bool ThermoDB::load(const SpeciesListDescriptor& descriptor)
     m_species.clear();
     m_elements.clear();
     
-    // First we need to load the entire element database for use in constructing
-    // our species list
-    Utilities::IO::XmlDocument element_doc(
-        Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-        "/thermo/elements.xml");
-    Utilities::IO::XmlElement::const_iterator element_iter =
-        element_doc.root().begin();
-
-    std::vector<Element> elements;
-    for ( ; element_iter != element_doc.root().end(); ++element_iter)
-        elements.push_back(Element(*element_iter));
-    
     // Load all possible species from the concrete database type
     std::list<Species> species_list;
-    loadAvailableSpecies(species_list, elements);
+    loadAvailableSpecies(species_list);
     
     // Check for duplicate species in the database
     std::list<Species>::iterator iter1 = species_list.begin();
@@ -104,13 +92,6 @@ bool ThermoDB::load(const SpeciesListDescriptor& descriptor)
             iter1 = species_list.erase(iter1);
     }
     
-//    std::cout << "species before ordering" << std::endl;
-//    iter = species_list.begin();
-//    while (iter != species_list.end()) {
-//        std::cout << iter->name() << std::endl;
-//        iter++;
-//    }
-    
     // Now we have all of the species that we want but possibly in the wrong
     // order so use the descriptor to tell us the correct order
     std::vector<std::string> missing;
@@ -123,10 +104,6 @@ bool ThermoDB::load(const SpeciesListDescriptor& descriptor)
         return false;
     }
     
-//    std::cout << "species after ordering" << std::endl;
-//    for (int i = 0; i < m_species.size(); ++i)
-//        std::cout << m_species[i].name() << std::endl;
-    
     // Finally fill our elements vector with only the elements that are required
     // for the species list
     std::set<std::string> element_names;
@@ -137,9 +114,9 @@ bool ThermoDB::load(const SpeciesListDescriptor& descriptor)
             element_names.insert(iter->first);
     }
     
-    for (int i = 0; i < elements.size(); ++i)
-        if (element_names.count(elements[i].name()) > 0)
-            m_elements.push_back(elements[i]);
+    for (int i = 0; i < Element::database().size(); ++i)
+        if (element_names.count(Element::database()[i].name()) > 0)
+            m_elements.push_back(Element::database()[i]);
     
     // Tell the concrete class to load the necessary thermodynamic data based on
     // the final species list

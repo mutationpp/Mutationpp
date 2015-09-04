@@ -52,6 +52,11 @@ namespace Mutation {
 class Element
 {
 public:
+
+    /**
+     * Provides a vector of the Element objects stored in elements.xml.
+     */
+    static const std::vector<Element>& database();
     
     /**
      * Loads an element from an "element" XmlElement node.
@@ -125,10 +130,8 @@ public:
      * Create a new species object.
      */
     Species(
-        const std::string& name,
-        const PhaseType phase,
-        const StoichList& stoichiometry,
-        const std::vector<Element>& elements);
+        const std::string& name, const PhaseType phase,
+        const StoichList& stoichiometry);
     
     /**
      * Instantiate a new species object which represents a single electronic
@@ -141,6 +144,11 @@ public:
      */
     Species(const Species& to_copy);
     
+    /**
+     * Creates a new species object from the XML element.
+     */
+    Species(const Mutation::Utilities::IO::XmlElement& xml_element);
+
     /**
      * Destructor.
      */
@@ -248,6 +256,12 @@ public:
     friend void swap(Species&, Species&);
 
 private:
+
+    /**
+     * Initialize all member variables related to stoichiometry and element
+     * data.  Assumes m_stoichiomery is already correctly set.
+     */
+    void initDataFromStoichiometry();
 
     /**
      * Determines the stoichiometry of this species from a stoichiometry string.

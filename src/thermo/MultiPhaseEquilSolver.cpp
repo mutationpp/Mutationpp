@@ -27,8 +27,6 @@
  */
 
 #include "MultiPhaseEquilSolver.h"
-//#include "minres.h"
-//#include "gmres.h"
 #include "Thermodynamics.h"
 #include "lp.h"
 
@@ -488,7 +486,11 @@ MultiPhaseEquilSolver::MultiPhaseEquilSolver(
     m_B = m_thermo.elementMatrix();
     m_Br = m_B;
     
-    m_tableau_capacity = (m_nc+2)*(m_ns+2);
+    // Compute phase information
+    mp_phase = new int [m_ns];
+    initPhases();
+
+    m_tableau_capacity = std::max((m_nc+2)*(m_ns+2), m_ns+m_nc+m_np*(m_ns+m_nc));
     mp_tableau = new double [m_tableau_capacity];
     mp_ming    = new double [m_ns];
     mp_maxmin  = new double [m_ns];
@@ -497,10 +499,6 @@ MultiPhaseEquilSolver::MultiPhaseEquilSolver(
     mp_c       = new double [m_nc];
     
     std::fill(mp_c, mp_c+m_nc, 0.0);
-
-    // Compute phase information
-    mp_phase = new int [m_ns];
-    initPhases();
     
     // Initialize storage for the solution object
     m_solution.initialize(m_np, m_nc, m_ns);
@@ -1063,8 +1061,9 @@ void MultiPhaseEquilSolver::rates(VectorXd& dx, bool save)
 
     // Use tableau for temporary storage
     Map<VectorXd> ydg(mp_tableau, nsr);
-    Map<VectorXd> dlamg(&ydg[0]+ydg.size(), ncr);
-    Map<MatrixXd> dlamy(&dlamg[0]+dlamg.size(), ncr, npr);
+    Map<VectorXd> dlamg(ydg.data()+ydg.size(), ncr);
+    Map<MatrixXd> dlamy(dlamg.data()+dlamg.size(), ncr, npr);
+    Map<MatrixXd> P(dlamy.data()+dlamy.size(), nsr, npr);
 
     // Compute dlamg
     for (int j = 0, jk = p_sjr[0]; j < nsr; jk = p_sjr[++j])
@@ -1078,11 +1077,11 @@ void MultiPhaseEquilSolver::rates(VectorXd& dx, bool save)
 //            y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
 //        Map<VectorXd>(p_dlamy+m*ncr, ncr) = svd.solve(rhs);
 //    }
-    dlamy.setZero();
+    P.setZero();
     for (int m = 0; m < npr; ++m)
-        dlamy.block(p_sizes[m], m, p_sizes[m+1]-p_sizes[m], 1) =
+        P.block(p_sizes[m], m, p_sizes[m+1]-p_sizes[m], 1) =
             y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
-    dlamy = svd.solve(dlamy);
+    dlamy = svd.solve(P);
 
     // Compute the linear system to be solved for the d(lnNbar)/ds variables
     MatrixXd A = MatrixXd::Zero(npr, npr);

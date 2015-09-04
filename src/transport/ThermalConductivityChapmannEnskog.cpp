@@ -116,7 +116,7 @@ public:
 
         lam01.tail(nh) = Te/Th*xh*(3.*Q12ei-2.5*Q11.col(0)).tail(nh);
         lam01(0) = -Th/Te*lam01.tail(nh).sum();
-        lam02.tail(nh) = Te/Th*xh*(10.5*Q12ei-6.*Q13ei-35./8.*Q11.col(0));
+        lam02.tail(nh) = Te/Th*xh*(10.5*Q12ei-6.*Q13ei-35./8.*Q11.col(0)).tail(nh);
         lam02(0) = -Th/Te*lam02.tail(nh).sum();
 
         double lam11 = p_x[0]*SQRT2*Q22(0) +

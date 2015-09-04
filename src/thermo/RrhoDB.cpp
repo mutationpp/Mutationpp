@@ -37,6 +37,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <cassert>
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -131,7 +132,7 @@ public:
             delete mp_el_bfac_table;
         }
     }
-    
+
     /**
      * Computes the unitless species specific heat at constant pressure
      * \f$ C_{P,i} / R_U\f$ in thermal nonequilibrium.
@@ -493,64 +494,15 @@ protected:
     /**
      * Loads all of the species from the RRHO database.
      */
-    virtual void loadAvailableSpecies(
-        std::list<Species>& species, const std::vector<Element>& elements)
+    virtual void loadAvailableSpecies(std::list<Species>& species)
     {
         IO::XmlDocument species_doc(
             getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
         IO::XmlElement::const_iterator species_iter = species_doc.root().begin();
         
         for ( ; species_iter != species_doc.root().end(); ++species_iter) {
-            // Species name
-            std::string name;
-            species_iter->getAttribute("name", name);
-            
-            // Phase
-            std::string phase_str;
-            species_iter->getAttribute("phase", phase_str, string("gas"));
-            phase_str = String::toLowerCase(phase_str);
-            
-            PhaseType phase;
-            if (phase_str == "gas")
-                phase = GAS;
-            else if (phase_str == "liquid")
-                phase = LIQUID;
-            else if (phase_str == "solid")
-                phase = SOLID;
-            else {
-                cerr << "Invalid phase description for species \"" << name
-                     << "\", can be \"gas\", \"liquid\", or \"solid\"." << endl;
-                exit(1);
-            }
-            
-            // Elemental composition
-            IO::XmlElement::const_iterator stoich_iter =
-                species_iter->findTag("stoichiometry");
-            std::string stoich_str = stoich_iter->text();
-            
-            // Split up the string in the format "A:a, B:b, ..." into a vector of
-            // strings matching ["A", "a", "B", "b", ... ]
-            vector<string> stoich_tokens;
-            String::tokenize(stoich_str, stoich_tokens, " \t\f\v\n\r:,");
-            
-            // Check that the vector has an even number of tokens (otherwise there must
-            // be an error in the syntax)
-            if (stoich_tokens.size() % 2 != 0) {
-                cerr << "Error in species \"" << name << "\" stoichiometry "
-                     << "definition, invalid syntax!" << endl;
-                for (int i = 0; i < stoich_tokens.size(); ++i)
-                    cerr << "\"" << stoich_tokens[i] << "\"" << endl;
-                exit(1); 
-            }
-            
-            std::vector< std::pair<std::string, int> > stoich;
-            for (int i = 0; i < stoich_tokens.size(); i+=2)
-                stoich.push_back(
-                    std::make_pair(
-                        stoich_tokens[i], atoi(stoich_tokens[i+1].c_str())));
-            
             // Add the species to the list
-            species.push_back(Species(name, phase, stoich, elements));
+            species.push_back(*species_iter);
             
             // We can also add all of the excited states as implicitly defined
             // species

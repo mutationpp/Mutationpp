@@ -66,8 +66,7 @@ protected:
     /**
      * Loads the species that is at the current location in the file stream.
      */
-    Species loadSpecies(
-        std::ifstream& is, const std::vector<Element>& elements) const
+    Species loadSpecies(std::ifstream& is) const
     {
         std::string line;
         if (!std::getline(is, line) || line.substr(0,3) == "END")
@@ -119,7 +118,7 @@ protected:
         std::getline(is, line);
         std::getline(is, line);
         
-        return Species(name, phase, stoich, elements);
+        return Species(name, phase, stoich);
     }
     
     /**

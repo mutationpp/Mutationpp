@@ -174,8 +174,8 @@ void SpeciesListDescriptor::order(
                 input.erase(lowest_level);
                 
                 species_iter = input.begin();
-                while (species_iter->groundStateName() != name &&
-                       species_iter != input.end())
+                while (species_iter != input.end() &&
+                       species_iter->groundStateName() != name)
                     species_iter++;
                 lowest_level = species_iter;
             }
