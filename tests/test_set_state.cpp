@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(compare_T_from_E_from_T)
 
             // Set an equilibrium state to make sure species temperatures and
             // densities are possible
-            equilibrateMixture(T, P);
+            mix().equilibrate(T, P);
 
             // Get the species densities
             double rho = mix().density();
