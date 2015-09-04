@@ -183,8 +183,6 @@ public:
         else
             m_thermo.equilSolver()->equilibrate(T, P, p_Xe, mp_X);
 
-        std::cout << "equilibrate(): T = " << T << ", P = " << P << std::endl;
-
         // Set the temperature and pressure
         m_T = m_Te = m_Tr = m_Tv = m_Tel = T;
         m_P = P;
