@@ -296,6 +296,14 @@ std::pair<int, int> Thermodynamics::equilibriumComposition(
 
 //==============================================================================
 
+void Thermodynamics::equilibrate(double T, double P, double* const p_Xe) const
+{
+    mp_state->equilibrate(T, P, p_Xe);
+    convert<X_TO_Y>(X(), mp_y);
+}
+
+//==============================================================================
+
 void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 {
     //mp_equil->addConstraint(p_A);

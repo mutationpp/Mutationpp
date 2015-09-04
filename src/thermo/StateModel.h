@@ -170,6 +170,27 @@ public:
     }
     
     /**
+     * Sets the mixture to an equilibrium state at the given temperature and
+     * pressure.  The elemental mole fractions may also be given, otherwise, the
+     * default mole fractions are used.
+     */
+    void equilibrate(double T, double P, double* const p_Xe = NULL)
+    {
+        // Compute the equilibrium composition
+        if (p_Xe == NULL)
+            m_thermo.equilSolver()->equilibrate(
+                T, P, m_thermo.getDefaultComposition(), mp_X);
+        else
+            m_thermo.equilSolver()->equilibrate(T, P, p_Xe, mp_X);
+
+        std::cout << "equilibrate(): T = " << T << ", P = " << P << std::endl;
+
+        // Set the temperature and pressure
+        m_T = m_Te = m_Tr = m_Tv = m_Tel = T;
+        m_P = P;
+    }
+
+    /**
      * Fills an array of the temperatures represented by this StateModel.
      */
     virtual void getTemperatures(double* const p_T) const {

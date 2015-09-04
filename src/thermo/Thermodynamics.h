@@ -239,10 +239,17 @@ public:
      * Returns the default elemental fraction for the element with a given
      * index.  Note that this index should be in 0 <= i < nElements().
      */
-    double getDefaultComposition(const int index) {
+    double getDefaultComposition(const int index) const {
         return mp_default_composition[index];
     }
     
+    /**
+     * Returns the default elemental fraction array.
+     */
+    const double* const getDefaultComposition() const {
+        return mp_default_composition;
+    }
+
     /**
      * Returns the index in the species array assigned to the species with the
      * given name.  If no species exists with that name, then the index is < 0.
@@ -317,6 +324,13 @@ public:
         double T, double P, const double* const p_Xe, double* const p_X,
         MoleFracDef mdf = GLOBAL) const;
     
+    /**
+     * Equilibrates the mixture to the given temperature, pressure, and
+     * elemental mole fractions.  If the mole fractions are not given, then the
+     * default fractions are used.
+     */
+    void equilibrate(double T, double P, double* const p_Xe = NULL) const;
+
     /**
      * Returns the element potentials calculated by the most recent call to 
      * equilibrate().
