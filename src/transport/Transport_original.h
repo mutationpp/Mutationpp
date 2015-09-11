@@ -125,8 +125,8 @@ public:
         }
         return (
             heavyThermalConductivity() + 
-            electronThermalConductivity()// +
-//            internalThermalConductivity()
+            electronThermalConductivity() +
+            internalThermalConductivity()
         );
     }
 

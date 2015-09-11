@@ -161,8 +161,8 @@ T& NewtonSolver<T, Solver>::solve(T& x)
     }
     
     if (resnorm > m_epsilon) {
-        cout << "Newton failed to converge after " << m_max_iter
-             << " iterations with a relative residual of " << resnorm << endl;
+//        cout << "Newton failed to converge after " << m_max_iter
+//             << " iterations with a relative residual of " << resnorm << endl;
     }
     
     return x;

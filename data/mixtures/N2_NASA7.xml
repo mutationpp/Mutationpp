@@ -1,0 +1,11 @@
+<mixture name="N2" thermo_db="NASA-9">
+    
+    <species>
+        N N2 
+    </species>
+    
+    <element_compositions default="default">
+        <composition name="default"> N:1.0 </composition>
+    </element_compositions>
+    
+</mixture>

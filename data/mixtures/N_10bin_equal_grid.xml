@@ -1,0 +1,11 @@
+<mixture mechanism="N_10bin_equal" thermo_db="RRHO">
+    
+    <default_element_fractions>
+        N  : 1.0
+    </default_element_fractions>
+    
+    <species>
+        Nbin N2_0 N2_1 N2_2 N2_3 N2_4 N2_5 N2_6 N2_7 N2_8 N2_9
+    </species>
+    
+</mixture>

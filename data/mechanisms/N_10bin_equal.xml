@@ -1,0 +1,336 @@
+<!-- Nitrogen 10 bin model reaction mechanism -->
+<mechanism name="N_10bin_equal">
+
+    <arrhenius_units A="mol,cm,s,K" E="J,mol,K" />
+
+    <!-- 01-->
+    <reaction formula="N2_0+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  7.781576E+09" n="  8.214192E-01" T="  1.029063E+05" />
+    </reaction>
+
+
+    <!-- 02-->
+    <reaction formula="N2_1+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  4.259529E+09" n="  8.957077E-01" T="  8.800220E+04" />
+    </reaction>
+
+
+    <!-- 03-->
+    <reaction formula="N2_2+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  2.684027E+08" n="  1.190681E+00" T="  7.216112E+04" />
+    </reaction>
+
+
+    <!-- 04-->
+    <reaction formula="N2_3+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  6.852360E+07" n="  1.333489E+00" T="  5.609491E+04" />
+    </reaction>
+
+
+    <!-- 05-->
+    <reaction formula="N2_4+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  5.991053E+07" n="  1.373306E+00" T="  3.996651E+04" />
+    </reaction>
+
+
+    <!-- 06-->
+    <reaction formula="N2_5+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  2.733346E+08" n="  1.261185E+00" T="  2.377857E+04" />
+    </reaction>
+
+
+    <!-- 07-->
+    <reaction formula="N2_6+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  1.046327E+11" n="  7.604423E-01" T="  7.195269E+03" />
+    </reaction>
+
+
+    <!-- 08-->
+    <reaction formula="N2_7+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  1.541200E+11" n="  7.580140E-01" T="  0.000000E+00" />
+    </reaction>
+
+
+    <!-- 09-->
+    <reaction formula="N2_8+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  1.505394E+11" n="  7.606042E-01" T="  0.000000E+00" />
+    </reaction>
+
+
+    <!-- 10-->
+    <reaction formula="N2_9+Nbin=Nbin+Nbin+Nbin">
+        <arrhenius A="  6.679693E+11" n="  6.451413E-01" T="  0.000000E+00" />
+    </reaction>
+
+
+    <!-- 11-->
+    <reaction formula="N2_0+Nbin=N2_1+Nbin">
+        <arrhenius A="  5.062698E+14" n=" -2.069858E-02" T="  1.490414E+04" />
+     </reaction>
+
+
+    <!-- 12-->
+    <reaction formula="N2_0+Nbin=N2_2+Nbin">
+        <arrhenius A="  7.681735E+11" n="  5.229523E-01" T="  3.074522E+04" />
+     </reaction>
+
+
+    <!-- 13-->
+    <reaction formula="N2_0+Nbin=N2_3+Nbin">
+        <arrhenius A="  3.533438E+11" n="  6.004646E-01" T="  4.681142E+04" />
+     </reaction>
+
+
+    <!-- 14-->
+    <reaction formula="N2_0+Nbin=N2_4+Nbin">
+        <arrhenius A="  9.402417E+11" n="  5.109642E-01" T="  6.293983E+04" />
+     </reaction>
+
+
+    <!-- 15-->
+    <reaction formula="N2_0+Nbin=N2_5+Nbin">
+        <arrhenius A="  2.472046E+12" n="  4.230374E-01" T="  7.912777E+04" />
+     </reaction>
+
+
+    <!-- 16-->
+    <reaction formula="N2_0+Nbin=N2_6+Nbin">
+        <arrhenius A="  1.516634E+13" n="  2.464486E-01" T="  9.571107E+04" />
+     </reaction>
+
+
+    <!-- 17-->
+    <reaction formula="N2_0+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.453812E+13" n="  1.881496E-01" T="  1.113464E+05" />
+     </reaction>
+
+
+    <!-- 18-->
+    <reaction formula="N2_0+Nbin=N2_8+Nbin">
+        <arrhenius A="  1.492975E+12" n="  2.348866E-01" T="  1.314396E+05" />
+     </reaction>
+
+
+    <!-- 19-->
+    <reaction formula="N2_0+Nbin=N2_9+Nbin">
+        <arrhenius A="  5.487862E+05" n="  1.351656E+00" T="  1.497805E+05" />
+     </reaction>
+
+
+    <!-- 20-->
+    <reaction formula="N2_1+Nbin=N2_2+Nbin">
+        <arrhenius A="  2.319530E+14" n="  4.172922E-02" T="  1.584108E+04" />
+     </reaction>
+
+
+    <!-- 21-->
+    <reaction formula="N2_1+Nbin=N2_3+Nbin">
+        <arrhenius A="  8.197881E+11" n="  5.241722E-01" T="  3.190728E+04" />
+     </reaction>
+
+
+    <!-- 22-->
+    <reaction formula="N2_1+Nbin=N2_4+Nbin">
+        <arrhenius A="  9.548978E+11" n="  5.041457E-01" T="  4.803569E+04" />
+     </reaction>
+
+
+    <!-- 23-->
+    <reaction formula="N2_1+Nbin=N2_5+Nbin">
+        <arrhenius A="  2.518961E+12" n="  4.136490E-01" T="  6.422362E+04" />
+     </reaction>
+
+
+    <!-- 24-->
+    <reaction formula="N2_1+Nbin=N2_6+Nbin">
+        <arrhenius A="  8.951486E+12" n="  2.955683E-01" T="  8.080693E+04" />
+     </reaction>
+
+
+    <!-- 25-->
+    <reaction formula="N2_1+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.502892E+13" n="  2.086083E-01" T="  9.644226E+04" />
+     </reaction>
+
+
+    <!-- 26-->
+    <reaction formula="N2_1+Nbin=N2_8+Nbin">
+        <arrhenius A="  5.717721E+12" n="  1.801503E-01" T="  1.165355E+05" />
+     </reaction>
+
+
+    <!-- 27-->
+    <reaction formula="N2_1+Nbin=N2_9+Nbin">
+        <arrhenius A="  2.408143E+10" n="  4.539128E-01" T="  1.348764E+05" />
+     </reaction>
+
+
+    <!-- 28-->
+    <reaction formula="N2_2+Nbin=N2_3+Nbin">
+        <arrhenius A="  1.443979E+14" n="  8.645249E-02" T="  1.606621E+04" />
+     </reaction>
+
+
+    <!-- 29-->
+    <reaction formula="N2_2+Nbin=N2_4+Nbin">
+        <arrhenius A="  1.302334E+12" n="  4.842230E-01" T="  3.219461E+04" />
+     </reaction>
+
+
+    <!-- 30-->
+    <reaction formula="N2_2+Nbin=N2_5+Nbin">
+        <arrhenius A="  3.169082E+12" n="  3.977006E-01" T="  4.838255E+04" />
+     </reaction>
+
+
+    <!-- 31-->
+    <reaction formula="N2_2+Nbin=N2_6+Nbin">
+        <arrhenius A="  1.008070E+13" n="  2.934092E-01" T="  6.496585E+04" />
+     </reaction>
+
+
+    <!-- 32-->
+    <reaction formula="N2_2+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.373499E+13" n="  2.345979E-01" T="  8.060118E+04" />
+     </reaction>
+
+
+    <!-- 33-->
+    <reaction formula="N2_2+Nbin=N2_8+Nbin">
+        <arrhenius A="  2.440325E+13" n="  9.288630E-02" T="  1.006944E+05" />
+     </reaction>
+
+
+    <!-- 34-->
+    <reaction formula="N2_2+Nbin=N2_9+Nbin">
+        <arrhenius A="  1.753608E+11" n="  3.629943E-01" T="  1.190353E+05" />
+     </reaction>
+
+
+    <!-- 35-->
+    <reaction formula="N2_3+Nbin=N2_4+Nbin">
+        <arrhenius A="  1.095241E+14" n="  1.127035E-01" T="  1.612841E+04" />
+     </reaction>
+
+
+    <!-- 36-->
+    <reaction formula="N2_3+Nbin=N2_5+Nbin">
+        <arrhenius A="  4.089294E+12" n="  3.844232E-01" T="  3.231634E+04" />
+     </reaction>
+
+
+    <!-- 37-->
+    <reaction formula="N2_3+Nbin=N2_6+Nbin">
+        <arrhenius A="  1.328644E+13" n="  2.743359E-01" T="  4.889964E+04" />
+     </reaction>
+
+
+    <!-- 38-->
+    <reaction formula="N2_3+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.751150E+13" n="  2.196643E-01" T="  6.453497E+04" />
+     </reaction>
+
+
+    <!-- 39-->
+    <reaction formula="N2_3+Nbin=N2_8+Nbin">
+        <arrhenius A="  3.365678E+12" n="  2.936272E-01" T="  8.462817E+04" />
+     </reaction>
+
+
+    <!-- 40-->
+    <reaction formula="N2_3+Nbin=N2_9+Nbin">
+        <arrhenius A="  1.179563E+12" n="  2.556801E-01" T="  1.029691E+05" />
+     </reaction>
+
+
+    <!-- 41-->
+    <reaction formula="N2_4+Nbin=N2_5+Nbin">
+        <arrhenius A="  1.597427E+14" n="  7.803484E-02" T="  1.618794E+04" />
+     </reaction>
+
+
+    <!-- 42-->
+    <reaction formula="N2_4+Nbin=N2_6+Nbin">
+        <arrhenius A="  3.191813E+13" n="  2.036393E-01" T="  3.277124E+04" />
+     </reaction>
+
+
+    <!-- 43-->
+    <reaction formula="N2_4+Nbin=N2_7+Nbin">
+        <arrhenius A="  4.452873E+13" n="  1.501306E-01" T="  4.840657E+04" />
+     </reaction>
+
+
+    <!-- 44-->
+    <reaction formula="N2_4+Nbin=N2_8+Nbin">
+        <arrhenius A="  1.813379E+13" n="  1.495320E-01" T="  6.849977E+04" />
+     </reaction>
+
+
+    <!-- 45-->
+    <reaction formula="N2_4+Nbin=N2_9+Nbin">
+        <arrhenius A="  4.723165E+12" n="  1.578529E-01" T="  8.684069E+04" />
+     </reaction>
+
+
+    <!-- 46-->
+    <reaction formula="N2_5+Nbin=N2_6+Nbin">
+        <arrhenius A="  3.829377E+14" n="  5.389484E-03" T="  1.658330E+04" />
+     </reaction>
+
+
+    <!-- 47-->
+    <reaction formula="N2_5+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.760952E+14" n="  3.682267E-02" T="  3.221863E+04" />
+     </reaction>
+
+
+    <!-- 48-->
+    <reaction formula="N2_5+Nbin=N2_8+Nbin">
+        <arrhenius A="  8.773712E+13" n="  2.068424E-02" T="  5.231183E+04" />
+     </reaction>
+
+
+    <!-- 49-->
+    <reaction formula="N2_5+Nbin=N2_9+Nbin">
+        <arrhenius A="  1.559009E+13" n="  7.426334E-02" T="  7.065275E+04" />
+     </reaction>
+
+
+    <!-- 50-->
+    <reaction formula="N2_6+Nbin=N2_7+Nbin">
+        <arrhenius A="  1.423848E+15" n=" -1.292867E-01" T="  1.563533E+04" />
+     </reaction>
+
+
+    <!-- 51-->
+    <reaction formula="N2_6+Nbin=N2_8+Nbin">
+        <arrhenius A="  1.946598E+14" n=" -5.430698E-02" T="  3.572853E+04" />
+     </reaction>
+
+
+    <!-- 52-->
+    <reaction formula="N2_6+Nbin=N2_9+Nbin">
+        <arrhenius A="  6.815239E+13" n=" -7.048426E-02" T="  5.406945E+04" />
+     </reaction>
+
+
+    <!-- 53-->
+    <reaction formula="N2_7+Nbin=N2_8+Nbin">
+        <arrhenius A="  2.033506E+13" n="  1.791933E-01" T="  2.009320E+04" />
+     </reaction>
+
+
+    <!-- 54-->
+    <reaction formula="N2_7+Nbin=N2_9+Nbin">
+        <arrhenius A="  2.904117E+12" n="  2.082271E-01" T="  3.843412E+04" />
+     </reaction>
+
+
+    <!-- 55-->
+    <reaction formula="N2_8+Nbin=N2_9+Nbin">
+        <arrhenius A="  5.409441E+12" n="  2.095924E-01" T="  1.834092E+04" />
+     </reaction>
+
+
+ </mechanism>

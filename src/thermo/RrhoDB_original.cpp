@@ -117,9 +117,9 @@ public:
         delete [] mp_lnqtmw;
         delete [] mp_hform;
         delete [] mp_indices;
-//!        delete [] mp_rot_data;
-//!        delete [] mp_nvib;
-//!        delete [] mp_vib_temps;
+        delete [] mp_rot_data;
+        delete [] mp_nvib;
+        delete [] mp_vib_temps;
         
         delete [] m_elec_data.p_nelec;
         delete [] m_elec_data.p_levels;
@@ -644,32 +644,32 @@ protected:
         LOOP(mp_hform[i] = rrhos[i].formationEnthalpy() / RU)
         
         // Store the molecule's rotational energy parameters
-//!        mp_rot_data = new RotData [m_nm];
-//!       LOOP_MOLECULES(
-//!           const ParticleRRHO& rrho = rrhos[j];
-//!           int linear = rrho.linearity();
-//!           mp_rot_data[i].linearity  = linear / 2.0;
-//!           mp_rot_data[i].ln_omega_t = 
-//!               std::log(rrho.rotationalTemperature()) + 2.0 / linear *
-//!               std::log(rrho.stericFactor());
-//!       )
+        mp_rot_data = new RotData [m_nm];
+        LOOP_MOLECULES(
+            const ParticleRRHO& rrho = rrhos[j];
+            int linear = rrho.linearity();
+            mp_rot_data[i].linearity  = linear / 2.0;
+            mp_rot_data[i].ln_omega_t = 
+                std::log(rrho.rotationalTemperature()) + 2.0 / linear *
+                std::log(rrho.stericFactor());
+        )
         
         // Store the vibrational temperatures of all the molecules in a compact
         // form
-//!       mp_nvib = new int [m_nm];
-//!       int nvib = 0;
-//!      LOOP_MOLECULES(
-//!           mp_nvib[i] = rrhos[j].nVibrationalLevels();
-//!           nvib += mp_nvib[i];
-//!       )
+        mp_nvib = new int [m_nm];
+        int nvib = 0;
+        LOOP_MOLECULES(
+            mp_nvib[i] = rrhos[j].nVibrationalLevels();
+            nvib += mp_nvib[i];
+        )
         
-//!       mp_vib_temps = new double [nvib];
-//!       int itemp = 0;
-//!       LOOP_MOLECULES(
-//!           const ParticleRRHO& rrho = rrhos[j];
-//!           for (int k = 0; k < mp_nvib[i]; ++k, itemp++)
-//!               mp_vib_temps[itemp] = rrho.vibrationalEnergy(k);
-//!       )
+        mp_vib_temps = new double [nvib];
+        int itemp = 0;
+        LOOP_MOLECULES(
+            const ParticleRRHO& rrho = rrhos[j];
+            for (int k = 0; k < mp_nvib[i]; ++k, itemp++)
+                mp_vib_temps[itemp] = rrho.vibrationalEnergy(k);
+        )
         
         // Finally store the electronic energy levels in a compact form like the
         // vibrational energy levels
@@ -745,7 +745,7 @@ private:
     void cpR(double* const cp, const OP& op) {
         op(cp[0], 0.0);
         LOOP_ATOMS(op(cp[j], 0.0));
-//!        LOOP_MOLECULES(op(cp[j], mp_rot_data[i].linearity));
+        LOOP_MOLECULES(op(cp[j], mp_rot_data[i].linearity));
     }
 
     /**
@@ -757,17 +757,17 @@ private:
         double sum, fac1, fac2;
         op(cp[0], 0.0);
         LOOP_ATOMS(op(cp[j], 0.0));
-//!        LOOP_MOLECULES(
-//!            sum = 0.0;
-//!            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
-//!                fac1 = mp_vib_temps[ilevel] / Tv;
-//!                fac2 = std::exp(fac1);
-//!                fac1 *= fac1*fac2;
-//!                fac2 -= 1.0;
-//!                sum += fac1/(fac2*fac2);
-//!            }
-//!            op(cp[j], sum);
-//!        )
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = mp_vib_temps[ilevel] / Tv;
+                fac2 = std::exp(fac1);
+                fac1 *= fac1*fac2;
+                fac2 -= 1.0;
+                sum += fac1/(fac2*fac2);
+            }
+            op(cp[j], sum);
+        )
     }
 
     /**
@@ -806,7 +806,7 @@ private:
      */
     template <typename OP>
     void hR(double T, double* const h, const OP& op) {
-//!        LOOP_MOLECULES(op(h[j], mp_rot_data[i].linearity * T))
+        LOOP_MOLECULES(op(h[j], mp_rot_data[i].linearity * T))
     }
     
     /**
@@ -814,15 +814,15 @@ private:
      */
     template <typename OP>
     void hV(double T, double* const h, const OP& op) {
-//!        int ilevel = 0;
-//!        double sum;
-//!        LOOP_MOLECULES(
-//!            sum = 0.0;
-//!            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++)
-//!               sum += mp_vib_temps[ilevel] / 
-//!                     (std::exp(mp_vib_temps[ilevel] / T) - 1.0);
-//!            op(h[j], sum);
-//!        )
+        int ilevel = 0;
+        double sum;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++)
+                sum += mp_vib_temps[ilevel] / 
+                    (std::exp(mp_vib_temps[ilevel] / T) - 1.0);
+            op(h[j], sum);
+        )
     }
     
     /**
@@ -870,10 +870,10 @@ private:
     template <typename OP>
     void sR(double T, double* const s, const OP& op) {
         const double onelnT = 1.0 + std::log(T);
-//!        LOOP_MOLECULES(
-//!            op(s[j], mp_rot_data[i].linearity * (onelnT - 
-//!                mp_rot_data[i].ln_omega_t));
-//!        )
+        LOOP_MOLECULES(
+            op(s[j], mp_rot_data[i].linearity * (onelnT - 
+                mp_rot_data[i].ln_omega_t));
+        )
     }
     
     /**
@@ -883,15 +883,15 @@ private:
     void sV(double T, double* const s, const OP& op) {
         int ilevel = 0;
         double fac, sum1, sum2;
-//!        LOOP_MOLECULES(
-//!            sum1 = sum2 = 0.0;
-//!            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
-//!                fac  =  std::exp(mp_vib_temps[ilevel] / T);
-//!                sum1 += mp_vib_temps[ilevel] / (fac - 1.0);
-//!                sum2 += std::log(1.0 - 1.0 / fac);
-//!            }
-//!            op(s[j], (sum1 / T - sum2));
-//!        )
+        LOOP_MOLECULES(
+            sum1 = sum2 = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac  =  std::exp(mp_vib_temps[ilevel] / T);
+                sum1 += mp_vib_temps[ilevel] / (fac - 1.0);
+                sum2 += std::log(1.0 - 1.0 / fac);
+            }
+            op(s[j], (sum1 / T - sum2));
+        )
     }
     
     /**

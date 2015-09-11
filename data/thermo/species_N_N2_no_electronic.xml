@@ -1714,6 +1714,80 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<!-- Hydrogen diatomic cation -->
+	<species name="H2+">
+		<stoichiometry>
+			e-: -1,
+			H: 2
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+            <linear>
+				yes
+			</linear>
+            <rotational_temperature units="K">
+				43.068
+			</rotational_temperature>
+            <steric_factor>
+				2
+			</steric_factor>
+            <vibrational_temperatures units="K">
+				3341.327
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+                <level degeneracy="2" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				1494672.430
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+	
+	<!-- Helium -->
+    <species name="He">
+        <stoichiometry>
+            He: 1
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				0.0
+			</formation_enthalpy>
+		</thermodynamics>
+    </species>
+    
+    <!-- Helium Cation-->
+    <species name="He+">
+        <stoichiometry>
+            e-: -1,
+            He: 1
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="2" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				2378521.473
+			</formation_enthalpy>
+		</thermodynamics>
+    </species>
+    
+    <!-- Helium++ -->
+	<species name="He++">
+		<stoichiometry>
+			e-: -2,
+			He: 1
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				5250514.307
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
  
 	<!-- Water -->
 	<species name="H2O">
@@ -1826,7 +1900,7 @@
 		<thermodynamics type="RRHO">
 			<electronic_levels units="1/cm">
 				<level degeneracy="4" energy="0.0" />
-				<level degeneracy="10" energy="19228.0" />
+				<!--level degeneracy="10" energy="19228.0" />
 				<level degeneracy="6" energy="28842.0" />
 				<level degeneracy="12" energy="83333.0" />
 				<level degeneracy="6" energy="86197.0" />
@@ -1870,22 +1944,7 @@
 				<level degeneracy="180" energy="114241.0" />
 				<level degeneracy="20" energy="114547.0" />
 				<level degeneracy="108" energy="115015.0" />
-				<level degeneracy="18" energy="115467.0" />
-			</electronic_levels>
-			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-				472440
-			</formation_enthalpy>
-		</thermodynamics>
-	</species>
-
-	<!-- Nitrogen for bin model: 10bin -->
-	<species name="Nbin">
-		<stoichiometry>
-			N: 1
-		</stoichiometry>
-		<thermodynamics type="RRHO">
-			<electronic_levels units="1/cm">
-				<level degeneracy="12" energy="0.0" />
+				<level degeneracy="18" energy="115467.0" /-->
 			</electronic_levels>
 			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
 				472440
@@ -1937,14 +1996,14 @@
 			</vibrational_temperatures>
 			<electronic_levels units="1/cm">
 				<level degeneracy="1" energy="0.0" />
-				<level degeneracy="3" energy="50203.5" />
+				<!--level degeneracy="3" energy="50203.5" />
 				<level degeneracy="6" energy="59619.2" />
 				<level degeneracy="6" energy="59808.0" />
 				<level degeneracy="3" energy="66272.5" />
 				<level degeneracy="1" energy="68152.7" />
 				<level degeneracy="2" energy="69283.0" />
 				<level degeneracy="2" energy="72097.6" />
-				<!-- removed to match old mutation library
+				< removed to match old mutation library
 				<level degeneracy="5" energy="77600.0" />
 				<level degeneracy="1" energy="85200.0" />
 				<level degeneracy="6" energy="86800.0" />
@@ -1959,157 +2018,7 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
-
-        <!-- Nitrogen diatomic 0 bin 9-1 non Uniform -->
-        <species name="N2_0">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="2145" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                   5654.35
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 1 bin 9-1 non Uniform -->
-        <species name="N2_1">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="9987" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                  31405.25
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 2 bin 9-1 non Uniform -->
-        <species name="N2_2">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="36699" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                  78812.08
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 3 bin 9-1 non Uniform -->
-        <species name="N2_3">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="93810" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 149053.80
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 4 bin 9-1 non Uniform -->
-        <species name="N2_4">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="201444" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 242186.45
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 5 bin 9-1 non Uniform -->
-        <species name="N2_5">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="388311" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 358874.34
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 6 bin 9-1 non Uniform -->
-        <species name="N2_6">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="697080" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 498973.25
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 7 bin 9-1 non Uniform -->
-        <species name="N2_7">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="1228542" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 662688.75
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 8 bin 9-1 non Uniform -->
-        <species name="N2_8">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="2434401" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                 855205.56
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
-        <!-- Nitrogen diatomic 9 bin 9-1 non Uniform -->
-        <species name="N2_9">
-                <stoichiometry>
-                        N: 2
-                </stoichiometry>
-                <thermodynamics type="RRHO">
-                        <electronic_levels units="1/cm">
-                               <level degeneracy="3109059" energy="0.0" /> 
-                        </electronic_levels>
-                        <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
-                                1085127.88
-                        </formation_enthalpy>
-                </thermodynamics>
-        </species>
-
+ 
 	<!-- Nitrogen diatomic cation -->
 	<species name="N2+">
 		<stoichiometry>

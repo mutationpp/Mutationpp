@@ -1,0 +1,11 @@
+<mixture mechanism="none" thermo_db="RRHO">
+    
+    <species>
+        N2_0 N2_1 N2_2 N2_3 N2_4 N2_5 N2_6 N2_7 N2_8 N2_9
+    </species>
+
+    <element_compositions default="default">
+        <composition name="default"> N:1 </composition>
+    </element_compositions>
+
+</mixture>

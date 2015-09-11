@@ -397,10 +397,29 @@ void NAME_MANGLE(surface_mass_balance)
 /**
  * Returns the pointer to the energy transfer between the internal energy modes 
  */
-
 void NAME_MANGLE(source_energy_transfer)
     (double* const p_source_transfer);
     
+/**
+ * Sets the wall using partial densities and temperatures
+ */
+void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars);
+
+/**
+ * 
+ */
+void NAME_MANGLE(set_diffusion_model)( double* rhoi_edge, double* dx );
+
+/**
+ * 
+ */
+void NAME_MANGLE(solve_surface_balance)();
+
+/**
+ * 
+ */
+void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars);
+
 /**
  * @}
  */

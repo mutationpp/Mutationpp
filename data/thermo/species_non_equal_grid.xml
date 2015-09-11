@@ -1967,7 +1967,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="2145" energy="0.0" /> 
+                               <level degeneracy="   2145" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                    5654.35
@@ -1982,7 +1982,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="9987" energy="0.0" /> 
+                               <level degeneracy="   9987" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                   31405.25
@@ -1997,7 +1997,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="36699" energy="0.0" /> 
+                               <level degeneracy="  36699" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                   78812.08
@@ -2012,7 +2012,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="93810" energy="0.0" /> 
+                               <level degeneracy="  93810" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                  149053.80
@@ -2027,7 +2027,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="201444" energy="0.0" /> 
+                               <level degeneracy=" 201444" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                  242186.45
@@ -2042,7 +2042,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="388311" energy="0.0" /> 
+                               <level degeneracy=" 388311" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                  358874.34
@@ -2057,7 +2057,7 @@
                 </stoichiometry>
                 <thermodynamics type="RRHO">
                         <electronic_levels units="1/cm">
-                               <level degeneracy="697080" energy="0.0" /> 
+                               <level degeneracy=" 697080" energy="0.0" /> 
                         </electronic_levels>
                         <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
                                  498973.25

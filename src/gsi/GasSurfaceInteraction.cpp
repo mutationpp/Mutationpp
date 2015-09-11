@@ -116,7 +116,7 @@ inline void GasSurfaceInteraction::locateGSIInputFile( std::string& l_gsi_input_
 inline void GasSurfaceInteraction::errorWrongTypeofGSIFile( const std::string& l_gsi_root_tag ){
 
     if ( l_gsi_root_tag != "gsi" ) {
-        std::cerr << "Root element in Gas Surface Interaction input file " << l_gsi_root_tag << " is not of 'gassurfaceinteraction' type!" << std::endl;
+        std::cerr << "Root element in Gas Surface Interaction input file " << l_gsi_root_tag << " is not of 'gassurfaceinteraction' type!" << std::endl; // @todo FIX ERROR not l_gsi_root_tag. Instead name of file...
         exit(1);
     }
 

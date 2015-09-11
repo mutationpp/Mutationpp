@@ -41,7 +41,7 @@ SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodyna
     mp_mass_blowing_rate = new MassBlowingRate();
 
     // Setup NewtonSolver
-    setMaxIterations(10);
+    setMaxIterations(3);
     setWriteConvergenceHistory(false);
 
 }

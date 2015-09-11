@@ -82,6 +82,7 @@ protected:
     Species loadSpecies(
         std::ifstream& is, const std::vector<Element>& elements) const
     {
+
         // Skip all comments and blank lines first
         std::string line;
         while (std::getline(is, line))
