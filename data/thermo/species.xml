@@ -2401,5 +2401,206 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+
+	<species name="Mg">
+		<stoichiometry>
+			Mg: 1			
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+                                <level degeneracy="1" energy="21850.405" />
+                                <level degeneracy="3" energy="21870.464" />
+                                <level degeneracy="5" energy="21911.178" />
+                                <level degeneracy="3" energy="35051.264" />
+                                <level degeneracy="5" energy="46403.065" />
+                                <level degeneracy="15" energy="47957.04" />
+                                <level degeneracy="1" energy="57813.77" />
+                                <level degeneracy="3" energy="57833.40" />
+                                <level degeneracy="5" energy="57837.94" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				147100
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+
+	<!-- Carbon monoxide -->
+	<species name="MgO">
+		<stoichiometry>
+			Mg: 1,
+			O: 1
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<linear>
+				yes
+			</linear>
+			<rotational_temperature units="K">
+				0.82629
+			</rotational_temperature>
+			<steric_factor>
+				1
+			</steric_factor>
+			<vibrational_temperatures units="K">
+				1129.534
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+				<level degeneracy="6" energy="2623.00" />
+				<level degeneracy="2" energy="3563.27" />
+				<level degeneracy="3" energy="13700" />
+				<level degeneracy="1" energy="19984.0" />
+				<level degeneracy="3" energy="28000" />
+				<level degeneracy="6" energy="29493" />
+				<level degeneracy="2" energy="29838" />
+				<level degeneracy="1" energy="30067.0" />
+				<level degeneracy="1" energy="37683.5" />
+				<level degeneracy="6" energy="36900" />
+				<level degeneracy="2" energy="37879.10" />
+				<level degeneracy="6" energy="38700" />
+				<level degeneracy="2" energy="39868.6" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				32698
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+
+	<species name="Si">
+		<stoichiometry>
+			Si: 1			
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+                                <level degeneracy="3" energy="77.115" />
+                                <level degeneracy="5" energy="223.157" />
+                                <level degeneracy="5" energy="6298.850" />
+                                <level degeneracy="1" energy="15394.370" />
+                                <level degeneracy="5" energy="33326.0530" />
+                                <level degeneracy="3" energy="45276.188" />
+                                <level degeneracy="5" energy="45293.629" />
+                                <level degeneracy="7" energy="45321.848" />
+                                <level degeneracy="5" energy="47351.554" />
+                                <level degeneracy="5" energy="49850.830" />
+                                <level degeneracy="7" energy="49933.775" />
+                                <level degeneracy="9" energy="50054.80" />
+                                <level degeneracy="5" energy="50499.838" />
+                                <level degeneracy="3" energy="50566.397" />
+                                <level degeneracy="1" energy="50602.44" />
+                                <level degeneracy="7" energy="53362.24" />
+                                <level degeneracy="3" energy="53387.334" />
+                                <level degeneracy="3" energy="54185.264" />
+                                <level degeneracy="5" energy="54205.090" />
+                                <level degeneracy="7" energy="54257.582" />
+                                <level degeneracy="5" energy="56690.903" />
+                                <level degeneracy="3" energy="56700.250" />
+                                <level degeneracy="1" energy="56733.380" />
+
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+			450000
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+
+	<species name="SiO">
+		<stoichiometry>
+			Si: 1,
+			O: 1
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<linear>
+				yes
+			</linear>
+			<rotational_temperature units="K">
+				1.045639
+			</rotational_temperature>
+			<steric_factor>
+				1
+			</steric_factor>
+			<vibrational_temperatures units="K">
+				1786.3352
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+				<level degeneracy="3" energy="33634" />
+				<level degeneracy="6" energy="33947" />
+				<level degeneracy="6" energy="36487" />
+				<level degeneracy="3" energy="38309" />
+				<level degeneracy="1" energy="38624" />
+				<level degeneracy="2" energy="38823" />
+				<level degeneracy="2" energy="42835" />
+				<level degeneracy="1" energy="52860.84" />
+				<level degeneracy="3" energy="57545" />
+				<level degeneracy="6" energy="59277" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				-100000
+			</formation_enthalpy>
+		</thermodynamics>
+	</species> 
+
+	<species name="SiO2">
+		<stoichiometry>
+			Si: 1,
+			O: 2
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<linear>
+				yes
+			</linear>
+			<rotational_temperature units="K">
+				0.31464
+			</rotational_temperature>
+			<steric_factor>
+				2
+			</steric_factor>
+			<vibrational_temperatures units="K">
+				1381
+                                546.7
+                                546.7
+                                1942.4
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+				<level degeneracy="1" energy="0.0" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				-320717
+			</formation_enthalpy>
+		</thermodynamics>
+	</species>
+
+
+	<species name="FeO">
+		<stoichiometry>
+			Fe: 1,
+			O: 1
+		</stoichiometry>
+		<thermodynamics type="RRHO">
+			<linear>
+				yes
+			</linear>
+			<rotational_temperature units="K">
+				2.782
+			</rotational_temperature>
+			<steric_factor>
+				1
+			</steric_factor>
+			<vibrational_temperatures units="K">
+				3083.452
+			</vibrational_temperatures>
+			<electronic_levels units="1/cm">
+				<level degeneracy="5" energy="0.0" />
+				<level degeneracy="5" energy="3948" />
+				<level degeneracy="10" energy="14404" />
+			</electronic_levels>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+				-250040
+			</formation_enthalpy>
+		</thermodynamics>
+	</species> 
+
+ 
  
 </specieslist>
