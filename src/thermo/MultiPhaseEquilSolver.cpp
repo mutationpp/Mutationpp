@@ -632,6 +632,12 @@ void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX) c
     const int npr = m_solution.npr();
     const int neq = ncr + npr;
 
+    // Special case for a single species
+    if (nsr == 1) {
+        Map<ArrayXd>(p_dX, m_ns).setZero();
+        return;
+    }
+
     // Compute the change in the solution variables due to change in dg
     VectorXd dx(neq);
     dSoldg(p_dg, dx);
