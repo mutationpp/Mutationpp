@@ -233,16 +233,10 @@ double Transport::electronThermalConductivity()
 
 //==============================================================================
 
-double Transport::internalThermalConductivity()
+double Transport::internalThermalConductivity(double T)
 {
-    m_thermo.speciesCpOverR(
-        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
-        NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
-
-    return euken(
-        Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()) +
-        Map<const ArrayXd>(mp_wrk2, m_thermo.nSpecies()) +
-        Map<const ArrayXd>(mp_wrk3, m_thermo.nSpecies()));
+    m_thermo.thermoDB()->cpint(T, mp_wrk1);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 
@@ -375,33 +369,6 @@ double Transport::soretThermalConductivity()
         lambda -= mp_wrk2[i]*mp_wrk1[i];
     
     return (m_thermo.P()*lambda);
-}
-
-//==============================================================================
-
-void Transport::averageDiffusionCoeffs(double *const p_Di)
-{
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
-    const int ns = m_thermo.nSpecies();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
-    const double* const p_X = m_thermo.X();
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, p_X);
-    
-    for (int i = 0; i < ns; ++i)
-        p_Di[i] = 0.0;
-    
-    for (int i = 0, index = 1; i < ns; ++i, ++index) {
-        for (int j = i + 1; j < ns; ++j, ++index) {
-            p_Di[i] += p_X[j] / nDij(index);
-            p_Di[j] += p_X[i] / nDij(index);
-        }
-    }
-    
-    for (int i = 0; i < ns; ++i)
-        p_Di[i] = (1.0 - p_X[i]) / (p_Di[i] * nd);
 }
 
 //==============================================================================
@@ -755,6 +722,8 @@ double Transport::meanFreePath()
 
 	// Thermo properties
     const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
+    const int k  = ns-nh;
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
@@ -767,8 +736,8 @@ double Transport::meanFreePath()
     // Loop to sum over electrons and all species
     double sum = 0.0;
 
-    for (int i = 0; i < ns; ++i)
-        for (int j = 0; j < ns; ++j)
+    for (int i = k; i < ns; ++i)
+        for (int j = k; j < ns; ++j)
             sum += X[i]*X[j]*Q11(i,j);
 
     return 1.0/(nd*sum);

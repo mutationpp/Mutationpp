@@ -112,7 +112,8 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
       m_eta(ArrayXd::Zero(m_ns)),
       m_etafac(ArrayXd::Zero(m_ns)),
       m_Dij(ArrayXXd::Zero(m_ns, m_ns)),
-      m_Dijfac(ArrayXXd::Zero(m_ns, m_ns))
+      m_Dijfac(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Dim(ArrayXd::Zero(m_ns))
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
@@ -610,6 +611,18 @@ void CollisionDB::updateCollisionData(
             if (m_ns > m_nh) m_Dij.col(0) *= std::sqrt(Te/Th);
             break;
         
+        case DIM:
+            updateCollisionData(Th, Te, nd, p_x, NDIJ);
+            m_Dim.setZero();
+            for (int j = 0; j < m_ns; ++j) {
+                for (int i = j + 1; i < m_ns; ++i) {
+                    m_Dim(i) += p_x[j] / m_Dij(i,j);
+                    m_Dim(j) += p_x[i] / m_Dij(i,j);
+                }
+            }
+            m_Dim = (1.0 - Map<const ArrayXd>(p_x,m_ns)) / (nd * m_Dim);
+            break;
+
         default:
             break;  // Will never get here
     }

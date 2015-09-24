@@ -137,7 +137,7 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
     OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals"),
     OutputQuantity("Chi", "?", "species thermal diffusion ratios"),
-    OutputQuantity("Dm", "", "mixture averaged diffusion coefficients")
+    OutputQuantity("Dm", "m^2/s", "mixture averaged diffusion coefficients")
 };
 
 // List of reaction output quantities
@@ -150,7 +150,7 @@ OutputQuantity reaction_quantities[NREACTION] = {
 // List of other output quantities
 #define NOTHER 8
 OutputQuantity other_quantities[NOTHER] = {
-    OutputQuantity("Dij", "", "multicomponent diffusion coefficients"),
+    OutputQuantity("Dij", "m^2/s", "multicomponent diffusion coefficients"),
     OutputQuantity("pi_i", "", "element potentials"),
     OutputQuantity("N_p", "mol", "phase moles"),
     OutputQuantity("iters", "", "number of continuation step iterations"),
@@ -742,7 +742,7 @@ int main(int argc, char** argv)
                 else if (name == "lam_soret")
                     value = mix.soretThermalConductivity();
                 else if (name == "lam_int")
-                    value = mix.internalThermalConductivity();
+                    value = mix.internalThermalConductivity(T);
                 else if (name == "lam_h")
                     value = mix.heavyThermalConductivity();
                 else if (name == "lam_e")
@@ -917,8 +917,9 @@ int main(int argc, char** argv)
                 
                 if (name == "Dij") {
                     const Eigen::MatrixXd& Dij = mix.diffusionMatrix();
-                    for (int i = 0; i < Dij.size(); ++i)
-                        cout << setw(column_widths[cw++]) << Dij(i);
+                    for (int i = 0; i < mix.nSpecies(); ++i)
+                        for (int j = 0; j < mix.nSpecies(); ++j)
+                            cout << setw(column_widths[cw++]) << Dij(i,j);
                 } else if (name == "pi_i") {
                     mix.elementPotentials(species_values);
                     for (int i = 0; i < mix.nElements(); ++i)

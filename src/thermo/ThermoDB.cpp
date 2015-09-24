@@ -28,9 +28,11 @@
 #include "ThermoDB.h"
 #include "Utilities.h"
 
+#include <Eigen/Dense>
+using namespace Eigen;
+
 #include <algorithm>
 #include <cassert>
-
 using namespace std;
 
 namespace Mutation {
@@ -180,6 +182,15 @@ void ThermoDB::hel(double T, double* const p_h)
     cout << "hel() is not provided in this thermodynamic database!" << endl;
     exit(1);
 }
+
+//==============================================================================
+
+void ThermoDB::cpint(double T, double* const p_cp) {
+    cp(T, T, T, T, T, p_cp);
+    Map<ArrayXd>(p_cp, m_species.size()) -= 2.5;
+}
+
+//==============================================================================
 
     } // namespace Thermodynamics
 } // namespace Mutation

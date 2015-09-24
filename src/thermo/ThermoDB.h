@@ -111,6 +111,13 @@ public:
     }
     
     /**
+     * Computes the unitless internal specific heat.  The default behavior is to
+     * simply provide \f$c_{p,\text{int}} = c_p(T) - 2.5\f$ for all species.
+     * @param T temperature assigned to internal energy modes
+     */
+    virtual void cpint(double T, double* const cp);
+
+    /**
      * Computes the unitless species specific heats at constant pressure
      * \f$ C_{p,i}/R_U\f$ of each species in thermal nonequilibrium.
      *
@@ -127,8 +134,9 @@ public:
      */
     virtual void cp(
         double Th, double Te, double Tr, double Tv, double Tel, 
-        double* const cp, double* const cpt, double* const cpr,
-        double* const cpv, double* const cpel) = 0;
+        double* const cp = NULL, double* const cpt = NULL,
+        double* const cpr = NULL, double* const cpv = NULL,
+        double* const cpel = NULL) = 0;
     
     /**
      * Computes the species vibrational specific heats at the given temperature

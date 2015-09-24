@@ -348,7 +348,7 @@ double NAME_MANGLE(electron_thermal_conductivity)();
 /**
  * Returns the internal energy thermal conductivity using Euken's formulas.
  */
-double NAME_MANGLE(internal_thermal_conductivity)();
+double NAME_MANGLE(internal_thermal_conductivity)(double T);
 
 /**
  * Returns the reactive thermal conductivity which accounts for reactions

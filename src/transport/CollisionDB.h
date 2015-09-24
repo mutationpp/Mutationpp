@@ -439,12 +439,20 @@ public:
         const double Th, const double Te, const double nd,
         const double *const p_x) {
         updateCollisionData(Th, Te, nd, p_x, NDIJ);
-        //std::cout << "Q11 = \n" << m_Q11 << std::endl;
-        //std::cout << "nDij = \n" << m_Dij << std::endl;
-        //exit(1);
         return m_Dij;
     }
     
+    /**
+     * Returns the average diffusion coefficients.
+     * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
+     */
+    const Eigen::ArrayXd& Dim(
+        const double Th, const double Te, const double nd,
+        const double *const p_x) {
+        updateCollisionData(Th, Te, nd, p_x, DIM);
+        return m_Dim;
+    }
+
     friend class CollisionDBTester;
     
 private:
@@ -504,6 +512,7 @@ private:
         CSTARIJ,
         ETAI,
         NDIJ,
+        DIM,
         DATA_SIZE
     };
 
@@ -591,6 +600,7 @@ private:
     Eigen::ArrayXd  m_etafac;
     Eigen::ArrayXXd m_Dij;
     Eigen::ArrayXXd m_Dijfac;
+    Eigen::ArrayXd  m_Dim;
     
     // Keeps track of last temperature a particular set of collision data values
     // was updated

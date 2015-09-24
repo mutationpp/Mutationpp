@@ -1279,7 +1279,6 @@ bool MultiPhaseEquilSolver::initialConditions(
         composition_change |= (p_c[i] != mp_c[i]);
     bool temperature_change = (std::abs(T - m_T) > ms_temp_change_tol);
     bool pressure_change    = (std::abs(P - m_P) > ms_pres_change_tol);
-    pressure_change = false;
 
     // Initialize input variables
     m_T  = T;

@@ -125,7 +125,7 @@ public:
         return (
             heavyThermalConductivity() + 
             electronThermalConductivity() +
-            internalThermalConductivity()
+            internalThermalConductivity(m_thermo.T())
         );
     }
 
@@ -192,7 +192,7 @@ public:
     /**
      * Returns the internal energy thermal conductivity using Euken's formulas.
      */
-    double internalThermalConductivity();
+    double internalThermalConductivity(double T);
 
     /**
      * Returns the rotational energy thermal conductivity using Euken's formulas.
@@ -226,7 +226,7 @@ public:
      */
     void thermalDiffusionRatios(double* const p_k) {
         ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-        return mp_thermal_conductivity->thermalDiffusionRatios(
+        mp_thermal_conductivity->thermalDiffusionRatios(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
             m_thermo.X(), p_k);
     }
@@ -242,12 +242,16 @@ public:
     }
     
     /**
-     * Returns mixture averaged species diffusion coefficients which are defined
-     * as \f[ D_i = \frac{1 - X_i}{\sum_j X_j / \mathcal{D}_{ij}} \f] where 
-     * \f$\mathcal{D}_{ij}\f$ are the binary diffusion coefficients for each
-     * species pair.
+     * Returns the average diffusion coefficients.
+     * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
      */
-    void averageDiffusionCoeffs(double *const p_Di);
+    void averageDiffusionCoeffs(double *const p_Di) {
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
+        Eigen::Map<Eigen::ArrayXd>(p_Di,m_thermo.nSpecies()) =
+            mp_collisions->Dim(
+                m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
+                m_thermo.X());
+    }
     
     /**
      * Computes the vector of elemental mass and energy diffusion fluxes per
