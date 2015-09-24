@@ -124,7 +124,7 @@ Utilities::Config::ObjectProvider<\
 // Available comparison functions
 ADD_FUNCTION(electron_thermal_conductivity,  v(0) = mix.electronThermalConductivity())
 ADD_FUNCTION(heavy_thermal_conductivity,     v(0) = mix.heavyThermalConductivity())
-ADD_FUNCTION(internal_thermal_conductivity,  v(0) = mix.internalThermalConductivity())
+ADD_FUNCTION(internal_thermal_conductivity,  v(0) = mix.internalThermalConductivity(mix.T()))
 ADD_FUNCTION(sigma,                          v(0) = mix.sigma())
 ADD_FUNCTION(thermal_diffusion_ratios,       mix.thermalDiffusionRatios(v.data()))
 ADD_FUNCTION(viscosity,                      v(0) = mix.viscosity())

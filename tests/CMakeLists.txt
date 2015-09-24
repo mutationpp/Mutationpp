@@ -27,6 +27,12 @@ find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
+add_executable(diffusion_matrix test_diffusion_matrix.cpp)
+target_link_libraries(diffusion_matrix mutation++)
+
+add_executable(dXidT test_dXidT.cpp)
+target_link_libraries(dXidT mutation++)
+
 add_executable(set_state test_set_state.cpp)
 target_link_libraries(set_state mutation++)
 
@@ -90,9 +96,13 @@ if (BUILD_FORTRAN_WRAPPER)
     test_example(wrapper_test fortran)
 endif()
 
+# Equilibrium tests
+test_all_mixtures(dXidT)
+
 # Transport property tests
-test_all_mixtures(thermal_diff_ratios)
+test_all_mixtures(diffusion_matrix)
 test_all_mixtures(stefan_maxwell)
+test_all_mixtures(thermal_diff_ratios)
 
 # Kinetics tests
 test_all_mixtures(wdot)
