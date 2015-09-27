@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     CollisionDB.cpp
+    CollisionIntegral.cpp
     ThermalConductivityChapmannEnskog.cpp
     ThermalConductivityWilke.cpp
     Transport.cpp
@@ -32,6 +33,7 @@ add_sources(mutation++
 )
 
 install(FILES CollisionDB.h DESTINATION include/mutation++)
+install(FILES CollisionIntegral.h DESTINATION include/mutation++)
 install(FILES ThermalConductivityAlgorithm.h DESTINATION include/mutation++)
 install(FILES ViscosityAlgorithm.h DESTINATION include/mutation++)
 install(FILES Ramshaw.h DESTINATION include/mutation++)
