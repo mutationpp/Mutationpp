@@ -29,6 +29,7 @@
 
 #include "AutoRegistration.h"
 #include "CollisionIntegral.h"
+#include "StringUtils.h"
 #include "XMLite.h"
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
@@ -45,7 +46,7 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 	m_ref(""),
 	m_acc(0.0)
 {
-	XmlElement& xml = args.first;
+	const XmlElement& xml = args.first;
 
 	// Load the reference information if it exists
 	xml.getAttribute("ref", m_ref, m_ref);
@@ -65,7 +66,7 @@ public:
 	ConstantColInt(CollisionIntegral::ARGS args) :
 		CollisionIntegral(args)
 	{
-		XmlElement& xml = args.first;
+		const XmlElement& xml = args.first;
 
 		// Load the constant value
 		xml.getAttribute("value", m_value,
@@ -75,6 +76,17 @@ public:
 	double compute(double T) { return m_value; }
 
 private:
+
+	/**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const ConstantColInt& compare = dynamic_cast<const ConstantColInt&>(ci);
+        return (m_value == compare.m_value);
+    }
+
+private:
+
 	double m_value;
 };
 
@@ -92,12 +104,27 @@ public:
 	TableColInt(CollisionIntegral::ARGS args) :
 		CollisionIntegral(args)
 	{
-		XmlElement& xml = args.first;
-		string text = xml.text();
+		const XmlElement& xml = args.first;
+
+		// Get the two vectors separated by a comma
+		vector<string> tokens;
+		String::tokenize(xml.text(), tokens, ",\n\r");
+
+		if (tokens.size() != 2)
+		    xml.parseError("Incorrect format for collision integral table.");
+
+		// Parse the two rows
+		fillVector(tokens[0], m_T);
+		fillVector(tokens[1], m_Q);
+
+		if (m_T.size() != m_Q.size() && m_T.size() > 1)
+		    xml.parseError("Table rows must be same size greater than 1.");
 	}
 
-	bool canTabulate() { return true; }
+	// Allow tabulation of this integral type
+	bool canTabulate() const { return true; }
 
+	// Interpolate from a table
 	double compute(double T)
 	{
 		// Clip the temperature
@@ -115,6 +142,25 @@ public:
 	}
 
 private:
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const TableColInt& compare = dynamic_cast<const TableColInt&>(ci);
+        return (m_T == compare.m_T && m_Q == compare.m_Q);
+    }
+
+	/**
+	 * Loads a table row from a string of numbers.
+	 */
+	void fillVector(const std::string& str, std::vector<double>& v) {
+	    double val; istringstream ss(str);
+	    while (ss >> val) v.push_back(val);
+	}
+
+private:
+
 	vector<double> m_T;
 	vector<double> m_Q;
 };

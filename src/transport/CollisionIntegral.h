@@ -28,6 +28,7 @@
  */
 
 #include <string>
+#include <typeinfo>
 
 namespace Mutation {
 
@@ -47,7 +48,8 @@ class CollisionPair;
 class CollisionIntegral
 {
 public:
-	typedef const std::pair<Utilities::IO::XmlElement&, CollisionPair&>& ARGS;
+	typedef const std::pair<
+	    const Utilities::IO::XmlElement&, const CollisionPair&> ARGS;
 
 	/**
 	 * Constructor used in self registration.
@@ -60,7 +62,17 @@ public:
 	virtual ~CollisionIntegral() { };
 
 	/**
-	 * Returns true if this integral can be tabulated vs. temperature.
+	 * Tests for object equality.
+	 */
+	bool operator == (const CollisionIntegral& compare) const {
+	    if (typeid(*this) != typeid(compare))
+	        return false;
+	    return isEqual(compare);
+	}
+
+	/**
+	 * Returns true if this integral can be tabulated vs. temperature.  Default
+	 * is to return false.
 	 */
 	virtual bool canTabulate() { return false; }
 
@@ -71,7 +83,8 @@ public:
 
 	/**
 	 * Gets any other parameters necessary to compute the integral which cannot
-	 * be determined from the temperature alone.
+	 * be determined from the temperature alone.  Default behavior is to do
+	 * nothing.
 	 */
 	virtual void getOtherParams(const Thermodynamics::Thermodynamics& thermo) { };
 
@@ -93,6 +106,11 @@ public:
 protected:
 
 	/**
+	 * Ensures that collision integral types can be compared.
+	 */
+	virtual bool isEqual(const CollisionIntegral& compare) const = 0;
+
+	/**
 	 * Sets the reference for this collision integral.
 	 */
 	void setReference(const std::string& ref) { m_ref = ref; }
@@ -103,6 +121,7 @@ protected:
 	void setAccuracy(double acc) { m_acc = acc; }
 
 private:
+
 	std::string m_ref;
 	double      m_acc;
 };
