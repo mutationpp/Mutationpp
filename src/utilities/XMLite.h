@@ -30,8 +30,6 @@
 #ifndef XMLITE_H
 #define XMLITE_H
 
-#include "IteratorWrapper.h"
-
 #include <istream>
 #include <map>
 #include <string>

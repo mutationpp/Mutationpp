@@ -85,6 +85,7 @@ public:
             for (iter = m_providers.begin() ; iter != m_providers.end(); iter++)
                 std::cout << iter->first << std::endl;
             std::cout << std::endl;
+            return NULL;
         }
         
         return dynamic_cast<Provider<PTYPE>*>(

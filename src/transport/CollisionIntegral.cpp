@@ -46,13 +46,11 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 	m_ref(""),
 	m_acc(0.0)
 {
-	const XmlElement& xml = args.first;
-
 	// Load the reference information if it exists
-	xml.getAttribute("ref", m_ref, m_ref);
+	args.xml.getAttribute("ref", m_ref, m_ref);
 
 	// Load the estimated accuracy if that exists
-	xml.getAttribute("accuracy", m_acc, m_acc);
+	args.xml.getAttribute("accuracy", m_acc, m_acc);
 }
 
 //==============================================================================
@@ -66,10 +64,8 @@ public:
 	ConstantColInt(CollisionIntegral::ARGS args) :
 		CollisionIntegral(args)
 	{
-		const XmlElement& xml = args.first;
-
 		// Load the constant value
-		xml.getAttribute("value", m_value,
+		args.xml.getAttribute("value", m_value,
 			"A constant collision integral must provide a 'value' attribute!");
 	}
 
@@ -104,21 +100,19 @@ public:
 	TableColInt(CollisionIntegral::ARGS args) :
 		CollisionIntegral(args)
 	{
-		const XmlElement& xml = args.first;
-
 		// Get the two vectors separated by a comma
 		vector<string> tokens;
-		String::tokenize(xml.text(), tokens, ",\n\r");
+		String::tokenize(args.xml.text(), tokens, ",\n\r");
 
-		if (tokens.size() != 2)
-		    xml.parseError("Incorrect format for collision integral table.");
+		if (tokens.size() != 2) args.xml.parseError(
+		    "Incorrect format for collision integral table.");
 
 		// Parse the two rows
 		fillVector(tokens[0], m_T);
 		fillVector(tokens[1], m_Q);
 
-		if (m_T.size() != m_Q.size() && m_T.size() > 1)
-		    xml.parseError("Table rows must be same size greater than 1.");
+		if (m_T.size() != m_Q.size() && m_T.size() > 1) args.xml.parseError(
+		    "Table rows must be same size and greater than 1.");
 	}
 
 	// Allow tabulation of this integral type

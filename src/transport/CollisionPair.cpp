@@ -27,12 +27,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "AutoRegistration.h"
 #include "CollisionPair.h"
-#include "CollisionIntegral.h"
 #include "Species.h"
 #include "XMLite.h"
 using namespace Mutation::Thermodynamics;
-using namespace Mutation::Utilities::IO;
+using namespace Mutation::Utilities;
 
 #include <string>
 using namespace std;
@@ -43,7 +43,7 @@ namespace Mutation {
 //==============================================================================
 
 CollisionPairNew::CollisionPairNew(
-    const Species& s1, const Species& s2, const XmlElement& xml)
+    const Species& s1, const Species& s2, const IO::XmlElement& xml)
 {
     // First initialize species info
     initSpeciesData(s1, s2);
@@ -53,16 +53,6 @@ CollisionPairNew::CollisionPairNew(
     mp_Q22 = loadIntegral("Q22", xml);
     mp_Bst = loadIntegral("Bst", xml);
     mp_Cst = loadIntegral("Cst", xml);
-}
-
-//==============================================================================
-
-CollisionPairNew::~CollisionPairNew()
-{
-    if (mp_Q11 != NULL) delete mp_Q11;
-    if (mp_Q22 != NULL) delete mp_Q22;
-    if (mp_Bst != NULL) delete mp_Bst;
-    if (mp_Cst != NULL) delete mp_Cst;
 }
 
 //==============================================================================
@@ -104,18 +94,18 @@ void CollisionPairNew::initSpeciesData(const Species& s1, const Species& s2)
 
 //==============================================================================
 
-XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
-    const string& kind, const XmlElement& database)
+IO::XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
+    const string& kind, const IO::XmlElement& database) const
 {
     // First check if this collision pair is explicitly given in the database
-    XmlElement::const_iterator iter = database.findTag("pair");
+    IO::XmlElement::const_iterator iter = database.findTag("pair");
     string sp1, sp2;
     while (iter != database.end()) {
-        iter->getAttribute("sp1", sp1, "Collision pair missing sp1 attribute.");
-        iter->getAttribute("sp2", sp2, "Collision pair missing sp2 attribute.");
+        iter->getAttribute("s1", sp1, "Collision pair missing sp1 attribute.");
+        iter->getAttribute("s2", sp2, "Collision pair missing sp2 attribute.");
 
         // Check if species names match
-        if ((m_sp1 == sp1 && m_sp2 == sp2) || (m_sp1 == sp2 && m_sp2 = sp1))
+        if ((m_sp1 == sp1 && m_sp2 == sp2) || (m_sp1 == sp2 && m_sp2 == sp1))
             break;
 
         // Get next collision pair in the database
@@ -124,16 +114,16 @@ XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
 
     // Found the pair, so check if the integral is explicitly given
     if (iter != database.end()) {
-        XmlElement::const_iter Qiter = iter->findTag(kind);
+        IO::XmlElement::const_iterator Qiter = iter->findTag(kind);
         if (Qiter != iter->end())
-            return Qiter
+            return Qiter;
     }
 
     // Didn't find the pair or integral wasn't given, so look in defaults
     iter = database.findTag("defaults");
-    if (iter == databse.end()) return iter;
+    if (iter == database.end()) return iter;
 
-    XmlElement::const_iter pair;
+    IO::XmlElement::const_iterator pair;
     switch (m_type) {
         case NEUTRAL_NEUTRAL:
             pair = iter->findTag("neutral-neutral"); break;
@@ -149,8 +139,8 @@ XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
     if (pair == iter->end())
         return database.end();
 
-    iter = pair.findTag(kind);
-    if (iter != pair.end())
+    iter = pair->findTag(kind);
+    if (iter != pair->end())
         return iter;
 
     return database.end();
@@ -159,18 +149,25 @@ XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
 
 //==============================================================================
 
-CollisionIntegral* CollisionPairNew::loadIntegral(
-    const string& kind, const XmlElement& database)
+SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
+    const string& kind, const IO::XmlElement& database) const
 {
-    XmlElement::const_iterator iter =
+    IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind, database);
     if (iter == database.end())
-        return NULL;
+        return SharedPtr<CollisionIntegral>();
 
     string type;
     iter->getAttribute("type", type, "Integral type must be specified.");
 
-    return Factor<CollisionIntegral>::create(type, make_pair(*iter, *this));
+    SharedPtr<CollisionIntegral> ci(
+        Config::Factory<CollisionIntegral>::create(
+            type, CollisionIntegral::ARGS(*iter, *this)));
+
+    if (ci == SharedPtr<CollisionIntegral>()) iter->parseError(
+        "Invalid collision integral type '" + type + "'.");
+
+    return ci;
 }
 
 //==============================================================================

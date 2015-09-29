@@ -27,14 +27,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef TRANSPORT_COLLISION_PAIR_H
+#define TRANSPORT_COLLISION_PAIR_H
+
+#include "CollisionIntegral.h"
+#include "SharedPtr.h"
+#include "XMLite.h"
 #include <string>
 
-namespace Mutation {
-    namespace Thermodynamics { class Species; }
-    namespace Utilities {
-        namespace IO { class XmlElement; }
-    }
+// Forward declarations
+namespace Mutation { namespace Thermodynamics { class Species; }}
 
+namespace Mutation {
     namespace Transport {
 
 /**
@@ -48,9 +52,6 @@ enum CollisionType {
     REPULSIVE
 };
 
-// Forward declarations
-class CollisionIntegral;
-
 /**
  * Encapsulates data corresponding to a particular collision pair.
  */
@@ -62,22 +63,18 @@ public:
      * the root node of the XML collision database.
      */
     CollisionPairNew(
-        const Thermodynamics::Species& s1, const Thermodynamics::Species& s2,
+        const Mutation::Thermodynamics::Species& s1,
+        const Mutation::Thermodynamics::Species& s2,
         const Utilities::IO::XmlElement& xml);
-
-    /**
-     * Destructor.
-     */
-    ~CollisionPairNew();
 
     // Getter functions
     const std::string& species1() const { return m_sp1; }
     const std::string& species2() const { return m_sp2; }
 
-    const CollisionIntegral* const Q11() { return mp_Q11; }
-    const CollisionIntegral* const Q22() { return mp_Q22; }
-    const CollisionIntegral* const Bst() { return mp_Bst; }
-    const CollisionIntegral* const Cst() { return mp_Cst; }
+    SharedPtr<CollisionIntegral> Q11() const { return mp_Q11; }
+    SharedPtr<CollisionIntegral> Q22() const { return mp_Q22; }
+    SharedPtr<CollisionIntegral> Bst() const { return mp_Bst; }
+    SharedPtr<CollisionIntegral> Cst() const { return mp_Cst; }
 
 private:
 
@@ -86,22 +83,25 @@ private:
      * from the two species objects.
      */
     void initSpeciesData(
-        const Thermodynamics::Species& s1,  const Thermodynamics::Species& s2);
+        const Mutation::Thermodynamics::Species& s1,
+        const Mutation::Thermodynamics::Species& s2);
 
     /**
      * Returns the iterator pointing to the XmlElement which holds the collision
      * integral of type kind for this collision pair.  If this doesn't exist,
      * then database.end() is returned.
      */
-    Utilities::IO::XmlElement::const_iterator
+    Mutation::Utilities::IO::XmlElement::const_iterator
     findXmlElementWithIntegralType(
-        const string& kind, const XmlElement& database);
+        const std::string& kind,
+        const Mutation::Utilities::IO::XmlElement& database) const;
 
     /**
      * Loads a particular collision integral from the database.
      */
-    CollisionIntegral* loadIntegral(
-        const std::string& type, const Utilities::IO::XmlElement& database);
+    SharedPtr<CollisionIntegral> loadIntegral(
+        const std::string& type,
+        const Mutation::Utilities::IO::XmlElement& database) const;
 
 private:
 
@@ -110,11 +110,13 @@ private:
     std::string   m_sp2;
 
     // collision integrals
-    CollisionIntegral* mp_Q11;
-    CollisionIntegral* mp_Q22;
-    CollisionIntegral* mp_Bst;
-    CollisionIntegral* mp_Cst;
+    SharedPtr<CollisionIntegral> mp_Q11;
+    SharedPtr<CollisionIntegral> mp_Q22;
+    SharedPtr<CollisionIntegral> mp_Bst;
+    SharedPtr<CollisionIntegral> mp_Cst;
 };
 
     } // namespace Transport
 } // namespace Mutation
+
+#endif // TRANSPORT_COLLISION_PAIR_H

@@ -27,6 +27,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef TRANSPORT_COLLISION_INTEGRAL_H
+#define TRANSPORT_COLLISION_INTEGRAL_H
+
 #include <string>
 #include <typeinfo>
 
@@ -40,7 +43,7 @@ namespace Mutation {
 
 	namespace Transport {
 
-class CollisionPair;
+class CollisionPairNew;
 
 /**
  * Abstract (self registering) class for all collision integral types.
@@ -48,8 +51,15 @@ class CollisionPair;
 class CollisionIntegral
 {
 public:
-	typedef const std::pair<
-	    const Utilities::IO::XmlElement&, const CollisionPair&> ARGS;
+	// Arguments for self registering constructor
+	struct ARGS {
+	    ARGS(
+	        const Mutation::Utilities::IO::XmlElement& arg1,
+	        const CollisionPairNew& arg2) :
+	        xml(arg1), pair(arg2) {}
+	    const Mutation::Utilities::IO::XmlElement& xml;
+	    const CollisionPairNew& pair;
+	};
 
 	/**
 	 * Constructor used in self registration.
@@ -86,12 +96,13 @@ public:
 	 * be determined from the temperature alone.  Default behavior is to do
 	 * nothing.
 	 */
-	virtual void getOtherParams(const Thermodynamics::Thermodynamics& thermo) { };
+	virtual void getOtherParams(
+	    const Mutation::Thermodynamics::Thermodynamics& thermo) { };
 
 	/**
 	 * Returns true if all the necessary data for this integral could be loaded.
 	 */
-	virtual bool loaded() { return true; }
+	virtual bool loaded() const { return true; }
 
 	/**
 	 * Returns the reference for this collision integral data.
@@ -129,4 +140,5 @@ private:
 	} // namespace Transport
 } // namespace Mutation
 
+#endif // TRANSPORT_COLLISION_INTEGRAL_H
 
