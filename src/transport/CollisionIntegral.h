@@ -30,6 +30,8 @@
 #ifndef TRANSPORT_COLLISION_INTEGRAL_H
 #define TRANSPORT_COLLISION_INTEGRAL_H
 
+#include "Units.h"
+
 #include <string>
 #include <typeinfo>
 
@@ -89,7 +91,9 @@ public:
 	/**
 	 * Returns the value of this integral at the given temperature in m^2.
 	 */
-	virtual double compute(double T) = 0;
+	double compute(double T) {
+		return m_units.convertToBase(compute_(T));
+	}
 
 	/**
 	 * Gets any other parameters necessary to compute the integral which cannot
@@ -116,6 +120,8 @@ public:
 
 protected:
 
+	virtual double compute_(double T) = 0;
+
 	/**
 	 * Ensures that collision integral types can be compared.
 	 */
@@ -135,6 +141,7 @@ private:
 
 	std::string m_ref;
 	double      m_acc;
+	Mutation::Utilities::Units m_units;
 };
 
 	} // namespace Transport

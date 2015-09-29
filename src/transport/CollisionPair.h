@@ -70,6 +70,7 @@ public:
     // Getter functions
     const std::string& species1() const { return m_sp1; }
     const std::string& species2() const { return m_sp2; }
+    CollisionType type() const { return m_type; }
 
     SharedPtr<CollisionIntegral> Q11() const { return mp_Q11; }
     SharedPtr<CollisionIntegral> Q22() const { return mp_Q22; }

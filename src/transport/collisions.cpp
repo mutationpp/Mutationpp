@@ -15,12 +15,29 @@ int main(int argc, char* argv[])
 
     CollisionDBNew db("collisions", mix);
 
-    double T = 2000.0;
+    mix.equilibrate(2000.0, ONEATM);
 
-    for (int i = 0; i < db.size(); ++i)
+    for (int i = 0; i < db.size(); ++i) {
+    	db[i].Q11()->getOtherParams(mix);
         cout << "Q11(" << db[i].species1() << ", "
-             << db[i].species2() << ")(" << T << ") = "
-             << db[i].Q11()->compute(T) << endl;
+             << db[i].species2() << ")(" << mix.T() << ") = "
+             << db[i].Q11()->compute(mix.T()) << endl;
+
+        db[i].Q22()->getOtherParams(mix);
+        cout << "Q22(" << db[i].species1() << ", "
+			 << db[i].species2() << ")(" << mix.T() << ") = "
+			 << db[i].Q22()->compute(mix.T()) << endl;
+
+        db[i].Bst()->getOtherParams(mix);
+		cout << "Bst(" << db[i].species1() << ", "
+					 << db[i].species2() << ")(" << mix.T() << ") = "
+					 << db[i].Bst()->compute(mix.T()) << endl;
+
+		db[i].Cst()->getOtherParams(mix);
+		cout << "Cst(" << db[i].species1() << ", "
+			 << db[i].species2() << ")(" << mix.T() << ") = "
+			 << db[i].Cst()->compute(mix.T()) << endl;
+    }
 
     return 0;
 }

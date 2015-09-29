@@ -84,7 +84,6 @@ public:
             typename std::map<std::string, Provider<PTYPE>*>::const_iterator iter;
             for (iter = m_providers.begin() ; iter != m_providers.end(); iter++)
                 std::cout << iter->first << std::endl;
-            std::cout << std::endl;
             return NULL;
         }
         
@@ -106,7 +105,10 @@ public:
      */
     static PTYPE* create(const std::string& name, typename PTYPE::ARGS args)
     {
-        return getInstance().getProvider(name)->create(args);
+        Provider<PTYPE>* p_provider = getInstance().getProvider(name);
+        if (p_provider == NULL)
+        	return NULL;
+        return p_provider->create(args);
     }
 
     /**

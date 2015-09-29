@@ -35,6 +35,7 @@ using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
 #include <string>
+#include <iostream> // remove
 using namespace std;
 
 namespace Mutation {
@@ -72,7 +73,7 @@ void CollisionPairNew::initSpeciesData(const Species& s1, const Species& s2)
             m_type = NEUTRAL_NEUTRAL;
     } else { // first species is an ion (electron or heavy)
         if (s2.isIon()) {
-            if (s1.charge() * s2.charge() < 0)
+            if (s1.charge() * s2.charge() > 0)
                 m_type = REPULSIVE;
             else
                 m_type = ATTRACTIVE;
@@ -131,10 +132,8 @@ IO::XmlElement::const_iterator CollisionPairNew::findXmlElementWithIntegralType(
             pair = iter->findTag("electron-neutral"); break;
         case ION_NEUTRAL:
             pair = iter->findTag("ion-neutral"); break;
-        case ATTRACTIVE:
-            pair = iter->findTag("attractive"); break;
-        case REPULSIVE:
-            pair = iter->findTag("repulsive"); break;
+        default:
+            pair = iter->findTag("charged"); break;
     }
     if (pair == iter->end())
         return database.end();
@@ -160,14 +159,15 @@ SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
     string type;
     iter->getAttribute("type", type, "Integral type must be specified.");
 
-    SharedPtr<CollisionIntegral> ci(
+    CollisionIntegral* p_ci(
         Config::Factory<CollisionIntegral>::create(
             type, CollisionIntegral::ARGS(*iter, *this)));
 
-    if (ci == SharedPtr<CollisionIntegral>()) iter->parseError(
-        "Invalid collision integral type '" + type + "'.");
+    if (p_ci == NULL) iter->parseError(
+        "Invalid collision integral type '" + type + "' for " + kind +
+		"_(" + m_sp1 + ", " + m_sp2 + ").");
 
-    return ci;
+    return SharedPtr<CollisionIntegral>(p_ci);
 }
 
 //==============================================================================

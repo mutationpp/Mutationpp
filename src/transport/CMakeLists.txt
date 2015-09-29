@@ -26,6 +26,7 @@ add_sources(mutation++
     CollisionDBNew.cpp
     CollisionIntegral.cpp
     CollisionPair.cpp
+    CoulombIntegrals.cpp
     ThermalConductivityChapmannEnskog.cpp
     ThermalConductivityWilke.cpp
     Transport.cpp

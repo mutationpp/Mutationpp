@@ -53,6 +53,7 @@ std::map<std::string, Units> _initializeUnits()
     units["mm"]   = units["m"] / 1000.0;
     units["cm"]   = units["m"] / 100.0;
     units["km"]   = units["m"] * 1000.0;
+    units["A"]    = units["m"] / 1.0e10;
     
     // mass
     units["kg"]   = Units(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -82,6 +83,7 @@ std::map<std::string, Units> _initializeUnits()
     // pressure
     units["Pa"]   = units["N"] / units["m"] / units["m"];
     units["atm"]  = units["Pa"] * 101325.0;
+    units["bar"]  = units["Pa"] * 100000.0;
     
     return units;
 }

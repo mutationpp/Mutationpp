@@ -51,6 +51,16 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 
 	// Load the estimated accuracy if that exists
 	args.xml.getAttribute("accuracy", m_acc, m_acc);
+
+	// Load any units that there might be
+	string units; args.xml.getAttribute("units", units, string());
+	if (!units.empty()) {
+		// Always take last units if available
+		std::vector<Units> vec = Units::split(units);
+		if (vec.size() == 0) args.xml.parseError(
+			"Invalid units attribute.");
+		m_units = vec.back();
+	}
 }
 
 //==============================================================================
@@ -69,9 +79,9 @@ public:
 			"A constant collision integral must provide a 'value' attribute!");
 	}
 
-	double compute(double T) { return m_value; }
-
 private:
+
+	double compute_(double T) { return m_value; }
 
 	/**
      * Returns true if the constant value is the same.
@@ -118,8 +128,10 @@ public:
 	// Allow tabulation of this integral type
 	bool canTabulate() const { return true; }
 
+private:
+
 	// Interpolate from a table
-	double compute(double T)
+	double compute_(double T)
 	{
 		// Clip the temperature
 		if (T < m_T[0])
@@ -134,8 +146,6 @@ public:
 		// Interpolate
 		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
 	}
-
-private:
 
     /**
      * Returns true if the constant value is the same.
