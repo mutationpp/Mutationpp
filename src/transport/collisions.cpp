@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
     CollisionDBNew db("collisions", mix);
 
-    mix.equilibrate(2000.0, ONEATM);
+    mix.equilibrate(12000.0, ONEATM);
 
     for (int i = 0; i < db.size(); ++i) {
     	db[i].Q11()->getOtherParams(mix);
