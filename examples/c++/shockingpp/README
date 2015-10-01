@@ -1,0 +1,23 @@
+# README
+This program solve the jump conditions both for cold gas approximation (Rankine-Hugoniot equations) or multispecies gas with an LTE assumption 
+- Input:by default the shockair.in is loaded
+#Install
+- Download the boost library src(not need to compile or install it)  at http://www.boost.org/users/history/version_1_54_0.html
+- Specify the path to mutation++ and boost in the Makefile
+
+#Soft
+The program computes first the « cold gas approximation » which is used as first guess for the shock jump considering LTE.
+
+set of variables : [\rho \rhoU \rhoE]
+
+Two Newton-Raphson algorithms are used to verify :
+(1)  	(rhoU)|1 - (rhoU)|2
+(2)	(rhoU*U + P)|1 - (rhoU*U +P)|2
+(3)	(rhoE*U + P*U)|1 - (rhoE*U +P*U)|2
+
+while ensuring that the mass/mole fractions are the one at equilibrium.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+BE CARREFULL: 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+For now the jacobians used for the 2 N-R are defined using finite difference. A more robust implementation should consider to derive rigorously the jacobians of such systems.
