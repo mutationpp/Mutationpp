@@ -39,33 +39,31 @@ using namespace Mutation::Utilities::Config;
 #include <Eigen/Dense>
 using namespace Eigen;
 
-#include <iostream>
+#include <cassert>
 #include <string>
 using namespace std;
 
 namespace Mutation {
-	namespace Transport {
+    namespace Transport {
 
+/**
+ * List of collision integral types that can be computed using predefined
+ * collision integrals computed from the screened Coulomb potential.
+ */
 enum CoulombType {
-	Q11_ATT = 0,
-	Q11_REP,
-	Q22_ATT,
-	Q22_REP,
-	Q14_ATT,
-	Q14_REP,
-	Q15_ATT,
-	Q15_REP,
-	Q24_ATT,
-	Q24_REP,
-	BST_ATT,
-	BST_REP,
-	CST_ATT,
-	CST_REP,
-	EST_ATT,
-	EST_REP,
-	N_COULOMB_TYPES // this must stay last
+    Q11_ATT, Q11_REP,
+    Q22_ATT, Q22_REP,
+    Q14_ATT, Q14_REP,
+    Q15_ATT, Q15_REP,
+    Q24_ATT, Q24_REP,
+    BST_ATT, BST_REP,
+    CST_ATT, CST_REP,
+    EST_ATT, EST_REP,
+    N_TABLE_TYPES, // All collision integrals in the table must come before this
+    AST_ATT, AST_REP
 };
 
+// Number of temperature points in the collision integral table
 #define N_TST_POINTS 26
 
 /**
@@ -75,77 +73,90 @@ enum CoulombType {
 class DebyeHuckleEvaluator
 {
 public:
-	DebyeHuckleEvaluator() :
-		m_lambda(0.0), m_last_T(-1.0), m_last_lambda(-1.0)
-	{ }
+    /**
+     * Constructor.
+     */
+    DebyeHuckleEvaluator() :
+        m_lambda(0.0), m_last_T(-1.0), m_last_lambda(-1.0)
+    { }
 
-	double operator () (double T, CoulombType type)
-	{
-		cout << T << ", " << m_lambda << ", " << type << endl;
-		// Check if we need to update the values
-		if (std::abs(T-m_last_T) + std::abs(m_lambda-m_last_lambda) > 1.0e-10) {
-		    cout << "updating values" << endl;
-			// Compute reduced temperature
-			double Tst = 4.0*PI*EPS0*m_lambda*KB*T/(QE*QE);
-			// Clip to table bounds
-			Tst = std::min(std::max(Tst, sm_tstvec[0]), sm_tstvec[N_TST_POINTS-1]);
-			cout << "T* = " << Tst << endl;
+    /**
+     * Computes the Coulomb integral type at the temperature T.
+     */
+    double operator () (double T, CoulombType type)
+    {
+        // Check input data
+        assert(T >= 0.0);
+        assert(type != N_TABLE_TYPES);
 
-			// Interpolate the table using reduced temperature
-			interpolate(Tst);
+        // Check if we need to update the values
+        if (std::abs(T-m_last_T) + std::abs(m_lambda-m_last_lambda) > 1.0e-10) {
+            // Compute reduced temperature
+            double Tst = 4.0*PI*EPS0*m_lambda*KB*T/(QE*QE);
 
-			cout << "after interpolation:\n" << m_values << endl;
+            // Clip to table bounds
+            Tst = std::min(
+                std::max(Tst, sm_tstvec[0]), sm_tstvec[N_TST_POINTS-1]);
 
-			// Dimensionalize from reduced form
-			m_values.head(BST_ATT) *= PI*m_lambda*m_lambda/(Tst*Tst);
-			cout << "after dimensionalization:\n" << m_values << endl;
+            // Interpolate the table using reduced temperature
+            interpolate(Tst);
 
-			// Save last updated state
-			m_last_T = T;
-			m_last_lambda = m_lambda;
-		}
+            // Convert from reduced form
+            m_values.head(BST_ATT) *= PI*m_lambda*m_lambda/(Tst*Tst);
 
-		return m_values[type];
-	}
+            // Save last updated state
+            m_last_T = T;
+            m_last_lambda = m_lambda;
+        }
 
-	/**
-	 * Sets the Debye length given electron temperature and number density.
-	 */
-	void setDebyeLength(double Te, double ne) {
-		assert(Te >= 0.0);
-		assert(ne >= 0.0);
-		m_lambda = std::sqrt(EPS0*KB*Te/(std::max(ne,1000.0)*QE*QE));
-	}
+        switch (type) {
+        case AST_ATT: return m_values[Q22_ATT]/m_values[Q11_ATT];
+        case AST_REP: return m_values[Q22_REP]/m_values[Q11_REP];
+        default:      return m_values[type];
+        }
+    }
 
-private:
-
-	void interpolate(double Tst)
-	{
-	    // Clip to table boundaries
-	    if (Tst <= sm_tstvec[0])
-	        m_values = sm_table.row(0);
-	    else if (Tst >= sm_tstvec[N_TST_POINTS-1])
-	        m_values = sm_table.row(N_TST_POINTS-1);
-	    else {
-	        // Find the index to interpolate between
-	        int i = 1; while (sm_tstvec[i] < Tst) ++i;
-
-	        // Interpolate
-	        m_values = (sm_table.row(i)-sm_table.row(i-1))*(Tst-sm_tstvec[i])/
-	            (sm_tstvec(i)-sm_tstvec(i-1)) + sm_table.row(i);
-	    }
-
-	}
+    /**
+     * Sets the Debye length given electron temperature and number density.
+     */
+    void setDebyeLength(double Te, double ne) {
+        assert(Te >= 0.0);
+        assert(ne >= 0.0);
+        // Including electron and ion contributions
+        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(std::max(ne,1000.0)*QE*QE));
+    }
 
 private:
 
-	double m_lambda;
-	double m_last_T;
-	double m_last_lambda;
+    /**
+     * Interpolates the table based on reduced temperature.
+     */
+    void interpolate(double Tst)
+    {
+        // Clip to table boundaries
+        if (Tst <= sm_tstvec[0])
+            m_values = sm_table.row(0);
+        else if (Tst >= sm_tstvec[N_TST_POINTS-1])
+            m_values = sm_table.row(N_TST_POINTS-1);
+        else {
+            // Find the index to interpolate between
+            int i = 1; while (sm_tstvec[i] < Tst) ++i;
 
-	static Array<double, N_TST_POINTS, N_COULOMB_TYPES, ColMajor> sm_table;
-	static Array<double, N_TST_POINTS, 1> sm_tstvec;
-    Array<double, N_COULOMB_TYPES, 1> m_values;
+            // Interpolate
+            m_values = (sm_table.row(i)-sm_table.row(i-1))*(Tst-sm_tstvec[i])/
+                (sm_tstvec(i)-sm_tstvec(i-1)) + sm_table.row(i);
+        }
+    }
+
+private:
+
+    double m_lambda;
+    double m_last_T;
+    double m_last_lambda;
+
+    static Array<double, N_TST_POINTS, N_TABLE_TYPES, ColMajor> sm_table;
+    static Array<double, N_TST_POINTS, 1> sm_tstvec;
+    Array<double, N_TABLE_TYPES, 1> m_values;
 };
 
 // Initialize the T* index values
@@ -160,8 +171,8 @@ Array<double, N_TST_POINTS, 1> DebyeHuckleEvaluator::sm_tstvec = init_tstvec();
 
 
 // Initialize the table of collision integral values
-Array<double, N_TST_POINTS, N_COULOMB_TYPES, ColMajor> init_table() {
-    Array<double, N_TST_POINTS, N_COULOMB_TYPES, ColMajor> table; table <<
+Array<double, N_TST_POINTS, N_TABLE_TYPES, ColMajor> init_table() {
+    Array<double, N_TST_POINTS, N_TABLE_TYPES, ColMajor> table; table <<
     // (T*)^2*Q11      (T*)^2*Q22      (T*)^2*Q14      (T*)^2*Q15      (T*)^2*Q24          B*              C*              E*
     //att     rep     att     rep     att     rep     att     rep     att     rep     att     rep     att     rep     att     rep
     0.0630, 0.0224, 0.0384, 0.0304, 0.0285, 0.0110, 0.0227, 0.0093, 0.0284, 0.0208, 1.4695, 1.3646, 0.7573, 0.7486, 0.8411, 0.8146,
@@ -192,7 +203,7 @@ Array<double, N_TST_POINTS, N_COULOMB_TYPES, ColMajor> init_table() {
     4.4759, 4.4763, 4.7211, 4.7211, 0.5388, 0.5388, 0.3675, 0.3675, 1.5413, 1.5413, 1.0734, 1.0733, 0.3702, 0.3702, 0.5265, 0.5265;
     return table;
 }
-Array<double, N_TST_POINTS, N_COULOMB_TYPES, ColMajor>
+Array<double, N_TST_POINTS, N_TABLE_TYPES, ColMajor>
     DebyeHuckleEvaluator::sm_table = init_table();
 
 /**
@@ -203,49 +214,49 @@ class DebyeHuckleColInt : public CollisionIntegral
 {
 public:
 
-	/**
-	 * Self registering onstructor. Determines which integral to evaluate based
-	 * on the collision type.
-	 */
-	DebyeHuckleColInt(CollisionIntegral::ARGS args) :
-		CollisionIntegral(args)
-	{
-		assert(args.pair.type() == ATTRACTIVE || args.pair.type() == REPULSIVE);
+    /**
+     * Self registering onstructor. Determines which integral to evaluate based
+     * on the collision type.
+     */
+    DebyeHuckleColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        assert(args.pair.type() == ATTRACTIVE || args.pair.type() == REPULSIVE);
 
-		// Set the type of integral we need
-		string tag = args.xml.tag();
-		CollisionType type = args.pair.type();
+        // Set the type of integral we need
+        string tag = args.xml.tag();
+        CollisionType type = args.pair.type();
 
-		if (tag == "Q11")
-			m_type = (type == ATTRACTIVE ? Q11_ATT : Q11_REP);
-		else if (tag == "Q22")
-			m_type = (type == ATTRACTIVE ? Q22_ATT : Q22_REP);
-		else if (tag == "Bst")
-			m_type = (type == ATTRACTIVE ? BST_ATT : BST_REP);
-		else if (tag == "Cst")
-			m_type = (type == ATTRACTIVE ? CST_ATT : CST_REP);
-		else
-			args.xml.parseError(
-				"Invalid collision integral for Debye-Huckle integral.");
-	}
+        if (tag == "Q11")
+            m_type = (type == ATTRACTIVE ? Q11_ATT : Q11_REP);
+        else if (tag == "Q22")
+            m_type = (type == ATTRACTIVE ? Q22_ATT : Q22_REP);
+        else if (tag == "Bst")
+            m_type = (type == ATTRACTIVE ? BST_ATT : BST_REP);
+        else if (tag == "Cst")
+            m_type = (type == ATTRACTIVE ? CST_ATT : CST_REP);
+        else
+            args.xml.parseError(
+                "Invalid collision integral for Debye-Huckle integral.");
+    }
 
-	// Set the Debye length
-	void getOtherParams(const class Thermodynamics& thermo) {
-		sm_evaluator.setDebyeLength(
-			thermo.Te(),
-			thermo.hasElectrons() ? thermo.numberDensity()*thermo.X()[0] : 0.0);
-	};
+    // Set the Debye length
+    void getOtherParams(const class Thermodynamics& thermo) {
+        sm_evaluator.setDebyeLength(
+            thermo.Te(),
+            thermo.hasElectrons() ? thermo.numberDensity()*thermo.X()[0] : 0.0);
+    };
 
 private:
 
-	double compute_(double T) {	return sm_evaluator(T, m_type);	}
+    double compute_(double T) { return sm_evaluator(T, m_type); }
 
-	/**
+    /**
      * Returns true if the constant value is the same.
      */
     bool isEqual(const CollisionIntegral& ci) const {
         const DebyeHuckleColInt& compare =
-        	dynamic_cast<const DebyeHuckleColInt&>(ci);
+            dynamic_cast<const DebyeHuckleColInt&>(ci);
         return (m_type == compare.m_type);
     }
 
@@ -262,5 +273,5 @@ DebyeHuckleEvaluator DebyeHuckleColInt::sm_evaluator;
 // Register the "Debye-Huckle" CollisionIntegral
 ObjectProvider<DebyeHuckleColInt, CollisionIntegral> DebyeHuckle_ci("Debye-Huckle");
 
-	} // namespace Transport
+    } // namespace Transport
 } // namespace Mutation

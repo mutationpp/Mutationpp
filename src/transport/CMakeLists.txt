@@ -24,6 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 add_sources(mutation++
     CollisionDB.cpp
     CollisionDBNew.cpp
+    CollisionGroup.cpp
     CollisionIntegral.cpp
     CollisionPair.cpp
     CoulombIntegrals.cpp
@@ -42,6 +43,7 @@ install(TARGETS collisions DESTINATION bin)
 
 install(FILES CollisionDB.h DESTINATION include/mutation++)
 install(FILES CollisionDBNew.h DESTINATION include/mutation++)
+install(FILES CollisionGroup.h DESTINATION include/mutation++)
 install(FILES CollisionIntegral.h DESTINATION include/mutation++)
 install(FILES CollisionPair.h DESTINATION include/mutation++)
 install(FILES ThermalConductivityAlgorithm.h DESTINATION include/mutation++)

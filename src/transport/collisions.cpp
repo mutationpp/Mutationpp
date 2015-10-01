@@ -17,27 +17,9 @@ int main(int argc, char* argv[])
 
     mix.equilibrate(12000.0, ONEATM);
 
-    for (int i = 0; i < db.size(); ++i) {
-    	db[i].Q11()->getOtherParams(mix);
-        cout << "Q11(" << db[i].species1() << ", "
-             << db[i].species2() << ")(" << mix.T() << ") = "
-             << db[i].Q11()->compute(mix.T()) << endl;
-
-        db[i].Q22()->getOtherParams(mix);
-        cout << "Q22(" << db[i].species1() << ", "
-			 << db[i].species2() << ")(" << mix.T() << ") = "
-			 << db[i].Q22()->compute(mix.T()) << endl;
-
-        db[i].Bst()->getOtherParams(mix);
-		cout << "Bst(" << db[i].species1() << ", "
-					 << db[i].species2() << ")(" << mix.T() << ") = "
-					 << db[i].Bst()->compute(mix.T()) << endl;
-
-		db[i].Cst()->getOtherParams(mix);
-		cout << "Cst(" << db[i].species1() << ", "
-			 << db[i].species2() << ")(" << mix.T() << ") = "
-			 << db[i].Cst()->compute(mix.T()) << endl;
-    }
+    const CollisionGroup& Q11 = db.Q11ij();
+    for (int i = 0; i < Q11.size(); ++i)
+        cout << Q11[i] << endl;
 
     return 0;
 }

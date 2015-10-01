@@ -42,15 +42,33 @@ namespace Mutation {
 //==============================================================================
 
 CollisionDBNew::CollisionDBNew(
-    const string& db_name, const Thermodynamics::Thermodynamics& thermo)
+    const string& db_name, const Thermodynamics::Thermodynamics& thermo) :
+    m_thermo(thermo)
 {
-    loadCollisionPairs(db_name, thermo.species());
+    // First load all of the necessary collision pairs
+    loadCollisionPairs(db_name);
+
+    // Fill the CollisionGroups
+    const int k = (thermo.hasElectrons() ? thermo.nSpecies() : 0);
+    // Electron-Heavy
+    vector<CollisionPairNew>::const_iterator start = m_pairs.begin();
+    vector<CollisionPairNew>::const_iterator end   = start+k;
+    m_Q11ei.manage(start, end, &CollisionPairNew::Q11);
+    m_Q22ei.manage(start, end, &CollisionPairNew::Q22);
+    m_Bstei.manage(start, end, &CollisionPairNew::Bst);
+    m_Cstei.manage(start, end, &CollisionPairNew::Cst);
+    // Heavy-Heavy
+    start = end;
+    end   = m_pairs.end();
+    m_Q11ij.manage(start, end, &CollisionPairNew::Q11);
+    m_Q22ij.manage(start, end, &CollisionPairNew::Q22);
+    m_Bstij.manage(start, end, &CollisionPairNew::Bst);
+    m_Cstij.manage(start, end, &CollisionPairNew::Cst);
 }
 
 //==============================================================================
 
-void CollisionDBNew::loadCollisionPairs(
-    string db_name, const vector<Species>& species)
+void CollisionDBNew::loadCollisionPairs(string db_name)
 {
     // Add extension if necessary
     if (db_name.substr(db_name.length()-5) != ".xml")
@@ -71,9 +89,58 @@ void CollisionDBNew::loadCollisionPairs(
     XmlElement root = db_doc.root();
 
     // Loop over the species and create the list of species pairs
+    const vector<Species>& species = m_thermo.species();
     for (int i = 0; i < species.size(); ++i)
         for (int j = i; j < species.size(); ++j)
             m_pairs.push_back(CollisionPairNew(species[i], species[j], root));
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Q11ei() {
+    return m_Q11ei.update(m_thermo.Te(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Q11ij() {
+    return m_Q11ij.update(m_thermo.T(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Q22ei() {
+    return m_Q22ei.update(m_thermo.Te(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Q22ij() {
+    return m_Q22ij.update(m_thermo.T(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Bstei() {
+    return m_Bstei.update(m_thermo.Te(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Bstij() {
+    return m_Bstij.update(m_thermo.T(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Cstei() {
+    return m_Cstei.update(m_thermo.Te(), m_thermo);
+}
+
+//==============================================================================
+
+const CollisionGroup& CollisionDBNew::Cstij() {
+    return m_Cstij.update(m_thermo.T(), m_thermo);
 }
 
 //==============================================================================
