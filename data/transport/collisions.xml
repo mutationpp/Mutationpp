@@ -8,21 +8,7 @@
  - first pass at creating the structure for all of the required data
 
 =============================================================================-->
-<collisions>
-
-    <!-- List of references (should just have this in another file) -->
-    <references>
-        <ref key="Wright2005">
-            Michael J. Wright, Deepak Bose, Grant E. Palmer, and Eugen Levin.
-            "Recommended Collision Integrals for Transport Property Computations,
-            Part 1: Air Species." AIAA Journal. 43 (12). 2005
-        </ref>
-        <ref key="Wright2007">
-            Michael J. Wright, Helen H. Hwang, and David W. Schwenke.
-            "Recommended Collision Integrals for Transport Property Computations,
-            Part 2: Mars and Venus Entries." AIAA Journal. 45 (1). 2007
-        </ref>
-    </references>
+<collisions tabulate="yes">
 
     <!-- Default collision integral data -->
     <defaults>

@@ -32,6 +32,7 @@
 
 #include "Units.h"
 
+#include <iostream>
 #include <string>
 #include <typeinfo>
 
@@ -73,20 +74,23 @@ public:
 	 */
 	virtual ~CollisionIntegral() { };
 
-	/**
-	 * Tests for object equality.
-	 */
+	/// Equality operator.
 	bool operator == (const CollisionIntegral& compare) const {
 	    if (typeid(*this) != typeid(compare))
 	        return false;
 	    return isEqual(compare);
 	}
 
+	/// Equality operator.
+	bool operator != (const CollisionIntegral& compare) const {
+	    return !(*this == compare);
+	}
+
 	/**
 	 * Returns true if this integral can be tabulated vs. temperature.  Default
 	 * is to return false.
 	 */
-	virtual bool canTabulate() { return false; }
+	virtual bool canTabulate() const { return false; }
 
 	/**
 	 * Returns the value of this integral at the given temperature in m^2.

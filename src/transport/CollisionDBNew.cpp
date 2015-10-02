@@ -31,9 +31,12 @@
 #include "XMLite.h"
 #include "Utilities.h"
 using namespace Mutation::Thermodynamics;
+using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
+#include <cassert>
 #include <fstream>
+#include <iostream>
 using namespace std;
 
 namespace Mutation {
@@ -43,104 +46,75 @@ namespace Mutation {
 
 CollisionDBNew::CollisionDBNew(
     const string& db_name, const Thermodynamics::Thermodynamics& thermo) :
-    m_thermo(thermo)
+    m_database(databaseFileName(db_name, "transport")),
+    m_thermo(thermo),
+    m_tabulate(true)
 {
-    // First load all of the necessary collision pairs
-    loadCollisionPairs(db_name);
-
-    // Fill the CollisionGroups
-    const int k = (thermo.hasElectrons() ? thermo.nSpecies() : 0);
-    // Electron-Heavy
-    vector<CollisionPairNew>::const_iterator start = m_pairs.begin();
-    vector<CollisionPairNew>::const_iterator end   = start+k;
-    m_Q11ei.manage(start, end, &CollisionPairNew::Q11);
-    m_Q22ei.manage(start, end, &CollisionPairNew::Q22);
-    m_Bstei.manage(start, end, &CollisionPairNew::Bst);
-    m_Cstei.manage(start, end, &CollisionPairNew::Cst);
-    // Heavy-Heavy
-    start = end;
-    end   = m_pairs.end();
-    m_Q11ij.manage(start, end, &CollisionPairNew::Q11);
-    m_Q22ij.manage(start, end, &CollisionPairNew::Q22);
-    m_Bstij.manage(start, end, &CollisionPairNew::Bst);
-    m_Cstij.manage(start, end, &CollisionPairNew::Cst);
-}
-
-//==============================================================================
-
-void CollisionDBNew::loadCollisionPairs(string db_name)
-{
-    // Add extension if necessary
-    if (db_name.substr(db_name.length()-5) != ".xml")
-        db_name = db_name + ".xml";
-
-    // Add directory
-    {
-        ifstream file(db_name.c_str(), ios::in);
-
-        // If that doesn't work, look in MPP_DATA_DIRECTORY/transport
-        if (!file.is_open())
-            db_name = Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-                "/transport/" + db_name;
-    }
-
-    // Now load the XML file
-    XmlDocument db_doc(db_name);
-    XmlElement root = db_doc.root();
-
     // Loop over the species and create the list of species pairs
     const vector<Species>& species = m_thermo.species();
+    XmlElement& root = m_database.root();
+
+    // Determine if we should tabulate collision integrals if possible
+    root.getAttribute("tabulate", m_tabulate, m_tabulate);
+    cout << "tabulating: " << m_tabulate << endl;
+
     for (int i = 0; i < species.size(); ++i)
         for (int j = i; j < species.size(); ++j)
-            m_pairs.push_back(CollisionPairNew(species[i], species[j], root));
+            m_pairs.push_back(CollisionPairNew(species[i], species[j], &root));
 }
 
 //==============================================================================
 
-const CollisionGroup& CollisionDBNew::Q11ei() {
-    return m_Q11ei.update(m_thermo.Te(), m_thermo);
-}
+const CollisionGroup& CollisionDBNew::group(const string& name)
+{
+    // Minimal check on the string argument
+    assert(isValidGroupName(name));
 
-//==============================================================================
+    // Check if this group is already being managed
+    map<string, CollisionGroup>::iterator iter = m_groups.find(name);
+    if (iter != m_groups.end())
+        return iter->second.update(
+            (name[3] == 'e' ? m_thermo.Te() : m_thermo.T()), m_thermo);
 
-const CollisionGroup& CollisionDBNew::Q11ij() {
-    return m_Q11ij.update(m_thermo.T(), m_thermo);
-}
+    // Create a new group to manage this type
+    CollisionGroup& new_group = m_groups.insert(
+        make_pair(name, CollisionGroup(m_tabulate))).first->second;
 
-//==============================================================================
+    string type  = name.substr(0,3); // Q11, Q22, Bst, ...
+    string pairs = name.substr(3);   // ee, ei, ii, ij
 
-const CollisionGroup& CollisionDBNew::Q22ei() {
-    return m_Q22ei.update(m_thermo.Te(), m_thermo);
-}
+    const int ns = m_thermo.nSpecies();
+    const int e  = (m_thermo.hasElectrons() ? 1 : 0);
+    const int k  = e*ns;
 
-//==============================================================================
+    std::vector<CollisionPairNew>::iterator start, end;
+    std::vector<CollisionPairNew> diag;
 
-const CollisionGroup& CollisionDBNew::Q22ij() {
-    return m_Q22ij.update(m_thermo.T(), m_thermo);
-}
+    if (pairs == "ee") {
+        // just electron-electron pair
+        start = m_pairs.begin();
+        end   = m_pairs.begin()+e;
+    } else if (pairs == "ei") {
+        // electron-heavy pairs
+        start = m_pairs.begin();
+        end   = m_pairs.begin()+k;
+    } else if (pairs == "ij") {
+        // all heavy-heavy pairs
+        start = m_pairs.begin()+k;
+        end   = m_pairs.end();
+    } else if (pairs == "ii") {
+        // diagonal heavy-heavy pairs
+        // create a temporary list of the heavy diagonal components
+        for (int i = 0, index = k; i < ns-e; index += ns-e-i, i++)
+            diag.push_back(m_pairs[index]);
+        start = diag.begin();
+        end   = diag.end();
+    }
 
-//==============================================================================
+    new_group.manage(start, end, &CollisionPairNew::get, type);
 
-const CollisionGroup& CollisionDBNew::Bstei() {
-    return m_Bstei.update(m_thermo.Te(), m_thermo);
-}
-
-//==============================================================================
-
-const CollisionGroup& CollisionDBNew::Bstij() {
-    return m_Bstij.update(m_thermo.T(), m_thermo);
-}
-
-//==============================================================================
-
-const CollisionGroup& CollisionDBNew::Cstei() {
-    return m_Cstei.update(m_thermo.Te(), m_thermo);
-}
-
-//==============================================================================
-
-const CollisionGroup& CollisionDBNew::Cstij() {
-    return m_Cstij.update(m_thermo.T(), m_thermo);
+    // Just call the function again (don't recode temperature selection, etc.)
+    return (*this).group(name);
 }
 
 //==============================================================================

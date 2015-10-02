@@ -33,6 +33,7 @@
 #include <string>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 
 #include "AutoRegistration.h"
 #include "IteratorWrapper.h"
@@ -64,6 +65,29 @@ static std::string getEnvironmentVariable(const std::string& key)
         return std::string();
     }
     return std::string(value);
+}
+
+/**
+ * Finds the full name to use for a database file name.
+ */
+static std::string databaseFileName(
+    std::string name, const std::string& dir, const std::string& ext = ".xml")
+{
+    // Add extension if necessary
+    if (name.substr(name.length()-5) != ext)
+        name = name + ext;
+
+    // Add directory if not in local
+    {
+        std::ifstream file(name.c_str(), std::ios::in);
+
+        // If that doesn't work, look in MPP_DATA_DIRECTORY/transport
+        if (!file.is_open())
+            name = Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") +
+                "/" + dir + "/" + name;
+    }
+
+    return name;
 }
 
     } // namespace Utilities

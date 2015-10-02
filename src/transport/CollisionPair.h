@@ -33,6 +33,7 @@
 #include "CollisionIntegral.h"
 #include "SharedPtr.h"
 #include "XMLite.h"
+
 #include <string>
 
 // Forward declarations
@@ -65,17 +66,15 @@ public:
     CollisionPairNew(
         const Mutation::Thermodynamics::Species& s1,
         const Mutation::Thermodynamics::Species& s2,
-        const Utilities::IO::XmlElement& xml);
+        const Mutation::Utilities::IO::XmlElement* xml);
 
     // Getter functions
     const std::string& species1() const { return m_sp1; }
     const std::string& species2() const { return m_sp2; }
     CollisionType type() const { return m_type; }
 
-    SharedPtr<CollisionIntegral> Q11() const { return mp_Q11; }
-    SharedPtr<CollisionIntegral> Q22() const { return mp_Q22; }
-    SharedPtr<CollisionIntegral> Bst() const { return mp_Bst; }
-    SharedPtr<CollisionIntegral> Cst() const { return mp_Cst; }
+    /// Get the collision integral corresponding to the given type.
+    SharedPtr<CollisionIntegral> get(const std::string& type);
 
 private:
 
@@ -93,28 +92,27 @@ private:
      * then database.end() is returned.
      */
     Mutation::Utilities::IO::XmlElement::const_iterator
-    findXmlElementWithIntegralType(
-        const std::string& kind,
-        const Mutation::Utilities::IO::XmlElement& database) const;
+    findXmlElementWithIntegralType(const std::string& kind) const;
 
     /**
      * Loads a particular collision integral from the database.
      */
-    SharedPtr<CollisionIntegral> loadIntegral(
-        const std::string& type,
-        const Mutation::Utilities::IO::XmlElement& database) const;
+    SharedPtr<CollisionIntegral> loadIntegral(const std::string& type) const;
 
 private:
 
+    /// Type of collision
     CollisionType m_type;
+
+    // Species names
     std::string   m_sp1;
     std::string   m_sp2;
 
-    // collision integrals
-    SharedPtr<CollisionIntegral> mp_Q11;
-    SharedPtr<CollisionIntegral> mp_Q22;
-    SharedPtr<CollisionIntegral> mp_Bst;
-    SharedPtr<CollisionIntegral> mp_Cst;
+    // Reference to xml database
+    const Mutation::Utilities::IO::XmlElement* mp_xml;
+
+    /// Group of collision integrals loaded for this pair
+    std::map<std::string, SharedPtr<CollisionIntegral> > m_integrals;
 };
 
     } // namespace Transport

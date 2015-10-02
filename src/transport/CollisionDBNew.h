@@ -30,8 +30,10 @@
 
 #include "CollisionPair.h"
 #include "CollisionGroup.h"
+#include "XMLite.h"
 
 #include <cassert>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -48,8 +50,7 @@ class CollisionDBNew
 public:
 
     /**
-     * Constructs a new CollisionDB type, loading all collision integral data
-     * from the database.
+     * Constructs a new CollisionDB type.
      */
     CollisionDBNew(
         const std::string& db_name,
@@ -64,53 +65,48 @@ public:
         return m_pairs[i];
     }
 
+    /**
+     * Returns the collision group corresponding to name, updated to the current
+     * state.  If the group is not loaded yet, it is first loaded from the
+     * database.
+     */
+    const CollisionGroup& group(const std::string& name);
+
     /// Provides Q11 collision integrals for electron-heavy interactions.
-    const CollisionGroup& Q11ei();
+    const CollisionGroup& Q11ei() { return group("Q11ei"); }
 
     /// Provides Q11 collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Q11ij();
+    const CollisionGroup& Q11ij() { return group("Q11ij"); }
 
     /// Provides Q22 collision integrals for electron-heavy interactions.
-    const CollisionGroup& Q22ei();
+    const CollisionGroup& Q22ei() { return group("Q22ei"); }
 
     /// Provides Q22 collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Q22ij();
+    const CollisionGroup& Q22ij() { return group("Q22ij"); }
 
     /// Provides B* collision integrals for electron-heavy interactions.
-    const CollisionGroup& Bstei();
+    const CollisionGroup& Bstei() { return group("Bstei"); }
 
     /// Provides B* collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Bstij();
+    const CollisionGroup& Bstij() { return group("Bstij"); }
 
     /// Provides C* collision integrals for electron-heavy interactions.
-    const CollisionGroup& Cstei();
+    const CollisionGroup& Cstei() { return group("Cstei"); }
 
     /// Provides C* collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Cstij();
+    const CollisionGroup& Cstij() { return group("Cstij"); }
 
 private:
 
-    /**
-     * Loads all of the required collision pairs from the database.
-     */
-    void loadCollisionPairs(std::string db_name);
-
-private:
-
+    Mutation::Utilities::IO::XmlDocument m_database;
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
+    bool m_tabulate;
 
     // List of collision pairs
     std::vector<CollisionPairNew> m_pairs;
 
-    // Collision groups
-    CollisionGroup m_Q11ei;
-    CollisionGroup m_Q11ij;
-    CollisionGroup m_Q22ei;
-    CollisionGroup m_Q22ij;
-    CollisionGroup m_Bstei;
-    CollisionGroup m_Bstij;
-    CollisionGroup m_Cstei;
-    CollisionGroup m_Cstij;
+    // CollisionGroup container
+    std::map<std::string, CollisionGroup> m_groups;
 };
 
     } // namespace Transport

@@ -51,19 +51,20 @@ public:
     /**
      * Empty constructor.
      */
-    CollisionGroup() : m_tabulate(true), m_size(0) { }
+    CollisionGroup(bool tabulate) : m_tabulate(tabulate), m_size(0) { }
 
     /**
      * Sets the collision integrals that are managed by this group.
      */
-    template <typename Iterator, typename Provider>
+    template <typename Iterator, typename Provider, typename Params>
     void manage(
         Iterator first, Iterator last,
-        SharedPtr<CollisionIntegral> (Provider::*f)() const)
+        SharedPtr<CollisionIntegral> (Provider::*f)(const Params&),
+        const Params& params)
     {
         std::vector< SharedPtr<CollisionIntegral> > integrals;
         while (first != last)
-            integrals.push_back(((*first++).*f)());
+            integrals.push_back(((*first++).*f)(params));
         manage(integrals);
     }
 
@@ -89,14 +90,25 @@ public:
      */
     const double& operator [] (int i) const { return m_values[i]; }
 
+    /**
+     * Access the value of the ith collision integral.
+     */
+    const double& operator () (int i) const { return m_values[i]; }
+
 private:
 
+    /// Whether or not to tabulate integrals managed by this group
     bool m_tabulate;
+
+    /// Number of integrals managed by this group
     int  m_size;
 
     /// vector of non-tabulated integrals
     std::vector< SharedPtr<CollisionIntegral> > m_integrals;
+
+    /// Internal vector of compute collision integral values
     std::vector<double> m_values;
+    std::vector<int>    m_map;
 };
 
 	} // namespace Transport
