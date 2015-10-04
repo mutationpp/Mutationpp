@@ -46,35 +46,36 @@ void CollisionGroup::manage(
 
     m_map.resize(m_size);
     m_values.resize(m_size);
+    m_unique_vals.resize(m_size);
 
     // Create a list of unique integrals and a mapping from original ordering to
     // the unique list
-    vector< SharedPtr<CollisionIntegral> > unique;
     for (int i = 0; i < integrals.size(); ++i) {
         SharedPtr<CollisionIntegral> integral = integrals[i];
         int j;
-        for (j = 0; j < unique.size(); ++j)
-            if (*integral == *unique[j]) break;
+        for (j = 0; j < m_integrals.size(); ++j)
+            if (*integral == *m_integrals[j]) break;
 
-        if (j == unique.size())
-            unique.push_back(integral);
+        if (j == m_integrals.size())
+            m_integrals.push_back(integral);
 
         m_map[i] = j;
     }
 
+    cout << "managing " << m_size << " integrals ("
+         << m_integrals.size() << " unique)" << endl;
+
     // If not tabulating, then we are done setting up
-    if (!m_tabulate) {
-        m_integrals = unique;
+    if (!m_tabulate)
         return;
-    }
 
     // Condense all the tabulatable integrals at the top of the list
     int next = 0;
-    for (int i = 0; i < unique.size(); ++i) {
-        if (unique[i]->canTabulate()) {
+    for (int i = 0; i < m_integrals.size(); ++i) {
+        if (m_integrals[i]->canTabulate()) {
             // Move this integral above the non-tabulatable list
             if (next != i) {
-                std::swap(unique[next], unique[i]);
+                std::swap(m_integrals[next], m_integrals[i]);
 
                 // Update the map
                 for (int j = 0; j < m_size; ++j) {
@@ -87,11 +88,23 @@ void CollisionGroup::manage(
         }
     }
 
-    cout << "managing " << m_size << " integrals (" << unique.size() << " unique)" << endl;
-    cout << "  tabulating " << next << endl;
-    cout << "  storing    " << unique.size()-next << endl;
+    // If nothing to tabulate, then we are done
+    if (next == 0)
+        return;
 
-    m_integrals = unique;
+    // Generate the table
+    m_table.resize(next, int((m_table_max-m_table_min)/m_table_delta)+1);
+
+    double T = m_table_min;
+    for (int j = 0; j < m_table.cols(); ++j) {
+        for (int i = 0; i < m_table.rows(); ++i)
+            m_table(i,j) = m_integrals[i]->compute(T);
+        T += m_table_delta;
+    }
+
+    cout << "-> tabulated " << m_table.rows() << " between "
+         << m_table_min << " and " << m_table_max << " K with "
+         << m_table_delta << " K increments" << endl;
 }
 
 //==============================================================================
@@ -99,11 +112,31 @@ void CollisionGroup::manage(
 CollisionGroup& CollisionGroup::update(
     double T, const Thermodynamics::Thermodynamics& thermo)
 {
-    for (int i = 0; i < m_size; ++i) {
-        SharedPtr<CollisionIntegral> integral = m_integrals[m_map[i]];
-        integral->getOtherParams(thermo);
-        m_values[i] = integral->compute(T);
+    // Compute tabulated data
+    if (m_table.rows() > 0) {
+        // Clip the temperature to the table bounds
+        T = std::max(std::min(T, m_table_max), m_table_min);
+
+        // Compute index of temperature >= to T
+        int i = std::min(
+            (int)((T-m_table_min)/m_table_delta)+1, (int)m_table.cols()-1);
+        double ratio = (T - m_table_min + i*m_table_delta)/m_table_delta;
+
+        // Linearly interpolate the table
+        m_unique_vals.head(m_table.rows()) =
+            ratio*(m_table.col(i) - m_table.col(i-1)) + m_table.col(i);
     }
+
+    // Compute non tabulated data
+    for (int i = m_table.rows(); i < m_integrals.size(); ++i) {
+        m_integrals[i]->getOtherParams(thermo);
+        m_unique_vals[i] = m_integrals[i]->compute(T);
+    }
+
+    // Finally copy unique values to full vector
+    for (int i = 0; i < m_size; ++i)
+        m_values[i] = m_unique_vals[m_map[i]];
+
     return *this;
 }
 

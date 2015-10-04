@@ -73,40 +73,112 @@ public:
     const CollisionGroup& group(const std::string& name);
 
     /// Provides Q11 collision integrals for electron-heavy interactions.
-    const CollisionGroup& Q11ei() { return group("Q11ei"); }
+    const Eigen::ArrayXd& Q11ei() { return group("Q11ei").array(); }
 
     /// Provides Q11 collision integrals for heavy-heavy interactions.
     const CollisionGroup& Q11ij() { return group("Q11ij"); }
 
+    /// Provides Q12 collision integrals for electron-heavy interactions.
+    const Eigen::ArrayXd& Q12ei() { return group("Q12ei").array(); }
+
+    /// Provides Q13 collision integrals for electron-heavy interactions.
+    const Eigen::ArrayXd& Q13ei() { return group("Q13ei").array(); }
+
+    /// Provides Q14 collision integrals for electron-heavy interactions.
+    const Eigen::ArrayXd& Q14ei() { return group("Q14ei").array(); }
+
+    /// Provides Q15 collision integrals for electron-heavy interactions.
+    const Eigen::ArrayXd& Q15ei() { return group("Q15ei").array(); }
+
     /// Provides Q22 collision integrals for electron-heavy interactions.
-    const CollisionGroup& Q22ei() { return group("Q22ei"); }
+    const Eigen::ArrayXd& Q22ei() { return group("Q22ei").array(); }
+
+    /// Provides Q22 collision integrals for diagonal heavy-heavy interactions.
+    const Eigen::ArrayXd& Q22ii() { return group("Q22ii").array(); }
 
     /// Provides Q22 collision integrals for heavy-heavy interactions.
     const CollisionGroup& Q22ij() { return group("Q22ij"); }
 
+    /// Provides Q23 collision integrals for electron-electron interactions.
+    const CollisionGroup& Q23ee() { return group("Q23ee"); }
+
+    /// Provides Q24 collision integrals for electron-electron interactions.
+    const CollisionGroup& Q24ee() { return group("Q24ee"); }
+
+    /// Provides A* collision integrals for electron-heavy interactions.
+    const Eigen::ArrayXd& Astei() { return group("Astei").array(); }
+
+    /// Provides A* collision integrals for heavy-heavy interactions.
+    const CollisionGroup& Astij() { return group("Astij"); }
+
     /// Provides B* collision integrals for electron-heavy interactions.
-    const CollisionGroup& Bstei() { return group("Bstei"); }
+    const Eigen::ArrayXd& Bstei() { return group("Bstei").array(); }
 
     /// Provides B* collision integrals for heavy-heavy interactions.
     const CollisionGroup& Bstij() { return group("Bstij"); }
 
     /// Provides C* collision integrals for electron-heavy interactions.
-    const CollisionGroup& Cstei() { return group("Cstei"); }
+    const Eigen::ArrayXd& Cstei() { return group("Cstei").array(); }
 
     /// Provides C* collision integrals for heavy-heavy interactions.
     const CollisionGroup& Cstij() { return group("Cstij"); }
+
+    /**
+     * Returns the pure, heavy species shear viscosities array.
+     */
+    const Eigen::ArrayXd& etai();
+
+    /**
+     * Returns binary diffusion coefficients for electron-heavy interactions.
+     */
+    const Eigen::ArrayXd& nDei();
+
+    /**
+     * Returns binary diffusion coefficients for heavy-heavy interactions.
+     */
+    const Eigen::ArrayXd& nDij();
+
+    /**
+     * Returns the average diffusion coefficients.
+     * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
+     */
+    const Eigen::ArrayXd& Dim();
+
+private:
+
+    /// Types of collision integral groups (ie: electron-heavy, ...).
+    enum GroupType {
+        EE = 0, EI, II, IJ, BAD_TYPE
+    };
+
+    /// Determines the type of group from the group name.
+    GroupType groupType(const std::string& name);
 
 private:
 
     Mutation::Utilities::IO::XmlDocument m_database;
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
+
+    // Tabulation parameters
     bool m_tabulate;
+    double m_table_min;
+    double m_table_max;
+    double m_table_del;
 
     // List of collision pairs
     std::vector<CollisionPairNew> m_pairs;
 
     // CollisionGroup container
     std::map<std::string, CollisionGroup> m_groups;
+
+    // Derived data
+    Eigen::ArrayXd m_etai;
+    Eigen::ArrayXd m_etafac;
+    Eigen::ArrayXd m_nDei;
+    Eigen::ArrayXd m_Deifac;
+    Eigen::ArrayXd m_nDij;
+    Eigen::ArrayXd m_Dijfac;
+    Eigen::ArrayXd m_Dim;
 };
 
     } // namespace Transport

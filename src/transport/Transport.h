@@ -30,6 +30,7 @@
 
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
+#include "CollisionDBNew.h"
 #include "ViscosityAlgorithm.h"
 #include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
@@ -489,6 +490,7 @@ private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB* mp_collisions;
+    CollisionDBNew* mp_collisions_new;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;

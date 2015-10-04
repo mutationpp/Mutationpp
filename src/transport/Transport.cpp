@@ -57,6 +57,7 @@ Transport::Transport(
 
     // Load the collision integral data
     mp_collisions = new CollisionDB(thermo);
+    mp_collisions_new = new CollisionDBNew("collisions.xml", thermo);
 
     // Load the viscosity calculator
     mp_viscosity = 

@@ -291,6 +291,26 @@ public:
      */
     void parseError(const std::string& error_msg) const;
     
+    /**
+     * Same as
+     * \code
+     * if (!test) parseError(error_msg);
+     * \endcode
+     */
+    void parseCheck(bool test, const char *const error_msg) const {
+        if (!test) parseError(error_msg);
+    }
+
+    /**
+     * Same as
+     * \code
+     * if (!test) parseError(error_msg);
+     * \endcode
+     */
+    void parseCheck(bool test, const std::string& error_msg) const {
+        if (!test) parseError(error_msg);
+    }
+
     friend class XmlDocument;
 
 private:    

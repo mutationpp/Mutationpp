@@ -8,7 +8,7 @@
  - first pass at creating the structure for all of the required data
 
 =============================================================================-->
-<collisions tabulate="yes">
+<collisions tabulate="yes" Tmin="300" Tmax="20000" dT="100">
 
     <!-- Default collision integral data -->
     <defaults>
@@ -30,13 +30,24 @@
         
         <!-- Electron-Neutral interactions -->
         <electron-neutral>
-            <!-- NO DEFAULTS! -->
+            <Q12 type="from Bst">
+            <Q13 type="from Cst">
+            <Q14 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
+            <Q15 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
         </electron-neutral>
         
         <!-- Charged interactions -->
         <charged>
             <Q11 type="Debye-Huckle"/>
+            <Q12 type="Debye-Huckle"/>
+            <Q13 type="Debye-Huckle"/>
+            <Q13 type="Debye-Huckle"/>
+            <Q14 type="Debye-Huckle"/>
+            <Q15 type="Debye-Huckle"/>
             <Q22 type="Debye-Huckle"/>
+            <Q23 type="Debye-Huckle"/>
+            <Q24 type="Debye-Huckle"/>
+            <Ast type="Debye-Huckle"/>
             <Bst type="Debye-Huckle"/>
             <Cst type="Debye-Huckle"/>
         </charged>

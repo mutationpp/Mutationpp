@@ -161,8 +161,11 @@ SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
 {
     IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind);
-    if (iter == mp_xml->end())
-        return SharedPtr<CollisionIntegral>();
+    if (iter == mp_xml->end()) {
+        cout << "Collision integral " << kind << " is not given for the pair ("
+             << m_sp1 << ", " << m_sp2 << ")." << endl;
+        exit(1);
+    }
 
     string type;
     iter->getAttribute("type", type, "Integral type must be specified.");
@@ -171,7 +174,7 @@ SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
         Config::Factory<CollisionIntegral>::create(
             type, CollisionIntegral::ARGS(*iter, *this)));
 
-    if (p_ci == NULL) iter->parseError(
+    iter->parseCheck(p_ci != NULL,
         "Invalid collision integral type '" + type + "' for " + kind +
 		"_(" + m_sp1 + ", " + m_sp2 + ").");
 

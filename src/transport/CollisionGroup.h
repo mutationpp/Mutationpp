@@ -33,6 +33,8 @@
 #include "CollisionIntegral.h"
 #include "SharedPtr.h"
 
+#include <Eigen/Dense>
+
 #include <vector>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
@@ -49,9 +51,19 @@ class CollisionGroup
 public:
 
     /**
-     * Empty constructor.
+     * Constructs an empty CollisionGroup with specified tabulation parameters.
+     * @param tabulate - whether or not to tabulate collision integrals
+     * @param min      - minimum temperature for tabulation
+     * @param max      - maximum temperature for tabulation
+     * @param delta    - temperature spacing in the table
      */
-    CollisionGroup(bool tabulate) : m_tabulate(tabulate), m_size(0) { }
+    CollisionGroup(
+        bool tabulate = true,
+        double min = 300.0, double max = 20000.0, double delta = 100.0) :
+        m_tabulate(tabulate),
+        m_size(0),
+        m_table_min(min), m_table_max(max), m_table_delta(delta)
+    { }
 
     /**
      * Sets the collision integrals that are managed by this group.
@@ -95,6 +107,11 @@ public:
      */
     const double& operator () (int i) const { return m_values[i]; }
 
+    /**
+     * Access the entire array of collision integral values.
+     */
+    const Eigen::ArrayXd& array() const { return m_values; }
+
 private:
 
     /// Whether or not to tabulate integrals managed by this group
@@ -106,9 +123,16 @@ private:
     /// vector of non-tabulated integrals
     std::vector< SharedPtr<CollisionIntegral> > m_integrals;
 
-    /// Internal vector of compute collision integral values
-    std::vector<double> m_values;
-    std::vector<int>    m_map;
+    /// Internal vector of computed collision integral values
+    Eigen::ArrayXd   m_values;
+    Eigen::ArrayXd   m_unique_vals;
+    std::vector<int> m_map;
+
+    /// Table of tabulated integrals versus temperature
+    double m_table_min;
+    double m_table_max;
+    double m_table_delta;
+    Eigen::ArrayXXd m_table;
 };
 
 	} // namespace Transport

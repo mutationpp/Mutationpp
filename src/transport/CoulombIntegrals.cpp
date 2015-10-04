@@ -60,6 +60,9 @@ enum CoulombType {
     CST_ATT, CST_REP,
     EST_ATT, EST_REP,
     N_TABLE_TYPES, // All collision integrals in the table must come before this
+    Q12_ATT, Q12_REP,
+    Q13_ATT, Q13_REP,
+    Q23_ATT, Q23_REP,
     AST_ATT, AST_REP
 };
 
@@ -110,8 +113,16 @@ public:
         }
 
         switch (type) {
+        // Derived data from the tabulated ones
+        case Q12_ATT: return m_values[CST_ATT]*m_values[Q11_ATT];
+        case Q12_REP: return m_values[CST_REP]*m_values[Q11_REP];
+        case Q13_ATT: return m_values[Q11_ATT]*(1.25*m_values[CST_ATT]-0.25*m_values[BST_ATT]);
+        case Q13_REP: return m_values[Q11_REP]*(1.25*m_values[CST_REP]-0.25*m_values[BST_REP]);
+        case Q23_ATT: return m_values[EST_ATT]*m_values[Q22_ATT];
+        case Q23_REP: return m_values[EST_REP]*m_values[Q22_REP];
         case AST_ATT: return m_values[Q22_ATT]/m_values[Q11_ATT];
         case AST_REP: return m_values[Q22_REP]/m_values[Q11_REP];
+        // Tabulated data
         default:      return m_values[type];
         }
     }

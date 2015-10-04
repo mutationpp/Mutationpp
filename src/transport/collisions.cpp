@@ -23,16 +23,8 @@ int main(int argc, char* argv[])
 
     CollisionDBNew db("collisions", mix);
 
-    mix.equilibrate(12000.0, ONEATM);
-
-    printIntegrals(db, "Q11ee");
-    printIntegrals(db, "Q11ei");
-    printIntegrals(db, "Q11ii");
-    printIntegrals(db, "Q11ij");
-
-    printIntegrals(db, "Bstee");
-    printIntegrals(db, "Bstei");
-    printIntegrals(db, "Bstii");
+    mix.equilibrate(10000.0, ONEATM);
+    printIntegrals(db, argv[2]);
 
     return 0;
 }
