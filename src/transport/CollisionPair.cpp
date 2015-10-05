@@ -157,7 +157,7 @@ CollisionPairNew::findXmlElementWithIntegralType(
 //==============================================================================
 
 SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
-    const string& kind) const
+    const string& kind)
 {
     IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind);

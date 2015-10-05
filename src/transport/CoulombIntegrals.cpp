@@ -134,7 +134,7 @@ public:
         assert(Te >= 0.0);
         assert(ne >= 0.0);
         // Including electron and ion contributions
-        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(std::max(ne,1000.0)*QE*QE));
+        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(std::max(ne,1.0)*QE*QE));
     }
 
 private:
@@ -240,8 +240,22 @@ public:
 
         if (tag == "Q11")
             m_type = (type == ATTRACTIVE ? Q11_ATT : Q11_REP);
+        else if (tag == "Q12")
+            m_type = (type == ATTRACTIVE ? Q12_ATT : Q12_REP);
+        else if (tag == "Q13")
+            m_type = (type == ATTRACTIVE ? Q13_ATT : Q13_REP);
+        else if (tag == "Q14")
+            m_type = (type == ATTRACTIVE ? Q14_ATT : Q14_REP);
+        else if (tag == "Q15")
+            m_type = (type == ATTRACTIVE ? Q15_ATT : Q15_REP);
         else if (tag == "Q22")
             m_type = (type == ATTRACTIVE ? Q22_ATT : Q22_REP);
+        else if (tag == "Q23")
+            m_type = (type == ATTRACTIVE ? Q23_ATT : Q23_REP);
+        else if (tag == "Q24")
+            m_type = (type == ATTRACTIVE ? Q24_ATT : Q24_REP);
+        else if (tag == "Ast")
+            m_type = (type == ATTRACTIVE ? AST_ATT : AST_REP);
         else if (tag == "Bst")
             m_type = (type == ATTRACTIVE ? BST_ATT : BST_REP);
         else if (tag == "Cst")

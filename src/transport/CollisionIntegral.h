@@ -58,10 +58,10 @@ public:
 	struct ARGS {
 	    ARGS(
 	        const Mutation::Utilities::IO::XmlElement& arg1,
-	        const CollisionPairNew& arg2) :
+	        CollisionPairNew& arg2) :
 	        xml(arg1), pair(arg2) {}
 	    const Mutation::Utilities::IO::XmlElement& xml;
-	    const CollisionPairNew& pair;
+	    CollisionPairNew& pair;
 	};
 
 	/**

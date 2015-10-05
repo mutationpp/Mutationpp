@@ -29,8 +29,13 @@
 
 #include "AutoRegistration.h"
 #include "CollisionIntegral.h"
+#include "CollisionPair.h"
 #include "StringUtils.h"
+#include "SharedPtr.h"
+#include "Thermodynamics.h"
 #include "XMLite.h"
+using namespace Mutation;
+using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
@@ -98,6 +103,254 @@ private:
 
 // Register the "constant" CollisionIntegral
 Config::ObjectProvider<ConstantColInt, CollisionIntegral> const_ci("constant");
+
+//==============================================================================
+
+/**
+ * Represents a collision integral that is computed based on the expression,
+ * \f[ B* = \frac{5Q^{1,2} - 4Q^{1,3}}{Q^{1,1}}, \f]
+ * assumes the other data is available.
+ */
+class FromBstColInt : public CollisionIntegral
+{
+public:
+    FromBstColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Determine the type of B* expression to evaluate
+        string tag = args.xml.tag();
+             if (tag == "Bst") m_type = BST;
+        else if (tag == "Q11") m_type = Q11;
+        else if (tag == "Q12") m_type = Q12;
+        else if (tag == "Q13") m_type = Q13;
+        else args.xml.parseError(
+            "Cannot determine " + tag + " from C* expression");
+
+        switch (m_type) {
+        case BST:
+            m_ci1 = args.pair.get("Q11");
+            m_ci2 = args.pair.get("Q12");
+            m_ci3 = args.pair.get("Q13");
+            break;
+        case Q11:
+            m_ci1 = args.pair.get("Bst");
+            m_ci2 = args.pair.get("Q12");
+            m_ci3 = args.pair.get("Q13");
+            break;
+        case Q12:
+            m_ci1 = args.pair.get("Bst");
+            m_ci2 = args.pair.get("Q11");
+            m_ci3 = args.pair.get("Q13");
+            break;
+        case Q13:
+            m_ci1 = args.pair.get("Bst");
+            m_ci2 = args.pair.get("Q11");
+            m_ci3 = args.pair.get("Q12");
+            break;
+        }
+    }
+
+    /// Make sure required integrals were loaded
+    bool loaded() const {
+        return (m_ci1->loaded() && m_ci2->loaded() && m_ci3->loaded());
+    }
+
+    // Allow tabulation of this integral type
+    bool canTabulate() const {
+        return (m_ci1->canTabulate() &&
+                m_ci2->canTabulate() &&
+                m_ci3->canTabulate());
+    }
+
+    // Forward the getOtherParams call to the underlying integrals
+    void getOtherParams(const Thermodynamics::Thermodynamics& thermo) {
+        m_ci1->getOtherParams(thermo);
+        m_ci2->getOtherParams(thermo);
+        m_ci3->getOtherParams(thermo);
+    }
+
+private:
+
+    enum BstType {
+        BST, Q11, Q12, Q13
+    };
+
+    // Evaluate the B* expression
+    double compute_(double T) {
+        switch(m_type) {
+        case BST: return // (5Q12 - 4Q13)/Q11
+            (5.*m_ci2->compute(T)-4.*m_ci3->compute(T))/m_ci1->compute(T);
+        case Q11: return // (5Q12 - 4Q13)/B*
+            (5.*m_ci2->compute(T)-4.*m_ci3->compute(T))/m_ci1->compute(T);
+        case Q12: return // (B*Q11 + 4Q13)/5
+            (m_ci1->compute(T)*m_ci2->compute(T)+4.*m_ci3->compute(T))/5.;
+        case Q13: return // (5*Q12 - B*Q11)/4
+            (5.*m_ci3->compute(T)-m_ci1->compute(T)*m_ci2->compute(T))/4.;
+        }
+    }
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const FromBstColInt& compare = dynamic_cast<const FromBstColInt&>(ci);
+        return (*m_ci1 == *(compare.m_ci1) &&
+                *m_ci2 == *(compare.m_ci2) &&
+                *m_ci3 == *(compare.m_ci3));
+    }
+
+private:
+
+    BstType m_type;
+
+    SharedPtr<CollisionIntegral> m_ci1;
+    SharedPtr<CollisionIntegral> m_ci2;
+    SharedPtr<CollisionIntegral> m_ci3;
+};
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<FromBstColInt, CollisionIntegral> bst_ci("from B*");
+
+//==============================================================================
+
+/**
+ * Represents a collision integral that is computed based on the expression,
+ * \f[ C* = \frac{Q^{1,2}}{Q^{1,1}}, \f]
+ * assumes the other data is available.
+ */
+class FromCstColInt : public CollisionIntegral
+{
+public:
+    FromCstColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Determine the type of B* expression to evaluate
+        string tag = args.xml.tag();
+             if (tag == "Cst") m_type = CST;
+        else if (tag == "Q11") m_type = Q11;
+        else if (tag == "Q12") m_type = Q12;
+        else args.xml.parseError(
+            "Cannot determine " + tag + " from C* expression");
+
+        switch (m_type) {
+        case CST:
+            m_ci1 = args.pair.get("Q11");
+            m_ci2 = args.pair.get("Q12");
+            break;
+        case Q11:
+            m_ci1 = args.pair.get("Cst");
+            m_ci2 = args.pair.get("Q12");
+            break;
+        case Q12:
+            m_ci1 = args.pair.get("Cst");
+            m_ci2 = args.pair.get("Q11");
+            break;
+        }
+    }
+
+    /// Make sure required integrals were loaded
+    bool loaded() const { return (m_ci1->loaded() && m_ci2->loaded()); }
+
+    // Allow tabulation of this integral type
+    bool canTabulate() const {
+        return (m_ci1->canTabulate() && m_ci2->canTabulate());
+    }
+
+    // Forward the getOtherParams call to the underlying integrals
+    void getOtherParams(const Thermodynamics::Thermodynamics& thermo) {
+        m_ci1->getOtherParams(thermo);
+        m_ci2->getOtherParams(thermo);
+    }
+
+private:
+
+    enum CstType {
+        CST, Q11, Q12
+    };
+
+    // Evaluate the B* expression
+    double compute_(double T) {
+        switch(m_type) {
+        case CST: return // Q12/Q11
+            (m_ci2->compute(T)/m_ci1->compute(T));
+        case Q11: return // Q12/C*
+            (m_ci2->compute(T)/m_ci1->compute(T));
+        case Q12: return // C* Q11
+            (m_ci1->compute(T)*m_ci2->compute(T));
+        }
+    }
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const FromCstColInt& compare = dynamic_cast<const FromCstColInt&>(ci);
+        return (*m_ci1 == *(compare.m_ci1) && *m_ci2 == *(compare.m_ci2));
+    }
+
+private:
+
+    CstType m_type;
+
+    SharedPtr<CollisionIntegral> m_ci1;
+    SharedPtr<CollisionIntegral> m_ci2;
+};
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<FromCstColInt, CollisionIntegral> cst_ci("from C*");
+
+//==============================================================================
+
+/**
+ * Represents a collision integral which is taken as the ratio of another
+ * integral.
+ */
+class RatioColInt : public CollisionIntegral
+{
+public:
+    RatioColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Load the ratio
+        args.xml.getAttribute("ratio", m_ratio,
+            "A ratio collision integral must provide a 'ratio' attribute.");
+
+        // Load the integral
+        string integral;
+        args.xml.getAttribute("integral", integral,
+            "A ratio collision integral must provide a 'integral' attribute.");
+        m_integral = args.pair.get(integral);
+    }
+
+    // Allow tabulation of this integral type
+    bool canTabulate() const { return m_integral->canTabulate(); }
+
+    // Forward the getOtherParams call to the underlying integral
+    void getOtherParams(const Thermodynamics::Thermodynamics& thermo) {
+        m_integral->getOtherParams(thermo);
+    }
+
+private:
+
+    double compute_(double T) { return m_ratio * m_integral->compute(T); }
+
+    /**
+     * Returns true if the ratio and integral are the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const RatioColInt& compare = dynamic_cast<const RatioColInt&>(ci);
+        return (m_ratio == compare.m_ratio &&
+            *m_integral == *(compare.m_integral));
+    }
+
+private:
+
+    double m_ratio;
+    SharedPtr<CollisionIntegral> m_integral;
+};
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<RatioColInt, CollisionIntegral> ratio_ci("ratio");
 
 //==============================================================================
 

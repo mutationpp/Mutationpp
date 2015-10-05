@@ -97,7 +97,7 @@ private:
     /**
      * Loads a particular collision integral from the database.
      */
-    SharedPtr<CollisionIntegral> loadIntegral(const std::string& type) const;
+    SharedPtr<CollisionIntegral> loadIntegral(const std::string& type);
 
 private:
 

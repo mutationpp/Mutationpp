@@ -1,12 +1,24 @@
 <!--============================================================================
  
- Mutation++ collision integral database
+                 ========================================
+                  MUTATION++ collision integral database
+                 ========================================
+ 
+ Default collision integral values are given in <defaults>, followed by 
+ explicitly input collision integrals. Default data is further split into the
+ 4 types of collisions: <neutral-neutral>, <ion-neutral>, <electron-neutral>,
+ and <charged>.  Data for each unique collision pair is given in a <pair>
+ XML node.
+ 
+ Please maintain the following ordering to aid manual searching:
+     1) Electron-Neutral pairs first with electron as s1 and neutral as s2
+     2) All other pairs with s1 and s2 ordered alphabetically
 
  History:
  ========
- 25/09/15: Initial development (J.B. Scoggins)
+ 25/09/15: (JBS) Initial development 
  - first pass at creating the structure for all of the required data
-
+ 05/10/15: (JBS) All data and integral types added for air13 mixture
 =============================================================================-->
 <collisions tabulate="yes" Tmin="300" Tmax="20000" dT="100">
 
@@ -14,8 +26,8 @@
     <defaults>
         <!-- Neutral-Neutral interactions -->
         <neutral-neutral>
-            <Q11 type="Lennard-Jones"/>
-            <Q22 type="Lennard-Jones"/>
+            <Q11 type="Stockmayer"/>
+            <Q22 type="Stockmayer"/>
             <Bst type="constant" value="1.15" ref="Wright2005"/>
             <Cst type="constant" value="0.92" ref="Wright2005"/>
         </neutral-neutral>
@@ -30,8 +42,9 @@
         
         <!-- Electron-Neutral interactions -->
         <electron-neutral>
-            <Q12 type="from Bst">
-            <Q13 type="from Cst">
+            <!-- Requiring that Q11, Q22, Bst, and Cst are provided -->
+            <Q12 type="from C*"/>
+            <Q13 type="from B*"/>
             <Q14 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
             <Q15 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
         </electron-neutral>
@@ -51,7 +64,6 @@
             <Bst type="Debye-Huckle"/>
             <Cst type="Debye-Huckle"/>
         </charged>
-        
     </defaults>
 
     <!-- Dipole Polarizabilities -->
@@ -98,7 +110,7 @@
     
     <!--========================================================================
      Explicitly defined collision pairs
-     Please maintain the following ordering:
+     Please maintain the following ordering (though it's not required):
      1) Electron-Neutral pairs first with electron as s1
      2) All other pairs with s1 and s2 ordered alphabetically
     =========================================================================-->

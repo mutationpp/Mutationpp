@@ -34,6 +34,9 @@ using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
+#include <Eigen/Dense>
+using namespace Eigen;
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -176,14 +179,14 @@ const CollisionGroup& CollisionDBNew::group(const string& name)
 
 //==============================================================================
 
-const Eigen::ArrayXd& CollisionDBNew::etai()
+const ArrayXd& CollisionDBNew::etai()
 {
     return (m_etai = std::sqrt(m_thermo.T()) * m_etafac / Q22ii());
 }
 
 //==============================================================================
 
-const Eigen::ArrayXd& CollisionDBNew::nDei()
+const ArrayXd& CollisionDBNew::nDei()
 {
     if (m_nDei.size() > 0)
         m_nDei = std::sqrt(m_thermo.Te()) * m_Deifac / Q11ei();
@@ -192,16 +195,44 @@ const Eigen::ArrayXd& CollisionDBNew::nDei()
 
 //==============================================================================
 
-const Eigen::ArrayXd& CollisionDBNew::nDij()
+const ArrayXd& CollisionDBNew::nDij()
 {
-    return (m_nDij = std::sqrt(m_thermo.T()) * m_Dijfac / Q11ij().array());
+    return (m_nDij = std::sqrt(m_thermo.T()) * m_Dijfac / Q11ij());
 }
 
 //==============================================================================
 
-const Eigen::ArrayXd& CollisionDBNew::Dim()
+const ArrayXd& CollisionDBNew::Dim()
 {
-    return (m_Dim = Eigen::ArrayXd::Zero(m_thermo.nSpecies()));
+    const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
+    const int k  = ns - nh;
+    const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-12);
+
+    // Electron
+    if (k > 1) {
+        nDei(); // update nDei
+        m_Dim(0) = (X / m_nDei).tail(nh).sum();
+        m_Dim.tail(nh) = X(0) / m_nDei.tail(nh);
+    } else
+        m_Dim.setZero();
+
+    // Heavies
+    nDij(); // update nDij
+    for (int i = 0, index; i < nh; ++i) {
+        for (int j = i+1; j < nh; ++j) {
+            index = (i*nh+j);
+            m_Dim(i+k) += X(j+k)/m_nDij(index);
+            m_Dim(j+k) += X(i+k)/m_nDij(index);
+        }
+    }
+
+    // Compute (1-X_i) as sum_j!=i X_j for better accuracy
+    for (int i = 0; i < ns; ++i)
+        m_Dim(i) = (X.head(i).sum() + X.tail(ns-i-1).sum()) / m_Dim(i);
+
+    // Remove number density and return
+    return (m_Dim /= m_thermo.numberDensity());
 }
 
 //==============================================================================

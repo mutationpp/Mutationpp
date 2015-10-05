@@ -74,7 +74,7 @@ static std::string databaseFileName(
     std::string name, const std::string& dir, const std::string& ext = ".xml")
 {
     // Add extension if necessary
-    if (name.substr(name.length()-5) != ext)
+    if (name.substr(name.length()-ext.length()) != ext)
         name = name + ext;
 
     // Add directory if not in local

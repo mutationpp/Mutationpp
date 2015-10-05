@@ -62,9 +62,6 @@ void CollisionGroup::manage(
         m_map[i] = j;
     }
 
-    cout << "managing " << m_size << " integrals ("
-         << m_integrals.size() << " unique)" << endl;
-
     // If not tabulating, then we are done setting up
     if (!m_tabulate)
         return;
@@ -101,10 +98,6 @@ void CollisionGroup::manage(
             m_table(i,j) = m_integrals[i]->compute(T);
         T += m_table_delta;
     }
-
-    cout << "-> tabulated " << m_table.rows() << " between "
-         << m_table_min << " and " << m_table_max << " K with "
-         << m_table_delta << " K increments" << endl;
 }
 
 //==============================================================================
@@ -120,7 +113,7 @@ CollisionGroup& CollisionGroup::update(
         // Compute index of temperature >= to T
         int i = std::min(
             (int)((T-m_table_min)/m_table_delta)+1, (int)m_table.cols()-1);
-        double ratio = (T - m_table_min + i*m_table_delta)/m_table_delta;
+        double ratio = (T - m_table_min - i*m_table_delta)/m_table_delta;
 
         // Linearly interpolate the table
         m_unique_vals.head(m_table.rows()) =

@@ -76,7 +76,7 @@ public:
     const Eigen::ArrayXd& Q11ei() { return group("Q11ei").array(); }
 
     /// Provides Q11 collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Q11ij() { return group("Q11ij"); }
+    const Eigen::ArrayXd& Q11ij() { return group("Q11ij").array(); }
 
     /// Provides Q12 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q12ei() { return group("Q12ei").array(); }
@@ -97,31 +97,31 @@ public:
     const Eigen::ArrayXd& Q22ii() { return group("Q22ii").array(); }
 
     /// Provides Q22 collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Q22ij() { return group("Q22ij"); }
+    const Eigen::ArrayXd& Q22ij() { return group("Q22ij").array(); }
 
-    /// Provides Q23 collision integrals for electron-electron interactions.
-    const CollisionGroup& Q23ee() { return group("Q23ee"); }
+    /// Provides Q23 collision integrals for electron-electron interaction.
+    double Q23ee() { return group("Q23ee")[0]; }
 
-    /// Provides Q24 collision integrals for electron-electron interactions.
-    const CollisionGroup& Q24ee() { return group("Q24ee"); }
+    /// Provides Q24 collision integrals for electron-electron interaction.
+    double Q24ee() { return group("Q24ee")[0]; }
 
     /// Provides A* collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Astei() { return group("Astei").array(); }
 
     /// Provides A* collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Astij() { return group("Astij"); }
+    const Eigen::ArrayXd& Astij() { return group("Astij").array(); }
 
     /// Provides B* collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Bstei() { return group("Bstei").array(); }
 
     /// Provides B* collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Bstij() { return group("Bstij"); }
+    const Eigen::ArrayXd& Bstij() { return group("Bstij").array(); }
 
     /// Provides C* collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Cstei() { return group("Cstei").array(); }
 
     /// Provides C* collision integrals for heavy-heavy interactions.
-    const CollisionGroup& Cstij() { return group("Cstij"); }
+    const Eigen::ArrayXd& Cstij() { return group("Cstij").array(); }
 
     /**
      * Returns the pure, heavy species shear viscosities array.
@@ -171,7 +171,7 @@ private:
     // CollisionGroup container
     std::map<std::string, CollisionGroup> m_groups;
 
-    // Derived data
+    // Derived data and helper arrays
     Eigen::ArrayXd m_etai;
     Eigen::ArrayXd m_etafac;
     Eigen::ArrayXd m_nDei;
