@@ -25,7 +25,7 @@ public:
     std::vector<double> getPostShockTemperature(){ return v_temp_post; }
     double getVsminusV2(){ return m_VsmV2; }
     double getPostShockDensity(){ return m_rho_post; }
-    double getPostMomentumDensity(){ return getMomentumDensity(); }
+    double getPostMomentumDensity(){ return mp_input_data->getMomentumDensity(); }
 
 protected:
     void computePostShockConditions();

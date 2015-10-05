@@ -28,24 +28,27 @@ void PostShockConditionsColdGas::computePostShockConditions(){
 
     double c1 = mp_mixture->frozenSoundSpeed();
     double M1 = mp_input_data->getPreShockVelocity() / c1;
-    double M1_s = h1 * M1;
+    double M1_s = M1 * M1; 
 
     // Mole Fractions do not change across the shock
     v_X_post = mp_input_data->getPreShockMoleFrac();
     
+    // Applying Rankine-Hugoniot Relations
     m_P_post = mp_input_data->getPreShockPressure() * ( 2.0 * gamma * M1_s - gamma + 1.0 ) / gamma_p1 ;
     m_V_post = mp_input_data->getPreShockVelocity() - c1 * 2.0 / gamma_p1 * ( M1 - 1.0 / M1 );
     v_temp_post[0] = mp_input_data->getPreShockTemperature()[0] * ( 2.0 * gamma * M1_s - gamma + 1.0 ) * ( gamma - 1.0 + 2.0 / M1_s ) / ( gamma_p1 * gamma_p1 );
 
+    // Computing Vs-V2
     m_VsmV2 =  mp_input_data->getPreShockVelocity() - m_V_post;
 
+    // The other temperatures are frozen across the shock
     for ( int i_nEn = 1; i_nEn < m_nEnergyEqns; ++i_nEn ){
         v_temp_post[i_nEn] = mp_input_data->getPreShockTemperature()[ i_nEn ];
     }
 
     // Density computed from mass conservation
-    m_rho_post = getMomentumDensity() / m_V_post;
-    p_mixture->convert<Mutation::Thermodynamics::X_TO_Y>( &v_X[0], &v_rhoi_post[0] );
+    m_rho_post = mp_input_data->getMomentumDensity() / m_V_post;
+    mp_mixture->convert<Mutation::Thermodynamics::X_TO_Y>( &v_X_post[0], &v_rhoi_post[0] );
 
     for ( int i_ns = 0; i_ns < m_ns; +i_ns ){
         v_rhoi_post[i_ns] *= m_rho_post;
