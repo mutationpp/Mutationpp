@@ -108,12 +108,7 @@
     </dispersion-coefficients>
     
     
-    <!--========================================================================
-     Explicitly defined collision pairs
-     Please maintain the following ordering (though it's not required):
-     1) Electron-Neutral pairs first with electron as s1
-     2) All other pairs with s1 and s2 ordered alphabetically
-    =========================================================================-->
+    <!-- Explicitly defined collision pairs -->
     <!-- e- -->
     <pair s1="e-" s2="Ar">
         <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="15">

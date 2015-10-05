@@ -25,6 +25,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "AutoRegistration.h"
+#include "CollisionDBNew.h"
+#include "Thermodynamics.h"
 #include "ViscosityAlgorithm.h"
 #include "GuptaYos.h"
 
@@ -41,9 +44,8 @@ class ViscosityGuptaYos : public ViscosityAlgorithm, public GuptaYos
 {
 public:
 
-    ViscosityGuptaYos(CollisionDB& collisions) 
+    ViscosityGuptaYos(ViscosityAlgorithm::ARGS collisions)
         : ViscosityAlgorithm(collisions),
-          m_shift(collisions.nSpecies()-collisions.nHeavy()),
           A(collisions.nHeavy(), collisions.nHeavy()),
           B(collisions.nHeavy(), collisions.nHeavy()),
           a(collisions.nHeavy())
@@ -52,29 +54,29 @@ public:
     /**
      * Returns the viscosity of the mixture in Pa-s.
      */
-   double viscosity(
-        double Th, double Te, double nd, const double *const p_x)
+   double viscosity()
     {
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
+        const int k  = ns - nh;
         
-        const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
-        const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
-        const ArrayXd&  mass  = m_collisions.mass();
-        const Map<const ArrayXd> x(p_x+(ns-nh), nh);
+        const ArrayXd& nDij = m_collisions.nDij();
+        const ArrayXd& Ast  = m_collisions.Astij();
+        const ArrayXd& mi   = m_collisions.mass();
+        const Map<const ArrayXd> x(m_collisions.thermo().X()+k, nh);
         
         // Compute the symmetric matrix A and vector a
-        for (int j = m_shift; j < ns; ++j)
-            for (int i = j; i < ns; ++i)
-                A(i-m_shift,j-m_shift) = (2.0 - 1.2 * Astar(i,j)) /
-                    ((mass(i) + mass(j)) * nDij(i,j));
-        B.triangularView<Lower>() =
-                (Astar/nDij).bottomRightCorner(nh,nh).matrix();
+        for (int j = 0, index = 0; j < nh; ++j) {
+            for (int i = j; i < nh; ++i, ++index) {
+                A(i,j) = (2.0-1.2*Ast(index))/((mi(i+k)+mi(j+k))*nDij(index));
+                B(i,j) = Ast(index) / nDij(index);
+            }
+        }
                 
         // Leave B as symmetric and postpone dividing by m(i) until after B*x
         // which uses fewer divides and allows for sym-matrix-vector product
         a.matrix() = B.selfadjointView<Lower>() * x.matrix();
-        a *= 1.2 / mass.tail(nh);
+        a *= 1.2 / mi.tail(nh);
             
         // Now compute the viscosity using Gupta-Yos
         return guptaYos(A, a, x);
@@ -82,8 +84,6 @@ public:
     
 private:
     
-    int m_shift;
-
     ArrayXXd A;
     MatrixXd B;
     ArrayXd  a;

@@ -56,8 +56,20 @@ public:
         const std::string& db_name,
         const Thermodynamics::Thermodynamics& thermo);
 
+    /// Returns number of species in the database.
+    int nSpecies() const;
+
+    /// Returns number of heavy particles in the database.
+    int nHeavy() const;
+
     /// Returns the number of collision pairs in this database.
     int size() const { return m_pairs.size(); }
+
+    /// Returns an array of species masses in kg.
+    const Eigen::ArrayXd& mass() const { return m_mass; }
+
+    /// Returns the reference of thermo.
+    const Thermodynamics::Thermodynamics& thermo() const { return m_thermo; }
 
     /// Returns i'th CollisionPair in the database.
     const CollisionPairNew& operator [] (int i) const {
@@ -123,19 +135,13 @@ public:
     /// Provides C* collision integrals for heavy-heavy interactions.
     const Eigen::ArrayXd& Cstij() { return group("Cstij").array(); }
 
-    /**
-     * Returns the pure, heavy species shear viscosities array.
-     */
+    /// Returns the pure, heavy species shear viscosities array.
     const Eigen::ArrayXd& etai();
 
-    /**
-     * Returns binary diffusion coefficients for electron-heavy interactions.
-     */
+    /// Returns binary diffusion coefficients for electron-heavy interactions.
     const Eigen::ArrayXd& nDei();
 
-    /**
-     * Returns binary diffusion coefficients for heavy-heavy interactions.
-     */
+    /// Returns binary diffusion coefficients for heavy-heavy interactions.
     const Eigen::ArrayXd& nDij();
 
     /**
@@ -172,6 +178,7 @@ private:
     std::map<std::string, CollisionGroup> m_groups;
 
     // Derived data and helper arrays
+    Eigen::ArrayXd m_mass;
     Eigen::ArrayXd m_etai;
     Eigen::ArrayXd m_etafac;
     Eigen::ArrayXd m_nDei;

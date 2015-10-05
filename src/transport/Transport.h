@@ -31,8 +31,6 @@
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
 #include "CollisionDBNew.h"
-#include "ViscosityAlgorithm.h"
-#include "ThermalConductivityAlgorithm.h"
 #include "Ramshaw.h"
 #include "Utilities.h"
 
@@ -47,10 +45,14 @@ if (mp_collisions == NULL) {\
     return __RET__;\
 }
 
+class ThermalConductivityAlgorithm;
+class ViscosityAlgorithm;
+
+
 /**
  * Manages the computation of transport properties.
  */
-class Transport //: public Mutation::Thermodynamics::StateModelUpdateHandler
+class Transport
 {
 public:
     
@@ -74,48 +76,24 @@ public:
         return mp_collisions;
     }
     
-    void stateUpdated() {
-        std::cout << "stateUpdated: Transport" << std::endl;
+    CollisionDBNew& collisionDB() {
+        return m_collisions;
     }
     
-    /**
-     * Sets the algorithm to use when computing viscosity.
-     */
-    void setViscosityAlgo(const std::string& algo) {
-        delete mp_viscosity;
-        mp_viscosity = Mutation::Utilities::Config::Factory<
-            ViscosityAlgorithm>::create(algo, *mp_collisions);
-    }
+    /// Sets the viscosity algorithm.
+    void setViscosityAlgo(const std::string& algo);
     
-    /**
-     * Sets the algorithm to use when computing thermal conductivity.
-     */
-    void setThermalConductivityAlgo(const std::string& algo) {
-        delete mp_thermal_conductivity;
-        mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
-            ThermalConductivityAlgorithm>::create(algo, *mp_collisions);
-    }
+    /// Sets the heavy particle, thermal conductivity algorithm.
+    void setThermalConductivityAlgo(const std::string& algo);
     
-    /**
-     * Returns the total number of collision pairs accounted for in the 
-     * collision database.
-     */
-    int nCollisionPairs() const {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0)
-        return mp_collisions->nCollisionPairs();
-    }
+    /// Returns the number of collision pairs accounted for in this mixture.
+    int nCollisionPairs() const { return m_collisions.size(); }
     
     void omega11ii(double* const p_omega);
     void omega22ii(double* const p_omega);
     
-    /**
-     * Returns the mixture viscosity.
-     */
-    double viscosity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return mp_viscosity->viscosity(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-    }
+    /// Returns the mixture viscosity.
+    double viscosity();
     
     /**
      * Returns the mixture thermal conductivity for a frozen mixture.
@@ -153,11 +131,7 @@ public:
      * Returns the heavy particle translational thermal conductivity using the 
      * set algorithm.
      */
-    double heavyThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return mp_thermal_conductivity->thermalConductivity(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-    }
+    double heavyThermalConductivity();
     
     /**
      * Returns the electron translational thermal conductivity.
@@ -171,21 +145,21 @@ public:
     template <typename E>
     double euken(const Eigen::ArrayBase<E>& cp)
     {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-
-        const int ns = m_thermo.nSpecies();
-        assert(cp.size() == ns);
+        const int ns = m_thermo.nSpecies();  assert(cp.size() == ns);
         const int nh = m_thermo.nHeavy();
         const int k  = ns-nh;
 
         Eigen::Map<const Eigen::ArrayXd> X(m_thermo.X()+k, nh);
-        const Eigen::MatrixXd& nDij = mp_collisions->nDij(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+        static Eigen::ArrayXd avDij; avDij.resize(nh);
+        const Eigen::ArrayXd& nDij = m_collisions.nDij();
 
-        Eigen::ArrayXd avDij(Eigen::ArrayXd::Zero(nh));
-        for (int j = 0; j < nh; ++j)
-            avDij += X(j) / (nDij+nDij.transpose()).col(j+k).tail(nh).array();
-        avDij += 0.5*X/nDij.diagonal().tail(nh).array();
+        avDij.setZero();
+        for (int i = 0, index = 0; i < nh; ++i) {
+            for (int j = i; j < nh; ++j, ++index) {
+                avDij(i) += X(j)/nDij(index);
+                avDij(j) += X(i)/nDij(index);
+            }
+        }
 
         return KB * (X * cp.tail(nh) / avDij).sum();
     }
@@ -222,15 +196,8 @@ public:
      */
     double soretThermalConductivity();
     
-    /**
-     * Returns the thermal diffusion ratios for each species.
-     */
-    void thermalDiffusionRatios(double* const p_k) {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-        mp_thermal_conductivity->thermalDiffusionRatios(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
-            m_thermo.X(), p_k);
-    }
+    /// Returns the thermal diffusion ratios for each species.
+    void thermalDiffusionRatios(double* const p_k);
     
     /**
      * Returns the multicomponent diffusion coefficient matrix.
@@ -247,11 +214,8 @@ public:
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
      */
     void averageDiffusionCoeffs(double *const p_Di) {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-        Eigen::Map<Eigen::ArrayXd>(p_Di,m_thermo.nSpecies()) =
-            mp_collisions->Dim(
-                m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
-                m_thermo.X());
+        Eigen::Map<Eigen::ArrayXd>(p_Di, m_thermo.nSpecies()) =
+            m_collisions.Dim();
     }
     
     /**
@@ -490,7 +454,7 @@ private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB* mp_collisions;
-    CollisionDBNew* mp_collisions_new;
+    CollisionDBNew m_collisions;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;

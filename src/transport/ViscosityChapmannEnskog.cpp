@@ -26,6 +26,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "AutoRegistration.h"
+#include "CollisionDBNew.h"
+#include "Thermodynamics.h"
 #include "ViscosityAlgorithm.h"
 
 #include <Eigen/Dense>
@@ -46,39 +49,38 @@ template <template <typename, int> class Solver>
 class ViscosityChapmannEnskog : public ViscosityAlgorithm
 {
 public:
-	ViscosityChapmannEnskog(CollisionDB& collisions) :
+	ViscosityChapmannEnskog(ViscosityAlgorithm::ARGS collisions) :
 		ViscosityAlgorithm(collisions),
 		m_sys(MatrixXd::Zero(collisions.nHeavy(), collisions.nHeavy())),
 		m_x(collisions.nHeavy()),
 		m_alpha(collisions.nHeavy())
 	{ }
 
-	double viscosity(
-	    double Th, double Te, double nd, const double *const p_x)
+	double viscosity()
 	{
 		const int ns = m_collisions.nSpecies();
 		const int nh = m_collisions.nHeavy();
 
-		const ArrayXd&  mi    = m_collisions.mass();
-		const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
-		const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
-		const ArrayXd&  etai  = m_collisions.etai(Th, Te, nd, p_x);
+		const ArrayXd& mi   = m_collisions.mass();
+		const ArrayXd& Ast  = m_collisions.Astij();
+		const ArrayXd& nDij = m_collisions.nDij();
+		const ArrayXd& etai = m_collisions.etai();
 
 		// Form the symmetric positive definite system matrix
 		int k = ns-nh, ik, jk;
 		double fac;
 
-		m_x = Map<const ArrayXd>(p_x+k,nh).max(1.0e-30);
-        m_sys.diagonal().array() = m_x * m_x / etai.tail(nh);
+		m_x = Map<const ArrayXd>(m_collisions.thermo().X()+k,nh).max(1.0e-30);
+        m_sys.diagonal().array() = m_x * m_x / etai;
 
-		for (int j = k; j < ns; ++j) {
-			jk = j-k;
-			for (int i = j+1; i < ns; ++i) {
-				ik = i-k;
-				fac = m_x(ik)*m_x(jk) / (nDij(i,j) * (mi(i) + mi(j)));
-				m_sys(ik,jk) =  fac * (1.2 * Astar(i,j) - 2.0);
-				m_sys(ik,ik) += fac * (1.2 * mi(j) / mi(i) * Astar(i,j) + 2.0);
-				m_sys(jk,jk) += fac * (1.2 * mi(i) / mi(j) * Astar(i,j) + 2.0);
+		for (int j = 0, index = 0; j < nh; ++j, ++index) {
+		    jk = j+k;
+			for (int i = j+1; i < nh; ++i, ++index) {
+			    ik = i+k;
+				fac = m_x(i)*m_x(j) / (nDij(index) * (mi(ik) + mi(jk)));
+				m_sys(i,j) =  fac * (1.2 * Ast(index) - 2.0);
+				m_sys(i,i) += fac * (1.2 * mi(jk) / mi(ik) * Ast(index) + 2.0);
+				m_sys(j,j) += fac * (1.2 * mi(ik) / mi(jk) * Ast(index) + 2.0);
 			}
 		}
 

@@ -52,6 +52,7 @@ CollisionDBNew::CollisionDBNew(
     m_database(databaseFileName(db_name, "transport")),
     m_thermo(thermo),
     m_tabulate(true), m_table_min(300.),  m_table_max(20000.), m_table_del(100.),
+    m_mass(thermo.nSpecies()),
     m_etai(thermo.nHeavy()), m_etafac(thermo.nHeavy()),
     m_nDei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
     m_Deifac(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
@@ -85,25 +86,35 @@ CollisionDBNew::CollisionDBNew(
         for (int j = i; j < species.size(); ++j)
             m_pairs.push_back(CollisionPairNew(species[i], species[j], &root));
 
+    // Compute species masses
+    for (int i = 0; i < nSpecies(); ++i)
+        m_mass(i) = thermo.speciesMw(i) / NA;
+
     // Compute eta factors
-    const int k = thermo.nSpecies() - thermo.nHeavy();
-    for (int i = k; i < thermo.nSpecies(); ++i)
-        m_etafac[i-k] = 5./16.*std::sqrt(PI*RU*thermo.speciesMw(i));
+    const int nh = nHeavy();
+    const int k  = nSpecies()-nh;
+    m_etafac = 5./16.*std::sqrt(PI*KB)*m_mass.tail(nh).sqrt();
 
     // Compute the nDei factors
-    if (k > 0) {
-        for (int i = 0; i < thermo.nSpecies(); ++i)
-            m_Deifac(i) = 3./16.*std::sqrt(TWOPI*RU/thermo.speciesMw(0));
+    if (m_thermo.nSpecies() > nh) {
+        m_Deifac.fill(3./16.*std::sqrt(TWOPI*KB/m_mass(0)));
         m_Deifac(0) *= 2./SQRT2;
     }
 
     // Compute the nDij factors
     for (int i = k, index = 0; i < thermo.nSpecies(); ++i)
         for (int j = i; j < thermo.nSpecies(); ++j, index++)
-            m_Dijfac(index) = 3./16.*std::sqrt(TWOPI*RU*
-                (thermo.speciesMw(i)+thermo.speciesMw(j))/
-                (thermo.speciesMw(i)*thermo.speciesMw(j)));
+            m_Dijfac(index) = 3./16.*std::sqrt(TWOPI*KB*
+                (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
 }
+
+//==============================================================================
+
+int CollisionDBNew::nSpecies() const { return m_thermo.nSpecies(); }
+
+//==============================================================================
+
+int CollisionDBNew::nHeavy() const { return m_thermo.nHeavy(); }
 
 //==============================================================================
 

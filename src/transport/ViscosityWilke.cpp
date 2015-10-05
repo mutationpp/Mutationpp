@@ -25,6 +25,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "AutoRegistration.h"
+#include "CollisionDBNew.h"
+#include "Thermodynamics.h"
 #include "ViscosityAlgorithm.h"
 #include "Wilke.h"
 
@@ -42,28 +45,26 @@ class ViscosityWilke : public ViscosityAlgorithm, public Wilke
 {
 public:
 
-    ViscosityWilke(CollisionDB& collisions) 
+    ViscosityWilke(ViscosityAlgorithm::ARGS collisions)
         : ViscosityAlgorithm(collisions)
     { }
 
-    /**
-     * Returns the viscosity of the mixture in Pa-s.
-     */
-    double viscosity(
-        double Th, double Te, double nd, const double *const p_x)
+    /// Returns the viscosity of the mixture in Pa-s.
+    double viscosity()
     {
-        const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
+        const int k  = m_collisions.nSpecies()-nh;
         
         return wilke(
-            m_collisions.etai(Th, Te, nd, p_x).tail(nh),
+            m_collisions.etai(),
             m_collisions.mass().tail(nh),
-            Eigen::Map<const Eigen::ArrayXd>(p_x+(ns-nh), nh));
+            Eigen::Map<const Eigen::ArrayXd>(m_collisions.thermo().X()+k, nh));
     }
        
 };
 
-Config::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> viscosityWilke("Wilke");
+// Register this algorithm
+Config::ObjectProvider<ViscosityWilke, ViscosityAlgorithm> visc_wilke("Wilke");
 
     } // namespace Transport
 } // namespace Mutation

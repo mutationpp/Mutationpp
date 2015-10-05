@@ -25,14 +25,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "Transport.h"
+
 #include "Constants.h"
+#include "ThermalConductivityAlgorithm.h"
+#include "Transport.h"
+#include "ViscosityAlgorithm.h"
 
 #include <iostream>
 #include <Eigen/Dense>
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::Config;
 using namespace Eigen;
 
 namespace Mutation {
@@ -46,6 +50,7 @@ Transport::Transport(
     Thermodynamics& thermo, const std::string& viscosity, const std::string& lambda, const bool load_data)
     : m_thermo(thermo),
       mp_collisions(NULL),
+      m_collisions("collisions.xml", thermo),
       mp_viscosity(NULL),
       mp_thermal_conductivity(NULL),
       mp_diffusion_matrix(NULL),
@@ -57,11 +62,9 @@ Transport::Transport(
 
     // Load the collision integral data
     mp_collisions = new CollisionDB(thermo);
-    mp_collisions_new = new CollisionDBNew("collisions.xml", thermo);
 
     // Load the viscosity calculator
-    mp_viscosity = 
-        Config::Factory<ViscosityAlgorithm>::create(viscosity, *mp_collisions);
+    setViscosityAlgo(viscosity);
     
     // Load the thermal conductivity calculator
     mp_thermal_conductivity = 
@@ -95,6 +98,44 @@ Transport::~Transport()
     
     delete [] mp_wrk1;
     delete [] mp_tag;
+}
+
+//==============================================================================
+
+void Transport::setViscosityAlgo(const std::string& algo)
+{
+    if (mp_viscosity != NULL) delete mp_viscosity;
+    mp_viscosity = Factory<ViscosityAlgorithm>::create(algo, m_collisions);
+}
+
+//==============================================================================
+
+double Transport::viscosity() { return mp_viscosity->viscosity(); }
+
+//==============================================================================
+
+void Transport::setThermalConductivityAlgo(const std::string& algo)
+{
+    if (mp_thermal_conductivity != NULL) delete mp_thermal_conductivity;
+    mp_thermal_conductivity = Factory<ThermalConductivityAlgorithm>::create(
+        algo, *mp_collisions);
+}
+
+//==============================================================================
+
+double Transport::heavyThermalConductivity() {
+    ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+    return mp_thermal_conductivity->thermalConductivity(
+        m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+}
+
+//==============================================================================
+
+void Transport::thermalDiffusionRatios(double* const p_k) {
+    ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
+    mp_thermal_conductivity->thermalDiffusionRatios(
+        m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
+        m_thermo.X(), p_k);
 }
 
 //==============================================================================
