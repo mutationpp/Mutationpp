@@ -68,6 +68,9 @@ public:
     /// Returns an array of species masses in kg.
     const Eigen::ArrayXd& mass() const { return m_mass; }
 
+    /// Just a wrapper around thermo().X().
+    Eigen::Map<const Eigen::ArrayXd> X() const;
+
     /// Returns the reference of thermo.
     const Thermodynamics::Thermodynamics& thermo() const { return m_thermo; }
 
@@ -84,8 +87,14 @@ public:
      */
     const CollisionGroup& group(const std::string& name);
 
+    /// Provides Q11 collision integral for the electron-electron interaction.
+    const Eigen::ArrayXd& Q11ee() { return group("Q11ee").array(); }
+
     /// Provides Q11 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q11ei() { return group("Q11ei").array(); }
+
+    /// Provides Q11 collision integrals for diagonal heavy-heavy interactions.
+    const Eigen::ArrayXd& Q11ii() { return group("Q11ii").array(); }
 
     /// Provides Q11 collision integrals for heavy-heavy interactions.
     const Eigen::ArrayXd& Q11ij() { return group("Q11ij").array(); }
@@ -101,6 +110,9 @@ public:
 
     /// Provides Q15 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q15ei() { return group("Q15ei").array(); }
+
+    /// Provides Q22 collision integral for the electron-electron interaction.
+    const Eigen::ArrayXd& Q22ee() { return group("Q22ee").array(); }
 
     /// Provides Q22 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q22ei() { return group("Q22ei").array(); }
@@ -150,6 +162,21 @@ public:
      */
     const Eigen::ArrayXd& Dim();
 
+    /// Returns the \f$\Lambda^{01}_{ei}\f$ array.
+    const Eigen::ArrayXd& L01ei();
+
+    /// Returns the \f$\Lambda^{02}_{ei}\f$ array.
+    const Eigen::ArrayXd& L02ei();
+
+    /// Returns \f$\Lambda^{11}_{ee}\f$.
+    double L11ee();
+
+    /// Returns \f$\Lambda^{12}_{ee}\f$.
+    double L12ee();
+
+    /// Returns \f$\Lambda^{22}_{ee}\f$.
+    double L22ee();
+
 private:
 
     /// Types of collision integral groups (ie: electron-heavy, ...).
@@ -186,6 +213,8 @@ private:
     Eigen::ArrayXd m_nDij;
     Eigen::ArrayXd m_Dijfac;
     Eigen::ArrayXd m_Dim;
+    Eigen::ArrayXd m_L01ei;
+    Eigen::ArrayXd m_L02ei;
 };
 
     } // namespace Transport

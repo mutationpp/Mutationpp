@@ -28,7 +28,7 @@
 #ifndef TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 #define TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 
-#include "CollisionDB.h"
+#include "CollisionDBNew.h"
 
 namespace Mutation {
     namespace Transport {
@@ -43,7 +43,7 @@ public:
 
     /// All ThermalConductivityAlgorithms must provide a constructor taking
     /// these arguements.
-    typedef CollisionDB& ARGS;
+    typedef CollisionDBNew& ARGS;
 
     /**
      * Constructor.
@@ -61,17 +61,14 @@ public:
      * Returns the mixture thermal conductivity in W/m-K using the algorithm 
      * defined in the derived type.
      */
-    virtual double thermalConductivity(
-        double Th, double Te, double nd, const double* const p_x) = 0;
+    virtual double thermalConductivity() = 0;
     
     
     /**
      * Returns the heavy particle thermal diffusion ratios if implemented by the
      * concrete ThermalConductivityAlgorithm type.
      */
-    virtual void thermalDiffusionRatios(
-        double Th, double Te, double nd, const double* const p_x,
-        double* const p_k)
+    virtual void thermalDiffusionRatios(double* const p_k)
     {
         for (int i = 0; i < m_collisions.nSpecies(); ++i)
             p_k[i] = 0.0;
@@ -80,7 +77,7 @@ public:
 
 protected:
     
-    CollisionDB& m_collisions;
+    CollisionDBNew& m_collisions;
 
 }; // class ThermalConductivityAlgorithm
 

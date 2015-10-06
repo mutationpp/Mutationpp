@@ -67,9 +67,7 @@ Transport::Transport(
     setViscosityAlgo(viscosity);
     
     // Load the thermal conductivity calculator
-    mp_thermal_conductivity = 
-        Config::Factory<ThermalConductivityAlgorithm>::create(
-            lambda, *mp_collisions);
+    setThermalConductivityAlgo(lambda);
     
     // Load the diffusion matrix calculator
     mp_diffusion_matrix =
@@ -118,58 +116,21 @@ void Transport::setThermalConductivityAlgo(const std::string& algo)
 {
     if (mp_thermal_conductivity != NULL) delete mp_thermal_conductivity;
     mp_thermal_conductivity = Factory<ThermalConductivityAlgorithm>::create(
-        algo, *mp_collisions);
+        algo, m_collisions);
 }
 
 //==============================================================================
 
-double Transport::heavyThermalConductivity() {
-    ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-    return mp_thermal_conductivity->thermalConductivity(
-        m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-}
-
-//==============================================================================
-
-void Transport::thermalDiffusionRatios(double* const p_k) {
-    ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-    mp_thermal_conductivity->thermalDiffusionRatios(
-        m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
-        m_thermo.X(), p_k);
-}
-
-//==============================================================================
-
-void Transport::omega11ii(double* const p_omega)
+double Transport::heavyThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
-    const double ns  = m_thermo.nSpecies();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double nd  = m_thermo.numberDensity();
-    const double *const X = m_thermo.X();
-    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    
-    for (int i = 0; i < ns; ++i)
-        p_omega[i] = Q11(i,i);
+    return mp_thermal_conductivity->thermalConductivity();
 }
 
 //==============================================================================
 
-void Transport::omega22ii(double* const p_omega)
+void Transport::thermalDiffusionRatios(double* const p_k)
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
-    const double ns  = m_thermo.nSpecies();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double nd  = m_thermo.numberDensity();
-    const double *const X = m_thermo.X();
-    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    
-    for (int i = 0; i < ns; ++i)
-        p_omega[i] = Q22(i,i);
+    mp_thermal_conductivity->thermalDiffusionRatios(p_k);
 }
 
 //==============================================================================
@@ -453,8 +414,6 @@ void Transport::equilDiffFluxFacs(double* const p_F)
 
 void Transport::equilDiffFluxFacsP(double* const p_F)
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
 	const int ns = m_thermo.nSpecies();
 	const double p = m_thermo.P();
 	const double* const p_Y = m_thermo.Y();
@@ -475,18 +434,14 @@ void Transport::equilDiffFluxFacsP(double* const p_F)
 
 void Transport::equilDiffFluxFacsT(double* const p_F)
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
 	const int ns = m_thermo.nSpecies();
 	const double T  = m_thermo.T();
-	const double nd = m_thermo.numberDensity();
-	const double* const p_X = m_thermo.X();
 
     // Compute the dXj/dT term
     m_thermo.dXidT(mp_wrk1);
 
 	// Add thermal diffusion ratio term
-	mp_thermal_conductivity->thermalDiffusionRatios(T, T, nd, p_X, mp_wrk2);
+	thermalDiffusionRatios(mp_wrk2);
 	for (int i = 0; i < ns; ++i)
 		mp_wrk1[i] += mp_wrk2[i]/T;
 
@@ -498,8 +453,6 @@ void Transport::equilDiffFluxFacsT(double* const p_F)
 
 void Transport::equilDiffFluxFacsZ(double* const p_F)
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
 	const int ns = m_thermo.nSpecies();
 	const int ne = m_thermo.nElements();
 	const double* const p_X = m_thermo.X();
@@ -533,9 +486,7 @@ void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
 	using namespace Eigen;
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
-    const int ns = m_thermo.nSpecies();
+	const int ns = m_thermo.nSpecies();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();

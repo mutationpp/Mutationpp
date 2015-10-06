@@ -58,7 +58,9 @@ CollisionDBNew::CollisionDBNew(
     m_Deifac(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
     m_nDij(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
     m_Dijfac(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
-    m_Dim(thermo.nSpecies())
+    m_Dim(thermo.nSpecies()),
+    m_L01ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
+    m_L02ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0))
 {
     XmlElement& root = m_database.root();
 
@@ -115,6 +117,12 @@ int CollisionDBNew::nSpecies() const { return m_thermo.nSpecies(); }
 //==============================================================================
 
 int CollisionDBNew::nHeavy() const { return m_thermo.nHeavy(); }
+
+//==============================================================================
+
+Map<const ArrayXd> CollisionDBNew::X() const {
+    return Eigen::Map<const ArrayXd>(thermo().X(), nSpecies());
+}
 
 //==============================================================================
 
@@ -243,6 +251,56 @@ const ArrayXd& CollisionDBNew::Dim()
 
     // Remove number density and return
     return (m_Dim /= m_thermo.numberDensity());
+}
+
+//==============================================================================
+
+const ArrayXd& CollisionDBNew::L01ei()
+{
+    if (m_L01ei.size() > 0) {
+        const double theta = m_thermo.Te() / m_thermo.T();
+        m_L01ei = theta*X()*(3.*Q12ei()-2.5*Q11ei());
+        m_L01ei(0) = -m_L01ei.tail(nHeavy()).sum() / theta;
+    }
+    return m_L01ei;
+}
+
+//==============================================================================
+
+const ArrayXd& CollisionDBNew::L02ei()
+{
+    if (m_L02ei.size() > 0) {
+        const double theta = m_thermo.Te() / m_thermo.T();
+        m_L02ei = theta*X()*(10.5*Q12ei()-6.*Q13ei()-35./8.*Q11ei());
+        m_L02ei(0) = -m_L02ei.tail(nHeavy()).sum() / theta;
+    }
+    return m_L02ei;
+}
+
+//==============================================================================
+
+double CollisionDBNew::L11ee()
+{
+    return X()(0)*SQRT2*Q22ee()(0) +
+       (X()*(6.25*Q11ei()-15.*Q12ei()+12.*Q13ei())).tail(nHeavy()).sum();
+}
+
+//==============================================================================
+
+double CollisionDBNew::L12ee()
+{
+    return X()(0)*SQRT2*(1.75*Q22ee()(0)-2.*Q23ee()) +
+        (X()*(175./16.*Q11ei()-315./8.*Q12ei()+57.*Q13ei()-30.*Q14ei())).
+        tail(nHeavy()).sum();
+}
+
+//==============================================================================
+
+double CollisionDBNew::L22ee()
+{
+    return X()(0)*SQRT2*(77./16.*Q22ee()(0)-7.*Q23ee()+5.*Q24ee()) +
+        (X()*(1225./64.*Q11ei()-735./8.*Q12ei()+399./2.*Q13ei()-210.*Q14ei()+
+        90.*Q15ei())).tail(nHeavy()).sum();
 }
 
 //==============================================================================

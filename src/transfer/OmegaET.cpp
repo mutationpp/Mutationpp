@@ -31,28 +31,32 @@
 #include <cmath>
 
 #include <Eigen/Dense>
+using namespace Eigen;
 
 namespace Mutation {
     namespace Transfer {
-      
+
+/**
+ * Computes the source term of the electron-heavy translational energy
+ * transfer in \f$J/(m^3 s)\f$, using a Landau-Teller formula:
+ * \f[
+ * \Omega^{ET} = \rho_e \frac{e^T_e\left(T\right)-e^T_e\left(T_{e}\right)}
+ *     {\tau^{ET}},
+ * \f]
+ * where relaxation time \f$\tau^{ET}\f$ is given by
+ * \f[
+ * \frac{1}{\tau^{ET}} = \sum_{j\in\mathcal{H}} \frac{2m_e}{m_i}\nu_{ei}.
+ * \f]
+ *
+ * @todo Check that the equations in the documentation match the implementation.
+ * @todo Merge compute_tau_ET() into the source() function directly.
+ */
 class OmegaET : public TransferModel
 {
 public:
-	OmegaET(Mutation::Mixture& mix)
-		: TransferModel(mix), mp_collisions(mix.collisionData())
+	OmegaET(TransferModel::ARGS mix)
+		: TransferModel(mix), m_collisions(mix.collisionDB())
 	{ }
-
-	/**
-	 * Computes the source term of the Electron-Heavy Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
-	 * using a Landau-Teller formula:
-	 * \f[ \Omega^{ET} = \rho_e \frac{e^T_e\left(T\right)-e^T_e\left(T_{e}\right)}
-	 *      {\tau^{ET}}  \f]
-	 *
-	 * The relaxation time \f$ \tau^{ET} \f$ is given by the expression:
-	 *
-	 * \f[ \tau^{ET} = \left( \sum_{j \in \mathcal{H}} \frac{2 M_e}{ M_i} \nu_{ei} \right)^{-1} \f]
-	 *
-	 */
 
 	double source()
 	{
@@ -62,11 +66,11 @@ public:
         double Te = m_mixture.Te();
 
         double tau = compute_tau_ET();
-        return 1.5E0*KB*nd*p_X[0]*(T-Te)/tau;
+        return 1.5*KB*nd*p_X[0]*(T-Te)/tau;
 	}
 
 private:
-	Transport::CollisionDB* mp_collisions;
+	Transport::CollisionDBNew& m_collisions;
 
 	double const compute_tau_ET();
 };
@@ -78,28 +82,17 @@ double const OmegaET::compute_tau_ET()
     const double Te = m_mixture.Te();
     const double nd = m_mixture.numberDensity();
     const double ns = m_mixture.nSpecies();
-    const double *const p_X = m_mixture.X();
-    const double mwel = m_mixture.speciesMw(0);
-    double mwis, nu, sum, tau;
+    Map<const ArrayXd> X(m_mixture.X(),ns);
 
-    // Collisional integrals
-    const Eigen::MatrixXd& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
+    // CollisionDB data
+    const ArrayXd& Q11ei = m_collisions.Q11ei();
+    const ArrayXd& mass  = m_collisions.mass();
 
     // Electron velocity
-    double ve = sqrt(RU*8.0*Te/(PI*mwel));
+    double ve = sqrt(RU*8.*Te/(PI*mass(0)));
 
-    // Compute mass averaged collision frequency
-    sum = 0.0;
-    for (int is = 1; is < ns; ++is) {
-        mwis = m_mixture.speciesMw(is);
-        nu = ve * p_X[is] * nd * Q11(is);
-        sum += nu/mwis;
-    }
-    sum *= mwel*8.0/3.0;
-
-    // Return tau
-    tau = 1.0/sum;
-    return tau;
+    // Tau
+    return 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
 }
 
 // Register the transfer model

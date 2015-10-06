@@ -33,6 +33,7 @@
 #include <cstdlib>
 
 #include <Eigen/Dense>
+using namespace Eigen;
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -883,9 +884,11 @@ int main(int argc, char** argv)
                 } else if (name == "omega") {
                     mix.netProductionRates(species_values);
                 } else if (name == "Omega11") {
-                    mix.omega11ii(species_values);
+                    Map<ArrayXd>(species_values,mix.nSpecies()) =
+                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q11ee(),mix.collisionDB().Q11ii()).finished();
                 } else if (name == "Omega22") {
-                    mix.omega22ii(species_values);
+                    Map<ArrayXd>(species_values,mix.nSpecies()) =
+                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q22ee(),mix.collisionDB().Q22ii()).finished();
                 } else if (name == "Chi") {
                     mix.thermalDiffusionRatios(species_values);
                 } else if (name == "Dm") {

@@ -68,17 +68,9 @@ public:
      * Destructor.
      */
     ~Transport();
-
-    /**
-    * Returns a pointer to the collision data object.
-    */
-    CollisionDB* const collisionData() {
-        return mp_collisions;
-    }
     
-    CollisionDBNew& collisionDB() {
-        return m_collisions;
-    }
+    /// Provides reference to the underlying collision integral database.
+    CollisionDBNew& collisionDB() { return m_collisions; }
     
     /// Sets the viscosity algorithm.
     void setViscosityAlgo(const std::string& algo);
@@ -89,8 +81,8 @@ public:
     /// Returns the number of collision pairs accounted for in this mixture.
     int nCollisionPairs() const { return m_collisions.size(); }
     
-    void omega11ii(double* const p_omega);
-    void omega22ii(double* const p_omega);
+    //void omega11ii(double* const p_omega);
+    //void omega22ii(double* const p_omega);
     
     /// Returns the mixture viscosity.
     double viscosity();
@@ -395,6 +387,7 @@ public:
 
     /// Electron-heavy collision frequency in 1/s.
     double electronHeavyCollisionFreq();
+
     /// Average collision frequency of heavy particles in mixture in 1/s.
     double averageHeavyCollisionFreq();
 
