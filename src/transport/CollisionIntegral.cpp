@@ -108,6 +108,94 @@ Config::ObjectProvider<ConstantColInt, CollisionIntegral> const_ci("constant");
 
 /**
  * Represents a collision integral that is computed based on the expression,
+ * \f[ A* = \frac{Q^{2,2}}{Q^{1,1}}, \f]
+ * assumes the other data is available.
+ */
+class FromAstColInt : public CollisionIntegral
+{
+public:
+    FromAstColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Determine the type of B* expression to evaluate
+        string tag = args.xml.tag();
+             if (tag == "Ast") m_type = AST;
+        else if (tag == "Q11") m_type = Q11;
+        else if (tag == "Q22") m_type = Q22;
+        else args.xml.parseError(
+            "Cannot determine " + tag + " from A* expression");
+
+        switch (m_type) {
+        case AST:
+            m_ci1 = args.pair.get("Q11");
+            m_ci2 = args.pair.get("Q22");
+            break;
+        case Q11:
+            m_ci1 = args.pair.get("Ast");
+            m_ci2 = args.pair.get("Q22");
+            break;
+        case Q22:
+            m_ci1 = args.pair.get("Ast");
+            m_ci2 = args.pair.get("Q11");
+            break;
+        }
+    }
+
+    /// Make sure required integrals were loaded
+    bool loaded() const { return (m_ci1->loaded() && m_ci2->loaded()); }
+
+    // Allow tabulation of this integral type
+    bool canTabulate() const {
+        return (m_ci1->canTabulate() && m_ci2->canTabulate());
+    }
+
+    // Forward the getOtherParams call to the underlying integrals
+    void getOtherParams(const Thermodynamics::Thermodynamics& thermo) {
+        m_ci1->getOtherParams(thermo);
+        m_ci2->getOtherParams(thermo);
+    }
+
+private:
+
+    enum AstType {
+        AST, Q11, Q22
+    };
+
+    // Evaluate the A* expression
+    double compute_(double T) {
+        switch(m_type) {
+        case AST: return // Q22/Q11
+            (m_ci2->compute(T)/m_ci1->compute(T));
+        case Q11: return // Q22/A*
+            (m_ci2->compute(T)/m_ci1->compute(T));
+        case Q22: return // A* Q11
+            (m_ci1->compute(T)*m_ci2->compute(T));
+        }
+    }
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const FromAstColInt& compare = dynamic_cast<const FromAstColInt&>(ci);
+        return (*m_ci1 == *(compare.m_ci1) && *m_ci2 == *(compare.m_ci2));
+    }
+
+private:
+
+    AstType m_type;
+
+    SharedPtr<CollisionIntegral> m_ci1;
+    SharedPtr<CollisionIntegral> m_ci2;
+};
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<FromAstColInt, CollisionIntegral> ast_ci("from A*");
+
+//==============================================================================
+
+/**
+ * Represents a collision integral that is computed based on the expression,
  * \f[ B* = \frac{5Q^{1,2} - 4Q^{1,3}}{Q^{1,1}}, \f]
  * assumes the other data is available.
  */
@@ -268,7 +356,7 @@ private:
         CST, Q11, Q12
     };
 
-    // Evaluate the B* expression
+    // Evaluate the A* expression
     double compute_(double T) {
         switch(m_type) {
         case CST: return // Q12/Q11

@@ -28,6 +28,7 @@
         <neutral-neutral>
             <Q11 type="Stockmayer"/>
             <Q22 type="Stockmayer"/>
+            <Ast type="from A*"/>
             <Bst type="constant" value="1.15" ref="Wright2005"/>
             <Cst type="constant" value="0.92" ref="Wright2005"/>
         </neutral-neutral>
@@ -36,6 +37,7 @@
         <ion-neutral>
             <Q11 type="Langevin"/>
             <Q22 type="ratio" ratio="1.1" integral="Q11" ref="Wright2007"/>
+            <Ast type="from A*"/>
             <Bst type="constant" value="1.20" ref="Wright2005"/>
             <Cst type="constant" value="0.85" ref="Wright2005"/>
         </ion-neutral>
@@ -47,6 +49,7 @@
             <Q13 type="from B*"/>
             <Q14 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
             <Q15 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
+            <Ast type="from A*"/>
         </electron-neutral>
         
         <!-- Charged interactions -->
