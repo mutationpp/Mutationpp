@@ -114,10 +114,10 @@
     <!-- Explicitly defined collision pairs -->
     <!-- e- -->
     <pair s1="e-" s2="Ar">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="15">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="15">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.12  0.19  0.43  0.55  0.66  0.89  1.12  1.68  2.23 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="15">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="15">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.17  0.30  0.79  1.05  1.31  1.81  2.25  3.07  3.48 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="15">
@@ -129,10 +129,10 @@
     </pair>
     
     <pair s1="e-" s2="N">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="35">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              9.04  4.06  3.33  2.93  2.53  2.34  2.13  1.98 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="35">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              5.68  3.71  3.52  3.42  3.30  3.20  2.95  2.58 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -144,10 +144,10 @@
     </pair>
     
     <pair s1="e-" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.56  2.17  2.91  3.59  3.80  3.93  3.99  3.91  3.57  3.29 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.46  2.07  2.96  3.88  4.09  4.15  4.04  3.85  3.41  3.12 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -159,10 +159,10 @@
     </pair>
     
     <pair s1="e-" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="35">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              4.53  4.64  4.29  3.97  3.48  3.17  2.75  2.55 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="35">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              5.64  4.52  4.05  3.73  3.37  3.18  2.92  2.75 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -174,10 +174,10 @@
     </pair>
     
     <pair s1="e-" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="30">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="30">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.72  0.85  0.98  1.02  1.05  1.09  1.13  1.20  1.26 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="30">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="30">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.82  1.05  1.34  1.44  1.52  1.65  1.73  1.85  1.90 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -189,10 +189,10 @@
     </pair>
     
     <pair s1="e-" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.31  1.72  1.99  2.04  2.06  2.06  2.05  1.99  1.96 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.30  1.73  2.10  2.18  2.23  2.29  2.31  2.32  2.31 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -205,524 +205,524 @@
     
     <!-- Ar -->
     <pair s1="Ar" s2="Ar">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             11.67 10.05  8.61  7.50  6.47  6.16  5.90  5.51  5.22  4.72  4.41 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             12.88 11.12  9.66  8.60  7.57  7.23  6.96  6.53  6.20  5.60  5.17 </Q22>
     </pair>
     
     <pair s1="Ar" s2="Ar+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              49.00 45.52 41.51 38.23 36.55 35.43 34.61 33.95 32.95 32.20 31.60 30.89 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.99 22.99 15.17 10.58  9.10  8.37  7.94  7.64  7.22  6.93  6.73  6.48 </Q22>
     </pair>
 
     <pair s1="Ar" s2="N">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.94  7.62  6.79  5.72  4.76  4.47  4.25  3.89  3.64  3.19 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.31  8.96  8.03  6.84  5.75  5.42  5.17  4.77  4.47  3.95 </Q22>
     </pair>
     
     <pair s1="Ar" s2="N+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.70 21.01 13.27  8.90  7.46  6.74  6.29  5.99  5.58  5.30  5.09  4.85 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.63 22.73 14.77  9.84  8.25  7.46  7.01  6.70  6.27  5.99  5.79  5.55 </Q22>
     </pair>
 
     <pair s1="Ar" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             10.93  9.57  8.35  7.40  6.51  6.22  5.98  5.61  5.31  4.80 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             11.97 10.50  9.28  8.38  7.53  7.25  7.02  6.63  6.32  5.73 </Q22>
     </pair>
     
     <pair s1="Ar" s2="N2+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.26 21.77 14.82 11.16  9.92  9.29  8.88  8.60  8.19  7.91  7.70  7.45 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              31.16 23.83 16.21 12.07 10.75 10.08  9.69  9.41  8.99  8.69  8.52  8.26 </Q22>
     </pair>
 
     <pair s1="Ar" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.44 10.10  9.73  8.86  7.78  6.66  6.32  6.06  5.67  5.37  4.86 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.03 11.33 10.89  9.90  8.85  7.79  7.44  7.15  6.71  6.37  5.77 </Q22>
     </pair>
     
     <pair s1="Ar" s2="NO+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.92 21.16 13.63  9.51  8.13  7.44  7.00  6.70  6.28  5.99  5.78  5.53 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.02 23.03 15.11 10.46  8.97  8.22  7.78  7.48  7.04  6.76  6.55  6.29 </Q22>
     </pair>
 
     <pair s1="Ar" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.62  8.72  7.58  6.52  5.54  5.24  5.00  4.64  4.37  3.90  3.58 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             11.11 10.13  8.87  7.69  6.60  6.26  6.00  5.59  5.28  4.74  4.37 </Q22>
     </pair>
     
     <pair s1="Ar" s2="O+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.78 21.07 13.13  8.52  6.99  6.22  5.76  5.45  5.03  4.75  4.54  4.30 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.32 22.68 14.69  9.48  7.77  6.92  6.45  6.13  5.69  5.40  5.20  4.96 </Q22>
     </pair>
 
     <pair s1="Ar" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             11.30  9.86  8.52  7.42  6.39  6.08  5.83  5.44  5.16  4.67 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             12.33 10.82  9.57  8.54  7.48  7.14  6.87  6.44  6.12  5.54 </Q22>
     </pair>
     
     <pair s1="Ar" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.95 21.24 13.17  8.35  6.74  5.94  5.46  5.14  4.71  4.43  4.22  3.99 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.22 22.68 14.74  9.33  7.51  6.63  6.13  5.79  5.34  5.06  4.85  4.62 </Q22>
     </pair>
 
     <!-- Ar+ -->
     <pair s1="Ar+" s2="N">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              23.05 16.76 11.18  8.31  7.35  6.84  6.51  6.28  5.95  5.71  5.53  5.32 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              24.69 18.47 12.30  9.09  8.06  7.53  7.21  6.99  6.64  6.38  6.23  6.01 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.17 22.02 14.08  9.71  8.26  7.52  7.06  6.74  6.30  6.00  5.77  5.51 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              31.20 23.93 15.65 10.72  9.13  8.33  7.87  7.55  7.09  6.79  6.57  6.30 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.56 21.63 13.92  9.67  8.25  7.54  7.09  6.77  6.35  6.05  5.83  5.57 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.51 23.55 15.45 10.65  9.11  8.33  7.88  7.57  7.13  6.83  6.61  6.35 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              19.22 13.92  9.51  7.30  6.53  6.11  5.83  5.62  5.32  5.10  4.93  4.73 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              21.03 15.44 10.46  8.03  7.23  6.79  6.52  6.32  6.00  5.78  5.62  5.41 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.69 20.92 13.38  9.32  7.97  7.29  6.86  6.56  6.14  5.85  5.63  5.37 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.43 22.55 14.81 10.27  8.82  8.08  7.65  7.35  6.92  6.63  6.41  6.16 </Q22>
     </pair>
     
     <!-- N -->
     <pair s1="N" s2="N">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.07  7.03  5.96  5.15  4.39  4.14  3.94  3.61  3.37  2.92  2.62 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.11  7.94  6.72  5.82  4.98  4.70  4.48  4.14  3.88  3.43  3.11 </Q22>
     </pair>
     
     <pair s1="N" s2="N+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              43.30 38.20 34.30 31.40 30.00 29.00 28.30 27.70 26.90 26.20 25.60 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.40 16.40 13.30 10.50  9.15  8.33  7.74  7.26  6.48  5.84  5.31 </Q22>
     </pair>
 
     <pair s1="N" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             10.10  8.57  7.70  6.65  5.65  5.05  4.61  4.25 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             11.21  9.68  8.81  7.76  6.73  6.18  5.74  5.36 </Q22>
     </pair>
     
     <pair s1="N" s2="N2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              24.90 18.10 12.60  9.94  9.03  8.54  8.21  7.98  7.65  7.41  7.23 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              26.10 19.50 13.60 10.70  9.78  9.26  8.96  8.74  8.40  8.14  7.98 </Q22>
     </pair>
 
     <pair s1="N" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.21  7.86  6.99  5.90  4.91  4.61  4.37  4.01  3.73  3.27 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.65  9.26  8.29  7.07  5.94  5.60  5.33  4.91  4.60  4.06 </Q22>
     </pair>
     
     <pair s1="N" s2="NO+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              25.00 17.50 11.30  8.21  7.20  6.68  6.34  6.10  5.76  5.52  5.36 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              25.40 18.80 12.30  8.97  7.91  7.37  7.04  6.81  6.46  6.27  6.04 </Q22>
     </pair>
 
     <pair s1="N" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.32  7.34  6.22  5.26  4.45  4.21  4.01  3.69  3.43  2.98  2.66 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.08  8.15  7.09  6.06  5.14  4.88  4.67  4.34  4.07  3.56  3.21 </Q22>
     </pair>
     
     <pair s1="N" s2="O+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.30 16.30 11.80  9.23  8.09  7.36  6.80  6.34  5.60  5.02  4.56 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.60 16.60 11.80  9.07  7.99  7.37  6.94  6.60  6.02  5.53  5.11 </Q22>
     </pair>
 
     <pair s1="N" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.56  7.26  6.55  5.60  4.75  4.49  4.28  3.96  3.72  3.31 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.68  6.63  5.67  5.38  5.14  4.78  4.51  4.04 </Q22>
     </pair>
     
     <pair s1="N" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.20 16.70 10.40  6.87  5.72  5.14  4.79  4.54  4.21  3.99  3.84 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.80 18.20 11.60  7.64  6.37  5.74  5.37  5.13  4.78  4.55  4.38 </Q22>
     </pair>
 
     <!-- N+ -->
     <pair s1="N+" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.30 22.40 13.80  9.02  7.48  6.71  6.24  5.92  5.50  5.21  5.01 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.20 23.70 15.20  9.97  8.28  7.45  6.98  6.66  6.21  5.92  5.70 </Q22>
     </pair>
 
     <pair s1="N+" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.50 21.70 13.20  8.63  7.17  6.44  5.98  5.68  5.26  4.98  4.79 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.40 22.90 14.60  9.55  7.96  7.18  6.72  6.41  5.98  5.69  5.47 </Q22>
     </pair>
 
     <pair s1="N+" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.60 15.10 10.90  8.33  7.07  6.21  5.56  5.06  4.33  3.82  3.44 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.80 15.40 11.10  8.61  7.52  6.75  6.13  5.64  4.90  4.37  3.98 </Q22>
     </pair>
 
     <pair s1="N+" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.60 22.10 13.70  8.99  7.43  6.65  6.17  5.85  5.41  5.11  4.91 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.90 23.80 15.30 10.00  8.27  7.42  6.93  6.60  6.14  5.84  5.62 </Q22>
     </pair>
 
     <!-- N2 -->
     <pair s1="N2" s2="N2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             12.23 10.60  9.79  8.60  7.49  6.87  6.43  6.06 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             13.72 11.80 10.94  9.82  8.70  8.08  7.58  7.32 </Q22>
     </pair>
     
     <pair s1="N2" s2="N2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              49.10 43.70 37.00 32.20 30.10 28.90 28.10 27.50 26.60 26.00 25.60 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 25.30 16.80 12.10 10.70  9.93  9.50  9.19  8.74  8.41  8.20 </Q22>
     </pair>
 
     <pair s1="N2" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.88 10.61 10.24  9.35  8.12  6.82  6.43  6.12  5.66  5.31  4.71 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.44 11.87 11.44 10.48  9.32  8.04  7.61  7.27  6.74  6.33  5.62 </Q22>
     </pair>
     
     <pair s1="N2" s2="NO+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.90 24.20 14.60  9.68  8.13  7.35  6.87  6.54  6.10  5.79  5.59 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 25.10 15.80 10.60  8.97  8.16  7.69  7.36  6.90  6.67  6.36 </Q22>
     </pair>
 
     <pair s1="N2" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
              8.07  5.93  5.17  4.77  4.31  3.71  3.38 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
              8.99  6.72  5.91  5.22  5.01  4.36  3.95 </Q22>
     </pair>
     
     <pair s1="N2" s2="O+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.40 22.40 13.60  8.64  7.01  6.21  5.73  5.40  4.97  4.68  4.48 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.50 23.50 15.10  9.61  7.81  6.93  6.43  6.10  5.64  5.35  5.13 </Q22>
     </pair>
 
     <pair s1="N2" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
             10.16  7.39  6.42  5.59  5.35  4.60  4.20 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
             11.23  8.36  7.35  6.47  6.21  5.42  4.94 </Q22>
     </pair>
     
     <pair s1="N2" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.90 23.20 13.90  8.55  6.78  5.92  5.40  5.05  4.60  4.30  4.10 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.40 24.10 15.40  9.56  7.59  6.64  6.10  5.74  5.26  4.96  4.73 </Q22>
     </pair>
 
     <!-- N2+ -->
     <pair s1="N2+" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.20 23.10 15.20 11.20  9.85  9.18  8.74  8.44  8.02  7.73  7.51 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.60 16.50 12.10 10.70 10.00  9.59  9.30  8.86  8.54  8.35 </Q22>
     </pair>
 
     <pair s1="N2+" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.30 15.60 11.00  8.87  8.10  7.68  7.38  7.17  6.86  6.63  6.46 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              22.20 16.50 11.80  9.60  8.85  8.42  8.15  7.95  7.62  7.37  7.21 </Q22>
     </pair>
 
     <pair s1="N2+" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.60 23.30 15.20 10.90  9.53  8.85  8.41  8.11  7.69  7.39  7.17 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.60 16.10 11.70 10.40  9.67  9.26  8.97  8.54  8.22  8.02 </Q22>
     </pair>
 
     <!-- NO -->
     <pair s1="NO" s2="NO">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.66 10.33  9.97  9.09  7.90  6.60  6.24  5.96  5.54  5.23  4.70 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.25 11.58 11.15 10.16  9.07  7.91  7.53  7.21  6.73  6.36  5.72 </Q22>
     </pair>
     
     <pair s1="NO" s2="NO+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              49.20 41.60 35.00 31.10 29.40 28.20 27.30 26.60 25.70 25.10 24.70 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.40 15.60 10.60  8.99  8.20  7.74  7.42  6.97  6.76  6.45 </Q22>
     </pair>
 
     <pair s1="NO" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.57  7.27  6.55  5.62  4.78  4.52  4.31  4.00  3.76  3.35 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.66  6.64  5.69  5.40  5.17  4.82  4.55  4.08 </Q22>
     </pair>
     
     <pair s1="NO" s2="O+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 23.40 13.70  8.45  6.80  6.00  5.51  5.19  4.76  4.47  4.28 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.80 23.60 14.70  9.26  7.52  6.68  6.19  5.87  5.43  5.14  4.92 </Q22>
     </pair>
 
     <pair s1="NO" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.39 10.10  9.75  8.89  7.74  6.56  6.23  5.98  5.59  5.31  4.82 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.93 11.32 10.90  9.94  8.89  7.80  7.45  7.17  6.73  6.39  5.80 </Q22>
     </pair>
     
     <pair s1="NO" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.70 22.20 13.60  8.47  6.77  5.94  5.44  5.10  4.66  4.37  4.17 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.20 23.40 15.10  9.47  7.57  6.65  6.12  5.77  5.31  5.01  4.79 </Q22>
     </pair>
     
     <!-- NO+ -->
     <pair s1="NO+" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.40 14.80  9.64  7.20  6.38  5.94  5.65  5.43  5.13  4.91  4.76 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              22.00 15.80 10.40  7.89  7.07  6.62  6.34  6.13  5.82  5.66  5.41 </Q22>
     </pair>
 
     <pair s1="NO+" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.20 22.50 13.70  9.25  7.82  7.11  6.66  6.36  5.93  5.64  5.44 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.80 23.50 14.90 10.20  8.66  7.91  7.47  7.16  6.72  6.50  6.20 </Q22>
     </pair>
 
     <!-- O -->
     <pair s1="O" s2="O">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.53  7.28  5.89  4.84  4.00  3.76  3.57  3.27  3.05  2.65  2.39 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.46  8.22  6.76  5.58  4.67  4.41  4.20  3.88  3.64  3.21  2.91 </Q22>
     </pair>
     
     <pair s1="O" s2="O+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.60 29.60 27.00 24.90 23.80 23.10 22.60 22.20 21.60 21.10 20.80 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.50 14.80 11.10  8.72  7.64  6.94  6.39  5.95  5.26  4.75  4.36 </Q22>
     </pair>
 
     <pair s1="O" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             9.10   7.58  6.74  5.70  4.78  4.29  3.96  3.71 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             10.13  8.61  7.78  6.71  5.67  5.13  4.78  4.50 </Q22>
     </pair>
     
     <pair s1="O" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              19.50 13.90  8.63  5.88  4.98  4.52  4.23  4.02  3.74  3.54  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.80 15.40  9.66  6.54  5.57  5.07  4.78  4.57  4.28  4.08  3.92 </Q22>
     </pair>
 
     <!-- O+ -->
     <pair s1="O+" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.70 22.80 13.80  8.68  7.01  6.18  5.68  5.34  4.90  4.60  4.40 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.20 23.90 15.30  9.68  7.83  6.92  6.40  6.06  5.59  5.28  5.06 </Q22>
     </pair>
 
     <!-- O2 -->
     <pair s1="O2" s2="O2">
-        <Q11 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.12  9.88  9.53  8.69  7.60  6.52  6.22  5.99  5.64  5.39  4.94 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.62 11.06 10.65  9.72  8.70  7.70  7.38  7.12  6.73  6.42  5.89 </Q22>
     </pair>
     
     <pair s1="O2" s2="O2+">
-        <Q11 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              48.50 40.90 34.20 30.60 28.70 27.50 26.10 25.30 24.20 23.60 23.20 </Q11>
-        <Q22 type="table" units="K,A-A" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.00 23.60 14.70  9.09  7.27  6.38  5.88  5.55  5.10  4.81  4.59 </Q22>
     </pair>

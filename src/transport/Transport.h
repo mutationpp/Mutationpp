@@ -155,6 +155,8 @@ public:
 
         avDij.setZero();
         for (int i = 0, index = 0; i < nh; ++i) {
+            // Account for diagonal term added twice
+            avDij(i) -= X(i)/nDij(index);
             for (int j = i; j < nh; ++j, ++index) {
                 avDij(i) += X(j)/nDij(index);
                 avDij(j) += X(i)/nDij(index);

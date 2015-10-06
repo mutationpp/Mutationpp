@@ -30,6 +30,7 @@
 #include "AutoRegistration.h"
 #include "CollisionIntegral.h"
 #include "CollisionPair.h"
+#include "Constants.h"
 #include "StringUtils.h"
 #include "SharedPtr.h"
 #include "Thermodynamics.h"
@@ -49,7 +50,8 @@ namespace Mutation {
 
 CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 	m_ref(""),
-	m_acc(0.0)
+	m_acc(0.0),
+	m_fac(1.0)
 {
 	// Load the reference information if it exists
 	args.xml.getAttribute("ref", m_ref, m_ref);
@@ -58,7 +60,7 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 	args.xml.getAttribute("accuracy", m_acc, m_acc);
 
 	// Load any units that there might be
-	string units; args.xml.getAttribute("units", units, string());
+	string units; args.xml.getAttribute("units", units, units);
 	if (!units.empty()) {
 		// Always take last units if available
 		std::vector<Units> vec = Units::split(units);
@@ -66,6 +68,10 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 			"Invalid units attribute.");
 		m_units = vec.back();
 	}
+
+	// Check if we should multiply by pi
+	bool multpi = false; args.xml.getAttribute("multpi", multpi, multpi);
+	m_fac = (multpi ? PI : 1.0);
 }
 
 //==============================================================================

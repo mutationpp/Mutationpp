@@ -96,7 +96,7 @@ public:
 	 * Returns the value of this integral at the given temperature in m^2.
 	 */
 	double compute(double T) {
-		return m_units.convertToBase(compute_(T));
+		return m_fac*m_units.convertToBase(compute_(T));
 	}
 
 	/**
@@ -144,7 +144,8 @@ protected:
 private:
 
 	std::string m_ref;
-	double      m_acc;
+	double m_acc;
+	double m_fac;
 	Mutation::Utilities::Units m_units;
 };
 

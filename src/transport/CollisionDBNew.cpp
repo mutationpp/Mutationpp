@@ -221,7 +221,7 @@ const ArrayXd& CollisionDBNew::Dim()
     const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-12);
 
     // Electron
-    if (k > 1) {
+    if (k > 0) {
         nDei(); // update nDei
         m_Dim(0) = (X / m_nDei).tail(nh).sum();
         m_Dim.tail(nh) = X(0) / m_nDei.tail(nh);
@@ -230,9 +230,8 @@ const ArrayXd& CollisionDBNew::Dim()
 
     // Heavies
     nDij(); // update nDij
-    for (int i = 0, index; i < nh; ++i) {
-        for (int j = i+1; j < nh; ++j) {
-            index = (i*nh+j);
+    for (int i = 0, index = 1; i < nh; ++i, ++index) {
+        for (int j = i+1; j < nh; ++j, ++index) {
             m_Dim(i+k) += X(j+k)/m_nDij(index);
             m_Dim(j+k) += X(i+k)/m_nDij(index);
         }

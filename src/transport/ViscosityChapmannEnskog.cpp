@@ -73,7 +73,7 @@ public:
 		m_x = Map<const ArrayXd>(m_collisions.thermo().X()+k,nh).max(1.0e-30);
         m_sys.diagonal().array() = m_x * m_x / etai;
 
-		for (int j = 0, index = 0; j < nh; ++j, ++index) {
+		for (int j = 0, index = 1; j < nh; ++j, ++index) {
 		    jk = j+k;
 			for (int i = j+1; i < nh; ++i, ++index) {
 			    ik = i+k;

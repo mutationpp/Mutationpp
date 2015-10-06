@@ -1,7 +1,12 @@
 /**
- * @file comparison.cpp
+ * @file update_comparison.cpp
  *
- * @brief Generic tool for comparing results with a file.
+ * @brief Helper tool for updating a comparison input file.
+ *
+ * WARNING! Only use this when you are sure the comparison file should be
+ * updated.  Typically this is only when a bug has been found which renders the
+ * previous comparison incorrect, or if some underlying data has changed
+ * significantly enough to warrant updating the file.
  */
 
 /*
@@ -37,21 +42,18 @@ using namespace std;
 #include <Eigen/Dense>
 using namespace Eigen;
 
-/**
- * Driver program for comparing a function to the values stored in the given
- * file.
- */
 int main(int argc, char* argv[])
 {
     // Open the file
     ifstream file(argv[1]);
 
     // Load the mixture
-    string str;
-    getline(file, str);
-    Mixture mix(str);
+    string mix_name;
+    getline(file, mix_name);
+    Mixture mix(mix_name);
 
     // Load the state variable information
+    string str;
     getline(file, str);
     int var_set, n1, n2;
     stringstream s1(str);  s1 >> var_set >> n1 >> n2;
@@ -76,16 +78,33 @@ int main(int argc, char* argv[])
     double v2 [n2];
     bool matches = true;
 
+    VectorXd result(result_size);
+
+
+    int precision = 10;
+    int width     = precision+8;
+    cout << mix_name << endl;
+    cout << var_set << " " << n1 << " " << n2 << endl;
+    cout << fun << " 1.0e-" << precision << endl;
+
     for (int i = 0; i < data.rows(); ++i) {
         // Set the state of the mixture
         Map<VectorXd>(v1,n1) = data.row(i).segment( 0,n1);
         Map<VectorXd>(v2,n2) = data.row(i).segment(n1,n2);
         mix.setState(v1, v2, var_set);
 
-        // Now compute the function and compare with expected result
-        matches &= function->compare(mix, data.row(i).tail(result_size));
+        // Compute the functions
+        function->compute(mix, result);
+
+        // Print the data back out
+        cout.precision(precision); cout.setf(ios::scientific);
+        for (int j = 0; j < n1+n2; ++j)
+            cout << setw(width) << data(i,j);
+        for (int j = 0; j < result_size; ++j)
+            cout << setw(width) << result(j);
+        cout << endl;
     }
 
     // Return 0 on success
-    return ((int) !matches);
+    return 0;
 }

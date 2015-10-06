@@ -26,6 +26,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef TESTS_MIXTURE_FIXTURES_H
+#define TESTS_MIXTURE_FIXTURES_H
+
 #include <boost/test/included/unit_test.hpp>
 #include "mutation++.h"
 
@@ -56,3 +59,5 @@ public:
 private:
     Mutation::Mixture* mp_mix;
 };
+
+#endif // TESTS_MIXTURE_FIXTURES_H

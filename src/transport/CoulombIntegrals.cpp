@@ -92,14 +92,16 @@ public:
         assert(T >= 0.0);
         assert(type != N_TABLE_TYPES);
 
+        // Average closest impact parameter
+        const double b = QE*QE / (8.0*PI*EPS0*KB*T);
+
+        // Clip maximum lambda
+        m_lambda = std::min(m_lambda, 2.0*sm_tstvec[N_TST_POINTS-1]*b);
+
         // Check if we need to update the values
         if (std::abs(T-m_last_T) + std::abs(m_lambda-m_last_lambda) > 1.0e-10) {
-            // Compute reduced temperature
-            double Tst = 4.0*PI*EPS0*m_lambda*KB*T/(QE*QE);
-
-            // Clip to table bounds
-            Tst = std::min(
-                std::max(Tst, sm_tstvec[0]), sm_tstvec[N_TST_POINTS-1]);
+            // Reduced temperature
+            const double Tst = std::max(0.5*m_lambda/b, sm_tstvec[0]);
 
             // Interpolate the table using reduced temperature
             interpolate(Tst);
@@ -134,7 +136,7 @@ public:
         assert(Te >= 0.0);
         assert(ne >= 0.0);
         // Including electron and ion contributions
-        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(std::max(ne,1.0)*QE*QE));
+        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(ne*QE*QE));
     }
 
 private:

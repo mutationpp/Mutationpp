@@ -119,6 +119,9 @@ test_all_mixtures(transfer_source)
 add_executable(compare comparison.cpp)
 target_link_libraries(compare mutation++)
 
+add_executable(update_comparison update_comparison.cpp)
+target_link_libraries(update_comparison mutation++)
+
 file(GLOB files "comparisons/*.dat")
 foreach(file ${files})
     get_filename_component(name ${file} NAME_WE)
