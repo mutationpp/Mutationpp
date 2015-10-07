@@ -40,7 +40,7 @@ class Ramshaw
 {
 public:
     
-    Ramshaw(CollisionDBNew& collisions) :
+    Ramshaw(CollisionDB& collisions) :
         m_collisions(collisions),
         m_D(collisions.nSpecies(), collisions.nSpecies())
     { }
@@ -84,7 +84,7 @@ public:
     
 private:
 
-    CollisionDBNew& m_collisions;
+    CollisionDB& m_collisions;
     Eigen::MatrixXd m_D;
         
 }; // class Ramshaw

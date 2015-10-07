@@ -31,7 +31,7 @@
 namespace Mutation {
     namespace Transport {
 
-class CollisionDBNew;
+class CollisionDB;
 
 /**
  * Abstract base class for all viscosity algorithms which allows for self 
@@ -42,7 +42,7 @@ class ViscosityAlgorithm
 public:
     
     // Required for self registering viscosity algorithms
-    typedef CollisionDBNew& ARGS;
+    typedef CollisionDB& ARGS;
     
     /// Constructor taking a CollisionDB object.
     ViscosityAlgorithm(ARGS collisions)
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-    CollisionDBNew& m_collisions;
+    CollisionDB& m_collisions;
     
 }; // class ViscosityAlgorithm
 

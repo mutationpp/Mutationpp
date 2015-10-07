@@ -28,7 +28,7 @@
 #ifndef TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 #define TRANSPORT_THERMAL_CONDUCTIVITY_ALGORITHM_H
 
-#include "CollisionDBNew.h"
+#include "CollisionDB.h"
 
 namespace Mutation {
     namespace Transport {
@@ -43,7 +43,7 @@ public:
 
     /// All ThermalConductivityAlgorithms must provide a constructor taking
     /// these arguements.
-    typedef CollisionDBNew& ARGS;
+    typedef CollisionDB& ARGS;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public:
 
 protected:
     
-    CollisionDBNew& m_collisions;
+    CollisionDB& m_collisions;
 
 }; // class ThermalConductivityAlgorithm
 

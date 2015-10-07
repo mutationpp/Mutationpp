@@ -42,7 +42,7 @@ namespace Mutation {
 
 //==============================================================================
 
-CollisionPairNew::CollisionPairNew(
+CollisionPair::CollisionPair(
     const Species& s1, const Species& s2, const IO::XmlElement* xml) :
     mp_xml(xml)
 {
@@ -52,7 +52,7 @@ CollisionPairNew::CollisionPairNew(
 
 //==============================================================================
 
-SharedPtr<CollisionIntegral> CollisionPairNew::get(const string& type)
+SharedPtr<CollisionIntegral> CollisionPair::get(const string& type)
 {
     map<string, SharedPtr<CollisionIntegral> >::iterator iter =
         m_integrals.find(type);
@@ -65,7 +65,7 @@ SharedPtr<CollisionIntegral> CollisionPairNew::get(const string& type)
 
 //==============================================================================
 
-void CollisionPairNew::initSpeciesData(const Species& s1, const Species& s2)
+void CollisionPair::initSpeciesData(const Species& s1, const Species& s2)
 {
     string name1 = s1.groundStateName();
     string name2 = s2.groundStateName();
@@ -103,7 +103,7 @@ void CollisionPairNew::initSpeciesData(const Species& s1, const Species& s2)
 //==============================================================================
 
 IO::XmlElement::const_iterator
-CollisionPairNew::findXmlElementWithIntegralType(
+CollisionPair::findXmlElementWithIntegralType(
     const string& kind) const
 {
     // First check if this collision pair is explicitly given in the database
@@ -156,7 +156,7 @@ CollisionPairNew::findXmlElementWithIntegralType(
 
 //==============================================================================
 
-SharedPtr<CollisionIntegral> CollisionPairNew::loadIntegral(
+SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(
     const string& kind)
 {
     IO::XmlElement::const_iterator iter =

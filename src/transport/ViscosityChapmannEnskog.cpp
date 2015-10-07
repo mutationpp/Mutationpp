@@ -27,7 +27,7 @@
  */
 
 #include "AutoRegistration.h"
-#include "CollisionDBNew.h"
+#include "CollisionDB.h"
 #include "Thermodynamics.h"
 #include "ViscosityAlgorithm.h"
 

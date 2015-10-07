@@ -30,7 +30,6 @@
 
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
-#include "CollisionDBNew.h"
 #include "Ramshaw.h"
 #include "Utilities.h"
 
@@ -62,7 +61,7 @@ public:
     ~Transport();
     
     /// Provides reference to the underlying collision integral database.
-    CollisionDBNew& collisionDB() { return m_collisions; }
+    CollisionDB& collisionDB() { return m_collisions; }
     
     /// Sets the viscosity algorithm.
     void setViscosityAlgo(const std::string& algo);
@@ -431,7 +430,7 @@ private:
 private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDBNew m_collisions;
+    CollisionDB m_collisions;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;

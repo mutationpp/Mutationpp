@@ -56,14 +56,14 @@ enum CollisionType {
 /**
  * Encapsulates data corresponding to a particular collision pair.
  */
-class CollisionPairNew
+class CollisionPair
 {
 public:
     /**
      * Loads the collision pair information provided the species in the pair and
      * the root node of the XML collision database.
      */
-    CollisionPairNew(
+    CollisionPair(
         const Mutation::Thermodynamics::Species& s1,
         const Mutation::Thermodynamics::Species& s2,
         const Mutation::Utilities::IO::XmlElement* xml);

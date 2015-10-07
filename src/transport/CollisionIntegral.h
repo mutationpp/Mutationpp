@@ -46,7 +46,7 @@ namespace Mutation {
 
 	namespace Transport {
 
-class CollisionPairNew;
+class CollisionPair;
 
 /**
  * Abstract (self registering) class for all collision integral types.
@@ -58,10 +58,10 @@ public:
 	struct ARGS {
 	    ARGS(
 	        const Mutation::Utilities::IO::XmlElement& arg1,
-	        CollisionPairNew& arg2) :
+	        CollisionPair& arg2) :
 	        xml(arg1), pair(arg2) {}
 	    const Mutation::Utilities::IO::XmlElement& xml;
-	    CollisionPairNew& pair;
+	    CollisionPair& pair;
 	};
 
 	/**

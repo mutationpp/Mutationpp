@@ -70,7 +70,7 @@ public:
 	}
 
 private:
-	Transport::CollisionDBNew& m_collisions;
+	Transport::CollisionDB& m_collisions;
 
 	double const compute_tau_ET();
 };
