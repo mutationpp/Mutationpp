@@ -2,8 +2,8 @@
 #define DIFFUSIONVELOCITYCALCULATOR_H
 
 #include <vector>
+#include <Eigen/Dense>
 
-#include "Numerics.h"
 #include "Thermodynamics.h"
 #include "Transport.h"
 
@@ -18,15 +18,15 @@ public:
     DiffusionVelocityCalculator( const Mutation::Thermodynamics::Thermodynamics& l_thermo, Mutation::Transport::Transport& l_transport );
     ~DiffusionVelocityCalculator();
 
-    void setDiffusionModel( const Mutation::Numerics::RealVector& lv_mole_frac_edge, const double& l_dx );
-    void computeDiffusionVelocities( const Mutation::Numerics::RealVector& lv_mole_frac, Mutation::Numerics::RealVector& lv_diff_velocities );
+    void setDiffusionModel( const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx );
+    void computeDiffusionVelocities( const Eigen::VectorXd& lv_mole_frac, Eigen::VectorXd& lv_diff_velocities );
 
 private:
     Mutation::Transport::Transport& m_transport;
 
     std::vector<DiffusionDrivingForces*> v_driving_forces;
 
-    Mutation::Numerics::RealVector v_rhs;
+    Eigen::VectorXd v_rhs; // Rename to something that I will understand
 
 };
 

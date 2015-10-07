@@ -1,6 +1,8 @@
 #ifndef SURFACEDESCRIPTION_H
 #define SURFACEDESCRIPTION_H
 
+#include <Eigen/Dense>
+
 #include "Thermodynamics.h"
 #include "Utilities.h"
 
@@ -20,8 +22,8 @@ public:
     void getWallState( double* const p_rhoi, double* const p_rhoie, const int state_variable );
     bool isWallStateSet() const;
 
-    const Mutation::Numerics::RealVector& getWallRhoi() const { return mp_wall_state->getWallRhoi(); }
-    const Mutation::Numerics::RealVector& getWallT() const { return mp_wall_state->getWallT(); }
+    const Eigen::VectorXd& getWallRhoi() const { return mp_wall_state->getWallRhoi(); }
+    const Eigen::VectorXd& getWallT() const { return mp_wall_state->getWallT(); }
 
 private:
     WallState* mp_wall_state;

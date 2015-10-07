@@ -53,29 +53,6 @@ public:
 
     Mutation::Mixture& mix() { return *mp_mix; }
 
-    /**
-     * Sets the mixture to an equilibrium state at the given T and P.  Assumes
-     * that the variable set 1 of the state model accepts species densities and
-     * temperature vectors.
-     */
-    void equilibrateMixture(double T, double P)
-    {
-        static std::vector<double> rhoi(mix().nSpecies());
-        static std::vector<double> tmps(mix().nEnergyEqns());
-
-        // Get equilibrium mole fractions
-        mix().equilibriumComposition(T, P, &rhoi[0]);
-
-        // Convert to species densities
-        double rho = mix().density(T, P, &rhoi[0]);
-        mix().convert<Mutation::Thermodynamics::X_TO_Y>(&rhoi[0], &rhoi[0]);
-        for (int i = 0; i < mix().nSpecies(); ++i)
-            rhoi[i] *= rho;
-
-        tmps.assign(mix().nEnergyEqns(), T);
-        mix().setState(&rhoi[0], &tmps[0], 1);
-    }
-
 private:
     Mutation::Mixture* mp_mix;
 };

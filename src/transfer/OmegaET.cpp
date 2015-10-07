@@ -27,8 +27,10 @@
 
 #include "Mixture.h"
 #include "TransferModel.h"
+
 #include <cmath>
 
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transfer {
@@ -80,7 +82,7 @@ double const OmegaET::compute_tau_ET()
     double mwis, nu, sum, tau;
 
     // Collisional integrals
-    const Numerics::RealSymMat& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
+    const Eigen::MatrixXd& Q11 = mp_collisions->Q11(T, Te, nd, p_X);
 
     // Electron velocity
     double ve = sqrt(RU*8.0*Te/(PI*mwel));

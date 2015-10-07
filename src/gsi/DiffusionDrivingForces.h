@@ -1,6 +1,8 @@
 #ifndef DIFFUSIONDRIVINGFORCES_H
 #define DIFFUSIONDRIVINGFORCES_H
 
+#include <Eigen/Dense>
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
@@ -11,7 +13,7 @@ public:
                             m_diff_model_set( 0 ) { }
     ~DiffusionDrivingForces(){ }
 
-    void computeDrivingForces( const Mutation::Numerics::RealVector& lv_mole_frac, Mutation::Numerics::RealVector& lv_driving_force ){ 
+    void computeDrivingForces( const Eigen::VectorXd& lv_mole_frac, Eigen::VectorXd& lv_driving_force ){ 
 
 
         if ( m_diff_model_set == 0 ) { std::cerr << "Error diffusion model!" << std::endl; exit(1); }
@@ -22,7 +24,7 @@ public:
 
     }
 
-    void setDiffusionCalculator( const Mutation::Numerics::RealVector& lv_mole_frac_edge, const double& l_dx ){
+    void setDiffusionCalculator( const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx ){
 
             v_mole_frac_edge = lv_mole_frac_edge; 
             m_dx = l_dx;
@@ -32,7 +34,7 @@ public:
     }
 
 private:
-    Mutation::Numerics::RealVector v_mole_frac_edge;
+    Eigen::VectorXd v_mole_frac_edge;
     double m_dx;
 
     bool m_diff_model_set;

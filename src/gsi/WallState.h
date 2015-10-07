@@ -1,9 +1,8 @@
 #ifndef WALLSTATE_H
 #define WALLSTATE_H
 
-#include "Numerics.h"
 #include "Thermodynamics.h"
-#include "Vector.h"
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -17,8 +16,8 @@ public:
     void setWallRhoi( const double* const p_rhoi );
     void setWallT( const double* const p_T );
 
-    const Mutation::Numerics::RealVector& getWallRhoi() const { return v_rhoi; }
-    const Mutation::Numerics::RealVector& getWallT() const { return v_T; }
+    const Eigen::VectorXd& getWallRhoi() const { return v_rhoi; }
+    const Eigen::VectorXd& getWallT() const { return v_T; }
 
     void wallStateSet();
     bool isWallStateSet() const ;
@@ -27,8 +26,8 @@ private:
     const int m_ns;
     const int m_nT;
 
-    Mutation::Numerics::RealVector v_rhoi;
-    Mutation::Numerics::RealVector v_T;
+    Eigen::VectorXd v_rhoi;
+    Eigen::VectorXd v_T;
 
     bool m_wall_state_set;
 

@@ -18,14 +18,14 @@ public:
 
 //=============================================================================================================
 
-    virtual double forwardReactionRate( const Mutation::Numerics::RealVector& v_rhoi, const Mutation::Numerics::RealVector& v_Twall ) const = 0;
+    virtual double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const = 0;
 
 //=============================================================================================================
 
 protected:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
 
-    inline double computeAverageThermalSpeedforSpeciesI( const int& l_index_species, const Mutation::Numerics::RealVector& v_Twall ) const {
+    inline double computeAverageThermalSpeedforSpeciesI( const int& l_index_species, const Eigen::VectorXd& v_Twall ) const {
 
         return sqrt( ( 8.E0 * Mutation::RU * v_Twall(0) ) / ( Mutation::PI * m_thermo.speciesMw( l_index_species ) ) ) ; /** @todo 0 -> position_translational_temperature */
 

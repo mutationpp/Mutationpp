@@ -35,12 +35,10 @@
 #include "Reaction.h"
 #include "StoichiometryManager.h"
 #include "ThirdBodyManager.h"
-#include "Numerics.h"
 #include "Species.h"
 #include "ThermoDB.h"
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
-//#include "GuptaYos.h"
 #include "Constants.h"
 #include "Ramshaw.h"
 #include "Transport.h"
@@ -49,5 +47,6 @@
 #include "Units.h"
 #include "GasSurfaceInteraction.h"
 #include "Composition.h"
+#include "ParticleRRHO.h"
 
 #endif // MUTATIONPP_H

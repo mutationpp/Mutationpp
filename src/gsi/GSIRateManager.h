@@ -1,6 +1,8 @@
 #ifndef GSIRATEMANAGER_H
 #define GSIRATEMANAGER_H
 
+#include<Eigen/Dense>
+
 #include "DataGSIRateManager.h"
 #include "GSIReaction.h"
 
@@ -18,7 +20,7 @@ public:
                     v_reactions( l_data_rate_manager.s_reactions ) { }
     virtual ~GSIRateManager(){ };
 
-    virtual void computeRate( Mutation::Numerics::RealVector& lv_mass_prod_rate ) = 0;
+    virtual void computeRate( Eigen::VectorXd& lv_mass_prod_rate ) = 0;
 
 protected:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;

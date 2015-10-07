@@ -35,12 +35,12 @@
 #include "Constants.h"
 #include "CollisionDB.h"
 
-#define VERBOSE
+//#define VERBOSE
 
 using namespace std;
-using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
+using namespace Eigen;
 
 namespace Mutation {
     namespace Transport {
@@ -98,38 +98,45 @@ CollisionDB::CollisionDB(const Thermodynamics& thermo)
     : m_ns(thermo.nSpecies()),
       m_nh(thermo.nHeavy()),
       m_ncollisions((m_ns*(m_ns + 1))/2),
-      m_mass(m_ns),
-      m_mass_sum(m_ns),
-      m_mass_prod(m_ns),
-      m_red_mass(m_ns),
-      m_Q11(m_ns),
-      m_Q12ei(m_ns),
-      m_Q13ei(m_ns),
-      m_Q14ei(m_ns),
-      m_Q15ei(m_ns),
-      m_Q22(m_ns),
-      m_Ast(m_ns),
-      m_Bst(m_ns),
-      m_Cstei(m_ns),
-      m_Cstij(m_nh),
-      m_eta(m_ns),
-      m_Dij(m_ns)
+      m_mass(ArrayXd::Zero(m_ns)),
+      m_Q11(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Q12ei(ArrayXd::Zero(m_ns)),
+      m_Q13ei(ArrayXd::Zero(m_ns)),
+      m_Q14ei(ArrayXd::Zero(m_ns)),
+      m_Q15ei(ArrayXd::Zero(m_ns)),
+      m_Q22(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Ast(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Bst(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Cstei(ArrayXd::Zero(m_ns)),
+      m_Cstij(ArrayXXd::Zero(m_nh, m_nh)),
+      m_eta(ArrayXd::Zero(m_ns)),
+      m_etafac(ArrayXd::Zero(m_ns)),
+      m_Dij(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Dijfac(ArrayXXd::Zero(m_ns, m_ns)),
+      m_Dim(ArrayXd::Zero(m_ns))
 {
     // Load collision integrals
     loadCollisionIntegrals(thermo.species());
     
-    // Next, compute the mass quantities
+    // Compute masses
     for (int i = 0; i < m_ns; ++i)
         m_mass(i) = thermo.speciesMw(i) / NA;
     
-    for (int i = 0; i < m_ns; ++i) {
-        for (int j = i; j < m_ns; ++j) {
-            m_mass_sum(i,j)  = m_mass(i) + m_mass(j);
-            m_mass_prod(i,j) = m_mass(i) * m_mass(j);
-            m_red_mass(i,j) = m_mass_prod(i,j) / m_mass_sum(i,j);
-        }
+    // Compute the Dij factors
+    double fac = 3./16.*std::sqrt(TWOPI*KB);
+    if (m_ns > m_nh) {
+        m_Dijfac.col(0).fill(fac/std::sqrt(m_mass(0)));
+        m_Dijfac(0) *= 2./SQRT2;
     }
-    
+    for (int j = m_ns-m_nh; j < m_ns; ++j)
+        for (int i = j; i < m_ns; ++i)
+            m_Dijfac(i,j) = fac*std::sqrt(
+                (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
+
+    // Compute eta factors
+    m_etafac.tail(m_nh) = (5./16.*std::sqrt(PI*KB))*m_mass.tail(m_nh).sqrt();
+
+    // Initialize save parameters
     for (int i = 0; i < DATA_SIZE; ++i) {
         mp_last_Th[i] = -1.0;
         mp_last_Te[i] = -1.0;
@@ -156,16 +163,11 @@ void CollisionDB::loadCollisionIntegrals(const vector<Species>& species)
     // First step is to determine all of the collision pairs that are needed and
     // what index they belong to in the collision function lists
     std::list< std::pair<CollisionPair, int> > collision_list;
-    //map<CollisionPair, int> collision_map;
-    int index = 0;
     
     for (int i = 0; i < m_ns; ++i) {
-        for (int j = i; j < m_ns; ++j, ++index)
-             //collision_map[
-             //   CollisionPair(species[i], species[j])
-             //] = index;
+        for (int j = i; j < m_ns; ++j)
              collision_list.push_back(
-                 std::make_pair(CollisionPair(species[i], species[j]), index));
+                 std::make_pair(CollisionPair(species[i], species[j]), i*m_ns+j));
     }
     
     // With the collision map generated, look through the database and load all
@@ -377,7 +379,7 @@ void CollisionDB::updateCollisionData(
     const CollisionData data)
 {
     // Return if we already computed this stuff for the same temperature
-    const double change = 0.001*std::sqrt(RealConsts::eps);
+    const double change = 0.001*std::sqrt(std::numeric_limits<double>::epsilon());
     const double ne = (m_ns > m_nh ? nd * std::max(p_x[0], 1.0e-99) : 0.0);
 
     if (std::abs(Th - mp_last_Th[data]) < change &&
@@ -444,21 +446,20 @@ void CollisionDB::updateCollisionData(
             Q11_att = hfac * sm_Q11_att(lnTsth);
             for (int i = m_nae; i < m_na; ++i)
                 m_Q11(m_attract_indices[i]) = Q11_att;
-            } break;
+            }
+            break;
         
-        case Q12EI: {
+        case Q12EI:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             updateCollisionData(Th, Te, nd, p_x, CSTAREI);
-            for (int i = 0; i < m_ns; ++i)
-                m_Q12ei(i) = m_Q11(i)*m_Cstei(i);
-            } break;
+            m_Q12ei = m_Q11.col(0)*m_Cstei;
+            break;
             
-        case Q13EI: {
+        case Q13EI:
             updateCollisionData(Th, Te, nd, p_x, Q12EI);
             updateCollisionData(Th, Te, nd, p_x, BSTAR);
-            for (int i = 0; i < m_ns; ++i)
-                m_Q13ei(i) = 1.25*m_Q12ei(i) - 0.25*m_Q11(i)*m_Bst(i);
-            } break;
+            m_Q13ei = 1.25*m_Q12ei - 0.25*m_Q11.col(0)*m_Bst.col(0);
+            break;
         
         case Q14EI: {
             // Neutral-electron collisions take value of Q(1,3)
@@ -527,20 +528,19 @@ void CollisionDB::updateCollisionData(
                 m_Q22(m_attract_indices[i]) = Q22_att;
             } break;
         
-        case Q23EE: {
+        case Q23EE:
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
             m_Q23ee = m_Q22(0) * sm_Est_rep(lnTste);
-            } break;
+            break;
         
-        case Q24EE: {
+        case Q24EE:
             m_Q24ee = efac * sm_Q24_rep(lnTste);
-            } break;
+            break;
             
         case ASTAR:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
-            for (int i = 0; i < m_ncollisions; ++i)
-                m_Ast(i) = m_Q22(i) / m_Q11(i);
+            m_Ast.matrix().triangularView<Lower>() = (m_Q22 / m_Q11).matrix();
             break;
                 
         case BSTAR: {
@@ -582,7 +582,7 @@ void CollisionDB::updateCollisionData(
             
         case CSTAREI: {
             // Neutral-electron collisions are treated as 1 for now
-            m_Cstei = 1.0;
+            m_Cstei.setOnes();
             
             // Ion-electron (repulsive) interactions
             const double rep = sm_Cst_rep(lnTste);
@@ -595,44 +595,34 @@ void CollisionDB::updateCollisionData(
                 m_Cstei(m_attract_indices[i]) = att;
             } break;
         
-        case CSTARIJ: {
-            m_Cstij = 1.0;
-            } break;
+        case CSTARIJ:
+            m_Cstij.setOnes();
+            break;
         
-        case ETAI: {
+        case ETAI:
             updateCollisionData(Th, Te, nd, p_x, Q22IJ);
+            m_eta = std::sqrt(Th)*m_etafac/m_Q22.matrix().diagonal().array();
+            break;
             
-            // Electron does not contribute to viscosity
-            int k = m_ns - m_nh;
-            m_eta(0) = 0.0;
-            
-            // Heavy species
-            for (int i = k; i < m_ns; ++i)
-                m_eta(i) = 
-                    5.0 / 16.0 * sqrt(PI * KB * Th * m_mass(i)) / m_Q22(i,i);
-            } break;
-            
-        case NDIJ: {
+        case NDIJ:
             updateCollisionData(Th, Te, nd, p_x, Q11IJ);
-            
-            int k = m_ns - m_nh;
-            
-            if (k == 1) {
-                // Electron-Electron
-                m_Dij(0) = 3.0 / 8.0 * sqrt(PI * KB * Te / m_mass(0)) / m_Q11(0);
-                
-                // Electron-heavy interactions
-                for (int i = 1; i < m_ns; ++i)
-                    m_Dij(i) = 
-                        3.0 / 16.0 * sqrt(TWOPI * KB * Te / m_mass(0)) / m_Q11(i);
-            }
-            
-            // Heavy-heavy interactions
-            for (int i = k * m_ns; i < m_ncollisions; ++i)
-                m_Dij(i) = 3.0 / 16.0 * sqrt(TWOPI * KB * Th / 
-                    m_red_mass(i)) / m_Q11(i);
-            } break;
+            m_Dij.matrix().triangularView<Lower>() =
+                (std::sqrt(Th)*m_Dijfac/m_Q11).matrix();
+            if (m_ns > m_nh) m_Dij.col(0) *= std::sqrt(Te/Th);
+            break;
         
+        case DIM:
+            updateCollisionData(Th, Te, nd, p_x, NDIJ);
+            m_Dim.setZero();
+            for (int j = 0; j < m_ns; ++j) {
+                for (int i = j + 1; i < m_ns; ++i) {
+                    m_Dim(i) += p_x[j] / m_Dij(i,j);
+                    m_Dim(j) += p_x[i] / m_Dij(i,j);
+                }
+            }
+            m_Dim = (1.0 - Map<const ArrayXd>(p_x,m_ns)) / (nd * m_Dim);
+            break;
+
         default:
             break;  // Will never get here
     }

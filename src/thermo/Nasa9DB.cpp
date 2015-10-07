@@ -79,8 +79,7 @@ protected:
     /**
      * Loads the species that is at the current location in the file stream.
      */
-    Species loadSpecies(
-        std::ifstream& is, const std::vector<Element>& elements) const
+    Species loadSpecies(std::ifstream& is) const
     {
 
         // Skip all comments and blank lines first
@@ -142,7 +141,7 @@ protected:
             }
         }
         
-        return Species(name, phase, stoich, elements);
+        return Species(name, phase, stoich);
     }
     
     /**

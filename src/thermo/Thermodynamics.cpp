@@ -35,8 +35,9 @@
 #include <set>
 
 using namespace std;
-using namespace Mutation::Numerics;
+//using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
+using namespace Eigen;
 
 //==============================================================================
 
@@ -77,7 +78,7 @@ Thermodynamics::Thermodynamics(
     m_ngas = nSpecies()-m_ngas;
 
     // Build the composition matrix
-    m_element_matrix = RealMatrix(nSpecies(), nElements());
+    m_element_matrix.resize(nSpecies(), nElements());
     
     for (int i = 0; i < nSpecies(); ++i)
         for (int j = 0; j < nElements(); ++j)
@@ -85,7 +86,7 @@ Thermodynamics::Thermodynamics(
                 species(i).nAtoms(element(j).name());
     
     // Store the species molecular weights for faster access
-    m_species_mw = RealVector(nSpecies());
+    m_species_mw.resize(nSpecies());
     for (int i = 0; i < nSpecies(); ++i)
         m_species_mw(i) = species(i).molecularWeight();
     
@@ -280,7 +281,8 @@ double Thermodynamics::standardStateP() const {
 
 double Thermodynamics::mixtureMw() const 
 {
-    return dot(Numerics::asVector(mp_state->X(), nSpecies()), m_species_mw);
+    //return dot(Numerics::asVector(mp_state->X(), nSpecies()), m_species_mw);
+    return (Map<const ArrayXd>(mp_state->X(), nSpecies())*m_species_mw).sum();
 }
 
 //==============================================================================
@@ -294,16 +296,26 @@ std::pair<int, int> Thermodynamics::equilibriumComposition(
 
 //==============================================================================
 
+void Thermodynamics::equilibrate(double T, double P, double* const p_Xe) const
+{
+    mp_state->equilibrate(T, P, p_Xe);
+    convert<X_TO_Y>(X(), mp_y);
+}
+
+//==============================================================================
+
 void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 {
-    mp_equil->addConstraint(p_A);
+    //mp_equil->addConstraint(p_A);
+    cout << "Note implemented!!" << endl;
 }
     
 //==============================================================================
 
 void Thermodynamics::clearEquilibriumContraints()
 {
-    mp_equil->clearConstraints();
+    //mp_equil->clearConstraints();
+    cout << "Note implemented!!" << endl;
 }
 
 //==============================================================================
@@ -994,8 +1006,8 @@ void Thermodynamics::speciesSTGOverRT(double T, double* const p_g) const {
 void Thermodynamics::elementMoles(
     const double *const species_N, double *const element_N) const
 {
-    asVector(element_N, nElements()) = 
-        asVector(species_N, nSpecies()) * m_element_matrix;
+    Map<VectorXd>(element_N, nElements()) =
+        Map<const VectorXd>(species_N, nSpecies()) * m_element_matrix;
 }
 
 //==============================================================================

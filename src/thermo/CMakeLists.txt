@@ -41,6 +41,7 @@ add_sources(mutation++
 
 install(FILES Composition.h DESTINATION include/mutation++)
 install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
+install(FILES ParticleRRHO.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)
 install(FILES StateModel.h DESTINATION include/mutation++)

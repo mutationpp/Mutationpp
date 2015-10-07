@@ -93,13 +93,32 @@ public:
         case 0: {
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
-            getTFromRhoE(
-                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
-            m_Tel = m_Te = m_Tv;
+            if (!getTFromRhoE(
+                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0)) {
+                std::cout << "was trying to compute Tv..." << std::endl;
+                std::cout << "rhoe_v = " << p_energy[1] << std::endl;
+                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+                    std::cout << m_thermo.speciesName(i) << p_mass[i] << std::endl;
+                std::cout << std::endl;
+            }
 
             // Next compute the temperature using the total energy density
-            getTFromRhoE(
-                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
+            m_Tel = m_Te = m_Tv;
+
+            if (!getTFromRhoE(
+                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
+                std::cout << "was trying to compute T..." << std::endl;
+                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+                    std::cout << p_mass[i] << std::endl;
+                std::cout << std::endl;
+            }
+//            getTFromRhoE(
+//                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
+//            m_Tel = m_Te = m_Tv;
+//
+//            // Next compute the temperature using the total energy density
+//            getTFromRhoE(
+//                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
 
             break;
         }
@@ -111,7 +130,7 @@ public:
             m_Tv = p_energy[1];
             break;
         default:
-            cout << "Variable-set " << vars << " not implemented in StateModel!" << endl;
+            std::cout << "Variable-set " << vars << " not implemented in StateModel!" << std::endl;
             exit(1);
         }
 

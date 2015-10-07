@@ -1,9 +1,8 @@
 #ifndef GSISTOICHIOMETRYMANAGER_H
 #define GSISTOICHIOMETRYMANAGER_H
 
+#include <Eigen/Dense>
 #include <vector>
-
-#include "Numerics.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -20,19 +19,19 @@ public:
         for (int i = 0; i < N; ++i) m_sps[i] = 0;
     }
 
-    inline void multReaction( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r) const {
+    inline void multReaction( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r) const {
         for (int i = 0; i < N; ++i) p_r(m_rxn) *= p_s(m_sps[i]);
     }
-    inline void incrReaction( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r) const {
+    inline void incrReaction( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r) const {
         for (int i = 0; i < N; ++i) p_r(m_rxn) += p_s(m_sps[i]);
     }
-    inline void decrReaction( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r) const {
+    inline void decrReaction( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r) const {
         for (int i = 0; i < N; ++i) p_r(m_rxn) -= p_s(m_sps[i]);
     }
-    inline void incrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s) const {
+    inline void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s) const {
         for (int i = 0; i < N; ++i) p_s(m_sps[i]) += p_r(m_rxn);
     }
-    inline void decrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s) const {
+    inline void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s) const {
         for (int i = 0; i < N; ++i) p_s(m_sps[i]) -= p_r(m_rxn);
     }
 
@@ -102,11 +101,11 @@ public:
     GSIStoichiometryManager( ){ }
 
     virtual void addReaction( const int rxn, const std::vector<int>& sps ) = 0;
-    virtual void multReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const = 0;
-    virtual void incrReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const = 0;
-    virtual void decrReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const = 0;
-    virtual void incrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s ) const = 0;
-    virtual void decrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s ) const = 0;
+    virtual void multReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
+    virtual void incrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
+    virtual void decrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
+    virtual void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const = 0;
+    virtual void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const = 0;
 
     virtual ~GSIStoichiometryManager(){ }
 
@@ -119,11 +118,11 @@ public:
     GSIStoichiometryManagerGamma( ){ }
 
     void addReaction( const int rxn, const std::vector<int>& sps );
-    void multReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const;
-    void incrReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const;
-    void decrReactions( const Mutation::Numerics::RealVector& p_s, Mutation::Numerics::RealVector& p_r ) const;
-    void incrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s ) const;
-    void decrSpecies( const Mutation::Numerics::RealVector& p_r, Mutation::Numerics::RealVector& p_s ) const;
+    void multReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    void incrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    void decrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
+    void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
 
     ~GSIStoichiometryManagerGamma(){ }
 

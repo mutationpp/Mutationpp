@@ -79,8 +79,7 @@ public:
 
 protected:
     
-    void loadAvailableSpecies(
-        std::list<Species>& species_list, const std::vector<Element>& elements);
+    void loadAvailableSpecies(std::list<Species>& species_list);
     
     void loadThermodynamicData();
     
@@ -88,8 +87,7 @@ protected:
     
     virtual void skipHeader(std::ifstream& is) const = 0;
     
-    virtual Species loadSpecies(
-        std::ifstream& is, const std::vector<Element>& elements) const = 0;
+    virtual Species loadSpecies(std::ifstream& is) const = 0;
     
     virtual void loadPolynomials(
         std::ifstream& is, std::vector<PolynomialType>& polynomials) = 0;
@@ -177,7 +175,7 @@ void NasaDB<PolynomialType>::gibbs(
 
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::loadAvailableSpecies(
-    std::list<Species>& species_list, const std::vector<Element>& elements)
+    std::list<Species>& species_list)
 {
     // Open the database file
     std::string db_path =
@@ -194,9 +192,9 @@ void NasaDB<PolynomialType>::loadAvailableSpecies(
     skipHeader(file);
     
     // Load all of the available species until we reach the end of the file
-    species_list.push_back(loadSpecies(file, elements));
+    species_list.push_back(loadSpecies(file));
     while (species_list.back().name() != "")
-        species_list.push_back(loadSpecies(file, elements));
+        species_list.push_back(loadSpecies(file));
     species_list.pop_back();
     
     // Close the database file
@@ -217,7 +215,7 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
         exit(1);
     }
     
-    
+
     // Move to the beginning of the first species
     skipHeader(file);
     

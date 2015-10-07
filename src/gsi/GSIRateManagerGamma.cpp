@@ -11,7 +11,7 @@ class GSIRateManagerGamma : public GSIRateManager{
 public:
     GSIRateManagerGamma( DataGSIRateManager l_data_rate_manager ) 
                     : GSIRateManager( l_data_rate_manager ),
-                      v_wall_reaction_rate_constant( l_data_rate_manager.s_reactions.size(), 0.0 ) {
+                      v_wall_reaction_rate_constant( l_data_rate_manager.s_reactions.size() ) {
 
     for ( int i_reac = 0 ; i_reac < l_data_rate_manager.s_reactions.size() ; ++i_reac ){
 
@@ -28,7 +28,7 @@ public:
 
 //=============================================================================
 
-    void computeRate( Mutation::Numerics::RealVector& lv_mass_prod_rate ){ 
+    void computeRate( Eigen::VectorXd& lv_mass_prod_rate ){ 
 
         // Get reaction rate constant
         for ( int i_reac = 0; i_reac < v_wall_reaction_rate_constant.size() ; ++i_reac ) {
@@ -49,12 +49,12 @@ public:
     }
 
 //=============================================================================
+
 private:
-    Mutation::Numerics::RealVector v_wall_reaction_rate_constant;
+    Eigen::VectorXd v_wall_reaction_rate_constant;
 
     GSIStoichiometryManagerGamma m_reactants;
     GSIStoichiometryManagerGamma m_irr_products;
-
 
 //=============================================================================
 

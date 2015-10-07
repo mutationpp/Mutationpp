@@ -12,16 +12,16 @@ SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodyna
                                             mp_diff_vel_calc( NULL ),
                                             mp_mass_blowing_rate( NULL ),
                                             m_ns( m_thermo.nSpecies() ),
-                                            v_rhoi( m_thermo.nSpecies(), 0.E0 ),
-                                            v_work( m_thermo.nSpecies(), 0.E0 ),
-                                            v_X( m_thermo.nSpecies(), 0.E0 ),
-                                            v_dX( m_thermo.nSpecies(), 0.E0 ),
-                                            v_f( m_thermo.nSpecies(), 0.E0 ),
-                                            v_f_unpert( m_thermo.nSpecies(), 0.E0 ),
-                                            v_jac(m_thermo.nSpecies(), m_thermo.nSpecies(), 0.E0),
+                                            v_rhoi( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_work( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_X( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_dX( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_f( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_f_unpert( m_thermo.nSpecies() ), // Removed Initialization to zero
+                                            v_jac(m_thermo.nSpecies(), m_thermo.nSpecies() ), // Removed Initialization to zero
                                             m_pert( 1.E-5 ),
                                             set_state_with_rhoi_T( 1 ),
-                                            v_sep_mass_prod_rate( m_thermo.nSpecies(), 0.E0 ) {
+                                            v_sep_mass_prod_rate( m_thermo.nSpecies() ) { // Removed Initialization to zero
                                             
 
     Mutation::Utilities::IO::XmlElement::const_iterator iter_prod_terms = l_node_prod_terms.begin();
@@ -41,7 +41,7 @@ SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodyna
     mp_mass_blowing_rate = new MassBlowingRate();
 
     // Setup NewtonSolver
-    setMaxIterations(3);
+    setMaxIterations(3); // Write a wrapper around the maximum number of iterations.
     setWriteConvergenceHistory(false);
 
 }
@@ -67,7 +67,7 @@ void SurfaceBalanceSolver::setWallState( const double* const l_mass, const doubl
 
 //======================================================================================
 
-void SurfaceBalanceSolver::computeGSIProductionRate( Mutation::Numerics::RealVector& lv_mass_prod_rate ){
+void SurfaceBalanceSolver::computeGSIProductionRate( Eigen::VectorXd& lv_mass_prod_rate ){
 
     errorWallStateNotSet();
     for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ v_sep_mass_prod_rate( i_ns ) = 0.E0; }
@@ -76,7 +76,7 @@ void SurfaceBalanceSolver::computeGSIProductionRate( Mutation::Numerics::RealVec
         v_surf_prod[i_prod_terms]->productionRate( v_sep_mass_prod_rate );
     }
 
-    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ /////// WTF????????????
+    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ /////// CHANGE!
         lv_mass_prod_rate( i_ns ) = v_sep_mass_prod_rate( i_ns );
     }
 
@@ -84,7 +84,7 @@ void SurfaceBalanceSolver::computeGSIProductionRate( Mutation::Numerics::RealVec
 
 //======================================================================================
 
-void SurfaceBalanceSolver::setDiffusionModel( const Mutation::Numerics::RealVector& lv_mole_frac_edge, const double& l_dx ){
+void SurfaceBalanceSolver::setDiffusionModel( const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx ){
 
     mp_diff_vel_calc->setDiffusionModel( lv_mole_frac_edge, l_dx );
 
@@ -92,7 +92,7 @@ void SurfaceBalanceSolver::setDiffusionModel( const Mutation::Numerics::RealVect
 
 //======================================================================================
 
-void SurfaceBalanceSolver::solveSurfaceBalance( const Mutation::Numerics::RealVector& lv_rhoi, const Mutation::Numerics::RealVector& lv_T ){
+void SurfaceBalanceSolver::solveSurfaceBalance( const Eigen::VectorXd& lv_rhoi, const Eigen::VectorXd& lv_T ){
 
     // errorUninitializedDiffusionModel
     // errorWallStateNotSetYet
@@ -111,7 +111,7 @@ void SurfaceBalanceSolver::solveSurfaceBalance( const Mutation::Numerics::RealVe
 
 //======================================================================================
 
-void SurfaceBalanceSolver::updateFunction( Mutation::Numerics::RealVector& lv_mole_frac ) {
+void SurfaceBalanceSolver::updateFunction( Eigen::VectorXd& lv_mole_frac ) {
 
     computePartialDensfromMoleFrac( lv_mole_frac, v_rhoi );
     m_thermo.setState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
@@ -133,7 +133,7 @@ void SurfaceBalanceSolver::updateFunction( Mutation::Numerics::RealVector& lv_mo
 
 //======================================================================================
 
-void SurfaceBalanceSolver::updateJacobian( Mutation::Numerics::RealVector& lv_mole_frac ) {
+void SurfaceBalanceSolver::updateJacobian( Eigen::VectorXd& lv_mole_frac ) {
 
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         v_f_unpert(i_ns) = v_f(i_ns);
@@ -160,10 +160,9 @@ void SurfaceBalanceSolver::updateJacobian( Mutation::Numerics::RealVector& lv_mo
 
 //======================================================================================
 
-Mutation::Numerics::RealVector& SurfaceBalanceSolver::systemSolution(){
+Eigen::VectorXd& SurfaceBalanceSolver::systemSolution(){
 
-    static Mutation::Numerics::QRP<double> m_qr(v_jac);
-    m_qr.solve(v_dX, v_f_unpert); // Unperturbed?
+    v_dX = v_jac.partialPivLu().solve(v_f_unpert);
     return v_dX;
 
 }
@@ -172,7 +171,7 @@ Mutation::Numerics::RealVector& SurfaceBalanceSolver::systemSolution(){
 
 double SurfaceBalanceSolver::norm(){
 
-    return v_f.normInf();
+    return v_f.lpNorm<Eigen::Infinity>();
 
 }
 
@@ -186,7 +185,7 @@ void SurfaceBalanceSolver::addSurfaceProductionTerm( WallProductionTerms* lp_wal
 
 //======================================================================================
 
-void SurfaceBalanceSolver::saveUnperturbedPressure( Mutation::Numerics::RealVector& lv_rhoi ){
+void SurfaceBalanceSolver::saveUnperturbedPressure( Eigen::VectorXd& lv_rhoi ){
 
     m_thermo.setState( &lv_rhoi(0), &m_Twall, set_state_with_rhoi_T );
     m_Pwall = m_thermo.P();
@@ -195,7 +194,7 @@ void SurfaceBalanceSolver::saveUnperturbedPressure( Mutation::Numerics::RealVect
 
 //======================================================================================
 
-void SurfaceBalanceSolver::computeMoleFracfromPartialDens( Mutation::Numerics::RealVector& lv_rhoi, Mutation::Numerics::RealVector& lv_xi ){
+void SurfaceBalanceSolver::computeMoleFracfromPartialDens( Eigen::VectorXd& lv_rhoi, Eigen::VectorXd& lv_xi ){
 
     m_thermo.setState( &lv_rhoi(0), &m_Twall, set_state_with_rhoi_T );
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
@@ -206,7 +205,7 @@ void SurfaceBalanceSolver::computeMoleFracfromPartialDens( Mutation::Numerics::R
 
 //======================================================================================
 
-void SurfaceBalanceSolver::computePartialDensfromMoleFrac( Mutation::Numerics::RealVector& lv_xi, Mutation::Numerics::RealVector& lv_rhoi ){
+void SurfaceBalanceSolver::computePartialDensfromMoleFrac( Eigen::VectorXd& lv_xi, Eigen::VectorXd& lv_rhoi ){
 
     for( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         lv_rhoi(i_ns) = lv_xi(i_ns) * m_Pwall * m_thermo.speciesMw(i_ns) / ( m_Twall * Mutation::RU );

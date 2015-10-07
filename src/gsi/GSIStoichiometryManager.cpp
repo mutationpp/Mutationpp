@@ -34,7 +34,7 @@ inline static void _##__my_func__ (\
         begin-> __stoic_func__ (input, output);\
 }\
 void GSIStoichiometryManagerGamma:: __my_func__ (\
-    const Mutation::Numerics::RealVector& in, Mutation::Numerics::RealVector& out) const\
+    const Eigen::VectorXd& in, Eigen::VectorXd& out) const\
 {\
     _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
     _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in , out );\

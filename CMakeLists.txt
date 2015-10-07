@@ -140,6 +140,7 @@ endif()
 ################################################################################
 # Descend into the src directory to build all targets and libraries
 include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/general
     ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
     ${CMAKE_CURRENT_SOURCE_DIR}/src/numerics
@@ -151,21 +152,8 @@ include_directories(
 )
 add_subdirectory(src)
 
-
-################################################################################
-# Install the data directory in the install folder
-################################################################################
-install(FILES data/thermo/nasa7.dat DESTINATION include/mutation++_data/thermo)
-install(FILES data/thermo/nasa9.dat DESTINATION include/mutation++_data/thermo)
-install(FILES data/thermo/elements.xml DESTINATION include/mutation++_data/thermo)
-install(FILES data/thermo/species.xml DESTINATION include/mutation++_data/thermo)
-install(FILES data/transport/heavy.dat DESTINATION include/mutation++_data/transport)
-FILE(GLOB mechanisms data/mechanisms/*.xml)
-install(FILES ${mechanisms} DESTINATION include/mutation++_data/mechanisms)
-FILE(GLOB mixtures data/mixtures/*.xml)
-install(FILES ${mixtures} DESTINATION include/mutation++_data/mixtures)
-FILE(GLOB gsi data/gsi/*.xml)
-install(FILES ${gsi} DESTINATION include/mutation++_data/gsi)
+# Install the Eigen files
+install(DIRECTORY Eigen DESTINATION include/mutation++)
 
 ################################################################################
 # CTest
@@ -176,3 +164,4 @@ if (ENABLE_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()
+

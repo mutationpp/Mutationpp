@@ -1,6 +1,7 @@
 #ifndef GASSURFACEINTERACTION_H
 #define GASSURFACEINTERACTION_H
 
+#include <Eigen/Dense>
 #include <string>
 
 #include "Thermodynamics.h"
@@ -35,7 +36,7 @@ private:
 
     std::string m_gsi_mechanism;
 
-    Mutation::Numerics::RealVector v_mass_prod_rate;
+     Eigen::VectorXd v_mass_prod_rate;
 
     inline void locateGSIInputFile( std::string& l_gsi_mechanism_file );
     inline void errorWrongTypeofGSIFile( const std::string& l_gsi_root_tag );
@@ -43,7 +44,7 @@ private:
     inline void errorInvalidGSIFileProperties( const std::string& l_gsi_option );
 
     // TEMPORARY
-    Mutation::Numerics::RealVector v_mole_frac_edge;
+    Eigen::VectorXd v_mole_frac_edge;
 
 };
 

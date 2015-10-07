@@ -42,7 +42,7 @@ public:
 
 //======================================================================================
 
-    void productionRate( Mutation::Numerics::RealVector& lv_mass_prod_rate ){ 
+    void productionRate( Eigen::VectorXd& lv_mass_prod_rate ){ 
 
         mp_rate_manager->computeRate( lv_mass_prod_rate );
 

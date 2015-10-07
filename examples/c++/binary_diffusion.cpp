@@ -1,4 +1,7 @@
 #include "mutation++.h"
+
+#include <Eigen/Dense>
+
 #include <vector>
 #include <iostream>
 
@@ -29,7 +32,7 @@ int main()
     std::vector<double> v_Vd_sm( ns, 0.0 );
     std::vector<double> v_b( ns, 0.0);    
 
-    Mutation::Numerics::RealMatrix m_ram_Dij(ns, ns, 0);
+    Eigen::MatrixXd m_ram_Dij(ns, ns);
 
     double E_field = 0.E0;
 

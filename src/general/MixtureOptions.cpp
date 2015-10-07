@@ -85,8 +85,8 @@ void MixtureOptions::setDefaultOptions()
     m_thermo_db   = "RRHO";
     m_load_transport = true;
     m_mechanism   = "none";
-    m_viscosity   = "LDLT";
-    m_thermal_conductivity = "LDLT";
+    m_viscosity   = "Chapmann-Enskog_LDLT";
+    m_thermal_conductivity = "Chapmann-Enskog_LDLT";
     m_gsi_mechanism = "none";
 }
 

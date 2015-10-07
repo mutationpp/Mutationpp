@@ -36,6 +36,27 @@ namespace Mutation {
 
 //==============================================================================
 
+const std::vector<Element>& Element::database()
+{
+    static std::vector<Element> elements;
+
+    // If we have already loaded then simply return the vector
+    if (elements.size() > 0)
+        return elements;
+
+    // Load from the XML database
+    IO::XmlDocument element_doc(
+        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo/elements.xml");
+    IO::XmlElement::const_iterator element_iter = element_doc.root().begin();
+
+    for ( ; element_iter != element_doc.root().end(); ++element_iter)
+        elements.push_back(*element_iter);
+
+    return elements;
+}
+
+//==============================================================================
+
 Element::Element(const IO::XmlElement &xml_element)
 {
     xml_element.getAttribute("name", m_name, 
@@ -71,15 +92,15 @@ Species::Species(const Species& to_copy)
 
 //==============================================================================
 
-Species::Species(const Species& to_copy, const size_t level)
-    : m_name(to_copy.m_name),
-      m_ground_state_name(to_copy.m_name),
-      m_mw(to_copy.m_mw),
-      m_charge(to_copy.m_charge),
-      m_phase(to_copy.m_phase),
-      m_type(to_copy.m_type),
-      m_level(level),
-      m_stoichiometry(to_copy.m_stoichiometry)
+Species::Species(const Species& to_copy, const size_t level) :
+    m_name(to_copy.m_name),
+    m_ground_state_name(to_copy.m_name),
+    m_mw(to_copy.m_mw),
+    m_charge(to_copy.m_charge),
+    m_phase(to_copy.m_phase),
+    m_type(to_copy.m_type),
+    m_level(level),
+    m_stoichiometry(to_copy.m_stoichiometry)
 { 
     stringstream ss;
     ss << "(" << m_level << ")";
@@ -90,33 +111,97 @@ Species::Species(const Species& to_copy, const size_t level)
 
 Species::Species(
     const std::string& name, const PhaseType phase,
-    const StoichList& stoichiometry, const std::vector<Element>& elements)
-    : m_name(name),
-      m_ground_state_name(name),
-      m_mw(0.0),
-      m_charge(0),
-      m_phase(phase),
-      m_type(ATOM),
-      m_level(0),
-      m_stoichiometry(stoichiometry)
+    const StoichList& stoichiometry) :
+    m_name(name),
+    m_ground_state_name(name),
+    m_mw(0.0),
+    m_charge(0),
+    m_phase(phase),
+    m_type(ATOM),
+    m_level(0),
+    m_stoichiometry(stoichiometry)
 {
+    initDataFromStoichiometry();
+}
+
+//==============================================================================
+
+Species::Species(const Mutation::Utilities::IO::XmlElement& xml_element) :
+    m_mw(0.0),
+    m_charge(0),
+    m_type(ATOM),
+    m_level(0)
+{
+    // Species name
+    xml_element.getAttribute("name", m_name,
+        "Species must have a name attribute!");
+    m_ground_state_name = m_name;
+
+    // Phase
+    std::string phase_str;
+    xml_element.getAttribute("phase", phase_str, string("gas"));
+    phase_str = String::toLowerCase(phase_str);
+
+    if (phase_str == "gas")
+        m_phase = GAS;
+    else if (phase_str == "liquid")
+        m_phase = LIQUID;
+    else if (phase_str == "solid")
+        m_phase = SOLID;
+    else
+        xml_element.parseError(
+            "Invalid phase description for species \"" + m_name +
+            "\", must be \"gas\" (default), \"liquid\", or \"solid\".");
+
+    // Elemental stoichiometry
+    IO::XmlElement::const_iterator stoich_iter =
+        xml_element.findTag("stoichiometry");
+    std::string stoich_str = stoich_iter->text();
+
+    // Split up the string in the format "A:a, B:b, ..." into a vector of
+    // strings matching ["A", "a", "B", "b", ... ]
+    vector<string> stoich_tokens;
+    String::tokenize(stoich_str, stoich_tokens, " \t\f\v\n\r:,");
+
+    // Check that the vector has an even number of tokens (otherwise there must
+    // be an error in the syntax)
+    if (stoich_tokens.size() % 2 != 0) {
+        xml_element.parseError(
+            "Error in species \"" + m_name +
+            "\" stoichiometry definition, invalid syntax!");
+    }
+
+    for (int i = 0; i < stoich_tokens.size(); i+=2)
+        m_stoichiometry.push_back(std::make_pair(
+            stoich_tokens[i], atoi(stoich_tokens[i+1].c_str())));
+
+    initDataFromStoichiometry();
+}
+
+//==============================================================================
+
+void Species::initDataFromStoichiometry()
+{
+    m_mw = 0.0;
+    m_charge = 0;
+
     StoichList::const_iterator iter = m_stoichiometry.begin();
-    std::vector<Element>::const_iterator el;
     for ( ; iter != m_stoichiometry.end(); ++iter) {
-        for (el = elements.begin(); el != elements.end(); ++el)
+        std::vector<Element>::const_iterator el = Element::database().begin();
+        for ( ; el != Element::database().end(); ++el)
             if (el->name() == iter->first) break;
-    
-        if (el == elements.end()) {
+
+        if (el == Element::database().end()) {
             std::cout << "Error trying to create species " << m_name
                       << " when element " << iter->first
                       << " does not exist in the database!" << std::endl;
             exit(1);
         }
-        
+
         m_mw += iter->second * el->atomicMass();
         m_charge += iter->second * el->charge();
     }
-    
+
     // Determine the species type
     int atoms = nAtoms();
     m_type = (atoms == 0 ? ELECTRON : (atoms == 1 ? ATOM : MOLECULE));

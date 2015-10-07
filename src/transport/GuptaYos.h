@@ -29,7 +29,7 @@
 #define TRANSPORT_GUPTAYOS_H
 
 #include "Constants.h"
-#include "Numerics.h"
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -43,11 +43,10 @@ class GuptaYos
 {
 protected:
     
-    template <typename T, typename E1, typename E2, typename E3>
+    template <typename E1, typename E2, typename E3>
     double guptaYos(
-        const Mutation::Numerics::MatExpr<T, E1>& a, 
-        const Mutation::Numerics::VecExpr<T, E2>& A, 
-        const Mutation::Numerics::VecExpr<T, E3>& x)
+        const Eigen::ArrayBase<E1>& A, const Eigen::ArrayBase<E2>& a,
+        const Eigen::ArrayBase<E3>& x)
     {
         const int ns = x.size();
     
@@ -56,30 +55,27 @@ protected:
         double sum2 = 0.0;
         double temp;
         
-        quotient = 1.0 / A;      
+        quotient = 1.0 / a;
         
-        for (int i = 0; i < ns-1; ++i) {
-            for (int j = i+1; j < ns; ++j) {
+        for (int j = 0; j < ns-1; ++j) {
+            for (int i = j+1; i < ns; ++i) {
                 temp = quotient(i) - quotient(j);
                 temp = 2.0 * x(i) * x(j) * temp * temp;
                 sum1 += temp;
-                sum2 += temp * a(i,j);
+                sum2 += temp * A(i,j);
             }
         }
         
         double a_av = sum2 / sum1;
         
         // Next compute the value obtained by the Gupta-Yos formula
-        sum1 = 0.0;
-        for (int i = 0; i < ns; ++i)
-            sum1 += x(i) / (A(i) + a_av);
-        
+        sum1 = (x / (a + a_av)).sum();
         return sum1 / (1.0 - a_av * sum1);
     }
 
 private:
     
-    Mutation::Numerics::RealVector quotient;
+    Eigen::ArrayXd quotient;
     
 }; // class GuptaYos
 

@@ -27,26 +27,18 @@
 
 #include "Transport.h"
 #include "Constants.h"
-#include "Numerics.h"
 
 #include <iostream>
+#include <Eigen/Dense>
 
-using namespace Mutation::Numerics;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
+using namespace Eigen;
 
 namespace Mutation {
     namespace Transport {
 
 using Mutation::Thermodynamics::Thermodynamics;
-
-//==============================================================================
-
-#define ERROR_IF_INTEGRALS_ARE_NOT_LOADED(__RET__)\
-if (mp_collisions == NULL) {\
-	cout << "Error! Trying to use transport without loading collision integrals!!" << endl;\
-	return __RET__;\
-}
 
 //==============================================================================
 
@@ -115,7 +107,7 @@ void Transport::omega11ii(double* const p_omega)
     const double Te  = m_thermo.Te();
     const double nd  = m_thermo.numberDensity();
     const double *const X = m_thermo.X();
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
     
     for (int i = 0; i < ns; ++i)
         p_omega[i] = Q11(i,i);
@@ -132,7 +124,7 @@ void Transport::omega22ii(double* const p_omega)
     const double Te  = m_thermo.Te();
     const double nd  = m_thermo.numberDensity();
     const double *const X = m_thermo.X();
-    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
     
     for (int i = 0; i < ns; ++i)
         p_omega[i] = Q22(i,i);
@@ -185,15 +177,15 @@ double Transport::electronThermalConductivity()
     const double *const X = m_thermo.X();
     
     // Get collision integral information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& B     = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
-    const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
-    const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& B     = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const double    Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
+    const double    Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
     
     // Compute the lambdas
     double fac;
@@ -215,14 +207,14 @@ double Transport::electronThermalConductivity()
     lam22 = fac*(lam22 + SQRT2*X[0]*(77.0/16.0*Q22(0)-7.0*Q23ee+5.0*Q24ee));
     
     if (lam11 <= 0.0) {
-        cout << "Negative electron thermal conductivity!" << endl;
-        cout << "electron mole fraction: " << X[0] << endl;
-        cout << "heavy temperature: " << Th << endl;
-        cout << "electron temperature: " << Te << endl;
-        cout << "Q22(0): " << Q22(0) << endl;
-        cout << "species, 6.25 - 3.0*B(i) > 0, Q11(i) > 0" << endl;
+        std::cout << "Negative electron thermal conductivity!" << std::endl;
+        std::cout << "electron mole fraction: " << X[0] << std::endl;
+        std::cout << "heavy temperature: " << Th << std::endl;
+        std::cout << "electron temperature: " << Te << std::endl;
+        std::cout << "Q22(0): " << Q22(0) << std::endl;
+        std::cout << "species, 6.25 - 3.0*B(i) > 0, Q11(i) > 0" << std::endl;
         for (int i = 1; i < ns; ++i)
-            cout << m_thermo.speciesName(i) << ", " << 6.25 - 3.0*B(i) << ", " << Q11(i) << endl;
+            std::cout << m_thermo.speciesName(i) << ", " << 6.25 - 3.0*B(i) << ", " << Q11(i) << std::endl;
     }
     assert(lam11 > 0.0);
     //assert(lam22 > 0.0);
@@ -241,134 +233,44 @@ double Transport::electronThermalConductivity()
 
 //==============================================================================
 
-double Transport::internalThermalConductivity()
+double Transport::internalThermalConductivity(double T)
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, mp_wrk2, mp_wrk3);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * (mp_wrk1[i] + mp_wrk2[i] + mp_wrk3[i]) / sum;
-    }
-    
-    return (lambda * KB);
+    m_thermo.thermoDB()->cpint(T, mp_wrk1);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
+
 
 //==============================================================================
 
 double Transport::rotationalThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, mp_wrk1, NULL, NULL);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, mp_wrk1, NULL, NULL);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================
 
 double Transport::vibrationalThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, NULL, mp_wrk1, NULL);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, mp_wrk1, NULL);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================
 
 double Transport::electronicThermalConductivity()
 {
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+	m_thermo.speciesCpOverR(
+        m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
+        NULL, NULL, NULL, NULL, mp_wrk1);
 
-    const int ns     = m_thermo.nSpecies();
-    const int nh     = m_thermo.nHeavy();
-    const double Th  = m_thermo.T();
-    const double Te  = m_thermo.Te();
-    const double Tr  = m_thermo.Tr();
-    const double Tv  = m_thermo.Tv();
-    const double Tel = m_thermo.Tel();
-    const double nd  = m_thermo.numberDensity(); 
-    const double *const X = m_thermo.X();
-    
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, X);
-    
-    m_thermo.speciesCpOverR(
-        Th, Te, Tr, Tv, Tel, NULL, NULL, NULL, NULL, mp_wrk1);
-    
-    double lambda = 0.0;
-    for (int i = ns-nh; i < ns; ++i) {
-        double sum = 0.0;
-        for (int j = 0; j < ns; ++j)
-            sum += X[j] / nDij(i,j);
-        
-        lambda += X[i] * mp_wrk1[i] / sum;
-    }
-    
-    return (lambda * KB);
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
 }
 
 //==============================================================================
@@ -384,7 +286,7 @@ double Transport::electronicThermalConductivity()
     
     // Compute the multicomponent diffusion coefficient matrix
     const int ns = m_thermo.nSpecies();
-    const RealMatrix& Dij = diffusionMatrix();
+    const MatrixXd& Dij = diffusionMatrix();
     const double* const X = m_thermo.X();
     const double* const Y = m_thermo.Y();
     
@@ -471,33 +373,6 @@ double Transport::soretThermalConductivity()
 
 //==============================================================================
 
-void Transport::averageDiffusionCoeffs(double *const p_Di)
-{
-	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-
-    const int ns = m_thermo.nSpecies();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
-    const double* const p_X = m_thermo.X();
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, p_X);
-    
-    for (int i = 0; i < ns; ++i)
-        p_Di[i] = 0.0;
-    
-    for (int i = 0, index = 1; i < ns; ++i, ++index) {
-        for (int j = i + 1; j < ns; ++j, ++index) {
-            p_Di[i] += p_X[j] / nDij(index);
-            p_Di[j] += p_X[i] / nDij(index);
-        }
-    }
-    
-    for (int i = 0; i < ns; ++i)
-        p_Di[i] = (1.0 - p_X[i]) / (p_Di[i] * nd);
-}
-
-//==============================================================================
-
 void Transport::equilDiffFluxFacs(double* const p_F)
 {
 	// Get some state data
@@ -508,8 +383,8 @@ void Transport::equilDiffFluxFacs(double* const p_F)
 	const double rho = m_thermo.density();
 	const double p   = m_thermo.P();
 
-	const RealMatrix& Dij = diffusionMatrix();
-	const RealMatrix& nu  = m_thermo.elementMatrix();
+	const MatrixXd& Dij = diffusionMatrix();
+	const Eigen::MatrixXd& nu  = m_thermo.elementMatrix();
 
 	for (int i = 0; i < ns; ++i) {
 		mp_wrk2[i] = 0.0;
@@ -615,6 +490,7 @@ void Transport::equilDiffFluxFacsZ(double* const p_F)
 void Transport::exactDiffusionMatrix(double ** const p_Dij)
 {
 
+    using namespace Eigen;
     ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int ns = m_thermo.nSpecies();
@@ -622,62 +498,46 @@ void Transport::exactDiffusionMatrix(double ** const p_Dij)
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
     
+
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
-    static std::vector<double> X(ns);
-    static std::vector<double> Y(ns);
-    for (int i = 0; i < ns; ++i)
-        X[i] = std::max(tol, m_thermo.X()[i]);
+
+    static ArrayXd X, Y; Y.resize(ns);
+    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol);
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
     // Get reference to binary diffusion coefficients
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
 
-    // Fix this for charged particles
-    const int k = 0;
-
-    // Compute singular system matrix
+    // Compute singular system matrix (lower triangular part)
     double fac;
-    static RealSymMat G(ns-k);
-    for (int i = k; i < ns; ++i)
-        G(i-k,i-k) = 0.0;
-    for (int i = k; i < ns; ++i) {
-        for (int j = i+1; j < ns; ++j) {
-            fac = X[i]*X[j]/nDij(i,j)*nd;
-            G(i-k,i-k) += fac;
-            G(j-k,j-k) += fac;
-            G(i-k,j-k) = -fac;
+    static MatrixXd G; G.resize(ns,ns);
+    G.triangularView<Lower>() = MatrixXd::Zero(ns,ns);
+    for (int j = 0; j < ns; ++j) {
+        for (int i = j+1; i < ns; ++i) {
+            fac = X(i)*X(j)/nDij(i,j)*nd; 
+            G(i,i) += fac;
+            G(j,j) += fac;
+            G(i,j) = -fac;
         }
     }
 
-    // Compute average binary diffusion coefficient
-    double a = 0.0;
-    for (int i = 0; i < nDij.size(); ++i)
-        a += nDij(i);
-    a /= ((double)nDij.size()*nd);
-    a = 1.0/a;
+    // Add mass balance relation to make matrix nonsigular
+    G.selfadjointView<Lower>().rankUpdate(
+        Y.matrix().tail(ns), nd/nDij.diagonal().mean());
 
-    // Add mass balance relation to make make matrix nonsigular
-    for (int i = k; i < ns; ++i)
-        for (int j = i; j < ns; ++j)
-            G(i-k,j-k) += a*Y[i]*Y[j]; // or just add a -> a*UxU
+    static Eigen::LDLT<MatrixXd, Lower> ldlt;
+    ldlt.compute(G);
 
-    // Solve for the velocities
-    static RealVector alpha( ns - k );
-    static RealVector RHS( ns - k );
-    static LDLT<double> ldlt;
-    ldlt.setMatrix(G);
-
-    for ( int i = 0; i < ns; ++i ){
-        RHS(i) = Y[i];
-    }
+    static VectorXd alpha; alpha.resize(ns);
+    static VectorXd b; b.resize(ns);
+    b.array() = Y.tail(ns);
 
     int l = 0;
-    // Solve the system ns - 1 times
     for ( int i = 0; i < ns ; ++i ){
-        RHS(i) += 1.0;
-        ldlt.solve( alpha, RHS );
-        RHS(i) -= 1.0;
+        b(i) += 1.0;
+        alpha.tail(ns) = ldlt.solve(b);
+        b(i) -= 1.0;
         for ( int j = l; j < ns; j++ ){
             p_Dij[i][j] = alpha(j);
             p_Dij[j][i] = alpha(j);
@@ -692,6 +552,7 @@ void Transport::exactDiffusionMatrix(double ** const p_Dij)
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
+	using namespace Eigen;
 	ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
 
     const int ns = m_thermo.nSpecies();
@@ -699,89 +560,69 @@ void Transport::stefanMaxwell(
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
     
+    // Electron offset
+    const int k = m_thermo.hasElectrons() ? 1 : 0;
+    const int nh = ns-k;
+
+    Map<const ArrayXd> dp(p_dp, ns);
+    Map<ArrayXd> V(p_V, ns), qi(mp_wrk3, ns);
+
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
-    static std::vector<double> X(ns);
-    static std::vector<double> Y(ns);
-    for (int i = 0; i < ns; ++i)
-        X[i] = std::max(tol, m_thermo.X()[i]);
+    static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
+    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
     // Get reference to binary diffusion coefficients
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
-
-    // Electron offset
-    const int k = m_thermo.hasElectrons() ? 1 : 0;
+    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
 
     // Compute mixture charge
-    double q = 0.0;
-    for (int i = 0; i < ns; ++i) {
-        mp_wrk3[i] = m_thermo.speciesCharge(i);
-        q += mp_wrk3[i] * X[i];
-    }
-
-    // Compute kappas
-    const double one_over_kbt = 1.0/(KB*Th);
     for (int i = 0; i < ns; ++i)
-        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+        qi[i] = m_thermo.speciesCharge(i);
+    const double q = (X*qi).sum();
+
+    // Compute kappas (store in V)
+    V = (X*qi - q*Y)/(KB*Th);
 
     // Compute ambipolar electric field
-    E = (k > 0 ? p_dp[0]/p_V[0] : 0.0);
+    E = (k > 0 ? dp[0]/V[0] : 0.0);
 
     // Compute right hand side
-    static RealVector b(ns-k);
-    for (int i = k; i < ns; ++i)
-        b(i-k) = -p_dp[i] + p_V[i]*E;
+    static VectorXd b; b.resize(nh);
+    b.array() = -dp.tail(nh) + E*V.tail(nh);
 
-    // Compute singular system matrix
+    // Compute singular system matrix (lower triangular part)
     double fac;
-    static RealSymMat G(ns-k);
-    for (int i = k; i < ns; ++i)
-        G(i-k,i-k) = 0.0;
-    for (int i = k; i < ns; ++i) {
-        for (int j = i+1; j < ns; ++j) {
-            fac = X[i]*X[j]/nDij(i,j)*nd;
-            G(i-k,i-k) += fac;
-            G(j-k,j-k) += fac;
-            G(i-k,j-k) = -fac;
+    static MatrixXd G; G.resize(nh,nh);
+    G.triangularView<Lower>() = MatrixXd::Zero(nh, nh);
+
+    for (int j = 0; j < nh; ++j) {
+        for (int i = j+1; i < nh; ++i) {
+            fac = X[i+k]*X[j+k]/nDij(i+k,j+k)*nd;
+            G(i,i) += fac;
+            G(j,j) += fac;
+            G(i,j) = -fac;
         }
     }
 
-    // Compute average binary diffusion coefficient
-    double a = 0.0;
-    for (int i = 0; i < nDij.size(); ++i)
-        a += nDij(i);
-    a /= ((double)nDij.size()*nd);
-    a = 1.0/a;
-
     // Compute the constraints that are applied to the matrix
-    fac = (k > 0 ? Y[0]/(X[0]*mp_wrk3[0]) : 0.0);
-    for (int i = k; i < ns; ++i)
-        p_V[i] = Y[i] - X[i]*mp_wrk3[i]*fac;
+    fac = X[0]*qi[0];
+    V.tail(nh) = Y.tail(nh);
+    if (k > 0) V.tail(nh) -= X.tail(nh)*qi.tail(nh)*Y[0]/fac;
 
-    // Add mass balance relation to make make matrix nonsigular
-    for (int i = k; i < ns; ++i)
-        for (int j = i; j < ns; ++j)
-            G(i-k,j-k) += a*p_V[i]*p_V[j];
+    // Add mass balance relation to make matrix nonsigular
+    G.selfadjointView<Lower>().rankUpdate(
+        V.matrix().tail(nh), nd/nDij.diagonal().mean());
 
-    // Solve for the velocities
-    static RealVector V(ns-k);
-    static LDLT<double> ldlt;
-    ldlt.setMatrix(G);
-    ldlt.solve(V, b);
-
-    // Copy to output vector
-    for (int i = k; i < ns; ++i)
-        p_V[i] = V(i-k);
+    static Eigen::LDLT<MatrixXd, Lower> ldlt;
+    ldlt.compute(G);
+    V.tail(nh) = ldlt.solve(b).array();
 
     // Compute electron diffusion velocity if need be
     if (k == 0)
         return;
 
-    p_V[0] = 0.0;
-    for (int i = k; i < ns; ++i)
-        p_V[0] += X[i]*mp_wrk3[i]*p_V[i];
-    p_V[0] /= -mp_wrk3[0]*X[0];
+    V[0] = -(X.tail(nh)*qi.tail(nh)*V.tail(nh)).sum() / fac;
 }
 
 // For now assume that we have ions and solve the full system in thermal
@@ -809,7 +650,7 @@ void Transport::stefanMaxwell(
     m_thermo.convert<X_TO_Y>(X, Y);
 
     // Get reference to binary diffusion coefficients
-    const RealSymMat& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
 
     // Compute mixture charge (store species' charges in mp_wrk3 work array)
     double q = 0.0;
@@ -829,14 +670,14 @@ void Transport::stefanMaxwell(
     s = std::sqrt(s);
 
     // Compute the RHS vector
-    static RealVector b(ns+1);
+    static VectorXd b(ns+1);
     for (int i = 0; i < ns; ++i)
         b(i) = -p_dp[i];
     b(0) *= Th/Te;
     b(ns) = 0.0;
     //cout << b << endl;
     // Compute system matrix
-    static RealMatrix G(ns+1,ns+1);
+    static MatrixXd G(ns+1,ns+1);
 
     // - electron contribution
     double fac1 = Te/Th;
@@ -870,12 +711,12 @@ void Transport::stefanMaxwell(
     //cout << G << endl;
 
     // Finally solve the system for Vi and E
-    static RealVector x(ns+1);
+    static VectorXd x(ns+1);
     std::pair<int, double> ret = Numerics::gmres(
         G, x, b, Numerics::DiagonalPreconditioner<double>(G));
 
     // Compute mass constraint projector
-    static RealVector R(ns,1.0);
+    static VectorXd R(ns,1.0);
     R(0) /= fac1;
     double r = 0.0;
     for (int i = 0; i < ns; ++i)
@@ -901,40 +742,38 @@ double Transport::sigma()
         return 0.0;
 
     const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
-    const double* const X = m_thermo.X();
     const double me = m_thermo.speciesMw(0)/NA;
+    Map<const ArrayXd> X(m_thermo.X(), ns);
 
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& B   = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const ArrayXXd& Q11 = mp_collisions->Q11(Th, Te, nd, m_thermo.X());
+    const ArrayXXd& Q22 = mp_collisions->Q22(Th, Te, nd, m_thermo.X());
+    const ArrayXXd& B   = mp_collisions->Bstar(Th, Te, nd, m_thermo.X());
+    const ArrayXd&  Cei = mp_collisions->Cstei(Th, Te, nd, m_thermo.X());
     
     // Compute lambdas
-    double lam00 = 0.0;
-    double lam01 = 0.0;
-    double lam11 = 0.0;
-    double fac   = 0.0;
-    
-    for (int i = 1; i < ns; ++i) {
-        fac = X[i]*Q11(i);
-        lam00 += fac;
-        lam01 += fac*(2.5-3.0*Cei(i));
-        lam11 += fac*(25.0/4.0-3.0*B(i));
-    }
-    
-    fac = 64.0/75.0*std::sqrt(me/(TWOPI*KB*KB*KB*Te))*X[0];
+    double lam00 = (X * Q11.col(0)).tail(nh).sum();
+    double lam01 = 2.50*lam00 - 3.0*(X * Q11.col(0) * Cei).tail(nh).sum();
+    double lam11 = 6.25*lam00 - 3.0*(X * Q11.col(0) * B.col(0)).tail(nh).sum();
+
+    static const double c1 = 64./75./KB*std::sqrt(me/(TWOPI*KB));
+    double fac = c1*X(0)/std::sqrt(Te);
     lam00 = fac*lam00;
     lam01 = fac*lam01;
     lam11 = fac*(lam11 + SQRT2*X[0]*Q22(0));
     
+    static const double c2 = 4./25.*QE*QE/(KB*KB);
+    fac = c2*X(0)*X(0)/Te;
     // First order
     //return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*lam00));
+    //return fac/lam00;
     
     // Second order
-    return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*(lam00-lam01*lam01/lam11)));
+    //return (4.0/25.0*(X[0]*X[0]*QE*QE)/(KB*KB*Te*(lam00-lam01*lam01/lam11)));
+    return fac/(lam00-lam01*lam01/lam11);
 }
 
 //==============================================================================
@@ -945,6 +784,8 @@ double Transport::meanFreePath()
 
 	// Thermo properties
     const int ns = m_thermo.nSpecies();
+    const int nh = m_thermo.nHeavy();
+    const int k  = ns-nh;
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
@@ -952,13 +793,13 @@ double Transport::meanFreePath()
     const double me = m_thermo.speciesMw(0)/NA;
 
     // Get Q11 Collision integral
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
 
     // Loop to sum over electrons and all species
     double sum = 0.0;
 
-    for (int i = 0; i < ns; ++i)
-        for (int j = 0; j < ns; ++j)
+    for (int i = k; i < ns; ++i)
+        for (int j = k; j < ns; ++j)
             sum += X[i]*X[j]*Q11(i,j);
 
     return 1.0/(nd*sum);
@@ -982,7 +823,7 @@ double Transport::electronMeanFreePath()
     const double* const X = m_thermo.X();
 
     // Get Q11 Collision integral
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
 
     // Loop to sum over electrons and all species
     double sum = 0.0;
@@ -1062,7 +903,7 @@ double Transport::coulombMeanCollisionTime()
     const double* const X = m_thermo.X();
 
     // Get Q11 Collision integral
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
 
     // Loop to sum over electrons and all species
     double sum = 0.0;
@@ -1106,14 +947,14 @@ double Transport::parallelDiffusionCoefficient()
     const double P = m_thermo.P();
 
     // Get collision information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1181,14 +1022,14 @@ double Transport::perpDiffusionCoefficient()
     const double B = m_thermo.getBField();
 
     // Get collision information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei   = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1266,14 +1107,14 @@ double Transport::transverseDiffusionCoefficient()
     const double B = m_thermo.getBField();
 
     // Get collision information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1349,13 +1190,13 @@ double Transport::parallelThermalDiffusionCoefficient()
     const double *const X = m_thermo.X();
 
     // Get collision integral information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar     = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1404,13 +1245,13 @@ double Transport::perpThermalDiffusionCoefficient()
     const double B = m_thermo.getBField();
 
     // Get collision integral information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1470,13 +1311,13 @@ double Transport::transverseThermalDiffusionCoefficient()
     const double B = m_thermo.getBField();
 
     // Get collision integral information
-    const RealSymMat& Q11   = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22   = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11   = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22   = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1662,14 +1503,14 @@ std::vector<double> Transport::parallelThermalDiffusionRatio()
     const double* const X = m_thermo.X();
     const double me = m_thermo.speciesMw(0)/NA;
 
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1738,14 +1579,14 @@ std::vector<double> Transport::perpThermalDiffusionRatio()
     const double B = m_thermo.getBField();
 
     // Get collision integrals
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 
@@ -1822,14 +1663,14 @@ std::vector<double> Transport::transverseThermalDiffusionRatio()
     const double B = m_thermo.getBField();
 
     // Get collision integrals
-    const RealSymMat& Q11 = mp_collisions->Q11(Th, Te, nd, X);
-    const RealSymMat& Q22 = mp_collisions->Q22(Th, Te, nd, X);
-    const RealSymMat& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
-    const RealVector& Cei = mp_collisions->Cstei(Th, Te, nd, X);
-    const RealVector& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
-    const RealVector& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
-    const RealVector& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
-    const RealVector& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
+    const MatrixXd& Q11 = mp_collisions->Q11(Th, Te, nd, X);
+    const MatrixXd& Q22 = mp_collisions->Q22(Th, Te, nd, X);
+    const MatrixXd& Bstar   = mp_collisions->Bstar(Th, Te, nd, X);
+    const VectorXd& Cei = mp_collisions->Cstei(Th, Te, nd, X);
+    const VectorXd& Q12ei = mp_collisions->Q12ei(Th, Te, nd, X);
+    const VectorXd& Q13ei = mp_collisions->Q13ei(Th, Te, nd, X);
+    const VectorXd& Q14ei = mp_collisions->Q14ei(Th, Te, nd, X);
+    const VectorXd& Q15ei = mp_collisions->Q15ei(Th, Te, nd, X);
     const double      Q23ee = mp_collisions->Q23ee(Th, Te, nd, X);
     const double      Q24ee = mp_collisions->Q24ee(Th, Te, nd, X);
 

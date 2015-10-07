@@ -51,7 +51,7 @@ public:
 
 //=============================================================================================================
 
-    double forwardReactionRate( const Mutation::Numerics::RealVector& v_rhoi, const Mutation::Numerics::RealVector& v_Twall ) const {
+    double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const {
 
         l_index_v_reactants = 0;
     
@@ -105,7 +105,7 @@ private:
 
 //=============================================================================================================
 
-    inline double computeWallImpingingMassFlux( const int& l_index_species, const Mutation::Numerics::RealVector& v_rhoi, const Mutation::Numerics::RealVector& v_Twall ) const {
+    inline double computeWallImpingingMassFlux( const int& l_index_species, const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const {
         
         return computeAverageThermalSpeedforSpeciesI( l_index_species, v_Twall ) / ( 4.E0 ) * v_rhoi( l_index_species ) / m_thermo.speciesMw( l_index_species );
 

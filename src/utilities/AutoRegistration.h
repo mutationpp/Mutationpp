@@ -39,6 +39,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Mutation {
     namespace Utilities {
@@ -105,6 +106,19 @@ public:
     static PTYPE* create(const std::string& name, typename PTYPE::ARGS args)
     {
         return getInstance().getProvider(name)->create(args);
+    }
+
+    /**
+     * Returns a list of all object names registered to this factory.
+     */
+    static std::vector<std::string> names() {
+        std::vector<std::string> names;
+        typename std::map<std::string, Provider<PTYPE>*>& providers =
+            getInstance().m_providers;
+        typename std::map<std::string, Provider<PTYPE>*>::const_iterator iter;
+        for (iter = providers.begin(); iter != providers.end(); ++iter)
+            names.push_back(iter->first);
+        return names;
     }
   
 private:
