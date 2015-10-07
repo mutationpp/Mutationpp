@@ -61,7 +61,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 52
+#define NMIXTURE 43
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -102,19 +102,19 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
     OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
     OutputQuantity("sigma", "S/m", "electric conductivity (B=0)"),
-    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
-    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
-    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
+//    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
+//    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
+//    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
-    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure"),
-    OutputQuantity("l", "m", "mean free path"),
-    OutputQuantity("le", "m", "mean free path of electrons"),
-    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
-    OutputQuantity("Ve", "m/s", "electron thermal speed"),
-    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
-    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
+//    OutputQuantity("l", "m", "mean free path"),
+//    OutputQuantity("le", "m", "mean free path of electrons"),
+//    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
+//    OutputQuantity("Ve", "m/s", "electron thermal speed"),
+//    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
+//    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
 };
 
 // List of all species output quantities
@@ -750,12 +750,12 @@ int main(int argc, char** argv)
                     value = mix.electronThermalConductivity();
                 else if (name == "sigma")
                     value = mix.sigma();
-                else if (name == "sigma_para")
-                    value = mix.sigmaParallel();
-                else if (name == "sigma_perp")
-                    value = mix.sigmaPerpendicular();
-                else if (name == "sigma_trans")
-                    value = mix.sigmaTransverse();
+//                else if (name == "sigma_para")
+//                    value = mix.sigmaParallel();
+//                else if (name == "sigma_perp")
+//                    value = mix.sigmaPerpendicular();
+//                else if (name == "sigma_trans")
+//                    value = mix.sigmaTransverse();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
                     value = 0.0;
@@ -806,18 +806,18 @@ int main(int argc, char** argv)
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
-                else if (name == "l")
-                    value = mix.meanFreePath();
-                else if (name == "le")
-                    value = mix.electronMeanFreePath();
-                else if (name == "Vh")
-                    value = mix.averageHeavyThermalSpeed();
-                else if (name == "Ve")
-                    value = mix.electronThermalSpeed();
-                else if (name == "tau_eh")
-                    value = mix.electronHeavyCollisionFreq();
-                else if (name == "tau_a")
-                    value = mix.averageHeavyCollisionFreq();
+//                else if (name == "l")
+//                    value = mix.meanFreePath();
+//                else if (name == "le")
+//                    value = mix.electronMeanFreePath();
+//                else if (name == "Vh")
+//                    value = mix.averageHeavyThermalSpeed();
+//                else if (name == "Ve")
+//                    value = mix.electronThermalSpeed();
+//                else if (name == "tau_eh")
+//                    value = mix.electronHeavyCollisionFreq();
+//                else if (name == "tau_a")
+//                    value = mix.averageHeavyCollisionFreq();
                 
                 cout << setw(column_widths[cw++]) << value;
             }

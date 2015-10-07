@@ -42,8 +42,7 @@ Mixture::Mixture(const MixtureOptions& options)
       Transport(
         *this,
         options.getViscosityAlgorithm(),
-        options.getThermalConductivityAlgorithm(),
-        options.loadTransport()),
+        options.getThermalConductivityAlgorithm()),
       Kinetics(
         static_cast<const Thermodynamics&>(*this),
         options.getMechanism())

@@ -30,14 +30,14 @@
 
 #include "CollisionPair.h"
 #include "CollisionGroup.h"
+#include "Constants.h"
+#include "Thermodynamics.h"
 #include "XMLite.h"
 
 #include <cassert>
 #include <map>
 #include <string>
 #include <vector>
-
-namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 
 namespace Mutation {
     namespace Transport {
@@ -168,16 +168,67 @@ public:
     /// Returns the \f$\Lambda^{02}_{ei}\f$ array.
     const Eigen::ArrayXd& L02ei();
 
-    /// Returns \f$\Lambda^{11}_{ee}\f$.
-    double L11ee();
+    /**
+     * Returns the symmetric \f$\Lambda_{ee}\f$ matrix of the given size divided
+     * by the \f$\frac{64x_e}{75k_B}\sqrt{\frac{m_e}{2\pi k_B T_e}}\f$.
+     */
+    template <int SIZE>
+    Eigen::Matrix<double, SIZE, SIZE> Lee()
+    {
+        Eigen::Matrix<double, SIZE, SIZE> L;
+        const int nh = nHeavy();
 
-    /// Returns \f$\Lambda^{12}_{ee}\f$.
-    double L12ee();
+        // L00ee
+        const Eigen::ArrayXd& Q11 = Q11ei();
+        L(0,0) = dotxh(Q11);
 
-    /// Returns \f$\Lambda^{22}_{ee}\f$.
-    double L22ee();
+        // Return if done
+        if (SIZE == 1) return L;
+
+        const Eigen::ArrayXd& Q12 = Q12ei();
+        const Eigen::ArrayXd& Q13 = Q13ei();
+        const double Q22 = Q22ee()(0);
+
+        // L01ee, L10ee
+        L(0,1) = dotxh(2.5*Q11-3.*Q12);
+        L(1,0) = L(0,1);
+
+        // L11ee
+        L(1,1) = dotxh(6.25*Q11-15.*Q12+12.*Q13);
+        L(1,1) += X()(0)*SQRT2*Q22;
+
+        // Return if done
+        if (SIZE == 2) return L;
+
+        const Eigen::ArrayXd& Q14 = Q14ei();
+        const Eigen::ArrayXd& Q15 = Q15ei();
+        const double Q23 = Q23ee();
+        const double Q24 = Q24ee();
+
+        // L02ee, L20ee
+        L(0,2) = dotxh(35./8.*Q11-10.5*Q12+6.*Q13);
+        L(2,0) = L(0,2);
+
+        // L12ee, L21ee
+        L(1,2) = dotxh(175./16.*Q11-315./8.*Q12+57.*Q13-30.*Q14);
+        L(1,2) += X()(0)*SQRT2*(1.75*Q22 - 2.*Q23);
+        L(2,1) = L(1,2);
+
+        // L22ee
+        L(2,2) = dotxh(1225./64.*Q11-735./8.*Q12+199.5*Q13-210.*Q14+90.*Q15);
+        L(2,2) += X()(0)*SQRT2*(77./16.*Q22-7.*Q23+5.*Q24);
+
+        return L;
+    }
+
 
 private:
+
+    /// Helper function to evaluate \f$ sum_{i\in\mathcal{H}} x_i a_i \f$.
+    template <typename E>
+    double dotxh(const Eigen::ArrayBase<E>& a) {
+        return (X()*a).tail(nHeavy()).sum();
+    }
 
     /// Types of collision integral groups (ie: electron-heavy, ...).
     enum GroupType {

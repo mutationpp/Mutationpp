@@ -39,15 +39,8 @@
 namespace Mutation {
     namespace Transport {
 
-#define ERROR_IF_INTEGRALS_ARE_NOT_LOADED(__RET__)\
-if (mp_collisions == NULL) {\
-    std::cout << "Error! Trying to use transport without loading collision integrals!!" << std::endl;\
-    return __RET__;\
-}
-
 class ThermalConductivityAlgorithm;
 class ViscosityAlgorithm;
-
 
 /**
  * Manages the computation of transport properties.
@@ -61,8 +54,7 @@ public:
      */
     Transport(
         Mutation::Thermodynamics::Thermodynamics& thermo, 
-        const std::string& viscosity, const std::string& lambda,
-        const bool load_data = true);
+        const std::string& viscosity, const std::string& lambda);
     
     /**
      * Destructor.
@@ -92,12 +84,10 @@ public:
      * To be used only at thermal equilibrium.
      */
     double frozenThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return (
+        return
             heavyThermalConductivity() + 
             electronThermalConductivity() +
-            internalThermalConductivity(m_thermo.T())
-        );
+            internalThermalConductivity(m_thermo.T());
     }
 
     /**
@@ -111,12 +101,10 @@ public:
      * equilibrium.
      */
     double equilibriumThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return (
+        return
             frozenThermalConductivity() +
             reactiveThermalConductivity() +
-            soretThermalConductivity()
-        );
+            soretThermalConductivity();
     }
     
     /**
@@ -125,10 +113,8 @@ public:
      */
     double heavyThermalConductivity();
     
-    /**
-     * Returns the electron translational thermal conductivity.
-     */
-    double electronThermalConductivity();
+    /// Returns the electron translational thermal conductivity.
+    double electronThermalConductivity(int order = 3);
     
     /**
      * Returns the thermal conductivity of an internal energy mode using
@@ -193,14 +179,9 @@ public:
     /// Returns the thermal diffusion ratios for each species.
     void thermalDiffusionRatios(double* const p_k);
     
-    /**
-     * Returns the multicomponent diffusion coefficient matrix.
-     */
+    /// Returns the multicomponent diffusion coefficient matrix.
     const Eigen::MatrixXd& diffusionMatrix() {
-        static Eigen::MatrixXd empty;
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(empty)
-        return mp_diffusion_matrix->diffusionMatrix(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+        return mp_diffusion_matrix->diffusionMatrix();
     }
     
     /**
@@ -360,6 +341,8 @@ public:
      *     \nabla \ln p + k^h_{Ti} \nabla \ln T_h + k^e_{Ti} \frac{T_h}{T_e}
      *     \nabla \ln T_e \f]
      *
+     * @todo Check that this is correct for thermal nonequilibrium.
+     *
      * @param p_dp - the vector of modified driving forces \f$ d^{'}_i \f$
      * @param p_V  - on return, the vector of diffusion velocities
      * @param E    - on return, the ambipolar electric field
@@ -367,63 +350,63 @@ public:
     void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
         
     /// Electric conductivity in S/m (no magnetic field).
-    double sigma();
+    double sigma(int order = 2);
     /// Electric conductivity parallel to the magnetic field in S/m.
-    double sigmaParallel();
-    /// Electric conductivity perpendicular to the magnetic field in S/m.
-    double sigmaPerpendicular();
-    /// Electriic conductivity transverse to the magnetic field in S/m.
-    double sigmaTransverse();
-
-    /// Mean free path of the mixture in m.
-    double meanFreePath();
-    /// Mean free path of electrons in m.
-    double electronMeanFreePath();
-
-    /// Average heavy particle thermal speed of mixture in m/s.
-    double averageHeavyThermalSpeed();
-    /// Electron thermal speed of mixture in m/s.
-    double electronThermalSpeed();
-
-    /// Electron-heavy collision frequency in 1/s.
-    double electronHeavyCollisionFreq();
-
-    /// Average collision frequency of heavy particles in mixture in 1/s.
-    double averageHeavyCollisionFreq();
-
-    /// Coulomb mean collision time of the mixture in s.
-    double coulombMeanCollisionTime();
-    /// Hall parameter.
-    double hallParameter();
-
-    // Anisotropic Diffusion Coefficient
-    double parallelDiffusionCoefficient();
-    double perpDiffusionCoefficient();
-    double transverseDiffusionCoefficient();
-
-    // Anisotropic Thermal Diffusion Coefficient
-    double parallelThermalDiffusionCoefficient();
-    double perpThermalDiffusionCoefficient();
-    double transverseThermalDiffusionCoefficient();
-
-
-    //Anisotropic Electron Thermal Conductivity
-    double parallelElectronThermalConductivity();
-    double perpElectronThermalConductivity();
-    double transverseElectronThermalConductivity();
-
-    // Thermal diffusion ratios
-    std::vector<double> parallelThermalDiffusionRatio();
-    std::vector<double> perpThermalDiffusionRatio();
-    std::vector<double> transverseThermalDiffusionRatio();
-
-    // Return ratios of anisotropic properties
-    double ratioSigmaPerpPar();
-    double ratioSigmaTransPar();
-    double ratioLambdaPerpPar();
-    double ratioLambdaTransPar();
-    std::vector<double> ratiokTPerpPar();
-    std::vector<double> ratiokTTransPar();
+//    double sigmaParallel();
+//    /// Electric conductivity perpendicular to the magnetic field in S/m.
+//    double sigmaPerpendicular();
+//    /// Electriic conductivity transverse to the magnetic field in S/m.
+//    double sigmaTransverse();
+//
+//    /// Mean free path of the mixture in m.
+//    double meanFreePath();
+//    /// Mean free path of electrons in m.
+//    double electronMeanFreePath();
+//
+//    /// Average heavy particle thermal speed of mixture in m/s.
+//    double averageHeavyThermalSpeed();
+//    /// Electron thermal speed of mixture in m/s.
+//    double electronThermalSpeed();
+//
+//    /// Electron-heavy collision frequency in 1/s.
+//    double electronHeavyCollisionFreq();
+//
+//    /// Average collision frequency of heavy particles in mixture in 1/s.
+//    double averageHeavyCollisionFreq();
+//
+//    /// Coulomb mean collision time of the mixture in s.
+//    double coulombMeanCollisionTime();
+//    /// Hall parameter.
+//    double hallParameter();
+//
+//    // Anisotropic Diffusion Coefficient
+//    double parallelDiffusionCoefficient();
+//    double perpDiffusionCoefficient();
+//    double transverseDiffusionCoefficient();
+//
+//    // Anisotropic Thermal Diffusion Coefficient
+//    double parallelThermalDiffusionCoefficient();
+//    double perpThermalDiffusionCoefficient();
+//    double transverseThermalDiffusionCoefficient();
+//
+//
+//    //Anisotropic Electron Thermal Conductivity
+//    double parallelElectronThermalConductivity();
+//    double perpElectronThermalConductivity();
+//    double transverseElectronThermalConductivity();
+//
+//    // Thermal diffusion ratios
+//    std::vector<double> parallelThermalDiffusionRatio();
+//    std::vector<double> perpThermalDiffusionRatio();
+//    std::vector<double> transverseThermalDiffusionRatio();
+//
+//    // Return ratios of anisotropic properties
+//    double ratioSigmaPerpPar();
+//    double ratioSigmaTransPar();
+//    double ratioLambdaPerpPar();
+//    double ratioLambdaTransPar();
+//    std::vector<double> ratiokTPerpPar();
+//    std::vector<double> ratiokTTransPar();
 
 private:
 
@@ -448,7 +431,6 @@ private:
 private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDB* mp_collisions;
     CollisionDBNew m_collisions;
     
     ViscosityAlgorithm* mp_viscosity;

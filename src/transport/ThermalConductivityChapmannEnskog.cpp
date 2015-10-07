@@ -72,24 +72,26 @@ public:
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
         const int k  = ns - nh;
-        int ik, jk;
 
         const ArrayXd& mi   = m_collisions.mass();
         const ArrayXd& nDij = m_collisions.nDij();
         const ArrayXd& Cst  = m_collisions.Cstij();
 
         // Compute heavy-particle thermal diffusion ratios
-        for (int j = 0, index = 1; j < nh; ++j, ++index) {
-            for (int i = j+1; i < nh; ++i, ++index) {
-                m_sys(i,j) = m_x(i)*m_x(j)*mi(i+k)/(mi(i+k)+mi(j+k))*
-                    (1.2*Cst(index)-1.)/nDij(index);
-                m_sys(i,i) -= m_sys(i,j);
+        double fac;
+        m_sys.diagonal().setZero();
+        for (int j = 0, si = 1; j < nh; ++j, ++si) {
+            for (int i = j+1; i < nh; ++i, ++si) {
+                fac = m_x(i)*m_x(j)/(mi(i+k)+mi(j+k))*(1.2*Cst(si)-1.)/nDij(si);
+                m_sys(i,j) = fac*mi(i+k);
+                m_sys(j,i) = fac*mi(j+k);
+                m_sys(i,i) -= m_sys(j,i);
                 m_sys(j,j) -= m_sys(i,j);
             }
         }
 
         p_k[0] = 0.0;
-        Map<ArrayXd>(p_k+k,nh) = (m_sys.selfadjointView<Lower>()*m_alpha)/KB;
+        Map<ArrayXd>(p_k+k,nh) = (m_sys*m_alpha)/KB;
 
         // Do we need to compute electron contributions?
         if (k == 0)
@@ -98,14 +100,14 @@ public:
         // Compute the lambdas
         const ArrayXd& L01ei = m_collisions.L01ei();
         const ArrayXd& L02ei = m_collisions.L02ei();
-        const double L11ee   = m_collisions.L11ee();
-        const double L12ee   = m_collisions.L12ee();
-        const double L22ee   = m_collisions.L22ee();
+        const Matrix3d& Lee  = m_collisions.Lee<3>();
         const double Te      = m_collisions.thermo().Te();
         const double Th      = m_collisions.thermo().T();
         const double Xe      = m_collisions.X()(0);
-        Map<ArrayXd>(p_k,ns) += (2.5*Te/Th*Xe/(L11ee*L22ee-L12ee*L12ee))*
-            (L22ee*L01ei - L12ee*L02ei);
+
+        Map<ArrayXd>(p_k,ns) += 2.5*Te/Th*Xe*(Lee(2,2)*L01ei-Lee(1,2)*L02ei)/
+            (Lee(1,1)*Lee(2,2)-Lee(1,2)*Lee(1,2));
+
     }
 
 private:

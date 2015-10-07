@@ -40,11 +40,9 @@ class Ramshaw
 {
 public:
     
-    Ramshaw(
-        const Mutation::Thermodynamics::Thermodynamics& thermo, 
-        CollisionDB& collisions) :
-        m_thermo(thermo), m_collisions(collisions),
-        m_D(thermo.nSpecies(), thermo.nSpecies())
+    Ramshaw(CollisionDBNew& collisions) :
+        m_collisions(collisions),
+        m_D(collisions.nSpecies(), collisions.nSpecies())
     { }
     
     /**
@@ -60,20 +58,20 @@ public:
      * matrix.  It should be reformulated to return a symmetric matrix which
      * would be faster to compute and use.
      */
-    const Eigen::MatrixXd& diffusionMatrix(
-        const double T, const double Te, const double nd, const double *const p_x)
+    const Eigen::MatrixXd& diffusionMatrix()
     {
-        const int ns = m_thermo.nSpecies();
+        const int ns = m_collisions.nSpecies();
     
         // First step is to compute X and Y with tolerance on X
         static Eigen::ArrayXd X(ns);
         static Eigen::ArrayXd Y(ns);
-        X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns)+1.0e-16;
+        X = m_collisions.X()+1.0e-16;
         X /= X.sum();
-        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(X.data(), Y.data());
+        m_collisions.thermo().convert<Mutation::Thermodynamics::X_TO_Y>(
+            X.data(), Y.data());
         
         // Compute average diffusion coefficients
-        const Eigen::ArrayXd& Dim = m_collisions.Dim(T, Te, nd, p_x);
+        const Eigen::ArrayXd& Dim = m_collisions.Dim();
 
         // Form the matrix
         for (int j = 0; j < ns; ++j) {
@@ -86,8 +84,7 @@ public:
     
 private:
 
-    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDB& m_collisions;
+    CollisionDBNew& m_collisions;
     Eigen::MatrixXd m_D;
         
 }; // class Ramshaw
