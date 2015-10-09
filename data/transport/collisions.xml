@@ -18,7 +18,9 @@
  ========
  25/09/15: (JBS) Initial development 
  - first pass at creating the structure for all of the required data
- 05/10/15: (JBS) All data and integral types added for air13 mixture
+ 05/10/15: (JBS) All data and integral types added for Air13 mixture
+ 09/10/15: (JBS) Added additional integrals for Mars and Venus mixtures
+ - added the Langevin integral type for default ion-neutral interactions
 =============================================================================-->
 <collisions tabulate="yes" Tmin="300" Tmax="20000" dT="100">
 
@@ -36,8 +38,8 @@
         <!-- Ion-Neutral interactions -->
         <ion-neutral>
             <Q11 type="Langevin"/>
-            <Q22 type="ratio" ratio="1.1" integral="Q11" ref="Wright2007"/>
-            <Ast type="from A*"/>
+            <Q22 type="from A*"/>
+            <Ast type="constant" value="1.10" ref="Wright2007"/>
             <Bst type="constant" value="1.20" ref="Wright2005"/>
             <Cst type="constant" value="0.85" ref="Wright2005"/>
         </ion-neutral>
@@ -70,16 +72,23 @@
     </defaults>
 
     <!-- Dipole Polarizabilities -->
-    <dipole-polarizabilities units="A^3">
-        <species name="C"   value="1.76" ref="Wright2007"/>
-        <species name="CN"  value="2.00" ref="Wright2007"/>
-        <species name="CO"  value="1.95" ref="Wright2007"/>
-        <species name="CO2" value="2.91" ref="Wright2007"/>
-        <species name="N"   value="1.10" ref="Wright2007"/>
-        <species name="N2"  value="1.74" ref="Wright2007"/>
-        <species name="NO"  value="1.70" ref="Wright2007"/>
-        <species name="O"   value="0.80" ref="Wright2007"/>
-        <species name="O2"  value="1.58" ref="Wright2007"/>
+    <dipole-polarizabilities units="A-A-A">
+        <species name="C"   value="1.76"   ref="Wright2007"/>
+        <species name="CN"  value="2.00"   ref="Wright2007"/>
+        <species name="CO"  value="1.95"   ref="Wright2007"/>
+        <species name="CO2" value="2.91"   ref="Wright2007"/>
+        <species name="H"   value="0.6668" ref="Bruno2010"/>
+        <species name="H-"  value="27.0"   ref="Bruno2010"/>
+        <species name="H2"  value="0.81"   ref="Bruno2010"/>
+        <species name="H2+" value="0.424"  ref="Bruno2010"/>
+        <species name="H3+" value="0.4663" ref="Bruno2010"/>
+        <species name="He"  value="0.205"  ref="Bruno2010"/>
+        <species name="He+" value="0.03"   ref="Bruno2010"/>
+        <species name="N"   value="1.10"   ref="Wright2007"/>
+        <species name="N2"  value="1.74"   ref="Wright2007"/>
+        <species name="NO"  value="1.70"   ref="Wright2007"/>
+        <species name="O"   value="0.80"   ref="Wright2007"/>
+        <species name="O2"  value="1.58"   ref="Wright2007"/>
     </dipole-polarizabilities>
     
     <!-- Explicitly defined collision pairs -->

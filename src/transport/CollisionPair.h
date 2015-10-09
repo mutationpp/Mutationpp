@@ -69,8 +69,10 @@ public:
         const Mutation::Utilities::IO::XmlElement* xml);
 
     // Getter functions
-    const std::string& species1() const { return m_sp1; }
-    const std::string& species2() const { return m_sp2; }
+    const Thermodynamics::Species& sp1() const { return *mp_sp1; }
+    const Thermodynamics::Species& sp2() const { return *mp_sp2; }
+    const std::string& sp1Name() const;
+    const std::string& sp2Name() const;
     CollisionType type() const { return m_type; }
 
     /// Get the collision integral corresponding to the given type.
@@ -104,9 +106,9 @@ private:
     /// Type of collision
     CollisionType m_type;
 
-    // Species names
-    std::string   m_sp1;
-    std::string   m_sp2;
+    // Species pointers
+    const Thermodynamics::Species* mp_sp1;
+    const Thermodynamics::Species* mp_sp2;
 
     // Reference to xml database
     const Mutation::Utilities::IO::XmlElement* mp_xml;

@@ -52,6 +52,18 @@ CollisionPair::CollisionPair(
 
 //==============================================================================
 
+const string& CollisionPair::sp1Name() const {
+    return mp_sp1->groundStateName();
+}
+
+//==============================================================================
+
+const string& CollisionPair::sp2Name() const {
+    return mp_sp2->groundStateName();
+}
+
+//==============================================================================
+
 SharedPtr<CollisionIntegral> CollisionPair::get(const string& type)
 {
     map<string, SharedPtr<CollisionIntegral> >::iterator iter =
@@ -90,14 +102,14 @@ void CollisionPair::initSpeciesData(const Species& s1, const Species& s2)
             m_type = ION_NEUTRAL;
     }
 
-    // Initialize the species names (e- first, then alphabetical order)
-    m_sp1 = s1.groundStateName();
-    m_sp2 = s2.groundStateName();
+    // Store species in order depending on their names (e- always first)
+    mp_sp1 = &s1;
+    mp_sp2 = &s2;
 
-    if (m_sp1 > m_sp2)
-        std::swap(m_sp1, m_sp2);
-    if (m_sp2 == "e-")
-        std::swap(m_sp1, m_sp2);
+    if (sp1Name() > sp2Name())
+        std::swap(mp_sp1, mp_sp2);
+    if (sp2Name() == "e-")
+        std::swap(mp_sp1, mp_sp2);
 }
 
 //==============================================================================
@@ -114,7 +126,8 @@ CollisionPair::findXmlElementWithIntegralType(
         iter->getAttribute("s2", sp2, "Collision pair missing sp2 attribute.");
 
         // Check if species names match
-        if ((m_sp1 == sp1 && m_sp2 == sp2) || (m_sp1 == sp2 && m_sp2 == sp1))
+        if ((sp1Name() == sp1 && sp2Name() == sp2) ||
+            (sp1Name() == sp2 && sp2Name() == sp1))
             break;
 
         // Get next collision pair in the database
@@ -156,14 +169,13 @@ CollisionPair::findXmlElementWithIntegralType(
 
 //==============================================================================
 
-SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(
-    const string& kind)
+SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(const string& kind)
 {
     IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind);
     if (iter == mp_xml->end()) {
         cout << "Collision integral " << kind << " is not given for the pair ("
-             << m_sp1 << ", " << m_sp2 << ")." << endl;
+             << sp1Name() << ", " << sp2Name() << ")." << endl;
         exit(1);
     }
 
@@ -176,7 +188,11 @@ SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(
 
     iter->parseCheck(p_ci != NULL,
         "Invalid collision integral type '" + type + "' for " + kind +
-		"_(" + m_sp1 + ", " + m_sp2 + ").");
+		"_(" + sp1Name() + ", " + sp2Name() + ").");
+
+    iter->parseCheck(p_ci->loaded(),
+        "Could not find data necessary to load " + kind +
+        "_(" + sp1Name() + ", " + sp2Name() + ").");
 
     return SharedPtr<CollisionIntegral>(p_ci);
 }
