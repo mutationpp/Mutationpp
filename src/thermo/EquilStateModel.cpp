@@ -108,9 +108,9 @@ public:
                 while (std::max(std::abs(f1/rhoe),std::abs(f2/rho)) > tol) {
                     // Print warning if this is taking too long
                     if (++iter % max_iters == 0) {
-                        cout << "setState() taking too many iterations for Equil StateModel!"
-                             << " It is likely that the input arguments are not feasible..." << endl;
-                        cout << "density [kg/m^3] = " << rho << ", energy [J/m^3] = " << rhoe << endl;
+                        std::cout << "setState() taking too many iterations for Equil StateModel!"
+                             << " It is likely that the input arguments are not feasible..." << std::endl;
+                        std::cout << "density [kg/m^3] = " << rho << ", energy [J/m^3] = " << rhoe << std::endl;
                     }
 
                     // Compute df1/dT which is the main term
@@ -182,7 +182,7 @@ public:
 
             // Unknown variable set
             default:
-                cout << "Unknown variable set in Equil StateModel!" << endl;
+                std::cout << "Unknown variable set in Equil StateModel!" << std::endl;
                 exit(1);
         }
 

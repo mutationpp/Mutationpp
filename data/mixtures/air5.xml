@@ -1,4 +1,8 @@
+<<<<<<< .working
 <mixture mechanism="air5_park" thermo_db="RRHO">
+=======
+<mixture mechanism="air5">
+>>>>>>> .merge-right.r563
     
     <species>
        N O O2 NO N2 

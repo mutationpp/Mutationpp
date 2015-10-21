@@ -61,7 +61,7 @@ public:
      * Returns the mixture viscosity in Pa-s.
      */
     virtual double viscosity(
-        const double T, const double nd, const double *const p_x) = 0;
+        double Th, double Te, double nd, const double *const p_x) = 0;
 
 protected:
 

@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(wdot_is_zero_in_equil)
             double T = 1000.0*it + 1000.0;
 
             // Set an equilibrium state
-            equilibrateMixture(T, P);
+            mix().equilibrate(T, P);
 
             mix().densities(&rhoi[0]);
             double max = rhoi[0];

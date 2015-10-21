@@ -31,6 +31,8 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
+#include <Eigen/Dense>
+
 #include "MixtureFixtures.h"
 
 // Provide mixture fixture to all test cases in this suite
@@ -42,8 +44,8 @@ BOOST_FIXTURE_TEST_SUITE(stefan_maxwell, MixtureFromCommandLine)
  */
 BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
 {
-    std::vector<double> dp(mix().nSpecies());
-    std::vector<double> Ji(mix().nSpecies());
+    Eigen::VectorXd dp(mix().nSpecies());
+    Eigen::VectorXd Ji(mix().nSpecies());
 
     const double tol = 1.0e-9;//10.0*std::numeric_limits<double>::epsilon();
 
@@ -53,18 +55,15 @@ BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
         for (int it = 0.0; it < 10; ++it) {
             double T = 1000.0*it + 1000.0;
 
-            // Set an equilibrium state
-            equilibrateMixture(T, P);
+            // Set an equilibrium state and compute the driving forces for a
+            // temperature graient in an equilibrium mixture
+            mix().equilibrate(T, P);
+            mix().dXidT(dp.data());
 
-            // Compute the driving forces for a temperature gradient in an
-            // equilibrium mixture
-            mix().dXidT(&dp[0]);
-            // Scale to make the temperature gradient larger
-            double max = std::abs(dp[0]);
-            for (int i = 1; i < mix().nSpecies(); ++i)
-                max = std::max(max, std::abs(dp[i]));
-            for (int i = 0; i < mix().nSpecies(); ++i)
-                dp[i] *= 1000.0/max;
+            // Scale to make the temperature gradient larger and make sure they
+            // sum to zero
+            dp *= 1000.0 / dp.array().abs().maxCoeff();
+            dp[0] -= dp.sum();
 
             // Compute the diffusion velocities
             double E; mix().stefanMaxwell(&dp[0], &Ji[0], E);
@@ -72,57 +71,14 @@ BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
             for (int i = 0; i < mix().nSpecies(); ++i)
                 Ji[i] *= rho * mix().Y()[i];
 
-            //for (int i = 0; i < mix().nSpecies(); ++i)
-            //    std::cout << Ji[i] << std::endl;
-
             // Compute the norm
-            double norm = 0.0;
-            for (int i = 0; i < mix().nSpecies(); ++i)
-                norm += Ji[i]*Ji[i];
-            norm = std::sqrt(norm) * mix().nSpecies();
+            double norm = Ji.norm() * mix().nSpecies();
 
             // Make sure the sum is zero
-            BOOST_CHECK_SMALL(
-                    std::accumulate(Ji.begin(), Ji.end(), 0.0)/norm, tol);
+            BOOST_CHECK_SMALL(Ji.sum()/norm, tol);
         }
     }
 }
-
-/*
- * Electron diffusion velocity must be zero (only tested if electrons are
- * present in the mixture.
- */
-//BOOST_AUTO_TEST_CASE(Ve_is_zero)
-//{
-//    if (!mix().hasElectrons())
-//        return;
-//
-//    std::vector<double> dp(mix().nSpecies());
-//    std::vector<double> Vi(mix().nSpecies());
-//
-//    const double tol = 10.0*std::numeric_limits<double>::epsilon();
-//
-//    // Loop over range of pressures and temperatures
-//    for (int ip = 0.0; ip < 10; ++ip) {
-//        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
-//        for (int it = 0.0; it < 10; ++it) {
-//            double T = 1000.0*it + 1000.0;
-//
-//            // Set an equilibrium state
-//            equilibrateMixture(T, P);
-//
-//            // Compute the driving forces for a temperature gradient in an
-//            // equilibrium mixture
-//            mix().dXidT(&dp[0]);
-//
-//            // Compute the diffusion velocities
-//            double E; mix().stefanMaxwell(&dp[0], &Vi[0], E);
-//
-//            // Make sure Ve is zero
-//            BOOST_CHECK_SMALL(Vi[0], tol);
-//        }
-//    }
-//}
 
 /*
  * There should be no net conduction current. Tests that sum of Xi*qi*Vi is
@@ -130,8 +86,8 @@ BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
  */
 BOOST_AUTO_TEST_CASE(XiqiVi_sum_is_zero)
 {
-    std::vector<double> dp(mix().nSpecies());
-    std::vector<double> Ji(mix().nSpecies());
+    Eigen::VectorXd dp(mix().nSpecies());
+    Eigen::VectorXd Ji(mix().nSpecies());
 
     const double tol = 1.0e-9;//10.0*std::numeric_limits<double>::epsilon();
 
@@ -141,31 +97,24 @@ BOOST_AUTO_TEST_CASE(XiqiVi_sum_is_zero)
         for (int it = 0.0; it < 10; ++it) {
             double T = 1000.0*it + 15000.0;
 
-            // Set an equilibrium state
-            equilibrateMixture(T, P);
+            // Set an equilibrium state and compute the driving forces for a
+            // temperature graient in an equilibrium mixture
+            mix().equilibrate(T, P);
+            mix().dXidT(dp.data());
 
-            // Compute the driving forces for a temperature gradient in an
-            // equilibrium mixture
-            mix().dXidT(&dp[0]);
-            // Scale to make the temperature gradient larger
-            double max = std::abs(dp[0]);
-            for (int i = 1; i < mix().nSpecies(); ++i)
-                max = std::max(max, std::abs(dp[i]));
-            for (int i = 0; i < mix().nSpecies(); ++i)
-                dp[i] *= 1000.0*max;
+            // Scale to make the temperature gradient larger and make sure they
+            // sum to zero
+            dp *= 1000.0 / dp.array().abs().maxCoeff();
+            dp[0] -= dp.sum();
 
             // Compute the charge fluxes and norm of the velocities
             double E; mix().stefanMaxwell(&dp[0], &Ji[0], E);
-            double norm = 0.0;
-            for (int i = 0; i < mix().nSpecies(); ++i) {
-                norm += Ji[i]*Ji[i];
+            double norm = Ji.norm()*Mutation::QE;
+            for (int i = 0; i < mix().nSpecies(); ++i)
                 Ji[i] *= mix().X()[i]*mix().speciesCharge(i);
-            }
-            norm = std::sqrt(norm)*Mutation::QE;
 
             // Make sure the sum is zero
-            BOOST_CHECK_SMALL(
-                    std::accumulate(Ji.begin(), Ji.end(), 0.0)/norm, tol);
+            BOOST_CHECK_SMALL(Ji.sum()/norm, tol);
         }
     }
 }

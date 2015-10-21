@@ -1,5 +1,5 @@
 #
-# Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2015 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -24,19 +24,23 @@ cmake_minimum_required(VERSION 2.6)
 # Require Boost.Test package 
 find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 add_executable(set_state test_set_state.cpp)
-target_link_libraries(set_state mutation++ ${Boost_LIBRARIES})
+target_link_libraries(set_state mutation++)
 
 add_executable(stefan_maxwell test_stefan_maxwell.cpp)
-target_link_libraries(stefan_maxwell mutation++ ${Boost_LIBRARIES})
+target_link_libraries(stefan_maxwell mutation++)
 
 add_executable(transfer_source test_transfer_source.cpp)
-target_link_libraries(transfer_source mutation++ ${Boost_LIBRARIES})
+target_link_libraries(transfer_source mutation++)
 
 add_executable(wdot test_wdot.cpp)
-target_link_libraries(wdot mutation++ ${Boost_LIBRARIES})
+target_link_libraries(wdot mutation++)
+
+add_executable(thermal_diff_ratios test_thermal_diff_ratios.cpp)
+target_link_libraries(thermal_diff_ratios mutation++)
 
 #####################################
 # TESTS
@@ -77,11 +81,17 @@ function(test_example name subdir)
         COMMAND ${name} )
 endfunction()
 
+# C++ examples
 test_example(equilibrium_air c++)
 test_example(O2_dissociation c++)
-test_example(wrapper_test fortran)
+
+# Fortran examples
+if (BUILD_FORTRAN_WRAPPER)
+    test_example(wrapper_test fortran)
+endif()
 
 # Transport property tests
+test_all_mixtures(thermal_diff_ratios)
 test_all_mixtures(stefan_maxwell)
 
 # Kinetics tests
@@ -92,4 +102,19 @@ test_all_mixtures(set_state)
 
 # TransferModel tests
 test_all_mixtures(transfer_source)
+
+#####################################
+# Setup comparison tests
+#####################################
+add_executable(compare comparison.cpp)
+target_link_libraries(compare mutation++)
+
+file(GLOB files "comparisons/*.dat")
+foreach(file ${files})
+    get_filename_component(name ${file} NAME_WE)
+    add_test(
+        NAME compare_${name} 
+        COMMAND compare ${file} 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data )
+endforeach()
 

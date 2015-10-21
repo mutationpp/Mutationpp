@@ -62,7 +62,7 @@ void checkOmegaIsZeroInEquil(
             double T = 1000.0*it + 1000.0;
 
             // Set an equilibrium state
-            p_fix->equilibrateMixture(T, P);
+            p_fix->mix().equilibrate(T, P);
 
             // Make sure the source term is near zero
             double rhoe = mix.mixtureEnergyMass()*mix.density();
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(Omega_is_zero_in_equil)
             double T = 1000.0*it + 1000.0;
 
             // Set an equilibrium state
-            equilibrateMixture(T, P);
+            mix().equilibrate(T, P);
             double rhoe = mix().density()*mix().mixtureEnergyMass();
 
             // Make sure the energy transfer sources are close to zero

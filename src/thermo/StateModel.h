@@ -170,6 +170,25 @@ public:
     }
     
     /**
+     * Sets the mixture to an equilibrium state at the given temperature and
+     * pressure.  The elemental mole fractions may also be given, otherwise, the
+     * default mole fractions are used.
+     */
+    void equilibrate(double T, double P, double* const p_Xe = NULL)
+    {
+        // Compute the equilibrium composition
+        if (p_Xe == NULL)
+            m_thermo.equilSolver()->equilibrate(
+                T, P, m_thermo.getDefaultComposition(), mp_X);
+        else
+            m_thermo.equilSolver()->equilibrate(T, P, p_Xe, mp_X);
+
+        // Set the temperature and pressure
+        m_T = m_Te = m_Tr = m_Tv = m_Tel = T;
+        m_P = P;
+    }
+
+    /**
      * Fills an array of the temperatures represented by this StateModel.
      */
     virtual void getTemperatures(double* const p_T) const {
@@ -346,8 +365,8 @@ protected:
         while (std::abs(f) > tol) {
             // Check for max iterations
             if (iter++ == max_iters) {
-                cerr << "Exceeded max iterations when computing temperature!\n";
-                cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << endl;
+                std::cerr << "Exceeded max iterations when computing temperature!\n";
+                std::cerr << "res = " << f / rhoe_over_Ru << ", T = " << T << std::endl;
                 return false;
             }
 
@@ -360,8 +379,8 @@ protected:
             // Update T
             dT = f/fp;
             if (std::abs(T - 50.0) < 1.0e-10 && dT > 0) {
-                cerr << "Clamping T at 50 K, energy is too low for the "
-                     << "given species densities..." << endl;
+                std::cerr << "Clamping T at 50 K, energy is too low for the "
+                     << "given species densities..." << std::endl;
                 return false;
             }
             while (T - dT < 50.0) dT *= 0.5; // prevent non-positive T

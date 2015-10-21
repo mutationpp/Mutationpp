@@ -26,8 +26,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "mutation++.h"
 #include <iostream>
 
@@ -104,8 +102,6 @@ int main(int argc, char* argv[])
     mix.getComposition(argv[8] , p_Ykg, Composition::MASS);
     mix.getComposition(argv[9] , p_Ykc, Composition::MASS);
 
-
-
  #ifdef Debug
 
     for(int i=0; i<ne; ++i){
@@ -123,6 +119,7 @@ int main(int argc, char* argv[])
    cout << setw(10) << "Variables =" <<setw(10) << "\"Tw[K]\""
          << setw(15) << "\"B'c\""
          << setw(15) << "\"hw[MJ/kg]\"";
+
     for (int i = 0; i < ns; ++i){
         cout << setw(15) << "\"" << mix.speciesName(i) << "\"";}
     for (int i = 0; i < ne; ++i){
@@ -143,11 +140,11 @@ int main(int argc, char* argv[])
         mix.surfaceMassBalance(p_Ykc, p_Yke, p_Ykg, T, P, Bg, Bc, hw, p_Xkw, p_Xw);
 
         cout << setw(10) << T << setw(15) << Bc << setw(15) << hw / 1.0e6;
+
         for (int i = 0; i < ns; ++i){
             cout << setw(15) << p_Xw[i];}
         for (int i = 0; i < ne; ++i){
             cout << setw(15) << p_Xkw[i];}
-
         cout << endl;
     }
     delete [] p_Xkw;

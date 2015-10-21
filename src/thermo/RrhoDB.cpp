@@ -37,6 +37,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <cassert>
 
 using namespace std;
 using namespace Mutation::Numerics;
@@ -106,7 +107,8 @@ public:
     RrhoDB(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
-          m_use_tables(true)
+          m_use_tables(true),
+          m_last_bfacs_T(0.0)
     { }
     
     /**
@@ -130,7 +132,7 @@ public:
             delete mp_el_bfac_table;
         }
     }
-    
+
     /**
      * Computes the unitless species specific heat at constant pressure
      * \f$ C_{P,i} / R_U\f$ in thermal nonequilibrium.
@@ -433,13 +435,13 @@ public:
     {        
         // First compute the non-dimensional enthalpy
         enthalpy(Th, Te, Tr, Tv, Tel, g, NULL, NULL, NULL, NULL, NULL);
-        
+
         // Subtract the entropies
         sT(Th, Te, P, g, MinusEq());
         sR(Tr, g, MinusEq());
         sV(Tv, g, MinusEq());
         sE(Tel, g, MinusEq());
-        
+
         // Account for spin of free electrons
         if (m_has_electron)
             g[0] -= std::log(2.0);
@@ -492,64 +494,15 @@ protected:
     /**
      * Loads all of the species from the RRHO database.
      */
-    virtual void loadAvailableSpecies(
-        std::list<Species>& species, const std::vector<Element>& elements)
+    virtual void loadAvailableSpecies(std::list<Species>& species)
     {
         IO::XmlDocument species_doc(
             getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
         IO::XmlElement::const_iterator species_iter = species_doc.root().begin();
         
         for ( ; species_iter != species_doc.root().end(); ++species_iter) {
-            // Species name
-            std::string name;
-            species_iter->getAttribute("name", name);
-            
-            // Phase
-            std::string phase_str;
-            species_iter->getAttribute("phase", phase_str, string("gas"));
-            phase_str = String::toLowerCase(phase_str);
-            
-            PhaseType phase;
-            if (phase_str == "gas")
-                phase = GAS;
-            else if (phase_str == "liquid")
-                phase = LIQUID;
-            else if (phase_str == "solid")
-                phase = SOLID;
-            else {
-                cerr << "Invalid phase description for species \"" << name
-                     << "\", can be \"gas\", \"liquid\", or \"solid\"." << endl;
-                exit(1);
-            }
-            
-            // Elemental composition
-            IO::XmlElement::const_iterator stoich_iter =
-                species_iter->findTag("stoichiometry");
-            std::string stoich_str = stoich_iter->text();
-            
-            // Split up the string in the format "A:a, B:b, ..." into a vector of
-            // strings matching ["A", "a", "B", "b", ... ]
-            vector<string> stoich_tokens;
-            String::tokenize(stoich_str, stoich_tokens, " \t\f\v\n\r:,");
-            
-            // Check that the vector has an even number of tokens (otherwise there must
-            // be an error in the syntax)
-            if (stoich_tokens.size() % 2 != 0) {
-                cerr << "Error in species \"" << name << "\" stoichiometry "
-                     << "definition, invalid syntax!" << endl;
-                for (int i = 0; i < stoich_tokens.size(); ++i)
-                    cerr << "\"" << stoich_tokens[i] << "\"" << endl;
-                exit(1); 
-            }
-            
-            std::vector< std::pair<std::string, int> > stoich;
-            for (int i = 0; i < stoich_tokens.size(); i+=2)
-                stoich.push_back(
-                    std::make_pair(
-                        stoich_tokens[i], atoi(stoich_tokens[i+1].c_str())));
-            
             // Add the species to the list
-            species.push_back(Species(name, phase, stoich, elements));
+            species.push_back(*species_iter);
             
             // We can also add all of the excited states as implicitly defined
             // species
@@ -642,7 +595,7 @@ protected:
         // Store the species formation enthalpies in K
         mp_hform = new double [m_ns];
         LOOP(mp_hform[i] = rrhos[i].formationEnthalpy() / RU)
-        
+
         // Store the molecule's rotational energy parameters
         mp_rot_data = new RotData [m_nm];
         LOOP_MOLECULES(
@@ -717,8 +670,7 @@ private:
 
     void updateElecBoltzmannFactors(double T)
     {
-        static double last_T = 0.0;
-        if (std::abs(1.0 - last_T/T) < 1.0e-16)
+        if (std::abs(1.0 - m_last_bfacs_T / T) < 1.0e-16)
             return;
 
         if (m_use_tables)
@@ -726,7 +678,7 @@ private:
         else
             ElecBFacsFunctor()(T, mp_el_bfacs, m_elec_data);
 
-        last_T = T;
+        m_last_bfacs_T = T;
     }
 
     
@@ -934,6 +886,7 @@ private:
     ElectronicData m_elec_data;
     Mutation::Utilities::LookupTable<double, double, ElecBFacsFunctor>* mp_el_bfac_table;
     double* mp_el_bfacs;
+    double m_last_bfacs_T;
 
     //Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
     //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;

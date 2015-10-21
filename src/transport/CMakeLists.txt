@@ -23,10 +23,10 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     CollisionDB.cpp
-    ThermalConductivityCG.cpp
+    ThermalConductivityChapmannEnskog.cpp
     ThermalConductivityWilke.cpp
     Transport.cpp
-    ViscosityCG.cpp
+    ViscosityChapmannEnskog.cpp
     ViscosityGuptaYos.cpp
     ViscosityWilke.cpp
 )

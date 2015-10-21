@@ -35,8 +35,16 @@
 #include "Ramshaw.h"
 #include "Utilities.h"
 
+#include <Eigen/Dense>
+
 namespace Mutation {
     namespace Transport {
+
+#define ERROR_IF_INTEGRALS_ARE_NOT_LOADED(__RET__)\
+if (mp_collisions == NULL) {\
+    std::cout << "Error! Trying to use transport without loading collision integrals!!" << std::endl;\
+    return __RET__;\
+}
 
 /**
  * Manages the computation of transport properties.
@@ -92,10 +100,7 @@ public:
      * collision database.
      */
     int nCollisionPairs() const {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return 0;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0)
         return mp_collisions->nCollisionPairs();
     }
     
@@ -106,12 +111,9 @@ public:
      * Returns the mixture viscosity.
      */
     double viscosity() {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return 0.0;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
         return mp_viscosity->viscosity(
-            m_thermo.T(), m_thermo.numberDensity(), m_thermo.X());
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
     
     /**
@@ -119,10 +121,7 @@ public:
      * To be used only at thermal equilibrium.
      */
     double frozenThermalConductivity() {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return 0.0;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
         return (
             heavyThermalConductivity() + 
             electronThermalConductivity() +
@@ -141,10 +140,7 @@ public:
      * equilibrium.
      */
     double equilibriumThermalConductivity() {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return 0.0;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
         return (
             frozenThermalConductivity() +
             reactiveThermalConductivity() +
@@ -157,10 +153,7 @@ public:
      * set algorithm.
      */
     double heavyThermalConductivity() {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return 0.0;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
         return mp_thermal_conductivity->thermalConductivity(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
@@ -170,6 +163,32 @@ public:
      */
     double electronThermalConductivity();
     
+    /**
+     * Returns the thermal conductivity of an internal energy mode using
+     * Euken's formula.
+     */
+    template <typename E>
+    double euken(const Eigen::ArrayBase<E>& cp)
+    {
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+        const int ns = m_thermo.nSpecies();
+        assert(cp.size() == ns);
+        const int nh = m_thermo.nHeavy();
+        const int k  = ns-nh;
+
+        Eigen::Map<const Eigen::ArrayXd> X(m_thermo.X()+k, nh);
+        const Eigen::MatrixXd& nDij = mp_collisions->nDij(
+            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+
+        Eigen::ArrayXd avDij(Eigen::ArrayXd::Zero(nh));
+        for (int j = 0; j < nh; ++j)
+            avDij += X(j) / (nDij+nDij.transpose()).col(j+k).tail(nh).array();
+        avDij += 0.5*X/nDij.diagonal().tail(nh).array();
+
+        return KB * (X * cp.tail(nh) / avDij).sum();
+    }
+
     /**
      * Returns the internal energy thermal conductivity using Euken's formulas.
      */
@@ -206,10 +225,7 @@ public:
      * Returns the thermal diffusion ratios for each species.
      */
     void thermalDiffusionRatios(double* const p_k) {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            return;
-        }
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
         return mp_thermal_conductivity->thermalDiffusionRatios(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
             m_thermo.X(), p_k);
@@ -218,11 +234,9 @@ public:
     /**
      * Returns the multicomponent diffusion coefficient matrix.
      */
-    const Mutation::Numerics::RealMatrix& diffusionMatrix() {
-        if (mp_collisions == NULL) {
-            cout << "Error! Trying to use transport without loading collision integrals!!" << endl;
-            exit(1);
-        }
+    const Eigen::MatrixXd& diffusionMatrix() {
+        static Eigen::MatrixXd empty;
+        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(empty)
         return mp_diffusion_matrix->diffusionMatrix(
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }

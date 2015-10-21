@@ -1,10 +1,10 @@
-<mixture mechanism="parkair01" thermo_db="RRHO">
+<mixture mechanism="parkair01">
 
     <species>
         e- N N+ O O+ NO N2 N2+ O2 O2+ NO+ Ar Ar+
     </species>
     
-     <element_compositions default="air">
+    <element_compositions default="air">
         <composition name="air"> N:0.78, O:0.21, Ar:0.01 </composition>
     </element_compositions>
     

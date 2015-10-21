@@ -30,7 +30,8 @@
 
 #include "CollisionDB.h"
 #include "Thermodynamics.h"
-#include "Numerics.h"
+
+#include "Eigen/Dense"
 
 namespace Mutation {
     namespace Transport {
@@ -53,20 +54,20 @@ public:
      * matrix.  It should be reformulated to return a symmetric matrix which
      * would be faster to compute and use.
      */
-    const Mutation::Numerics::RealMatrix& diffusionMatrix(
+    const Eigen::MatrixXd& diffusionMatrix(
         const double T, const double Te, const double nd, const double *const p_x)
     {
         const int ns = m_thermo.nSpecies();
     
         // First step is to compute nDij and Y
-        const Mutation::Numerics::RealSymMat& nDij = 
+        const Eigen::MatrixXd& nDij =
             m_collisions.nDij(T, Te, nd, p_x);
         double* Y = new double [ns];
         m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(p_x, Y);
         
         // Now we can compute the mixture averaged diffusion coefficient for the
         // ith species
-        m_Di = 0.0;
+        m_Di = Eigen::VectorXd::Zero(ns);
         for (int i = 0, index = 1; i < ns; ++i, ++index) {
             for (int j = i + 1; j < ns; ++j, ++index) {
                 m_Di(i) += p_x[j] / nDij(index);
@@ -93,8 +94,8 @@ private:
 
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB& m_collisions;
-    Mutation::Numerics::RealVector m_Di;
-    Mutation::Numerics::RealMatrix m_D;
+    Eigen::VectorXd m_Di;
+    Eigen::MatrixXd m_D;
         
 }; // class Ramshaw
 

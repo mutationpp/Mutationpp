@@ -247,8 +247,7 @@ protected:
      * of the species available in the database.  Note that this is only called
      * once in the constructor.
      */
-    virtual void loadAvailableSpecies(
-        std::list<Species>& species, const std::vector<Element>& elements) = 0;
+    virtual void loadAvailableSpecies(std::list<Species>& species) = 0;
     
     /**
      * Implemented by the concrete class which loads any data from the database

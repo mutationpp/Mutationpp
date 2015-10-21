@@ -27,9 +27,9 @@
 
 #include "ViscosityAlgorithm.h"
 #include "Wilke.h"
-#include "Numerics.h"
 
-using namespace Mutation::Numerics;
+#include <Eigen/Dense>
+
 using namespace Mutation::Utilities;
 
 namespace Mutation {
@@ -49,13 +49,16 @@ public:
     /**
      * Returns the viscosity of the mixture in Pa-s.
      */
-    double viscosity(const double T, const double nd, const double *const p_x) 
+    double viscosity(
+        double Th, double Te, double nd, const double *const p_x)
     {
-        const size_t ns = m_collisions.nSpecies();
+        const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
         
         return wilke(
-            m_collisions.etai(T, T, nd, p_x), m_collisions.mass(), 
-            asVector(p_x, ns));
+            m_collisions.etai(Th, Te, nd, p_x).tail(nh),
+            m_collisions.mass().tail(nh),
+            Eigen::Map<const Eigen::ArrayXd>(p_x+(ns-nh), nh));
     }
        
 };
