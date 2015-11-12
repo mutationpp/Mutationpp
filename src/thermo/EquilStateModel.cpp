@@ -190,6 +190,11 @@ public:
         m_Tr = m_Tv = m_Tel = m_Te = m_T;
     }
 
+    void getTemperatures(double* const p_T) const
+    {
+        p_T[0] = m_T;
+    }
+
     void getEnergiesMass(double* const p_e)
 	{
 		const int ns = m_thermo.nSpecies();
