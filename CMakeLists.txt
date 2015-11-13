@@ -109,7 +109,12 @@ if (BUILD_FORTRAN_WRAPPER)
     endif()
 endif()
 
+################################################################################
+# Python wrapper options
+################################################################################
 
+option (BUILD_PYTHON_WRAPPER
+    "Generate the Python wrapper module (requires Boost.Python library)" OFF)
 
 ################################################################################
 # Doxygen documentation generation
