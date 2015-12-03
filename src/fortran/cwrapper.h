@@ -288,6 +288,13 @@ void NAME_MANGLE(species_e_mass)(double *const e);
 void NAME_MANGLE(species_h_mass)(double *const h);
 
 /**
+ * Returns the species entropies (total + internal if multi temperature) in J/kg-K.
+ *
+ * @param s - species entropies on return
+ */
+void NAME_MANGLE(species_s_mass)(double *const s);
+
+/**
  * Returns the mixture enthalpy in J/kg given the mixture temperature and
  * species mass fractions.
  */
