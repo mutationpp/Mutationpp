@@ -766,15 +766,19 @@ private:
      */
     template <typename OP>
     void hV(double T, double* const h, const OP& op) {
-        int ilevel = 0;
-        double sum;
-        LOOP_MOLECULES(
-            sum = 0.0;
-            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++)
-                sum += mp_vib_temps[ilevel] / 
-                    (std::exp(mp_vib_temps[ilevel] / T) - 1.0);
-            op(h[j], sum);
-        )
+        if (T < 10.0) {
+            LOOP_MOLECULES(op(h[j], 0.0));
+        } else {
+            int ilevel = 0;
+            double sum;
+            LOOP_MOLECULES(
+                sum = 0.0;
+                for (int k = 0; k < mp_nvib[i]; ++k, ilevel++)
+                    sum += mp_vib_temps[ilevel] /
+                        (std::exp(mp_vib_temps[ilevel] / T) - 1.0);
+                op(h[j], sum);
+            )
+        }
     }
     
     /**

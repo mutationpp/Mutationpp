@@ -729,6 +729,14 @@ public:
     double mixtureHMass(double T) const;
 
     /**
+     * Returns the mixture averaged enthalpy minus the enthalpy of the mixture
+     * at 0K with.
+     */
+    double mixtureHMinusH0Mass() {
+        return mixtureHMass() - mixtureHMass(0.0000001);
+    }
+
+    /**
      * Returns the mixture energy in J/mol.
      */
     double mixtureEnergyMole() const {
