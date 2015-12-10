@@ -98,7 +98,8 @@ public:
                 std::cout << "was trying to compute Tv..." << std::endl;
                 std::cout << "rhoe_v = " << p_energy[1] << std::endl;
                 for (int i = 0; i < m_thermo.nSpecies(); ++i)
-                    std::cout << m_thermo.speciesName(i) << p_mass[i] << std::endl;
+                    std::cout << std::setw(20) << m_thermo.speciesName(i)
+                              << std::setw(20) << p_mass[i] << std::endl;
                 std::cout << std::endl;
             }
 
@@ -108,8 +109,10 @@ public:
             if (!getTFromRhoE(
                 Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
                 std::cout << "was trying to compute T..." << std::endl;
+                std::cout << "rhoe = " << p_energy[0] << std::endl;
                 for (int i = 0; i < m_thermo.nSpecies(); ++i)
-                    std::cout << p_mass[i] << std::endl;
+                    std::cout << std::setw(20) << m_thermo.speciesName(i)
+                              << std::setw(20) << p_mass[i] << std::endl;
                 std::cout << std::endl;
             }
 //            getTFromRhoE(
@@ -171,42 +174,15 @@ public:
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
 
         for(int i = offset; i < ns; ++i)
-            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
+            p_e[i] = (mp_work1[i] - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+
         for(int i = offset; i < ns; ++i)
             p_e[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons()){
+
+        if (m_thermo.hasElectrons()) {
             p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
             p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
         }
-    }
-
-    void getMixtureEnergiesMass(double* const p_e)
-    {
-        int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
-
-        double mw = 0.0;
-        for (int i = 0; i < ns; ++i)
-            mw += mp_X[i]*m_thermo.speciesMw(i);
-
-        p_e[0] = 0.0;
-        p_e[1] = 0.0;
-        for(int i = offset; i < ns; ++i) {
-            p_e[0] += mp_X[i]*(mp_work1[i]-1.0);
-            p_e[1] += mp_X[i]*(mp_work3[i] + mp_work4[i]);
-        }
-
-        p_e[0] *= m_T;
-        p_e[1] *= m_T;
-
-        if (offset > 0) {
-            p_e[0] += mp_X[0]*(mp_work1[0]*m_T - m_Tv);
-            p_e[1] += mp_X[0]*(mp_work2[0]*m_T - m_Tv);
-        }
-
-        p_e[0] *= RU / mw;
-        p_e[1] *= RU / mw;
     }
 
     void getEnthalpiesMass(double* const p_h)

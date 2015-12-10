@@ -753,7 +753,7 @@ public:
     /**
      * Returns the mixture energy vector in J/kg.
      */
-    void mixtureEnergies(double* const p_e) const;
+    void mixtureEnergies(double* const p_e);
 
     /**
      * Returns the frozen sound speed of the mixture in m/s.
@@ -827,6 +827,9 @@ public:
         double *const p_Xs = NULL);
     
 private:
+
+    void sumSpeciesMass(
+        const double* const p_s, double* const p_e, const int size) const;
     
     /**
      * Loads the elements and species given by the species names vector from the
