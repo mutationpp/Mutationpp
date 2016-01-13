@@ -41,6 +41,13 @@ using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
 #include <utility>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <iostream>
+#include <cassert>
+#include <sstream>
 using namespace std;
 
 namespace Mutation {
@@ -111,6 +118,54 @@ private:
 Config::ObjectProvider<ConstantColInt, CollisionIntegral> const_ci("constant");
 
 //==============================================================================
+
+/**
+ * Represents a collision integral evaluated from an exponential polynomial.
+ */
+class ExpPolyColInt : public CollisionIntegral
+{
+public:
+    ExpPolyColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Load polynomial coefficients
+        std::stringstream ss(args.xml.text());
+
+        std::copy(
+            std::istream_iterator<double>(ss),
+            std::istream_iterator<double>(),
+            std::back_inserter(m_params));
+    }
+
+private:
+
+    double compute_(double T) {
+        double lnT = std::log(T);
+        double val = m_params[0];
+        for (int i = 1; i < m_params.size(); ++i)
+            val = val*lnT + m_params[i];
+        return std::exp(val);
+    }
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const ExpPolyColInt& compare = dynamic_cast<const ExpPolyColInt&>(ci);
+        return (m_params == compare.m_params);
+    }
+
+private:
+
+    std::vector<double> m_params;
+
+};
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<ExpPolyColInt, CollisionIntegral> exppoly_ci("exp-poly");
+
+//==============================================================================
+
 
 /**
  * Represents a collision integral that is computed based on the expression,

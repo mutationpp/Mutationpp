@@ -89,7 +89,7 @@ double const OmegaET::compute_tau_ET()
     const ArrayXd& mass  = m_collisions.mass();
 
     // Electron velocity
-    double ve = sqrt(RU*8.*Te/(PI*mass(0)));
+    double ve = sqrt(KB*8.*Te/(PI*mass(0)));
 
     // Tau
     return 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
