@@ -32,7 +32,7 @@ public:
 
         // Get reaction rate constant
         for ( int i_reac = 0; i_reac < v_wall_reaction_rate_constant.size() ; ++i_reac ) {
-            v_wall_reaction_rate_constant(i_reac) =  v_reactions[i_reac]->getRateLaw()->forwardReactionRate( m_surf_descr.getWallRhoi(), m_surf_descr.getWallT()); 
+            v_wall_reaction_rate_constant(i_reac) =  v_reactions[i_reac]->getRateLaw()->forwardReactionRate( m_wall_state.getWallRhoi(), m_wall_state.getWallT()); 
         }
 
         // Constant rate times densities of species

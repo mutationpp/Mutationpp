@@ -15,10 +15,10 @@ class WallProductionTerms {
 public:
     typedef const DataWallProductionTerms& ARGS;
 
-    WallProductionTerms( ARGS l_data_wall_production_terms ){ }
+    WallProductionTerms( ARGS l_data_wall_production_terms ){ } // Check if ARGS is indeed needed
     virtual ~WallProductionTerms(){ }
 
-    virtual void productionRate( Eigen::VectorXd& lv_mass_prod_rate ) = 0;
+    virtual void productionRate( Eigen::VectorXd& lv_mass_prod_rate ) = 0; // FIX ME!
 
 };
 

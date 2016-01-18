@@ -1,0 +1,35 @@
+<gsi gsi_mechanism = "frc">
+
+    <surface_properties>
+        <surface total_number_of_sites = "1.E20">
+            <site label = "sp" fraction = "9.98E-1" distance = "1.E-10" species = "N" />
+            <site label = "sc" fraction = "2.E-3" distance = "2.E-9" species = "N" />
+        </surface>
+    </surface_properties>
+    
+    <diffusion_model model="first_order">
+        <mass distance= "1"> </mass>
+    </diffusion_model>
+
+    <production_terms>
+        <surface_chemistry>
+            <!-- 1 -->
+            <reaction type="frc" formula="N + sp => N-sp">
+                <adsorption sticking_coef = "1." b = "0." E_activation = "0." />
+            </reaction>
+            <!-- 2 -->
+            <reaction type="frc" formula="N-sp => N + sp">
+                <desorption steric_factor = "1." b = "0." freq_vibration_perp = "1.E15" E_desorption = "51000." /> <!-- J/mol -->
+            </reaction>
+            <!-- 3 -->
+            <reaction type="frc" formula="N + sc => N-sc">
+                <adsorption  sticking_coef = "1." b = "0." E_activation = "0." />
+            </reaction>
+            <!-- 4 -->
+            <reaction type="frc" formula="N + N-sc => N2 + sc">
+                <E-R  steric_factor = "1." b = "0" E_activ_recomb = "14000" /> <!-- J/mol -->
+            </reaction>
+        </surface_chemistry>
+    </production_terms>
+    
+</gsi>

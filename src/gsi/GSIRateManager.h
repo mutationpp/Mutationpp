@@ -16,7 +16,8 @@ public:
 
     GSIRateManager( ARGS l_data_rate_manager ) 
                   : m_thermo( l_data_rate_manager.s_thermo ),
-                    m_surf_descr( l_data_rate_manager.s_surf_descr ),
+                    m_surf_props( l_data_rate_manager.s_surf_props ),
+                    m_wall_state( l_data_rate_manager.s_wall_state ),
                     v_reactions( l_data_rate_manager.s_reactions ) { }
     virtual ~GSIRateManager(){ };
 
@@ -24,7 +25,8 @@ public:
 
 protected:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    const SurfaceDescription& m_surf_descr;
+    const SurfaceProperties& m_surf_props;
+    const WallState& m_wall_state;
     const std::vector<GSIReaction*>& v_reactions;
 
 };

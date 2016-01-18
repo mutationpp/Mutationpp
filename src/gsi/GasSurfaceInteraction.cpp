@@ -9,56 +9,58 @@ namespace Mutation {
 GasSurfaceInteraction::GasSurfaceInteraction( Mutation::Thermodynamics::Thermodynamics& l_thermo, Mutation::Transport::Transport& l_transport, std::string l_gsi_input_file )
                                             : m_thermo( l_thermo ),
                                               m_transport( l_transport ),
-                                              mp_surf_descr( NULL ),
                                               mp_surf_solver( NULL ),
+                                              mp_surf_props( NULL ),
+                                              mp_wall_state( NULL ),
                                               v_mass_prod_rate( m_thermo.nSpecies() ),
                                               v_mole_frac_edge( m_thermo.nSpecies() ) {
+
+    using namespace Mutation::Utilities::IO;
 
     if ( l_gsi_input_file == "none" ){ return; }
 
     locateGSIInputFile( l_gsi_input_file );
     
-    Mutation::Utilities::IO::XmlDocument l_xml_doc( l_gsi_input_file );
-    Mutation::Utilities::IO::XmlElement l_root_element = l_xml_doc.root();
+    XmlDocument l_xml_doc( l_gsi_input_file );
+    XmlElement l_root_element = l_xml_doc.root();
 
     errorWrongTypeofGSIFile( l_root_element.tag() );
 
     l_root_element.getAttribute( "gsi_mechanism", m_gsi_mechanism, "none" );
 
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_position_surf_descr;
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_position_diff_model;
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_position_prod_terms;
-    
-    getXmlPositionPointerSurfPropsDiffModelProdTerm( xml_position_surf_descr, xml_position_diff_model, xml_position_prod_terms, l_root_element );
+    XmlElement::const_iterator xml_position_surf_props = l_root_element.findTag("surface_properties");
+    XmlElement::const_iterator xml_position_diff_model = l_root_element.findTag("diffusion_model");
+    XmlElement::const_iterator xml_position_prod_terms = l_root_element.findTag("production_terms");
 
-    mp_surf_descr = new SurfaceDescription( m_thermo, m_gsi_mechanism, *xml_position_surf_descr );
-    mp_surf_solver = new SurfaceBalanceSolver( m_thermo, m_transport, m_gsi_mechanism, *xml_position_diff_model, *xml_position_prod_terms, *mp_surf_descr );
+    DataSurfaceProperties l_data_surface_properties = { m_thermo, *xml_position_surf_props };
+    mp_surf_props = Mutation::Utilities::Config::Factory<SurfaceProperties>::create( m_gsi_mechanism, l_data_surface_properties );
+    mp_wall_state = new WallState( m_thermo, *mp_surf_props );
+
+    // Creating the SurfaceBalanceSolver class
+    DataSurfaceBalanceSolver l_data_surface_balance_solver = { m_thermo, m_transport, m_gsi_mechanism, *xml_position_diff_model, 
+                                                               *xml_position_prod_terms, *mp_surf_props, *mp_wall_state };
+    mp_surf_solver = Mutation::Utilities::Config::Factory<SurfaceBalanceSolver>::create( m_gsi_mechanism, l_data_surface_balance_solver );
 
 }
 
 //======================================================================================
 
 GasSurfaceInteraction::~GasSurfaceInteraction(){
-
-    if ( mp_surf_descr != NULL ) { delete mp_surf_descr; }
+    if ( mp_surf_props != NULL ) { delete mp_surf_props; }
+    if ( mp_wall_state != NULL ) { delete mp_wall_state; }
     if ( mp_surf_solver != NULL ) { delete mp_surf_solver; }
-
 }
 
 //======================================================================================
 
 void GasSurfaceInteraction::setWallState( const double* const l_mass, const double* const l_energy, const int state_variable ){
-
-    mp_surf_solver->setWallState( l_mass, l_energy, state_variable );
-
+    mp_wall_state->setWallState( l_mass, l_energy, state_variable );
 }
 
 //======================================================================================
 
 void GasSurfaceInteraction::getWallState( double* const l_mass, double* const l_energy, const int state_variable ){
-
-    mp_surf_descr->getWallState( l_mass, l_energy, state_variable );
-
+    mp_wall_state->getWallState( l_mass, l_energy, state_variable );
 }
 
 //======================================================================================
@@ -89,7 +91,8 @@ void GasSurfaceInteraction::setDiffusionModel( const double* const l_mole_frac_e
 
 void  GasSurfaceInteraction::solveSurfaceBalance(){
 
-    mp_surf_solver->solveSurfaceBalance( mp_surf_descr->getWallRhoi(), mp_surf_descr->getWallT() );
+//    mp_surf_solver->solveSurfaceBalance( mp_surf_descr->getWallRhoi(), mp_surf_descr->getWallT() );
+    mp_surf_solver->solveSurfaceBalance( mp_wall_state->getWallRhoi(), mp_wall_state->getWallT() );
 
 }
 
@@ -124,31 +127,10 @@ inline void GasSurfaceInteraction::errorWrongTypeofGSIFile( const std::string& l
 
 //======================================================================================
 
-inline void GasSurfaceInteraction::getXmlPositionPointerSurfPropsDiffModelProdTerm( Mutation::Utilities::IO::XmlElement::const_iterator& l_index_surf_descr, Mutation::Utilities::IO::XmlElement::const_iterator& l_index_diff_model, Mutation::Utilities::IO::XmlElement::const_iterator& l_index_prod_terms, const Mutation::Utilities::IO::XmlElement& root ){
-
-// Replace it with getTag();
-
-        Mutation::Utilities::IO::XmlElement::const_iterator iter = root.begin();
-        for ( ; iter != root.end(); ++iter) {
-            if ( iter->tag() == "surface_properties" ) {
-                l_index_surf_descr = iter;
-            } else if ( iter->tag() == "diffusion_model" ) {
-                l_index_diff_model = iter;
-            } else if ( iter->tag() == "production_terms" ) {
-                l_index_prod_terms = iter;
-            } else {
-                inline void errorInvalidGSIFileProperties( );
-            }
-        }
-
-}
-
-//======================================================================================
-
 inline void GasSurfaceInteraction::errorInvalidGSIFileProperties( const std::string& l_gsi_option ) {
 
-        std::cerr << l_gsi_option << " is not a valid gas surface interaction file option!" << std::endl;
-        exit(1);
+    std::cerr << l_gsi_option << " is not a valid gas surface interaction file option!" << std::endl;
+    exit(1);
 
 }
 

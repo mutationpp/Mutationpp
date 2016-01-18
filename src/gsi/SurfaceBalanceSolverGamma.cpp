@@ -6,9 +6,15 @@ namespace Mutation {
 
 //======================================================================================
 
-SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodynamics& l_thermo, Mutation::Transport::Transport& l_transport, const std::string& l_gsi_mechanism, const Mutation::Utilities::IO::XmlElement& l_node_diff_model, const Mutation::Utilities::IO::XmlElement& l_node_prod_terms, SurfaceDescription& l_surf_descr )
-                                          : m_thermo( l_thermo ),
-                                            m_surf_descr( l_surf_descr ),
+class SurfaceBalanceSolverGamma : public SurfaceBalanceSolver, public Mutation::Numerics::NewtonSolver<Eigen::VectorXd, SurfaceBalanceSolverGamma> {
+
+//======================================================================================
+
+public:
+SurfaceBalanceSolverGamma( ARGS l_data_surface_balance_solver )
+                                          : m_thermo( l_data_surface_balance_solver.s_thermo ),
+                                            m_surf_props( l_data_surface_balance_solver.s_surf_props ),
+                                            m_wall_state( l_data_surface_balance_solver.s_wall_state ),
                                             mp_diff_vel_calc( NULL ),
                                             mp_mass_blowing_rate( NULL ),
                                             m_ns( m_thermo.nSpecies() ),
@@ -24,18 +30,18 @@ SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodyna
                                             v_sep_mass_prod_rate( m_thermo.nSpecies() ) { // Removed Initialization to zero
                                             
 
-    Mutation::Utilities::IO::XmlElement::const_iterator iter_prod_terms = l_node_prod_terms.begin();
+    Mutation::Utilities::IO::XmlElement::const_iterator iter_prod_terms = l_data_surface_balance_solver.s_node_prod_terms.begin();
 
 //    { /** @todo Make me a function */
-    DataWallProductionTerms l_data_wall_production_terms = { m_thermo, l_gsi_mechanism, *iter_prod_terms, m_surf_descr }; 
-    for( ; iter_prod_terms != l_node_prod_terms.end() ; ++iter_prod_terms ){
+    DataWallProductionTerms l_data_wall_production_terms = { m_thermo, l_data_surface_balance_solver.s_gsi_mechanism, *iter_prod_terms, m_surf_props, m_wall_state }; 
+    for( ; iter_prod_terms != l_data_surface_balance_solver.s_node_prod_terms.end() ; ++iter_prod_terms ){
         addSurfaceProductionTerm( Mutation::Utilities::Config::Factory<WallProductionTerms>::create( iter_prod_terms->tag(), l_data_wall_production_terms ) );
     }
     errorEmptyWallProductionTerms();
 //    } // Make me a function
  
     // DiffusionVelocityCalculator
-    mp_diff_vel_calc = new DiffusionVelocityCalculator( m_thermo, l_transport );
+    mp_diff_vel_calc = new DiffusionVelocityCalculator( m_thermo, l_data_surface_balance_solver.s_transport );
 
     // MassBlowingRate
     mp_mass_blowing_rate = new MassBlowingRate();
@@ -48,7 +54,7 @@ SurfaceBalanceSolver::SurfaceBalanceSolver( Mutation::Thermodynamics::Thermodyna
 
 //======================================================================================
 
-SurfaceBalanceSolver::~SurfaceBalanceSolver(){
+~SurfaceBalanceSolverGamma(){
 
     for ( std::vector<WallProductionTerms*>::iterator iter = v_surf_prod.begin() ; iter != v_surf_prod.end() ; ++iter ){
         delete (*iter);
@@ -61,13 +67,7 @@ SurfaceBalanceSolver::~SurfaceBalanceSolver(){
 
 //======================================================================================
 
-void SurfaceBalanceSolver::setWallState( const double* const l_mass, const double* const l_energy, const int state_variable ){
-    m_surf_descr.setWallState( l_mass, l_energy, state_variable );
-}
-
-//======================================================================================
-
-void SurfaceBalanceSolver::computeGSIProductionRate( Eigen::VectorXd& lv_mass_prod_rate ){
+void computeGSIProductionRate( Eigen::VectorXd& lv_mass_prod_rate ){
 
     errorWallStateNotSet();
     for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ v_sep_mass_prod_rate( i_ns ) = 0.E0; }
@@ -84,15 +84,13 @@ void SurfaceBalanceSolver::computeGSIProductionRate( Eigen::VectorXd& lv_mass_pr
 
 //======================================================================================
 
-void SurfaceBalanceSolver::setDiffusionModel( const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx ){
-
+void setDiffusionModel( const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx ){
     mp_diff_vel_calc->setDiffusionModel( lv_mole_frac_edge, l_dx );
-
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::solveSurfaceBalance( const Eigen::VectorXd& lv_rhoi, const Eigen::VectorXd& lv_T ){
+void solveSurfaceBalance( const Eigen::VectorXd& lv_rhoi, const Eigen::VectorXd& lv_T ){
 
     // errorUninitializedDiffusionModel
     // errorWallStateNotSetYet
@@ -105,17 +103,17 @@ void SurfaceBalanceSolver::solveSurfaceBalance( const Eigen::VectorXd& lv_rhoi, 
     v_X = solve( v_X );
     computePartialDensfromMoleFrac( v_X, v_rhoi );
 
-    setWallState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
+    m_wall_state.setWallState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
     
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::updateFunction( Eigen::VectorXd& lv_mole_frac ) {
+void updateFunction( Eigen::VectorXd& lv_mole_frac ) {
 
     computePartialDensfromMoleFrac( lv_mole_frac, v_rhoi );
     m_thermo.setState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
-    setWallState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
+    m_wall_state.setWallState( &v_rhoi(0), &m_Twall, set_state_with_rhoi_T );
 
     mp_diff_vel_calc->computeDiffusionVelocities( lv_mole_frac, v_work );
 
@@ -133,7 +131,7 @@ void SurfaceBalanceSolver::updateFunction( Eigen::VectorXd& lv_mole_frac ) {
 
 //======================================================================================
 
-void SurfaceBalanceSolver::updateJacobian( Eigen::VectorXd& lv_mole_frac ) {
+void updateJacobian( Eigen::VectorXd& lv_mole_frac ) {
 
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         v_f_unpert(i_ns) = v_f(i_ns);
@@ -160,83 +158,102 @@ void SurfaceBalanceSolver::updateJacobian( Eigen::VectorXd& lv_mole_frac ) {
 
 //======================================================================================
 
-Eigen::VectorXd& SurfaceBalanceSolver::systemSolution(){
-
+Eigen::VectorXd& systemSolution(){
     v_dX = v_jac.partialPivLu().solve(v_f_unpert);
     return v_dX;
-
 }
 
 //======================================================================================
 
-double SurfaceBalanceSolver::norm(){
-
+double norm(){
     return v_f.lpNorm<Eigen::Infinity>();
-
 }
 
 //======================================================================================
-
-void SurfaceBalanceSolver::addSurfaceProductionTerm( WallProductionTerms* lp_wall_prod_term ){
-
+private:
+void addSurfaceProductionTerm( WallProductionTerms* lp_wall_prod_term ){
     v_surf_prod.push_back( lp_wall_prod_term );
-
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::saveUnperturbedPressure( Eigen::VectorXd& lv_rhoi ){
-
+void saveUnperturbedPressure( Eigen::VectorXd& lv_rhoi ){
     m_thermo.setState( &lv_rhoi(0), &m_Twall, set_state_with_rhoi_T );
     m_Pwall = m_thermo.P();
-
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::computeMoleFracfromPartialDens( Eigen::VectorXd& lv_rhoi, Eigen::VectorXd& lv_xi ){
-
+void computeMoleFracfromPartialDens( Eigen::VectorXd& lv_rhoi, Eigen::VectorXd& lv_xi ){
     m_thermo.setState( &lv_rhoi(0), &m_Twall, set_state_with_rhoi_T );
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         lv_xi(i_ns) = m_thermo.X()[i_ns];
     }
-
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::computePartialDensfromMoleFrac( Eigen::VectorXd& lv_xi, Eigen::VectorXd& lv_rhoi ){
-
+void computePartialDensfromMoleFrac( Eigen::VectorXd& lv_xi, Eigen::VectorXd& lv_rhoi ){
     for( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         lv_rhoi(i_ns) = lv_xi(i_ns) * m_Pwall * m_thermo.speciesMw(i_ns) / ( m_Twall * Mutation::RU );
     }
-
 }
 //======================================================================================
 
-void SurfaceBalanceSolver::errorEmptyWallProductionTerms() const {
-
+void errorEmptyWallProductionTerms() const {
     if ( v_surf_prod.size() == 0 ){
-
         std::cerr << "At least one wall production term should be provided in the input file!" << std::endl;
         exit(1);
-
     }
-
 }
 
 //======================================================================================
 
-void SurfaceBalanceSolver::errorWallStateNotSet() const {
-    
-    if ( m_surf_descr.isWallStateSet() == 0 ){ 
+void errorWallStateNotSet() const {
+    if ( m_wall_state.isWallStateSet() == 0 ){ 
         std::cerr << "The wall state must have been set!" << std::endl; /** @todo better error */
         exit(1);
     }
-
 }
 
 //======================================================================================
+// CHECK WHICH OF THE ABOVE FUNCTIONS ARE PRIVATE!
+private:
+    Mutation::Thermodynamics::Thermodynamics& m_thermo;
 
+    SurfaceProperties& m_surf_props;
+    WallState& m_wall_state;
+    
+    std::vector<WallProductionTerms*> v_surf_prod;
+
+    DiffusionVelocityCalculator* mp_diff_vel_calc;
+    MassBlowingRate* mp_mass_blowing_rate;
+
+    // VARIABLES FOR SOLVER
+    const size_t m_ns;
+    double m_Twall;
+    double m_Pwall;
+    Eigen::VectorXd v_rhoi;
+    Eigen::VectorXd v_work;
+    Eigen::VectorXd v_X;
+    Eigen::VectorXd v_dX;
+    Eigen::VectorXd v_f;
+    Eigen::MatrixXd v_jac;
+    double m_pert;
+    double m_X_unpert;
+    Eigen::VectorXd v_f_unpert;
+
+    const int set_state_with_rhoi_T;
+
+    // TEMPORARY
+    Eigen::VectorXd v_sep_mass_prod_rate;
+
+};
+
+//======================================================================================
+
+Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverGamma, SurfaceBalanceSolver> surface_balance_solver_gamma("gamma");
+Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverGamma, SurfaceBalanceSolver> surface_balance_solver_frc("frc");
+ 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

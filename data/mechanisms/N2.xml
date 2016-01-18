@@ -1,5 +1,5 @@
 <!-- Nitrogen Reaction Mechanism -->
-<mechanism name="NN">
+<mechanism name="N2">
     
     <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
     

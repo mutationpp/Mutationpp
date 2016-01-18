@@ -30,6 +30,7 @@ CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
 EXAMPLES  = \
 	equilibrium_air \
 	O2_dissociation \
+        frc\
         gsi\
         binary_diffusion
 
@@ -39,6 +40,9 @@ equilibrium_air  : equilibrium_air.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 O2_dissociation  : O2_dissociation.o
+	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
+frc              : frc.o 
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 gsi              : gsi.o 

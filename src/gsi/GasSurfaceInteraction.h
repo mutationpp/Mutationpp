@@ -7,7 +7,8 @@
 #include "Thermodynamics.h"
 #include "Transport.h"
 
-#include "SurfaceDescription.h" 
+#include "SurfaceProperties.h"
+#include "WallState.h"
 #include "SurfaceBalanceSolver.h" 
 
 namespace Mutation {
@@ -16,7 +17,9 @@ namespace Mutation {
 class GasSurfaceInteraction {
 
 public:
-    GasSurfaceInteraction( Mutation::Thermodynamics::Thermodynamics& l_thermo, Mutation::Transport::Transport& l_transport, std::string l_gsi_mechanism_file );
+    GasSurfaceInteraction( Mutation::Thermodynamics::Thermodynamics& l_thermo, 
+                           Mutation::Transport::Transport& l_transport, 
+                           std::string l_gsi_mechanism_file );
     ~GasSurfaceInteraction();
 
     void setWallState( const double* const l_mass, const double* const l_energy, const int state_variable );
@@ -31,16 +34,16 @@ private:
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     Mutation::Transport::Transport& m_transport;
 
-    SurfaceDescription* mp_surf_descr;
+    SurfaceProperties* mp_surf_props;
+    WallState* mp_wall_state;
     SurfaceBalanceSolver* mp_surf_solver;
 
     std::string m_gsi_mechanism;
 
-     Eigen::VectorXd v_mass_prod_rate;
+    Eigen::VectorXd v_mass_prod_rate; // Ugly! To fix
 
     inline void locateGSIInputFile( std::string& l_gsi_mechanism_file );
     inline void errorWrongTypeofGSIFile( const std::string& l_gsi_root_tag );
-    inline void getXmlPositionPointerSurfPropsDiffModelProdTerm( Mutation::Utilities::IO::XmlElement::const_iterator& l_index_surf_descr, Mutation::Utilities::IO::XmlElement::const_iterator& l_index_diff_model, Mutation::Utilities::IO::XmlElement::const_iterator& l_index_prod_terms, const Mutation::Utilities::IO::XmlElement& root );
     inline void errorInvalidGSIFileProperties( const std::string& l_gsi_option );
 
     // TEMPORARY

@@ -4,7 +4,8 @@
 #include "Thermodynamics.h"
 
 #include "GSIReaction.h"
-#include "SurfaceDescription.h"
+#include "SurfaceProperties.h"
+#include "WallState.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -13,7 +14,8 @@ namespace Mutation {
 
 struct DataGSIRateManager { 
     const Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    const SurfaceDescription& s_surf_descr;
+    const SurfaceProperties& s_surf_props;
+    const WallState& s_wall_state;
     const std::vector<GSIReaction*>& s_reactions;
 };
 

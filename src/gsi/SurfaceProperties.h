@@ -1,16 +1,23 @@
 #ifndef SURFACEPROPERTIES_H
 #define SURFACEPROPERTIES_H
 
+#include "DataSurfaceProperties.h"
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 class SurfaceProperties{
 
 public:
-    typedef const Mutation::Utilities::IO::XmlElement& ARGS;
+    typedef const DataSurfaceProperties& ARGS;
 
-    SurfaceProperties( ARGS l_node_surf_props ){ }
+    SurfaceProperties( ARGS l_data_surf_props ){ }
     virtual ~SurfaceProperties(){ }
+
+public:
+    virtual int speciesIndexWall( const std::string& str_sp ) const = 0;
+    virtual int nSpeciesWall() const = 0;
+//    virtual void initializeWallComposition( Eigen::VectorXd& v_wall_composition ) const = 0;
 
 };
 
