@@ -94,11 +94,16 @@ public:
         m_conv_hist = hist;
     }
 
+    void setArmijoParameter(double alpha) {
+        m_alpha = alpha;
+    }
+
 private:
 
     unsigned int m_max_iter;
     unsigned int m_jacobian_lag;
     double       m_epsilon;
+    double       m_alpha;
     bool         m_conv_hist;
     
 };
@@ -110,7 +115,8 @@ NewtonSolver<T, Solver>::NewtonSolver()
     : m_max_iter(20),
       m_jacobian_lag(1),
       m_epsilon(1.0e-8),
-      m_conv_hist(false)
+      m_conv_hist(false),
+      m_alpha(0.05)
 { }
 
 //==============================================================================
@@ -149,11 +155,26 @@ T& NewtonSolver<T, Solver>::solve(T& x)
         }
         
         // x -= inv(J)*f
-        x -= static_cast<Solver&>(*this).systemSolution();
+        //x -= static_cast<Solver&>(*this).systemSolution();
+        T d = static_cast<Solver&>(*this).systemSolution();
+        T xt = x - d;
         
-        // Recompute f and norm(f)
-        static_cast<Solver&>(*this).updateFunction(x);
-        resnorm = static_cast<Solver&>(*this).norm() / f0_norm;
+        // Armijo line search
+        double lambda = 1.0;
+        static_cast<Solver&>(*this).updateFunction(xt);
+        double norm = static_cast<Solver&>(*this).norm() / f0_norm;
+
+        while (norm > (1.0 - m_alpha*lambda)*resnorm) {
+            cout << "in armijo line search..." << endl;
+            lambda *= 0.5;
+            xt = x - lambda*d;
+            static_cast<Solver&>(*this).updateFunction(xt);
+            norm = static_cast<Solver&>(*this).norm() / f0_norm;
+        }
+
+        // Update x and resnorm
+        x = xt;
+        resnorm = norm;
         
         if (m_conv_hist)
             cout << ", relative residual = " << resnorm << endl;
