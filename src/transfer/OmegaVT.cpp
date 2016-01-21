@@ -45,7 +45,7 @@ public:
     OmegaVT(Mixture& mix)
         : TransferModel(mix), m_mw(mix)
     {
-        m_const_Park_correction = std::sqrt(PI* KB / (8.E0 * NA));
+        m_const_Park_correction = std::sqrt(PI*KB/(8.E0*NA));
         m_ns              = m_mixture.nSpecies();
         m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
 
@@ -147,7 +147,7 @@ inline double const OmegaVT::compute_tau_VT_mj(int const i_vibrator, int const i
       double P = m_mixture.P();
       double T = m_mixture.T();
 
-      return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,  -1.E0/3.E0) - m_mw[i_vibrator][i_partner].b()) -18.42E0) * 101325.E0/ P );                                
+      return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,-1.0/3.0) - m_mw[i_vibrator][i_partner].b()) -18.421) * ONEATM / P );
 }
       
 double OmegaVT::compute_tau_VT_m(int const i_vibrator)
