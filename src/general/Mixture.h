@@ -97,6 +97,18 @@ public:
         Mutation::Thermodynamics::Composition::Type type =
             Mutation::Thermodynamics::Composition::MOLE) const;
 
+
+    double smb(
+        double Tw, double Pw, double* const p_rhoi,
+        const double* const p_xip, double dx);
+
+    void computeSurfaceSource(Eigen::ArrayXd& mci);
+
+private:
+
+    void smbf(double Tw, double Pw, const Eigen::VectorXd& dx, Eigen::VectorXd& f);
+
+
 private:
 
     std::vector<Mutation::Thermodynamics::Composition> m_compositions;
