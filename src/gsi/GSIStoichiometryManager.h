@@ -100,31 +100,32 @@ class GSIStoichiometryManager{
 public:
     GSIStoichiometryManager( ){ }
 
-    virtual void addReaction( const int rxn, const std::vector<int>& sps ) = 0;
-    virtual void multReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
-    virtual void incrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
-    virtual void decrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const = 0;
-    virtual void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const = 0;
-    virtual void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const = 0;
+    void addReaction( const int rxn, const std::vector<int>& sps );
+    virtual void multReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    virtual void incrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    virtual void decrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
+    virtual void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
+    virtual void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
+    virtual void incrSpeciesSurf( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const {}
+    virtual void decrSpeciesSurf( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const {}
 
     virtual ~GSIStoichiometryManager(){ }
+
+private:
+    std::vector<Stoich1> m_stoich1_vec;
+    std::vector<Stoich2> m_stoich2_vec;
 
 };
 
 //=======================================================================================
 
-class GSIStoichiometryManagerGamma: public GSIStoichiometryManager{
+class GSIStoichiometryManagerFRC : public GSIStoichiometryManager {
 public:
-    GSIStoichiometryManagerGamma( ){ }
-
-    void addReaction( const int rxn, const std::vector<int>& sps );
     void multReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
     void incrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
     void decrReactions( const Eigen::VectorXd& p_s, Eigen::VectorXd& p_r ) const;
     void incrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
     void decrSpecies( const Eigen::VectorXd& p_r, Eigen::VectorXd& p_s ) const;
-
-    ~GSIStoichiometryManagerGamma(){ }
 
 private:
     std::vector<Stoich1> m_stoich1_vec;

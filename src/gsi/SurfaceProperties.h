@@ -17,7 +17,12 @@ public:
 public:
     virtual int speciesIndexWall( const std::string& str_sp ) const = 0;
     virtual int nSpeciesWall() const = 0;
-//    virtual void initializeWallComposition( Eigen::VectorXd& v_wall_composition ) const = 0;
+
+    virtual int nSites() const = 0;
+    virtual double nTotalSites() const = 0;
+
+    virtual double fracSite( const int& i_site ) const = 0;
+    virtual int nSpeciesSite( const int& i_site ) const = 0;
 
 };
 

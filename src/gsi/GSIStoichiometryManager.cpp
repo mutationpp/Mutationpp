@@ -8,7 +8,7 @@ namespace Mutation {
 
 //========================================================================================
 
-void GSIStoichiometryManagerGamma::addReaction(const int rxn, const std::vector<int>& sps){
+void GSIStoichiometryManager::addReaction(const int rxn, const std::vector<int>& sps){
     switch (sps.size()){
         case 1:
             m_stoich1_vec.push_back(Stoich1(rxn, sps[0]));
@@ -33,7 +33,7 @@ inline static void _##__my_func__ (\
     for (; begin != end; ++begin)\
         begin-> __stoic_func__ (input, output);\
 }\
-void GSIStoichiometryManagerGamma:: __my_func__ (\
+void GSIStoichiometryManager:: __my_func__ (\
     const Eigen::VectorXd& in, Eigen::VectorXd& out) const\
 {\
     _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
@@ -48,6 +48,19 @@ STOICH_MGR_APPLY_FUNC(incrSpecies, incrSpecies)
 STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies)
 
 #undef STOICH_MGR_APPLY_FUNC
+
+// #define STOICH_MGR_FRC_APPLY_FUNC(__my_func__,__stoic_func__)\
+// template<class Iterator, class Vec1, class Vec2>\
+// void GSIStoichiometryManagerFRC:: __my_func__ (\
+//     const Eigen::VectorXd& in, Eigen::VectorXd& out) const\
+// {\
+//     _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
+//     _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in , out );\
+// }\
+//
+// STOICH_MGR_FRC_APPLY_FUNC(multReactions, multReaction)
+//
+// #undef STOICH_MGR_FRC_APPLY_FUNC
 
 //=======================================================================================
 

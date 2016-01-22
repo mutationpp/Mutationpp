@@ -53,8 +53,8 @@ public:
 private:
     Eigen::VectorXd v_wall_reaction_rate_constant;
 
-    GSIStoichiometryManagerGamma m_reactants;
-    GSIStoichiometryManagerGamma m_irr_products;
+    GSIStoichiometryManager m_reactants;
+    GSIStoichiometryManager m_irr_products;
 
 //=============================================================================
 

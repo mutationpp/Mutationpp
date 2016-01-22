@@ -36,12 +36,19 @@ public:
     void wallStateSet();
     bool isWallStateSet() const ;
 
-    void setSurfPropState( const Eigen::VectorXd& lv_surf_props_state ){ v_surf_props_state = lv_surf_props_state; };
-    Eigen::VectorXd getSurfPropState(){ return v_surf_props_state; }
+    void getConcWallSurfState( Eigen::VectorXd& lv_wall_state ) const;
+//    void setSurfPropState( const Eigen::VectorXd& lv_surf_props_state ){ v_surf_props_state = lv_surf_props_state; };
+//    Eigen::VectorXd getSurfPropState(){ return v_surf_props_state; }
 
 private:
+    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
+    const SurfaceProperties& m_surf_props;
+
+    void initializeSurfState();
+
     const int m_ns;
     const int m_nT;
+    const int m_ns_surf;
 
     Eigen::VectorXd v_rhoi;
     Eigen::VectorXd v_T;

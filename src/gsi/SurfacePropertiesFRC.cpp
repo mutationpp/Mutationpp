@@ -59,14 +59,11 @@ int nSpeciesWall() const {
     return n_species_wall;
 }
 
-//void initializeWallComposition( Eigen::VectorXd& v_wall_comp ) const {}
+int nSites() const { return vp_sites.size(); }
+double nTotalSites() const { return m_tot_site_dens; }
 
-//===========================================================================================
-
-private:
-inline int nSpeciesSite( int id_site ) const {
-    return vp_sites[id_site]->nSpeciesSite();
-}
+double fracSite( const int& i_site ) const { return vp_sites[i_site]->fracSite(); }
+int nSpeciesSite( const int& i_site ) const { return vp_sites[i_site]->nSpeciesSite(); }
 
 //===========================================================================================
 
@@ -111,6 +108,8 @@ public:
     }
 
     inline int nSpeciesSite() const { return m_n_species_site; } 
+
+    inline double fracSite() const { return m_frac_site_over_surf; }
 
 private: 
     void parseSiteSpecies( const std::string& s_sp_in_site, const Mutation::Thermodynamics::Thermodynamics& l_thermo , int& idx_sp ){
