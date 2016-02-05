@@ -30,7 +30,7 @@ public:
 
     double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const { 
         return( m_steric_factor * m_vib_perp * pow(v_Twall[0], m_beta)
-                                  * exp(-(m_E_des)/(RU * v_Twall[0] )) );
+                                  * exp(-(m_E_des)/( RU * v_Twall[0] )) );
     }
 
 

@@ -50,6 +50,8 @@ private:
     const int m_nT;
     const int m_ns_surf;
 
+    const int m_set_state_rhoi_T;
+
     Eigen::VectorXd v_rhoi;
     Eigen::VectorXd v_T;
 

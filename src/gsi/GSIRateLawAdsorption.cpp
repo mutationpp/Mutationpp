@@ -33,6 +33,7 @@ public:
 
     double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const {
 
+    	// @todo Not checked for cases where m_E_act /= 0
         double k = m_S_coeff * pow( v_Twall(0), m_beta ) * exp( -( m_E_act ) / ( Mutation::RU * v_Twall(0) ) );
 
        // @todo Pay attention when you have different phases!
