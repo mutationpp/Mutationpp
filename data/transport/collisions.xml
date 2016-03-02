@@ -64,18 +64,18 @@
         
         <!-- Charged interactions -->
         <charged>
-            <Q11 type="Debye-Huckle"/>
-            <Q12 type="Debye-Huckle"/>
-            <Q13 type="Debye-Huckle"/>
-            <Q13 type="Debye-Huckle"/>
-            <Q14 type="Debye-Huckle"/>
-            <Q15 type="Debye-Huckle"/>
-            <Q22 type="Debye-Huckle"/>
-            <Q23 type="Debye-Huckle"/>
-            <Q24 type="Debye-Huckle"/>
-            <Ast type="Debye-Huckle"/>
-            <Bst type="Debye-Huckle"/>
-            <Cst type="Debye-Huckle"/>
+            <Q11 type="Debye-Huckel"/>
+            <Q12 type="Debye-Huckel"/>
+            <Q13 type="Debye-Huckel"/>
+            <Q13 type="Debye-Huckel"/>
+            <Q14 type="Debye-Huckel"/>
+            <Q15 type="Debye-Huckel"/>
+            <Q22 type="Debye-Huckel"/>
+            <Q23 type="Debye-Huckel"/>
+            <Q24 type="Debye-Huckel"/>
+            <Ast type="Debye-Huckel"/>
+            <Bst type="Debye-Huckel"/>
+            <Cst type="Debye-Huckel"/>
         </charged>
     </defaults>
 
