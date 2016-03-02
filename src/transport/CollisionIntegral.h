@@ -75,7 +75,7 @@ public:
 	virtual ~CollisionIntegral() { };
 
 	/// Equality operator.
-	bool operator == (const CollisionIntegral& compare) const {
+	virtual bool operator == (const CollisionIntegral& compare) const {
 	    if (typeid(*this) != typeid(compare))
 	        return false;
 	    return isEqual(compare);

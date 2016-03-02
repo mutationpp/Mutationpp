@@ -298,7 +298,7 @@ private:
 DebyeHuckleEvaluator DebyeHuckleColInt::sm_evaluator;
 
 // Register the "Debye-Huckle" CollisionIntegral
-ObjectProvider<DebyeHuckleColInt, CollisionIntegral> DebyeHuckle_ci("Debye-Huckle");
+ObjectProvider<DebyeHuckleColInt, CollisionIntegral> DebyeHuckle_ci("Debye-Huckel");
 
     } // namespace Transport
 } // namespace Mutation

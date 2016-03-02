@@ -113,7 +113,7 @@ public:
     double heavyThermalConductivity();
     
     /// Returns the electron translational thermal conductivity.
-    double electronThermalConductivity(int order = 3);
+    double electronThermalConductivity(int order = 2);
     
     /**
      * Returns the thermal conductivity of an internal energy mode using
