@@ -114,7 +114,7 @@ public:
             src += m_rId[i].second*mp_delta[j]*mp_rate[j];
         }
 
-        return (-0.2*src*RU*298.15);
+        return (-src*RU*298.15);
 	}
 
 private:

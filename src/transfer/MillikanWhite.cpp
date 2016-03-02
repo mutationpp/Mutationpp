@@ -94,8 +94,8 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
             m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
         }
 
-        std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
-        std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
+        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
+        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
 }
 
@@ -130,8 +130,8 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Add Millikan-White data using defaults
         m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
-        std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
-        std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
+        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
+        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
 }
 
