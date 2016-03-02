@@ -313,11 +313,16 @@ void NAME_MANGLE(net_production_rates)(double* const wdot)
 }
 
 //==============================================================================
+void NAME_MANGLE(species_jacobian_rho)(double* const j)
+{
+    p_mix->jacobianRho(j);
+}
+
+//==============================================================================
 int NAME_MANGLE(ncollision_pairs)()
 {
     return p_mix->nCollisionPairs();
 }
-
 
 //==============================================================================
 double NAME_MANGLE(viscosity)()
