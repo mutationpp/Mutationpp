@@ -1,18 +1,22 @@
 #ifndef MASSBLOWINGRATE_H
 #define MASSBLOWINGRATE_H
 
+#include "Utilities.h"
+
+#include "DataMassBlowingRate.h"
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 class MassBlowingRate{
-
 public:
-    MassBlowingRate(){ }
-    ~MassBlowingRate(){ }
+    typedef const DataMassBlowingRate& ARGS;
 
-    double computeMassBlowingRate(){ return 0.E0; }
+    virtual ~MassBlowingRate(){ }
 
+    virtual double computeBlowingFlux() = 0;
 };
+
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

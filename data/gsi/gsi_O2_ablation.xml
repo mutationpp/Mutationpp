@@ -1,0 +1,19 @@
+<gsi gsi_mechanism = "ablation">
+
+    <surface_properties name = "none" > 
+    </surface_properties>
+    
+    <diffusion_model model="first_order">
+        <mass distance= "1"> </mass>
+    </diffusion_model>
+
+    <production_terms>
+        <surface_chemistry>
+            <!-- 1 -->
+            <reaction type= "ablation" formula="C-s + O => CO">
+                <ablation pre_exp="0.63" T="1160.0" />
+            </reaction>
+        </surface_chemistry>
+    </production_terms>
+    
+</gsi>

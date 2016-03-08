@@ -30,9 +30,11 @@ CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
 EXAMPLES  = \
 	equilibrium_air \
 	O2_dissociation \
-        frc\
-        gsi\
-        binary_diffusion
+    frc\
+    ablation\
+    gsi\
+    binary_diffusion#\
+#    N3SystemOneWayReactionsTest
 
 all : $(EXAMPLES)
 
@@ -48,8 +50,14 @@ frc              : frc.o
 gsi              : gsi.o 
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
+ablation         : ablation.o
+	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
 binary_diffusion : binary_diffusion.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
+#N3SystemOneWayReactionsTest : N3SystemOneWayReactionsTest.o
+#	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp
 	$(CXX) -c $(CXX_FLAGS) $<

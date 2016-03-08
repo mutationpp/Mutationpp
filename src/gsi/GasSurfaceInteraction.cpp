@@ -33,13 +33,13 @@ GasSurfaceInteraction::GasSurfaceInteraction( Mutation::Thermodynamics::Thermody
     XmlElement::const_iterator xml_position_prod_terms = l_root_element.findTag("production_terms");
 
     DataSurfaceProperties l_data_surface_properties = { m_thermo, *xml_position_surf_props };
-    mp_surf_props = Mutation::Utilities::Config::Factory<SurfaceProperties>::create( m_gsi_mechanism, l_data_surface_properties );
+    mp_surf_props = Mutation::Utilities::Config::Factory<SurfaceProperties>::create( m_gsi_mechanism, l_data_surface_properties ); //@totuesday
     mp_wall_state = new WallState( m_thermo, *mp_surf_props );
 
     // Creating the SurfaceBalanceSolver class
     DataSurfaceBalanceSolver l_data_surface_balance_solver = { m_thermo, m_transport, m_gsi_mechanism, *xml_position_diff_model, 
                                                                *xml_position_prod_terms, *mp_surf_props, *mp_wall_state };
-    mp_surf_solver = Mutation::Utilities::Config::Factory<SurfaceBalanceSolver>::create( m_gsi_mechanism, l_data_surface_balance_solver );
+    mp_surf_solver = Mutation::Utilities::Config::Factory<SurfaceBalanceSolver>::create( m_gsi_mechanism, l_data_surface_balance_solver ); //@totuesday
 
 }
 
@@ -91,7 +91,6 @@ void GasSurfaceInteraction::setDiffusionModel( const double* const l_mole_frac_e
 
 void  GasSurfaceInteraction::solveSurfaceBalance(){
 
-//    mp_surf_solver->solveSurfaceBalance( mp_surf_descr->getWallRhoi(), mp_surf_descr->getWallT() );
     mp_surf_solver->solveSurfaceBalance( mp_wall_state->getWallRhoi(), mp_wall_state->getWallT() );
 
 }

@@ -138,7 +138,7 @@ public:
 
     }
 
-    double norm(){ v_F.lpNorm<Eigen::Infinity>(); }
+    double norm(){ return v_F.lpNorm<Eigen::Infinity>(); }
     Eigen::VectorXd systemSolution(){ return v_jac.partialPivLu().solve( v_F ); }
 
 private:

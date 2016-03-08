@@ -34,7 +34,9 @@ public:
 
     double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const { 
 
-        double k = m_S_steric * pow( v_Twall(0), m_beta ) * exp( -( m_E_act ) / ( Mutation::RU * v_Twall(0) ) );
+    	int pos_T_trans = 0;
+    	double l_T_trans = v_Twall(pos_T_trans);
+        double k = m_S_steric * pow( l_T_trans, m_beta ) * exp( -( m_E_act ) / ( Mutation::RU * l_T_trans ) );
 
        // @todo Pay attention when you have different phases!
        // @todo m_surf_props.nTotalSites()^ns!

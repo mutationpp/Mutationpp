@@ -32,19 +32,19 @@ SurfaceBalanceSolverGamma( ARGS l_data_surface_balance_solver )
 
     Mutation::Utilities::IO::XmlElement::const_iterator iter_prod_terms = l_data_surface_balance_solver.s_node_prod_terms.begin();
 
-//    { /** @todo Make me a function */
     DataWallProductionTerms l_data_wall_production_terms = { m_thermo, l_data_surface_balance_solver.s_gsi_mechanism, *iter_prod_terms, m_surf_props, m_wall_state }; 
     for( ; iter_prod_terms != l_data_surface_balance_solver.s_node_prod_terms.end() ; ++iter_prod_terms ){
         addSurfaceProductionTerm( Mutation::Utilities::Config::Factory<WallProductionTerms>::create( iter_prod_terms->tag(), l_data_wall_production_terms ) );
     }
     errorEmptyWallProductionTerms();
-//    } // Make me a function
  
     // DiffusionVelocityCalculator
     mp_diff_vel_calc = new DiffusionVelocityCalculator( m_thermo, l_data_surface_balance_solver.s_transport );
 
     // MassBlowingRate
-    mp_mass_blowing_rate = new MassBlowingRate();
+    DataMassBlowingRate l_data_mass_blowing_rate = { *v_surf_prod[0] };
+  //  mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create("zero", l_data_mass_blowing_rate);
+    mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create("ablation", l_data_mass_blowing_rate);
 
     // Setup NewtonSolver
     setMaxIterations(3); // Write a wrapper around the maximum number of iterations.
@@ -70,13 +70,13 @@ SurfaceBalanceSolverGamma( ARGS l_data_surface_balance_solver )
 void computeGSIProductionRate( Eigen::VectorXd& lv_mass_prod_rate ){
 
     errorWallStateNotSet();
-    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ v_sep_mass_prod_rate( i_ns ) = 0.E0; }
+    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ v_sep_mass_prod_rate( i_ns ) = 0.E0; } // v_sep_mass_prod_rate.setZero();
 
     for ( int i_prod_terms = 0 ; i_prod_terms < v_surf_prod.size() ; ++i_prod_terms ){
         v_surf_prod[i_prod_terms]->productionRate( v_sep_mass_prod_rate );
     }
 
-    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ /////// CHANGE!
+    for ( int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){ // lv_mass_prod_rate = v_sep_mass_prod_rate;
         lv_mass_prod_rate( i_ns ) = v_sep_mass_prod_rate( i_ns );
     }
 
@@ -127,15 +127,20 @@ void updateFunction( Eigen::VectorXd& lv_mole_frac ) {
         v_f(i_ns) -= v_work(i_ns); 
     }
 
+    //@totuesday add massblowing rate
+     double l_blowing = mp_mass_blowing_rate->computeBlowingFlux() / v_rhoi.sum();
+
+     for (int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){
+         v_f(i_ns) -= l_blowing * v_rhoi(i_ns);
+     }
+
 }
 
 //======================================================================================
 
 void updateJacobian( Eigen::VectorXd& lv_mole_frac ) {
 
-    for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
-        v_f_unpert(i_ns) = v_f(i_ns);
-    }
+        v_f_unpert = v_f;
     
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++){
 
@@ -252,6 +257,7 @@ private:
 
 //======================================================================================
 
+Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverGamma, SurfaceBalanceSolver> surface_balance_solver_ablation("ablation"); // @totuesday
 Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverGamma, SurfaceBalanceSolver> surface_balance_solver_gamma("gamma");
 Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverGamma, SurfaceBalanceSolver> surface_balance_solver_frc("frc");
  

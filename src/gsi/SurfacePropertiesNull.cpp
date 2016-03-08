@@ -23,7 +23,8 @@ public:
 
 };
 
-Mutation::Utilities::Config::ObjectProvider<SurfacePropertiesNull, SurfaceProperties> surface_properties_null("gamma");
+Mutation::Utilities::Config::ObjectProvider<SurfacePropertiesNull, SurfaceProperties> surface_properties_gamma_null("gamma");
+Mutation::Utilities::Config::ObjectProvider<SurfacePropertiesNull, SurfaceProperties> surface_properties_ablation_null("ablation");
 
 
     } // namespace GasSurfaceInteraction

@@ -27,7 +27,9 @@ protected:
 
     inline double computeAverageThermalSpeedforSpeciesI( const int& l_index_species, const Eigen::VectorXd& v_Twall ) const {
 
-        return sqrt( ( 8.E0 * Mutation::RU * v_Twall(0) ) / ( Mutation::PI * m_thermo.speciesMw( l_index_species ) ) ) ; /** @todo 0 -> position_translational_temperature */
+    	int pos_T_trans = 0;
+    	double l_T_trans = v_Twall(pos_T_trans);
+        return sqrt( ( 8.E0 * Mutation::RU * l_T_trans ) / ( Mutation::PI * m_thermo.speciesMw( l_index_species ) ) ) ;
 
     }
 
