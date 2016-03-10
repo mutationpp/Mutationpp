@@ -2,7 +2,10 @@
 
 int main() {
 
-    Mutation::MixtureOptions opts("O2_ablation");
+
+    std::cout << "@todo CHECK RATES OF NITRIDATION!" << std::endl;
+
+    Mutation::MixtureOptions opts("O2_N2_ablation");
     opts.setStateModel("ChemNonEq1T");
     opts.setThermodynamicDatabase("RRHO");
     Mutation::Mixture mix(opts);
@@ -24,16 +27,19 @@ int main() {
     const size_t state_var = 0;
 
     const int iO   = mix.speciesIndex("O");
+    const int iN  = mix.speciesIndex("N");
     const int iO2  = mix.speciesIndex("O2");
     const int iCO  = mix.speciesIndex("CO");
+    const int iCN  = mix.speciesIndex("CN");
 
 // Conditions T = 3000K and p = 100Pa
-    v_rhoi[iO]  = 6.00781e-05;
-    v_rhoi[iO2] = 8.12943e-06;
-    v_rhoi[iCO] = 1.00000e-07;
-    double total_rho = v_rhoi[iO] + v_rhoi[iO2] + v_rhoi[iCO];
+    v_rhoi[iO]  = 1.31228e-05;
+    v_rhoi[iN] = 4.44957e-05;
+    v_rhoi[iO2] = 3.87867e-07;
+    v_rhoi[iCO] = 1.00000e-10;
+    v_rhoi[iCN] = 1.00000e-10;
+    double total_rho = v_rhoi[iO] + v_rhoi[iN] + v_rhoi[iO2] + v_rhoi[iCO] + v_rhoi[iCN];
     wall_temperature = 1000.e0;
-    
 
     // GET MOLE FRACTIONS
     int set_state_with_rhoi_T = 1;
@@ -50,11 +56,12 @@ int main() {
     mix.solveSurfaceBalance();
     mix.getWallState( &v_rhoi[0], &wall_temperature, state_var );
 
-    std::cout << "The result for the partial densities are: " << v_rhoi[0] << " " << v_rhoi[1] << " " << v_rhoi[2] << std::endl;
+    std::cout << "The result for the partial densities are: " << v_rhoi[0] << " " << v_rhoi[1] << " " << v_rhoi[2] 
+              << " " << v_rhoi[3] << " " << v_rhoi[4] <<  std::endl;
 
 //================================================================================================================
 
-    total_rho = v_rhoi[iO] + v_rhoi[iO2] + v_rhoi[iCO];
+    total_rho = v_rhoi[iO] + v_rhoi[iN] + v_rhoi[iO2] + v_rhoi[iCO] + v_rhoi[iCN];
 
     mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
     mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T );
@@ -67,7 +74,9 @@ int main() {
     double electric_field = 0.E0;
     mix.stefanMaxwell(&v_mole_gradients[0], &v_diffusion_velocities[0], electric_field);
     mix.surfaceProductionRates( &v_wall_production_rates[0] );
-    std::cout << "The wall production rates are: " << v_wall_production_rates[0] << " " << v_wall_production_rates[1] << " " << v_wall_production_rates[2] << std::endl;
+    std::cout << "The wall production rates are: " << v_wall_production_rates[0] << " " 
+              << v_wall_production_rates[1] << " " << v_wall_production_rates[2] << " " 
+              << v_wall_production_rates[3] << " " << v_wall_production_rates[4] << std::endl;
 
     double mass_blowing = 0.0;
     for ( int i_ns = 0 ; i_ns < ns ; ++i_ns ){
@@ -80,6 +89,7 @@ int main() {
                                                                        + mass_blowing * v_rhoi[i_ns]; 
     }
 
-    std::cout << "The residual is equal to: "<< v_function[0] << " " << v_function[1] << " " << v_function[2] << std::endl;
+    std::cout << "The residual is equal to: " << v_function[0] << " " << v_function[1] 
+              << " " << v_function[2] << " " << v_function[3] << " " << v_function[4] <<  std::endl;
 
 }

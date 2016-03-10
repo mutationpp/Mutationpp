@@ -10,6 +10,8 @@ namespace Mutation {
 
 void GSIStoichiometryManager::addReaction(const int rxn, const std::vector<int>& sps){
     switch (sps.size()){
+        case 0:
+            break;
         case 1:
             m_stoich1_vec.push_back(Stoich1(rxn, sps[0]));
             break;

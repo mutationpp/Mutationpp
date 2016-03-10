@@ -51,7 +51,7 @@ int main() {
     mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
     mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T );
 
-    for (int i_ns ; i_ns < ns ; i_ns++){
+    for (int i_ns = 0; i_ns < ns ; i_ns++){
         v_mole_fractions[i_ns] = mix.X()[i_ns];
         v_mole_gradients[i_ns] = ( v_mole_fractions[i_ns] - v_mole_fractions_edge[i_ns] ) / gradient_distance_wall_bulk;
     }

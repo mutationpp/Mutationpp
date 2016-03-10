@@ -8,6 +8,7 @@ add_sources(mutation++
     GSIReactionFRC.cpp
     GSIRateLawGammaConst.cpp
     GSIRateLawGammaT.cpp
+    GSIRateLawSublimation.cpp
     GSIRateLawAdsorption.cpp
     GSIRateLawDesorption.cpp
     GSIRateLawER.cpp

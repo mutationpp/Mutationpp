@@ -21,7 +21,8 @@ public:
         DataGSIRateLaw l_data_gsi_rate_law = { l_data_gsi_reaction.s_thermo,
                                                l_node_rate_law,
                                                l_data_gsi_reaction.s_surf_props,
-                                               m_reactants };
+                                               m_reactants,
+                                               m_products };
         mp_rate_law = Mutation::Utilities::Config::Factory<GSIRateLaw>::create( l_node_rate_law.tag(), l_data_gsi_rate_law );
 
         if ( mp_rate_law == NULL ) {

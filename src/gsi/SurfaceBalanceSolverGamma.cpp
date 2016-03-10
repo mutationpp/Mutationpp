@@ -49,8 +49,8 @@ SurfaceBalanceSolverGamma( ARGS l_data_surface_balance_solver )
     mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create( s_mass_blowing, l_data_mass_blowing_rate );
 
     // Setup NewtonSolver
-    setMaxIterations(100); // Write a wrapper around the maximum number of iterations.
-    setWriteConvergenceHistory(true);
+    setMaxIterations(10); // Write a wrapper around the maximum number of iterations.
+    setWriteConvergenceHistory(false);
 
 }
 
@@ -119,21 +119,26 @@ void updateFunction( Eigen::VectorXd& lv_mole_frac ) {
 
     mp_diff_vel_calc->computeDiffusionVelocities( lv_mole_frac, v_work );
 
-    for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
+    // std::cout << "Diffusion Velocities = " << v_work << std::endl;
+
+    for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){ // v_f = v_rhoi.dot( v_work );
         v_f(i_ns) = v_rhoi(i_ns) * v_work(i_ns); 
     }
 
     computeGSIProductionRate( v_work );
 
+    // std::cout << "Production Rates = " << v_work << std::endl;
+
     for ( int i_ns = 0 ; i_ns < m_ns ; i_ns++ ){
         v_f(i_ns) -= v_work(i_ns); 
     }
 
-    //@totuesday add massblowing rate
      double l_blowing = mp_mass_blowing_rate->computeBlowingFlux() / v_rhoi.sum();
 
+     // std::cout << "Blowing Rate = " << l_blowing << std::endl;
+
      for (int i_ns = 0 ; i_ns < m_ns ; ++i_ns ){
-         v_f(i_ns) -= l_blowing * v_rhoi(i_ns);
+         v_f(i_ns) += l_blowing * v_rhoi(i_ns);
      }
 
 }

@@ -1,0 +1,11 @@
+<mixture mechanism="O2_ablation" thermo_db="RRHO" gsi_mechanism="gsi_O2_N2_C_ablation">
+    
+    <species>
+        O N O2 CO CN C3
+    </species>
+    
+    <element_compositions default="default">
+        <composition name="default"> O:0.21 N:0.79 C:0.0 </composition>
+    </element_compositions>
+
+</mixture>
