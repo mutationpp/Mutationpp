@@ -6,12 +6,11 @@ add_sources(mutation++
     GSIReactionAblation.cpp
     GSIReactionCatalysis.cpp
     GSIReactionFRC.cpp
-    GSIRateLawAblation.cpp
     GSIRateLawGammaConst.cpp
+    GSIRateLawGammaT.cpp
     GSIRateLawAdsorption.cpp
     GSIRateLawDesorption.cpp
     GSIRateLawER.cpp
-    GSIRateManagerAblation.cpp
     GSIRateManagerGamma.cpp
     GSIRateManagerFRC.cpp
     GSIStoichiometryManager.cpp

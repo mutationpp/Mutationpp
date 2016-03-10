@@ -1,6 +1,8 @@
 #ifndef DATAMASSBLOWINGRATE_H
 #define DATAMASSBLOWINGRATE_H
 
+#include "Thermodynamics.h"
+
 #include "WallProductionTerms.h"
 
 namespace Mutation {
@@ -9,6 +11,7 @@ namespace Mutation {
 //========================================================================
 
 struct DataMassBlowingRate {
+	const Mutation::Thermodynamics::Thermodynamics& s_thermo;
     WallProductionTerms& s_wall_productions_terms;
 };
 

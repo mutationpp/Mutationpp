@@ -6,14 +6,14 @@
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class GSIRateLawAblation : public GSIRateLaw {
+class GSIRateLawGammaT : public GSIRateLaw {
 
 public:
-    GSIRateLawAblation( ARGS l_data_gsi_rate_law )
+    GSIRateLawGammaT( ARGS l_data_gsi_rate_law ) // @todo Extend it to catalysis?
                         : GSIRateLaw ( l_data_gsi_rate_law ),
                           v_reactants( l_data_gsi_rate_law.s_reactants ) {
 
-        assert( l_data_gsi_rate_law.s_node_rate_law.tag() == "ablation" );
+    assert( l_data_gsi_rate_law.s_node_rate_law.tag() == "gamma_T" );
 
     l_data_gsi_rate_law.s_node_rate_law.getAttribute( "pre_exp", m_pre_exp,
                                       "Error. Nothing provided" );
@@ -24,7 +24,7 @@ public:
 
 //=============================================================================================================
 
-    ~GSIRateLawAblation( ){ }
+    ~GSIRateLawGammaT( ){ }
 
 //=============================================================================================================
 
@@ -49,7 +49,7 @@ private:
 
 };
 
-Mutation::Utilities::Config::ObjectProvider<GSIRateLawAblation, GSIRateLaw> gsi_rate_law_ablation("ablation");
+Mutation::Utilities::Config::ObjectProvider<GSIRateLawGammaT, GSIRateLaw> gsi_rate_law_gamma_T("gamma_T");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

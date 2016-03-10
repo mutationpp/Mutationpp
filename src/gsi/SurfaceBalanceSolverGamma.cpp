@@ -42,13 +42,15 @@ SurfaceBalanceSolverGamma( ARGS l_data_surface_balance_solver )
     mp_diff_vel_calc = new DiffusionVelocityCalculator( m_thermo, l_data_surface_balance_solver.s_transport );
 
     // MassBlowingRate
-    DataMassBlowingRate l_data_mass_blowing_rate = { *v_surf_prod[0] };
-  //  mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create("zero", l_data_mass_blowing_rate);
-    mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create("ablation", l_data_mass_blowing_rate);
+    DataMassBlowingRate l_data_mass_blowing_rate = { m_thermo, *v_surf_prod[0] }; // @todo Rewrite...
+//    std::string s_mass_blowing = "zero";
+    std::string s_mass_blowing = "isOn";
+
+    mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create( s_mass_blowing, l_data_mass_blowing_rate );
 
     // Setup NewtonSolver
-    setMaxIterations(3); // Write a wrapper around the maximum number of iterations.
-    setWriteConvergenceHistory(false);
+    setMaxIterations(100); // Write a wrapper around the maximum number of iterations.
+    setWriteConvergenceHistory(true);
 
 }
 

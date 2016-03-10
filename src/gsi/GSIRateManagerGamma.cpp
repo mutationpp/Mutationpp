@@ -36,8 +36,7 @@ public:
         }
 
         // Constant rate times densities of species
-//        std::fill( lv_mass_prod_rate.begin(), lv_mass_prod_rate.end() , 0.0);
-        for ( int i_sp = 0 ; i_sp < lv_mass_prod_rate.size() ; ++i_sp ){ lv_mass_prod_rate( i_sp ) = 0.E0; }
+        lv_mass_prod_rate.setZero();
         m_reactants.incrSpecies( v_wall_reaction_rate_constant, lv_mass_prod_rate );
         m_irr_products.decrSpecies( v_wall_reaction_rate_constant, lv_mass_prod_rate );
 

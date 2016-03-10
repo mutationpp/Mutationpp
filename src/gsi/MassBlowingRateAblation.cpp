@@ -7,8 +7,8 @@ namespace Mutation {
 class MassBlowingRateAblation : public MassBlowingRate {
 public:
 	MassBlowingRateAblation( ARGS l_data_mass_blowing_rate )
-	                       : m_wall_production_terms(l_data_mass_blowing_rate.s_wall_productions_terms),
-							 v_wall_production_rates(3){ } // FIX
+	                       : m_wall_production_terms( l_data_mass_blowing_rate.s_wall_productions_terms ),
+							 v_wall_production_rates( l_data_mass_blowing_rate.s_thermo.nSpecies() ){ }
 
 	~MassBlowingRateAblation(){ }
 
@@ -22,13 +22,13 @@ public:
 	}
 
 private:
-	WallProductionTerms& m_wall_production_terms;
+	WallProductionTerms& m_wall_production_terms; // @todo Check const correctness
 
     Eigen::VectorXd v_wall_production_rates;
 
 };
 
-Mutation::Utilities::Config::ObjectProvider<MassBlowingRateAblation, MassBlowingRate> mass_blowing_rate_ablation("ablation"); // @totuesday
+Mutation::Utilities::Config::ObjectProvider<MassBlowingRateAblation, MassBlowingRate> mass_blowing_rate_ablation("isOn"); // @totuesday
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
