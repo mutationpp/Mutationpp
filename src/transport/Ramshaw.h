@@ -68,7 +68,8 @@ public:
         // First step is to compute X and Y with tolerance on X
         static Eigen::ArrayXd X(ns);
         static Eigen::ArrayXd Y(ns);
-        X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns)+1.0e-16;
+        //X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns)+1.0e-16;
+        X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns);//.max(1.0e-30);
         X /= X.sum();
         m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(X.data(), Y.data());
         
