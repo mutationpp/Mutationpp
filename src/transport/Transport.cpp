@@ -503,7 +503,7 @@ void Transport::exactDiffusionMatrix(double ** const p_Dij)
     const double tol = 1.0e-16;
 
     static ArrayXd X, Y; Y.resize(ns);
-    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol);
+    X = Map<const ArrayXd>(m_thermo.X(), ns);//.max(tol);
     X /= X.sum();
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
@@ -571,7 +571,7 @@ void Transport::stefanMaxwell(
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
     static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
-    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
+    X = Map<const ArrayXd>(m_thermo.X(), ns);//.max(tol); // Place a tolerance on X
     X /= X.sum();
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
