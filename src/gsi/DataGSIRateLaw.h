@@ -1,3 +1,5 @@
+// JB: please use underscore between "words" in header guards in order to
+// improve readability (ie: DATA_GSI_RATE_LAW_H)
 #ifndef DATAGSIRATELAW_H
 #define DATAGSIRATELAW_H 
 
