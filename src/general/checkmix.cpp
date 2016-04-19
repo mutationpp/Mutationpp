@@ -38,6 +38,7 @@ using std::string;
 using std::setw;
 using std::vector;
 using std::pair;
+using std::fixed;
 
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
@@ -177,8 +178,13 @@ int main(int argc, char** argv)
     const int ng = mixture.nGas();
     const int nc = mixture.nCondensed();
 
-    std::vector<double> g(ns, 0.0);
-    mixture.speciesSTGOverRT(298.15, &g[0]);
+    std::vector<double> h(ns, 0.0);
+    mixture.speciesHOverRT(298.15, &h[0]);
+    for (int i = 0; i < mixture.nSpecies(); ++i)
+        h[i] *= 0.29815*RU;
+
+    std::ios init(NULL);
+    init.copyfmt(cout);
  
     cout << "location: " << opts.getSource() << endl;
     cout << ns << " species containing " << ne << " elements" << endl;
@@ -235,7 +241,8 @@ int main(int argc, char** argv)
         cout << setw(12) << (phase == GAS ? "gas" :
             (phase == LIQUID ? "liquid" : "solid"));
 
-        cout << setw(12) << g[i] << endl;
+        cout << fixed << std::setprecision(2) << setw(12) << h[i] << endl;
+        cout.copyfmt(init);
     }
 
     if (nc > 0) {
@@ -257,7 +264,8 @@ int main(int argc, char** argv)
             cout << setw(12) << (phase == GAS ? "gas" :
                 (phase == LIQUID ? "liquid" : "solid"));
 
-            cout << setw(12) << g[i] << endl;
+            cout << fixed << std::setprecision(2) << setw(12) << h[i] << endl;
+            cout.copyfmt(init);
         }
     }
     

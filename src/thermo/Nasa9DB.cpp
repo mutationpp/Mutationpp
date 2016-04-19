@@ -183,6 +183,25 @@ protected:
 // Register this database type
 Utilities::Config::ObjectProvider<Nasa9DB, ThermoDB> nasa9DB("NASA-9");
 
+class Nasa9NewDB : public Nasa9DB
+{
+public:
+    Nasa9NewDB(int arg) : Nasa9DB(arg)
+    { }
+
+protected:
+    /**
+     * Returns the name of the file where this database resides.
+     */
+    std::string filename() const {
+        return std::string("nasa9_new.dat");
+    }
+};
+
+// Register this database type
+Utilities::Config::ObjectProvider<Nasa9NewDB, ThermoDB> nasa9newDB("NASA-9-New");
+
+
 
     } // namespace Thermodynamics
 } // namespace Mutation

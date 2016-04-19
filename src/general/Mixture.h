@@ -68,7 +68,11 @@ public:
     /** 
      * Destructor.
      */
-    ~Mixture(){}
+    ~Mixture() {
+//        std::cout << "=======================" << std::endl;
+//        std::cout << "| CALCULATION CORRECT |" << std::endl;
+//        std::cout << "=======================" << std::endl;
+    }
 //        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
