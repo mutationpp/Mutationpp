@@ -29,6 +29,11 @@
  12/01/16: (JBS) Added neutral-neutral interactions and polarizabilities for C2, 
  C2H, H, and H2.
  - added the exponential polynomial integral type
+ 
+ 31/05/16: (JBS) Added a warning integral type which allows the user to throw
+ a warning when the integral is loaded using default data.  Defaults are now 
+ given for all possible integrals with warnings for integrals that really should
+ have explicit data given.
 =============================================================================-->
 <collisions tabulate="yes" Tmin="300" Tmax="20000" dT="100">
 
@@ -36,8 +41,10 @@
     <defaults>
         <!-- Neutral-Neutral interactions -->
         <neutral-neutral>
-            <!--<Q11 type="constant" value="1.0e-20"/>-->
-            <!--<Q22 type="constant" value="1.0e-20"/>-->
+            <!-- Warn user if missing Q11 or Q22 -->
+            <Q11 type="warning" value="1.0e-20"/>
+            <Q22 type="warning" value="1.0e-20"/>
+            
             <Ast type="from A*"/>
             <Bst type="constant" value="1.15" ref="Wright2005"/>
             <Cst type="constant" value="0.92" ref="Wright2005"/>
@@ -54,7 +61,12 @@
         
         <!-- Electron-Neutral interactions -->
         <electron-neutral>
-            <!-- Requiring that Q11, Q22, Bst, and Cst are provided -->
+            <!-- Warn user if missing Q11, Q22, B*, or C* -->
+            <Q11 type="warning" value="1.0e-20"/>
+            <Q22 type="warning" value="1.0e-20"/>
+            <Bst type="warning" value="1.0"/>
+            <Cst type="warning" value="1.0"/>
+            
             <Q12 type="from C*"/>
             <Q13 type="from B*"/>
             <Q14 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>

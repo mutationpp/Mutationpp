@@ -84,6 +84,48 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 //==============================================================================
 
 /**
+ * Represents a constant value collision integral which writes a warning that
+ * the requested integral is not found in the database.
+ */
+class WarningColInt : public CollisionIntegral
+{
+public:
+    WarningColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Load the constant value
+        args.xml.getAttribute("value", m_value,
+            "A warning collision integral must provide a 'value' attribute!");
+
+        // Write a warning
+        cout << "Warning: missing collision integral " << args.xml.tag() << "_("
+             << args.pair.sp1Name() << "," << args.pair.sp2Name()
+             << ").  Using a constant value of " << m_value << "." << endl;
+    }
+
+private:
+
+    double compute_(double T) { return m_value; }
+
+    /**
+     * Returns true if the constant value is the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const WarningColInt& compare = dynamic_cast<const WarningColInt&>(ci);
+        return (m_value == compare.m_value);
+    }
+
+private:
+
+    double m_value;
+};
+
+// Register the "warning" CollisionIntegral
+Config::ObjectProvider<WarningColInt, CollisionIntegral> warn_ci("warning");
+
+//==============================================================================
+
+/**
  * Represents a collision integral which evaluates to a constant.
  */
 class ConstantColInt : public CollisionIntegral
