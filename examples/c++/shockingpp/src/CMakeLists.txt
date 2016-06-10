@@ -23,18 +23,34 @@ endfunction()
 
 # Source code here
 add_sources(shockingpp
-    shocking.cpp
-    InputData.cpp
-    InputFileParser.cpp
-    MeshOptions.cpp
-    PostShockConditions.cpp
-    SolveSystem.cpp
+    main.cpp
+    Solver.cpp
+    DataShocking1T.cpp
+    DataShockingNT.cpp
+    Mesh.cpp
+    Shocking1T.cpp
+    ShockingTTv.cpp
+    RankineHugoniot1T.cpp
+    RankineHugoniotNT.cpp
+    SetupProblem.cpp
+    SetupShocking1T.cpp
+    SetupShockingNT.cpp
+    SetupProperties.cpp
 )
 
-
-install(FILES shocking.h DESTINATION bin/include)
-install(FILES InputData.h DESTINATION bin/include)
-install(FILES InputFileParser.h DESTINATION bin/include)
-install(FILES MeshOptions.h DESTINATION bin/include)
-install(FILES PostShockConditions.h DESTINATION bin/include)
-install(FILES SolveSystem.h DESTINATION bin/include)
+install(FILES Solver.h DESTINATION bin/include)
+install(FILES Data.h DESTINATION bin/include)
+install(FILES DataShocking1T.h DESTINATION bin/include)
+install(FILES Mesh.h DESTINATION bin/include)
+install(FILES Problem.h DESTINATION bin/include)
+install(FILES Shocking1T.h DESTINATION bin/include)
+install(FILES ShockingTTv.h DESTINATION bin/include)
+install(FILES ShockRelations.h DESTINATION bin/include)
+install(FILES RankineHugoniot1T.h DESTINATION bin/include)
+install(FILES SetupProblem.h DESTINATION bin/include)
+install(FILES SetupShocking1T.h DESTINATION bin/include)
+install(FILES SetupShockingNT.h DESTINATION bin/include)
+install(FILES SetupProperties.h DESTINATION bin/include)
+install(FILES BasicOutput.h DESTINATION bin/include)
+install(FILES dfdt.h DESTINATION bin/include)
+install(FILES jacobian.h DESTINATION bin/include)

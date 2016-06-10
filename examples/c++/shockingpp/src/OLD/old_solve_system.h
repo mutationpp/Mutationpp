@@ -36,16 +36,16 @@ private:
 
 };
 
-class Jacobian{
-public:
-    Jacobian( Problem& l_problem );
-
-    void operator()( const vector_type& x, matrix_type& J, const double& t, vector_type& dfdt );
-private:
-
-    Problem& m_problem;
-
-};
+// class Jacobian{
+// public:
+//     Jacobian( Problem& l_problem );
+//
+//     void operator()( const vector_type& x, matrix_type& J, const double& t, vector_type& dfdt );
+// private:
+//
+//     Problem& m_problem;
+//
+// };
 
 class SolveSystem{
 public:
