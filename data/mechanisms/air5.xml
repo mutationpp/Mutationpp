@@ -18,7 +18,7 @@
     <!-- 3 -->
     <reaction formula="NO+M=N+O+M">
         <arrhenius A="5.0E15" n="+0.0" T="75500.0" />
-        <M>NO:20.0, N:20.0, O:20.0</M>
+        <M>NO:20.0, N:22.0, O:22.0</M>
     </reaction>
     
     <!-- 4 -->

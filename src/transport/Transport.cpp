@@ -836,6 +836,15 @@ double Transport::electronMeanFreePath()
 
 //==============================================================================
 
+double Transport::speciesThermalSpeed(const int& i_sp) const
+{
+	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
+
+    const double Th = m_thermo.T();
+    return sqrt(8.0*RU*Th/(PI*m_thermo.speciesMw(i_sp)));
+}
+
+//==============================================================================
 double Transport::averageHeavyThermalSpeed()
 {
 	ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
@@ -1754,6 +1763,27 @@ std::vector<double> Transport::ratiokTTransPar()
         ratio[i] = transverseThermalDiffusionRatio()[i]/parallelThermalDiffusionRatio()[i];
     }
     return ratio;
+}
+//==============================================================================
+Eigen::MatrixXd Transport::binaryDiffusionCoefficients()
+{
+    
+    using namespace Eigen;
+//    ERROR_IF_INTEGRALS_ARE_NOT_LOADED();
+
+    const int ns = m_thermo.nSpecies();
+    const double Th = m_thermo.T();
+    const double Te = m_thermo.Te();
+    const double nd = m_thermo.numberDensity();
+    
+    // Need to place a tolerance on X and Y
+    const double tol = 1.0e-16;
+    static ArrayXd X;
+    X = Map<const ArrayXd>(m_thermo.X(), ns);//.max(tol); // Place a tolerance on X
+
+    // Get reference to binary diffusion coefficients
+    return mp_collisions->nDij(Th, Te, nd, X.data())/nd;
+
 }
 //==============================================================================
 

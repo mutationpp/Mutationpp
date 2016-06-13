@@ -20,6 +20,7 @@ add_sources(mutation++
     SurfaceBalanceSolverGamma.cpp
     SurfaceBalanceSolverEquilibrium.cpp
     SurfaceProductionRate.cpp
+    SurfacePropertiesEquilibrium.cpp
     SurfacePropertiesFRC.cpp
     SurfacePropertiesNull.cpp
     WallState.cpp

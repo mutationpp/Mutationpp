@@ -46,7 +46,7 @@ int main() {
     // GET MOLE FRACTIONS
     int set_state_with_rhoi_T = 1;
     mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T);
-    for (int i_ns ; i_ns < ns ; i_ns++){
+    for (int i_ns = 0 ; i_ns < ns ; i_ns++){
         v_mole_fractions_edge[i_ns] = mix.X()[i_ns];
     }
 
@@ -68,7 +68,7 @@ int main() {
     mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
     mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T );
 
-    for (int i_ns ; i_ns < ns ; i_ns++){
+    for (int i_ns = 0 ; i_ns < ns ; i_ns++){
         v_mole_fractions[i_ns] = mix.X()[i_ns];
         v_mole_gradients[i_ns] = ( v_mole_fractions[i_ns] - v_mole_fractions_edge[i_ns] ) / gradient_distance_wall_bulk;
     }
@@ -87,7 +87,7 @@ int main() {
     } 
     mass_blowing = mass_blowing / total_rho;
 
-    for( int i_ns ; i_ns < ns ; i_ns++){
+    for( int i_ns = 0 ; i_ns < ns ; i_ns++){
         v_function[i_ns] = v_rhoi[i_ns] * v_diffusion_velocities[i_ns] - v_wall_production_rates[i_ns]
                                                                        + mass_blowing * v_rhoi[i_ns]; 
     }

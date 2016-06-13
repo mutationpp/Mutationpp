@@ -1,5 +1,5 @@
-#ifndef GSISTOICHIOMETRYMANAGER_H
-#define GSISTOICHIOMETRYMANAGER_H
+#ifndef GSI_STOICHIOMETRY_MANAGER_H
+#define GSI_STOICHIOMETRY_MANAGER_H
 
 #include <Eigen/Dense>
 #include <vector>
@@ -138,4 +138,4 @@ private:
     }// namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // GSISTOICHIOMETRYMANAGER_H
+#endif // GSI_STOICHIOMETRY_MANAGER_H

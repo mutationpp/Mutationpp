@@ -1,5 +1,5 @@
-#ifndef DATASURFACEBALANCESOLVER_H
-#define DATASURFACEBALANCESOLVER_H 
+#ifndef DATA_SURFACE_BALANCE_SOLVER_H
+#define DATA_SURFACE_BALANCE_SOLVER_H
 
 #include "Thermodynamics.h"
 #include "Transport.h"
@@ -13,6 +13,9 @@ namespace Mutation {
 
 //========================================================================
 
+/**
+ * Structure which stores the necessary inputs for the SurfaceBalanceSolver class.
+ */
 struct DataSurfaceBalanceSolver {
     Mutation::Thermodynamics::Thermodynamics& s_thermo;
     Mutation::Transport::Transport& s_transport;
@@ -28,4 +31,4 @@ struct DataSurfaceBalanceSolver {
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DATASURFACEBALANCESOLVER_H
+#endif // DATA_SURFACE_BALANCE_SOLVER_H

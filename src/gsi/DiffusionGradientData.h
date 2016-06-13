@@ -1,5 +1,5 @@
-#ifndef DIFFUSIONGRADIENTDATA_H
-#define DIFFUSIONGRADIENTDATA_H
+#ifndef DIFFUSION_GRADIENT_DATA_H
+#define DIFFUSION_GRADIENT_DATA_H
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -14,4 +14,4 @@ public:
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif 	// DIFFUSIONGRADIENTDATA_H
+#endif 	// DIFFUSION_GRADIENT_DATA_H

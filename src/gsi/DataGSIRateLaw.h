@@ -1,9 +1,9 @@
-// JB: please use underscore between "words" in header guards in order to
-// improve readability (ie: DATA_GSI_RATE_LAW_H)
-#ifndef DATAGSIRATELAW_H
-#define DATAGSIRATELAW_H 
+#ifndef DATA_GSI_RATE_LAW_H
+#define DATA_GSI_RATE_LAW_H
 
+#include "AutoRegistration.h"
 #include "Thermodynamics.h"
+#include "Transport.h"
 #include "Utilities.h"
 
 #include "SurfaceProperties.h"
@@ -13,8 +13,12 @@ namespace Mutation {
 
 //========================================================================
 
+/**
+ * Structure which stores the necessary inputs for the GSIRateLaw class.
+ */
 struct DataGSIRateLaw {
-    const Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    const Mutation::Transport::Transport& s_transport;
     const Mutation::Utilities::IO::XmlElement& s_node_rate_law;
     const SurfaceProperties& s_surf_props;
     const std::vector<int>& s_reactants;
@@ -26,4 +30,4 @@ struct DataGSIRateLaw {
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DATAGSIRATELAW_H
+#endif // DATA_GSI_RATE_LAW_H

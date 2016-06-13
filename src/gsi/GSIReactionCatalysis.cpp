@@ -1,53 +1,49 @@
-#include "AutoRegistration.h"
-#include "Utilities.h"
-
 #include "GSIReaction.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class GSIReactionCatalysis : public GSIReaction {
-
+class GSIReactionCatalysis : public GSIReaction
+{
 public:
-    GSIReactionCatalysis( ARGS l_data_gsi_reaction )
-                     : GSIReaction( l_data_gsi_reaction ) {
+    GSIReactionCatalysis(ARGS args)
+        : GSIReaction(args)
+    {
+        assert(args.s_iter_reaction->tag() == "reaction");
 
-        assert( l_data_gsi_reaction.s_iter_reaction->tag() == "reaction" );
+        args.s_iter_reaction->getAttribute( "formula", m_formula, errorNoFormulainReaction() );
+        parseFormula(args.s_thermo, *(args.s_iter_reaction), args.s_surf_props );
 
-        l_data_gsi_reaction.s_iter_reaction->getAttribute( "formula", m_formula, errorNoFormulainReaction() );
-        parseFormula( l_data_gsi_reaction.s_thermo, *(l_data_gsi_reaction.s_iter_reaction), l_data_gsi_reaction.s_surf_props );
-
-        const Mutation::Utilities::IO::XmlElement& l_node_rate_law = *(l_data_gsi_reaction.s_iter_reaction->begin());
-        DataGSIRateLaw l_data_gsi_rate_law = { l_data_gsi_reaction.s_thermo,
+        const Mutation::Utilities::IO::XmlElement& l_node_rate_law = *(args.s_iter_reaction->begin());
+        DataGSIRateLaw l_data_gsi_rate_law = { args.s_thermo,
+                                               args.s_transport,
                                                l_node_rate_law,
-                                               l_data_gsi_reaction.s_surf_props,
+                                               args.s_surf_props,
                                                m_reactants,
                                                m_products };
-        mp_rate_law = Mutation::Utilities::Config::Factory<GSIRateLaw>::create( l_node_rate_law.tag(), l_data_gsi_rate_law );
 
-        if ( mp_rate_law == NULL ) {
-            l_data_gsi_reaction.s_iter_reaction->parseError( "A rate law must be provided for this reaction!" );
+        mp_rate_law = Mutation::Utilities::Config::Factory<GSIRateLaw>::create(
+            l_node_rate_law.tag(), l_data_gsi_rate_law);
+
+        if (mp_rate_law == NULL) {
+            args.s_iter_reaction->parseError( "A rate law must be provided for this reaction!" );
         }
     }
 
 //=============================================================================================================
 
     ~GSIReactionCatalysis(){ 
-        if ( mp_rate_law != NULL ){ delete mp_rate_law; }
+        if (mp_rate_law != NULL){ delete mp_rate_law; }
     }
 
 //=============================================================================================================
 
-    bool isCatalytic(){ return 1; }
-    bool isAblative(){ return 0; }
-
-//=============================================================================================================
-
-    void parseSpecies( std::vector<int>& l_species, std::string& l_str_chem_species, 
-                       const Mutation::Utilities::IO::XmlElement& l_node_reaction, 
-                       const Mutation::Thermodynamics::Thermodynamics& l_thermo,
-                       const SurfaceProperties& l_surf_props ){
-        /** @todo Clean */
+    void parseSpecies(
+        std::vector<int>& l_species, std::string& l_str_chem_species,
+        const Mutation::Utilities::IO::XmlElement& l_node_reaction,
+        const Mutation::Thermodynamics::Thermodynamics& l_thermo,
+        const SurfaceProperties& l_surf_props)
+    {
         // State-Machine states for parsing a species formula
         enum ParseState {
             coefficient,
@@ -61,14 +57,14 @@ public:
         int nu   = 1;
         bool add_species = false;
         
-        Mutation::Utilities::String::eraseAll( l_str_chem_species, " ");
+        Mutation::Utilities::String::eraseAll(l_str_chem_species, " ");
         
         // Loop over every character
-        while ( c != l_str_chem_species.size() ) {
-            switch( state ) {
+        while (c != l_str_chem_species.size()) {
+            switch(state) {
                 case coefficient:
-                    if ( isdigit( l_str_chem_species[c] ) ) {
-                        nu = atoi( l_str_chem_species.substr( c, 1 ).c_str() );
+                    if (isdigit(l_str_chem_species[c])) {
+                        nu = atoi(l_str_chem_species.substr(c, 1).c_str());
                         s = c + 1;
                     } else {
                         nu = 1;
@@ -77,11 +73,11 @@ public:
                     state = name;
                     break;
                 case name:
-                    if ( l_str_chem_species[c] == '+' )
+                    if (l_str_chem_species[c] == '+')
                         state = plus;
                     break;
                 case plus:
-                    if ( l_str_chem_species[c] != '+' ) {
+                    if (l_str_chem_species[c] != '+') {
                         e = c - 2;                        
                         c--;
                         add_species = true;
@@ -90,7 +86,7 @@ public:
                     break;                     
             }
             
-            if ( c == l_str_chem_species.size() - 1 ) {
+            if (c == l_str_chem_species.size() - 1) {
                 add_species = true;
                 e = c;
             }
@@ -115,7 +111,7 @@ public:
 
 //=============================================================================================================
 
-};
+}; // class GSIReactionCatalysis
 
 Mutation::Utilities::Config::ObjectProvider<GSIReactionCatalysis, GSIReaction> catalysis_reaction("catalysis");
 

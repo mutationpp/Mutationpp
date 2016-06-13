@@ -6,58 +6,66 @@ namespace Mutation {
 
 //=============================================================================
 
-class GSIRateManagerGamma : public GSIRateManager{
-
+class GSIRateManagerGamma : public GSIRateManager
+{
 public:
-    GSIRateManagerGamma( DataGSIRateManager l_data_rate_manager ) 
-                    : GSIRateManager( l_data_rate_manager ),
-                      v_wall_reaction_rate_constant( l_data_rate_manager.s_reactions.size() ) {
 
-    for ( int i_reac = 0 ; i_reac < l_data_rate_manager.s_reactions.size() ; ++i_reac ){
-
-        m_reactants.addReaction( i_reac, l_data_rate_manager.s_reactions[i_reac]->getReactants() );
-        m_irr_products.addReaction( i_reac, l_data_rate_manager.s_reactions[i_reac]->getProducts() );
-    
+    GSIRateManagerGamma(DataGSIRateManager args)
+        : GSIRateManager(args),
+		  m_ns(args.s_thermo.nSpecies()),
+		  m_nr(args.s_reactions.size()),
+          v_wall_reaction_rate_constant(m_nr),
+		  v_work(m_ns)
+    {
+        for (int i_reac = 0; i_reac < m_nr; ++i_reac){
+            m_reactants.addReaction(i_reac, args.s_reactions[i_reac]->getReactants());
+            m_irr_products.addReaction(i_reac, args.s_reactions[i_reac]->getProducts());
+        }
     }
 
-}
+//=============================================================================
+
+    ~GSIRateManagerGamma(){}
 
 //=============================================================================
 
-    ~GSIRateManagerGamma(){ }
-
-//=============================================================================
-
-    void computeRate( Eigen::VectorXd& lv_mass_prod_rate ){ 
-
+    /**
+     * @toadddoc
+     */
+    Eigen::VectorXd computeRate()
+    {
         // Get reaction rate constant
-        for ( int i_reac = 0; i_reac < v_wall_reaction_rate_constant.size() ; ++i_reac ) {
-            v_wall_reaction_rate_constant(i_reac) =  v_reactions[i_reac]->getRateLaw()->forwardReactionRate( m_wall_state.getWallRhoi(), m_wall_state.getWallT()); 
+        for (int i_reac = 0; i_reac < m_nr; ++i_reac){
+            v_wall_reaction_rate_constant(i_reac) =
+            		v_reactions[i_reac]->getRateLaw()->forwardReactionRateCoefficient(
+            				m_wall_state.getWallRhoi(), m_wall_state.getWallT());
         }
 
         // Constant rate times densities of species
-        lv_mass_prod_rate.setZero();
-        m_reactants.incrSpecies( v_wall_reaction_rate_constant, lv_mass_prod_rate );
-        m_irr_products.decrSpecies( v_wall_reaction_rate_constant, lv_mass_prod_rate );
+        v_work.setZero();
+        m_reactants.incrSpecies(v_wall_reaction_rate_constant, v_work);
+        m_irr_products.decrSpecies(v_wall_reaction_rate_constant, v_work);
 
         // Multiply by molar mass
-        for ( int i_sp = 0 ; i_sp < lv_mass_prod_rate.size() ; ++i_sp ){
-            lv_mass_prod_rate(i_sp) *= m_thermo.speciesMw(i_sp);
-        }
-
+        return v_work.cwiseProduct(Eigen::Map<const Eigen::VectorXd>(m_thermo.speciesMw(), m_ns));
     }
 
 //=============================================================================
 
 private:
+
+    const int m_ns;
+    const int m_nr;
+
     Eigen::VectorXd v_wall_reaction_rate_constant;
+    Eigen::VectorXd v_work;
 
     GSIStoichiometryManager m_reactants;
     GSIStoichiometryManager m_irr_products;
 
 //=============================================================================
 
-};
+}; //class GSIRateManagerGamma
 
 Mutation::Utilities::Config::ObjectProvider<GSIRateManagerGamma, GSIRateManager> gsi_rate_manager_gamma("gamma");
 

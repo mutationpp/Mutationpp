@@ -153,6 +153,15 @@ void NAME_MANGLE(convert_x_to_y)(
     const double* species_x, double* species_y);
 
 /**
+ * Converts the species mass fractions to species mole fractions.
+ *
+ * @param species_y - species mole fractions
+ * @param species_x - species mass fractions on return
+ */
+void NAME_MANGLE(convert_y_to_x)(
+    const double* species_y, double* species_x);
+
+/**
  * Converts the element mole fractions to element mass fractions.
  *
  * @param element_x - element mole fractions
@@ -251,6 +260,54 @@ void NAME_MANGLE(species_cp_mass)(double* const cp);
  * per each energy mode.
  */
 void NAME_MANGLE(species_cv_mass)(double* const cv);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_cv_mass_cosmic)(const int& i, double* T, double* const cv);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_cp_mass_cosmic)(const int& i, double* T, double* const cp);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_cv_mole_cosmic)(const int& i, double* T, double* const cv);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_cp_mole_cosmic)(const int& i, double* T, double* const cp);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_energy_mole_cosmic)(const int& i, double* T, double* energy);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_energy_mass_cosmic)(const int& i, double* T, double* energy);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_enthalpy_mole_cosmic)(const int& i, double* T, double* enthalpy);
+
+/**
+ * 
+ * 
+ */
+void NAME_MANGLE(species_i_enthalpy_mass_cosmic)(const int& i, double* T, double* enthalpy);
 
 /**
  * Returns the mixture specific heat at constant pressure in J/kg-K.
@@ -420,6 +477,35 @@ void NAME_MANGLE(solve_surface_balance)();
  */
 void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars);
 
+/**
+ * 
+ */
+double NAME_MANGLE(r_univ)();
+
+/**
+ * 
+ */
+double NAME_MANGLE(pi)();
+
+/**
+ * 
+ */
+double NAME_MANGLE(kb)();
+
+/**
+ * 
+ */
+void NAME_MANGLE(species_h_ref_form_mass)(double* h_total_ref_mass, double* h_form_mass);
+
+/**
+ * 
+ */
+void NAME_MANGLE(binary_diff_coeff)(double* Dbin);
+
+/**
+ * 
+ */
+void NAME_MANGLE(jac_w_dot)(double* jac_w_dot);
 /**
  * @}
  */

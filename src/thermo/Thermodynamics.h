@@ -70,6 +70,8 @@ enum ConversionType {
     // Mixed quantities
     Y_TO_XE,     ///< species mass fractions to elemental mole fractions
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
+
+    Y_TO_YE,     ///<
 };
 
 /**
@@ -488,6 +490,13 @@ public:
         return m_species_mw(index);
     }
     
+    /**
+     * Returns the molecular weights in kg/mol of the species in the mixture
+     */
+    const double* const speciesMw() const {
+        return m_species_mw.data();
+    }
+
     /**
      * Returns the atomic weight in kg/mol of the element with the given index
      * in the element array.
@@ -933,6 +942,25 @@ inline void Thermodynamics::convert<YE_TO_XE>(
     const double sum = std::accumulate(b, b + nElements(), 0.0);
     for (int i = 0; i < nElements(); ++i)
         b[i] /= sum;
+}
+
+template <>
+inline void Thermodynamics::convert<Y_TO_YE>(
+    const double *const a, double *const b) const {
+
+    for (int i = 0; i < nElements(); ++i){
+        b[i] = 0.;
+    }
+
+    for (int i = 0; i < nElements(); ++i){
+        for (int j =0; j < nSpecies(); ++j){
+        b[i] += (elementMatrix()(j,i)* a[j]*atomicMass(i))/speciesMw(j);}}
+
+    const double sum = std::accumulate(b, b + nElements(), 0.0);
+
+    if (sum > 1.E-5){
+    for (int i = 0; i < nElements(); ++i)
+        b[i] /= sum;}
 }
 
 //template <>

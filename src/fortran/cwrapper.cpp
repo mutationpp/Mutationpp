@@ -28,6 +28,8 @@
 #include "cwrapper.h"
 #include "mutation++.h"
 
+#include <Eigen/Dense>
+
 #include <iostream>
 
 using namespace std;
@@ -36,6 +38,13 @@ using namespace Mutation::Thermodynamics;
 Mutation::Mixture* p_mix;
 double* p_work_species;
 double* p_work_element;
+double* p_energy_species_tot;
+double* p_energy_species_trans;
+double* p_energy_species_rot;
+double* p_energy_species_vib;
+double* p_energy_species_ele;
+double* p_energy_species_form;
+
 //RealVector work_species;
 
 //==============================================================================
@@ -67,7 +76,12 @@ void NAME_MANGLE(initialize)(
     opts.setStateModel(char_to_string(state_model, state_length));
     p_mix = new Mutation::Mixture(opts);
     p_work_species = new double [p_mix->nSpecies()];
-    p_work_element = new double [p_mix->nElements()];
+    p_energy_species_tot = new double [p_mix->nSpecies()];
+    p_energy_species_trans = new double [p_mix->nSpecies()];
+    p_energy_species_rot = new double [p_mix->nSpecies()];
+    p_energy_species_vib = new double [p_mix->nSpecies()];
+    p_energy_species_ele = new double [p_mix->nSpecies()];
+    p_energy_species_form = new double [p_mix->nSpecies()];
     //work_species = RealVector(p_mix->nSpecies());
 }
 
@@ -78,6 +92,13 @@ void NAME_MANGLE(destroy)()
     delete [] p_work_species;
     delete [] p_work_element;
     
+    delete [] p_energy_species_tot;
+    delete [] p_energy_species_trans;
+    delete [] p_energy_species_rot;
+    delete [] p_energy_species_vib;
+    delete [] p_energy_species_ele;
+    delete [] p_energy_species_form;
+
     p_mix = NULL;
     p_work_species = NULL;
     p_work_element = NULL;
@@ -155,6 +176,13 @@ void NAME_MANGLE(convert_x_to_y)(
     const double *const species_x, double *const species_y)
 {
     p_mix->convert<X_TO_Y>(species_x, species_y);
+}
+
+//==============================================================================
+void NAME_MANGLE(convert_y_to_x)(
+    const double *const species_y, double *const species_x)
+{
+    p_mix->convert<Y_TO_X>(species_y, species_x);
 }
 
 //==============================================================================
@@ -418,5 +446,175 @@ void NAME_MANGLE(solve_surface_balance)()
 void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars)
 {
      p_mix->getWallState( v1, v2, *vars );
+}
+//==============================================================================
+double NAME_MANGLE(r_univ)()
+{
+     return Mutation::RU;
+}
+//==============================================================================
+double NAME_MANGLE(pi)()
+{
+     return Mutation::PI;
+}
+//==============================================================================
+double NAME_MANGLE(kb)()
+{
+     return Mutation::KB;
+}
+//==============================================================================
+void NAME_MANGLE(species_h_ref_form_mass)(double* h_tot_ref_mass, double* h_form_mass)
+{
+     const double T_ref = 298.15;
+     p_mix->speciesHOverRT(T_ref, T_ref, T_ref, T_ref, T_ref, h_tot_ref_mass, NULL, NULL, NULL, NULL, h_form_mass);
+     for (int i_sp = 0; i_sp<p_mix->nSpecies(); ++i_sp){
+         h_tot_ref_mass[i_sp] *= ((Mutation::RU/p_mix->speciesMw(i_sp)) * T_ref);
+         h_form_mass[i_sp] *= ((Mutation::RU/p_mix->speciesMw(i_sp)) * T_ref);
+     }
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_cv_mass_cosmic)(const int& i_fortran, double* T, double* cv)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesCvOverR(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele);
+    cv[0] = p_energy_species_tot[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cv[1] = p_energy_species_trans[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cv[2] = p_energy_species_rot[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cv[3] = p_energy_species_vib[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cv[4] = p_energy_species_ele[i] * (Mutation::RU / p_mix->speciesMw(i));
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_cp_mass_cosmic)(const int& i_fortran, double* T, double* cp)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesCpOverR(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele);
+    cp[0] = p_energy_species_tot[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cp[1] = p_energy_species_trans[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cp[2] = p_energy_species_rot[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cp[3] = p_energy_species_vib[i] * (Mutation::RU / p_mix->speciesMw(i));
+    cp[4] = p_energy_species_ele[i] * (Mutation::RU / p_mix->speciesMw(i));
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_cv_mole_cosmic)(const int& i_fortran, double* T, double* cv)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesCvOverR(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele);
+    cv[0] = p_energy_species_tot[i] * (Mutation::RU);
+    cv[1] = p_energy_species_trans[i] * (Mutation::RU);
+    cv[2] = p_energy_species_rot[i] * (Mutation::RU);
+    cv[3] = p_energy_species_vib[i] * (Mutation::RU);
+    cv[4] = p_energy_species_ele[i] * (Mutation::RU);
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_cp_mole_cosmic)(const int& i_fortran, double* T, double* cp)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesCpOverR(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele);
+    cp[0] = p_energy_species_tot[i] * (Mutation::RU);
+    cp[1] = p_energy_species_trans[i] * (Mutation::RU);
+    cp[2] = p_energy_species_rot[i] * (Mutation::RU);
+    cp[3] = p_energy_species_vib[i] * (Mutation::RU);
+    cp[4] = p_energy_species_ele[i] * (Mutation::RU);
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_energy_mole_cosmic)(const int& i_fortran, double* T, double* energy)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesHOverRT(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele, p_energy_species_form);
+    energy[0] = (p_energy_species_tot[i]-1.0) * (Mutation::RU) * *T;
+    energy[1] = (p_energy_species_trans[i]-1.0) * (Mutation::RU) * *T;
+    energy[2] = p_energy_species_rot[i] * (Mutation::RU) * *T;
+    energy[3] = p_energy_species_vib[i] * (Mutation::RU) * *T;
+    energy[4] = p_energy_species_ele[i] * (Mutation::RU) * *T;
+    energy[7] = p_energy_species_form[i] * (Mutation::RU) * *T;
+}
+ 
+//==============================================================================
+void NAME_MANGLE(species_i_energy_mass_cosmic)(const int& i_fortran, double* T, double* energy)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesHOverRT(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele, p_energy_species_form);
+    energy[0] = (p_energy_species_tot[i]-1) * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    energy[1] = (p_energy_species_trans[i]-1.0) * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    energy[2] = p_energy_species_rot[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    energy[3] = p_energy_species_vib[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    energy[4] = p_energy_species_ele[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    energy[7] = p_energy_species_form[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+}
+
+//==============================================================================
+void NAME_MANGLE(species_i_enthalpy_mole_cosmic)(const int& i_fortran, double* T, double* enthalpy)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesHOverRT(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele, p_energy_species_form);
+    enthalpy[0] = (p_energy_species_tot[i]) * (Mutation::RU) * *T;
+    enthalpy[1] = (p_energy_species_trans[i]) * (Mutation::RU) * *T;
+    enthalpy[2] = p_energy_species_rot[i] * (Mutation::RU) * *T;
+    enthalpy[3] = p_energy_species_vib[i] * (Mutation::RU) * *T;
+    enthalpy[4] = p_energy_species_ele[i] * (Mutation::RU) * *T;
+    enthalpy[7] = p_energy_species_form[i] * (Mutation::RU) * *T;
+}
+ 
+//==============================================================================
+void NAME_MANGLE(species_i_enthalpy_mass_cosmic)(const int& i_fortran, double* T, double* enthalpy)
+{
+    int i = i_fortran-1;
+
+    p_mix->speciesHOverRT(*T, *T, *T, *T, *T, 
+                          p_energy_species_tot, p_energy_species_trans, p_energy_species_rot, 
+                          p_energy_species_vib, p_energy_species_ele, p_energy_species_form);
+    enthalpy[0] = (p_energy_species_tot[i]) * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    enthalpy[1] = (p_energy_species_trans[i]) * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    enthalpy[2] = p_energy_species_rot[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    enthalpy[3] = p_energy_species_vib[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    enthalpy[4] = p_energy_species_ele[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+    enthalpy[7] = p_energy_species_form[i] * (Mutation::RU / p_mix->speciesMw(i)) * *T;
+}
+
+//==============================================================================
+void NAME_MANGLE(binary_diff_coeff)(double* Dbin)
+{
+    Eigen::MatrixXd m_Dbin = p_mix->binaryDiffusionCoefficients();
+
+    for (int j = 0; j < p_mix->nSpecies(); j++){
+        for (int i = 0; i < p_mix->nSpecies(); i++){
+            if (i>j){
+            Dbin[j*p_mix->nSpecies()+i] = m_Dbin(i,j);
+            } else {
+            Dbin[j*p_mix->nSpecies()+i] = m_Dbin(j,i);
+            }
+        }
+    }
+}
+//==============================================================================
+void NAME_MANGLE(jac_w_dot)(double* jac_w_dot)
+{
+     p_mix->jacobianRho(jac_w_dot);
 }
 

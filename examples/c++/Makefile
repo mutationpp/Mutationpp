@@ -22,10 +22,10 @@
 # Change this path to your Mutation++ install path
 MUTATIONPP_INSTALL = ../../install
 
-CXX       = g++
+CXX       = c++
 CXX_FLAGS = -I$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g
 # use .dylib for Mac, .so for Unix
-CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
+CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.dylib
 
 EXAMPLES  = \
 	equilibrium_air \
@@ -35,8 +35,8 @@ EXAMPLES  = \
         ablation_nitridation\
         ablation_sublimation\
         gsi\
-        binary_diffusion#\
-#    N3SystemOneWayReactionsTest
+        binary_diffusion\
+        bprime
 
 all : $(EXAMPLES)
 
@@ -64,8 +64,8 @@ ablation_sublimation : ablation_sublimation.o
 binary_diffusion : binary_diffusion.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
-#N3SystemOneWayReactionsTest : N3SystemOneWayReactionsTest.o
-#	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+bprime : bprime.o
+	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp
 	$(CXX) -c $(CXX_FLAGS) $<

@@ -1,5 +1,5 @@
-#ifndef DIFFUSIONVELOCITYCALCULATOR_H
-#define DIFFUSIONVELOCITYCALCULATOR_H
+#ifndef DIFFUSION_VELOCITY_CALCULATOR_H
+#define DIFFUSION_VELOCITY_CALCULATOR_H
 
 #include <vector>
 #include <Eigen/Dense>
@@ -33,4 +33,4 @@ private:
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DIFFUSIONVELOCITYCALCULATOR_H
+#endif // DIFFUSION_VELOCITY_CALCULATOR_H

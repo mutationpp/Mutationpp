@@ -1,5 +1,5 @@
-#ifndef DATAMASSBLOWINGRATE_H
-#define DATAMASSBLOWINGRATE_H
+#ifndef DATA_MASS_BLOWING_RATE_H
+#define DATA_MASS_BLOWING_RATE_H
 
 #include "Thermodynamics.h"
 
@@ -10,6 +10,9 @@ namespace Mutation {
 
 //========================================================================
 
+/**
+ * Structure which stores the necessary inputs for the MassBlowingRate class.
+ */
 struct DataMassBlowingRate {
 	const Mutation::Thermodynamics::Thermodynamics& s_thermo;
     WallProductionTerms& s_wall_productions_terms;
@@ -20,4 +23,4 @@ struct DataMassBlowingRate {
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DATAMASSBLOWINGRATE_H
+#endif // DATA_MASS_BLOWING_RATE_H

@@ -1,32 +1,32 @@
-#include "AutoRegistration.h"
-#include "Utilities.h"
-
 #include "GSIReaction.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class GSIReactionFRC : public GSIReaction {
-
+class GSIReactionFRC : public GSIReaction
+{
 public:
-    GSIReactionFRC( ARGS l_data_gsi_reaction )
-                     : GSIReaction( l_data_gsi_reaction ) {
+    GSIReactionFRC(ARGS args)
+        : GSIReaction(args)
+    {
+        assert(args.s_iter_reaction->tag() == "reaction");
 
-        assert( l_data_gsi_reaction.s_iter_reaction->tag() == "reaction" );
+        args.s_iter_reaction->getAttribute( "formula", m_formula, errorNoFormulainReaction());
+        parseFormula(args.s_thermo, *(args.s_iter_reaction), args.s_surf_props);
 
-        l_data_gsi_reaction.s_iter_reaction->getAttribute( "formula", m_formula, errorNoFormulainReaction() );
-        parseFormula( l_data_gsi_reaction.s_thermo, *(l_data_gsi_reaction.s_iter_reaction), l_data_gsi_reaction.s_surf_props );
-
-        const Mutation::Utilities::IO::XmlElement& l_node_rate_law = *(l_data_gsi_reaction.s_iter_reaction->begin());
-        DataGSIRateLaw l_data_gsi_rate_law = { l_data_gsi_reaction.s_thermo,
+        const Mutation::Utilities::IO::XmlElement& l_node_rate_law = *(args.s_iter_reaction->begin());
+        DataGSIRateLaw l_data_gsi_rate_law = { args.s_thermo,
+                                               args.s_transport,
                                                l_node_rate_law, 
-                                               l_data_gsi_reaction.s_surf_props,
+                                               args.s_surf_props,
                                                m_reactants,
                                                m_products };
-        mp_rate_law = Mutation::Utilities::Config::Factory<GSIRateLaw>::create( l_node_rate_law.tag(), l_data_gsi_rate_law );
 
-        if ( mp_rate_law == NULL ) {
-            l_data_gsi_reaction.s_iter_reaction->parseError( "A rate law must be provided for this reaction!" );
+        mp_rate_law = Mutation::Utilities::Config::Factory<GSIRateLaw>::create(
+            l_node_rate_law.tag(), l_data_gsi_rate_law);
+
+        if (mp_rate_law == NULL) {
+            args.s_iter_reaction->parseError("A rate law must be provided for this reaction!");
         }
 
     }
@@ -34,13 +34,8 @@ public:
 //=============================================================================================================
 
     ~GSIReactionFRC(){ 
-        if ( mp_rate_law != NULL ){ delete mp_rate_law; }
+        if (mp_rate_law != NULL){ delete mp_rate_law; }
     }
-
-//=============================================================================================================
-
-    bool isCatalytic(){ return 0; }
-    bool isAblative(){ return 0; }
 
 //=============================================================================================================
 
@@ -128,7 +123,7 @@ public:
 
 //=============================================================================================================
 
-};
+}; // class GSIReactionFRC
 
 Mutation::Utilities::Config::ObjectProvider<GSIReactionFRC, GSIReaction> frc_reaction("frc");
 

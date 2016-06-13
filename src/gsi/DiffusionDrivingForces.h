@@ -1,5 +1,5 @@
-#ifndef DIFFUSIONDRIVINGFORCES_H
-#define DIFFUSIONDRIVINGFORCES_H
+#ifndef DIFFUSION_DRIVING_FORCES_H
+#define DIFFUSION_DRIVING_FORCES_H
 
 #include <Eigen/Dense>
 
@@ -34,12 +34,6 @@ public:
             exit(1);
         }
 
-        // JB: you can replace simple loops like this over Eigen vectors
-        //for ( int i_ns = 0 ; i_ns < lv_mole_frac.size() ; ++i_ns ){
-        //    lv_driving_force( i_ns ) = ( lv_mole_frac( i_ns ) - v_mole_frac_edge( i_ns ) ) / m_dx;
-        //}
-        // JB: Better yet, you could simply return the Eigen expression and avoid
-        // having to pass result in as second argument
         lv_driving_force = (lv_mole_frac - v_mole_frac_edge) / m_dx;
     }
 
@@ -62,4 +56,4 @@ private:
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DIFFUSIONDRIVINGFORCES_H
+#endif // DIFFUSION_DRIVING_FORCES_H

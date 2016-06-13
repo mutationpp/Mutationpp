@@ -6,18 +6,18 @@
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class GSIRateLawGammaT : public GSIRateLaw {
-
+class GSIRateLawGammaT : public GSIRateLaw
+{
 public:
-    GSIRateLawGammaT( ARGS l_data_gsi_rate_law ) // @todo Extend it to catalysis?
-                        : GSIRateLaw ( l_data_gsi_rate_law ),
-                          v_reactants( l_data_gsi_rate_law.s_reactants ) {
+    GSIRateLawGammaT(ARGS args)
+                        : GSIRateLaw (args),
+                          v_reactants(args.s_reactants) {
 
-    assert( l_data_gsi_rate_law.s_node_rate_law.tag() == "gamma_T" );
+    assert(args.s_node_rate_law.tag() == "gamma_T");
 
-    l_data_gsi_rate_law.s_node_rate_law.getAttribute( "pre_exp", m_pre_exp,
+    args.s_node_rate_law.getAttribute( "pre_exp", m_pre_exp,
                                       "Error. Nothing provided" );
-    l_data_gsi_rate_law.s_node_rate_law.getAttribute( "T", m_activation_energy,
+    args.s_node_rate_law.getAttribute( "T", m_activation_energy,
                                       "Error. Nothing provided" );
 
     }
@@ -28,11 +28,17 @@ public:
 
 //=============================================================================================================
 
-    double forwardReactionRate( const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const {
+    double forwardReactionRateCoefficient(
+        const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall ) const
+    {
     	double l_Twall = v_Twall(0);
 
-        return computeAverageThermalSpeedforSpeciesI( v_reactants[0], v_Twall ) / 4.0   // @todo change 0;
-        		* m_pre_exp * std::exp(- m_activation_energy / l_Twall )
+    	const int set_state_with_rhoi_T = 1;
+    	m_thermo.setState(v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
+    	double m_sp_thermal_speed = m_transport.speciesThermalSpeed(v_reactants[0]);  // @todo change 0;
+
+        return  m_sp_thermal_speed / 4.0
+                * m_pre_exp * std::exp(- m_activation_energy / l_Twall )
                 / m_thermo.speciesMw( v_reactants[0] ) * v_rhoi[0] ;
 
     }

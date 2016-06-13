@@ -114,6 +114,15 @@ module mutationpp
         real(kind=8) function mpp_sigma()
         end function
         
+        real(kind=8) function mpp_r_univ()
+        end function
+
+        real(kind=8) function mpp_pi()
+        end function
+
+        real(kind=8) function mpp_kb()
+        end function
+
     end interface
 
 end module mutationpp

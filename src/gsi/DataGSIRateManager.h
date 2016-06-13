@@ -1,5 +1,5 @@
-#ifndef DATAGSIRATEMANAGER_H
-#define DATAGSIRATEMANAGER_H
+#ifndef DATA_GSI_RATE_MANAGER_H
+#define DATA_GSI_RATE_MANAGER_H
 
 #include "Thermodynamics.h"
 
@@ -12,6 +12,9 @@ namespace Mutation {
 
 //========================================================================
 
+/**
+ * Structure which stores the necessary inputs for the GSIRateManager class.
+ */
 struct DataGSIRateManager { 
     const Mutation::Thermodynamics::Thermodynamics& s_thermo;
     const SurfaceProperties& s_surf_props;
@@ -24,4 +27,4 @@ struct DataGSIRateManager {
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DATAGSIRATEMANAGER_H
+#endif // DATA_GSI_RATE_MANAGER_H

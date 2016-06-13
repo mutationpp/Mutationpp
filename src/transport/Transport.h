@@ -428,6 +428,8 @@ public:
     /// Mean free path of electrons in m.
     double electronMeanFreePath();
 
+    /// Thermal speed of species i in m/s.
+    double speciesThermalSpeed(const int& i_sp) const;
     /// Average heavy particle thermal speed of mixture in m/s.
     double averageHeavyThermalSpeed();
     /// Electron thermal speed of mixture in m/s.
@@ -471,6 +473,8 @@ public:
     double ratioLambdaTransPar();
     std::vector<double> ratiokTPerpPar();
     std::vector<double> ratiokTTransPar();
+
+    Eigen::MatrixXd binaryDiffusionCoefficients();
 
 private:
 

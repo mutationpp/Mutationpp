@@ -1,5 +1,5 @@
-#ifndef WALLPRODUCTIONTERMS_H
-#define WALLPRODUCTIONTERMS_H
+#ifndef WALL_PRODUCTION_TERMS_H
+#define WALL_PRODUCTION_TERMS_H
 
 #include<Eigen/Dense>
 
@@ -10,19 +10,18 @@
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class WallProductionTerms {
-
+class WallProductionTerms
+{
 public:
     typedef const DataWallProductionTerms& ARGS;
 
-    WallProductionTerms( ARGS l_data_wall_production_terms ){ } // Check if ARGS is indeed needed
-    virtual ~WallProductionTerms(){ }
+    WallProductionTerms(ARGS args){}
+    virtual ~WallProductionTerms(){}
 
-    virtual void productionRate( Eigen::VectorXd& lv_mass_prod_rate ) = 0; // FIX ME!
-
-};
+    virtual void productionRate(Eigen::VectorXd& lv_mass_prod_rate) = 0;
+}; // class WallProductionTerms
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // WALLPRODUCTIONTERMS_H
+#endif // WALL_PRODUCTION_TERMS_H
