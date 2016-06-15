@@ -57,6 +57,11 @@ class RateLawGroup
 public:
 
     /**
+     * Constructor.
+     */
+    RateLawGroup() : m_last_t(-1.0) {}
+
+    /**
      * Destructor.
      */
     virtual ~RateLawGroup() { };
@@ -110,6 +115,7 @@ protected:
     /// This is the temperature computed to evaluate the rate law (should be set
     /// in the lnk() function)
     double m_t;
+    double m_last_t;
     
     /// Stores the reactants for reactions that will use this rate law for the
     /// reverse direction
@@ -148,14 +154,22 @@ public:
     virtual void lnk(
         const Thermodynamics::StateModel* const p_state, double* const p_lnk)
     {
+        // Determine the reaction temperature for this group
         m_t = TSelectorType().getT(p_state);
-        const double lnT  = std::log(m_t);
-        const double invT = 1.0 / m_t;
-    
-        for (int i = 0; i < m_rates.size(); ++i) {
-            const std::pair<size_t, RateLawType>& rate = m_rates[i];
-            p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
+
+        // Update only if the temperature has changed
+        if (std::abs(m_t - m_last_t) < 1.0e-10) {
+            const double lnT  = std::log(m_t);
+            const double invT = 1.0 / m_t;
+
+            for (int i = 0; i < m_rates.size(); ++i) {
+                const std::pair<size_t, RateLawType>& rate = m_rates[i];
+                p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
+            }
         }
+
+        // Save this temperature
+        m_last_t = m_t;
     }
 
 private:

@@ -679,6 +679,11 @@ public:
     void dXidP(double* const dxdp) const;
 
     /**
+     *
+     */
+    void dXjdci(int i, double* const p_dxdc) const;
+
+    /**
      * Returns the density derivative with respect to pressure for the current
      * equilibrium state.
      */

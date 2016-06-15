@@ -35,6 +35,7 @@
 #include "XMLite.h"
 
 #include <cassert>
+#include <complex>
 #include <map>
 #include <string>
 #include <vector>
@@ -169,6 +170,17 @@ public:
     const Eigen::ArrayXd& L02ei();
 
     /**
+     * Returns the factor which must be multiplied by the result of the
+     * Lee() function to retrieve \f$\L_{ee}^{pq}\f$.
+     */
+    double Leefac() {
+        const double Te = m_thermo.Te();
+        const double me = m_mass(0);
+        const double xe = m_thermo.X()[0];
+        return 16.*m_thermo.P()/(3.*KB*Te)*std::sqrt(me/(TWOPI*KB*Te));
+    }
+
+    /**
      * Returns the symmetric \f$\Lambda_{ee}\f$ matrix of the given size divided
      * by the \f$\frac{64x_e}{75k_B}\sqrt{\frac{m_e}{2\pi k_B T_e}}\f$.
      */
@@ -221,6 +233,50 @@ public:
         return L;
     }
 
+    /**
+     * Returns the \f$\L_{ee}^{Bpq}\f$ matrix with the given size.
+     */
+    template <int SIZE>
+    Eigen::Matrix<std::complex<double>, SIZE, SIZE> LBee()
+    {
+        Eigen::Matrix<std::complex<double>, SIZE, SIZE> LB;
+        const double fac = m_thermo.getBField()*QE/(KB*m_thermo.Te());
+
+        LB(0,0).imag(fac);
+        if (SIZE == 1) return LB;
+
+        LB(1,1).imag(2.5*fac);
+        if (SIZE == 2) return LB;
+
+        LB(2,2).imag(35./8.*fac);
+        return LB;
+    }
+
+    template <int ORDER>
+    Eigen::Matrix<double,ORDER,ORDER> L1inv() {
+        return Lee<ORDER>().inverse()/Leefac();
+    }
+
+    template <int ORDER>
+    Eigen::Matrix<std::complex<double>,ORDER,ORDER> L2inv()
+    {
+        Eigen::Matrix<std::complex<double>,ORDER,ORDER> L2 = LBee<ORDER>();
+        L2.real() += Leefac()*Lee<ORDER>();
+        return L2.inverse();
+    }
+
+    template <int ORDER>
+    Eigen::Matrix<double,ORDER,1> L1sol(const Eigen::Matrix<double,ORDER,1>& b)
+    {
+        return L1inv<ORDER>()*b;
+    }
+
+    template <int ORDER>
+    Eigen::Matrix<std::complex<double>,ORDER,1> L2sol(
+        const Eigen::Matrix<double,ORDER,1>& b)
+    {
+        return L2inv<ORDER>()*b;
+    }
 
 private:
 

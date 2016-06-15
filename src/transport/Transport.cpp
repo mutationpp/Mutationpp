@@ -475,6 +475,11 @@ double Transport::sigma(int order)
     return fac / (L(0,0)-L(0,1)*L(0,1)/L(1,1));
 }
 
+template <>
+Eigen::Vector3d Transport::electronThermalConductivityB<1>() {
+    return Eigen::Vector3d::Zero();
+}
+
 //==============================================================================
 
 //double Transport::meanFreePath()

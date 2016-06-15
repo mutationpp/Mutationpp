@@ -348,8 +348,64 @@ public:
      */
     void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
         
-    /// Electric conductivity in S/m (no magnetic field).
+    /// Isotropic electric conductivity in S/m (no magnetic field).
     double sigma(int order = 2);
+
+    /// Anisotropic electric conductivity in S/m (with magnetic field).
+    Eigen::Vector3d sigmaB(int order = 2)
+    {
+        switch (order) {
+        case 1: return sigmaB<1>();
+        case 2: return sigmaB<2>();
+        case 3: return sigmaB<3>();
+        default:
+            std::cout << "Warning: invalid order for sigma.  ";
+            std::cout << "Using order 2..." << std::endl;
+            return sigmaB<2>();
+        }
+    }
+
+    template <int ORDER>
+    Eigen::Vector3d sigmaB()
+    {
+        const double fac =
+            m_thermo.numberDensity()*m_thermo.X()[0]*QE*QE/(KB*m_thermo.Te());
+
+        Eigen::Vector3d sigma;
+        sigma(0) = m_collisions.L1inv<ORDER>()(0,0);
+
+        std::complex<double> alpha = m_collisions.L2inv<ORDER>()(0,0);
+        sigma(1) = alpha.real();
+        sigma(2) = alpha.imag();
+
+        return fac*sigma;
+    }
+
+    template <int P>
+    Eigen::Vector3d electronThermalConductivityB()
+    {
+        const double fac = 2.5*m_thermo.numberDensity()*m_thermo.X()[0]*KB;
+
+        Eigen::Matrix<double,P-1,P-1> L1 =
+            m_collisions.Leefac()*
+            m_collisions.Lee<P>().template block<P-1,P-1>(1,1);
+        Eigen::Matrix<double,P-1,P-1> L1inv = L1.inverse();
+        Eigen::Matrix<std::complex<double>,P-1,P-1> L2 =
+            m_collisions.LBee<P>().template block<P-1,P-1>(1,1);
+        L2.real() += L1;
+        Eigen::Matrix<std::complex<double>,P-1,P-1> L2inv = L2.inverse();
+
+        Eigen::Vector3d lambda;
+        lambda(0) = 2.5*L1inv(0,0);
+
+        std::complex<double> alpha = 2.5*L2inv(0,0);
+        lambda(1) = alpha.real();
+        lambda(2) = alpha.imag();
+
+        return fac*lambda;
+    }
+
+
     /// Electric conductivity parallel to the magnetic field in S/m.
 //    double sigmaParallel();
 //    /// Electric conductivity perpendicular to the magnetic field in S/m.

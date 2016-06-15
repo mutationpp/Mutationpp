@@ -149,7 +149,7 @@ OutputQuantity reaction_quantities[NREACTION] = {
 };
 
 // List of other output quantities
-#define NOTHER 8
+#define NOTHER 10
 OutputQuantity other_quantities[NOTHER] = {
     OutputQuantity("Dij", "m^2/s", "multicomponent diffusion coefficients"),
     OutputQuantity("pi_i", "", "element potentials"),
@@ -158,7 +158,9 @@ OutputQuantity other_quantities[NOTHER] = {
     OutputQuantity("newts", "", "total number of newton iterations"),
     OutputQuantity("Fp_k", "kg/m-Pa-s", "elemental diffusion fluxes per pressure gradient"),
     OutputQuantity("Ft_k", "kg/m-K-s", "elemental diffusion fluxes per temperature gradient"),
-    OutputQuantity("Fz_k", "kg/m-s", "elemental diffusion fluxes per element mole fraction gradient")
+    OutputQuantity("Fz_k", "kg/m-s", "elemental diffusion fluxes per element mole fraction gradient"),
+    OutputQuantity("sigmaB", "S/m", "anisotropic electric conductivity"),
+    OutputQuantity("lamB_e", "W/m-K", "anisotropic electron thermal conductivity")
 };
 
 // Simply stores the command line options
@@ -613,6 +615,26 @@ void writeHeader(
                         cout << setw(column_widths.back()) << name;
                 }
             }
+        } else if (other_quantities[*iter].name == "sigmaB") {
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_par";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_perp";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_tran";
+        } else if (other_quantities[*iter].name == "lamB_e") {
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_par";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_perp";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_tran";
         }
     }
     
@@ -947,6 +969,14 @@ int main(int argc, char** argv)
                     mix.equilDiffFluxFacsZ(temp);
                     for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
                         cout << setw(column_widths[cw++]) << temp[k];
+                } else if (name == "sigmaB") {
+                    Eigen::Vector3d sigma = mix.sigmaB();
+                    for (int i = 0; i < 3; ++i)
+                        cout << setw(column_widths[cw++]) << sigma(i);
+                } else if (name == "lamB_e") {
+                    Eigen::Vector3d lambda = mix.electronThermalConductivityB<2>();
+                    for (int i = 0; i < 3; ++i)
+                        cout << setw(column_widths[cw++]) << lambda(i);
                 }
             }
             

@@ -584,6 +584,11 @@ void Thermodynamics::dXidP(double* const p_dxdp) const
     mp_equil->dXdg(p_dxdp, p_dxdp);
 }
 
+void Thermodynamics::dXjdci(int i, double* const p_dxdc) const
+{
+    mp_equil->dXdc(i, p_dxdc);
+}
+
 //==============================================================================
 
 double Thermodynamics::dRhodP()
