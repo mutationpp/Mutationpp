@@ -58,7 +58,6 @@ void Solver::initialize(){
     // Apply Shock Relations
     p_shock_relations->applyShockRelations(*p_data_pre, *p_data_post);
 
-
 }
 
 //=============================================================================================================

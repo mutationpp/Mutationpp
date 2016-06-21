@@ -27,7 +27,7 @@ void RankineHugoniot1T::applyShockRelations(const Data& l_data_before, Data& l_d
 
     l_data_after.setPressure(l_p1 * (2.0 * l_gamma * l_M1s - l_gm1) / l_gp1);
     l_data_after.setVelocity(l_u1 - l_c1 * 2.0 / l_gp1 * (l_M1 - 1.0 / l_M1));
-    l_data_after.setTTrans(l_T1 * (2.0 * l_gamma * l_M1s - l_gp1) * (l_gm1 + 2.0 / l_M1s) / (l_gp1 * l_gp1) );
+    l_data_after.setTTrans(l_T1 * (2.0 * l_gamma * l_M1s - l_gamma + 1) * (l_gm1 + 2.0 / l_M1s) / (l_gp1 * l_gp1) );
     l_data_after.setMassFractions(l_data_before.getMassFractions());
 
     l_data_after.buildStatePostShock();

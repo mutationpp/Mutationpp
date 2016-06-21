@@ -18,7 +18,7 @@ SetupProperties::SetupProperties(std::string& s_file_input)
     // HARDCODE INPUT FILE FOR THE TIME BEING
     s_problem_type = "shocking";
     s_mixture = "air5";
-    s_state_model = "ChemNonEq1T";
+    s_state_model = "ChemNonEqTTv";
     s_thermo_db = "RRHO";
     s_mesh = "NotEmpty!";
     s_free_stream_conditions = "NotEmpty!";

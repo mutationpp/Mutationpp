@@ -39,7 +39,7 @@ vector_type Shocking1T::computedxdt(const vector_type& x, const double t){
     m_mix.setState(&v_rhoi[0], &m_T, set_state_rhoi_T);
     m_mix.netProductionRates(&v_omegai[0]);
     m_mix.speciesHOverRT(&v_hi[0]);
-    m_mix.speciesCpOverR(&v_cpi[0]);
+    m_mix.speciesCpOverR(m_T, &v_cpi[0]);
 
     for (int i_sp = 0; i_sp < m_ns; i_sp++){
         v_Mw[i_sp] = m_mix.speciesMw(i_sp);
@@ -58,7 +58,6 @@ vector_type Shocking1T::computedxdt(const vector_type& x, const double t){
         wrk1 = 1.0/v_Mw[i_sp];
         wrk2 = v_yi[i_sp];
         wrk3 = v_omegai[i_sp];
-
 
         h_sum += v_hi[i_sp]*wrk3;
         cp_sum += wrk2 * v_cpi[i_sp];
