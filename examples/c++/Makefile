@@ -36,7 +36,8 @@ EXAMPLES  = \
         ablation_sublimation\
         gsi\
         binary_diffusion\
-        bprime
+        catalysis_frc_air_cu
+#        bprime
 
 all : $(EXAMPLES)
 
@@ -64,8 +65,11 @@ ablation_sublimation : ablation_sublimation.o
 binary_diffusion : binary_diffusion.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
-bprime : bprime.o
+catalysis_frc_air_cu : catalysis_frc_air_cu.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
+# bprime : bprime.o
+# 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp
 	$(CXX) -c $(CXX_FLAGS) $<

@@ -1,0 +1,77 @@
+<gsi gsi_mechanism = "frc">
+
+    <surface_properties>
+        <surface total_number_of_sites = "1.47"> <!-- Check Units -->
+            <site label = "s" fraction = "1.0" distance = "1.0" species = "N O" />
+        </surface>
+    </surface_properties>
+    
+    <diffusion_model model="first_order">
+        <mass distance= "1"> </mass>
+    </diffusion_model>
+
+    <production_terms>
+        <surface_chemistry>
+            <!-- Chemisorption of N Atoms -->
+            <reaction type="frc" formula="N + s => N-s">
+                <adsorption sticking_coef = "1." b = "0." E_activation = "0." 
+                            T_threshold = "300" sticking_coef_correction = "100" />
+            </reaction>
+            
+            <!-- Chemisorption of O Atoms -->
+            <reaction type="frc" formula="O + s => O-s">
+                <adsorption sticking_coef = "1." b = "0." E_activation = "0."
+                            T_threshold = "300." sticking_coef_correction = "100." />
+            </reaction>
+            
+            <!-- Chemisorption of N2 Molecules (Impossible) -->
+            <!-- Chemisorption of O2 Molecules (Possible but Ignored) -->
+            
+            <!-- Dissociative Adsorption of N2 Molecules -->
+            <reaction type="frc" formula="N2 + 2s => 2N-s">
+                <adsorption sticking_coef = "1." b = "0." E_activation = "0." />
+            </reaction>
+
+            <!-- Dissociative Adsorption of O2 Molecules -->
+            <reaction type="frc" formula="O2 + 2s => 2O-s">
+                <adsorption sticking_coef = "1." b = "0." E_activation = "0." />
+            </reaction>
+            
+            <!-- Thermal Desorption of N Atoms -->
+            <reaction type="frc" formula="N-s => N + s">
+                <desorption E_desorption = "0.0"/>
+            </reaction>
+            
+            <!-- Thermal Desorption of O Atoms -->
+            <reaction type="frc" formula="O-s => O + s">
+                <desorption E_desorption = "0.0"/>
+            </reaction>
+            
+            <!-- E-R recombination N2 Molecules -->
+            <reaction type="frc" formula="N + N-s => N2 + s">
+                <E-R steric_factor = "1." b = "0." E_activ_recomb = "0.0" 
+                     T_threshold = "300." m_beta_T_corr = "1." />
+            </reaction>
+            
+            <!-- E-R recombination O2 Molecules -->
+            <reaction type="frc" formula="O + O-s => O2 + s">
+                <E-R steric_factor = "1." b = "0." E_activ_recomb = "0.0" 
+                     T_threshold = "300." m_beta_T_corr = "1." />
+            </reaction>
+
+            <!-- L-H recombination N2 Molecules -->
+            <reaction type="frc" formula="N-s + N-s => N2 + 2s">
+                <L-H steric_factor = "1." b = "0." E_activ_recomb = "0.0" 
+                     T_threshold = "300." m_beta_T_corr = "1." />
+            </reaction>
+            
+            <!-- L-H recombination O2 Molecules -->
+            <reaction type="frc" formula="O-s + O-s => O2 + 2s">
+                <L-H steric_factor = "1." b = "0." E_activ_recomb = "0.0" 
+                     T_threshold = "300." m_beta_T_corr = "1." />
+            </reaction>
+
+        </surface_chemistry>
+    </production_terms>
+    
+</gsi>

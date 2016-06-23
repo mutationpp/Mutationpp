@@ -465,6 +465,11 @@ void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars);
 /**
  * 
  */
+void NAME_MANGLE(wall_production_rates)(double* v1);
+
+/**
+ * 
+ */
 void NAME_MANGLE(set_diffusion_model)( double* rhoi_edge, double* dx );
 
 /**

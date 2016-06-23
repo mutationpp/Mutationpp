@@ -33,7 +33,7 @@ public:
     /**
      * Returns
      */
-    virtual Eigen::VectorXd& computeGSIProductionRate() = 0; //  @todo const correctness // reference?
+    virtual Eigen::VectorXd& computeGSIProductionRates() = 0; //  @todo const correctness // reference?
 
     /**
      * Purely virtual function. Temporary solution for setting up a diffusion
@@ -45,8 +45,7 @@ public:
     /**
      * Purely virtual function to be called in order to solve the surface balance.
      */
-    virtual void solveSurfaceBalance(const Eigen::VectorXd& lv_rhoi, const Eigen::VectorXd& lv_T){}; //@BD Remove the function above and keep the one with no arguments. The state should not be passed like that, but should be retrieved by the wall state.
-    virtual void solveSurfaceBalance(){ }; //@todo FIX IMPORTANT Which do I keep? Make it purely virtual
+    virtual void solveSurfaceBalance() = 0;
 
     virtual void getBprimeCondensedSpecies(std::vector<std::string>& CondensedSpecies){};
     virtual void getBprimeParameters(double & Bprime_char, std::vector<double>& CondensedMoleFrac){};

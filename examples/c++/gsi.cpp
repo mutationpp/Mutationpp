@@ -32,14 +32,15 @@ int main() {
     
     int set_state_with_rhoi_T = 1;
     mix.setState( v_rhoi.data(), &wall_temperature, set_state_with_rhoi_T);
+
     for (int i_ns = 0 ; i_ns < ns ; i_ns++){
         v_mole_fractions_edge(i_ns) = mix.X()[i_ns];
     }
 
-    int state_var = 0;
+    int state_var = 1;
     double gradient_distance_wall_bulk = 1.e0;
-    mix.setWallState( v_rhoi.data(), &wall_temperature, state_var );
-    mix.setDiffusionModel( v_mole_fractions_edge.data(), gradient_distance_wall_bulk );
+    mix.setWallState(v_rhoi.data(), &wall_temperature, state_var);
+    mix.setDiffusionModel(v_mole_fractions_edge.data(), gradient_distance_wall_bulk);
 
     mix.solveSurfaceBalance();
     mix.getWallState( v_rhoi.data(), &wall_temperature, state_var );
@@ -48,15 +49,17 @@ int main() {
 
 //================================================================================================================
 
-    mix.setState( v_rhoi.data(), &wall_temperature, set_state_with_rhoi_T); 
-    mix.setWallState( v_rhoi.data(), &wall_temperature, set_state_with_rhoi_T );
+    mix.setState(v_rhoi.data(), &wall_temperature, set_state_with_rhoi_T); 
+    mix.setWallState(v_rhoi.data(), &wall_temperature, set_state_with_rhoi_T);
 
     v_mole_fractions = Eigen::Map<const Eigen::VectorXd>(mix.X(), ns);
     v_mole_gradients = ( v_mole_fractions - v_mole_fractions_edge ) / gradient_distance_wall_bulk;
 
     double electric_field = 0.E0;
     mix.stefanMaxwell( v_mole_gradients.data(), v_diffusion_velocities.data(), electric_field);
-    v_wall_production_rates = Eigen::Map<const Eigen::VectorXd>(mix.surfaceProductionRates(), ns);
+//    v_wall_production_rates = Eigen::Map<const Eigen::VectorXd>(mix.surfaceProductionRates(), ns);
+    mix.surfaceProductionRates(v_wall_production_rates.data());
+
     std::cout << "The wall production rates are: " << v_wall_production_rates(0)
                                             << " " << v_wall_production_rates(1) << std::endl;
 

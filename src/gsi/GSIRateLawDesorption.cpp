@@ -9,12 +9,12 @@ public:
     GSIRateLawDesorption( ARGS args )
         : GSIRateLaw (args)
     {
-        args.s_node_rate_law.getAttribute("steric_factor", m_steric_factor,
-                     "The sticking coefficient should be provided for every desorption reaction. Please provide a sticking_coef!");
-        args.s_node_rate_law.getAttribute("b", m_beta,
-                     "A beta coefficient should be provided for every desorption reaction. Please provide a 'b' attribute!");
-        args.s_node_rate_law.getAttribute("freq_vibration_perp", m_vib_perp,
-                     "In a thermal desorption reaction the vibrational frequency perpendicular to the surface should be provide");
+    	const double l_zero = 0.0;
+    	const double l_one = 1.0;
+
+        args.s_node_rate_law.getAttribute("steric_factor", m_steric_factor, l_one);
+        args.s_node_rate_law.getAttribute("b", m_beta, l_zero);
+        args.s_node_rate_law.getAttribute("freq_vibration_perp", m_vib_perp, l_zero);
         args.s_node_rate_law.getAttribute("E_desorption", m_E_des,
                      "Activation energy should be provided for every desorption reaction. Please provide a 'E_desorption' attribute!");
 
@@ -29,8 +29,18 @@ public:
     double forwardReactionRateCoefficient(
         const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall) const
     {
-        return (m_steric_factor * m_vib_perp * pow(v_Twall[0], m_beta)
-               * exp(-(m_E_des)/(Mutation::RU * v_Twall[0])));
+    	const double l_low_number = 1.e-30;
+
+    	const size_t pos_T_trans = 0;
+    	double l_T_trans = v_Twall(pos_T_trans);
+
+    	double l_freq_factor = m_vib_perp;
+    	if (m_vib_perp < l_low_number){
+    	    l_freq_factor = Mutation::KB * l_T_trans / Mutation::HP;
+    	}
+
+        return (m_steric_factor * m_vib_perp * pow(l_T_trans, m_beta)
+               * exp(-(m_E_des)/(Mutation::RU * l_T_trans)));
     }
 
 //=============================================================================================================

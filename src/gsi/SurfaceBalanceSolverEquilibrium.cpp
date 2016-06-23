@@ -78,7 +78,7 @@ public:
 
     //======================================================================================
 
-    Eigen::VectorXd& computeGSIProductionRate()
+    Eigen::VectorXd& computeGSIProductionRates()
     {
         std::cerr << "Wall treated in chemical equilibrium" << std::endl;
         exit(1);

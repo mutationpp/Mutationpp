@@ -23,6 +23,7 @@ SurfaceBalanceSolverGamma(ARGS args)
       v_f_unpert(m_thermo.nSpecies()),
       v_jac(m_thermo.nSpecies(), m_thermo.nSpecies()),
       m_pert(1.E-5),
+	  pos_T_trans(0),
       set_state_with_rhoi_T(1),
       v_sep_mass_prod_rate(m_thermo.nSpecies()) {
                                             
@@ -73,16 +74,16 @@ SurfaceBalanceSolverGamma(ARGS args)
 
 //======================================================================================
 
-    Eigen::VectorXd& computeGSIProductionRate()
+    Eigen::VectorXd& computeGSIProductionRates()
     {
         errorWallStateNotSet();
 
         v_sep_mass_prod_rate.setZero();
-        for (int i_prod_terms = 0; i_prod_terms < v_surf_prod.size(); ++i_prod_terms)
+        for (int i_prod_terms = 0; i_prod_terms < v_surf_prod.size(); ++i_prod_terms){
             v_surf_prod[i_prod_terms]->productionRate(v_sep_mass_prod_rate);
+        }
 
         return v_sep_mass_prod_rate;
-
     }
 
 //======================================================================================
@@ -93,20 +94,21 @@ SurfaceBalanceSolverGamma(ARGS args)
 
 //======================================================================================
 
-    void solveSurfaceBalance(const Eigen::VectorXd& lv_rhoi, const Eigen::VectorXd& lv_T)
+    void solveSurfaceBalance()
     {
         // errorUninitializedDiffusionModel
         // errorWallStateNotSetYet
 
-        v_rhoi = lv_rhoi;
-        m_Twall = lv_T(0); // 0-> position of the translational velocity
+    	// Getting the state
+        v_rhoi = m_wall_state.getWallRhoi();
+        m_Twall = m_wall_state.getWallT()(pos_T_trans);
         saveUnperturbedPressure(v_rhoi);
 
+        // Changing to the solution variables and solving
         computeMoleFracfromPartialDens(v_rhoi, v_X);
         v_X = solve(v_X);
         computePartialDensfromMoleFrac(v_X, v_rhoi);
 
-        m_wall_state.setWallState(v_rhoi.data(), &m_Twall, set_state_with_rhoi_T);
     }
 
 //======================================================================================
@@ -124,7 +126,7 @@ SurfaceBalanceSolverGamma(ARGS args)
         v_f = v_rhoi.cwiseProduct(v_f);
 
         // Chemical Production Rates
-        v_f -= computeGSIProductionRate();
+        v_f -= computeGSIProductionRates();
 
         // Blowing Fluxes
         v_f += v_rhoi * mp_mass_blowing_rate->computeBlowingFlux() / v_rhoi.sum(); // @todo: check efficiency comparing double = mp...
@@ -236,6 +238,7 @@ private:
     Eigen::VectorXd v_f_unpert;
     Eigen::VectorXd v_sep_mass_prod_rate;
 
+    const int pos_T_trans;
     const int set_state_with_rhoi_T;
 }; // class SurfaceBalanceSolverGamma
 

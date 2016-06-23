@@ -427,13 +427,19 @@ void NAME_MANGLE(source_energy_transfer)
 //==============================================================================
 void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars)
 {
-     p_mix->setWallState( v1, v2, *vars );
+     p_mix->setWallState(v1, v2, *vars);
+}
+
+//==============================================================================
+void NAME_MANGLE(wall_production_rates)(double* const v1)
+{
+     p_mix->surfaceProductionRates(v1);
 }
 
 //==============================================================================
 void NAME_MANGLE(set_diffusion_model)(double* rhoi_edge, double* dx)
 {
-     p_mix->setDiffusionModel( rhoi_edge, *dx );
+     p_mix->setDiffusionModel(rhoi_edge, *dx);
 }
 
 //==============================================================================

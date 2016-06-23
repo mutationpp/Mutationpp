@@ -20,6 +20,10 @@ public:
     double forwardReactionRateCoefficient(
         const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall) const
     {
+
+    	double radius_O = 4.8e-11;
+    	double radius_N = 5.6e-11;
+
         return 0.;
     }
 

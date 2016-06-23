@@ -25,9 +25,9 @@ int main() {
     int set_state_with_rhoi_T = 1;
 
     mix.setState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T); 
-    mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T );
+    mix.setWallState(&v_rhoi[0], &wall_temperature, set_state_with_rhoi_T);
 
-    mix.surfaceProductionRates( &v_wall_prod_rates[0] );
+    mix.surfaceProductionRates(&v_wall_prod_rates[0]);
     std::cout << "The wall production rates are: " << v_wall_prod_rates[0] << " " << v_wall_prod_rates[1] << std::endl;
 
 }

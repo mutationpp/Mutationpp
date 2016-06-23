@@ -97,7 +97,7 @@ public:
      *
      * return surface production rates in kg/m^2-s.
      */
-    const double* const surfaceProductionRates();
+    void surfaceProductionRates(double* const lp_wall_prod_rates);
     
     /**
      * Temporary function which set ups the diffusion model in order to compute

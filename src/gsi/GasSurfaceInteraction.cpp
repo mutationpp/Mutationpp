@@ -40,7 +40,7 @@ GasSurfaceInteraction::GasSurfaceInteraction(
         l_root_element.findTag("production_terms");
 
     // Creating Surface Properties class
-    // xml_pos_surf_props.tag("none" or whaterver) and then m_gsi_mechanism->to this
+    // xml_pos_surf_props.tag("none" or whatever) and then m_gsi_mechanism->to this
     DataSurfaceProperties l_data_surface_properties =
         {m_thermo, *xml_pos_surf_props};
     mp_surf_props = Mutation::Utilities::Config::Factory<SurfaceProperties>::create(
@@ -87,9 +87,11 @@ void GasSurfaceInteraction::getWallState(
 
 //======================================================================================
 
-const double* const GasSurfaceInteraction::surfaceProductionRates()
+void GasSurfaceInteraction::surfaceProductionRates(double* const lv_wall_prod_rates)
 {
-    return mp_surf_solver->computeGSIProductionRate().data();
+	for (int i_sp = 0; i_sp < m_thermo.nSpecies(); i_sp++){
+	    lv_wall_prod_rates[i_sp] = mp_surf_solver->computeGSIProductionRates()(i_sp);
+	}
 }
 
 //======================================================================================
@@ -105,10 +107,7 @@ void GasSurfaceInteraction::setDiffusionModel(
 
 void GasSurfaceInteraction::solveSurfaceBalance()
 {
-//    mp_surf_solver->solveSurfaceBalance(
-//        mp_wall_state->getWallRhoi(), mp_wall_state->getWallT()); //@BD
     mp_surf_solver->solveSurfaceBalance();
-
 }
 
 //=================================================================

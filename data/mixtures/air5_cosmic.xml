@@ -1,0 +1,11 @@
+<mixture mechanism="air5">
+    
+    <species>
+        O2 N2 NO O N
+    </species>
+    
+    <element_compositions default="air">
+        <composition name="air"> N:0.79, O: 0.21 </composition>
+    </element_compositions>
+    
+</mixture>
