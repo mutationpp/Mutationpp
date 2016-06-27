@@ -241,6 +241,8 @@ public:
             m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
     }
     
+    void exactDiffusionMatrix(double ** const p_Dij);
+
     /**
      * Returns the average diffusion coefficients.
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]

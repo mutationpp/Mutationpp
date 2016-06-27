@@ -208,12 +208,6 @@ public:
         std::exit(1);
     }
     
-    virtual void getMixtureEnergiesMass(double* const p_e) {
-        std::cerr << "getMixtureEnergiesMass()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
-    }
-
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
 	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy

@@ -689,10 +689,28 @@ double Thermodynamics::mixtureEquilibriumCvMass()
     return (cp + (P/rho - dedp/drdp)*drdt);
 }
 
-void Thermodynamics::mixtureEnergies(double* const p_e) const
+//==============================================================================
+
+void Thermodynamics::sumSpeciesMass(
+    const double* const p_s, double* const p_e, const int size) const
 {
-    mp_state->getMixtureEnergiesMass(p_e);
+    const int ns = nSpecies();
+
+    Map<VectorXd>(p_e, size) =
+        Map< Matrix<double, -1, -1, RowMajor> >(mp_wrkcp, size, ns) *
+        Map<VectorXd>(mp_y, ns);
 }
+
+//==============================================================================
+
+void Thermodynamics::mixtureEnergies(double* const p_e)
+{
+    // Compute the species energies
+    mp_state->getEnergiesMass(mp_wrkcp);
+    sumSpeciesMass(mp_wrkcp, p_e, nEnergyEqns());
+}
+
+//==============================================================================
 
 
 /*double Thermodynamics::mixtureEquilibriumCvMass()

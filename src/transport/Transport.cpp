@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -497,25 +498,25 @@ void Transport::exactDiffusionMatrix(double ** const p_Dij)
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
-    
 
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
 
     static ArrayXd X, Y; Y.resize(ns);
-    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol);
-    m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+    X = Map<const ArrayXd>(m_thermo.X(), ns);//.max(tol);
+    X /= X.sum();
+    m_thermo.convert<X_TO_Y>(X.data(), Y.data());
 
     // Get reference to binary diffusion coefficients
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, X.data());
 
-    // Compute singular system matrix (lower triangular part)
+    // Compute singular system matrix (lower triangular part) // If this were a function we could reuse from Stefan-Maxwell
     double fac;
     static MatrixXd G; G.resize(ns,ns);
     G.triangularView<Lower>() = MatrixXd::Zero(ns,ns);
     for (int j = 0; j < ns; ++j) {
         for (int i = j+1; i < ns; ++i) {
-            fac = X(i)*X(j)/nDij(i,j)*nd; 
+            fac = X(i)*X(j)/nDij(i,j)*nd;
             G(i,i) += fac;
             G(j,j) += fac;
             G(i,j) = -fac;
@@ -570,7 +571,8 @@ void Transport::stefanMaxwell(
     // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
     static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
-    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
+    X = Map<const ArrayXd>(m_thermo.X(), ns);//.max(tol); // Place a tolerance on X
+    X /= X.sum();
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
 
     // Get reference to binary diffusion coefficients
@@ -615,6 +617,7 @@ void Transport::stefanMaxwell(
         V.matrix().tail(nh), nd/nDij.diagonal().mean());
 
     static Eigen::LDLT<MatrixXd, Lower> ldlt;
+    //static Eigen::ConjugateGradient<MatrixXd, Lower> ldlt;
     ldlt.compute(G);
     V.tail(nh) = ldlt.solve(b).array();
 
@@ -625,112 +628,112 @@ void Transport::stefanMaxwell(
     V[0] = -(X.tail(nh)*qi.tail(nh)*V.tail(nh)).sum() / fac;
 }
 
-// For now assume that we have ions and solve the full system in thermal
-// nonequilibrium with ambipolar assumption
-/*void Transport::stefanMaxwell(
-    const double* const p_dp, double* const p_V, double& E)
-{
-    // Determine some constants
-    const int ns = m_thermo.nSpecies();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
-
-    // Place a tolerance on X and Y
-    const double tol = 1.0e-16;
-    static std::vector<double> xy(2*ns);
-    double *X = &xy[0], *Y = &xy[ns];
-    double sum = 0.0;
-    for (int i = 0; i < ns; ++i) {
-        X[i] = tol + m_thermo.X()[i];
-        sum += X[i];
-    }
-    for (int i = 0; i < ns; ++i)
-        X[i] /= sum;
-    m_thermo.convert<X_TO_Y>(X, Y);
-
-    // Get reference to binary diffusion coefficients
-    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
-
-    // Compute mixture charge (store species' charges in mp_wrk3 work array)
-    double q = 0.0;
-    for (int i = 0; i < ns; ++i) {
-        mp_wrk3[i] = m_thermo.speciesCharge(i);
-        q += mp_wrk3[i] * X[i];
-    }
-
-    // Compute kappas (stored in p_V to avoid creating another array)
-    // also compute the 2-norm of the kappa vector
-    const double one_over_kbt = 1.0/(KB*Th);
-    double s = 0.0;
-    for (int i = 0; i < ns; ++i) {
-        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
-        s += p_V[i]*p_V[i];
-    }
-    s = std::sqrt(s);
-
-    // Compute the RHS vector
-    static VectorXd b(ns+1);
-    for (int i = 0; i < ns; ++i)
-        b(i) = -p_dp[i];
-    b(0) *= Th/Te;
-    b(ns) = 0.0;
-    //cout << b << endl;
-    // Compute system matrix
-    static MatrixXd G(ns+1,ns+1);
-
-    // - electron contribution
-    double fac1 = Te/Th;
-    double fac2 = fac1*X[0]*nd;
-    G(0,0) = 0.0;
-    for (int j = 1; j < ns; ++j) {
-        G(0,j) =  -fac2*X[j]/nDij(0,j);
-        G(0,0) += G(0,j);
-        G(j,0) =  G(0,j);
-        G(j,j) = -fac1*G(j,0);
-    }
-    G(0,0) /= -fac1;
-    G(0,ns) = -p_V[0]/(fac1*s);
-
-    // - heavy contribution
-    for (int i = 1; i < ns; ++i) {
-        for (int j = i+1; j < ns; ++j) {
-            G(i,j) =  -X[i]*X[j]/nDij(i,j)*nd;
-            G(i,i) -= G(i,j);
-            G(j,i) =  G(i,j);
-            G(j,j) -= G(j,i);
-        }
-        G(i,ns) = -p_V[i]/s;
-    }
-
-    // - ambipolar constraint
-    for (int j = 0; j < ns; ++j)
-        G(ns,j) = -p_V[j]/s;
-    G(ns,ns) = 0.0;
-
-    //cout << G << endl;
-
-    // Finally solve the system for Vi and E
-    static VectorXd x(ns+1);
-    std::pair<int, double> ret = Numerics::gmres(
-        G, x, b, Numerics::DiagonalPreconditioner<double>(G));
-
-    // Compute mass constraint projector
-    static VectorXd R(ns,1.0);
-    R(0) /= fac1;
-    double r = 0.0;
-    for (int i = 0; i < ns; ++i)
-        r += R(i)*Y[i];
-    double p = 0.0;
-    for (int i = 0; i < ns; ++i)
-        p += x(i)*Y[i];
-    p /= r;
-
-    // Retrieve the solution
-    for (int i = 0; i < ns; ++i)
-        p_V[i] = x(i) - p*R(i);
-    E = b(ns)/s;
-}*/
+//// For now assume that we have ions and solve the full system in thermal
+//// nonequilibrium with ambipolar assumption
+//void Transport::stefanMaxwell(
+//    const double* const p_dp, double* const p_V, double& E)
+//{
+//    // Determine some constants
+//    const int ns = m_thermo.nSpecies();
+//    const double Th = m_thermo.T();
+//    const double Te = m_thermo.Te();
+//    const double nd = m_thermo.numberDensity();
+//
+//    // Place a tolerance on X and Y
+//    const double tol = 1.0e-16;
+//    static std::vector<double> xy(2*ns);
+//    double *X = &xy[0], *Y = &xy[ns];
+//    double sum = 0.0;
+//    for (int i = 0; i < ns; ++i) {
+//        X[i] = tol + m_thermo.X()[i];
+//        sum += X[i];
+//    }
+//    for (int i = 0; i < ns; ++i)
+//        X[i] /= sum;
+//    m_thermo.convert<X_TO_Y>(X, Y);
+//
+//    // Get reference to binary diffusion coefficients
+//    const MatrixXd& nDij = mp_collisions->nDij(Th, Te, nd, &X[0]);
+//
+//    // Compute mixture charge (store species' charges in mp_wrk3 work array)
+//    double q = 0.0;
+//    for (int i = 0; i < ns; ++i) {
+//        mp_wrk3[i] = m_thermo.speciesCharge(i);
+//        q += mp_wrk3[i] * X[i];
+//    }
+//
+//    // Compute kappas (stored in p_V to avoid creating another array)
+//    // also compute the 2-norm of the kappa vector
+//    const double one_over_kbt = 1.0/(KB*Th);
+//    double s = 0.0;
+//    for (int i = 0; i < ns; ++i) {
+//        p_V[i] = (X[i]*mp_wrk3[i] - Y[i]*q)*one_over_kbt;
+//        s += p_V[i]*p_V[i];
+//    }
+//    s = std::sqrt(s);
+//
+//    // Compute the RHS vector
+//    static VectorXd b(ns+1);
+//    for (int i = 0; i < ns; ++i)
+//        b(i) = -p_dp[i];
+//    b(0) *= Th/Te;
+//    b(ns) = 0.0;
+//    //cout << b << endl;
+//    // Compute system matrix
+//    static MatrixXd G(ns+1,ns+1);
+//
+//    // - electron contribution
+//    double fac1 = Te/Th;
+//    double fac2 = fac1*X[0]*nd;
+//    G(0,0) = 0.0;
+//    for (int j = 1; j < ns; ++j) {
+//        G(0,j) =  -fac2*X[j]/nDij(0,j);
+//        G(0,0) += G(0,j);
+//        G(j,0) =  G(0,j);
+//        G(j,j) = -fac1*G(j,0);
+//    }
+//    G(0,0) /= -fac1;
+//    G(0,ns) = -p_V[0]/(fac1*s);
+//
+//    // - heavy contribution
+//    for (int i = 1; i < ns; ++i) {
+//        for (int j = i+1; j < ns; ++j) {
+//            G(i,j) =  -X[i]*X[j]/nDij(i,j)*nd;
+//            G(i,i) -= G(i,j);
+//            G(j,i) =  G(i,j);
+//            G(j,j) -= G(j,i);
+//        }
+//        G(i,ns) = -p_V[i]/s;
+//    }
+//
+//    // - ambipolar constraint
+//    for (int j = 0; j < ns; ++j)
+//        G(ns,j) = -p_V[j]/s;
+//    G(ns,ns) = 0.0;
+//
+//    //cout << G << endl;
+//
+//    // Finally solve the system for Vi and E
+//    static VectorXd x(ns+1);
+//    std::pair<int, double> ret = Numerics::gmres(
+//        G, x, b, Numerics::DiagonalPreconditioner<double>(G));
+//
+//    // Compute mass constraint projector
+//    static VectorXd R(ns,1.0);
+//    R(0) /= fac1;
+//    double r = 0.0;
+//    for (int i = 0; i < ns; ++i)
+//        r += R(i)*Y[i];
+//    double p = 0.0;
+//    for (int i = 0; i < ns; ++i)
+//        p += x(i)*Y[i];
+//    p /= r;
+//
+//    // Retrieve the solution
+//    for (int i = 0; i < ns; ++i)
+//        p_V[i] = x(i) - p*R(i);
+//    E = b(ns)/s;
+//}
 
 //==============================================================================
 

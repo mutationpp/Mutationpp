@@ -323,6 +323,14 @@ void NAME_MANGLE(species_h_mass)(double *const h)
 }
 
 //==============================================================================
+void NAME_MANGLE(species_s_mass)(double *const s)
+{
+    p_mix->speciesSOverR(s);
+    for (int i = 0; i < p_mix->nSpecies(); ++i)
+        s[i] *= Mutation::RU / p_mix->speciesMw(i);
+}
+
+//==============================================================================
 double NAME_MANGLE(mixture_h_mass)()
 {
     return p_mix->mixtureHMass();

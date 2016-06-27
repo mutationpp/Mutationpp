@@ -738,6 +738,14 @@ public:
     double mixtureHMass(double T) const;
 
     /**
+     * Returns the mixture averaged enthalpy minus the enthalpy of the mixture
+     * at 0K with.
+     */
+    double mixtureHMinusH0Mass() {
+        return mixtureHMass() - mixtureHMass(0.0000001);
+    }
+
+    /**
      * Returns the mixture energy in J/mol.
      */
     double mixtureEnergyMole() const {
@@ -754,7 +762,7 @@ public:
     /**
      * Returns the mixture energy vector in J/kg.
      */
-    void mixtureEnergies(double* const p_e) const;
+    void mixtureEnergies(double* const p_e);
 
     /**
      * Returns the frozen sound speed of the mixture in m/s.
@@ -828,6 +836,9 @@ public:
         double *const p_Xs = NULL);
     
 private:
+
+    void sumSpeciesMass(
+        const double* const p_s, double* const p_e, const int size) const;
     
     /**
      * Loads the elements and species given by the species names vector from the
