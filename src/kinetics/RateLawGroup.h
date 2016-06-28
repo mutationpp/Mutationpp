@@ -158,7 +158,7 @@ public:
         m_t = TSelectorType().getT(p_state);
 
         // Update only if the temperature has changed
-        if (std::abs(m_t - m_last_t) < 1.0e-10) {
+        //if (std::abs(m_t - m_last_t) > 1.0e-10) {
             const double lnT  = std::log(m_t);
             const double invT = 1.0 / m_t;
 
@@ -166,7 +166,7 @@ public:
                 const std::pair<size_t, RateLawType>& rate = m_rates[i];
                 p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
             }
-        }
+        //}
 
         // Save this temperature
         m_last_t = m_t;

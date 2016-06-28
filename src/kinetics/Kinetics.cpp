@@ -367,15 +367,22 @@ void Kinetics::netProductionRates(double* const p_wdot)
     mp_rates->update(m_thermo);
     
     // Compute forward ROP
+    //cout << m_thermo.T() << ", " << m_thermo.Te() << endl;
     const double* const lnkf = mp_rates->lnkf();
-    for (int i = 0; i < nReactions(); ++i)
+    //cout << "ln forward rate" << endl;
+    for (int i = 0; i < nReactions(); ++i) {
+    //    cout << lnkf[i] << endl;
         mp_ropf[i] = std::exp(lnkf[i]);
+    }
     m_reactants.multReactions(p_wdot, mp_ropf);
     
     // Compute reverse ROP
     const double* const lnkb = mp_rates->lnkb();
-    for (int i = 0; i < nReactions(); ++i)
+    //cout << "ln backward rate" << endl;
+    for (int i = 0; i < nReactions(); ++i) {
+    //    cout << lnkb[i] << endl;
         mp_ropb[i] = std::exp(lnkb[i]);
+    }
     m_rev_prods.multReactions(p_wdot, mp_ropb);
     
     // Compute net ROP
