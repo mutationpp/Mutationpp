@@ -50,8 +50,10 @@ public:
     /// Constructor.
     ElectronSubSystem(
         Mutation::Thermodynamics::Thermodynamics& thermo,
-        CollisionDB& collisions)
-        : m_thermo(thermo), m_collisions(collisions)
+        CollisionDB& collisions) :
+            m_thermo(thermo),
+            m_collisions(collisions),
+            m_alpha(thermo.nHeavy())
     { }
 
     /// Destructor.
@@ -68,6 +70,8 @@ public:
 
     /// Anisotropic electron thermal conductivity in W/m-K.
     Eigen::Vector3d electronThermalConductivityB(int order = 2);
+
+    const Eigen::VectorXd& alpha(int order = 2);
 
 protected:
 
@@ -156,8 +160,8 @@ protected:
         return fac*lambda;
     }
 
-//    template <int XI, typename RHS>
-//    Eigen::Matrix<double, XI, 1> solveRealSysP0(const RHS& rhs) {
+//    template <int P, typename RHS>
+//    Eigen::Matrix<double, P, 1> solveRealSysP0(const RHS& rhs) {
 //        return Lee<XI>().inverse() * rhs<XI>();
 //    }
 //
@@ -173,6 +177,8 @@ private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB m_collisions;
+
+    Eigen::VectorXd m_alpha;
 
 }; // class ElectronSubSystem
 

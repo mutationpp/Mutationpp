@@ -114,5 +114,31 @@ Eigen::Vector3d ElectronSubSystem::electronThermalConductivityB(int order)
 
 //==============================================================================
 
+class BetaDi
+{
+public:
+    BetaDi(CollisionDB& collisions) : m_collisions(collisions) { }
+
+    template <int P>
+    Eigen::Matrix<double,P,Eigen::Dynamic> beta()
+    {
+        Eigen::Matrix<double,P,Eigen::Dynamic> beta(P,m_collisions.nHeavy());
+        // Fill in beta
+        return beta;
+    }
+private:
+    CollisionDB& m_collisions;
+};
+
+const Eigen::VectorXd& ElectronSubSystem::alpha(int order)
+{
+    // Compute the system solution
+    Eigen::MatrixXd beta = BetaDi(m_collisions).beta<2>();
+    m_alpha = beta.transpose() * Lee<2>().inverse() * beta;
+    return m_alpha;
+}
+
+//==============================================================================
+
     } // namespace Transport
 } // namespace Mutation
