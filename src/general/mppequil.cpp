@@ -771,7 +771,7 @@ int main(int argc, char** argv)
                 else if (name == "lam_e")
                     value = mix.electronThermalConductivity();
                 else if (name == "sigma")
-                    value = mix.sigma();
+                    value = mix.electricConductivity();
 //                else if (name == "sigma_para")
 //                    value = mix.sigmaParallel();
 //                else if (name == "sigma_perp")
@@ -970,11 +970,11 @@ int main(int argc, char** argv)
                     for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
                         cout << setw(column_widths[cw++]) << temp[k];
                 } else if (name == "sigmaB") {
-                    Eigen::Vector3d sigma = mix.sigmaB();
+                    Eigen::Vector3d sigma = mix.electricConductivityB();
                     for (int i = 0; i < 3; ++i)
                         cout << setw(column_widths[cw++]) << sigma(i);
                 } else if (name == "lamB_e") {
-                    Eigen::Vector3d lambda = mix.electronThermalConductivityB<2>();
+                    Eigen::Vector3d lambda = mix.electronThermalConductivityB();
                     for (int i = 0; i < 3; ++i)
                         cout << setw(column_widths[cw++]) << lambda(i);
                 }
