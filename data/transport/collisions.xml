@@ -52,9 +52,11 @@
         
         <!-- Ion-Neutral interactions -->
         <ion-neutral>
+            <-- Requires dipole-polarizability of neutral species -->
             <Q11 type="Langevin"/>
-            <Q22 type="from A*"/>
-            <Ast type="constant" value="1.10" ref="Wright2007"/>
+            
+            <Q22 type="ratio" ratio="1.1" integral="Q11" ref="Wright2007"/>
+            <Ast type="from A*"/>
             <Bst type="constant" value="1.20" ref="Wright2005"/>
             <Cst type="constant" value="0.85" ref="Wright2005"/>
         </ion-neutral>
