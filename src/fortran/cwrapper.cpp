@@ -30,6 +30,10 @@
 
 #include <iostream>
 
+#ifdef _GNU_SOURCE
+#include <fenv.h>
+#endif
+
 using namespace std;
 using namespace Mutation::Thermodynamics;
 
@@ -62,7 +66,11 @@ void NAME_MANGLE(initialize)(
     F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
     F_STRLEN state_length)
 {
-    //feenableexcept(FE_INVALID);
+//#ifdef _GNU_SOURCE
+//    // Enable floating point exception handling
+//    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+//#endif
+
     Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
     opts.setStateModel(char_to_string(state_model, state_length));
     p_mix = new Mutation::Mixture(opts);
@@ -382,7 +390,7 @@ void NAME_MANGLE(stefan_maxwell)
 //==============================================================================
 double NAME_MANGLE(sigma)()
 {
-    return p_mix->sigma();
+    return p_mix->electricConductivity();
 }
 
 //==============================================================================
