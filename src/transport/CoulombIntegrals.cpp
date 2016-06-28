@@ -228,7 +228,7 @@ class DebyeHuckleColInt : public CollisionIntegral
 public:
 
     /**
-     * Self registering onstructor. Determines which integral to evaluate based
+     * Self registering constructor. Determines which integral to evaluate based
      * on the collision type.
      */
     DebyeHuckleColInt(CollisionIntegral::ARGS args) :

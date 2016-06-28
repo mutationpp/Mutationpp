@@ -27,6 +27,7 @@ add_sources(mutation++
     CollisionIntegral.cpp
     CollisionPair.cpp
     CoulombIntegrals.cpp
+    ElectronSubSystem.cpp
     LangevinIntegrals.cpp
     ThermalConductivityChapmannEnskog.cpp
     ThermalConductivityWilke.cpp
@@ -40,6 +41,7 @@ install(FILES CollisionDB.h DESTINATION include/mutation++)
 install(FILES CollisionGroup.h DESTINATION include/mutation++)
 install(FILES CollisionIntegral.h DESTINATION include/mutation++)
 install(FILES CollisionPair.h DESTINATION include/mutation++)
+install(FILES ElectronSubSystem.h DESTINATION include/mutation++)
 install(FILES ThermalConductivityAlgorithm.h DESTINATION include/mutation++)
 install(FILES ViscosityAlgorithm.h DESTINATION include/mutation++)
 install(FILES Ramshaw.h DESTINATION include/mutation++)

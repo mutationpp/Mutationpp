@@ -30,6 +30,7 @@
 
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
+#include "ElectronSubSystem.h"
 #include "Ramshaw.h"
 #include "Utilities.h"
 
@@ -38,6 +39,7 @@
 namespace Mutation {
     namespace Transport {
 
+class ElectronSubSystem;
 class ThermalConductivityAlgorithm;
 class ViscosityAlgorithm;
 
@@ -111,9 +113,6 @@ public:
      * set algorithm.
      */
     double heavyThermalConductivity();
-    
-    /// Returns the electron translational thermal conductivity.
-    double electronThermalConductivity(int order = 2);
     
     /**
      * Returns the thermal conductivity of an internal energy mode using
@@ -348,113 +347,81 @@ public:
      */
     void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
         
+    //==========================================================================
+    // Electron subsystem functions
+    //==========================================================================
+
     /// Isotropic electric conductivity in S/m (no magnetic field).
-    double sigma(int order = 2);
+    double electricConductivity(int order = 2) {
+        return mp_esubsyst->electricConductivity(order);
+    }
 
     /// Anisotropic electric conductivity in S/m (with magnetic field).
-    Eigen::Vector3d sigmaB(int order = 2)
-    {
-        switch (order) {
-        case 1: return sigmaB<1>();
-        case 2: return sigmaB<2>();
-        case 3: return sigmaB<3>();
-        default:
-            std::cout << "Warning: invalid order for sigma.  ";
-            std::cout << "Using order 2..." << std::endl;
-            return sigmaB<2>();
-        }
+    Eigen::Vector3d electricConductivityB(int order = 2) {
+        return mp_esubsyst->electricConductivityB(order);
     }
 
-    template <int ORDER>
-    Eigen::Vector3d sigmaB()
-    {
-        const double fac =
-            m_thermo.numberDensity()*m_thermo.X()[0]*QE*QE/(KB*m_thermo.Te());
-
-        Eigen::Vector3d sigma;
-        sigma(0) = m_collisions.L1inv<ORDER>()(0,0);
-
-        std::complex<double> alpha = m_collisions.L2inv<ORDER>()(0,0);
-        sigma(1) = alpha.real();
-        sigma(2) = alpha.imag();
-
-        return fac*sigma;
+    /// Returns the electron thermal conductivity in W/m-K
+    double electronThermalConductivity(int order = 2) {
+        return mp_esubsyst->electronThermalConductivity(order);
     }
 
-    template <int P>
-    Eigen::Vector3d electronThermalConductivityB()
-    {
-        const double fac = 2.5*m_thermo.numberDensity()*m_thermo.X()[0]*KB;
-
-        Eigen::Matrix<double,P-1,P-1> L1 =
-            m_collisions.Leefac()*
-            m_collisions.Lee<P>().template block<P-1,P-1>(1,1);
-        Eigen::Matrix<double,P-1,P-1> L1inv = L1.inverse();
-        Eigen::Matrix<std::complex<double>,P-1,P-1> L2 =
-            m_collisions.LBee<P>().template block<P-1,P-1>(1,1);
-        L2.real() += L1;
-        Eigen::Matrix<std::complex<double>,P-1,P-1> L2inv = L2.inverse();
-
-        Eigen::Vector3d lambda;
-        lambda(0) = 2.5*L1inv(0,0);
-
-        std::complex<double> alpha = 2.5*L2inv(0,0);
-        lambda(1) = alpha.real();
-        lambda(2) = alpha.imag();
-
-        return fac*lambda;
+    /// Anisotropic electron thermal conductivity in W/m-K.
+    Eigen::Vector3d electronThermalConductivityB(int order = 2) {
+        return mp_esubsyst->electronThermalConductivityB(order);
     }
 
 
-    /// Electric conductivity parallel to the magnetic field in S/m.
-//    double sigmaParallel();
+
+    double sigmaParallel();
 //    /// Electric conductivity perpendicular to the magnetic field in S/m.
-//    double sigmaPerpendicular();
+    double sigmaPerpendicular();
 //    /// Electriic conductivity transverse to the magnetic field in S/m.
-//    double sigmaTransverse();
+    double sigmaTransverse();
 //
 //    /// Mean free path of the mixture in m.
-//    double meanFreePath();
+    double meanFreePath();
 //    /// Mean free path of electrons in m.
-//    double electronMeanFreePath();
-//
+    double electronMeanFreePath();
 //    /// Average heavy particle thermal speed of mixture in m/s.
-//    double averageHeavyThermalSpeed();
+   double averageHeavyThermalSpeed();
 //    /// Electron thermal speed of mixture in m/s.
-//    double electronThermalSpeed();
+    double electronThermalSpeed();
 //
 //    /// Electron-heavy collision frequency in 1/s.
-//    double electronHeavyCollisionFreq();
+    double electronHeavyCollisionFreq();
 //
 //    /// Average collision frequency of heavy particles in mixture in 1/s.
-//    double averageHeavyCollisionFreq();
+    double averageHeavyCollisionFreq();
 //
 //    /// Coulomb mean collision time of the mixture in s.
-//    double coulombMeanCollisionTime();
+    double coulombMeanCollisionTime();
 //    /// Hall parameter.
-//    double hallParameter();
+    double hallParameter();
 //
 //    // Anisotropic Diffusion Coefficient
-//    double parallelDiffusionCoefficient();
-//    double perpDiffusionCoefficient();
-//    double transverseDiffusionCoefficient();
+    double parallelDiffusionCoefficient();
+    double perpDiffusionCoefficient();
+    double transverseDiffusionCoefficient();
 //
 //    // Anisotropic Thermal Diffusion Coefficient
-//    double parallelThermalDiffusionCoefficient();
-//    double perpThermalDiffusionCoefficient();
-//    double transverseThermalDiffusionCoefficient();
+    double parallelThermalDiffusionCoefficient();
+    double perpThermalDiffusionCoefficient();
+    double transverseThermalDiffusionCoefficient();
 //
 //
 //    //Anisotropic Electron Thermal Conductivity
-//    double parallelElectronThermalConductivity();
-//    double perpElectronThermalConductivity();
-//    double transverseElectronThermalConductivity();
+    double parallelElectronThermalConductivity();
+    double perpElectronThermalConductivity();
+    double transverseElectronThermalConductivity();
 //
 //    // Thermal diffusion ratios
-//    std::vector<double> parallelThermalDiffusionRatio();
-//    std::vector<double> perpThermalDiffusionRatio();
-//    std::vector<double> transverseThermalDiffusionRatio();
-//
+    std::vector<double> parallelThermalDiffusionRatio2();
+    double parallelThermalDiffusionRatio();
+    std::vector<double> perpThermalDiffusionRatio2();
+    double perpThermalDiffusionRatio();
+    std::vector<double> transverseThermalDiffusionRatio2();
+    double transverseThermalDiffusionRatio();
 //    // Return ratios of anisotropic properties
 //    double ratioSigmaPerpPar();
 //    double ratioSigmaTransPar();
@@ -462,6 +429,25 @@ public:
 //    double ratioLambdaTransPar();
 //    std::vector<double> ratiokTPerpPar();
 //    std::vector<double> ratiokTTransPar();
+ double taueLambda();
+ double taueLambdaBr();
+double perpLambdaeBr();
+double transLambdaeBr();
+
+double coefficientFriction();
+double perpfriccoeffBr();
+double transfriccoeffBr();
+
+ double tauViscosity();
+ double tauViscosityBr();
+double tauLambdaHeavy();
+double tauLambdaHeavyBr();
+double tauEnergy();
+double tauEnergyBr();
+double etaohmbraginskii();
+double transetaohmBr();
+double perpetaohmBr();
+
 
 private:
 
@@ -487,6 +473,7 @@ private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     CollisionDB m_collisions;
+    ElectronSubSystem* mp_esubsyst;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;
