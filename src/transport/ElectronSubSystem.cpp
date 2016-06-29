@@ -32,39 +32,57 @@ namespace Mutation {
 
 //==============================================================================
 
-double  ElectronSubSystem::electricConductivity(int order)
+double ElectronSubSystem::electricConductivity(int order)
 {
-    assert(order == 1 || order == 2);
-
     if (!m_thermo.hasElectrons())
         return 0.0;
 
-    const double xe = m_thermo.X()[0];
-    const double me = m_collisions.mass()(0);
-    const double Te = m_thermo.Te();
-    const double fac = 3.*xe*QE*QE/(16.*KB*Te)*std::sqrt(TWOPI*KB*Te/me);
+    const double fac =
+        m_thermo.numberDensity()*m_thermo.X()[0]*QE*QE/(KB*m_thermo.Te());
 
-    // First order
-    if (order == 1)
-        return fac / m_collisions.Lee<1>()(0,0);
-
-    // Second order
-    Eigen::Matrix2d L = m_collisions.Lee<2>();
-    return fac / (L(0,0)-L(0,1)*L(0,1)/L(1,1));
+    return fac * electronDiffusionCoefficient(order);
 }
 
 //==============================================================================
 
 Eigen::Vector3d ElectronSubSystem::electricConductivityB(int order)
 {
+    if (!m_thermo.hasElectrons())
+        return Eigen::Vector3d::Zero();
+
+    const double fac =
+        m_thermo.numberDensity()*m_thermo.X()[0]*QE*QE/(KB*m_thermo.Te());
+
+    return fac * electronDiffusionCoefficientB(order);
+}
+
+//==============================================================================
+
+double ElectronSubSystem::electronDiffusionCoefficient(int order)
+{
     switch (order) {
-    case 1: return sigmaB<1>();
-    case 2: return sigmaB<2>();
-    case 3: return sigmaB<3>();
+    case 1: return electronDiffusionCoefficient<1>();
+    case 2: return electronDiffusionCoefficient<2>();
+    case 3: return electronDiffusionCoefficient<3>();
     default:
-        std::cout << "Warning: invalid order for sigma.  ";
-        std::cout << "Using order 2..." << std::endl;
-        return sigmaB<2>();
+        std::cout << "Warning: invalid order for electron diffusion coefficient.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronDiffusionCoefficient<3>();
+    }
+}
+
+//==============================================================================
+
+Eigen::Vector3d ElectronSubSystem::electronDiffusionCoefficientB(int order)
+{
+    switch (order) {
+    case 1: return electronDiffusionCoefficientB<1>();
+    case 2: return electronDiffusionCoefficientB<2>();
+    case 3: return electronDiffusionCoefficientB<3>();
+    default:
+        std::cout << "Warning: invalid order for electron diffusion coefficient.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronDiffusionCoefficientB<3>();
     }
 }
 
@@ -108,34 +126,112 @@ Eigen::Vector3d ElectronSubSystem::electronThermalConductivityB(int order)
     default:
         std::cout << "Warning: invalid order for electron thermal conductivity.  ";
         std::cout << "Using order 3..." << std::endl;
-        return electronThermalConductivityB<2>();
+        return electronThermalConductivityB<3>();
     }
 }
 
 //==============================================================================
 
-class BetaDi
-{
-public:
-    BetaDi(CollisionDB& collisions) : m_collisions(collisions) { }
-
-    template <int P>
-    Eigen::Matrix<double,P,Eigen::Dynamic> beta()
-    {
-        Eigen::Matrix<double,P,Eigen::Dynamic> beta(P,m_collisions.nHeavy());
-        // Fill in beta
-        return beta;
-    }
-private:
-    CollisionDB& m_collisions;
-};
-
 const Eigen::VectorXd& ElectronSubSystem::alpha(int order)
 {
-    // Compute the system solution
-    Eigen::MatrixXd beta = BetaDi(m_collisions).beta<2>();
-    m_alpha = beta.transpose() * Lee<2>().inverse() * beta;
-    return m_alpha;
+    switch (order) {
+    case 1: return alpha<1>();
+    case 2: return alpha<2>();
+    case 3: return alpha<3>();
+    default:
+        std::cout << "Warning: invalid order for alpha coefficients.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return alpha<3>();
+    }
+}
+
+//==============================================================================
+
+const Eigen::MatrixXd& ElectronSubSystem::alphaB(int order)
+{
+    switch (order) {
+    case 1: return alphaB<1>();
+    case 2: return alphaB<2>();
+    case 3: return alphaB<3>();
+    default:
+        std::cout << "Warning: invalid order for alpha coefficients.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return alphaB<3>();
+    }
+}
+
+//==============================================================================
+
+template <>
+double ElectronSubSystem::electronThermalDiffusionRatio<1>() {
+    return 0.0;
+}
+
+//==============================================================================
+
+double ElectronSubSystem::electronThermalDiffusionRatio(int order)
+{
+    switch (order) {
+    case 1: return electronThermalDiffusionRatio<1>();
+    case 2: return electronThermalDiffusionRatio<2>();
+    case 3: return electronThermalDiffusionRatio<3>();
+    default:
+        std::cout << "Warning: invalid order for electron thermal diffusion ratio.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronThermalDiffusionRatio<3>();
+    }
+}
+
+//==============================================================================
+
+template <>
+Eigen::Vector3d ElectronSubSystem::electronThermalDiffusionRatioB<1>() {
+    return Eigen::Vector3d::Zero();
+}
+
+//==============================================================================
+
+Eigen::Vector3d ElectronSubSystem::electronThermalDiffusionRatioB(int order)
+{
+    switch (order) {
+    case 1: return electronThermalDiffusionRatioB<1>();
+    case 2: return electronThermalDiffusionRatioB<2>();
+    case 3: return electronThermalDiffusionRatioB<3>();
+    default:
+        std::cout << "Warning: invalid order for electron thermal diffusion ratio.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronThermalDiffusionRatioB<3>();
+    }
+}
+
+//==============================================================================
+
+const Eigen::VectorXd& ElectronSubSystem::electronThermalDiffusionRatios2(int order)
+{
+    switch (order) {
+    case 1: return electronThermalDiffusionRatios2<1>();
+    case 2: return electronThermalDiffusionRatios2<2>();
+    case 3: return electronThermalDiffusionRatios2<3>();
+    default:
+        std::cout << "Warning: invalid order for 2nd order electron thermal diffusion ratios.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronThermalDiffusionRatios2<3>();
+    }
+}
+
+//==============================================================================
+
+const Eigen::MatrixXd& ElectronSubSystem::electronThermalDiffusionRatios2B(int order)
+{
+    switch (order) {
+    case 1: return electronThermalDiffusionRatios2B<1>();
+    case 2: return electronThermalDiffusionRatios2B<2>();
+    case 3: return electronThermalDiffusionRatios2B<3>();
+    default:
+        std::cout << "Warning: invalid order for 2nd order electron thermal diffusion ratios.  ";
+        std::cout << "Using order 3..." << std::endl;
+        return electronThermalDiffusionRatios2B<3>();
+    }
 }
 
 //==============================================================================

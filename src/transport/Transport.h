@@ -352,23 +352,63 @@ public:
     //==========================================================================
 
     /// Isotropic electric conductivity in S/m (no magnetic field).
-    double electricConductivity(int order = 2) {
+    double electricConductivity(int order = 3) {
         return mp_esubsyst->electricConductivity(order);
     }
 
     /// Anisotropic electric conductivity in S/m (with magnetic field).
-    Eigen::Vector3d electricConductivityB(int order = 2) {
+    Eigen::Vector3d electricConductivityB(int order = 3) {
         return mp_esubsyst->electricConductivityB(order);
     }
 
     /// Returns the electron thermal conductivity in W/m-K
-    double electronThermalConductivity(int order = 2) {
+    double electronThermalConductivity(int order = 3) {
         return mp_esubsyst->electronThermalConductivity(order);
     }
 
     /// Anisotropic electron thermal conductivity in W/m-K.
-    Eigen::Vector3d electronThermalConductivityB(int order = 2) {
+    Eigen::Vector3d electronThermalConductivityB(int order = 3) {
         return mp_esubsyst->electronThermalConductivityB(order);
+    }
+
+    /// Isotropic electron diffusion coefficient.
+    double electronDiffusionCoefficient(int order = 3) {
+        return mp_esubsyst->electronDiffusionCoefficient(order);
+    }
+
+    /// Anisotropic electron diffusion coefficient.
+    Eigen::Vector3d electronDiffusionCoefficientB(int order = 3) {
+        return mp_esubsyst->electronDiffusionCoefficientB(order);
+    }
+
+    /// Isotropic alpha coefficients.
+    const Eigen::VectorXd& alpha(int order = 3) {
+        return mp_esubsyst->alpha(order);
+    }
+
+    /// Anisotropic alpha coefficients.
+    const Eigen::MatrixXd& alphaB(int order = 3) {
+        return mp_esubsyst->alphaB(order);
+    }
+
+    /// Isotropic electron thermal diffusion ratio.
+    double electronThermalDiffusionRatio(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatio(order);
+    }
+
+    /// Anisotropic electron thermal diffusion ratio.
+    Eigen::Vector3d electronThermalDiffusionRatioB(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatioB(order);
+    }
+
+    /// Isotropic second-order electron thermal diffusion ratios.
+    const Eigen::VectorXd& electronThermalDiffusionRatios2(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatios2(order);
+    }
+
+    /// Anisotropic second-order electron thermal diffusion ratios.
+    const Eigen::MatrixXd& electronThermalDiffusionRatios2B(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatios2B(order);
     }
 
 

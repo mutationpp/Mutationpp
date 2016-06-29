@@ -53,25 +53,45 @@ public:
         CollisionDB& collisions) :
             m_thermo(thermo),
             m_collisions(collisions),
-            m_alpha(thermo.nHeavy())
+            m_alpha(thermo.nHeavy()),
+            m_alpha_B(thermo.nHeavy(), 3),
+            m_chi2(thermo.nHeavy()),
+            m_chi2_B(thermo.nHeavy(), 3)
     { }
 
     /// Destructor.
     ~ElectronSubSystem() { }
 
     /// Isotropic electric conductivity in S/m.
-    double electricConductivity(int order = 2);
-
+    double electricConductivity(int order = 3);
     /// Anisotropic electric conductivity in S/m.
-    Eigen::Vector3d electricConductivityB(int order = 2);
+    Eigen::Vector3d electricConductivityB(int order = 3);
+
+    /// Isotropic electron diffusion coefficient.
+    double electronDiffusionCoefficient(int order = 3);
+    /// Anisotropic electron diffusion coefficient.
+    Eigen::Vector3d electronDiffusionCoefficientB(int order = 3);
 
     /// Isotropic electron thermal conductivity in W/m-K.
-    double electronThermalConductivity(int order = 2);
-
+    double electronThermalConductivity(int order = 3);
     /// Anisotropic electron thermal conductivity in W/m-K.
-    Eigen::Vector3d electronThermalConductivityB(int order = 2);
+    Eigen::Vector3d electronThermalConductivityB(int order = 3);
 
-    const Eigen::VectorXd& alpha(int order = 2);
+    /// Isotropic alpha coefficients.
+    const Eigen::VectorXd& alpha(int order = 3);
+    /// Anisotropic alpha coefficients.
+    const Eigen::MatrixXd& alphaB(int order = 3);
+
+    /// Isotropic electron thermal diffusion ratio.
+    double electronThermalDiffusionRatio(int order = 3);
+    /// Anisotropic electron thermal diffusion ratio.
+    Eigen::Vector3d electronThermalDiffusionRatioB(int order = 3);
+
+    /// Isotropic second-order electron thermal diffusion ratios.
+    const Eigen::VectorXd& electronThermalDiffusionRatios2(int order = 3);
+    /// Anisotropic second-order electron thermal diffusion ratios.
+    const Eigen::MatrixXd& electronThermalDiffusionRatios2B(int order = 3);
+
 
 protected:
 
@@ -82,7 +102,6 @@ protected:
     double Leefac() {
         const double Te = m_thermo.Te();
         const double me = m_collisions.mass()[0];
-        const double xe = m_thermo.X()[0];
         return 16.*m_thermo.P()/(3.*KB*Te)*std::sqrt(me/(TWOPI*KB*Te));
     }
 
@@ -107,58 +126,58 @@ protected:
         return (m_collisions.X()*a).tail(m_collisions.nHeavy()).sum();
     }
 
-    template <int XI>
-    Eigen::Vector3d sigmaB()
-    {
-        const double fac =
-            m_thermo.numberDensity()*m_thermo.X()[0]*QE*QE/(KB*m_thermo.Te());
-
-        Eigen::Vector3d sigma;
-        sigma(0) = m_collisions.L1inv<XI>()(0,0);
-
-        std::complex<double> alpha = m_collisions.L2inv<XI>()(0,0);
-        sigma(1) = alpha.real();
-        sigma(2) = alpha.imag();
-
-        return fac*sigma;
+    template <int P>
+    Eigen::Matrix<double,P,P> L1inv() {
+        return Lee<P>().inverse()/Leefac();
     }
 
-    template <int ORDER>
-    Eigen::Matrix<double,ORDER,ORDER> L1inv() {
-        return Lee<ORDER>().inverse()/Leefac();
-    }
-
-    template <int ORDER>
-    Eigen::Matrix<std::complex<double>,ORDER,ORDER> L2inv()
+    template <int P>
+    Eigen::Matrix<std::complex<double>,P,P> L2inv()
     {
-        Eigen::Matrix<std::complex<double>,ORDER,ORDER> L2 = LBee<ORDER>();
-        L2.real() += Leefac()*Lee<ORDER>();
+        Eigen::Matrix<std::complex<double>,P,P> L2;
+        L2.real() = Leefac()*Lee<P>();
+        L2.imag() = LBee<P>();
         return L2.inverse();
     }
 
     template <int P>
-    Eigen::Vector3d electronThermalConductivityB()
-    {
-        const double fac = 2.5*m_thermo.numberDensity()*m_thermo.X()[0]*KB;
+    Eigen::Vector3d electronThermalConductivityB();
 
-        Eigen::Matrix<double,P-1,P-1> L1 =
-            m_collisions.Leefac()*
-            m_collisions.Lee<P>().template block<P-1,P-1>(1,1);
-        Eigen::Matrix<double,P-1,P-1> L1inv = L1.inverse();
-        Eigen::Matrix<std::complex<double>,P-1,P-1> L2 =
-            m_collisions.LBee<P>().template block<P-1,P-1>(1,1);
-        L2.real() += L1;
-        Eigen::Matrix<std::complex<double>,P-1,P-1> L2inv = L2.inverse();
-
-        Eigen::Vector3d lambda;
-        lambda(0) = 2.5*L1inv(0,0);
-
-        std::complex<double> alpha = 2.5*L2inv(0,0);
-        lambda(1) = alpha.real();
-        lambda(2) = alpha.imag();
-
-        return fac*lambda;
+    template <int P>
+    double electronDiffusionCoefficient() {
+        return L1inv<P>()(0,0);
     }
+
+    template <int P>
+    Eigen::Vector3d electronDiffusionCoefficientB()
+    {
+        Eigen::Vector3d De;
+        De(0) = L1inv<P>()(0,0);
+
+        std::complex<double> alpha = L2inv<P>()(0,0);
+        De(1) = alpha.real();
+        De(2) = alpha.imag();
+
+        return De;
+    }
+
+    template <int P>
+    const Eigen::VectorXd& alpha();
+
+    template <int P>
+    const Eigen::MatrixXd& alphaB();
+
+    template <int P>
+    double electronThermalDiffusionRatio();
+
+    template <int P>
+    Eigen::Vector3d electronThermalDiffusionRatioB();
+
+    template <int P>
+    const Eigen::VectorXd& electronThermalDiffusionRatios2();
+
+    template <int P>
+    const Eigen::MatrixXd& electronThermalDiffusionRatios2B();
 
 //    template <int P, typename RHS>
 //    Eigen::Matrix<double, P, 1> solveRealSysP0(const RHS& rhs) {
@@ -179,6 +198,9 @@ private:
     CollisionDB m_collisions;
 
     Eigen::VectorXd m_alpha;
+    Eigen::MatrixXd m_alpha_B;
+    Eigen::VectorXd m_chi2;
+    Eigen::MatrixXd m_chi2_B;
 
 }; // class ElectronSubSystem
 
@@ -247,6 +269,143 @@ Eigen::Matrix<double, SIZE, SIZE> ElectronSubSystem::LBee()
 
     LB(2,2) = 35./8.*fac;
     return LB;
+}
+
+template <int P>
+Eigen::Vector3d ElectronSubSystem::electronThermalConductivityB()
+{
+    const double fac = 2.5*m_thermo.numberDensity()*m_thermo.X()[0]*KB;
+
+    Eigen::Matrix<double,P-1,P-1> L1 =
+        m_collisions.Leefac()*
+        m_collisions.Lee<P>().template block<P-1,P-1>(1,1);
+    Eigen::Matrix<double,P-1,P-1> L1inv = L1.inverse();
+    Eigen::Matrix<std::complex<double>,P-1,P-1> L2 =
+        m_collisions.LBee<P>().template block<P-1,P-1>(1,1);
+    L2.real() += L1;
+    Eigen::Matrix<std::complex<double>,P-1,P-1> L2inv = L2.inverse();
+
+    Eigen::Vector3d lambda;
+    lambda(0) = 2.5*L1inv(0,0);
+
+    std::complex<double> alpha = 2.5*L2inv(0,0);
+    lambda(1) = alpha.real();
+    lambda(2) = alpha.imag();
+
+    return fac*lambda;
+}
+
+
+/// Small helper class which provides the \f$\beta^{pD_i}\f$.
+template <int P>
+class BetaDi
+{
+public:
+    BetaDi(
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
+        CollisionDB& collisions) : m_beta(P, thermo.nHeavy())
+    {
+        const double fac = 16.0/3.0*thermo.numberDensity()*
+            std::sqrt(collisions.mass()(0)/(TWOPI*KB*thermo.Te()));
+        const int nh = thermo.nHeavy();
+
+        const Eigen::ArrayXd& Q11 = collisions.Q11ei();
+        m_beta.row(0) = fac*(collisions.X()*Q11).tail(nh);
+
+        if (P == 1) return;
+
+        const Eigen::ArrayXd& Q12 = collisions.Q12ei();
+        m_beta.row(1) = fac*(collisions.X()*(2.5*Q11 + 3.0*Q12)).tail(nh);
+
+        if (P == 2) return;
+
+        const Eigen::ArrayXd& Q13 = collisions.Q13ei();
+        m_beta.row(2) =
+            fac*(collisions.X()*(4.375*Q11 + 10.5*Q12 + 6.0*Q13)).tail(nh);
+    }
+
+    const Eigen::Matrix<double,P,Eigen::Dynamic>& operator() () {
+        return m_beta;
+    }
+
+private:
+
+    Eigen::Matrix<double,P,Eigen::Dynamic> m_beta;
+
+};
+
+template <int P>
+const Eigen::VectorXd& ElectronSubSystem::alpha()
+{
+    // Compute the system solution
+    BetaDi<P> beta(m_thermo, m_collisions);
+    m_alpha = (beta().transpose() * L1inv<P>() * beta()).diagonal();
+    return m_alpha;
+}
+
+template <int P>
+const Eigen::MatrixXd& ElectronSubSystem::alphaB()
+{
+    // Compute the system solution
+    BetaDi<P> beta(m_thermo, m_collisions);
+    m_alpha_B.col(0) = (beta().transpose() * L1inv<P>() * beta()).diagonal();
+
+    Eigen::VectorXcd sol = (beta().transpose() * L2inv<P>() * beta()).diagonal();
+    m_alpha_B.col(1) = sol.real();
+    m_alpha_B.col(2) = sol.imag();
+
+    return m_alpha_B;
+}
+
+template <int P>
+double ElectronSubSystem::electronThermalDiffusionRatio()
+{
+    Eigen::Matrix<double,P,P> L1 = Lee<P>();
+
+    return 2.5 * (L1.template topRightCorner<1,P-1>() *
+        L1.template bottomRightCorner<P-1,P-1>().inverse().template leftCols<1>())(0);
+}
+
+template <int P>
+Eigen::Vector3d ElectronSubSystem::electronThermalDiffusionRatioB()
+{
+    // Linear system matrices
+    Eigen::Matrix<double,P,P> L1 = Leefac() * Lee<P>();
+    Eigen::Matrix<std::complex<double>,P,P> L2;
+    L2.real() = L1;
+    L2.imag() = LBee<P>();
+
+    Eigen::Vector3d chi;
+    chi(0) = (L1.template topRightCorner<1,P-1>() *
+        L1.template bottomRightCorner<P-1,P-1>().inverse().template leftCols<1>())(0);
+
+    std::complex<double> sol = (L2.template topRightCorner<1,P-1>() *
+        L2.template bottomRightCorner<P-1,P-1>().inverse().template leftCols<1>())(0);
+    chi(1) = sol.real();
+    chi(2) = sol.imag();
+
+    return 2.5*chi;
+}
+
+template <int P>
+const Eigen::VectorXd& ElectronSubSystem::electronThermalDiffusionRatios2()
+{
+    BetaDi<P> beta(m_thermo, m_collisions);
+    m_chi2 = -2.5 * (L1inv<P>() * beta()).row(1);
+    return m_chi2;
+}
+
+template <int P>
+const Eigen::MatrixXd& ElectronSubSystem::electronThermalDiffusionRatios2B()
+{
+    BetaDi<P> beta(m_thermo, m_collisions);
+    m_chi2_B.col(0) = -2.5 * (L1inv<P>() * beta()).row(1);
+
+    Eigen::VectorXcd sol = (L2inv<P>() * beta()).row(1);
+    m_chi2_B.col(1) = -2.5 * sol.real();
+    m_chi2_B.col(2) = -2.5 * sol.imag();
+
+    return m_chi2_B;
 }
 
 
