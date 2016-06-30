@@ -147,7 +147,7 @@ const Eigen::VectorXd& ElectronSubSystem::alpha(int order)
 
 //==============================================================================
 
-const Eigen::MatrixXd& ElectronSubSystem::alphaB(int order)
+const Eigen::Matrix<double,-1,3>& ElectronSubSystem::alphaB(int order)
 {
     switch (order) {
     case 1: return alphaB<1>();
@@ -221,7 +221,7 @@ const Eigen::VectorXd& ElectronSubSystem::electronThermalDiffusionRatios2(int or
 
 //==============================================================================
 
-const Eigen::MatrixXd& ElectronSubSystem::electronThermalDiffusionRatios2B(int order)
+const Eigen::Matrix<double,-1,3>& ElectronSubSystem::electronThermalDiffusionRatios2B(int order)
 {
     switch (order) {
     case 1: return electronThermalDiffusionRatios2B<1>();

@@ -381,13 +381,29 @@ public:
         return mp_esubsyst->electronDiffusionCoefficientB(order);
     }
 
+    /// Isotropic second-order electron diffusion coefficient.
+    double electronDiffusionCoefficient2(int order = 3)
+    {
+        const int nh = m_thermo.nHeavy();
+        return static_cast<ElectronSubSystem&>(*mp_esubsyst).electronDiffusionCoefficient2(
+            diffusionMatrix().bottomRightCorner(nh,nh), order);
+    }
+
+    /// Anisotropic second-order electron diffusion coefficient.
+    Eigen::Vector3d electronDiffusionCoefficient2B(int order = 3)
+    {
+        const int nh = m_thermo.nHeavy();
+        return static_cast<ElectronSubSystem&>(*mp_esubsyst).electronDiffusionCoefficient2B(
+            diffusionMatrix().bottomRightCorner(nh,nh), order);
+    }
+
     /// Isotropic alpha coefficients.
     const Eigen::VectorXd& alpha(int order = 3) {
         return mp_esubsyst->alpha(order);
     }
 
     /// Anisotropic alpha coefficients.
-    const Eigen::MatrixXd& alphaB(int order = 3) {
+    const Eigen::Matrix<double,-1,3>& alphaB(int order = 3) {
         return mp_esubsyst->alphaB(order);
     }
 
@@ -407,7 +423,7 @@ public:
     }
 
     /// Anisotropic second-order electron thermal diffusion ratios.
-    const Eigen::MatrixXd& electronThermalDiffusionRatios2B(int order = 3) {
+    const Eigen::Matrix<double,-1,3>& electronThermalDiffusionRatios2B(int order = 3) {
         return mp_esubsyst->electronThermalDiffusionRatios2B(order);
     }
 

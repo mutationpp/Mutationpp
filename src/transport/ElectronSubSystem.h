@@ -64,33 +64,49 @@ public:
 
     /// Isotropic electric conductivity in S/m.
     double electricConductivity(int order = 3);
+
     /// Anisotropic electric conductivity in S/m.
     Eigen::Vector3d electricConductivityB(int order = 3);
 
     /// Isotropic electron diffusion coefficient.
     double electronDiffusionCoefficient(int order = 3);
+
     /// Anisotropic electron diffusion coefficient.
     Eigen::Vector3d electronDiffusionCoefficientB(int order = 3);
 
+    /// Isotropic second-order electron diffusion coefficient.
+    template <typename Derived>
+    double electronDiffusionCoefficient2(
+        const Eigen::MatrixBase<Derived>& Dij, int order = 3);
+
+    /// Anisotropic second-order electron diffusion coefficient.
+    template <typename Derived>
+    Eigen::Vector3d electronDiffusionCoefficient2B(
+        const Eigen::MatrixBase<Derived>& Dij, int order = 3);
+
     /// Isotropic electron thermal conductivity in W/m-K.
     double electronThermalConductivity(int order = 3);
+
     /// Anisotropic electron thermal conductivity in W/m-K.
     Eigen::Vector3d electronThermalConductivityB(int order = 3);
 
     /// Isotropic alpha coefficients.
     const Eigen::VectorXd& alpha(int order = 3);
+
     /// Anisotropic alpha coefficients.
-    const Eigen::MatrixXd& alphaB(int order = 3);
+    const Eigen::Matrix<double,-1,3>& alphaB(int order = 3);
 
     /// Isotropic electron thermal diffusion ratio.
     double electronThermalDiffusionRatio(int order = 3);
+
     /// Anisotropic electron thermal diffusion ratio.
     Eigen::Vector3d electronThermalDiffusionRatioB(int order = 3);
 
     /// Isotropic second-order electron thermal diffusion ratios.
     const Eigen::VectorXd& electronThermalDiffusionRatios2(int order = 3);
+
     /// Anisotropic second-order electron thermal diffusion ratios.
-    const Eigen::MatrixXd& electronThermalDiffusionRatios2B(int order = 3);
+    const Eigen::Matrix<double,-1,3>& electronThermalDiffusionRatios2B(int order = 3);
 
 
 protected:
@@ -171,7 +187,7 @@ protected:
     const Eigen::VectorXd& alpha();
 
     template <int P>
-    const Eigen::MatrixXd& alphaB();
+    const Eigen::Matrix<double,-1,3>& alphaB();
 
     template <int P>
     double electronThermalDiffusionRatio();
@@ -183,7 +199,7 @@ protected:
     const Eigen::VectorXd& electronThermalDiffusionRatios2();
 
     template <int P>
-    const Eigen::MatrixXd& electronThermalDiffusionRatios2B();
+    const Eigen::Matrix<double,-1,3>& electronThermalDiffusionRatios2B();
 
 //    template <int P, typename RHS>
 //    Eigen::Matrix<double, P, 1> solveRealSysP0(const RHS& rhs) {
@@ -204,9 +220,9 @@ private:
     CollisionDB m_collisions;
 
     Eigen::VectorXd m_alpha;
-    Eigen::MatrixXd m_alpha_B;
+    Eigen::Matrix<double,-1,3> m_alpha_B;
     Eigen::VectorXd m_chi2;
-    Eigen::MatrixXd m_chi2_B;
+    Eigen::Matrix<double,-1,3> m_chi2_B;
 
 }; // class ElectronSubSystem
 
@@ -347,7 +363,7 @@ const Eigen::VectorXd& ElectronSubSystem::alpha()
 }
 
 template <int P>
-const Eigen::MatrixXd& ElectronSubSystem::alphaB()
+const Eigen::Matrix<double,-1,3>& ElectronSubSystem::alphaB()
 {
     // Linear system matrices
     Eigen::Matrix<double,P,P> L1 = Leefac() * Lee<P>();
@@ -405,7 +421,7 @@ const Eigen::VectorXd& ElectronSubSystem::electronThermalDiffusionRatios2()
 }
 
 template <int P>
-const Eigen::MatrixXd& ElectronSubSystem::electronThermalDiffusionRatios2B()
+const Eigen::Matrix<double,-1,3>& ElectronSubSystem::electronThermalDiffusionRatios2B()
 {
     // Linear system matrices
     Eigen::Matrix<double,P,P> L1 = Leefac() * Lee<P>();
@@ -421,6 +437,32 @@ const Eigen::MatrixXd& ElectronSubSystem::electronThermalDiffusionRatios2B()
     m_chi2_B.col(2) = -2.5 * sol.imag();
 
     return m_chi2_B;
+}
+
+template <typename Derived>
+double ElectronSubSystem::electronDiffusionCoefficient2(
+    const Eigen::MatrixBase<Derived>& Dij, int order)
+{
+    const Eigen::VectorXd& a = (*this).alpha(order);
+    return (Dij * a).dot(a);
+}
+
+template <typename Derived>
+Eigen::Vector3d ElectronSubSystem::electronDiffusionCoefficient2B(
+    const Eigen::MatrixBase<Derived>& Dij, int order)
+{
+    const Eigen::Matrix<double,-1,3>& a = (*this).alphaB(order);
+    Eigen::Vector3d Dee;
+
+    Dee(0) = (Dij * a.col(0)).dot(a.col(0));
+
+    Dee(1) = (Dij * a.col(1)).dot(a.col(1)) -
+             (Dij * a.col(2)).dot(a.col(2));
+
+    Dee(2) = (Dij * a.col(1)).dot(a.col(2)) +
+             (Dij * a.col(2)).dot(a.col(1));
+
+    return Dee;
 }
 
 
