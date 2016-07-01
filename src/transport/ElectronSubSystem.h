@@ -75,14 +75,12 @@ public:
     Eigen::Vector3d electronDiffusionCoefficientB(int order = 3);
 
     /// Isotropic second-order electron diffusion coefficient.
-    template <typename Derived>
     double electronDiffusionCoefficient2(
-        const Eigen::MatrixBase<Derived>& Dij, int order = 3);
+        const Eigen::Ref<const Eigen::MatrixXd>& Dij, int order = 3);
 
     /// Anisotropic second-order electron diffusion coefficient.
-    template <typename Derived>
     Eigen::Vector3d electronDiffusionCoefficient2B(
-        const Eigen::MatrixBase<Derived>& Dij, int order = 3);
+        const Eigen::Ref<const Eigen::MatrixXd>& Dij, int order = 3);
 
     /// Isotropic electron thermal conductivity in W/m-K.
     double electronThermalConductivity(int order = 3);
@@ -243,7 +241,7 @@ Eigen::Matrix<double, SIZE, SIZE> ElectronSubSystem::Lee()
 
     const Eigen::ArrayXd& Q12 = m_collisions.Q12ei();
     const Eigen::ArrayXd& Q13 = m_collisions.Q13ei();
-    const double Q22 = m_collisions.Q22ee()(0);
+    const double Q22 = m_collisions.Q22ee();
 
     // L01ee, L10ee
     L(0,1) = dotxh(2.5*Q11-3.*Q12);
@@ -358,7 +356,11 @@ const Eigen::VectorXd& ElectronSubSystem::alpha()
 {
     // Compute the system solution
     BetaDi<P> beta(m_thermo, m_collisions);
-    m_alpha = (beta().transpose() * L1inv<P>() * beta()).diagonal();
+    Eigen::Matrix<double,P,P> L1inv = Lee<P>().inverse() / Leefac();
+
+    for (int i = 0; i < m_thermo.nHeavy(); ++i)
+        m_alpha(i) = (L1inv * beta().col(i)).dot(beta().col(i));
+
     return m_alpha;
 }
 
@@ -371,13 +373,23 @@ const Eigen::Matrix<double,-1,3>& ElectronSubSystem::alphaB()
     L2.real() = L1;
     L2.imag() = LBee<P>();
 
+    // Inverses
+    Eigen::Matrix<double,P,P> L1inv = L1.inverse();
+    Eigen::Matrix<std::complex<double>,P,P> L2inv = L2.inverse();
+
     // Compute the system solution
     BetaDi<P> beta(m_thermo, m_collisions);
-    m_alpha_B.col(0) = (beta().transpose()*L1.inverse()*beta()).diagonal();
+    std::complex<double> sol;
+    Eigen::Matrix<double,P,1> b;
 
-    Eigen::VectorXcd sol = (beta().transpose()*L2.inverse()*beta()).diagonal();
-    m_alpha_B.col(1) = sol.real();
-    m_alpha_B.col(2) = sol.imag();
+    for (int i = 0; i < m_thermo.nHeavy(); ++i) {
+        b = beta().col(i);
+        m_alpha_B(i,0) = (L1inv * b).dot(b);
+
+        sol = (L2inv * b).dot(b);
+        m_alpha_B(i,1) = sol.real();
+        m_alpha_B(i,2) = sol.imag();
+    }
 
     return m_alpha_B;
 }
@@ -437,32 +449,6 @@ const Eigen::Matrix<double,-1,3>& ElectronSubSystem::electronThermalDiffusionRat
     m_chi2_B.col(2) = -2.5 * sol.imag();
 
     return m_chi2_B;
-}
-
-template <typename Derived>
-double ElectronSubSystem::electronDiffusionCoefficient2(
-    const Eigen::MatrixBase<Derived>& Dij, int order)
-{
-    const Eigen::VectorXd& a = (*this).alpha(order);
-    return (Dij * a).dot(a);
-}
-
-template <typename Derived>
-Eigen::Vector3d ElectronSubSystem::electronDiffusionCoefficient2B(
-    const Eigen::MatrixBase<Derived>& Dij, int order)
-{
-    const Eigen::Matrix<double,-1,3>& a = (*this).alphaB(order);
-    Eigen::Vector3d Dee;
-
-    Dee(0) = (Dij * a.col(0)).dot(a.col(0));
-
-    Dee(1) = (Dij * a.col(1)).dot(a.col(1)) -
-             (Dij * a.col(2)).dot(a.col(2));
-
-    Dee(2) = (Dij * a.col(1)).dot(a.col(2)) +
-             (Dij * a.col(2)).dot(a.col(1));
-
-    return Dee;
 }
 
 

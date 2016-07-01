@@ -89,7 +89,7 @@ public:
     const CollisionGroup& group(const std::string& name);
 
     /// Provides Q11 collision integral for the electron-electron interaction.
-    const Eigen::ArrayXd& Q11ee() { return group("Q11ee").array(); }
+    double Q11ee() { return group("Q11ee")[0]; }
 
     /// Provides Q11 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q11ei() { return group("Q11ei").array(); }
@@ -113,7 +113,7 @@ public:
     const Eigen::ArrayXd& Q15ei() { return group("Q15ei").array(); }
 
     /// Provides Q22 collision integral for the electron-electron interaction.
-    const Eigen::ArrayXd& Q22ee() { return group("Q22ee").array(); }
+    double Q22ee() { return group("Q22ee")[0]; }
 
     /// Provides Q22 collision integrals for electron-heavy interactions.
     const Eigen::ArrayXd& Q22ei() { return group("Q22ei").array(); }
@@ -199,7 +199,7 @@ public:
 
         const Eigen::ArrayXd& Q12 = Q12ei();
         const Eigen::ArrayXd& Q13 = Q13ei();
-        const double Q22 = Q22ee()(0);
+        const double Q22 = Q22ee();
 
         // L01ee, L10ee
         L(0,1) = dotxh(2.5*Q11-3.*Q12);

@@ -236,5 +236,33 @@ const Eigen::Matrix<double,-1,3>& ElectronSubSystem::electronThermalDiffusionRat
 
 //==============================================================================
 
+double ElectronSubSystem::electronDiffusionCoefficient2(
+    const Eigen::Ref<const Eigen::MatrixXd>& Dij, int order)
+{
+    const Eigen::VectorXd a = (*this).alpha(order);
+    return (Dij * a).dot(a);
+}
+
+//==============================================================================
+
+Eigen::Vector3d ElectronSubSystem::electronDiffusionCoefficient2B(
+    const Eigen::Ref<const Eigen::MatrixXd>& Dij, int order)
+{
+    const Eigen::Matrix<double,-1,3> a = (*this).alphaB(order);
+    Eigen::Vector3d Dee;
+
+    Dee(0) = (Dij * a.col(0)).dot(a.col(0));
+
+    Dee(1) = (Dij * a.col(1)).dot(a.col(1)) -
+             (Dij * a.col(2)).dot(a.col(2));
+
+    Dee(2) = (Dij * a.col(1)).dot(a.col(2)) +
+             (Dij * a.col(2)).dot(a.col(1));
+
+    return Dee;
+}
+
+//==============================================================================
+
     } // namespace Transport
 } // namespace Mutation

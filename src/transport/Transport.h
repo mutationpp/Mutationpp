@@ -31,7 +31,6 @@
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
 #include "ElectronSubSystem.h"
-#include "Ramshaw.h"
 #include "Utilities.h"
 
 #include <Eigen/Dense>
@@ -39,7 +38,7 @@
 namespace Mutation {
     namespace Transport {
 
-class ElectronSubSystem;
+class DiffusionMatrix;
 class ThermalConductivityAlgorithm;
 class ViscosityAlgorithm;
 
@@ -71,6 +70,9 @@ public:
     /// Sets the heavy particle, thermal conductivity algorithm.
     void setThermalConductivityAlgo(const std::string& algo);
     
+    /// Sets the diffusion matrix algorithm.
+    void setDiffusionMatrixAlgo(const std::string& algo);
+
     /// Returns the number of collision pairs accounted for in this mixture.
     int nCollisionPairs() const { return m_collisions.size(); }
     
@@ -178,10 +180,8 @@ public:
     void thermalDiffusionRatios(double* const p_k);
     
     /// Returns the multicomponent diffusion coefficient matrix.
-    const Eigen::MatrixXd& diffusionMatrix() {
-        return mp_diffusion_matrix->diffusionMatrix();
-    }
-    
+    const Eigen::MatrixXd& diffusionMatrix();
+
     /**
      * Returns the average diffusion coefficients.
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
@@ -385,7 +385,7 @@ public:
     double electronDiffusionCoefficient2(int order = 3)
     {
         const int nh = m_thermo.nHeavy();
-        return static_cast<ElectronSubSystem&>(*mp_esubsyst).electronDiffusionCoefficient2(
+        return mp_esubsyst->electronDiffusionCoefficient2(
             diffusionMatrix().bottomRightCorner(nh,nh), order);
     }
 
@@ -393,7 +393,7 @@ public:
     Eigen::Vector3d electronDiffusionCoefficient2B(int order = 3)
     {
         const int nh = m_thermo.nHeavy();
-        return static_cast<ElectronSubSystem&>(*mp_esubsyst).electronDiffusionCoefficient2B(
+        return mp_esubsyst->electronDiffusionCoefficient2B(
             diffusionMatrix().bottomRightCorner(nh,nh), order);
     }
 
@@ -533,7 +533,7 @@ private:
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;
-    Ramshaw* mp_diffusion_matrix;
+    DiffusionMatrix* mp_diffusion_matrix;
     
     double* mp_wrk1;
     double* mp_wrk2;

@@ -27,6 +27,7 @@
 
 
 #include "Constants.h"
+#include "DiffusionMatrix.h"
 #include "ThermalConductivityAlgorithm.h"
 #include "Transport.h"
 #include "ViscosityAlgorithm.h"
@@ -67,7 +68,7 @@ Transport::Transport(
     setThermalConductivityAlgo(lambda);
     
     // Load the diffusion matrix calculator
-    mp_diffusion_matrix = new Ramshaw(m_collisions);
+    setDiffusionMatrixAlgo("Exact");
     
     // Allocate work array storage
     mp_wrk1 = new double [m_thermo.nSpecies()*3];
@@ -120,6 +121,21 @@ void Transport::setThermalConductivityAlgo(const std::string& algo)
 double Transport::heavyThermalConductivity()
 {
     return mp_thermal_conductivity->thermalConductivity();
+}
+
+//==============================================================================
+
+void Transport::setDiffusionMatrixAlgo(const std::string& algo)
+{
+    if (mp_diffusion_matrix != NULL) delete mp_diffusion_matrix;
+    mp_diffusion_matrix = Factory<DiffusionMatrix>::create(algo, m_collisions);
+}
+
+//==============================================================================
+
+const Eigen::MatrixXd& Transport::diffusionMatrix()
+{
+    return mp_diffusion_matrix->diffusionMatrix();
 }
 
 //==============================================================================
@@ -448,7 +464,7 @@ double Transport::meanFreePath()
                     const double* const X = m_thermo.X();
                     const double me = m_thermo.speciesMw(0)/NA;
                    const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-        const double Q11ee = m_collisions.Q11ee()(0);
+        const double Q11ee = m_collisions.Q11ee();
         const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 
 
@@ -479,7 +495,7 @@ double Transport::electronMeanFreePath()
     const double nd = m_thermo.numberDensity();
     const double* const X = m_thermo.X();
 
-    const double Q11ee = m_collisions.Q11ee()(0);
+    const double Q11ee = m_collisions.Q11ee();
     const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
     double sum = 0.0;
             sum +=X[0]*X[0]*Q11ee;
@@ -541,7 +557,7 @@ double Transport::coulombMeanCollisionTime()
     const double* const X = m_thermo.X();
     double sum = 0.0;
     const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-    const double Q11ee = m_collisions.Q11ee()(0);
+    const double Q11ee = m_collisions.Q11ee();
     const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
                         sum +=X[0]*X[0]*Q11ee;
                         for (int i = 1; i < ns; ++i)
@@ -1080,11 +1096,11 @@ const double Th = m_thermo.T();
 const double* const X = m_thermo.X();
 const int ns = m_thermo.nSpecies();
 const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-const double Q11ee = m_collisions.Q11ee()(0);
+const double Q11ee = m_collisions.Q11ee();
 const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 const Eigen::ArrayXd& Q12ei = m_collisions.Q12ei();
 const Eigen::ArrayXd& Q13ei = m_collisions.Q13ei();
-const double Q22ee = m_collisions.Q22ee()(0);
+const double Q22ee = m_collisions.Q22ee();
 double tauelambda=0.0;
 double Ve0=0.0;
 double collisionalsum=0.0;
@@ -1139,11 +1155,11 @@ const double Th = m_thermo.T();
 const double* const X = m_thermo.X();
 const int ns = m_thermo.nSpecies();
 const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-const double Q11ee = m_collisions.Q11ee()(0);
+const double Q11ee = m_collisions.Q11ee();
 const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 const Eigen::ArrayXd& Q12ei = m_collisions.Q12ei();
 const Eigen::ArrayXd& Q13ei = m_collisions.Q13ei();
-const double Q22ee = m_collisions.Q22ee()(0);
+const double Q22ee = m_collisions.Q22ee();
 double frictioncoeff=0.0;
 double A=0.0;
 double BB=0.0;
@@ -1242,11 +1258,11 @@ const double* const X = m_thermo.X();
 const int ns = m_thermo.nSpecies();
 const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 const Eigen::ArrayXd& Q22 = m_collisions.Q22ij();
-const double Q11ee = m_collisions.Q11ee()(0);
+const double Q11ee = m_collisions.Q11ee();
 const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 const Eigen::ArrayXd& Q12ei = m_collisions.Q12ei();
 const Eigen::ArrayXd& Q13ei = m_collisions.Q13ei();
-const double Q22ee = m_collisions.Q22ee()(0);
+const double Q22ee = m_collisions.Q22ee();
 
 double tauvisc=0.0;
 double Vh0=0.0;
@@ -1296,12 +1312,12 @@ double nd  = m_thermo.numberDensity();
    const double Th = m_thermo.T();
 const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 const Eigen::ArrayXd& Q22 = m_collisions.Q22ij();
-const double Q11ee = m_collisions.Q11ee()(0);
+const double Q11ee = m_collisions.Q11ee();
 const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 const Eigen::ArrayXd& Q12ei = m_collisions.Q12ei();
 const Eigen::ArrayXd& Q13ei = m_collisions.Q13ei();
 const Eigen::ArrayXd& Bstar = m_collisions.Bstij();
-const double Q22ee = m_collisions.Q22ee()(0);
+const double Q22ee = m_collisions.Q22ee();
    double taulambdah=0.0;
    double Vh0=0.0;
    double collisionsum=0.0;
@@ -1348,12 +1364,12 @@ const double me =m_thermo.speciesMw(0)/NA;
    const double Th = m_thermo.T();
 const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 const Eigen::ArrayXd& Q22 = m_collisions.Q22ij();
-const double Q11ee = m_collisions.Q11ee()(0);
+const double Q11ee = m_collisions.Q11ee();
 const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
 const Eigen::ArrayXd& Q12ei = m_collisions.Q12ei();
 const Eigen::ArrayXd& Q13ei = m_collisions.Q13ei();
 const Eigen::ArrayXd& Bstar = m_collisions.Bstij();
-const double Q22ee = m_collisions.Q22ee()(0);
+const double Q22ee = m_collisions.Q22ee();
 double tauenergy=0.0;
      double Vh0=0.0;
      double collisionsum=0.0;
