@@ -249,6 +249,9 @@ double Transport::reactiveThermalConductivity()
 
 double Transport::soretThermalConductivity()
 {
+	// This is super inefficient, should fix
+	Eigen::VectorXd work(m_thermo.nSpecies());
+
 	// Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
     
@@ -258,15 +261,15 @@ double Transport::soretThermalConductivity()
     // Combine to get the driving forces
     for (int i = 0; i < m_thermo.nSpecies(); i++)
         mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
-    
+
     // Compute the diffusion velocities
     double E;
-    stefanMaxwell(mp_wrk1, mp_wrk1, E);
+    stefanMaxwell(mp_wrk1, work.data(), E);
     
     double lambda = 0.0;
-    for (int i = 0; i < m_thermo.nSpecies(); i++)
-        lambda -= mp_wrk2[i]*mp_wrk1[i];
-    
+    for (int i = 1; i < m_thermo.nSpecies(); i++)
+        lambda -= mp_wrk2[i]*work[i];
+
     return (m_thermo.P()*lambda);
 }
 
@@ -393,11 +396,13 @@ void Transport::stefanMaxwell(
     Map<const ArrayXd> dp(p_dp, ns);
     Map<ArrayXd> V(p_V, ns), qi(mp_wrk3, ns);
 
-    // Need to place a tolerance on X and Y
+//    // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
     static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
     X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+//    Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
+//    Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
 
     // Get reference to binary diffusion coefficients
     const ArrayXd& nDij = m_collisions.nDij();

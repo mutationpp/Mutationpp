@@ -68,7 +68,7 @@ enum ConversionType {
     YE_TO_XE,    ///< elemental mass fraction to mole fraction
     
     // Mixed quantities
-    Y_TO_XE,     ///< species mass fractions to elemental mole fractions
+    //Y_TO_XE,     ///< species mass fractions to elemental mole fractions
     X_TO_XE,     ///< species mole fractions to elemental mole fractions
 };
 
@@ -939,6 +939,18 @@ inline void Thermodynamics::convert<YE_TO_XE>(
     for (int i = 0; i < nElements(); ++i)
         b[i] /= sum;
 }
+
+template <>
+inline void Thermodynamics::convert<X_TO_XE>(
+    const double *const a, double *const b) const
+{
+    Eigen::Map<const Eigen::VectorXd> X(a, nSpecies());
+    Eigen::Map<Eigen::VectorXd> Xe(b, nElements());
+
+    Xe = m_element_matrix.transpose() * X;
+    Xe /= Xe.sum();
+}
+
 
 //template <>
 //inline void Thermodynamics::convert<Y_TO_XE>(

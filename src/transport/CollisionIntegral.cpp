@@ -546,6 +546,54 @@ Config::ObjectProvider<RatioColInt, CollisionIntegral> ratio_ci("ratio");
 //==============================================================================
 
 /**
+ * Represents a collision integral computed using Murphy's phenomenological
+ * approximation to combine elastic and charge-exchange integrals.
+ */
+class MurphyColInt : public CollisionIntegral
+{
+public:
+    MurphyColInt(CollisionIntegral::ARGS args) :
+        CollisionIntegral(args)
+    {
+        // Get the two vectors separated by a comma
+        vector<string> tokens;
+        String::tokenize(args.xml.text(), tokens, ",\n\r");
+
+        if (tokens.size() != 2) args.xml.parseError(
+            "Incorrect format for collision integral table.");
+
+        // Parse the two rows
+        fillVector(tokens[0], m_T);
+        fillVector(tokens[1], m_Q);
+
+        if (m_T.size() != m_Q.size() && m_T.size() > 1) args.xml.parseError(
+            "Table rows must be same size and greater than 1.");
+    }
+
+    // Allow tabulation of this integral if the two underlying integrals can be
+    // tabulated
+    bool canTabulate() const {
+        return m_Q1.canTabulate() && m_Q2.canTabulate();
+    }
+
+private:
+
+    double compute_(double T)
+    {
+        double Q1 = m_Q1->compute(T);
+        double Q2 = m_Q2->compute(T);
+        return std::sqrt(Q1->compute(T))
+    }
+
+private
+
+    SharedPtr<CollisionIntegral> m_Q1;
+    SharedPtr<CollisionIntegral> m_Q2;
+};
+
+//==============================================================================
+
+/**
  * Represents a collision integral which is interpolated from a given table.
  */
 class TableColInt : public CollisionIntegral

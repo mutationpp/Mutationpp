@@ -110,6 +110,9 @@ void CollisionPair::initSpeciesData(const Species& s1, const Species& s2)
         std::swap(mp_sp1, mp_sp2);
     if (sp2Name() == "e-")
         std::swap(mp_sp1, mp_sp2);
+
+    // Make the string representation of this pair
+    m_string = "(" + sp1Name() + "," + sp2Name() + ")";
 }
 
 //==============================================================================
@@ -174,8 +177,8 @@ SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(const string& kind)
     IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind);
     if (iter == mp_xml->end()) {
-        cout << "Collision integral " << kind << " is not given for the pair ("
-             << sp1Name() << ", " << sp2Name() << ")." << endl;
+        cout << "Collision integral " << kind << " is not given for the pair "
+             << name() << "." << endl;
         exit(1);
     }
 

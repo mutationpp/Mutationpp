@@ -73,6 +73,7 @@ public:
     const Thermodynamics::Species& sp2() const { return *mp_sp2; }
     const std::string& sp1Name() const;
     const std::string& sp2Name() const;
+    const std::string& name() const { return m_string; }
     CollisionType type() const { return m_type; }
 
     /// Get the collision integral corresponding to the given type.
@@ -115,6 +116,9 @@ private:
 
     /// Group of collision integrals loaded for this pair
     std::map<std::string, SharedPtr<CollisionIntegral> > m_integrals;
+
+    /// String representation of this pair
+    std::string m_string;
 };
 
     } // namespace Transport

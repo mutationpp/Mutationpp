@@ -69,20 +69,44 @@ Mixture::Mixture(const MixtureOptions& options)
 
 void Mixture::addComposition(const Composition& c, bool make_default)
 {
-    // Make sure all the components are valid elements for this mixture
+    // Check if all names in the composition are elements
+    bool elements = true;
     for (int i = 0; i < c.size(); ++i) {
         if (elementIndex(c[i].name) < 0) {
-            std::cerr << "Error: composition '" << c.name()
-                      << "'has an element which does not exist in mixture!"
-                      << std::endl;
-            std::exit(1);
+            elements = false;
+
+            if (speciesIndex(c[i].name) < 0) {
+                std::cerr << "Error: composition '" << c.name()
+                      << "' has component which is not an element or species"
+                      << " belonging to the mixture!" << std::endl;
+                std::exit(1);
+            }
         }
     }
 
-    m_compositions.push_back(c);
+    // If this composition has species names, then treat all as species and
+    // convert to elements
+    if (!elements) {
+        ArrayXd svals(nSpecies());
+        ArrayXd evals(nElements());
+        c.getComposition(m_species_indices, svals.data());
+
+        if (c.type() == Composition::MASS)
+            convert<Y_TO_X>(svals.data(), svals.data());
+        convert<X_TO_XE>(svals.data(), evals.data());
+
+        // Get list of element names
+        std::vector<std::string> names;
+        for (int i = 0; i < nElements(); ++i)
+            names.push_back(elementName(i));
+
+        m_compositions.push_back(
+            Composition(names, evals.data(), Composition::MOLE));
+    } else
+        m_compositions.push_back(c);
 
     if (make_default)
-        setDefaultComposition(c);
+        setDefaultComposition(m_compositions.back());
 }
 
 //==============================================================================

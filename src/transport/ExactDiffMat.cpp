@@ -54,13 +54,12 @@ public:
         const int k  = ns - m_collisions.nHeavy();
         const double nd = m_collisions.thermo().numberDensity();
 
-        // First step is to compute X and Y with tolerance on X
-        static Eigen::ArrayXd X(ns);
-        static Eigen::ArrayXd Y(ns);
-        X = m_collisions.X();//+1.0e-16;
-        //X /= X.sum();
-        m_collisions.thermo().convert<Mutation::Thermodynamics::X_TO_Y>(
-            X.data(), Y.data());
+        //Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
+        //Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
+
+        static Eigen::ArrayXd X; X = m_collisions.X()+1.0e-16;
+        static Eigen::ArrayXd Y; Y.resize(ns);
+        m_collisions.thermo().convert<Thermodynamics::X_TO_Y>(X.data(), Y.data());
 
 
         // Compute singular system matrix (lower triangular part)

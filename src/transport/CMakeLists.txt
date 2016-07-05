@@ -22,6 +22,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
+    CapitelliIntegrals.cpp
     CollisionDB.cpp
     CollisionGroup.cpp
     CollisionIntegral.cpp

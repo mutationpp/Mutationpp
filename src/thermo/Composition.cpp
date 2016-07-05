@@ -90,6 +90,17 @@ Composition::Composition(const IO::XmlElement& element)
 
 //=============================================================================
 
+Composition::Composition(
+    const std::vector<std::string>& names, const double* const vals, Type type)
+    : m_type(type)
+{
+    for (int i = 0; i < names.size(); ++i)
+        if (vals[i] != 0.0)
+            m_components.push_back(Component(names[i], vals[i]));
+}
+
+//=============================================================================
+
 void Composition::getComposition(
     const std::map<std::string, int>& map, double* const p_vec) const
 {

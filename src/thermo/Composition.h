@@ -64,6 +64,9 @@ public:
     Composition(
         const std::string& name, const std::string& list, Type type = MOLE);
     Composition(const Mutation::Utilities::IO::XmlElement& element);
+    Composition(
+        const std::vector<std::string>& names,
+        const double* const vals, Type type);
 
     // Property getters
     const std::string& name() const { return m_name; }
@@ -76,6 +79,7 @@ public:
     void getComposition(
         const std::map<std::string, int>& map, double* const p_vec) const;
     int size() const { return m_components.size(); }
+
 
 private:
 

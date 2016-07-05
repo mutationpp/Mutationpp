@@ -35,7 +35,7 @@
  given for all possible integrals with warnings for integrals that really should
  have explicit data given.
 =============================================================================-->
-<collisions tabulate="yes" Tmin="300" Tmax="20000" dT="100">
+<collisions tabulate="yes" Tmin="200" Tmax="50000" dT="100">
 
     <!-- Default collision integral data -->
     <defaults>
@@ -52,7 +52,7 @@
         
         <!-- Ion-Neutral interactions -->
         <ion-neutral>
-            <-- Requires dipole-polarizability of neutral species -->
+            <!-- Requires dipole-polarizability of neutral species -->
             <Q11 type="Langevin"/>
             
             <Q22 type="ratio" ratio="1.1" integral="Q11" ref="Wright2007"/>
@@ -1463,12 +1463,21 @@
     </pair>
     
     <!-- H -->
+    <!--
     <pair s1="H" s2="H">
         <Q11 type="exp-poly" units="A-A" ref="Bellemans">
             -1.431967e-02 2.525294e-01 -1.667807e+00 7.154934e+00 </Q11>
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             -1.524182e-02 2.925868e-01 -2.076287e+00 8.401160e+00 </Q22>
     </pair>
+    -->
+    <pair s1="H" s2="H">
+        <Q11 type="Bruno-Eq(11)" units="A-A" ref="Bruno2010">
+            15.09506044 -1.25710008 9.57839369 -3.80371463 0.98646613 9.25705877 -0.93611707 </Q11>
+        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+            -1.524182e-02 2.925868e-01 -2.076287e+00 8.401160e+00 </Q22>
+    </pair>
+    
 
     <pair s1="H" s2="H+">
         <Q11 type="exp-poly" units="A-A" ref="Bellemans">
@@ -1476,12 +1485,90 @@
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             -2.096691e-02 4.088188e-01 -2.889170e+00 1.127644e+01 </Q22>
     </pair>
+    
+    <pair s1="H" s2="H-">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.012538 0.114167 -0.564435 4.451002</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.017183 0.129002 -0.516498 4.232525</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.017270 0.120349 -0.464369 4.100052</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.016338 0.122604 -0.499940 4.087296</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.014551 0.093025 -0.382882 3.941256</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.012449 0.113253 -0.542293 4.552107</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.018657 0.058290 -0.674248 4.154910</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.018548 0.133436 -0.485788 4.283382</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.015668 0.123634 -0.515070 4.330396</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.017262 0.132609 -0.511806 4.387950</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
 
     <pair s1="H" s2="H2">
         <Q11 type="exp-poly" units="A-A" ref="Bellemans">
             -6.008266e-03 7.222274e-02 -4.980915e-01 4.430276e+00 </Q11>
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             -6.824500e-03 8.847957e-02 -5.678354e-01 4.630866e+00 </Q22>
+    </pair>
+    
+    <pair s1="H" s2="H2+">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            0.014249 0.045243 -0.563183 3.342470</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            0.010197 0.058608 -0.513357 3.137374</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            0.004720 0.065067 -0.460770 3.003656</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            0.010946 0.053252 -0.500452 2.992990</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.003382 0.069125 -0.381561 2.833028</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015933 0.038679 -0.542355 3.439947</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            0.008513 -0.014197 -0.741782 2.960374</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            0.010603 0.056418 -0.479878 3.185756</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            0.011177 0.053582 -0.511833 3.227706</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            0.013631 0.051145 -0.508979 3.287532</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
+    <pair s1="H" s2="H3+">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            0.013961 0.044875 -0.562322 3.363043</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            0.009612 0.058402 -0.511314 3.157574</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            0.004022 0.065122 -0.458311 3.023216</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            0.010444 0.053008 -0.498641 3.013196</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.004050 0.069519 -0.379354 2.851716</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015750 0.038237 -0.541779 3.460726</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            0.008385 -0.014399 -0.740660 2.982430</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            0.009981 0.056208 -0.477589 3.206034</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            0.010719 0.053336 -0.510259 3.248049</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            0.013148 0.050792 -0.507217 3.308157</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
     </pair>
 
     <pair s1="H" s2="HCN">
@@ -1575,6 +1662,33 @@
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
     
+    <!-- H- -->
+    <pair s1="H-" s2="H2">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.009481 0.097442 -0.540733 4.453855</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.015981 0.120182 -0.495846 4.230374</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.017655 0.119946 -0.452408 4.095748</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.014782 0.112555 -0.479349 4.086960</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.016375 0.101555 -0.383799 3.938378</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.008570 0.092586 -0.515736 4.555210</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.013932 0.033206 -0.669252 4.148700</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.017260 0.123712 -0.463010 4.278504</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.013712 0.111534 -0.493012 4.329304</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.014827 0.117485 -0.485368 4.385731</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
     <!-- H2 -->   
     <pair s1="H2" s2="H2">
         <Q11 type="exp-poly" units="A-A" ref="Bellemans">
@@ -1582,12 +1696,114 @@
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             -1.150966e-03 3.526062e-03 -1.205215e-01 3.930103e+00 </Q22>
     </pair>
+    
+    <pair s1="H2" s2="H2+">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            0.014604 0.048748 -0.551024 3.378941</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            0.011513 0.061402 -0.503458 3.180030</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            0.006526 0.066707 -0.451966 3.052329</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            0.012952 0.055564 -0.498001 3.037058</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.001404 0.069080 -0.372406 2.890415</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.016175 0.042647 -0.532969 3.470703</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            0.005949 -0.030099 -0.785154 2.928632</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            0.012255 0.059569 -0.473909 3.223750</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            0.012158 0.056540 -0.502323 3.266183</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            0.014840 0.054894 -0.502273 3.321313</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
+    <pair s1="H2" s2="H3+">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            0.014505 0.048457 -0.551200 3.399495</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            0.011257 0.061126 -0.503046 3.200369</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            0.006197 0.066538 -0.451270 3.072285</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            0.012730 0.055299 -0.497502 3.057421</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.001743 0.069105 -0.371709 2.909738</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.016129 0.042333 -0.533214 3.491496</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            0.006054 -0.029496 -0.783343 2.951732</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            0.011973 0.059261 -0.473276 3.244302</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            0.011967 0.056271 -0.502108 3.286657</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            0.014636 0.054545 -0.501925 3.342073</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
 
     <pair s1="H2" s2="HCN">
         <Q11 type="exp-poly" units="A-A" ref="Bellemans">
             -4.942712e-03 1.309716e-01 -1.305302e+00 7.700887e+00 </Q11>
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             -5.214044e-03 1.361040e-01 -1.324077e+00 7.774390e+00 </Q22>
+    </pair>
+    
+    <pair s1="H2" s2="He">
+        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0049427 0.118 -1.0874 6.3348 </Q11>
+        <Q12 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0025006 0.058232 -0.60334 4.9858 </Q12>
+        <Q13 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0013749 0.031065 -0.38717 4.3885 </Q13>
+        <Q14 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.00084773 0.018421 -0.28748 4.0832 </Q14>
+        <Q15 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.00056447 0.011661 -0.23462 3.8849 </Q15>
+        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0052141 0.12242 -1.0978 6.3956 </Q22>
+        <Q23 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0030459 0.069825 -0.67677 5.2543 </Q23>
+        <Q24 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.00192 0.042756 -0.46248 4.6504 </Q24>
+        <Q33 type="exp-poly" units="A-A" ref="Bellemans">
+            -0.0031194 0.071984 -0.69861 5.2668 </Q33>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
+    <pair s1="H2" s2="He+">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015747 0.053940 -0.549865 2.905082</Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            0.016386 0.070032 -0.515731 2.701760</Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            0.013574 0.075349 -0.473357 2.575904</Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015879 0.062163 -0.504891 2.561489</Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            0.006658 0.074672 -0.399146 2.422602</Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015598 0.046445 -0.527026 2.997526</Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            0.004791 -0.032210 -0.791466 2.444136</Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            0.017376 0.068942 -0.488107 2.743067</Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            0.015449 0.063417 -0.509424 2.789846</Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            0.017874 0.062907 -0.508659 2.841809</Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
     </pair>
 
     <pair s1="H2" s2="N">
@@ -1659,6 +1875,95 @@
         <Q22 type="exp-poly" units="A-A" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
+    
+    <!-- H2+ -->
+    <pair s1="H2+" s2="He">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.002117 0.068911 -0.488832 3.192598 </Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.010150 0.092606 -0.431158 2.979281 </Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.014288 0.100961 -0.387245 2.846997 </Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.006131 0.081412 -0.434684 2.843736 </Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.016379 0.098249 -0.328882 2.693865 </Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            0.000054 0.061476 -0.472343 3.283003 </Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.006404 -0.052487 -0.803433 2.720445 </Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.011239 0.094961 -0.399490 3.014507 </Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.007236 0.083567 -0.435798 3.069108 </Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.007364 0.085460 -0.427764 3.118258 </Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
+    <!-- H3+ -->
+    <pair s1="H3+" s2="He">
+        <Q11 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.002836 0.071199 -0.489401 3.214226 </Q11>
+        <Q12 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.010790 0.095091 -0.432825 3.000519 </Q12>
+        <Q13 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.014723 0.102969 -0.389517 2.868700 </Q13>
+        <Q14 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.006981 0.084174 -0.435103 2.864735 </Q14>
+        <Q15 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.016492 0.099139 -0.331218 2.716507 </Q15>
+        <Q22 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.000783 0.063974 -0.472385 3.304731 </Q22>
+        <Q23 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.006873 -0.049596 -0.797689 2.748054 </Q23>
+        <Q24 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.011934 0.097709 -0.401317 3.035877 </Q24>
+        <Q33 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.007909 0.085981 -0.436993 3.090607 </Q33>
+        <Q44 ref="Bellemans" type="exp-poly" units="A-A">
+            -0.008169 0.088322 -0.428912 3.139532 </Q44>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
+    <!-- He -->
+    <pair s1="He" s2="He">
+        <Q11 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             15.86 12.66 10.89  9.67  8.74  8.09  7.60  7.21  6.89  6.61  6.15  5.79  5.48  5.23  4.81  4.48  4.09  3.61  3.26  2.98  2.58  2.28 </Q11>
+        <Q12 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             14.77 11.79 10.08  8.88  7.97  7.34  6.87  6.49  6.17  5.91  5.47  5.13  4.84  4.60  4.21  3.90  3.54  3.09  2.77  2.51  2.14  1.87 </Q12>
+        <Q13 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             14.04 11.16  9.48  8.30  7.41  6.80  6.34  5.97  5.67  5.41  4.99  4.66  4.38  4.15  3.78  3.49  3.14  2.72  2.42  2.18  1.83  1.58 </Q13>
+        <Q14 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             13.48 10.66  9.01  7.85  6.98  6.38  5.93  5.57  5.28  5.03  4.62  4.30  4.03  3.81  3.45  3.17  2.84  2.44  2.15  1.93  1.60  1.36 </Q14>
+        <Q15 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             13.03 10.25  8.62  7.49  6.63  6.04  5.60  5.25  4.96  4.72  4.32  4.01  3.75  3.54  3.19  2.92  2.60  2.22  1.94  1.73  1.42  1.19 </Q15>
+        <Q22 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             17.95 14.68 12.82 11.50 10.48  9.77  9.23  8.79  8.42  8.11  7.59  7.18  6.83  6.53  6.05  5.67  5.21  4.64  4.22  3.89  3.40  3.04 </Q22>
+        <Q23 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             17.13 14.01 12.17 10.86  9.85  9.15  8.61  8.18  7.82  7.52  7.01  6.61  6.28  5.99  5.53  5.16  4.72  4.18  3.78  3.47  2.99  2.64 </Q23>
+        <Q24 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             16.52 13.47 11.65 10.35  9.35  8.66  8.13  7.71  7.35  7.05  6.56  6.17  5.85  5.57  5.12  4.76  4.34  3.82  3.44  3.13  2.68  2.35 </Q24>
+        <Q33 type="table" units="K,A-A" ref="Bruno2010">
+               100   300   600  1000  1500  2000  2500  3000  3500  4000  5000  6000  7000  8000 10000 12000 15000 20000 25000 30000 40000 50000,
+             15.93 12.91 11.15  9.90  8.94  8.28  7.78  7.38  7.04  6.76  6.29  5.92  5.61  5.34  4.92  4.58  4.18  3.69  3.32  3.04  2.62  2.31 </Q33>
+        <Ast type="from A*"/>
+        <Bst type="from B*"/>
+        <Cst type="from C*"/>
+    </pair>
+    
     
     <!-- N -->
     <pair s1="N" s2="N">

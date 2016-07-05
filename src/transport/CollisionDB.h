@@ -72,6 +72,9 @@ public:
     /// Just a wrapper around thermo().X().
     Eigen::Map<const Eigen::ArrayXd> X() const;
 
+    /// Just a wrapper around thermo().Y().
+    Eigen::Map<const Eigen::ArrayXd> Y() const;
+
     /// Returns the reference of thermo.
     const Thermodynamics::Thermodynamics& thermo() const { return m_thermo; }
 

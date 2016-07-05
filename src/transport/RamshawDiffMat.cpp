@@ -62,13 +62,8 @@ public:
     {
         const int ns = m_collisions.nSpecies();
 
-        // First step is to compute X and Y with tolerance on X
-        static Eigen::ArrayXd X(ns);
-        static Eigen::ArrayXd Y(ns);
-        X = m_collisions.X();//+1.0e-16;
-        //X /= X.sum();
-        m_collisions.thermo().convert<Mutation::Thermodynamics::X_TO_Y>(
-            X.data(), Y.data());
+        Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
+        Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
 
         // Compute average diffusion coefficients
         const Eigen::ArrayXd& Dim = m_collisions.Dim();

@@ -126,6 +126,12 @@ Map<const ArrayXd> CollisionDB::X() const {
 
 //==============================================================================
 
+Map<const ArrayXd> CollisionDB::Y() const {
+    return Eigen::Map<const ArrayXd>(thermo().Y(), nSpecies());
+}
+
+//==============================================================================
+
 CollisionDB::GroupType CollisionDB::groupType(const string& name)
 {
     const int len = name.length();

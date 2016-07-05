@@ -70,7 +70,7 @@ public:
 		int k = ns-nh, ik, jk;
 		double fac;
 
-		m_x = Map<const ArrayXd>(m_collisions.thermo().X()+k,nh).max(1.0e-30);
+		m_x = Map<const ArrayXd>(m_collisions.thermo().X()+k,nh);//.max(1.0e-30);
         m_sys.diagonal().array() = m_x * m_x / etai;
 
 		for (int j = 0, index = 1; j < nh; ++j, ++index) {

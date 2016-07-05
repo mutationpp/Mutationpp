@@ -141,6 +141,16 @@ protected:
 	 */
 	void setAccuracy(double acc) { m_acc = acc; }
 
+	/**
+	 * Sets the units of the integral.
+	 */
+	void setUnits(const Mutation::Utilities::Units& units) { m_units = units; }
+
+	/**
+	 * Sets the multiplication factor of this integral.
+	 */
+	void setFactor(double fac) { m_fac = fac; }
+
 private:
 
 	std::string m_ref;
