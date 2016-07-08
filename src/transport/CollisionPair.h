@@ -79,6 +79,9 @@ public:
     /// Get the collision integral corresponding to the given type.
     SharedPtr<CollisionIntegral> get(const std::string& type);
 
+    /// Looks for the XML element representing this pair in the database.
+    Mutation::Utilities::IO::XmlElement::const_iterator findPair() const;
+
 private:
 
     /**

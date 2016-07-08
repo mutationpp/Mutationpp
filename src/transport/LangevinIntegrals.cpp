@@ -71,7 +71,7 @@ public:
         }
 
         // Determine (l,s)
-        string kind = args.xml.tag();
+        string kind = args.kind;
         bool format_check = (
             kind.size() == 3 && kind[0] == 'Q' &&
             kind[1] > '0' && kind[1] < '4'     &&

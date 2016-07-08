@@ -117,11 +117,8 @@ void CollisionPair::initSpeciesData(const Species& s1, const Species& s2)
 
 //==============================================================================
 
-IO::XmlElement::const_iterator
-CollisionPair::findXmlElementWithIntegralType(
-    const string& kind) const
+IO::XmlElement::const_iterator CollisionPair::findPair() const
 {
-    // First check if this collision pair is explicitly given in the database
     IO::XmlElement::const_iterator iter = mp_xml->findTag("pair");
     string sp1, sp2;
     while (iter != mp_xml->end()) {
@@ -136,6 +133,18 @@ CollisionPair::findXmlElementWithIntegralType(
         // Get next collision pair in the database
         iter = mp_xml->findTag("pair", ++iter);
     }
+
+    return iter;
+}
+
+//==============================================================================
+
+IO::XmlElement::const_iterator
+CollisionPair::findXmlElementWithIntegralType(
+    const string& kind) const
+{
+    // First check if this collision pair is explicitly given in the database
+    IO::XmlElement::const_iterator iter = findPair();
 
     // Found the pair, so check if the integral is explicitly given
     if (iter != mp_xml->end()) {
@@ -182,22 +191,7 @@ SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(const string& kind)
         exit(1);
     }
 
-    string type;
-    iter->getAttribute("type", type, "Integral type must be specified.");
-
-    CollisionIntegral* p_ci(
-        Config::Factory<CollisionIntegral>::create(
-            type, CollisionIntegral::ARGS(*iter, *this)));
-
-    iter->parseCheck(p_ci != NULL,
-        "Invalid collision integral type '" + type + "' for " + kind +
-		"_(" + sp1Name() + ", " + sp2Name() + ").");
-
-    iter->parseCheck(p_ci->loaded(),
-        "Could not find data necessary to load " + kind +
-        "_(" + sp1Name() + ", " + sp2Name() + ").");
-
-    return SharedPtr<CollisionIntegral>(p_ci);
+    return CollisionIntegral::load(CollisionIntegral::ARGS(*iter, *this, kind));
 }
 
 //==============================================================================

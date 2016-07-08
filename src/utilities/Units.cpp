@@ -48,7 +48,6 @@ std::map<std::string, Units> _initializeUnits()
     std::map<std::string, Units> units;
     
     // length
-    
     units["m"]    = Units(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     units["mm"]   = units["m"] / 1000.0;
     units["cm"]   = units["m"] / 100.0;
@@ -79,6 +78,8 @@ std::map<std::string, Units> _initializeUnits()
     units["kJ"]   = units["J"] * 1000.0;
     units["cal"]  = units["J"] * 4.184;
     units["kcal"] = units["cal"] * 1000.0;
+    units["eV"]   = units["J"] / 6.242e18;
+    units["meV"]  = units["eV"] / 1000.0;
     
     // pressure
     units["Pa"]   = units["N"] / units["m"] / units["m"];

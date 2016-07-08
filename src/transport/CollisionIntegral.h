@@ -31,6 +31,7 @@
 #define TRANSPORT_COLLISION_INTEGRAL_H
 
 #include "Units.h"
+#include "SharedPtr.h"
 
 #include <iostream>
 #include <string>
@@ -58,10 +59,11 @@ public:
 	struct ARGS {
 	    ARGS(
 	        const Mutation::Utilities::IO::XmlElement& arg1,
-	        CollisionPair& arg2) :
-	        xml(arg1), pair(arg2) {}
+	        CollisionPair& arg2, const std::string& arg3) :
+	        xml(arg1), pair(arg2), kind(arg3) {}
 	    const Mutation::Utilities::IO::XmlElement& xml;
 	    CollisionPair& pair;
+	    std::string kind;
 	};
 
 	/**
@@ -121,6 +123,11 @@ public:
 	 * Returns the estimated accuracy of this collision integral in %.
 	 */
 	double accuracy() const { return m_acc; }
+
+	/**
+	 * Tries to load the integral.
+	 */
+	static SharedPtr<CollisionIntegral> load(ARGS args);
 
 protected:
 

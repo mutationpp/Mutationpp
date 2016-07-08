@@ -146,6 +146,7 @@ private:
      */
     void interpolate(double Tst)
     {
+        cout << Tst << endl;
         // Clip to table boundaries
         if (Tst <= sm_tstvec[0])
             m_values = sm_table.row(0);
@@ -237,30 +238,30 @@ public:
         assert(args.pair.type() == ATTRACTIVE || args.pair.type() == REPULSIVE);
 
         // Set the type of integral we need
-        string tag = args.xml.tag();
+        string kind = args.kind;
         CollisionType type = args.pair.type();
 
-        if (tag == "Q11")
+        if (kind == "Q11")
             m_type = (type == ATTRACTIVE ? Q11_ATT : Q11_REP);
-        else if (tag == "Q12")
+        else if (kind == "Q12")
             m_type = (type == ATTRACTIVE ? Q12_ATT : Q12_REP);
-        else if (tag == "Q13")
+        else if (kind == "Q13")
             m_type = (type == ATTRACTIVE ? Q13_ATT : Q13_REP);
-        else if (tag == "Q14")
+        else if (kind == "Q14")
             m_type = (type == ATTRACTIVE ? Q14_ATT : Q14_REP);
-        else if (tag == "Q15")
+        else if (kind == "Q15")
             m_type = (type == ATTRACTIVE ? Q15_ATT : Q15_REP);
-        else if (tag == "Q22")
+        else if (kind == "Q22")
             m_type = (type == ATTRACTIVE ? Q22_ATT : Q22_REP);
-        else if (tag == "Q23")
+        else if (kind == "Q23")
             m_type = (type == ATTRACTIVE ? Q23_ATT : Q23_REP);
-        else if (tag == "Q24")
+        else if (kind == "Q24")
             m_type = (type == ATTRACTIVE ? Q24_ATT : Q24_REP);
-        else if (tag == "Ast")
+        else if (kind == "Ast")
             m_type = (type == ATTRACTIVE ? AST_ATT : AST_REP);
-        else if (tag == "Bst")
+        else if (kind == "Bst")
             m_type = (type == ATTRACTIVE ? BST_ATT : BST_REP);
-        else if (tag == "Cst")
+        else if (kind == "Cst")
             m_type = (type == ATTRACTIVE ? CST_ATT : CST_REP);
         else
             args.xml.parseError(

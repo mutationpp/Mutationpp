@@ -67,16 +67,16 @@ public:
         m_Dij.triangularView<Eigen::Lower>() = Eigen::MatrixXd::Zero(ns,ns);
 
         // Electron-Heavy subsystem
-        if (k == 1) {
-            const Eigen::ArrayXd& nDei = m_collisions.nDei();
-            for (int i = 1; i < ns; ++i) {
-                fac = X(0)*X(i)/nDei(i)*nd;
-                m_Dij(0,0) += fac;
-                m_Dij(i,i) += fac;
-                m_Dij(i,0) = -fac;
-
-            }
-        }
+//        if (k == 1) {
+//            const Eigen::ArrayXd& nDei = m_collisions.nDei();
+//            for (int i = 1; i < ns; ++i) {
+//                fac = X(0)*X(i)/nDei(i)*nd;
+//                m_Dij(0,0) += fac;
+//                m_Dij(i,i) += fac;
+//                m_Dij(i,0) = -fac;
+//
+//            }
+//        }
 
         // Heavy particle subsystem
         const Eigen::MatrixXd& nDij = m_collisions.nDij();
@@ -94,20 +94,20 @@ public:
             Y.matrix(), nd/nDij.diagonal().mean());
 
         static Eigen::LDLT<Eigen::MatrixXd, Eigen::Lower> ldlt;
-        ldlt.compute(m_Dij);
+        ldlt.compute(m_Dij.bottomRightCorner(ns-k,ns-k));
 
-        static Eigen::VectorXd alpha; alpha.resize(ns);
-        static Eigen::VectorXd b; b.resize(ns);
-        b.array() = Y;
+        static Eigen::VectorXd alpha; alpha.resize(ns-k);
+        static Eigen::VectorXd b; b.resize(ns-k);
+        b.array() = Y.tail(ns-k);
 
-        for (int i = 0; i < ns ; ++i ){
-            b(i) += 1.0;
+        for (int i = k; i < ns ; ++i ){
+            b(i-k) += 1.0;
             alpha = ldlt.solve(b);
-            b(i) -= 1.0;
+            b(i-k) -= 1.0;
 
             for (int j = i; j < ns; j++ ){
-                m_Dij(i,j) = alpha(j);
-                m_Dij(j,i) = alpha(j);
+                m_Dij(i,j) = alpha(j-k);
+                m_Dij(j,i) = alpha(j-k);
             }
         }
 

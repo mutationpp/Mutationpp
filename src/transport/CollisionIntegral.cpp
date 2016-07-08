@@ -55,6 +55,28 @@ namespace Mutation {
 
 //==============================================================================
 
+SharedPtr<CollisionIntegral> CollisionIntegral::load(
+    CollisionIntegral::ARGS args)
+{
+    string type;
+    args.xml.getAttribute("type", type, "Integral type must be specified.");
+
+    CollisionIntegral* p_ci(
+        Config::Factory<CollisionIntegral>::create(type, args));
+
+    args.xml.parseCheck(p_ci != NULL,
+        "Invalid collision integral type '" + type + "' for " + args.kind +
+        "_" + args.pair.name() + ".");
+
+    args.xml.parseCheck(p_ci->loaded(),
+        "Could not find data necessary to load " + args.kind +
+        "_" + args.pair.name() + ".");
+
+    return SharedPtr<CollisionIntegral>(p_ci);
+}
+
+//==============================================================================
+
 CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 	m_ref(""),
 	m_acc(0.0),
@@ -555,26 +577,26 @@ public:
     MurphyColInt(CollisionIntegral::ARGS args) :
         CollisionIntegral(args)
     {
-        // Get the two vectors separated by a comma
-        vector<string> tokens;
-        String::tokenize(args.xml.text(), tokens, ",\n\r");
-
-        if (tokens.size() != 2) args.xml.parseError(
-            "Incorrect format for collision integral table.");
-
-        // Parse the two rows
-        fillVector(tokens[0], m_T);
-        fillVector(tokens[1], m_Q);
-
-        if (m_T.size() != m_Q.size() && m_T.size() > 1) args.xml.parseError(
-            "Table rows must be same size and greater than 1.");
+        // Load the two integrals
+        m_Q1 = getIntegral(args, "Q1");
+        m_Q2 = getIntegral(args, "Q2");
     }
 
     // Allow tabulation of this integral if the two underlying integrals can be
     // tabulated
     bool canTabulate() const {
-        return m_Q1.canTabulate() && m_Q2.canTabulate();
+        return m_Q1->canTabulate() && m_Q2->canTabulate();
     }
+
+    /**
+     * Returns true if the ratio and integral are the same.
+     */
+    bool isEqual(const CollisionIntegral& ci) const {
+        const MurphyColInt& compare = dynamic_cast<const MurphyColInt&>(ci);
+        return (*m_Q1 == *(compare.m_Q1) &&
+                *m_Q2 == *(compare.m_Q2));
+    }
+
 
 private:
 
@@ -582,14 +604,29 @@ private:
     {
         double Q1 = m_Q1->compute(T);
         double Q2 = m_Q2->compute(T);
-        return std::sqrt(Q1->compute(T))
+        return std::sqrt(Q1*Q1 + Q2*Q2);
     }
 
-private
+    SharedPtr<CollisionIntegral> getIntegral(
+            CollisionIntegral::ARGS args, const std::string& tag)
+    {
+        XmlElement::const_iterator Q = args.xml.findTag(tag);
+        if (Q == args.xml.end())
+            args.xml.parseError(
+                "Murphy collision integral must have " + tag + " child node.");
+
+        return CollisionIntegral::load(
+            CollisionIntegral::ARGS(*Q, args.pair, args.kind));
+    }
+
+private:
 
     SharedPtr<CollisionIntegral> m_Q1;
     SharedPtr<CollisionIntegral> m_Q2;
 };
+
+// Register the "constant" CollisionIntegral
+Config::ObjectProvider<MurphyColInt, CollisionIntegral> murphy_ci("Murphy");
 
 //==============================================================================
 
