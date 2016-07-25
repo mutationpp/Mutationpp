@@ -61,7 +61,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 43
+#define NMIXTURE 44
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -97,6 +97,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
     OutputQuantity("lambda", "W/m-K", "mixture equilibrium thermal conductivity"),
     OutputQuantity("lam_reac", "W/m-K", "reactive thermal conductivity"),
+    OutputQuantity("lam_bb", "W/m-K", "Butler-Brokaw reactive thermal conductivity"),
     OutputQuantity("lam_soret", "W/m-K", "Soret thermal conductivity"),
     OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
@@ -762,6 +763,8 @@ int main(int argc, char** argv)
                     value = mix.equilibriumThermalConductivity();
                 else if (name == "lam_reac")
                     value = mix.reactiveThermalConductivity();
+                else if (name == "lam_bb")
+                    value = mix.butlerBrokawThermalConductivity();
                 else if (name == "lam_soret")
                     value = mix.soretThermalConductivity();
                 else if (name == "lam_int")

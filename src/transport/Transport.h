@@ -171,6 +171,13 @@ public:
     double reactiveThermalConductivity();
     
     /**
+     * Returns the reactive thermal conductivity which accounts for reactions
+     * for mixtures in thermochemical equilibrium using the Butler-Brokaw
+     * formula.
+     */
+    double butlerBrokawThermalConductivity();
+
+    /**
      * Returns the Soret thermal conductivity the mixture in thermochemical 
      * equilibrium.
      */

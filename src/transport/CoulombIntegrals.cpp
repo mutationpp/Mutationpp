@@ -146,7 +146,6 @@ private:
      */
     void interpolate(double Tst)
     {
-        cout << Tst << endl;
         // Clip to table boundaries
         if (Tst <= sm_tstvec[0])
             m_values = sm_table.row(0);

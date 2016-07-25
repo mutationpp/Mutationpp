@@ -247,6 +247,79 @@ double Transport::reactiveThermalConductivity()
 
 //==============================================================================
 
+double Transport::butlerBrokawThermalConductivity()
+{
+    const int ns = m_thermo.nSpecies();
+    const int ne = m_thermo.nElements();
+    const int nr = ns - ne;
+    const int nh = m_thermo.nHeavy();
+    const int a  = ns - nh;
+
+    const Eigen::MatrixXd& E = m_thermo.elementMatrix();
+
+    // Find the elements
+    Eigen::VectorXd ei(ne);
+    for (int i = 0; i < ne; ++i)
+        ei(i) = m_thermo.speciesIndex(m_thermo.elementName(i));
+
+    // Generate formation reactions (assuming elements are always included)
+    Eigen::MatrixXd nu(nr, ns);
+    nu.setConstant(0);
+    for (int i = 0, ir = 0; i < ns; ++i) {
+        if (E.row(i).array().abs().sum() == 1)
+            continue;
+
+        // Add formation reaction for the species
+        for (int j = 0; j < ne; ++j)
+            nu(ir,ei(j)) = -E(i,j);
+        nu(ir++,i) = 1;
+    }
+
+    // Compute the Delta H vector
+    Eigen::VectorXd H(ns);
+    Eigen::VectorXd DH(nr);
+    m_thermo.speciesHOverRT(H.data());
+    DH = (nu * H) * KB * m_thermo.T();
+
+    // Compute the system matrix
+    Eigen::MatrixXd A(nr,nr); A.setConstant(0.0);
+    Eigen::MatrixXd nDij(ns,ns);
+    if (m_thermo.hasElectrons()) {
+        for (int i = 0; i < ns; ++i) {
+            nDij(i,0) = m_collisions.nDei()(i);
+            nDij(0,i) = m_collisions.nDei()(i);
+        }
+    }
+    for (int i = a, s = 0; i < ns; ++i) {
+        for (int j = i; j < ns; ++j, s++) {
+            nDij(i,j) = m_collisions.nDij()(s);
+            nDij(j,i) = m_collisions.nDij()(s);
+        }
+    }
+    const Eigen::ArrayXd X = m_collisions.X().max(1.0e-16);
+
+    // Heavy species
+    for (int i = 0; i < nr; ++i) {
+        for (int j = 0; j <= i; ++j) {
+            for (int k = 0; k < ns - 1; ++k) {
+                for (int l = k + 1; l < ns; ++l) {
+                    A(i,j) += X(k)*X(l)/nDij(k,l)*
+                              (nu(i,k)/X(k)-nu(i,l)/X(l))*
+                              (nu(j,k)/X(k)-nu(j,l)/X(l));
+                }
+            }
+        }
+    }
+
+    //A *= RU*m_thermo.T()*m_thermo.numberDensity()/m_thermo.P();
+
+    Eigen::VectorXd W = Eigen::LDLT<Eigen::MatrixXd, Eigen::Lower>(A).solve(DH);
+
+    return W.dot(DH)/(KB*m_thermo.T()*m_thermo.T());
+}
+
+//==============================================================================
+
 double Transport::soretThermalConductivity()
 {
 	// This is super inefficient, should fix
