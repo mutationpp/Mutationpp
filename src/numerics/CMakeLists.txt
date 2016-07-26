@@ -23,4 +23,5 @@ cmake_minimum_required(VERSION 2.6)
 
 install(FILES lp.h DESTINATION include/mutation++)
 install(FILES Functors.h DESTINATION include/mutation++)
+install(FILES MCHInterpolator.h DESTINATION include/mutation++)
 install(FILES NewtonSolver.h DESTINATION include/mutation++)

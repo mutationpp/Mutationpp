@@ -31,6 +31,7 @@
 #include "CollisionIntegral.h"
 #include "CollisionPair.h"
 #include "Constants.h"
+#include "MCHInterpolator.h"
 #include "StringUtils.h"
 #include "SharedPtr.h"
 #include "Thermodynamics.h"
@@ -39,6 +40,7 @@ using namespace Mutation;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
+using namespace Mutation::Numerics;
 
 #include <utility>
 #include <vector>
@@ -652,6 +654,13 @@ public:
 
 		if (m_T.size() != m_Q.size() && m_T.size() > 1) args.xml.parseError(
 		    "Table rows must be same size and greater than 1.");
+
+		mp_interpolator =
+		    new MCHInterpolator<double>(&m_T[0], &m_Q[0], m_T.size());
+	}
+
+	~TableColInt() {
+	    delete mp_interpolator;
 	}
 
 	// Allow tabulation of this integral type
@@ -668,12 +677,14 @@ private:
 		if (T > m_T.back())
 			return m_Q.back();
 
-		// Find the index
-		int i = 1;
-		while (m_T[i] < T && i < m_T.size()-1) i++;
+//		// Find the index
+//		int i = 1;
+//		while (m_T[i] < T && i < m_T.size()-1) i++;
+//
+//		// Interpolate
+//		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
 
-		// Interpolate
-		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
+		return (*mp_interpolator)(T);
 	}
 
     /**
@@ -696,6 +707,8 @@ private:
 
 	vector<double> m_T;
 	vector<double> m_Q;
+
+	MCHInterpolator<double>* mp_interpolator;
 };
 
 // Register the "table" CollisionIntegral

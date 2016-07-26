@@ -31,6 +31,7 @@
 #include "Constants.h"
 #include "CollisionIntegral.h"
 #include "CollisionPair.h"
+#include "CoulombIntegrals.h"
 #include "Thermodynamics.h"
 #include "XMLite.h"
 using namespace Mutation::Thermodynamics;
@@ -46,131 +47,76 @@ using namespace std;
 namespace Mutation {
     namespace Transport {
 
-/**
- * List of collision integral types that can be computed using predefined
- * collision integrals computed from the screened Coulomb potential.
- */
-enum CoulombType {
-    Q11_ATT, Q11_REP,
-    Q22_ATT, Q22_REP,
-    Q14_ATT, Q14_REP,
-    Q15_ATT, Q15_REP,
-    Q24_ATT, Q24_REP,
-    BST_ATT, BST_REP,
-    CST_ATT, CST_REP,
-    EST_ATT, EST_REP,
-    N_TABLE_TYPES, // All collision integrals in the table must come before this
-    Q12_ATT, Q12_REP,
-    Q13_ATT, Q13_REP,
-    Q23_ATT, Q23_REP,
-    AST_ATT, AST_REP
-};
 
-// Number of temperature points in the collision integral table
-#define N_TST_POINTS 26
-
-/**
- * Evaluates the Debye-Huckle collision integrals all at once because this is
- * faster then doing them individually all the time.
- */
-class DebyeHuckleEvaluator
+double DebyeHuckleEvaluator::operator() (double T, CoulombType type)
 {
-public:
-    /**
-     * Constructor.
-     */
-    DebyeHuckleEvaluator() :
-        m_lambda(0.0), m_last_T(-1.0), m_last_lambda(-1.0)
-    { }
+    // Check input data
+    assert(T >= 0.0);
+    assert(type != N_TABLE_TYPES);
 
-    /**
-     * Computes the Coulomb integral type at the temperature T.
-     */
-    double operator () (double T, CoulombType type)
-    {
-        // Check input data
-        assert(T >= 0.0);
-        assert(type != N_TABLE_TYPES);
+    // Average closest impact parameter
+    const double b = QE*QE / (8.0*PI*EPS0*KB*T);
 
-        // Average closest impact parameter
-        const double b = QE*QE / (8.0*PI*EPS0*KB*T);
+    // Clip maximum lambda
+    m_lambda = std::min(m_lambda, 2.0*sm_tstvec[N_TST_POINTS-1]*b);
 
-        // Clip maximum lambda
-        m_lambda = std::min(m_lambda, 2.0*sm_tstvec[N_TST_POINTS-1]*b);
+    // Check if we need to update the values
+    if (std::abs(T-m_last_T) + std::abs(m_lambda-m_last_lambda) > 1.0e-10) {
+        // Reduced temperature
+        const double Tst = std::max(0.5*m_lambda/b, sm_tstvec[0]);
 
-        // Check if we need to update the values
-        if (std::abs(T-m_last_T) + std::abs(m_lambda-m_last_lambda) > 1.0e-10) {
-            // Reduced temperature
-            const double Tst = std::max(0.5*m_lambda/b, sm_tstvec[0]);
+        // Interpolate the table using reduced temperature
+        interpolate(Tst);
 
-            // Interpolate the table using reduced temperature
-            interpolate(Tst);
+        // Convert from reduced form
+        m_values.head(BST_ATT) *= PI*m_lambda*m_lambda/(Tst*Tst);
 
-            // Convert from reduced form
-            m_values.head(BST_ATT) *= PI*m_lambda*m_lambda/(Tst*Tst);
-
-            // Save last updated state
-            m_last_T = T;
-            m_last_lambda = m_lambda;
-        }
-
-        switch (type) {
-        // Derived data from the tabulated ones
-        case Q12_ATT: return m_values[CST_ATT]*m_values[Q11_ATT];
-        case Q12_REP: return m_values[CST_REP]*m_values[Q11_REP];
-        case Q13_ATT: return m_values[Q11_ATT]*(1.25*m_values[CST_ATT]-0.25*m_values[BST_ATT]);
-        case Q13_REP: return m_values[Q11_REP]*(1.25*m_values[CST_REP]-0.25*m_values[BST_REP]);
-        case Q23_ATT: return m_values[EST_ATT]*m_values[Q22_ATT];
-        case Q23_REP: return m_values[EST_REP]*m_values[Q22_REP];
-        case AST_ATT: return m_values[Q22_ATT]/m_values[Q11_ATT];
-        case AST_REP: return m_values[Q22_REP]/m_values[Q11_REP];
-        // Tabulated data
-        default:      return m_values[type];
-        }
+        // Save last updated state
+        m_last_T = T;
+        m_last_lambda = m_lambda;
     }
 
-    /**
-     * Sets the Debye length given electron temperature and number density.
-     */
-    void setDebyeLength(double Te, double ne) {
-        assert(Te >= 0.0);
-        assert(ne >= 0.0);
-        // Including electron and ion contributions
-        m_lambda = std::sqrt(0.5*EPS0*KB*Te/(ne*QE*QE));
+    switch (type) {
+    // Derived data from the tabulated ones
+    case Q12_ATT: return m_values[CST_ATT]*m_values[Q11_ATT];
+    case Q12_REP: return m_values[CST_REP]*m_values[Q11_REP];
+    case Q13_ATT: return m_values[Q11_ATT]*(1.25*m_values[CST_ATT]-0.25*m_values[BST_ATT]);
+    case Q13_REP: return m_values[Q11_REP]*(1.25*m_values[CST_REP]-0.25*m_values[BST_REP]);
+    case Q23_ATT: return m_values[EST_ATT]*m_values[Q22_ATT];
+    case Q23_REP: return m_values[EST_REP]*m_values[Q22_REP];
+    case AST_ATT: return m_values[Q22_ATT]/m_values[Q11_ATT];
+    case AST_REP: return m_values[Q22_REP]/m_values[Q11_REP];
+    // Tabulated data
+    default:      return m_values[type];
     }
+}
 
-private:
 
-    /**
-     * Interpolates the table based on reduced temperature.
-     */
-    void interpolate(double Tst)
-    {
-        // Clip to table boundaries
-        if (Tst <= sm_tstvec[0])
-            m_values = sm_table.row(0);
-        else if (Tst >= sm_tstvec[N_TST_POINTS-1])
-            m_values = sm_table.row(N_TST_POINTS-1);
-        else {
-            // Find the index to interpolate between
-            int i = 1; while (sm_tstvec[i] < Tst) ++i;
+void DebyeHuckleEvaluator::setDebyeLength(double Te, double ne)
+{
+    assert(Te >= 0.0);
+    assert(ne >= 0.0);
+    // Including electron and ion contributions
+    m_lambda = std::sqrt(0.5*EPS0*KB*Te/(ne*QE*QE));
+}
 
-            // Interpolate
-            m_values = (sm_table.row(i)-sm_table.row(i-1))*(Tst-sm_tstvec[i])/
-                (sm_tstvec(i)-sm_tstvec(i-1)) + sm_table.row(i);
-        }
+void DebyeHuckleEvaluator::interpolate(double Tst)
+{
+    // Clip to table boundaries
+    if (Tst <= sm_tstvec[0])
+        m_values = sm_table.row(0);
+    else if (Tst >= sm_tstvec[N_TST_POINTS-1])
+        m_values = sm_table.row(N_TST_POINTS-1);
+    else {
+        // Find the index to interpolate between
+        int i = 1; while (sm_tstvec[i] < Tst) ++i;
+
+        // Interpolate
+        m_values = (sm_table.row(i)-sm_table.row(i-1))*(Tst-sm_tstvec[i])/
+            (sm_tstvec(i)-sm_tstvec(i-1)) + sm_table.row(i);
     }
+}
 
-private:
-
-    double m_lambda;
-    double m_last_T;
-    double m_last_lambda;
-
-    static Array<double, N_TST_POINTS, N_TABLE_TYPES, ColMajor> sm_table;
-    static Array<double, N_TST_POINTS, 1> sm_tstvec;
-    Array<double, N_TABLE_TYPES, 1> m_values;
-};
 
 // Initialize the T* index values
 Array<double, N_TST_POINTS, 1> init_tstvec() {
