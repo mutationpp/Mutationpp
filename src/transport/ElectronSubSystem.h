@@ -322,8 +322,9 @@ public:
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         CollisionDB& collisions) : m_beta(P, thermo.nHeavy())
     {
-        const double fac = 16.0/3.0*thermo.numberDensity()*
-            std::sqrt(collisions.mass()(0)/(TWOPI*KB*thermo.Te()));
+        //const double fac = 16.0/3.0*thermo.numberDensity()*
+        //    std::sqrt(collisions.mass()(0)/(TWOPI*KB*thermo.Te()));
+        const double fac = 16.0/3.0*thermo.numberDensity()/std::sqrt(TWOPI*thermo.Te());
         const int nh = thermo.nHeavy();
 
         const Eigen::ArrayXd& Q11 = collisions.Q11ei();

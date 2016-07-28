@@ -454,80 +454,156 @@ void Transport::equilDiffFluxFacsZ(double* const p_F)
 
 //==============================================================================
 
+
 void Transport::stefanMaxwell(
     const double* const p_dp, double* const p_V, double& E)
 {
-	const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nSpecies();
+    const int k  = ns - m_thermo.nHeavy();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
-    
-    // Electron offset
-    const int k = m_thermo.hasElectrons() ? 1 : 0;
-    const int nh = ns-k;
 
-    Map<const ArrayXd> dp(p_dp, ns);
-    Map<ArrayXd> V(p_V, ns), qi(mp_wrk3, ns);
-
-//    // Need to place a tolerance on X and Y
     const double tol = 1.0e-16;
     static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
     X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
     m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
-//    Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
-//    Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
 
-    // Get reference to binary diffusion coefficients
+    // Form the SM matrix
+    MatrixXd G = MatrixXd::Zero(ns+k,ns+k);
+
+    // electron subsystem
+    double s = 0.0;
+    if (k == 1) {
+        const ArrayXd& nDei = m_collisions.nDei();
+        for (int i = 1; i < ns; ++i) {
+            const double fac = Te/Th*X(0)*X(i)/nDei(i)*nd;
+            G(0,0) += fac;
+            G(i,0) = -fac;
+            G(i,i) = Te/Th*fac;
+            G(0,i) = -fac;
+        }
+        G(0,0) *= Th/Te;
+
+        ArrayXd qi(ns);
+        for (int i = 0; i < ns; ++i)
+            qi(i) = m_thermo.speciesCharge(i);
+        const double q = (X*qi).sum();
+
+        ArrayXd kappa = (X*qi - q*Y)/(KB*Th);
+        s = kappa.matrix().norm();
+        G.row(ns).head(ns) = kappa / s;
+        G.col(ns).head(ns) = kappa / s;
+        G(0,ns) *= Th/Te;
+    }
+
+    // heavy subsystem
     const ArrayXd& nDij = m_collisions.nDij();
-
-    // Compute mixture charge
-    for (int i = 0; i < ns; ++i)
-        qi[i] = m_thermo.speciesCharge(i);
-    const double q = (X*qi).sum();
-
-    // Compute kappas (store in V)
-    V = (X*qi - q*Y)/(KB*Th);
-
-    // Compute ambipolar electric field
-    E = (k > 0 ? dp[0]/V[0] : 0.0);
-
-    // Compute right hand side
-    static VectorXd b; b.resize(nh);
-    b.array() = -dp.tail(nh) + E*V.tail(nh);
-
-    // Compute singular system matrix (lower triangular part)
-    double fac;
-    static MatrixXd G; G.resize(nh,nh);
-    G.triangularView<Lower>() = MatrixXd::Zero(nh, nh);
-
-    for (int j = 0, si = 1; j < nh; ++j, ++si) {
-        for (int i = j+1; i < nh; ++i, ++si) {
-            fac = X[i+k]*X[j+k]/nDij(si)*nd;
-            G(i,i) += fac;
-            G(j,j) += fac;
+    for (int i = k, is = 1; i < ns; ++i, ++is) {
+        for (int j = i+1; j < ns; ++j, ++is) {
+            const double fac = X(i)*X(j)/nDij(is)*nd;
             G(i,j) = -fac;
+            G(i,i) += fac;
+            G(j,i) = -fac;
+            G(j,j) += fac;
         }
     }
 
-    // Compute the constraints that are applied to the matrix
-    fac = X[0]*qi[0];
-    V.tail(nh) = Y.tail(nh);
-    if (k > 0) V.tail(nh) -= X.tail(nh)*qi.tail(nh)*Y[0]/fac;
+    // add mass constraint
+    const double a = nDij.maxCoeff()/nd;
+    G.topLeftCorner(ns,ns) += a * Y.matrix() * Y.matrix().transpose();
 
-    // Add mass balance relation to make matrix nonsigular
-    G.selfadjointView<Lower>().rankUpdate(
-        V.matrix().tail(nh), nd/nDij.mean());
+    // Form the right hand side
+    VectorXd b = VectorXd::Zero(ns+k);
+    b.head(ns) = -Map<const VectorXd>(p_dp, ns);
+    if (k == 1) b(0) *= Th/Te;
 
-    static Eigen::LDLT<MatrixXd, Lower> ldlt;
-    ldlt.compute(G);
-    V.tail(nh) = ldlt.solve(b).array();
+    // Solve the system
+    VectorXd x = G.colPivHouseholderQr().solve(b);
 
-    // Compute electron diffusion velocity if need be
-    if (k == 0)
-        return;
+    // Retrieve the solution
+    Map<VectorXd>(p_V, ns) = x.head(ns);
+    E = (k == 1 ? x(ns)/s : 0.0);
 
-    V[0] = -(X.tail(nh)*qi.tail(nh)*V.tail(nh)).sum() / fac;
+    // Apply Ramshaw to fix roundoff errors
+    Map<ArrayXd>(p_V, ns) -= (Map<ArrayXd>(p_V, ns)*Map<const ArrayXd>(m_thermo.Y(), ns)).sum();
 }
+
+
+//void Transport::stefanMaxwell(
+//    const double* const p_dp, double* const p_V, double& E)
+//{
+//	const int ns = m_thermo.nSpecies();
+//    const double Th = m_thermo.T();
+//    const double Te = m_thermo.Te();
+//    const double nd = m_thermo.numberDensity();
+//
+//    // Electron offset
+//    const int k = m_thermo.hasElectrons() ? 1 : 0;
+//    const int nh = ns-k;
+//
+//    Map<const ArrayXd> dp(p_dp, ns);
+//    Map<ArrayXd> V(p_V, ns), qi(mp_wrk3, ns);
+//
+////    // Need to place a tolerance on X and Y
+//    const double tol = 1.0e-16;
+//    static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
+//    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
+//    m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+////    Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
+////    Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
+//
+//    // Get reference to binary diffusion coefficients
+//    const ArrayXd& nDij = m_collisions.nDij();
+//
+//    // Compute mixture charge
+//    for (int i = 0; i < ns; ++i)
+//        qi[i] = m_thermo.speciesCharge(i);
+//    const double q = (X*qi).sum();
+//
+//    // Compute kappas (store in V)
+//    V = (X*qi - q*Y)/(KB*Th);
+//
+//    // Compute ambipolar electric field
+//    E = (k > 0 ? dp[0]/V[0] : 0.0);
+//
+//    // Compute right hand side
+//    static VectorXd b; b.resize(nh);
+//    b.array() = -dp.tail(nh) + E*V.tail(nh);
+//
+//    // Compute singular system matrix (lower triangular part)
+//    double fac;
+//    static MatrixXd G; G.resize(nh,nh);
+//    G.triangularView<Lower>() = MatrixXd::Zero(nh, nh);
+//
+//    for (int j = 0, si = 1; j < nh; ++j, ++si) {
+//        for (int i = j+1; i < nh; ++i, ++si) {
+//            fac = X[i+k]*X[j+k]/nDij(si)*nd;
+//            G(i,i) += fac;
+//            G(j,j) += fac;
+//            G(i,j) = -fac;
+//        }
+//    }
+//
+//    // Compute the constraints that are applied to the matrix
+//    fac = X[0]*qi[0];
+//    V.tail(nh) = Y.tail(nh);
+//    if (k > 0) V.tail(nh) -= X.tail(nh)*qi.tail(nh)*Y[0]/fac;
+//
+//    // Add mass balance relation to make matrix nonsigular
+//    G.selfadjointView<Lower>().rankUpdate(
+//        V.matrix().tail(nh), nd/nDij.mean());
+//
+//    static Eigen::LDLT<MatrixXd, Lower> ldlt;
+//    ldlt.compute(G);
+//    V.tail(nh) = ldlt.solve(b).array();
+//
+//    // Compute electron diffusion velocity if need be
+//    if (k == 0)
+//        return;
+//
+//    V[0] = -(X.tail(nh)*qi.tail(nh)*V.tail(nh)).sum() / fac;
+//}
 
 //==============================================================================
 

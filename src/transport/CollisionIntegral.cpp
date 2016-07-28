@@ -677,14 +677,14 @@ private:
 		if (T > m_T.back())
 			return m_Q.back();
 
-//		// Find the index
-//		int i = 1;
-//		while (m_T[i] < T && i < m_T.size()-1) i++;
-//
-//		// Interpolate
-//		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
+		// Find the index
+		int i = 1;
+		while (m_T[i] < T && i < m_T.size()-1) i++;
 
-		return (*mp_interpolator)(T);
+		// Interpolate
+		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
+
+		//return (*mp_interpolator)(T);
 	}
 
     /**
