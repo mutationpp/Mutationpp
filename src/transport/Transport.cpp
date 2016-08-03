@@ -454,30 +454,41 @@ void Transport::equilDiffFluxFacsZ(double* const p_F)
 
 //==============================================================================
 
-
 void Transport::stefanMaxwell(
-    const double* const p_dp, double* const p_V, double& E)
+    const double* const p_dp, double* const p_V, double& E, int order)
+{
+    stefanMaxwell(m_thermo.T(), m_thermo.Te(), p_dp, p_V, E, order);
+}
+
+
+void Transport::stefanMaxwell(double Th, double Te,
+    const double* const p_dp, double* const p_V, double& E, int order)
 {
     const int ns = m_thermo.nSpecies();
     const int k  = ns - m_thermo.nHeavy();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
 
-    const double tol = 1.0e-16;
-    static ArrayXd X, Y; Y.resize(ns); // only gets resized the first time
-    X = Map<const ArrayXd>(m_thermo.X(), ns).max(tol); // Place a tolerance on X
-    m_thermo.convert<X_TO_Y>(&X[0], &Y[0]);
+    static ArrayXd X;
+    X = Map<const ArrayXd>(m_thermo.X(), ns) + 1.0e-16;
+    X /= X.sum();
+
+    ArrayXd qi(ns), Mi(ns);
+    for (int i = 0; i < ns; ++i) {
+        qi(i) = m_thermo.speciesCharge(i);
+        Mi(i) = m_thermo.speciesMw(i);
+    }
 
     // Form the SM matrix
     MatrixXd G = MatrixXd::Zero(ns+k,ns+k);
 
     // electron subsystem
     double s = 0.0;
+    double a = 0.0;
     if (k == 1) {
         const ArrayXd& nDei = m_collisions.nDei();
+        ArrayXd phi; smCorrectionsElectron(order, phi);
         for (int i = 1; i < ns; ++i) {
-            const double fac = Te/Th*X(0)*X(i)/nDei(i)*nd;
+            const double fac = Te/Th*X(0)*X(i)/nDei(i)*nd*(1.0+phi(i));
             G(0,0) += fac;
             G(i,0) = -fac;
             G(i,i) = Te/Th*fac;
@@ -485,23 +496,22 @@ void Transport::stefanMaxwell(
         }
         G(0,0) *= Th/Te;
 
-        ArrayXd qi(ns);
-        for (int i = 0; i < ns; ++i)
-            qi(i) = m_thermo.speciesCharge(i);
-        const double q = (X*qi).sum();
+        ArrayXd kappa = X*(qi - Mi * (qi*X).sum() / (Mi*X).sum()) / (KB*Th);
 
-        ArrayXd kappa = (X*qi - q*Y)/(KB*Th);
         s = kappa.matrix().norm();
         G.row(ns).head(ns) = kappa / s;
         G.col(ns).head(ns) = kappa / s;
         G(0,ns) *= Th/Te;
+
+        a = nDei.mean();
     }
 
     // heavy subsystem
     const ArrayXd& nDij = m_collisions.nDij();
+    ArrayXd phi; smCorrectionsHeavy(order, phi);
     for (int i = k, is = 1; i < ns; ++i, ++is) {
         for (int j = i+1; j < ns; ++j, ++is) {
-            const double fac = X(i)*X(j)/nDij(is)*nd;
+            const double fac = X(i)*X(j)/nDij(is)*nd*(1.0+phi(is));
             G(i,j) = -fac;
             G(i,i) += fac;
             G(j,i) = -fac;
@@ -510,8 +520,15 @@ void Transport::stefanMaxwell(
     }
 
     // add mass constraint
-    const double a = nDij.maxCoeff()/nd;
+    //a = nd / std::max(a, nDij.maxCoeff());
+    a = G.diagonal().maxCoeff();
+    ArrayXd Y = X * Mi / (Mi*X).sum();
     G.topLeftCorner(ns,ns) += a * Y.matrix() * Y.matrix().transpose();
+
+//    if (Th == 7800.0 && Te == 7800.0) {
+//        std::cout << G << "\n" << std::endl;
+//        exit(1);
+//    }
 
     // Form the right hand side
     VectorXd b = VectorXd::Zero(ns+k);
@@ -527,6 +544,101 @@ void Transport::stefanMaxwell(
 
     // Apply Ramshaw to fix roundoff errors
     Map<ArrayXd>(p_V, ns) -= (Map<ArrayXd>(p_V, ns)*Map<const ArrayXd>(m_thermo.Y(), ns)).sum();
+}
+
+void Transport::smCorrectionsElectron(int order, Eigen::ArrayXd& phi)
+{
+    const int ns = m_thermo.nSpecies();
+    phi = ArrayXd::Zero(ns);
+
+    if (order == 1)
+        return;
+
+    const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-16);
+    const ArrayXd& nDei = m_collisions.nDei();
+    const Matrix2d Lee = mp_esubsyst->Lee<2>();
+    const ArrayXd& L01 = m_collisions.L01ei();
+
+    phi = 25./4.*KB*nDei/(X*X(0))*Lee(0,1)/Lee(1,1)*L01;
+    std::cout << phi << "\n" << std::endl;
+}
+
+void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
+{
+    order = 2;
+    std::cout << "smCorrectionsHeavy: order = " << order << std::endl;
+
+    const int nh = m_thermo.nHeavy();
+    phi = ArrayXd::Zero(nh*(nh+1)/2);
+
+    if (order == 1)
+        return;
+
+    // Use second order corrections
+    const int ns = m_thermo.nSpecies();
+    const int k  = ns - nh;
+    ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns) + 1.0e-16;
+    X /= X.sum();
+
+    const ArrayXd& mi = m_collisions.mass();
+    const ArrayXd& Ast = m_collisions.Astij();
+    const ArrayXd& Bst = m_collisions.Bstij();
+    const ArrayXd& Cst = m_collisions.Cstij();
+    const ArrayXd& nDij = m_collisions.nDij();
+    const ArrayXd& etai = m_collisions.etai();
+
+    // Compute the Lam01 matrix
+    MatrixXd Lam01(nh,nh);
+    double fac;
+    Lam01.diagonal().setZero();
+    for (int j = 0, si = 1; j < nh; ++j, ++si) {
+        for (int i = j+1; i < nh; ++i, ++si) {
+            fac = X(i+k)*X(j+k)/(mi(i+k)+mi(j+k))*(12.*Cst(si)-10.)/(25.*KB*nDij(si));
+            Lam01(i,j) = fac*mi(i+k);
+            Lam01(j,i) = fac*mi(j+k);
+            Lam01(i,i) -= Lam01(j,i);
+            Lam01(j,j) -= Lam01(i,j);
+        }
+    }
+
+
+    // Compute the Glamh matrix (only lower part)
+    MatrixXd Glamh(nh,nh);
+    Glamh.diagonal().array() = 4./(15.0*KB)*(X*X*mi).tail(nh)/etai;
+    double miij, mjij;
+    int ik, jk;
+    for (int j = 0, si = 1; j < nh; ++j, ++si) {
+        jk = j+k;
+        for (int i = j+1; i < nh; ++i, ++si) {
+            ik = i+k;
+            miij = mi(ik) / (mi(ik) + mi(jk));
+            mjij = mi(jk) / (mi(ik) + mi(jk));
+            fac  = X(ik)*X(jk) / (nDij(si)*25.*KB);
+            Glamh(i,j) = fac * miij * mjij *
+                (16.0 * Ast(si) + 12.0 * Bst(si) - 55.0);
+            Glamh(i,i) += fac * (miij * (30.0 * miij + 16.0 * mjij *
+                Ast(si)) + mjij * mjij * (25.0 - 12.0 * Bst(si)));
+            Glamh(j,j) += fac * (mjij * (30.0 * mjij + 16.0 * miij *
+                Ast(si)) + miij * miij * (25.0 - 12.0 * Bst(si)));
+        }
+    }
+
+    //std::cout << Glamh << std::endl << std::endl;
+    //std::cout << Lam01 << std::endl << std::endl;
+
+    // Get LDLT factorization of the Glamh matrix
+    LDLT<MatrixXd, Lower> ldlt(Glamh);
+
+    // Compute second order corrections
+    VectorXd beta(nh);
+    for (int j = 0, is = 1; j < nh; ++j, ++is) {
+        beta = ldlt.solve(Lam01.row(j).transpose());
+        for (int i = j+1; i < nh; ++i, ++is)
+            phi(is) = nDij(is)/(X(i+k)*X(j+k)) * beta.dot(Lam01.row(i));
+    }
+    phi *= 6.25 * KB;
+
+    //std::cout << phi << "\n" << std::endl;
 }
 
 

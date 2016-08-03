@@ -352,7 +352,14 @@ public:
      * @param p_V  - on return, the vector of diffusion velocities
      * @param E    - on return, the ambipolar electric field
      */
-    void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
+    void stefanMaxwell(
+        const double* const p_dp, double* const p_V, double& E, int order = 1);
+
+    void stefanMaxwell(double Th, double Te,
+        const double* const p_dp, double* const p_V, double& E, int order = 1);
+
+    void smCorrectionsElectron(int order, Eigen::ArrayXd& phi);
+    void smCorrectionsHeavy(int order, Eigen::ArrayXd& phi);
         
     //==========================================================================
     // Electron subsystem functions

@@ -107,8 +107,6 @@ public:
     const Eigen::Matrix<double,-1,3>& electronThermalDiffusionRatios2B(int order = 3);
 
 
-protected:
-
     /**
      * Returns the factor which must be multiplied by the result of the
      * Lee() function to retrieve \f$\L_{ee}^{pq}\f$.
@@ -131,6 +129,9 @@ protected:
      */
     template <int SIZE>
     Eigen::Matrix<double, SIZE, SIZE> LBee();
+
+
+protected:
 
     /**
      * Helper function to evaluate \f$ sum_{i\in\mathcal{H}} x_i a_i \f$.
@@ -322,9 +323,9 @@ public:
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         CollisionDB& collisions) : m_beta(P, thermo.nHeavy())
     {
-        //const double fac = 16.0/3.0*thermo.numberDensity()*
-        //    std::sqrt(collisions.mass()(0)/(TWOPI*KB*thermo.Te()));
-        const double fac = 16.0/3.0*thermo.numberDensity()/std::sqrt(TWOPI*thermo.Te());
+        const double fac = 16.0/3.0*thermo.numberDensity()*
+            std::sqrt(collisions.mass()(0)/(TWOPI*KB*thermo.Te()));
+        //const double fac = 16.0/3.0*thermo.numberDensity()/std::sqrt(TWOPI*thermo.Te());
         const int nh = thermo.nHeavy();
 
         const Eigen::ArrayXd& Q11 = collisions.Q11ei();
@@ -333,13 +334,13 @@ public:
         if (P == 1) return;
 
         const Eigen::ArrayXd& Q12 = collisions.Q12ei();
-        m_beta.row(1) = fac*(collisions.X()*(2.5*Q11 + 3.0*Q12)).tail(nh);
+        m_beta.row(1) = fac*(collisions.X()*(2.5*Q11 - 3.0*Q12)).tail(nh);
 
         if (P == 2) return;
 
         const Eigen::ArrayXd& Q13 = collisions.Q13ei();
         m_beta.row(2) =
-            fac*(collisions.X()*(4.375*Q11 + 10.5*Q12 + 6.0*Q13)).tail(nh);
+            fac*(collisions.X()*(4.375*Q11 - 10.5*Q12 + 6.0*Q13)).tail(nh);
     }
 
     const Eigen::Matrix<double,P,Eigen::Dynamic>& operator() () {
@@ -357,12 +358,12 @@ const Eigen::VectorXd& ElectronSubSystem::alpha()
 {
     // Compute the system solution
     BetaDi<P> beta(m_thermo, m_collisions);
-    Eigen::Matrix<double,P,P> L1inv = Lee<P>().inverse() / Leefac();
+    Eigen::Matrix<double,P,P> L1inv = Lee<P>().inverse();
 
     for (int i = 0; i < m_thermo.nHeavy(); ++i)
-        m_alpha(i) = (L1inv * beta().col(i)).dot(beta().col(i));
+        m_alpha(i) = (L1inv.col(0)).dot(beta().col(i));
 
-    return m_alpha;
+    return (m_alpha /= Leefac());
 }
 
 template <int P>
@@ -385,9 +386,9 @@ const Eigen::Matrix<double,-1,3>& ElectronSubSystem::alphaB()
 
     for (int i = 0; i < m_thermo.nHeavy(); ++i) {
         b = beta().col(i);
-        m_alpha_B(i,0) = (L1inv * b).dot(b);
+        m_alpha_B(i,0) = (L1inv.col(0)).dot(b);
 
-        sol = (L2inv * b).dot(b);
+        sol = (L2inv.col(0)).dot(b);
         m_alpha_B(i,1) = sol.real();
         m_alpha_B(i,2) = sol.imag();
     }
