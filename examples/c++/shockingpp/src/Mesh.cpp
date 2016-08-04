@@ -8,7 +8,7 @@ Mesh::Mesh(const std::string& l_mesh_info)
 {
     m_Xinitial = 0.0;
     m_Xfinal = 5.e-2;
-    m_dX = 1.e-6;
+    m_dX = 1.e-8;
     m_dX_print = 1.e-5;
 }
 

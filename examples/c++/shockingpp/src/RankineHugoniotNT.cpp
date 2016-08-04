@@ -31,7 +31,6 @@ void RankineHugoniotNT::applyShockRelations(const Data& l_data_before, Data& l_d
     lv_T[0] = lv_T[0] * (2.0 * l_gamma * l_M1s - l_gamma + 1.0) * (l_gm1 + 2.0 / l_M1s) / (l_gp1 * l_gp1);
     l_data_after.setTemperatures(lv_T);
     l_data_after.setMassFractions(l_data_before.getMassFractions());
-
     l_data_after.buildStatePostShock();
 
 }

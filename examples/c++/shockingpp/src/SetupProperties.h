@@ -3,6 +3,11 @@
 
 #include <string>
 
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+
 class SetupProperties {
 public:
     SetupProperties(std::string& s_file_input);
@@ -17,6 +22,10 @@ public:
 
     void cleanMeshInfo();
     void cleanFreeStreamConditionsInfo();
+  
+    // Function for reading input file
+    std::string parseline(std::string line);
+    void readInputFile(std::string& s_file_input);
 
 private:
     std::string s_problem_type;

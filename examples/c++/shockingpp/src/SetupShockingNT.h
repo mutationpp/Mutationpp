@@ -5,7 +5,7 @@
 
 class SetupShockingNT: public SetupProblem {
 public:
-    SetupShockingNT(){}
+    SetupShockingNT();
     ~SetupShockingNT(){}
 
     Data* getDataPreShock(Mutation::Mixture& l_mix, const std::string& l_free_stream_conditions);
@@ -14,4 +14,4 @@ public:
     Problem* getProblem(Mutation::Mixture& l_mix, Data& l_data);
 };
 
-#endif /* SETUPSHOCKING1T_H */
+#endif /* SETUPSHOCKINGNT_H */

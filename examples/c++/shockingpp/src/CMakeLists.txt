@@ -27,29 +27,41 @@ add_sources(shockingpp
     Solver.cpp
     DataShocking1T.cpp
     DataShockingNT.cpp
+    DataLarsen1T.cpp
+    DataLarsenTTv.cpp
     Mesh.cpp
     Shocking1T.cpp
     ShockingTTv.cpp
+    Larsen1T.cpp
+    LarsenTTv.cpp
     RankineHugoniot1T.cpp
     RankineHugoniotNT.cpp
     SetupProblem.cpp
     SetupShocking1T.cpp
     SetupShockingNT.cpp
+    SetupLarsen1T.cpp
+    SetupLarsenTTv.cpp
     SetupProperties.cpp
 )
 
 install(FILES Solver.h DESTINATION bin/include)
 install(FILES Data.h DESTINATION bin/include)
 install(FILES DataShocking1T.h DESTINATION bin/include)
+install(FILES DataLarsen1T.h DESTINATION bin/include)
+install(FILES DataLarsenTTv.h DESTINATION bin/include)
 install(FILES Mesh.h DESTINATION bin/include)
 install(FILES Problem.h DESTINATION bin/include)
 install(FILES Shocking1T.h DESTINATION bin/include)
 install(FILES ShockingTTv.h DESTINATION bin/include)
+install(FILES Larsen1T.h DESTINATION bin/include)
+install(FILES LarsenTTv.h DESTINATION bin/include)
 install(FILES ShockRelations.h DESTINATION bin/include)
 install(FILES RankineHugoniot1T.h DESTINATION bin/include)
 install(FILES SetupProblem.h DESTINATION bin/include)
 install(FILES SetupShocking1T.h DESTINATION bin/include)
 install(FILES SetupShockingNT.h DESTINATION bin/include)
+install(FILES SetupLarsen1T.h DESTINATION bin/include)
+install(FILES SetupLarsenTTv.h DESTINATION bin/include)
 install(FILES SetupProperties.h DESTINATION bin/include)
 install(FILES BasicOutput.h DESTINATION bin/include)
 install(FILES dfdt.h DESTINATION bin/include)

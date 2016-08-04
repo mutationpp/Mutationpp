@@ -20,9 +20,7 @@ private:
     double m_mdot;
 
     mutable std::vector<double> v_Mw;
-    mutable std::vector<double> v_yi, v_rhoi, v_omegai, v_T,  v_hi, v_cpi, v_omega_int_en;
-    mutable std::vector<double> v_hti, v_hri, v_hvi, v_heli;
-    mutable std::vector<double> v_cpti, v_cvri, v_cvvi, v_cveli;
+    mutable std::vector<double> v_yi, v_rhoi, v_omegai, v_T,  v_hi, v_ei, v_cpi, v_cvi, v_omega_int_en;
     mutable vector_type v_dxdt;
 
     const size_t set_state_rhoi_T;

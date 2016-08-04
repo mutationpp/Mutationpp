@@ -1,5 +1,0 @@
-The main file is Larsen.
-First part is shocking 1T (in its procedural version made by Pierre S.), second part is the 
-lagrangian solver.
-I have kept function in the header file (in place of a .cpp file) only for lazyness (sorry 
-about that!)

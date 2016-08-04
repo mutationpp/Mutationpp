@@ -40,11 +40,11 @@ DataShockingNT::DataShockingNT(Mutation::Mixture& l_mix, const std::string& l_in
     // Parse info
 
     // Or for the time being set them arbitrary!
-    m_P = 5.0;      // Pa
+    m_P = 5.2;      // Pa
     for (int i_en = 0; i_en < n_eneq; i_en++){
-        v_T[i_en] = 300.0; // K Free stream in equilibrium
+        v_T[i_en] = 210.0; // K Free stream in equilibrium
     }
-    m_V = 12300.0;  // m/s
+    m_V = 11310.0;  // m/s
 
     errorStateNotSetProperly();
     buildState();
