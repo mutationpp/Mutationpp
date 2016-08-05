@@ -94,7 +94,6 @@ public:
         Map<ArrayXd>(p_k+k,nh) = (m_sys*m_alpha)/KB;
 
         // Do we need to compute electron contributions?
-        return;
         if (k == 0)
             return;
 

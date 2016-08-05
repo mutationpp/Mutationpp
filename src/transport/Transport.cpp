@@ -340,7 +340,7 @@ double Transport::soretThermalConductivity()
     stefanMaxwell(mp_wrk1, work.data(), E);
     
     double lambda = 0.0;
-    for (int i = 1; i < m_thermo.nSpecies(); i++)
+    for (int i = 0; i < m_thermo.nSpecies(); i++)
         lambda -= mp_wrk2[i]*work[i];
 
     return (m_thermo.P()*lambda);
@@ -565,8 +565,8 @@ void Transport::smCorrectionsElectron(int order, Eigen::ArrayXd& phi)
 
 void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
 {
-    order = 2;
-    std::cout << "smCorrectionsHeavy: order = " << order << std::endl;
+    //order = 2;
+    //std::cout << "smCorrectionsHeavy: order = " << order << std::endl;
 
     const int nh = m_thermo.nHeavy();
     phi = ArrayXd::Zero(nh*(nh+1)/2);
