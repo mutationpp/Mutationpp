@@ -1,4 +1,4 @@
-<mixture mechanism="air5_park" thermo_db="RRHO">
+<mixture mechanism="none" thermo_db="RRHO">
     <species>
         O2 N2 NO O N
     </species>

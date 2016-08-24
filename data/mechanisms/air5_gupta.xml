@@ -1,0 +1,55 @@
+<!-- Park Air-5 Reaction Mechanism -->
+<mechanism name="air5_gupta">
+    
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+    
+    <!-- 1 -->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="3.61E+18" n="-1.0" T="59400.0" />
+        <M>O:1.0, N:1.0, O2:1.0, N2:1.0, NO:1.0</M>
+    </reaction>
+    
+    <!-- 2 -->
+    <reaction formula="N2+O=2N+O">
+        <arrhenius A="1.92E+17" n="-0.5" T="113100.0" />
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N2+NO=2N+NO">
+        <arrhenius A="1.92E+17" n="-0.5" T="113100.0" />
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N2+O2=2N+O2">
+        <arrhenius A="1.92E+17" n="-0.5" T="113100.0" />
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N2+N2=2N+N2">
+        <arrhenius A="1.92E+17" n="-0.5" T="113100.0" />
+    </reaction>
+
+    <!-- 2 -->
+    <reaction formula="N2+N=2N+N">
+        <arrhenius A="4.085E+22" n="-1.5" T="113100.0" />
+    </reaction>
+
+    <!-- 3 -->
+    <reaction formula="NO+M=N+O+M">
+        <arrhenius A="3.97E+20" n="-1.5" T="75600.0" />
+        <M>O:1.0, N:1.0, O2:1.0, N2:1.0, NO:1.0</M>
+    </reaction>
+
+    <!-- 4 -->
+    <reaction formula="NO+O=O2+N">
+        <arrhenius A="3.2E+9" n="1.0" T="19700.0" />
+    </reaction>
+
+    <!-- 5 -->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="7.E+13" n="0.0" T="37500.0" />
+    </reaction>
+
+</mechanism>
+
+
