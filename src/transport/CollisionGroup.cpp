@@ -108,12 +108,12 @@ CollisionGroup& CollisionGroup::update(
     // Compute tabulated data
     if (m_table.rows() > 0) {
         // Clip the temperature to the table bounds
-        T = std::max(std::min(T, m_table_max), m_table_min);
+        double Tc = std::max(std::min(T, m_table_max), m_table_min);
 
         // Compute index of temperature >= to T
         int i = std::min(
-            (int)((T-m_table_min)/m_table_delta)+1, (int)m_table.cols()-1);
-        double ratio = (T - m_table_min - i*m_table_delta)/m_table_delta;
+            (int)((Tc-m_table_min)/m_table_delta)+1, (int)m_table.cols()-1);
+        double ratio = (Tc - m_table_min - i*m_table_delta)/m_table_delta;
 
         // Linearly interpolate the table
         m_unique_vals.head(m_table.rows()) =

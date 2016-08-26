@@ -394,6 +394,8 @@ void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di);
 void NAME_MANGLE(stefan_maxwell)
     (const double* const p_dp, double* const p_V, double* const p_E);
     
+void NAME_MANGLE(diffusion_matrix)(double* const p_Dij);
+
 /**
  * Returns the electric conductivity.
  */

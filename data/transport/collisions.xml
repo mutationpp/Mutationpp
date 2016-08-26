@@ -35,7 +35,7 @@
  given for all possible integrals with warnings for integrals that really should
  have explicit data given.
 =============================================================================-->
-<collisions tabulate="no" Tmin="200" Tmax="50000" dT="100">
+<collisions tabulate="yes" Tmin="100" Tmax="50000" dT="100">
 
     <!-- Default collision integral data -->
     <defaults>

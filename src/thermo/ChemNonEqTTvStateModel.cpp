@@ -276,8 +276,10 @@ public:
 
     void solveEnergies(const double* const p_rhoi, const double* const p_rhoe)
     {
-        const double atol = 1.0e-12;
-        const double rtol = 1.0e-12;
+        m_T = m_Tv = 500.0;
+
+        const double atol = 1.0e-10;
+        const double rtol = 1.0e-10;
         const int    imax = 100;
 
         Map<const VectorXd> rhoi(p_rhoi, m_thermo.nSpecies());

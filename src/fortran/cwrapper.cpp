@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+#include <Eigen/Dense>
+
 #ifdef _GNU_SOURCE
 #include <fenv.h>
 #endif
@@ -385,6 +387,13 @@ void NAME_MANGLE(stefan_maxwell)
     (const double* const p_dp, double* const p_V, double* const p_E)
 {
     p_mix->stefanMaxwell(p_dp, p_V, *p_E);
+}
+
+//==============================================================================
+void NAME_MANGLE(diffusion_matrix)(double* const p_Dij)
+{
+    Eigen::Map<Eigen::MatrixXd>(p_Dij, p_mix->nSpecies(), p_mix->nSpecies()) =
+        p_mix->diffusionMatrix().transpose();
 }
     
 //==============================================================================
