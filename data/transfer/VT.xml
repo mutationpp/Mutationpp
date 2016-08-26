@@ -104,9 +104,13 @@ Data References:
         
         <!-- CO data from Ref. [2] -->
         <vibrator species="CO" omegav="3.0E-22">
+            <partner species="Ar" a="215" b="0.0302" />
             <partner species="N" a="47.7" b="0.05" />
             <partner species="O" a="47.7" b="0.05" />
             <partner species="C" a="47.7" b="0.05" />
+            <partner species="N2" a="198" b="0.029" />
+            <partner species="CO" a="198" b="0.029" />
+            <partner species="CO2" a="218" b="0.0305" />
         </vibrator>
         
         <!-- CO2 data from Ref. [2] -->

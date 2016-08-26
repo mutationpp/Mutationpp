@@ -116,9 +116,9 @@ double const OmegaCV::compute_source_Candler()
 	 double sum = 0.E0;
 
 	 for(int i = 0 ; i < m_ns; ++i)
-		 sum += mp_wrk1[i]*mp_wrk2[i] *m_mixture.T()*RU/m_mixture.speciesMw(i);
+		 sum += mp_wrk1[i]*mp_wrk2[i]/m_mixture.speciesMw(i);
 
-	 return(c1*sum);
+	 return(c1*sum*m_mixture.T()*RU);
  }
 
 // Register the transfer model
