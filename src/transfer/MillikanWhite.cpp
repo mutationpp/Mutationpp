@@ -31,6 +31,9 @@
 #include "ParticleRRHO.h"
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
@@ -49,24 +52,13 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
     // Get the name of this species
     std::string name;
     node.getAttribute("species", name, "must provide species name!");
-    m_index = thermo.speciesIndex(name);
+    m_index  = thermo.speciesIndex(name);
+    m_thetav = loadThetaV(name);
     
     // Get the limiting cross-section if available
     node.getAttribute("omegav", m_omegav, 3.0E-21);
     
     const Species& vibrator = thermo.species(name);
-    
-    // Get characteristic vibrational temperature
-    
-    double theta=0.0;
-//    if (vibrator.hasRRHOParameters())
-//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-//    else {
-        std::cout << "Cannot get characteristic vibrational temperature for "
-             << "species " << vibrator.name() << " because there is no "
-             << "RRHO data present in species.xml!" << std::endl;
-//        exit(1);
-//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
@@ -89,12 +81,21 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
             partner_iter->getAttribute("a", a, "must provide constant a!");
             partner_iter->getAttribute("b", b, "must provide constant b!");
             
-            // add Millikan-White data for collision pair
+            // Add Millikan-White data for collision pair
             m_partners.push_back(MillikanWhitePartner(a, b, mu));
         } else {
+            if (m_thetav < 0.0) {
+                std::cout << "Error: Did not find vibrational temperature for "
+                          << name << "." << std::endl;
+                std::exit(1);
+            }
+
             // Add Millikan-White data using defaults
-            m_partners.push_back(MillikanWhitePartner(mu, theta));
+            m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
         }
+
+        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
+        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
 }
 
@@ -102,23 +103,22 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 
 MillikanWhiteVibrator::MillikanWhiteVibrator(
     const std::string& name, const class Thermodynamics& thermo)
-    : m_omegav(3.0E-21), m_index(thermo.speciesIndex(name))
+    : m_omegav(3.0E-21),
+      m_index(thermo.speciesIndex(name)),
+      m_thetav(loadThetaV(name))
 {
+    // Rely on thetav for all partners so make sure it was found
+    if (m_thetav < 0.0) {
+        std::cout << "Error: Did not find vibrational temperature for "
+                  << name << "." << std::endl;
+        std::exit(1);
+    }
+
     const Species& vibrator = thermo.species(name);
-    
-    // Get characteristic vibrational temperature
-    double theta = 0.0, mu;
-//    if (vibrator.hasRRHOParameters())
-//        theta = vibrator.getRRHOParameters()->vibrationalEnergy(0);
-//    else {
-        std::cout << "Cannot get characteristic vibrational temperature for "
-             << "species " << vibrator.name() << " because there is no "
-             << "RRHO data present in species.xml!" << std::endl;
-//        exit(1);
-//    }
     
     // Loop over each heavy species in thermo
     int offset = (thermo.hasElectrons() ? 1 : 0);
+    double mu;
     
     for (int i = 0; i < thermo.nHeavy(); ++i) {
         // Get collision partner
@@ -129,8 +129,46 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
              (vibrator.molecularWeight() + partner.molecularWeight());
         
         // Add Millikan-White data using defaults
-        m_partners.push_back(MillikanWhitePartner(mu, theta));
+        m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
+        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
+        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
+}
+
+//==============================================================================
+
+double MillikanWhiteVibrator::loadThetaV(const std::string& name)
+{
+    // Get the species.xml path on this computer (first assume the local directory)
+    std::string filename = "species.xml";
+    {
+        std::ifstream file(filename.c_str(), std::ios::in);
+
+        // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
+        if (!file.is_open())
+            filename = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
+                "/thermo/" + filename;
+    }
+
+    // Now look for the species
+    XmlDocument doc(filename);
+    XmlElement::const_iterator iter = doc.root().findTagWithAttribute(
+        "species", "name", name);
+    if (iter == doc.root().end()) return -1.0;
+
+    // Look for the thermodynamic data
+    XmlElement::const_iterator thermo_iter = iter->findTagWithAttribute(
+        "thermodynamics", "type", "RRHO");
+    if (thermo_iter == iter->end()) return -1.0;
+
+    // Look for the vibrational temperature data
+    iter = thermo_iter->findTag("vibrational_temperatures");
+    if (iter == thermo_iter->end()) return -1.0;
+
+    std::stringstream ss(iter->text());
+    double thetav; ss >> thetav;
+
+    return thetav;
 }
 
 //==============================================================================
@@ -142,16 +180,12 @@ MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
     
     // Open the VT file as an XML document
     XmlDocument doc(filename);
-    XmlElement root = doc.root();
     
-    // Search for the Millikan and White element
-    XmlElement::const_iterator iter = root.begin();
-    for ( ; iter != root.end(); ++iter) {
-        if (iter->tag() == "Millikan-White") {
-            root = *iter;
-            break;
-        }
-    }
+    // Find the Millikan-White data
+    XmlElement::const_iterator iter = doc.root().findTag("Millikan-White");
+    if (iter == doc.root().end())
+        doc.root().parseError("Could not find Millikan-White element.");
+    const XmlElement& root = *iter;
 
     // Loop over all molecules and load the Millikan-White data associated with
     // them

@@ -686,12 +686,18 @@ void LookupTable<IndexType, DataType, FunctionType>::lookup(
         } else {
             // Otherwise do binary search for worst case O(log(n)) comparisons
             IndexType* p_upper_index = 
-                std::lower_bound(mp_indices, mp_indices + m_num_indices, index);
+                std::lower_bound(mp_indices, mp_indices + m_num_indices - 1, index);
             
             upper_row = static_cast<unsigned int>(p_upper_index - mp_indices);
             lower_row = upper_row - 1;
         }
-    }    
+    }
+
+//    std::cout << "Lookup table: lookup()" << std::endl;
+//    std::cout << "# of indices = " << m_num_indices << std::endl;
+//    std::cout << "x = " << index << std::endl;
+//    std::cout << "index[" << lower_row << "]= " << mp_indices[lower_row] << std::endl;
+//    std::cout << "index[" << upper_row << "]= " << mp_indices[upper_row] << std::endl;
     
     // Now compute the values of the functions at index using the specified
     // interpolation scheme

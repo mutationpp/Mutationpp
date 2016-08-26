@@ -180,20 +180,6 @@ public:
     void setMechanism(const std::string& mechanism) {
         m_mechanism = mechanism;
     }
-    
-    /**
-     * Get option to load the transport data.
-     */
-    bool loadTransport() const {
-        return m_load_transport;
-    }
-
-    /**
-     * Set option to load the transport data.
-     */
-    void loadTransport(bool load) {
-        m_load_transport = load;
-    }
 
     /**
      * Gets the viscosity algorithm to use.

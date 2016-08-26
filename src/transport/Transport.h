@@ -30,9 +30,7 @@
 
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
-#include "ViscosityAlgorithm.h"
-#include "ThermalConductivityAlgorithm.h"
-#include "Ramshaw.h"
+#include "ElectronSubSystem.h"
 #include "Utilities.h"
 
 #include <Eigen/Dense>
@@ -40,16 +38,14 @@
 namespace Mutation {
     namespace Transport {
 
-#define ERROR_IF_INTEGRALS_ARE_NOT_LOADED(__RET__)\
-if (mp_collisions == NULL) {\
-    std::cout << "Error! Trying to use transport without loading collision integrals!!" << std::endl;\
-    return __RET__;\
-}
+class DiffusionMatrix;
+class ThermalConductivityAlgorithm;
+class ViscosityAlgorithm;
 
 /**
  * Manages the computation of transport properties.
  */
-class Transport //: public Mutation::Thermodynamics::StateModelUpdateHandler
+class Transport
 {
 public:
     
@@ -58,75 +54,43 @@ public:
      */
     Transport(
         Mutation::Thermodynamics::Thermodynamics& thermo, 
-        const std::string& viscosity, const std::string& lambda,
-        const bool load_data = true);
+        const std::string& viscosity, const std::string& lambda);
     
     /**
      * Destructor.
      */
     ~Transport();
+    
+    /// Provides reference to the underlying collision integral database.
+    CollisionDB& collisionDB() { return m_collisions; }
+    
+    /// Sets the viscosity algorithm.
+    void setViscosityAlgo(const std::string& algo);
+    
+    /// Sets the heavy particle, thermal conductivity algorithm.
+    void setThermalConductivityAlgo(const std::string& algo);
+    
+    /// Sets the diffusion matrix algorithm.
+    void setDiffusionMatrixAlgo(const std::string& algo);
 
-    /**
-    * Returns a pointer to the collision data object.
-    */
-    CollisionDB* const collisionData() {
-        return mp_collisions;
-    }
+    /// Returns the number of collision pairs accounted for in this mixture.
+    int nCollisionPairs() const { return m_collisions.size(); }
     
-    void stateUpdated() {
-        std::cout << "stateUpdated: Transport" << std::endl;
-    }
+    //void omega11ii(double* const p_omega);
+    //void omega22ii(double* const p_omega);
     
-    /**
-     * Sets the algorithm to use when computing viscosity.
-     */
-    void setViscosityAlgo(const std::string& algo) {
-        delete mp_viscosity;
-        mp_viscosity = Mutation::Utilities::Config::Factory<
-            ViscosityAlgorithm>::create(algo, *mp_collisions);
-    }
-    
-    /**
-     * Sets the algorithm to use when computing thermal conductivity.
-     */
-    void setThermalConductivityAlgo(const std::string& algo) {
-        delete mp_thermal_conductivity;
-        mp_thermal_conductivity = Mutation::Utilities::Config::Factory<
-            ThermalConductivityAlgorithm>::create(algo, *mp_collisions);
-    }
-    
-    /**
-     * Returns the total number of collision pairs accounted for in the 
-     * collision database.
-     */
-    int nCollisionPairs() const {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0)
-        return mp_collisions->nCollisionPairs();
-    }
-    
-    void omega11ii(double* const p_omega);
-    void omega22ii(double* const p_omega);
-    
-    /**
-     * Returns the mixture viscosity.
-     */
-    double viscosity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return mp_viscosity->viscosity(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-    }
+    /// Returns the mixture viscosity.
+    double viscosity();
     
     /**
      * Returns the mixture thermal conductivity for a frozen mixture.
      * To be used only at thermal equilibrium.
      */
     double frozenThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return (
+        return
             heavyThermalConductivity() + 
             electronThermalConductivity() +
-            internalThermalConductivity(m_thermo.T())
-        );
+            internalThermalConductivity(m_thermo.T());
     }
 
     /**
@@ -140,28 +104,17 @@ public:
      * equilibrium.
      */
     double equilibriumThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return (
+        return
             frozenThermalConductivity() +
             reactiveThermalConductivity() +
-            soretThermalConductivity()
-        );
+            soretThermalConductivity();
     }
     
     /**
      * Returns the heavy particle translational thermal conductivity using the 
      * set algorithm.
      */
-    double heavyThermalConductivity() {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-        return mp_thermal_conductivity->thermalConductivity(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-    }
-    
-    /**
-     * Returns the electron translational thermal conductivity.
-     */
-    double electronThermalConductivity();
+    double heavyThermalConductivity();
     
     /**
      * Returns the thermal conductivity of an internal energy mode using
@@ -170,21 +123,23 @@ public:
     template <typename E>
     double euken(const Eigen::ArrayBase<E>& cp)
     {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(0.0)
-
-        const int ns = m_thermo.nSpecies();
-        assert(cp.size() == ns);
+        const int ns = m_thermo.nSpecies();  assert(cp.size() == ns);
         const int nh = m_thermo.nHeavy();
         const int k  = ns-nh;
 
         Eigen::Map<const Eigen::ArrayXd> X(m_thermo.X()+k, nh);
-        const Eigen::MatrixXd& nDij = mp_collisions->nDij(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
+        static Eigen::ArrayXd avDij; avDij.resize(nh);
+        const Eigen::ArrayXd& nDij = m_collisions.nDij();
 
-        Eigen::ArrayXd avDij(Eigen::ArrayXd::Zero(nh));
-        for (int j = 0; j < nh; ++j)
-            avDij += X(j) / (nDij+nDij.transpose()).col(j+k).tail(nh).array();
-        avDij += 0.5*X/nDij.diagonal().tail(nh).array();
+        avDij.setZero();
+        for (int i = 0, index = 0; i < nh; ++i) {
+            // Account for diagonal term added twice
+            avDij(i) -= X(i)/nDij(index);
+            for (int j = i; j < nh; ++j, ++index) {
+                avDij(i) += X(j)/nDij(index);
+                avDij(j) += X(i)/nDij(index);
+            }
+        }
 
         return KB * (X * cp.tail(nh) / avDij).sum();
     }
@@ -216,43 +171,31 @@ public:
     double reactiveThermalConductivity();
     
     /**
+     * Returns the reactive thermal conductivity which accounts for reactions
+     * for mixtures in thermochemical equilibrium using the Butler-Brokaw
+     * formula.
+     */
+    double butlerBrokawThermalConductivity();
+
+    /**
      * Returns the Soret thermal conductivity the mixture in thermochemical 
      * equilibrium.
      */
     double soretThermalConductivity();
     
-    /**
-     * Returns the thermal diffusion ratios for each species.
-     */
-    void thermalDiffusionRatios(double* const p_k) {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-        mp_thermal_conductivity->thermalDiffusionRatios(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
-            m_thermo.X(), p_k);
-    }
+    /// Returns the thermal diffusion ratios for each species.
+    void thermalDiffusionRatios(double* const p_k);
     
-    /**
-     * Returns the multicomponent diffusion coefficient matrix.
-     */
-    const Eigen::MatrixXd& diffusionMatrix() {
-        static Eigen::MatrixXd empty;
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED(empty)
-        return mp_diffusion_matrix->diffusionMatrix(
-            m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(), m_thermo.X());
-    }
-    
-    void exactDiffusionMatrix(double ** const p_Dij);
+    /// Returns the multicomponent diffusion coefficient matrix.
+    const Eigen::MatrixXd& diffusionMatrix();
 
     /**
      * Returns the average diffusion coefficients.
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
      */
     void averageDiffusionCoeffs(double *const p_Di) {
-        ERROR_IF_INTEGRALS_ARE_NOT_LOADED()
-        Eigen::Map<Eigen::ArrayXd>(p_Di,m_thermo.nSpecies()) =
-            mp_collisions->Dim(
-                m_thermo.T(), m_thermo.Te(), m_thermo.numberDensity(),
-                m_thermo.X());
+        Eigen::Map<Eigen::ArrayXd>(p_Di, m_thermo.nSpecies()) =
+            m_collisions.Dim();
     }
     
     /**
@@ -403,69 +346,178 @@ public:
      *     \nabla \ln p + k^h_{Ti} \nabla \ln T_h + k^e_{Ti} \frac{T_h}{T_e}
      *     \nabla \ln T_e \f]
      *
+     * @todo Check that this is correct for thermal nonequilibrium.
+     *
      * @param p_dp - the vector of modified driving forces \f$ d^{'}_i \f$
      * @param p_V  - on return, the vector of diffusion velocities
      * @param E    - on return, the ambipolar electric field
      */
-    void stefanMaxwell(const double* const p_dp, double* const p_V, double& E);
+    void stefanMaxwell(
+        const double* const p_dp, double* const p_V, double& E, int order = 1);
+
+    void stefanMaxwell(double Th, double Te,
+        const double* const p_dp, double* const p_V, double& E, int order = 1);
+
+    void smCorrectionsElectron(int order, Eigen::ArrayXd& phi);
+    void smCorrectionsHeavy(int order, Eigen::ArrayXd& phi);
         
-    /// Electric conductivity in S/m (no magnetic field).
-    double sigma();
-    /// Electric conductivity parallel to the magnetic field in S/m.
+    //==========================================================================
+    // Electron subsystem functions
+    //==========================================================================
+
+    /// Isotropic electric conductivity in S/m (no magnetic field).
+    double electricConductivity(int order = 3) {
+        return mp_esubsyst->electricConductivity(order);
+    }
+
+    /// Anisotropic electric conductivity in S/m (with magnetic field).
+    Eigen::Vector3d electricConductivityB(int order = 3) {
+        return mp_esubsyst->electricConductivityB(order);
+    }
+
+    /// Returns the electron thermal conductivity in W/m-K
+    double electronThermalConductivity(int order = 3) {
+        return mp_esubsyst->electronThermalConductivity(order);
+    }
+
+    /// Anisotropic electron thermal conductivity in W/m-K.
+    Eigen::Vector3d electronThermalConductivityB(int order = 3) {
+        return mp_esubsyst->electronThermalConductivityB(order);
+    }
+
+    /// Isotropic electron diffusion coefficient.
+    double electronDiffusionCoefficient(int order = 3) {
+        return mp_esubsyst->electronDiffusionCoefficient(order);
+    }
+
+    /// Anisotropic electron diffusion coefficient.
+    Eigen::Vector3d electronDiffusionCoefficientB(int order = 3) {
+        return mp_esubsyst->electronDiffusionCoefficientB(order);
+    }
+
+    /// Isotropic second-order electron diffusion coefficient.
+    double electronDiffusionCoefficient2(int order = 3)
+    {
+        const int nh = m_thermo.nHeavy();
+        return mp_esubsyst->electronDiffusionCoefficient2(
+            diffusionMatrix().bottomRightCorner(nh,nh), order);
+    }
+
+    /// Anisotropic second-order electron diffusion coefficient.
+    Eigen::Vector3d electronDiffusionCoefficient2B(int order = 3)
+    {
+        const int nh = m_thermo.nHeavy();
+        return mp_esubsyst->electronDiffusionCoefficient2B(
+            diffusionMatrix().bottomRightCorner(nh,nh), order);
+    }
+
+    /// Isotropic alpha coefficients.
+    const Eigen::VectorXd& alpha(int order = 3) {
+        return mp_esubsyst->alpha(order);
+    }
+
+    /// Anisotropic alpha coefficients.
+    const Eigen::Matrix<double,-1,3>& alphaB(int order = 3) {
+        return mp_esubsyst->alphaB(order);
+    }
+
+    /// Isotropic electron thermal diffusion ratio.
+    double electronThermalDiffusionRatio(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatio(order);
+    }
+
+    /// Anisotropic electron thermal diffusion ratio.
+    Eigen::Vector3d electronThermalDiffusionRatioB(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatioB(order);
+    }
+
+    /// Isotropic second-order electron thermal diffusion ratios.
+    const Eigen::VectorXd& electronThermalDiffusionRatios2(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatios2(order);
+    }
+
+    /// Anisotropic second-order electron thermal diffusion ratios.
+    const Eigen::Matrix<double,-1,3>& electronThermalDiffusionRatios2B(int order = 3) {
+        return mp_esubsyst->electronThermalDiffusionRatios2B(order);
+    }
+
+
+
     double sigmaParallel();
-    /// Electric conductivity perpendicular to the magnetic field in S/m.
+//    /// Electric conductivity perpendicular to the magnetic field in S/m.
     double sigmaPerpendicular();
-    /// Electriic conductivity transverse to the magnetic field in S/m.
+//    /// Electriic conductivity transverse to the magnetic field in S/m.
     double sigmaTransverse();
-
-    /// Mean free path of the mixture in m.
+//
+//    /// Mean free path of the mixture in m.
     double meanFreePath();
-    /// Mean free path of electrons in m.
+//    /// Mean free path of electrons in m.
     double electronMeanFreePath();
-
-    /// Average heavy particle thermal speed of mixture in m/s.
-    double averageHeavyThermalSpeed();
-    /// Electron thermal speed of mixture in m/s.
+//    /// Average heavy particle thermal speed of mixture in m/s.
+   double averageHeavyThermalSpeed();
+//    /// Electron thermal speed of mixture in m/s.
     double electronThermalSpeed();
-
-    /// Electron-heavy collision frequency in 1/s.
+//
+//    /// Electron-heavy collision frequency in 1/s.
     double electronHeavyCollisionFreq();
-    /// Average collision frequency of heavy particles in mixture in 1/s.
+//
+//    /// Average collision frequency of heavy particles in mixture in 1/s.
     double averageHeavyCollisionFreq();
-
-    /// Coulomb mean collision time of the mixture in s.
+//
+//    /// Coulomb mean collision time of the mixture in s.
     double coulombMeanCollisionTime();
-    /// Hall parameter.
+//    /// Hall parameter.
     double hallParameter();
-
-    // Anisotropic Diffusion Coefficient
+//
+//    // Anisotropic Diffusion Coefficient
     double parallelDiffusionCoefficient();
     double perpDiffusionCoefficient();
     double transverseDiffusionCoefficient();
-
-    // Anisotropic Thermal Diffusion Coefficient
+//
+//    // Anisotropic Thermal Diffusion Coefficient
     double parallelThermalDiffusionCoefficient();
     double perpThermalDiffusionCoefficient();
     double transverseThermalDiffusionCoefficient();
-
-
-    //Anisotropic Electron Thermal Conductivity
+//
+//
+//    //Anisotropic Electron Thermal Conductivity
     double parallelElectronThermalConductivity();
     double perpElectronThermalConductivity();
     double transverseElectronThermalConductivity();
+//
+//    // Thermal diffusion ratios
+    std::vector<double> parallelThermalDiffusionRatio2();
+    double parallelThermalDiffusionRatio();
+    std::vector<double> perpThermalDiffusionRatio2();
+    double perpThermalDiffusionRatio();
+    std::vector<double> transverseThermalDiffusionRatio2();
+    double transverseThermalDiffusionRatio();
+//    // Return ratios of anisotropic properties
+//    double ratioSigmaPerpPar();
+//    double ratioSigmaTransPar();
+//    double ratioLambdaPerpPar();
+//    double ratioLambdaTransPar();
+//    std::vector<double> ratiokTPerpPar();
+//    std::vector<double> ratiokTTransPar();
+ double taueLambda();
+ double taueLambdaBr();
+double perpLambdaeBr();
+double transLambdaeBr();
 
-    // Thermal diffusion ratios
-    std::vector<double> parallelThermalDiffusionRatio();
-    std::vector<double> perpThermalDiffusionRatio();
-    std::vector<double> transverseThermalDiffusionRatio();
+double coefficientFriction();
+double perpfriccoeffBr();
+double transfriccoeffBr();
 
-    // Return ratios of anisotropic properties
-    double ratioSigmaPerpPar();
-    double ratioSigmaTransPar();
-    double ratioLambdaPerpPar();
-    double ratioLambdaTransPar();
-    std::vector<double> ratiokTPerpPar();
-    std::vector<double> ratiokTTransPar();
+ double tauViscosity();
+ double tauViscosityBr();
+double tauLambdaHeavy();
+double tauLambdaHeavyBr();
+double tauEnergy();
+double tauEnergyBr();
+double etaohmbraginskii();
+double transetaohmBr();
+double perpetaohmBr();
+
 
 private:
 
@@ -490,11 +542,12 @@ private:
 private:
 
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDB* mp_collisions;
+    CollisionDB m_collisions;
+    ElectronSubSystem* mp_esubsyst;
     
     ViscosityAlgorithm* mp_viscosity;
     ThermalConductivityAlgorithm* mp_thermal_conductivity;
-    Ramshaw* mp_diffusion_matrix;
+    DiffusionMatrix* mp_diffusion_matrix;
     
     double* mp_wrk1;
     double* mp_wrk2;

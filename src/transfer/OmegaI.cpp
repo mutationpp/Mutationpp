@@ -94,10 +94,27 @@ public:
 		int j;
 		for (int i = 0; i < m_rId.size(); ++i) {
 		    j = m_rId[i].first;
-	            src += m_rId[i].second*mp_delta[j]*mp_rate[j];
+	        src += m_rId[i].second*mp_delta[j]*mp_rate[j];
 		}
 
 		return (-src*RU*m_mixture.T());
+
+//		m_mixture.speciesHOverRT(298.15, mp_hf);
+//        // Get reaction enthalpies
+//        std::fill(mp_delta, mp_delta+m_nr, 0.0);
+//        m_mixture.getReactionDelta(mp_hf,mp_delta);
+//
+//        // Get molar rates of progress
+//        m_mixture.netRatesOfProgress(mp_rate);
+//
+//        double src = 0.0;
+//        int j;
+//        for (int i = 0; i < m_rId.size(); ++i) {
+//            j = m_rId[i].first;
+//            src += m_rId[i].second*mp_delta[j]*mp_rate[j];
+//        }
+//
+//        return (-src*RU*298.15);
 	}
 
 private:

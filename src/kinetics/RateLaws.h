@@ -74,6 +74,10 @@ public:
         return (m_lnA + m_n * lnT - m_temp * invT);
     }
     
+    inline double derivative(const double k, const double lnT, const double invT) const {
+        return (k*invT*(m_n + m_temp*invT));
+    }
+
     double A() const { 
         return std::exp(m_lnA);
     }

@@ -33,6 +33,7 @@
 #include <cstdlib>
 
 #include <Eigen/Dense>
+using namespace Eigen;
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -60,7 +61,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 53
+#define NMIXTURE 45
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -97,24 +98,25 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("mu", "Pa-s", "dynamic viscosity"),
     OutputQuantity("lambda", "W/m-K", "mixture equilibrium thermal conductivity"),
     OutputQuantity("lam_reac", "W/m-K", "reactive thermal conductivity"),
+    OutputQuantity("lam_bb", "W/m-K", "Butler-Brokaw reactive thermal conductivity"),
     OutputQuantity("lam_soret", "W/m-K", "Soret thermal conductivity"),
     OutputQuantity("lam_int", "W/m-K", "internal energy thermal conductivity"),
     OutputQuantity("lam_h", "W/m-K", "heavy particle translational thermal conductivity"),
     OutputQuantity("lam_e", "W/m-K", "electron translational thermal conductivity"),
     OutputQuantity("sigma", "S/m", "electric conductivity (B=0)"),
-    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
-    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
-    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
+//    OutputQuantity("sigma_para", "S/m", "electronic conductivity parallel to magnetic field"),
+//    OutputQuantity("sigma_perp", "S/m", "electronic conductivity perpendicular to magnetic field"),
+//    OutputQuantity("sigma_tran", "S/m", "electronic conductivity transverse to magnetic field"),
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
-    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure"),
-    OutputQuantity("l", "m", "mean free path"),
-    OutputQuantity("le", "m", "mean free path of electrons"),
-    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
-    OutputQuantity("Ve", "m/s", "electron thermal speed"),
-    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
-    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
+//    OutputQuantity("l", "m", "mean free path"),
+//    OutputQuantity("le", "m", "mean free path of electrons"),
+//    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
+//    OutputQuantity("Ve", "m/s", "electron thermal speed"),
+//    OutputQuantity("tau_eh", "1/s", "electron-heavy collision frequency"),
+//    OutputQuantity("tau_a", "1/s", "average heavy particle collision frequency")
 };
 
 // List of all species output quantities
@@ -149,7 +151,7 @@ OutputQuantity reaction_quantities[NREACTION] = {
 };
 
 // List of other output quantities
-#define NOTHER 8
+#define NOTHER 10
 OutputQuantity other_quantities[NOTHER] = {
     OutputQuantity("Dij", "m^2/s", "multicomponent diffusion coefficients"),
     OutputQuantity("pi_i", "", "element potentials"),
@@ -158,7 +160,9 @@ OutputQuantity other_quantities[NOTHER] = {
     OutputQuantity("newts", "", "total number of newton iterations"),
     OutputQuantity("Fp_k", "kg/m-Pa-s", "elemental diffusion fluxes per pressure gradient"),
     OutputQuantity("Ft_k", "kg/m-K-s", "elemental diffusion fluxes per temperature gradient"),
-    OutputQuantity("Fz_k", "kg/m-s", "elemental diffusion fluxes per element mole fraction gradient")
+    OutputQuantity("Fz_k", "kg/m-s", "elemental diffusion fluxes per element mole fraction gradient"),
+    OutputQuantity("sigmaB", "S/m", "anisotropic electric conductivity"),
+    OutputQuantity("lamB_e", "W/m-K", "anisotropic electron thermal conductivity")
 };
 
 // Simply stores the command line options
@@ -613,6 +617,26 @@ void writeHeader(
                         cout << setw(column_widths.back()) << name;
                 }
             }
+        } else if (other_quantities[*iter].name == "sigmaB") {
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_par";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_perp";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "sig_tran";
+        } else if (other_quantities[*iter].name == "lamB_e") {
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_par";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_perp";
+            column_widths.push_back(std::max(width, 10));
+            if (opts.header)
+                cout << setw(column_widths.back()) << "lamB_tran";
         }
     }
     
@@ -742,6 +766,8 @@ int main(int argc, char** argv)
                     value = mix.equilibriumThermalConductivity();
                 else if (name == "lam_reac")
                     value = mix.reactiveThermalConductivity();
+                else if (name == "lam_bb")
+                    value = mix.butlerBrokawThermalConductivity();
                 else if (name == "lam_soret")
                     value = mix.soretThermalConductivity();
                 else if (name == "lam_int")
@@ -751,13 +777,13 @@ int main(int argc, char** argv)
                 else if (name == "lam_e")
                     value = mix.electronThermalConductivity();
                 else if (name == "sigma")
-                    value = mix.sigma();
-                else if (name == "sigma_para")
-                    value = mix.sigmaParallel();
-                else if (name == "sigma_perp")
-                    value = mix.sigmaPerpendicular();
-                else if (name == "sigma_trans")
-                    value = mix.sigmaTransverse();
+                    value = mix.electricConductivity();
+//                else if (name == "sigma_para")
+//                    value = mix.sigmaParallel();
+//                else if (name == "sigma_perp")
+//                    value = mix.sigmaPerpendicular();
+//                else if (name == "sigma_trans")
+//                    value = mix.sigmaTransverse();
                 else if (name == "Ht") {
                     mix.speciesHOverRT(temp, species_values);
                     value = 0.0;
@@ -808,18 +834,18 @@ int main(int argc, char** argv)
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
-                else if (name == "l")
-                    value = mix.meanFreePath();
-                else if (name == "le")
-                    value = mix.electronMeanFreePath();
-                else if (name == "Vh")
-                    value = mix.averageHeavyThermalSpeed();
-                else if (name == "Ve")
-                    value = mix.electronThermalSpeed();
-                else if (name == "tau_eh")
-                    value = mix.electronHeavyCollisionFreq();
-                else if (name == "tau_a")
-                    value = mix.averageHeavyCollisionFreq();
+//                else if (name == "l")
+//                    value = mix.meanFreePath();
+//                else if (name == "le")
+//                    value = mix.electronMeanFreePath();
+//                else if (name == "Vh")
+//                    value = mix.averageHeavyThermalSpeed();
+//                else if (name == "Ve")
+//                    value = mix.electronThermalSpeed();
+//                else if (name == "tau_eh")
+//                    value = mix.electronHeavyCollisionFreq();
+//                else if (name == "tau_a")
+//                    value = mix.averageHeavyCollisionFreq();
                 
                 cout << setw(column_widths[cw++]) << value;
             }
@@ -886,9 +912,11 @@ int main(int argc, char** argv)
                 } else if (name == "omega") {
                     mix.netProductionRates(species_values);
                 } else if (name == "Omega11") {
-                    mix.omega11ii(species_values);
+                    Map<ArrayXd>(species_values,mix.nSpecies()) =
+                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q11ee(),mix.collisionDB().Q11ii()).finished();
                 } else if (name == "Omega22") {
-                    mix.omega22ii(species_values);
+                    Map<ArrayXd>(species_values,mix.nSpecies()) =
+                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q22ee(),mix.collisionDB().Q22ii()).finished();
                 } else if (name == "Chi") {
                     mix.thermalDiffusionRatios(species_values);
                 } else if (name == "Dm") {
@@ -947,6 +975,14 @@ int main(int argc, char** argv)
                     mix.equilDiffFluxFacsZ(temp);
                     for (int k = 0; k < mix.nElements()*mix.nElements(); ++k)
                         cout << setw(column_widths[cw++]) << temp[k];
+                } else if (name == "sigmaB") {
+                    Eigen::Vector3d sigma = mix.electricConductivityB();
+                    for (int i = 0; i < 3; ++i)
+                        cout << setw(column_widths[cw++]) << sigma(i);
+                } else if (name == "lamB_e") {
+                    Eigen::Vector3d lambda = mix.electronThermalConductivityB();
+                    for (int i = 0; i < 3; ++i)
+                        cout << setw(column_widths[cw++]) << lambda(i);
                 }
             }
             

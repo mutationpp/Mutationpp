@@ -1685,6 +1685,21 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<!-- Hydrogen anion -->
+    <species name="H-">
+        <stoichiometry>
+            e-: 1,
+            H: 1
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+            <electronic_levels units="1/cm">
+            </electronic_levels>
+            <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+                139031.328
+            </formation_enthalpy>
+        </thermodynamics>
+    </species>
  
 	<!-- Hydrogen diatomic -->
 	<species name="H2">
@@ -1742,6 +1757,34 @@
 			</formation_enthalpy>
 		</thermodynamics>
 	</species>
+	
+	<!-- Hydrogen triatomic cation -->
+    <species name="H3+">
+        <stoichiometry>
+            e-: -1,
+            H: 3
+        </stoichiometry>
+        <thermodynamics type="RRHO">
+            <linear>
+                no
+            </linear>
+            <rotational_temperature units="K">
+                43.068
+            </rotational_temperature>
+            <steric_factor>
+                2
+            </steric_factor>
+            <vibrational_temperatures units="K">
+                4582.5 3627.986
+            </vibrational_temperatures>
+            <electronic_levels units="1/cm">
+                <level degeneracy="1" energy="0.0" />
+            </electronic_levels>
+            <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+                1494672.430
+            </formation_enthalpy>
+        </thermodynamics>
+    </species>
 	
 	<!-- Helium -->
     <species name="He">

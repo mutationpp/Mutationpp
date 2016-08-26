@@ -190,6 +190,8 @@ public:
 
     void dXdg(const double* const p_dg, double* const p_dXdg) const;
 
+    void dXdc(int i, double* const p_dxdc);
+
     void dSoldg(const double* const p_dg, Eigen::VectorXd& dx) const;
 
     /**
@@ -499,6 +501,8 @@ private:
      * residual.
      */
     void rates(Eigen::VectorXd& dx, bool save = false);
+
+    void rates_ci(int i, Eigen::VectorXd& dx);
 
     /**
      * Tries to reduce the solution residual (at a fixed value of \f$s\f$) below

@@ -40,7 +40,6 @@
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
 #include "Constants.h"
-#include "Ramshaw.h"
 #include "Transport.h"
 #include "IteratorWrapper.h"
 #include "LookupTable.h"

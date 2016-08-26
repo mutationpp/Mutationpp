@@ -121,8 +121,14 @@ public:
 
 private:
 
+    /**
+     * Finds the characteristic vibrational temperature for this vibrator.
+     */
+    static double loadThetaV(const std::string& name);
+
     std::vector<MillikanWhitePartner> m_partners;
     double m_omegav;
+    double m_thetav;
     int m_index;
 };
 

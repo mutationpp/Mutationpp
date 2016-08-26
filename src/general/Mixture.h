@@ -68,7 +68,11 @@ public:
     /** 
      * Destructor.
      */
-    ~Mixture(){}
+    ~Mixture() {
+//        std::cout << "=======================" << std::endl;
+//        std::cout << "| CALCULATION CORRECT |" << std::endl;
+//        std::cout << "=======================" << std::endl;
+    }
 //        if (mp_transfer != NULL) delete mp_transfer;
     
     /**
@@ -96,6 +100,18 @@ public:
         const std::string& name, double* const p_vec,
         Mutation::Thermodynamics::Composition::Type type =
             Mutation::Thermodynamics::Composition::MOLE) const;
+
+
+    double smb(
+        double Tw, double Pw, double* const p_rhoi,
+        const double* const p_xip, double dx);
+
+    void computeSurfaceSource(Eigen::ArrayXd& mci);
+
+private:
+
+    void smbf(double Tw, double Pw, const Eigen::VectorXd& dx, Eigen::VectorXd& f);
+
 
 private:
 

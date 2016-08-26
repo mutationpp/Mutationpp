@@ -25,7 +25,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "mutation++.h"
+#include "CompareFunc.h"
+#include "MatrixHelper.h"
 using namespace Mutation;
 
 #include <fstream>
@@ -35,99 +36,6 @@ using namespace std;
 
 #include <Eigen/Dense>
 using namespace Eigen;
-
-/**
- * Reads a matrix in from a file.
- */
-MatrixXd readMatrix(ifstream& infile)
-{
-    int cols = 0, rows = 0;
-    double buff[((int) 1e6)];
-
-    // Read numbers from file into buffer.
-    while (!infile.eof()) {
-        string line;
-        getline(infile, line);
-
-        int temp_cols = 0;
-        stringstream stream(line);
-        while(! stream.eof())
-            stream >> buff[cols*rows+temp_cols++];
-
-        if (temp_cols == 0)
-            continue;
-
-        if (cols == 0)
-            cols = temp_cols;
-
-        rows++;
-    }
-
-    //rows--;
-
-    // Populate matrix with numbers.
-    MatrixXd result(rows,cols);
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            result(i,j) = buff[cols*i+j];
-
-    return result;
-};
-
-/**
- * Base class for all comparison functions.
- */
-class CompareFunc
-{
-public:
-    typedef double ARGS;
-    CompareFunc(double tol) : m_tolerance(tol) {}
-    virtual ~CompareFunc() {}
-
-    bool compare(Mixture& mix, VectorXd result)
-    {
-        VectorXd v(result.size());
-        compute(mix, v);
-        bool matches =  v.isApprox(result, m_tolerance);
-
-        if (!matches) {
-            cout << "Comparison between {"
-                 << v.transpose() << "} and {"
-                 << result.transpose() << "} failed."
-                 << endl;
-        }
-
-        return matches;
-    };
-
-protected:
-    virtual void compute(Mixture& mix, VectorXd& v) = 0;
-
-private:
-    double m_tolerance;
-};
-
-// Macro for adding a new comparison function
-#define ADD_FUNCTION(__NAME__,__CODE__)\
-class __NAME__ : public CompareFunc\
-{\
-public:\
-    __NAME__(double tol) : CompareFunc(tol) {}\
-protected:\
-    void compute(Mixture& mix, VectorXd& v) {\
-        __CODE__;\
-    };\
-};\
-Utilities::Config::ObjectProvider<\
-    __NAME__, CompareFunc> op_##__NAME__(#__NAME__);
-
-// Available comparison functions
-ADD_FUNCTION(electron_thermal_conductivity,  v(0) = mix.electronThermalConductivity())
-ADD_FUNCTION(heavy_thermal_conductivity,     v(0) = mix.heavyThermalConductivity())
-ADD_FUNCTION(internal_thermal_conductivity,  v(0) = mix.internalThermalConductivity(mix.T()))
-ADD_FUNCTION(sigma,                          v(0) = mix.sigma())
-ADD_FUNCTION(thermal_diffusion_ratios,       mix.thermalDiffusionRatios(v.data()))
-ADD_FUNCTION(viscosity,                      v(0) = mix.viscosity())
 
 /**
  * Driver program for comparing a function to the values stored in the given

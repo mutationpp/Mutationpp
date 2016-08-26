@@ -320,6 +320,19 @@ double NAME_MANGLE(mixture_e_mass)();
 void NAME_MANGLE(net_production_rates)(double* const wdot);
 
 /**
+ * Fills the matrix j with the species production rate jacobian matrix
+ * \f[
+ * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial \rho_j}
+ * \f]
+ * The Jacobian matrix should be sized to be at least the square of the
+ * number of species, ns.  Access the jacobian using row-major ordering (ie:
+ * J_{ij} = p_jac[i*ns + j]).
+ *
+ * @param p_jac  - on return, the jacobian matrix \f$J_{ij}\f$
+ */
+void NAME_MANGLE(species_jacobian_rho)(double* const j);
+
+/**
  * Returns the total number of collision pairs accounted for in the 
  * collision database.
  */
@@ -388,6 +401,8 @@ void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di);
 void NAME_MANGLE(stefan_maxwell)
     (const double* const p_dp, double* const p_V, double* const p_E);
     
+void NAME_MANGLE(diffusion_matrix)(double* const p_Dij);
+
 /**
  * Returns the electric conductivity.
  */

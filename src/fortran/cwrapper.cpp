@@ -30,6 +30,12 @@
 
 #include <iostream>
 
+#include <Eigen/Dense>
+
+#ifdef _GNU_SOURCE
+#include <fenv.h>
+#endif
+
 using namespace std;
 using namespace Mutation::Thermodynamics;
 
@@ -62,7 +68,11 @@ void NAME_MANGLE(initialize)(
     F_STRING mixture, F_STRING state_model, F_STRLEN mixture_length,
     F_STRLEN state_length)
 {
-    //feenableexcept(FE_INVALID);
+//#ifdef _GNU_SOURCE
+//    // Enable floating point exception handling
+//    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+//#endif
+
     Mutation::MixtureOptions opts(char_to_string(mixture, mixture_length));
     opts.setStateModel(char_to_string(state_model, state_length));
     p_mix = new Mutation::Mixture(opts);
@@ -321,11 +331,16 @@ void NAME_MANGLE(net_production_rates)(double* const wdot)
 }
 
 //==============================================================================
+void NAME_MANGLE(species_jacobian_rho)(double* const j)
+{
+    p_mix->jacobianRho(j);
+}
+
+//==============================================================================
 int NAME_MANGLE(ncollision_pairs)()
 {
     return p_mix->nCollisionPairs();
 }
-
 
 //==============================================================================
 double NAME_MANGLE(viscosity)()
@@ -381,11 +396,18 @@ void NAME_MANGLE(stefan_maxwell)
 {
     p_mix->stefanMaxwell(p_dp, p_V, *p_E);
 }
+
+//==============================================================================
+void NAME_MANGLE(diffusion_matrix)(double* const p_Dij)
+{
+    Eigen::Map<Eigen::MatrixXd>(p_Dij, p_mix->nSpecies(), p_mix->nSpecies()) =
+        p_mix->diffusionMatrix().transpose();
+}
     
 //==============================================================================
 double NAME_MANGLE(sigma)()
 {
-    return p_mix->sigma();
+    return p_mix->electricConductivity();
 }
 
 //==============================================================================

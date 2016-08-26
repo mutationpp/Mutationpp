@@ -28,11 +28,10 @@
 #ifndef TRANSPORT_VISCOSITY_ALGORITHM_H
 #define TRANSPORT_VISCOSITY_ALGORITHM_H
 
-#include "AutoRegistration.h"
-#include "CollisionDB.h"
-
 namespace Mutation {
     namespace Transport {
+
+class CollisionDB;
 
 /**
  * Abstract base class for all viscosity algorithms which allows for self 
@@ -45,23 +44,16 @@ public:
     // Required for self registering viscosity algorithms
     typedef CollisionDB& ARGS;
     
-    /**
-     * Constructor taking a CollisionDB object.
-     */
+    /// Constructor taking a CollisionDB object.
     ViscosityAlgorithm(ARGS collisions)
         : m_collisions(collisions)
     { }
     
-    /**
-     * Destructor.
-     */
+    /// Destructor.
     virtual ~ViscosityAlgorithm() { }
     
-    /**
-     * Returns the mixture viscosity in Pa-s.
-     */
-    virtual double viscosity(
-        double Th, double Te, double nd, const double *const p_x) = 0;
+    /// Returns the mixture viscosity in Pa-s.
+    virtual double viscosity() = 0;
 
 protected:
 

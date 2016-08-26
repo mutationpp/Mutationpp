@@ -148,9 +148,10 @@ bool XmlElement::getAttribute(const std::string &name, bool &value) const
 {
     std::map<std::string, std::string>::const_iterator iter =
         m_attributes.find(name);
-    if (iter != m_attributes.end())
-        value = (String::toLowerCase(iter->second) == "true");
-    else
+    if (iter != m_attributes.end()) {
+        string lower = String::toLowerCase(iter->second);
+        value = (lower == "true" || lower == "yes");
+    } else
         value = false;
     return value;
 }

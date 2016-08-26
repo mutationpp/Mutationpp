@@ -51,119 +51,100 @@ template <template <typename, int> class Solver>
 class ThermalConductivityChapmannEnskog : public ThermalConductivityAlgorithm
 {
 public:
-    ThermalConductivityChapmannEnskog(CollisionDB& collisions) :
-        ThermalConductivityAlgorithm(collisions),
-        m_sys(MatrixXd::Zero(collisions.nHeavy(), collisions.nHeavy())),
-        m_x(collisions.nHeavy()),
-        m_alpha(collisions.nHeavy())
+    ThermalConductivityChapmannEnskog(ThermalConductivityAlgorithm::ARGS args) :
+        ThermalConductivityAlgorithm(args),
+        m_sys(MatrixXd::Zero(args.nHeavy(), args.nHeavy())),
+        m_x(args.nHeavy()),
+        m_alpha(args.nHeavy())
     { }
 
-    double thermalConductivity(
-        double Th, double Te, double nd, const double *const p_x)
+    double thermalConductivity()
     {
-        updateAlphas(Th, Te, nd, p_x);
+        updateAlphas();
         return m_x.matrix().dot(m_alpha);
     }
 
-    void thermalDiffusionRatios(
-        double Th, double Te, double nd, const double* const p_x,
-        double* const p_k)
+    void thermalDiffusionRatios(double* const p_k)
     {
         // First solve the linear system for the alphas
-        updateAlphas(Th, Te, nd, p_x);
+        updateAlphas();
 
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
         const int k  = ns - nh;
-        int ik, jk;
 
-        const ArrayXd&  mi   = m_collisions.mass();
-        const ArrayXXd& nDij = m_collisions.nDij(Th, Te, nd, p_x);
-        const ArrayXXd& Cij  = m_collisions.Cstij(Th, Te, nd, p_x);
-        Map<const ArrayXd> xh(p_x+k, nh);
+        const ArrayXd& mi   = m_collisions.mass();
+        const ArrayXd& nDij = m_collisions.nDij();
+        const ArrayXd& Cst  = m_collisions.Cstij();
 
         // Compute heavy-particle thermal diffusion ratios
-        m_sys.triangularView<StrictlyLower>() =
-            ((xh.matrix()*xh.matrix().transpose()).array()*
-            (1.2*Cij - 1.) / nDij.bottomRightCorner(nh, nh)).matrix();
-        m_sys.triangularView<StrictlyUpper>() =
-            m_sys.triangularView<StrictlyLower>().transpose();
+        double fac;
         m_sys.diagonal().setZero();
+        for (int j = 0, si = 1; j < nh; ++j, ++si) {
+            for (int i = j+1; i < nh; ++i, ++si) {
+                fac = m_x(i)*m_x(j)/(mi(i+k)+mi(j+k))*(1.2*Cst(si)-1.)/nDij(si);
+                m_sys(i,j) = fac*mi(i+k);
+                m_sys(j,i) = fac*mi(j+k);
+                m_sys(i,i) -= m_sys(j,i);
+                m_sys(j,j) -= m_sys(i,j);
+            }
+        }
 
-        Map<ArrayXd>(p_k,ns).setZero();
-        for (int j = 0; j < nh; ++j)
-            Map<ArrayXd>(p_k+k,nh) += m_sys.col(j).array()*(
-                m_alpha(j)*mi.tail(nh)-mi(j+k)*m_alpha.array()) /
-                (mi.tail(nh) + mi(j+k));
-        Map<ArrayXd>(p_k+k,nh) /= KB;
+        p_k[0] = 0.0;
+        Map<ArrayXd>(p_k+k,nh) = (m_sys*m_alpha)/KB;
 
         // Do we need to compute electron contributions?
         if (k == 0)
             return;
 
-        const ArrayXXd& Q11   = m_collisions.Q11(Th, Te, nd, p_x);
-        const ArrayXXd& Q22   = m_collisions.Q22(Th, Te, nd, p_x);
-        const ArrayXd&  Q12ei = m_collisions.Q12ei(Th, Te, nd, p_x);
-        const ArrayXd&  Q13ei = m_collisions.Q13ei(Th, Te, nd, p_x);
-        const ArrayXd&  Q14ei = m_collisions.Q14ei(Th, Te, nd, p_x);
-        const ArrayXd&  Q15ei = m_collisions.Q15ei(Th, Te, nd, p_x);
-        const double    Q23ee = m_collisions.Q23ee(Th, Te, nd, p_x);
-        const double    Q24ee = m_collisions.Q24ee(Th, Te, nd, p_x);
-
         // Compute the lambdas
-        static ArrayXd lam01; lam01.resize(ns);
-        static ArrayXd lam02; lam02.resize(ns);
+        const ArrayXd& L01ei = m_collisions.L01ei();
+        const ArrayXd& L02ei = m_collisions.L02ei();
+        const Matrix3d& Lee  = m_collisions.Lee<3>();
+        const double Te      = m_collisions.thermo().Te();
+        const double Th      = m_collisions.thermo().T();
+        const double Xe      = m_collisions.X()(0);
 
-        lam01.tail(nh) = Te/Th*xh*(3.*Q12ei-2.5*Q11.col(0)).tail(nh);
-        lam01(0) = -Th/Te*lam01.tail(nh).sum();
-        lam02.tail(nh) = Te/Th*xh*(10.5*Q12ei-6.*Q13ei-35./8.*Q11.col(0)).tail(nh);
-        lam02(0) = -Th/Te*lam02.tail(nh).sum();
+        Map<ArrayXd>(p_k,ns) += 2.5*Te/Th*Xe*(Lee(2,2)*L01ei-Lee(1,2)*L02ei)/
+            (Lee(1,1)*Lee(2,2)-Lee(1,2)*Lee(1,2));
 
-        double lam11 = p_x[0]*SQRT2*Q22(0) +
-            (xh*(6.25*Q11.col(0)-15.*Q12ei+12.*Q13ei).tail(nh)).sum();
-        double lam12 = p_x[0]*SQRT2*(1.75*Q22(0)-2.*Q23ee) +
-            (xh*(175./16.*Q11.col(0)-315./8.*Q12ei+57.*Q13ei-30.*Q14ei).tail(nh)).sum();
-        double lam22 = p_x[0]*SQRT2*(77./16.*Q22(0)-7.*Q23ee+5.*Q24ee) +
-            (xh*(1225./64.*Q11.col(0)-735./8.*Q12ei+399./2.*Q13ei-210.*Q14ei+90.*Q15ei).tail(nh)).sum();
-
-         Map<ArrayXd>(p_k,ns) += (2.5*Te/Th*p_x[0]/(lam11*lam22-lam12*lam12))*
-             (lam22*lam01 - lam12*lam02);
     }
 
 private:
 
-    void updateAlphas(double Th, double Te, double nd, const double *const p_x)
+    void updateAlphas()
     {
         const int ns = m_collisions.nSpecies();
         const int nh = m_collisions.nHeavy();
 
-        const ArrayXd&  mi    = m_collisions.mass();
-        const ArrayXXd& Astar = m_collisions.Astar(Th, Te, nd, p_x);
-        const ArrayXXd& Bstar = m_collisions.Bstar(Th, Te, nd, p_x);
-        const ArrayXXd& nDij  = m_collisions.nDij(Th, Te, nd, p_x);
-        const ArrayXd&  etai  = m_collisions.etai(Th, Te, nd, p_x);
+        // Collision data
+        const ArrayXd& mi   = m_collisions.mass();
+        const ArrayXd& Ast  = m_collisions.Astij();
+        const ArrayXd& Bst  = m_collisions.Bstij();
+        const ArrayXd& nDij = m_collisions.nDij();
+        const ArrayXd& etai = m_collisions.etai();
 
         // Compute the system matrix
         double fac = 4.0 / (15.0 * KB);
         int k = ns - nh, ik, jk;
-        m_x = Map<const ArrayXd>(p_x+k,nh).max(1.0e-16);
-        m_sys.diagonal().array() = fac*m_x*m_x*mi.tail(nh)/etai.tail(nh);
+        m_x = Map<const ArrayXd>(m_collisions.thermo().X()+k,nh).max(1.0e-16);
+        m_sys.diagonal().array() = fac*m_x*m_x*mi.tail(nh)/etai;
 
         double miij;
         double mjij;
-        for (int j = k; j < ns; ++j) {
-            jk = j-k;
-            for (int i = j+1; i < ns; ++i) {
-                ik = i-k;
-                miij = mi(i) / (mi(i) + mi(j));
-                mjij = mi(j) / (mi(i) + mi(j));
-                fac  = m_x(ik) * m_x(jk) / (nDij(i,j) * 25.0 * KB);
-                m_sys(ik,jk) = fac * miij * mjij *
-                    (16.0 * Astar(i,j) + 12.0 * Bstar(i,j) - 55.0);
-                m_sys(ik,ik) += fac * (miij * (30.0 * miij + 16.0 * mjij *
-                    Astar(i,j)) + mjij * mjij * (25.0 - 12.0 * Bstar(i,j)));
-                m_sys(jk,jk) += fac * (mjij * (30.0 * mjij + 16.0 * miij *
-                    Astar(i,j)) + miij * miij * (25.0 - 12.0 * Bstar(i,j)));
+        for (int j = 0, index = 1; j < nh; ++j, ++index) {
+            jk = j+k;
+            for (int i = j+1; i < nh; ++i, ++index) {
+                ik = i+k;
+                miij = mi(ik) / (mi(ik) + mi(jk));
+                mjij = mi(jk) / (mi(ik) + mi(jk));
+                fac  = m_x(i) * m_x(j) / (nDij(index) * 25.0 * KB);
+                m_sys(i,j) = fac * miij * mjij *
+                    (16.0 * Ast(index) + 12.0 * Bst(index) - 55.0);
+                m_sys(i,i) += fac * (miij * (30.0 * miij + 16.0 * mjij *
+                    Ast(index)) + mjij * mjij * (25.0 - 12.0 * Bst(index)));
+                m_sys(j,j) += fac * (mjij * (30.0 * mjij + 16.0 * miij *
+                    Ast(index)) + miij * miij * (25.0 - 12.0 * Bst(index)));
             }
         }
 

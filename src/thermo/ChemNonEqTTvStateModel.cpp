@@ -27,6 +27,9 @@
 
 #include "StateModel.h"
 #include "AutoRegistration.h"
+#include <Eigen/Dense>
+
+using namespace Eigen;
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -93,28 +96,29 @@ public:
         case 0: {
             // First step is to solve one nonlinear equation to get Tv from the
             // vibrational energy density equation
-            if (!getTFromRhoE(
-                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0)) {
-                std::cout << "was trying to compute Tv..." << std::endl;
-                std::cout << "rhoe_v = " << p_energy[1] << std::endl;
-                for (int i = 0; i < m_thermo.nSpecies(); ++i)
-                    std::cout << std::setw(20) << m_thermo.speciesName(i)
-                              << std::setw(20) << p_mass[i] << std::endl;
-                std::cout << std::endl;
-            }
+//            if (!getTFromRhoE(
+//                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0)) {
+//                std::cout << "was trying to compute Tv..." << std::endl;
+//                std::cout << "rhoe_v = " << p_energy[1] << std::endl;
+//                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//                    std::cout << m_thermo.speciesName(i) << p_mass[i] << std::endl;
+//                std::cout << std::endl;
+//            }
+//
+//            // Next compute the temperature using the total energy density
+//            m_Tel = m_Te = m_Tv;
+//
+//            if (!getTFromRhoE(
+//                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
+//                std::cout << "was trying to compute T..." << std::endl;
+//                for (int i = 0; i < m_thermo.nSpecies(); ++i)
+//                    std::cout << p_mass[i] << std::endl;
+//                std::cout << std::endl;
+//            }
+//
+//            m_Tr = m_T;
 
-            // Next compute the temperature using the total energy density
-            m_Tel = m_Te = m_Tv;
-
-            if (!getTFromRhoE(
-                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
-                std::cout << "was trying to compute T..." << std::endl;
-                std::cout << "rhoe = " << p_energy[0] << std::endl;
-                for (int i = 0; i < m_thermo.nSpecies(); ++i)
-                    std::cout << std::setw(20) << m_thermo.speciesName(i)
-                              << std::setw(20) << p_mass[i] << std::endl;
-                std::cout << std::endl;
-            }
+            solveEnergies(p_mass, p_energy);
 //            getTFromRhoE(
 //                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
 //            m_Tel = m_Te = m_Tv;
@@ -170,7 +174,8 @@ public:
     void getEnergiesMass(double* const p_e)
     {    
         int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
+        m_thermo.speciesHOverRT(
+            m_T, m_Tv, m_T, m_Tv, m_Tv, mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
 
         for(int i = offset; i < ns; ++i)
@@ -220,7 +225,7 @@ public:
         int ns = m_thermo.nSpecies();
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
         m_thermo.speciesCpOverR(
-			m_T, m_Te, m_Tr, m_Tv, m_Tel, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
+			m_T, m_Tv, m_T, m_Tv, m_Tv, NULL, mp_work1, mp_work2, mp_work3, mp_work4);
 
         for(int i = offset; i < ns; ++i)
             p_Cv[i] = (mp_work1[i]+mp_work2[i]-1.0)*RU/m_thermo.speciesMw(i);
@@ -241,6 +246,49 @@ public:
      	p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
     }
     
+
+    void solveEnergies(const double* const p_rhoi, const double* const p_rhoe)
+    {
+        // This line is required to have perfect numerical jacobians...
+        //m_T = m_Tv = 500.0;
+
+        const double atol = 1.0e-12;
+        const double rtol = 1.0e-12;
+        const int    imax = 100;
+
+        Map<const VectorXd> rhoi(p_rhoi, m_thermo.nSpecies());
+        const double density = rhoi.sum();
+
+        static VectorXd yi; yi = rhoi / density;
+        const Vector2d emix = Map<const Vector2d>(p_rhoe) / density;
+
+        static Matrix<double, Dynamic, Dynamic, RowMajor> ei(2, m_thermo.nSpecies());
+        static Matrix<double, Dynamic, Dynamic, RowMajor> ci(2, m_thermo.nSpecies());
+        getEnergiesMass(ei.data());
+
+        Vector2d f, e, cv;
+        e = ei*yi;
+        f = e - emix;
+
+        int i;
+        for (i = 0; (f.norm() > rtol*emix.norm() + atol) && (i < imax); ++i) {
+            // Update temperatures
+            getCvsMass(ci.data());
+            cv = ci*yi;
+
+            m_Tv = std::max(m_Tv - f[1]/cv[1], 0.1*m_Tv);
+            m_T  = std::max(m_T + (f[1]-f[0])/cv[0], 0.1*m_T);
+
+            // Update function evaluation
+            getEnergiesMass(ei.data());
+            e = ei*yi;
+            f = e - emix;
+        }
+
+        if (i == imax)
+            std::cout << "Warning, didn't converge temperatures: f = " << f.norm() << std::endl;
+    }
+
     private:
 
     /**

@@ -31,6 +31,8 @@
 #include "CollisionDB.h"
 #include "Utilities.h"
 
+using namespace Eigen;
+
 namespace Mutation {
     namespace Transport {
 
@@ -47,18 +49,16 @@ public:
         : ThermalConductivityAlgorithm(arguments)
     { }
     
-    double thermalConductivity(
-        double Th, double Te, double nd, const double* const p_x) 
+    double thermalConductivity()
     {
-        using namespace Eigen;
-        const int ns   = m_collisions.nSpecies();
-        const int nh   = m_collisions.nHeavy();
-        const ArrayXd& etai = m_collisions.etai(Th, Te, nd, p_x);
+        const int ns = m_collisions.nSpecies();
+        const int nh = m_collisions.nHeavy();
+        const ArrayXd& etai = m_collisions.etai();
         const ArrayXd& mass = m_collisions.mass();
 
         return wilke(
-            (3.75*KB*etai/mass).tail(nh), mass.tail(nh),
-            Map<const ArrayXd>(p_x+(ns-nh),nh));
+            (3.75*KB*etai/mass.tail(nh)), mass.tail(nh),
+            m_collisions.X().tail(nh));
     }
 };
 

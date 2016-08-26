@@ -1,11 +1,11 @@
 /**
- * @file Ramshaw.h
+ * @file RamshawDiffMat.cpp
  *
- * @brief Provides Ramshaw class.
+ * @brief Implements RamshawDiffMat class.
  */
 
 /*
- * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2016 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -25,28 +25,26 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRANSPORT_RANSHAW_H
-#define TRANSPORT_RANSHAW_H
-
+#include "AutoRegistration.h"
 #include "CollisionDB.h"
-#include "Thermodynamics.h"
+#include "DiffusionMatrix.h"
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
 
-class Ramshaw
+/**
+ * Ramshaw diffusion matrix implementation.
+ */
+class RamshawDiffMat : public DiffusionMatrix
 {
 public:
-    
-    Ramshaw(
-        const Mutation::Thermodynamics::Thermodynamics& thermo, 
-        CollisionDB& collisions) :
-        m_thermo(thermo), m_collisions(collisions),
-        m_D(thermo.nSpecies(), thermo.nSpecies())
+
+    RamshawDiffMat(DiffusionMatrix::ARGS collisions)
+        : DiffusionMatrix(collisions)
     { }
-    
+
     /**
      * Computes the multicomponent diffusion coefficient matrix using the Fick
      * approximation with Ramshaw's correction,
@@ -60,41 +58,31 @@ public:
      * matrix.  It should be reformulated to return a symmetric matrix which
      * would be faster to compute and use.
      */
-    const Eigen::MatrixXd& diffusionMatrix(
-        const double T, const double Te, const double nd, const double *const p_x)
+    const Eigen::MatrixXd& diffusionMatrix()
     {
-        const int ns = m_thermo.nSpecies();
-    
-        // First step is to compute X and Y with tolerance on X
-        static Eigen::ArrayXd X(ns);
-        static Eigen::ArrayXd Y(ns);
-        //X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns)+1.0e-16;
-        X = Eigen::Map<const Eigen::ArrayXd>(p_x, ns);//.max(1.0e-30);
-        X /= X.sum();
-        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(X.data(), Y.data());
-        
+        const int ns = m_collisions.nSpecies();
+
+        Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
+        Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
+
         // Compute average diffusion coefficients
-        const Eigen::ArrayXd& Dim = m_collisions.Dim(T, Te, nd, p_x);
+        const Eigen::ArrayXd& Dim = m_collisions.Dim();
 
         // Form the matrix
         for (int j = 0; j < ns; ++j) {
-            m_D.col(j).fill(-Y[j]/X[j]*(1.-Y[j])/(1.-X[j])*Dim(j));
-            m_D(j,j) -= m_D(j,j)/Y[j];
+            m_Dij.col(j).fill(-Y[j]/X[j]*(1.-Y[j])/(1.-X[j])*Dim(j));
+            m_Dij(j,j) -= m_Dij(j,j)/Y[j];
         }
 
-        return m_D;
+        return m_Dij;
     }
-    
-private:
 
-    const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    CollisionDB& m_collisions;
-    Eigen::MatrixXd m_D;
-        
-}; // class Ramshaw
+}; // RamshawDiffMat
+
+// Register this algorithm
+Mutation::Utilities::Config::ObjectProvider<
+    RamshawDiffMat, DiffusionMatrix> ramshaw_dm("Ramshaw");
 
     } // namespace Transport
 } // namespace Mutation
-
-#endif // TRANSPORT_RANSHAW_H
 

@@ -666,6 +666,41 @@ void MultiPhaseEquilSolver::dXdg(const double* const p_dg, double* const p_dX) c
         p_dX[*p_jk] = 0.0;
 }
 
+void MultiPhaseEquilSolver::dXdc(int i, double* const p_dX)
+{
+    const int ncr = m_solution.ncr();
+    const int npr = m_solution.npr();
+    const int nsr = m_solution.nsr();
+    const int neq = ncr + npr;
+
+    // Get the system solution
+    VectorXd dx(neq);
+    rates_ci(i, dx);
+
+    int jk;
+    double temp;
+
+    // Finally compute the dX/dci for all non zero species
+    for (int m = 0, j = 0; m < npr; ++m) {
+        double Nbar = std::exp(m_solution.lnNbar()[m]);
+        for (; j < m_solution.sizes()[m+1]; ++j) {
+            jk = m_solution.sjr()[j];
+            p_dX[jk] = 0.0;
+
+            for (int i = 0; i < ncr; ++i)
+                p_dX[jk] += m_B(jk,m_solution.cir()[i])*dx(i);
+
+            temp = m_solution.y()[j];
+            p_dX[jk] *= temp*temp/Nbar;
+        }
+    }
+
+    // Set the remaining species to zero
+    const int* p_jk = m_solution.sjr()+nsr;
+    for ( ; p_jk != m_solution.sjr()+m_ns; ++p_jk)
+        p_dX[*p_jk] = 0.0;
+}
+
 //==============================================================================
 
 void MultiPhaseEquilSolver::dNdg(const double* const p_dg, double* const p_dN) const
@@ -1109,6 +1144,82 @@ void MultiPhaseEquilSolver::rates(VectorXd& dx, bool save)
     for (int m = 0; m < npr; j = ++m) {
         j = p_sizes[m]; n = p_sizes[m+1]-j;
         b(m) = y.segment(j,n).dot((H*dlamg - ydg).segment(j,n));
+    }
+
+    // Solve for d(lnNbar)/ds
+    dx.tail(npr) = A.selfadjointView<Upper>().ldlt().solve(b);
+
+    // Finally compute the d(lambda)/ds vector
+    dx.head(ncr) = dlamg - dlamy*dx.tail(npr);
+}
+
+void MultiPhaseEquilSolver::rates_ci(int k, VectorXd& dx)
+{
+    // Get some of the solution variables
+    const int npr = m_solution.npr();
+    const int ncr = m_solution.ncr();
+    const int nsr = m_solution.nsr();
+
+    const int* const p_sjr   = m_solution.sjr();
+    const int* const p_sizes = m_solution.sizes();
+
+    VectorXd y = Map<const ArrayXd>(m_solution.y(), nsr).max(1.e-6);
+
+    // Compute a least squares factorization of H
+    static MatrixXd H; H = y.asDiagonal()*m_solution.reducedMatrix(m_B, m_Br);
+    static JacobiSVD<MatrixXd> svd; svd.compute(H, ComputeThinU | ComputeThinV);
+
+    // Use tableau for temporary storage
+    Map<VectorXd> phi(mp_tableau, nsr);
+    Map<VectorXd> dlamg(phi.data()+phi.size(), ncr);
+    Map<MatrixXd> dlamy(dlamg.data()+dlamg.size(), ncr, npr);
+    Map<MatrixXd> P(dlamy.data()+dlamy.size(), nsr, npr);
+
+    // Compute dlamg
+    phi.setZero();
+    for (int j = 0; j < nsr; ++j) {
+        if (m_Br.row(j).array().abs().sum() == std::abs(m_Br(j,k))) {
+            phi(j) = 1.0/(y(j)*m_Br(j,k));
+            break;
+        }
+    }
+    cout << "phi = \n" << phi << endl;
+    dlamg = svd.solve(phi);
+    cout << "dlamg = \n" << dlamg << endl;
+
+    // Compute dlambda_m for each phase m
+//    for (int m = 0; m < npr; ++m) {
+//        rhs.setZero();
+//        rhs.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]) =
+//            y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
+//        Map<VectorXd>(p_dlamy+m*ncr, ncr) = svd.solve(rhs);
+//    }
+    P.setZero();
+    for (int m = 0; m < npr; ++m)
+        P.block(p_sizes[m], m, p_sizes[m+1]-p_sizes[m], 1) =
+            y.segment(p_sizes[m], p_sizes[m+1]-p_sizes[m]);
+    dlamy = svd.solve(P);
+
+    // Compute the linear system to be solved for the d(lnNbar)/ds variables
+    MatrixXd A = MatrixXd::Zero(npr, npr);
+
+    double sum;
+    for (int p = 0; p < npr; ++p) {
+        for (int m = p; m < npr; ++m) {
+            for (int j = p_sizes[m]; j < p_sizes[m+1]; ++j) {
+                sum = 0.0;
+                for (int i = 0; i < ncr; ++i)
+                    sum += H(j,i)*dlamy(i,p);
+                A(m,p) += y[j]*sum;
+            }
+        }
+    }
+
+    VectorXd b(npr);
+    int j, n;
+    for (int m = 0; m < npr; j = ++m) {
+        j = p_sizes[m]; n = p_sizes[m+1]-j;
+        b(m) = y.segment(j,n).dot((H*dlamg).segment(j,n));
     }
 
     // Solve for d(lnNbar)/ds
