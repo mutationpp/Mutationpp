@@ -57,7 +57,7 @@ public:
         //Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
         //Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
 
-        static Eigen::ArrayXd X; X = m_collisions.X()+1.0e-16;
+        static Eigen::ArrayXd X; X = m_collisions.X()+1.0e-16; X /= X.sum();
         static Eigen::ArrayXd Y; Y.resize(ns);
         m_collisions.thermo().convert<Thermodynamics::X_TO_Y>(X.data(), Y.data());
 
@@ -67,16 +67,16 @@ public:
         m_Dij.triangularView<Eigen::Lower>() = Eigen::MatrixXd::Zero(ns,ns);
 
         // Electron-Heavy subsystem
-//        if (k == 1) {
-//            const Eigen::ArrayXd& nDei = m_collisions.nDei();
-//            for (int i = 1; i < ns; ++i) {
-//                fac = X(0)*X(i)/nDei(i)*nd;
-//                m_Dij(0,0) += fac;
-//                m_Dij(i,i) += fac;
-//                m_Dij(i,0) = -fac;
-//
-//            }
-//        }
+        if (k == 1) {
+            const Eigen::ArrayXd& nDei = m_collisions.nDei();
+            for (int i = 1; i < ns; ++i) {
+                fac = X(0)*X(i)/nDei(i)*nd;
+                m_Dij(0,0) += fac;
+                m_Dij(i,i) += fac;
+                m_Dij(i,0) = -fac;
+
+            }
+        }
 
         // Heavy particle subsystem
         const Eigen::MatrixXd& nDij = m_collisions.nDij();

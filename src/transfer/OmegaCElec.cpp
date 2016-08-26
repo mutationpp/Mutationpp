@@ -56,12 +56,11 @@ public:
 		m_mixture.netProductionRates(mp_wrk2);
 
 		double sum = 0.0;
-		double rt  = m_mixture.T()*RU;
 
 		for(int i = 0 ; i < m_mixture.nSpecies(); ++i)
-			sum += mp_wrk1[i]*mp_wrk2[i]*rt/m_mixture.speciesMw(i);
+			sum += mp_wrk1[i]*mp_wrk2[i]/m_mixture.speciesMw(i);
 
-		return sum;
+		return (sum*m_mixture.T()*RU);
 	}
 
 private:

@@ -61,7 +61,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 44
+#define NMIXTURE 45
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -74,6 +74,7 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("S", "J/mol-K", "entropy"),
     OutputQuantity("Cp_eq", "J/kg-K", "equilibrium specific heat at constant pressure"),
     OutputQuantity("H", "J/kg", "mixture enthalpy"),
+    OutputQuantity("H-H0", "J/kg", "mixture enthalpy minus the enthalpy at 0K"),
     OutputQuantity("S", "J/kg-K", "entropy"),
     OutputQuantity("Cv_eq", "J/kg-K", "equilibrium specific heat at constant volume"),
     OutputQuantity("Cp", "J/mol-K", "frozen specific heat at constant pressure"),
@@ -731,6 +732,8 @@ int main(int argc, char** argv)
                         value = mix.mixtureHMole();
                     else if (units == "J/kg")
                         value = mix.mixtureHMass();
+                } else if (name == "H-H0") {
+                    value = mix.mixtureHMinusH0Mass();
                 } else if (name == "S") {
                     if (units == "J/mol-K")
                         value = mix.mixtureSMole();

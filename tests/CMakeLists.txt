@@ -33,6 +33,9 @@ target_link_libraries(diffusion_matrix mutation++)
 add_executable(dXidT test_dXidT.cpp)
 target_link_libraries(dXidT mutation++)
 
+add_executable(energies test_energies.cpp)
+target_link_libraries(energies mutation++)
+
 add_executable(set_state test_set_state.cpp)
 target_link_libraries(set_state mutation++)
 
@@ -108,6 +111,7 @@ test_all_mixtures(thermal_diff_ratios)
 test_all_mixtures(wdot)
 
 # StateModel tests
+test_all_mixtures(energies)
 test_all_mixtures(set_state)
 
 # TransferModel tests

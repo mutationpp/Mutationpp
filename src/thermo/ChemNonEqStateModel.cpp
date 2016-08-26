@@ -128,21 +128,6 @@ public:
             p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getMixtureEnergiesMass(double* const p_e)
-    {
-        const int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work);
-
-        p_e[0] = 0.0;
-        double mw = 0.0;
-        for (int i = 0; i < ns; ++i) {
-            mw += mp_X[i]*m_thermo.speciesMw(i);
-            p_e[0] += mp_X[i]*(mp_work[i] - 1.0);
-        }
-
-        p_e[0] *= RU*m_T/mw;
-    }
-
     void getEnthalpiesMass(double* const p_h) 
     {
 		const int ns = m_thermo.nSpecies();

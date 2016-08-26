@@ -68,7 +68,7 @@ Transport::Transport(
     setThermalConductivityAlgo(lambda);
     
     // Load the diffusion matrix calculator
-    setDiffusionMatrixAlgo("Exact");
+    setDiffusionMatrixAlgo("Ramshaw");
     
     // Allocate work array storage
     mp_wrk1 = new double [m_thermo.nSpecies()*3];

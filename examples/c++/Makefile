@@ -23,14 +23,14 @@
 MUTATIONPP_INSTALL = ../../install
 
 CXX       = g++
-CXX_FLAGS = -I $(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g
+CXX_FLAGS = -I$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g
 # use .dylib for Mac, .so for Unix
 CXX_LIBS  = $(MUTATIONPP_INSTALL)/lib/libmutation++.so
 
 EXAMPLES  = \
 	equilibrium_air \
 	O2_dissociation \
-        smb
+	air_diffusion_comparison
 
 all : $(EXAMPLES)
 
@@ -40,7 +40,7 @@ equilibrium_air : equilibrium_air.o
 O2_dissociation : O2_dissociation.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
-smb : smb.o
+air_diffusion_comparison : air_diffusion_comparison.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp

@@ -1,7 +1,7 @@
 /**
- * @file test_set_state.cpp
+ * @file test_energies.cpp
  *
- * @brief General tests on the setState() function.
+ * @brief General tests on the functions getting the energies.
  */
 
 /*
@@ -26,36 +26,37 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE setState() tests
+#define BOOST_TEST_MODULE getEnergies() tests
 
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/random.hpp>
 
+#include <Eigen/Dense>
+
 #include "MixtureFixtures.h"
 
 // Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(set_state, MixtureFromCommandLine)
+BOOST_FIXTURE_TEST_SUITE(energies, MixtureFromCommandLine)
 
-/*
- * All setState() functions (which take {rhoi, rho*Em} and {rhoi, Tm} as
- * variable sets should be able to compute rho*Em given a Tm and vice versa.
- * This test makes sure that you can go from one to the other and get the same
- * result.
+/**
+ * Tests that the sum of the species energies equals the mixture energies.
  */
-BOOST_AUTO_TEST_CASE(compare_T_from_E_from_T)
+BOOST_AUTO_TEST_CASE(test_species_energy_sum)
 {
     const int ns = mix().nSpecies();
     const int nt = mix().nEnergyEqns();
     const int e_var_set = 0;
     const int t_var_set = 1;
 
-    // @TODO investigate why this tolerance needs to be so big
-    const double tol = 1.0e-8;//1.0e3*std::numeric_limits<double>::epsilon();
+    const double tol = 1.0e3*std::numeric_limits<double>::epsilon();
 
-    std::vector<double> rhoi(ns);
     std::vector<double> tmps1(nt);
     std::vector<double> tmps2(nt);
+
+    Eigen::ArrayXd rhoi(ns);
+    Eigen::ArrayXd species_energies(ns*nt);
+    Eigen::ArrayXd mixture_energies(nt);
 
     // Setup random number generator
     boost::mt19937 rng;
@@ -72,11 +73,10 @@ BOOST_AUTO_TEST_CASE(compare_T_from_E_from_T)
             // Set an equilibrium state to make sure species temperatures and
             // densities are possible
             mix().equilibrate(T, P);
+            double rho = mix().density();
 
             // Get the species densities
-            double rho = mix().density();
-            for (int i = 0; i < ns; ++i)
-                rhoi[i] = mix().Y()[i] * rho;
+            rhoi = rho * Eigen::Map<const Eigen::ArrayXd>(mix().Y(), ns);
 
             // Get a nominal temperature vector
             tmps1.assign(nt, T);
@@ -85,32 +85,19 @@ BOOST_AUTO_TEST_CASE(compare_T_from_E_from_T)
             for (int i = 0; i < nt; ++i)
                 tmps1[i] += rand_temp();
 
-
             // Set the state with the densities and perturbed temperatures
-            mix().setState(&rhoi[0], &tmps1[0], t_var_set);
+            mix().setState(rhoi.data(), &tmps1[0], t_var_set);
 
-            // Check that explicitly set properties still match
-            mix().getTemperatures(&tmps2[0]);
+            // Check
+            mix().getEnergiesMass(species_energies.data());
+            mix().mixtureEnergies(mixture_energies.data());
+
             for (int i = 0; i < nt; ++i)
-                BOOST_CHECK_CLOSE(tmps1[i], tmps2[i], tol);
-            BOOST_CHECK_CLOSE(rho, mix().density(), tol);
-
-            // Get the energy vector
-            mix().mixtureEnergies(&tmps2[0]);
-            for (int i = 0; i < nt; ++i)
-                tmps2[i] *= rho;
-
-            // Set the state of the mixture based on the energies
-            mix().setState(&rhoi[0], &tmps2[0], e_var_set);
-
-            // Check that implicitly set properties still match
-            mix().getTemperatures(&tmps2[0]);
-            for (int i = 0; i < nt; ++i)
-                BOOST_CHECK_CLOSE(tmps1[i], tmps2[i], tol);
-            BOOST_CHECK_CLOSE(rho, mix().density(), tol);
+                BOOST_CHECK_CLOSE(rho * mixture_energies[i],
+                    (rhoi*species_energies.segment(i*ns, (i+1)*ns)).sum(), tol);
         }
     }
 }
 
-// End of the set_state test suite
+// End of the energies test suite
 BOOST_AUTO_TEST_SUITE_END()

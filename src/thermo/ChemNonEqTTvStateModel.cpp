@@ -179,42 +179,15 @@ public:
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
 
         for(int i = offset; i < ns; ++i)
-            p_e[i] = (mp_work1[i]-1.0)*m_T*RU/m_thermo.speciesMw(i);
+            p_e[i] = (mp_work1[i] - 1.0)*m_T*RU/m_thermo.speciesMw(i);
+
         for(int i = offset; i < ns; ++i)
             p_e[i+ns] = (mp_work3[i] + mp_work4[i])*m_T*RU/m_thermo.speciesMw(i);
-        if(m_thermo.hasElectrons()){
+
+        if (m_thermo.hasElectrons()) {
             p_e[0] = (mp_work1[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
             p_e[ns] = (mp_work2[0]*m_T-m_Tv)*RU/m_thermo.speciesMw(0);
         }
-    }
-
-    void getMixtureEnergiesMass(double* const p_e)
-    {
-        int ns = m_thermo.nSpecies();
-        m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
-        int offset = (m_thermo.hasElectrons() ? 1 : 0);
-
-        double mw = 0.0;
-        for (int i = 0; i < ns; ++i)
-            mw += mp_X[i]*m_thermo.speciesMw(i);
-
-        p_e[0] = 0.0;
-        p_e[1] = 0.0;
-        for(int i = offset; i < ns; ++i) {
-            p_e[0] += mp_X[i]*(mp_work1[i]-1.0);
-            p_e[1] += mp_X[i]*(mp_work3[i] + mp_work4[i]);
-        }
-
-        p_e[0] *= m_T;
-        p_e[1] *= m_T;
-
-        if (offset > 0) {
-            p_e[0] += mp_X[0]*(mp_work1[0]*m_T - m_Tv);
-            p_e[1] += mp_X[0]*(mp_work2[0]*m_T - m_Tv);
-        }
-
-        p_e[0] *= RU / mw;
-        p_e[1] *= RU / mw;
     }
 
     void getEnthalpiesMass(double* const p_h)
@@ -276,10 +249,11 @@ public:
 
     void solveEnergies(const double* const p_rhoi, const double* const p_rhoe)
     {
-        m_T = m_Tv = 500.0;
+        // This line is required to have perfect numerical jacobians...
+        //m_T = m_Tv = 500.0;
 
-        const double atol = 1.0e-10;
-        const double rtol = 1.0e-10;
+        const double atol = 1.0e-12;
+        const double rtol = 1.0e-12;
         const int    imax = 100;
 
         Map<const VectorXd> rhoi(p_rhoi, m_thermo.nSpecies());
@@ -302,8 +276,8 @@ public:
             getCvsMass(ci.data());
             cv = ci*yi;
 
-            m_Tv = std::max(m_Tv - f[1]/cv[1], 0.5*m_Tv);
-            m_T  = std::max(m_T + (f[1]-f[0])/cv[0], 0.5*m_T);
+            m_Tv = std::max(m_Tv - f[1]/cv[1], 0.1*m_Tv);
+            m_T  = std::max(m_T + (f[1]-f[0])/cv[0], 0.1*m_T);
 
             // Update function evaluation
             getEnergiesMass(ei.data());
