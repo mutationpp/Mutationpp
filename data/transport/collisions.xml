@@ -34,8 +34,16 @@
  a warning when the integral is loaded using default data.  Defaults are now 
  given for all possible integrals with warnings for integrals that really should
  have explicit data given.
+ 
+ 26/11/16: (JBS) Setup the global options element
 =============================================================================-->
-<collisions tabulate="yes" Tmin="100" Tmax="50000" dT="100">
+<collisions>
+
+    <!-- Global options -->
+    <global-options>
+        <tabulate Tmin="100" Tmax="50000" dT="100" />
+        <integral type="table" interpolator="Linear" clip="true"/>
+    </global-options>
 
     <!-- Default collision integral data -->
     <defaults>

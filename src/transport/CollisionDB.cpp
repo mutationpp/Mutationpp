@@ -51,7 +51,7 @@ CollisionDB::CollisionDB(
     const string& db_name, const Thermodynamics::Thermodynamics& thermo) :
     m_database(databaseFileName(db_name, "transport")),
     m_thermo(thermo),
-    m_tabulate(true), m_table_min(300.),  m_table_max(20000.), m_table_del(100.),
+    m_tabulate(false), m_table_min(300.),  m_table_max(20000.), m_table_del(100.),
     m_mass(thermo.nSpecies()),
     m_etai(thermo.nHeavy()), m_etafac(thermo.nHeavy()),
     m_nDei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
@@ -64,22 +64,29 @@ CollisionDB::CollisionDB(
 {
     XmlElement& root = m_database.root();
 
-    // Determine if we should tabulate collision integrals when possible
-    root.getAttribute("tabulate", m_tabulate, m_tabulate);
-    root.getAttribute("Tmin", m_table_min, m_table_min);
-    root.getAttribute("Tmax", m_table_max, m_table_max);
-    root.getAttribute("dT",   m_table_del, m_table_del);
+    // Load global options
+    XmlElement::const_iterator opts = root.findTag("global-options");
+    if (opts != root.end()) {
+        // Determine if we should tabulate collision integrals when possible
+        XmlElement::const_iterator tabulate = opts->findTag("tabulate");
+        if (tabulate != opts->end()) {
+            m_tabulate = true;
+            tabulate->getAttribute("Tmin", m_table_min, m_table_min);
+            tabulate->getAttribute("Tmax", m_table_max, m_table_max);
+            tabulate->getAttribute("dT",   m_table_del, m_table_del);
+        }
 
-    // Check the table data
-    if (m_tabulate) {
-        root.parseCheck(m_table_min > 0.0, "Tmin must be positive.");
-        root.parseCheck(m_table_max > 0.0, "Tmax must be positive.");
-        root.parseCheck(m_table_del > 0.0, "dT must be positive.");
-        root.parseCheck(m_table_min < m_table_max, "Tmin must be > Tmax.");
+        // Check the table data
+        if (m_tabulate) {
+            tabulate->parseCheck(m_table_min > 0.0, "Tmin must be positive.");
+            tabulate->parseCheck(m_table_max > 0.0, "Tmax must be positive.");
+            tabulate->parseCheck(m_table_del > 0.0, "dT must be positive.");
+            tabulate->parseCheck(m_table_min < m_table_max, "Tmin must be > Tmax.");
 
-        double size = (m_table_max-m_table_min)/m_table_del;
-        root.parseCheck(std::abs(size-int(size))/size < 1.0e-15,
-            "(Tmax - Tmin)/dT must be a positive whole number.");
+            double size = (m_table_max-m_table_min)/m_table_del;
+            tabulate->parseCheck(std::abs(size-int(size))/size < 1.0e-15,
+                "(Tmax - Tmin)/dT must be a positive whole number.");
+        }
     }
 
     // Loop over the species and create the list of species pairs

@@ -31,7 +31,9 @@
 #include "CollisionIntegral.h"
 #include "CollisionPair.h"
 #include "Constants.h"
-#include "MCHInterpolator.h"
+//#include "MCHInterpolator.h"
+//#include "ChebyshevInterpolator.h"
+#include "Interpolators.h"
 #include "StringUtils.h"
 #include "SharedPtr.h"
 #include "Thermodynamics.h"
@@ -631,7 +633,6 @@ private:
 Config::ObjectProvider<MurphyColInt, CollisionIntegral> murphy_ci("Murphy");
 
 //==============================================================================
-
 /**
  * Represents a collision integral which is interpolated from a given table.
  */
@@ -639,9 +640,21 @@ class TableColInt : public CollisionIntegral
 {
 public:
 	TableColInt(CollisionIntegral::ARGS args) :
-		CollisionIntegral(args)
+		CollisionIntegral(args),
+		m_interpolator_type("Linear"), m_clip(true)
 	{
-		// Get the two vectors separated by a comma
+		// First load global options
+	    loadGlobalOptions(args.xml.document()->root());
+
+	    // Check for the same options here
+	    // clip
+        args.xml.getAttribute("clip", m_clip, m_clip);
+
+        // interpolator
+        args.xml.getAttribute(
+            "interpolator", m_interpolator_type, m_interpolator_type);
+
+	    // Get the two vectors separated by a comma
 		vector<string> tokens;
 		String::tokenize(args.xml.text(), tokens, ",\n\r");
 
@@ -655,12 +668,12 @@ public:
 		if (m_T.size() != m_Q.size() && m_T.size() > 1) args.xml.parseError(
 		    "Table rows must be same size and greater than 1.");
 
-		mp_interpolator =
-		    new MCHInterpolator<double>(&m_T[0], &m_Q[0], m_T.size());
-	}
-
-	~TableColInt() {
-	    delete mp_interpolator;
+		// Load the interpolator
+		mp_interpolator = SharedPtr< Interpolator<double> > (
+		    Config::Factory<Interpolator<double> >::create(
+		        m_interpolator_type,
+		        Interpolator<double>::ARGS(&m_T[0], &m_Q[0], m_T.size())
+		    ));
 	}
 
 	// Allow tabulation of this integral type
@@ -671,20 +684,15 @@ private:
 	// Interpolate from a table
 	double compute_(double T)
 	{
-		// Clip the temperature
-		if (T < m_T[0])
-			return m_Q[0];
-		if (T > m_T.back())
-			return m_Q.back();
+		// Clip the temperature if requested
+	    if (m_clip) {
+            if (T < m_T[0])
+                return m_Q[0];
+            if (T > m_T.back())
+                return m_Q.back();
+	    }
 
-		// Find the index
-		int i = 1;
-		while (m_T[i] < T && i < m_T.size()-1) i++;
-
-		// Interpolate
-		return (m_Q[i]-m_Q[i-1])*(T-m_T[i])/(m_T[i]-m_T[i-1])+m_Q[i];
-
-		//return (*mp_interpolator)(T);
+		return (*mp_interpolator)(T);
 	}
 
     /**
@@ -705,10 +713,34 @@ private:
 
 private:
 
+	void loadGlobalOptions(XmlElement& root)
+	{
+	    // Look for global-options element
+        XmlElement::const_iterator options = root.findTag("global-options");
+        if (options == root.end()) return;
+
+        // Look for table element
+        XmlElement::const_iterator table =
+            options->findTagWithAttribute("integral", "type", "table");
+        if (table == options->end()) return;
+
+        // clip
+        table->getAttribute("clip", m_clip, m_clip);
+
+        // interpolator
+        table->getAttribute(
+            "interpolator", m_interpolator_type, m_interpolator_type);
+	}
+
+private:
+
 	vector<double> m_T;
 	vector<double> m_Q;
 
-	MCHInterpolator<double>* mp_interpolator;
+	SharedPtr< Interpolator<double> > mp_interpolator;
+    string m_interpolator_type;
+	bool m_clip;
+
 };
 
 // Register the "table" CollisionIntegral
