@@ -1,1 +1,21 @@
 # file for the ci on mutation++
+
+build:
+  stage: build
+  script:
+    - cd mutation++
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make install
+
+  tags:
+    - linux
+
+#test:
+#  stage: test
+#  script:
+#    - checkmix air11
+#  artifacts:
+#    paths:
+#      - tests/
