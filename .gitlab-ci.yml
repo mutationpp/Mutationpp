@@ -3,7 +3,6 @@
 build:
   stage: build
   script:
-    - cd mutation++
     - mkdir build
     - cd build
     - cmake ..
