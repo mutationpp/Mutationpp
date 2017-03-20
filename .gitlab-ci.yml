@@ -2,6 +2,8 @@
 
 build:
   stage: build
+  before_script:
+    - apt-get install -y cmake
   script:
     - mkdir build
     - cd build
@@ -9,7 +11,20 @@ build:
     - make install
 
   tags:
-    - linux
+    - debian_base
+
+build:
+  stage: build
+  before_script:
+    - yum -i -y cmake
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make install
+
+  tags:
+    - fedora_base
 
 #test:
 #  stage: test
