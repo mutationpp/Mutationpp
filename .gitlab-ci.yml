@@ -16,7 +16,7 @@ build:
 build:
   stage: build
   before_script:
-    - yum -i -y cmake
+    - dnf install -y cmake
   script:
     - mkdir build
     - cd build
