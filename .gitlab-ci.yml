@@ -43,6 +43,17 @@ build-centos:
 
   tags:
     - centos7
+
+build-macos:
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make install
+
+  tags:
+    - macOS
 #test:
 #  stage: test
 #  script:
