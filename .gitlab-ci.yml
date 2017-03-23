@@ -54,6 +54,8 @@ build-macos:
 
   tags:
     - macOS
+
+# new commit because of error
 #test:
 #  stage: test
 #  script:
