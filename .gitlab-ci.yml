@@ -6,6 +6,7 @@ build:debian:
     - mkdir build
     - cd build
     - cmake ..
+#    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -20,6 +21,7 @@ build:ubuntu:
     - mkdir build
     - cd build
     - cmake ..
+#    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -34,6 +36,7 @@ build:fedora:
     - mkdir build
     - cd build
     - cmake ..
+#    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -48,6 +51,7 @@ build:centos:
     - mkdir build
     - cd build
     - cmake ..
+#    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -62,6 +66,7 @@ build:macos:
     - mkdir build
     - cd build
     - cmake ..
+#    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
