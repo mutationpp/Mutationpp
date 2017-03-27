@@ -1,5 +1,5 @@
 # file for the ci on mutation++
-cache:
+artifacts:
   paths:
     - build/
     - install/
