@@ -59,8 +59,11 @@ test-macos:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
+    - echo $MPP_DATA_DIRECTORY
     - export PATH=$PWD/install/bin:$PATH
+    - echo $PATH
     - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
+    - echo $DYLD_LIBRARY_PATH
     - checkmix air11
   tags:
     - macOS
