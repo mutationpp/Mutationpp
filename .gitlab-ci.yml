@@ -1,6 +1,6 @@
 # file for the ci on mutation++
 cache:
-  path:
+  paths:
     - build/
     - install/
 
