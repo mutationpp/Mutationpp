@@ -55,6 +55,16 @@ build-macos:
   tags:
     - macOS
 
+test-macos:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - export PATH=$PWD/install/bin:$PATH
+    - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
+    - checkmix air11
+  tags:
+    - macOS
+
 # new commit because of error
 #test:
 #  stage: test
