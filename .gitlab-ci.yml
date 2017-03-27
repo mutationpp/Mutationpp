@@ -1,111 +1,132 @@
 # file for the ci on mutation++
-artifacts:
-  paths:
-    - build/
-    - install/
 
-build-debian:
+build:debian:
   stage: build
   script:
     - mkdir build
     - cd build
     - cmake ..
     - make install
-
+  artifacts:
+    paths:
+      - build/
+      - install/
   tags:
     - debian8
 
-build-ubuntu:
+build:ubuntu:
   stage: build
   script:
     - mkdir build
     - cd build
     - cmake ..
     - make install
-
+  artifacts:
+    paths:
+      - build/
+      - install/
   tags:
     - ubuntu-lts
 
-build-fedora:
+build:fedora:
   stage: build
   script:
     - mkdir build
     - cd build
     - cmake ..
     - make install
-
+  artifacts:
+    paths:
+      - build/
+      - install/
   tags:
     - fedora24
 
-build-centos:
+build:centos:
   stage: build
   script:
     - mkdir build
     - cd build
     - cmake ..
     - make install
-
+  artifacts:
+    paths:
+      - build/
+      - install/
   tags:
     - centos7
 
-build-macos:
+build:macos:
   stage: build
   script:
     - mkdir build
     - cd build
     - cmake ..
     - make install
-
+  artifacts:
+    paths:
+      - build/
+      - install/
   tags:
     - macOS
 
-test-macos:
+test:macos:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
     - checkmix air11
+  dependencies:
+    - build:macos
   tags:
     - macOS
 
-test-centos:
+test:centos:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - checkmix air11
+  dependencies:
+    - build:centos
   tags:
     - centos7
 
-test-fedora:
+test:fedora:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - checkmix air11
+  dependencies:
+    - build:fedora
   tags:
     - fedora24
 
-test-debian:
+test:debian:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - checkmix air11
+  dependencies:
+    - build:debian
   tags:
     - debian8
 
-test-ubuntu:
+test:ubuntu:
   stage: test
   script:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - checkmix air11
+  dependencies:
+    - build:ubuntu
   tags:
     - ubuntu-lts
 
