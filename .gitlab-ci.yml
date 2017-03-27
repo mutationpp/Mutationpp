@@ -64,9 +64,61 @@ test-macos:
     - echo $PATH
     - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
     - echo $DYLD_LIBRARY_PATH
-    - checkmix air11
+#    - checkmix air11
   tags:
     - macOS
+
+test-centos:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - echo $MPP_DATA_DIRECTORY
+    - export PATH=$PWD/install/bin:$PATH
+    - echo $PATH
+    - export LD_LIBRARY_PATH="path_to_mutation++_directory"/install/lib:$LD_LIBRARY_PATH
+    - echo $LD_LIBRARY_PATH
+    - checkmix air11
+  tags:
+    - centos7
+
+test-fedora:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - echo $MPP_DATA_DIRECTORY
+    - export PATH=$PWD/install/bin:$PATH
+    - echo $PATH
+    - export LD_LIBRARY_PATH="path_to_mutation++_directory"/install/lib:$LD_LIBRARY_PATH
+    - echo $LD_LIBRARY_PATH
+    - checkmix air11
+  tags:
+    - fedora24
+
+test-debian:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - echo $MPP_DATA_DIRECTORY
+    - export PATH=$PWD/install/bin:$PATH
+    - echo $PATH
+    - export LD_LIBRARY_PATH="path_to_mutation++_directory"/install/lib:$LD_LIBRARY_PATH
+    - echo $LD_LIBRARY_PATH
+    - checkmix air11
+  tags:
+    - debian8
+
+test-ubuntu:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - echo $MPP_DATA_DIRECTORY
+    - export PATH=$PWD/install/bin:$PATH
+    - echo $PATH
+    - export LD_LIBRARY_PATH="path_to_mutation++_directory"/install/lib:$LD_LIBRARY_PATH
+    - echo $LD_LIBRARY_PATH
+    - checkmix air11
+  tags:
+    - ubuntu-lts
 
 # new commit because of error
 #test:
