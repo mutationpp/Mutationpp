@@ -13,6 +13,7 @@ build:debian:
       - install/
   only:
     - master
+    - ci_implement
   tags:
     - debian8
 
@@ -29,6 +30,7 @@ build:ubuntu:
       - install/
   only:
     - master
+    - ci_implement
   tags:
     - ubuntu-lts
 
@@ -45,6 +47,7 @@ build:fedora:
       - install/
   only:
     - master
+    - ci_implement
   tags:
     - fedora24
 
@@ -61,6 +64,7 @@ build:centos:
       - install/
   only:
     - master
+    - ci_implement
   tags:
     - centos7
 
@@ -77,6 +81,7 @@ build:macos:
       - install/
   only:
     - master
+    - ci_implement
   tags:
     - macOS
 
@@ -87,11 +92,12 @@ test:macos:
     - export PATH=$PWD/install/bin:$PATH
     - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
     - cd build/
-    - ctest
+    - ctest -VV
   dependencies:
     - build:macos
   only:
     - master
+    - ci_implement
   tags:
     - macOS
 
@@ -102,11 +108,12 @@ test:centos:
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - cd build/
-    - ctest
+    - ctest -VV
   dependencies:
     - build:centos
   only:
     - master
+    - ci_implement
   tags:
     - centos7
 
@@ -117,11 +124,12 @@ test:fedora:
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - cd build/
-    - ctest
+    - ctest -VV
   dependencies:
     - build:fedora
   only:
     - master
+    - ci_implement
   tags:
     - fedora24
 
@@ -132,11 +140,12 @@ test:debian:
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - cd build/
-    - ctest
+    - ctest -VV
   dependencies:
     - build:debian
   only:
     - master
+    - ci_implement
   tags:
     - debian8
 
@@ -147,10 +156,11 @@ test:ubuntu:
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
     - cd build/
-    - ctest
+    - ctest -VV
   dependencies:
     - build:ubuntu
   only:
     - master
+    - ci_implement
   tags:
     - ubuntu-lts
