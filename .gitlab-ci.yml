@@ -5,13 +5,14 @@ build:debian:
   script:
     - mkdir build
     - cd build
-#    - cmake ..
     - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
       - build/
       - install/
+  only:
+    - master
   tags:
     - debian8
 
@@ -20,13 +21,14 @@ build:ubuntu:
   script:
     - mkdir build
     - cd build
-#    - cmake ..
     - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
       - build/
       - install/
+  only:
+    - master
   tags:
     - ubuntu-lts
 
@@ -35,13 +37,14 @@ build:fedora:
   script:
     - mkdir build
     - cd build
-#    - cmake ..
     - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
       - build/
       - install/
+  only:
+    - master
   tags:
     - fedora24
 
@@ -50,13 +53,14 @@ build:centos:
   script:
     - mkdir build
     - cd build
-#    - cmake ..
     - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
       - build/
       - install/
+  only:
+    - master
   tags:
     - centos7
 
@@ -65,13 +69,14 @@ build:macos:
   script:
     - mkdir build
     - cd build
-#    - cmake ..
     - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
       - build/
       - install/
+  only:
+    - master
   tags:
     - macOS
 
@@ -81,11 +86,12 @@ test:macos:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
-#    - checkmix air11
     - cd build/
     - ctest
   dependencies:
     - build:macos
+  only:
+    - master
   tags:
     - macOS
 
@@ -95,11 +101,12 @@ test:centos:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-#    - checkmix air11
     - cd build/
     - ctest
   dependencies:
     - build:centos
+  only:
+    - master
   tags:
     - centos7
 
@@ -109,11 +116,12 @@ test:fedora:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-#    - checkmix air11
     - cd build/
     - ctest
   dependencies:
     - build:fedora
+  only:
+    - master
   tags:
     - fedora24
 
@@ -123,11 +131,12 @@ test:debian:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-#    - checkmix air11
     - cd build/
     - ctest
   dependencies:
     - build:debian
+  only:
+    - master
   tags:
     - debian8
 
@@ -137,19 +146,11 @@ test:ubuntu:
     - export MPP_DATA_DIRECTORY=$PWD/data
     - export PATH=$PWD/install/bin:$PATH
     - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-#    - checkmix air11
     - cd build/
     - ctest
   dependencies:
     - build:ubuntu
+  only:
+    - master
   tags:
     - ubuntu-lts
-
-# new commit because of error
-#test:
-#  stage: test
-#  script:
-#    - checkmix air11
-#  artifacts:
-#    paths:
-#      - tests/
