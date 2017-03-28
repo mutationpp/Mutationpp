@@ -65,8 +65,8 @@ build:macos:
   script:
     - mkdir build
     - cd build
-    - cmake ..
-#    - cmake -DENABLE_TESTING:BOOL=ON ..
+#    - cmake ..
+    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -75,17 +75,19 @@ build:macos:
   tags:
     - macOS
 
-#test:macos:
-#  stage: test
-#  script:
-#    - export MPP_DATA_DIRECTORY=$PWD/data
-#    - export PATH=$PWD/install/bin:$PATH
-#    - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
+test:macos:
+  stage: test
+  script:
+    - export MPP_DATA_DIRECTORY=$PWD/data
+    - export PATH=$PWD/install/bin:$PATH
+    - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
 #    - checkmix air11
-#  dependencies:
-#    - build:macos
-#  tags:
-#    - macOS
+    - cd build/
+    - ctest
+  dependencies:
+    - build:macos
+  tags:
+    - macOS
 
 test:centos:
   stage: test
