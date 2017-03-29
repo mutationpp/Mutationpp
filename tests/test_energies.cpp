@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_species_energy_sum)
 
             for (int i = 0; i < nt; ++i)
                 BOOST_CHECK_CLOSE(rho * mixture_energies[i],
-                    (rhoi*species_energies.segment(i*ns, (i+1)*ns)).sum(), tol);
+                    (rhoi*species_energies.segment(i*ns, ns)).sum(), tol);
         }
     }
 }

@@ -702,8 +702,8 @@ void Thermodynamics::sumSpeciesMass(
     const int ns = nSpecies();
 
     Map<VectorXd>(p_e, size) =
-        Map< Matrix<double, -1, -1, RowMajor> >(mp_wrkcp, size, ns) *
-        Map<VectorXd>(mp_y, ns);
+        Map<const Matrix<double, -1, -1, RowMajor> >(p_s, size, ns) *
+        Map<const VectorXd>(mp_y, ns);
 }
 
 //==============================================================================
