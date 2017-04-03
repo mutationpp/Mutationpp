@@ -93,6 +93,7 @@ endfunction()
 # C++ examples
 test_example(equilibrium_air c++)
 test_example(O2_dissociation c++)
+test_example(air_diffusion_comparison c++)
 
 # Fortran examples
 if (BUILD_FORTRAN_WRAPPER)
