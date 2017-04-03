@@ -51,22 +51,11 @@ int main()
         mix.setState(&T, &P);
         rho = mix.density();
         v_rhoi = rho * Eigen::Map<const Eigen::VectorXd>(mix.Y(), ns);
-//        for ( int i = 0 ; i < ns ; ++i ){
-//            v_rhoi(i) = rho * mix.Y()[i];
-//        }
 
         // Exact Diffusion Coefficients
         mix.setDiffusionMatrixAlgo("Exact");
         m_Dij = mix.diffusionMatrix();
         v_Vd = -m_Dij*v_b;
-
-//        v_Vd.setZero();
-//
-//        for ( int i = 0; i < ns; ++i ){
-//            for ( int j = 0; j < ns; ++j ){
-//                v_Vd(i) -= p_Dij[i][j] * v_b(j);
-//            }
-//        }
 
         // Ramsaw Diffusion Coefficients
         mix.setDiffusionMatrixAlgo("Ramshaw");
