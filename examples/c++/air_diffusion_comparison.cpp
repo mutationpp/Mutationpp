@@ -33,11 +33,6 @@ int main()
 
     double E_field = 0.E0;
 
-    double ** const p_Dij = new double* [ns] ;
-    for ( int i = 0; i < ns; ++i ){
-        p_Dij[i] = new double [ns];
-    }
-
     // Loop over range of temperatures and compute equilibrium values at 1 atm    
     double P = ONEATM;
     double T;
@@ -55,22 +50,15 @@ int main()
         // temperature and pressure
         mix.setState(&T, &P);
         rho = mix.density();
-        for ( int i = 0 ; i < ns ; ++i ){
-            v_rhoi(i) = rho * mix.Y()[i];
-        }
+        v_rhoi = rho * Eigen::Map<const Eigen::VectorXd>(mix.Y(), ns);
 
         // Exact Diffusion Coefficients
-        mix.exactDiffusionMatrix( p_Dij );
-
-        v_Vd.setZero();
-        
-        for ( int i = 0; i < ns; ++i ){
-            for ( int j = 0; j < ns; ++j ){
-                v_Vd(i) -= p_Dij[i][j] * v_b(j);
-            }
-        }
+        mix.setDiffusionMatrixAlgo("Exact");
+        m_Dij = mix.diffusionMatrix();
+        v_Vd = -m_Dij*v_b;
 
         // Ramsaw Diffusion Coefficients
+        mix.setDiffusionMatrixAlgo("Ramshaw");
         m_ram_Dij = mix.diffusionMatrix();
         v_Vd_ram = -m_ram_Dij * v_b;
 
@@ -88,11 +76,5 @@ int main()
 
     } // Loop over temperatures
  
-    // Cleaning
-    for ( int i = 0 ; i < ns; ++i ){
-        delete [] p_Dij[i];
-    }
-    delete [] p_Dij;
-
     return 0;
 }
