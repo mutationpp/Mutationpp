@@ -96,6 +96,10 @@ void DebyeHuckleEvaluator::setDebyeLength(double Te, double ne)
 {
     assert(Te >= 0.0);
     assert(ne >= 0.0);
+
+    // Protect against small electron number densities
+    ne = std::max(ne, 1.0e-16);
+
     // Including electron and ion contributions
     m_lambda = std::sqrt(0.5*EPS0*KB*Te/(ne*QE*QE));
 }
