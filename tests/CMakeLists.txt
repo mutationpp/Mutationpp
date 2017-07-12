@@ -27,6 +27,11 @@ find_package( Boost COMPONENTS unit_test_framework filesystem system REQUIRED)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+configure_file(Configuration.h.in Configuration.h)
+add_executable(run_tests comparisons.cpp run_tests.cpp)
+target_link_libraries(run_tests mutation++)
+
 add_executable(diffusion_matrix test_diffusion_matrix.cpp)
 target_link_libraries(diffusion_matrix mutation++)
 
