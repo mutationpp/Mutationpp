@@ -36,6 +36,7 @@
 #include <fstream>
 
 #include "AutoRegistration.h"
+#include "GlobalOptions.h"
 #include "IteratorWrapper.h"
 #include "LookupTable.h"
 #include "ReferenceServer.h"
@@ -55,39 +56,63 @@ namespace Mutation {
     namespace Utilities {
 
 /**
- *  Wraps the std::getenv() function to return a string.
+ * Prepends a directory path to a file name.
  */
-static std::string getEnvironmentVariable(const std::string& key)
+static std::string prependPath(
+    const std::string& dir, const std::string& file)
 {
-    char* value = std::getenv(key.c_str());
-    if (value == NULL) {
-        std::cout << "Warning: environment variable " << key << " not found" << std::endl;
-        return std::string();
-    }
-    return std::string(value);
+    // For an empty directory string, return the file name only
+    if (dir.length() == 0)
+        return file;
+
+    // Check if the separator is already appended on the directory name
+    const char sep = GlobalOptions::separator();
+    if (dir[dir.length()-1] == sep)
+        return dir + file;
+    else
+        return dir + sep + file;
 }
 
 /**
- * Finds the full name to use for a database file name.
+ * Finds the full name to use for a database file name.  If the given extension
+ * is not included, then it is appended to the file name.  The file path is
+ * located in the following order:
+ *
+ * 1) working_directory/name.ext
+ * 2) working_directory/dir/name.ext
+ * 3) data_directory/name.ext
+ * 4) data_directory/dir/name.ext
+ *
+ * If the file is not found, then the last location searched is returned.
  */
 static std::string databaseFileName(
     std::string name, const std::string& dir, const std::string& ext = ".xml")
 {
     // Add extension if necessary
-    if (name.substr(name.length()-ext.length()) != ext)
+    if (name.length() < ext.length() + 1 ||
+        name.substr(name.length()-ext.length()) != ext)
         name = name + ext;
 
-    // Add directory if not in local
-    {
-        std::ifstream file(name.c_str(), std::ios::in);
+    // Check the working directory first
+    std::string path = prependPath(GlobalOptions::workingDirectory(), name);
+    if (std::ifstream(path.c_str(), std::ios::in).is_open())
+        return path;
 
-        // If that doesn't work, look in MPP_DATA_DIRECTORY/transport
-        if (!file.is_open())
-            name = Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-                "/" + dir + "/" + name;
-    }
+    // Check the working directory with assumed folder hierarchy
+    path = prependPath(GlobalOptions::workingDirectory(), dir);
+    path = prependPath(path, name);
+    if (std::ifstream(path.c_str(), std::ios::in).is_open())
+        return path;
 
-    return name;
+    // Check data directory
+    path = prependPath(GlobalOptions::dataDirectory(), name);
+    if (std::ifstream(path.c_str(), std::ios::in).is_open())
+        return path;
+
+    // If we didn't find it there then just return path with data directory and
+    // assumed folder hierarchy
+    path = prependPath(GlobalOptions::dataDirectory(), dir);
+    return prependPath(path, name);
 }
 
     } // namespace Utilities

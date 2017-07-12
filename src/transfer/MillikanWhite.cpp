@@ -139,16 +139,8 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
 
 double MillikanWhiteVibrator::loadThetaV(const std::string& name)
 {
-    // Get the species.xml path on this computer (first assume the local directory)
-    std::string filename = "species.xml";
-    {
-        std::ifstream file(filename.c_str(), std::ios::in);
-
-        // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
-        if (!file.is_open())
-            filename = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-                "/thermo/" + filename;
-    }
+    // Get the species.xml path on this computer.
+    std::string filename = databaseFileName("species.xml", "thermo");
 
     // Now look for the species
     XmlDocument doc(filename);
@@ -175,8 +167,8 @@ double MillikanWhiteVibrator::loadThetaV(const std::string& name)
 
 MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
 {
-    std::string filename =
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/transfer/VT.xml";
+    // Get the VT.xml file location.
+    std::string filename = databaseFileName("VT.xml", "transfer");
     
     // Open the VT file as an XML document
     XmlDocument doc(filename);

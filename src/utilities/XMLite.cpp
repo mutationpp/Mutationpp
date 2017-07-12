@@ -49,6 +49,8 @@ XmlDocument::XmlDocument(const std::string &filename)
     : m_filename(filename)
 {
     ifstream xml_file(m_filename.c_str(), ios::in);
+
+    std::cout << filename << std::endl;
     
     if (!xml_file.is_open()) {
         cerr << "Could not open file " << m_filename << " for reading!" << endl;

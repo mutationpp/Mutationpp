@@ -41,6 +41,7 @@ target_link_libraries(bprime mutation++)
 install(TARGETS bprime DESTINATION bin)
 
 # Install the header files
+install(FILES GlobalOptions.h DESTINATION include/mutation++)
 install(FILES mutation++.h DESTINATION include/mutation++)
 install(FILES Mixture.h DESTINATION include/mutation++)
 install(FILES MixtureOptions.h DESTINATION include/mutation++)

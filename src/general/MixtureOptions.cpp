@@ -91,16 +91,8 @@ void MixtureOptions::loadFromFile(const string& mixture)
     // Initalize to the default options
     setDefaultOptions();
     
-    // Get the mixture path on this computer (first assume the local directory)
-    m_source = mixture + ".xml";
-    {
-        ifstream file(m_source.c_str(), ios::in);
-
-        // If that doesn't work then assume it is in MPP_DATA_DIRECTORY/mixtures.
-        if (!file.is_open())
-            m_source = getEnvironmentVariable("MPP_DATA_DIRECTORY") +
-                "/mixtures/" + m_source;
-    }
+    // Get the mixture path on this computer.
+    m_source = databaseFileName(mixture, "mixtures");
 
     // Now load the XML file
     IO::XmlDocument mixture_doc(m_source);
