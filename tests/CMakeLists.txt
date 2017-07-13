@@ -29,7 +29,21 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
-add_executable(run_tests comparisons.cpp run_tests.cpp)
+
+add_custom_target(
+    generate_comparison_tests
+    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/generate_comparison_tests.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(test_sources
+    comparison_tests.cpp
+    run_tests.cpp
+)
+
+add_executable(run_tests ${test_sources})
+
+add_dependencies(run_tests generate_comparison_tests)
 target_link_libraries(run_tests mutation++)
 
 add_executable(diffusion_matrix test_diffusion_matrix.cpp)
@@ -123,21 +137,7 @@ test_all_mixtures(set_state)
 # TransferModel tests
 test_all_mixtures(transfer_source)
 
-#####################################
-# Setup comparison tests
-#####################################
-add_executable(compare comparison.cpp)
-target_link_libraries(compare mutation++)
-
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
 
-file(GLOB files "comparisons/*.dat")
-foreach(file ${files})
-    get_filename_component(name ${file} NAME_WE)
-    add_test(
-        NAME compare_${name} 
-        COMMAND compare ${file} 
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data )
-endforeach()
 

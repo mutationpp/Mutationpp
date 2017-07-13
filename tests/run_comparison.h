@@ -36,6 +36,8 @@ using namespace Eigen;
 /// Driver for the comparison tests.
 void run_comparison(const char* filename)
 {
+    INFO("File: " << filename)
+
     // Get the folder that is configured at compile time by CMake
     std::string comparisons_folder = COMPARISONS_FOLDER;
 
@@ -46,10 +48,10 @@ void run_comparison(const char* filename)
     REQUIRE(file.is_open());
 
     // Load the mixture
-    std::string data_folder = TEST_DATA_FOLDER;
+    GlobalOptions::workingDirectory(TEST_DATA_FOLDER);
     std::string str;
     getline(file, str);
-    Mixture mix(data_folder + str);
+    Mixture mix(str);
 
     // Load the state variable information
     getline(file, str);
@@ -76,6 +78,8 @@ void run_comparison(const char* filename)
     double v2 [n2];
 
     for (int i = 0; i < data.rows(); ++i) {
+        INFO("Line:" << i + 4)
+
         // Set the state of the mixture
         Map<VectorXd>(v1,n1) = data.row(i).segment( 0,n1);
         Map<VectorXd>(v2,n2) = data.row(i).segment(n1,n2);
@@ -84,10 +88,8 @@ void run_comparison(const char* filename)
         // Now compute the function and compare with expected result
         CHECK(function->compare(mix, data.row(i).tail(result_size)));
     }
+
+    delete function;
 }
 
-//==============================================================================
 
-TEST_CASE("Comparison: air11 3rd order electron thermal conductivity", "[transport][comparison]") {
-    run_comparison("lambdae_air11_3rd_order.dat");
-}
