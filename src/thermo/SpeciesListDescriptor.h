@@ -76,6 +76,12 @@ public:
     
 private:
 
+    /// Separates species names in a list (initializes m_species_names).
+    void separateSpeciesNames(std::string descriptor);
+
+
+private:
+
     /// Explicitly defined species names
     std::vector<std::string> m_species_names;
     

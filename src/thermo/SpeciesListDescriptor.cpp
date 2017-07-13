@@ -82,9 +82,8 @@ SpeciesListDescriptor::SpeciesListDescriptor(std::string descriptor)
         m_element_names.insert(elements.begin(), elements.end());
     }
     
-    // Tokenize the species list to get the species names
-    Utilities::String::tokenize(
-        Utilities::String::trim(descriptor), m_species_names, " \n\r\t\f\v");
+    // Separate out the species names
+    separateSpeciesNames(descriptor);
     
     // Check on any species whose excited electronic states should be expanded
     for (int i = 0; i < m_species_names.size(); ++i) {
@@ -94,6 +93,70 @@ SpeciesListDescriptor::SpeciesListDescriptor(std::string descriptor)
             m_expand_states.insert(m_species_names[i]);
         }
     }
+}
+
+//==============================================================================
+
+void SpeciesListDescriptor::separateSpeciesNames(std::string descriptor)
+{
+    // First trim the descriptor string
+    descriptor = Utilities::String::trim(descriptor);
+
+    // State-machine with 2 states (either in quotes or not)
+    bool in_quotes = (descriptor[0] == '\"');
+    std::string name = "";
+
+    for (int i = (in_quotes ? 1 : 0); i < descriptor.length(); ++i) {
+        char c = descriptor[i];
+
+        if (in_quotes) {
+            // Add everything to the name until we escape out of the quotes
+            switch(c) {
+            case '\"':
+                // Escape and add name to the list
+                in_quotes = false;
+                if (name.length() > 0) {
+                    m_species_names.push_back(name);
+                    name = "";
+                }
+                break;
+            default:
+                // Otherwise just add the character to the name
+                name += c;
+            }
+        } else {
+            // All white-space should be ignored
+            switch(c) {
+            case ' ':
+            case '\n':
+            case '\r':
+            case '\t':
+            case '\f':
+            case '\v':
+                if (name.length() > 0) {
+                    m_species_names.push_back(name);
+                    name = "";
+                }
+                break;
+            case '\"':
+                if (name.length() > 0) {
+                    std::cerr << "Error, cannot include quotation mark in ";
+                    std::cerr << "species name!" << std::cerr;
+                    std::cerr << "    " << descriptor.substr(0, i+1);
+                    std::cerr << " <--" << std::endl;
+                    exit(1);
+                }
+                in_quotes = true;
+                break;
+            default:
+                name += c;
+            }
+        }
+    }
+
+    // Push back the last name
+    if (name.length() > 0)
+        m_species_names.push_back(name);
 }
 
 //==============================================================================
