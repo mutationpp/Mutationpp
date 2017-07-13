@@ -74,6 +74,25 @@ static std::string prependPath(
 }
 
 /**
+ * Appends a file extension to the given file name.  If the extension is empty,
+ * no change is made.  If the period character is not already included in the
+ * given extension, then it is added as well.
+ */
+static std::string appendExtension(
+     const std::string& name, const std::string& ext)
+{
+    // For an empty extension, return the file name as is
+    if (ext.length() == 0)
+        return name;
+
+    // Check if period character is already included
+    if (ext[0] == '.')
+        return name + ext;
+    else
+        return name + '.' + ext;
+}
+
+/**
  * Finds the full name to use for a database file name.  If the given extension
  * is not included, then it is appended to the file name.  The file path is
  * located in the following order:
@@ -91,7 +110,7 @@ static std::string databaseFileName(
     // Add extension if necessary
     if (name.length() < ext.length() + 1 ||
         name.substr(name.length()-ext.length()) != ext)
-        name = name + ext;
+        name = appendExtension(name, ext);
 
     // Check the working directory first
     std::string path = prependPath(GlobalOptions::workingDirectory(), name);
