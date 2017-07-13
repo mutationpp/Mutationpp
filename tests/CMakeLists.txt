@@ -70,8 +70,8 @@ function(test_all_mixtures test)
     foreach(mixture ${mixtures_to_test})
         add_test(
             NAME ${test}_${mixture}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
-            COMMAND ${test} ${mixture} )
+            COMMAND ${test} ${mixture}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data )
     endforeach(mixture)
 endfunction()
 

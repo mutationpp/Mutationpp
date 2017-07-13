@@ -179,10 +179,9 @@ void NasaDB<PolynomialType>::loadAvailableSpecies(
 {
     // Open the database file
     std::string db_path =
-        Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo/" +
-        filename();
+        Utilities::databaseFileName(filename(), "thermo", ".dat");
     std::ifstream file(db_path.c_str());
-    
+
     if (!file.is_open()) {
         std::cerr << "Could not open " << db_path << "!\n" << std::endl;
         exit(1);
@@ -206,8 +205,7 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
 {
     // Open the database file
     std::string db_path =
-        Utilities::getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo/" +
-        filename();
+        Utilities::databaseFileName(filename(), "thermo", ".dat");
     std::ifstream file(db_path.c_str());
     
     if (!file.is_open()) {
@@ -215,7 +213,6 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
         exit(1);
     }
     
-
     // Move to the beginning of the first species
     skipHeader(file);
     

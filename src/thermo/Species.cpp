@@ -45,8 +45,7 @@ const std::vector<Element>& Element::database()
         return elements;
 
     // Load from the XML database
-    IO::XmlDocument element_doc(
-        getEnvironmentVariable("MPP_DATA_DIRECTORY") + "/thermo/elements.xml");
+    IO::XmlDocument element_doc(databaseFileName("elements.xml", "thermo"));
     IO::XmlElement::const_iterator element_iter = element_doc.root().begin();
 
     for ( ; element_iter != element_doc.root().end(); ++element_iter)
