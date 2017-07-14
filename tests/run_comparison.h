@@ -19,6 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#ifndef RUN_COMPARISON_H
+#define RUN_COMPARISON_H
+
 #include "catch.hpp"
 #include <iostream>
 #include <string>
@@ -92,4 +95,5 @@ void run_comparison(const char* filename)
     delete function;
 }
 
+#endif // RUN_COMPARISON_H
 

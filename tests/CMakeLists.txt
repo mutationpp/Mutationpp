@@ -39,10 +39,10 @@ add_custom_target(
 set(test_sources
     comparison_tests.cpp
     run_tests.cpp
+    test_mixtures.cpp
 )
 
 add_executable(run_tests ${test_sources})
-
 add_dependencies(run_tests generate_comparison_tests)
 target_link_libraries(run_tests mutation++)
 
@@ -93,9 +93,6 @@ function(test_all_mixtures test)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data )
     endforeach(mixture)
 endfunction()
-
-# Make sure mixtures load
-test_all_mixtures(checkmix)
 
 # Make sure examples compile and run
 function(test_example name subdir)    
