@@ -30,20 +30,13 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
-add_custom_target(
-    generate_comparison_tests
-    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/generate_comparison_tests.py
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 set(test_sources
-    comparison_tests.cpp
     run_tests.cpp
+    test_comparisons.cpp
     test_mixtures.cpp
 )
 
 add_executable(run_tests ${test_sources})
-add_dependencies(run_tests generate_comparison_tests)
 target_link_libraries(run_tests mutation++)
 
 add_executable(diffusion_matrix test_diffusion_matrix.cpp)
