@@ -1,5 +1,12 @@
 build/
 install/
 
+.cproject
+.project
+examples/c++/O2_dissociation
+examples/c++/air_diffusion_comparison
+examples/c++/equilibrium_air
+examples/c++/*.o
+
 # OS specifics
 .DS_Store
