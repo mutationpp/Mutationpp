@@ -54,13 +54,17 @@ namespace Mutation {
 class OmegaET : public TransferModel
 {
 public:
-	OmegaET(TransferModel::ARGS mix)
-		: TransferModel(mix), m_collisions(mix.collisionDB())
+	OmegaET(TransferModel::ARGS mix) :
+	    TransferModel(mix), m_collisions(mix.collisionDB()),
+		 m_has_electrons(mix.hasElectrons())
 	{ }
 
 	double source()
 	{
-		const double * p_X = m_mixture.X();
+	    if (!m_has_electrons)
+		    return 0.0;
+
+	    const double * p_X = m_mixture.X();
         double nd = m_mixture.numberDensity();
         double T = m_mixture.T();
         double Te = m_mixture.Te();
@@ -71,6 +75,7 @@ public:
 
 private:
 	Transport::CollisionDB& m_collisions;
+	bool m_has_electrons;
 
 	double const compute_tau_ET();
 };
