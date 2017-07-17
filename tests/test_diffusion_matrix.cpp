@@ -91,7 +91,7 @@ void DiffusionMatrixTests::fluxesSumToZero(Mixture& mix)
         // Make sure the sum is zero
         INFO("Ji = " << Ji);
         INFO("dx = " << dx);
-        REQUIRE(Ji.sum() == Approx(0.0).margin(tol));
+        CHECK(Ji.sum() == Approx(0.0).margin(tol));
     )
 }
 
