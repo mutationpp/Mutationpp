@@ -25,48 +25,35 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Stefan-Maxwell tests
-
-#include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
+#include "mutation++.h"
+#include "Configuration.h"
+#include "TestMacros.h"
+#include "catch.hpp"
 #include <Eigen/Dense>
+
+using namespace Mutation;
+using namespace Catch;
 using namespace Eigen;
 
-#include "MixtureFixtures.h"
 
-// Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(dXidT, MixtureFromCommandLine)
-
-/*
- * Species mole fraction derivatives should sum to 0.  As these are used in
- * several other tests to provide fake driving forces, this is an important
- * test to include.
- */
-BOOST_AUTO_TEST_CASE(dX_sum_is_zero)
+TEST_CASE
+(
+    "Equilibrium mole fractions derivatives sum to zero",
+    "[equilibrium][thermodynamics]"
+)
 {
-    VectorXd dx(mix().nSpecies());
+    const double tol = std::numeric_limits<double>::epsilon();
 
-    const double tol = 1.0e-9;
+    MIXTURE_LOOP
+    (
+        VectorXd dx(mix.nSpecies());
 
-    // Loop over range of pressures and temperatures
-    for (int ip = 0.0; ip < 10; ++ip) {
-        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
-        for (int it = 0.0; it < 10; ++it) {
-            double T = 1000.0*it + 1000.0;
-
-            // Set an equilibrium state and compute the driving forces for a
-            // temperature gradient in an equilibrium mixture
-            mix().equilibrate(T, P);
-            mix().dXidT(dx.data());
-
-            // Make sure the sum is zero
-            BOOST_CHECK_SMALL(dx.sum()/(dx.maxCoeff()), tol);
-        }
-    }
+        EQUILIBRATE_LOOP
+        (
+            mix.dXidT(dx.data());
+            INFO("dx = " << dx);
+            REQUIRE(dx.sum() == Approx(0.0).margin(tol));
+        )
+    )
 }
-
-// End of the stefan_maxwell test suite
-BOOST_AUTO_TEST_SUITE_END()
 

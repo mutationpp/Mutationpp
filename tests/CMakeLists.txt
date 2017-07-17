@@ -33,20 +33,17 @@ configure_file(Configuration.h.in Configuration.h)
 set(test_sources
     run_tests.cpp
     test_comparisons.cpp
+    test_diffusion_matrix.cpp
+    test_dXidT.cpp
+    test_energies.cpp
     test_mixtures.cpp
+    test_wdot.cpp
 )
 
 add_executable(run_tests ${test_sources})
 target_link_libraries(run_tests mutation++)
 
-add_executable(diffusion_matrix test_diffusion_matrix.cpp)
-target_link_libraries(diffusion_matrix mutation++)
 
-add_executable(dXidT test_dXidT.cpp)
-target_link_libraries(dXidT mutation++)
-
-add_executable(energies test_energies.cpp)
-target_link_libraries(energies mutation++)
 
 add_executable(set_state test_set_state.cpp)
 target_link_libraries(set_state mutation++)
@@ -56,9 +53,6 @@ target_link_libraries(stefan_maxwell mutation++)
 
 add_executable(transfer_source test_transfer_source.cpp)
 target_link_libraries(transfer_source mutation++)
-
-add_executable(wdot test_wdot.cpp)
-target_link_libraries(wdot mutation++)
 
 add_executable(thermal_diff_ratios test_thermal_diff_ratios.cpp)
 target_link_libraries(thermal_diff_ratios mutation++)
