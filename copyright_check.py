@@ -81,6 +81,7 @@ class FileInfo(object):
         with open(self.filename, 'r') as source_file:
             for source_line in source_file:
                 # Check presence
+                # TODO: this presence check may yield many false positives and should be deleted
                 if re.match("(.*)(C|c)opyright(.*)", source_line):
                     self.cpinfo_present = True
                     self.cpinfo_line = source_line
