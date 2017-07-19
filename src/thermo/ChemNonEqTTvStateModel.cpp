@@ -262,8 +262,11 @@ public:
         static VectorXd yi; yi = rhoi / density;
         const Vector2d emix = Map<const Vector2d>(p_rhoe) / density;
 
-        static Matrix<double, Dynamic, Dynamic, RowMajor> ei(2, m_thermo.nSpecies());
-        static Matrix<double, Dynamic, Dynamic, RowMajor> ci(2, m_thermo.nSpecies());
+        static Matrix<double, Dynamic, Dynamic, RowMajor> ei;
+        static Matrix<double, Dynamic, Dynamic, RowMajor> ci;
+        ei.resize(2, m_thermo.nSpecies());
+        ci.resize(2, m_thermo.nSpecies());
+
         getEnergiesMass(ei.data());
 
         Vector2d f, e, cv;

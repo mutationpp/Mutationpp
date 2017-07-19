@@ -1,11 +1,3 @@
-/**
- * @file test_thermal_diff_ratios.cpp
- *
- * @brief Contains tests related to the species thermal diffusion ratios.
- * A mixture name must be given in the command line arguments for the tests to
- * work and all tests are performed on this mixture.
- */
-
 /*
  * Copyright 2014-2015 von Karman Institute for Fluid Dynamics (VKI)
  *
@@ -27,19 +19,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE thermal diffusion ratios tests
+#include "mutation++.h"
+#include "Configuration.h"
+#include "TestMacros.h"
+#include "catch.hpp"
+#include <Eigen/Dense>
 
-#include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
-#include <vector>
-#include <numeric>
-#include "MixtureFixtures.h"
-
-
-// Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(thermal_diffusion_ratios, MixtureFromCommandLine)
+using namespace Mutation;
+using namespace Catch;
+using namespace Eigen;
 
 /*
  * Checks that the thermal diffusion ratios sum to zero correctly such that
@@ -48,53 +36,43 @@ BOOST_FIXTURE_TEST_SUITE(thermal_diffusion_ratios, MixtureFromCommandLine)
  * \f]
  * in and out of thermal equilibrium.
  */
-BOOST_AUTO_TEST_CASE(kTi_sum_to_zero)
+TEST_CASE
+(
+    "Thermal diffusion ratios sum to zero",
+    "[transport]"
+)
 {
-    std::vector<double> rhoi(mix().nSpecies());
-    std::vector<double> tmps(mix().nEnergyEqns());
+    const double tol = std::numeric_limits<double>::epsilon();
 
-    const double tol = 10.0*std::numeric_limits<double>::epsilon()*
-            mix().nSpecies();
+    MIXTURE_LOOP
+    (
+        VectorXd rhoi(mix.nSpecies());
+        VectorXd tmps(mix.nEnergyEqns());
+        VectorXd chii(mix.nSpecies());
 
-    // Check conditions with all temperatures the same ranging from 500 to
-    // 10,000K
-    for (int i = 0; i < 20; ++i) {
-        rhoi.assign(mix().nSpecies(), 0.1);
-        tmps.assign(mix().nEnergyEqns(), 500.0*i + 500.0);
-        mix().setState(&rhoi[0], &tmps[0], 1);
+        rhoi.setConstant(0.1);
 
-        mix().thermalDiffusionRatios(&rhoi[0]);
+        SECTION("Thermal equilibrium") {
+            for (int i = 0; i < 20; ++i) {
+                tmps.setConstant(500.0*i + 500.0);
+                mix.setState(rhoi.data(), tmps.data(), 1);
+                mix.thermalDiffusionRatios(chii.data());
+                CHECK(chii.sum() == Approx(0.0).margin(tol));
+            }
+        }
 
-        double max = std::abs(rhoi[0]);
-        for (int i = 1; i < mix().nSpecies(); ++i)
-            max = std::max(std::abs(max), rhoi[i]);
-
-        BOOST_CHECK_SMALL(
-            std::accumulate(rhoi.begin(), rhoi.end(), 0.0)/max, tol);
-    }
-
-    // Check conditions with different temperatures centered around temperatures
-    // from 500 to 10,000K (thermal nonequilibrium)
-    for (int i = 0; i < 20; ++i) {
-        rhoi.assign(mix().nSpecies(), 0.1);
-        for (int k = 0; k < mix().nEnergyEqns(); ++k)
-            tmps[k] = 500.0*i + 500.0 + 100.0*k*std::pow(-1.0,(double) k);
-        mix().setState(&rhoi[0], &tmps[0], 1);
-
-        mix().thermalDiffusionRatios(&rhoi[0]);
-        if (mix().hasElectrons())
-            rhoi[0] *= mix().Te() / mix().T();
-
-        double max = std::abs(rhoi[0]);
-        for (int i = 1; i < mix().nSpecies(); ++i)
-            max = std::max(std::abs(max), rhoi[i]);
-
-        BOOST_CHECK_SMALL(
-            std::accumulate(rhoi.begin(), rhoi.end(), 0.0)/max, tol);
-    }
+        SECTION("Thermal nonequilibrium") {
+            for (int i = 0; i < 20; ++i) {
+                double T = 500.0*i + 500.0;
+                for (int k = 0; k < mix.nEnergyEqns(); ++k)
+                    tmps[k] = T + 100.0*k*std::pow(-1.0,(double) k);
+                mix.setState(rhoi.data(), tmps.data(), 1);
+                mix.thermalDiffusionRatios(chii.data());
+                INFO("chii = " << chii);
+                CHECK(chii.sum() == Approx(0.0).margin(tol));
+            }
+        }
+    )
 }
-
-// End of the kinetics test suite
-BOOST_AUTO_TEST_SUITE_END()
 
 

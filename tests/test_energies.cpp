@@ -1,9 +1,3 @@
-/**
- * @file test_energies.cpp
- *
- * @brief General tests on the functions getting the energies.
- */
-
 /*
  * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
@@ -25,79 +19,64 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE getEnergies() tests
-
-#include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-#include <boost/random.hpp>
-
+#include "mutation++.h"
+#include "Configuration.h"
+#include "TestMacros.h"
+#include "catch.hpp"
 #include <Eigen/Dense>
 
-#include "MixtureFixtures.h"
+using namespace Mutation;
+using namespace Catch;
+using namespace Eigen;
 
-// Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(energies, MixtureFromCommandLine)
 
-/**
- * Tests that the sum of the species energies equals the mixture energies.
- */
-BOOST_AUTO_TEST_CASE(test_species_energy_sum)
+TEST_CASE
+(
+    "Sum of species energies equals mixture energies",
+    "[thermodynamics]"
+)
 {
-    const int ns = mix().nSpecies();
-    const int nt = mix().nEnergyEqns();
+    const double tol = std::numeric_limits<double>::epsilon();
     const int e_var_set = 0;
     const int t_var_set = 1;
 
-    const double tol = 1.0e3*std::numeric_limits<double>::epsilon();
+    MIXTURE_LOOP
+    (
+        const int ns = mix.nSpecies();
+        const int nt = mix.nEnergyEqns();
 
-    std::vector<double> tmps1(nt);
-    std::vector<double> tmps2(nt);
+        std::vector<double> tmps1(nt);
+        std::vector<double> tmps2(nt);
 
-    Eigen::ArrayXd rhoi(ns);
-    Eigen::ArrayXd species_energies(ns*nt);
-    Eigen::ArrayXd mixture_energies(nt);
+        Eigen::ArrayXd rhoi(ns);
+        Eigen::ArrayXd species_energies(ns*nt);
+        Eigen::ArrayXd mixture_energies(nt);
 
-    // Setup random number generator
-    boost::mt19937 rng;
-    boost::uniform_real<> temp_range(-500.0, 500.0);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<> >
-        rand_temp(rng, temp_range);
-
-    // Loop over range of pressures and temperatures
-    for (int ip = 0.0; ip < 10; ++ip) {
-        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
-        for (int it = 0.0; it < 10; ++it) {
-            double T = 1000.0*it + 1000.0;
-
-            // Set an equilibrium state to make sure species temperatures and
-            // densities are possible
-            mix().equilibrate(T, P);
-            double rho = mix().density();
-
+        EQUILIBRATE_LOOP
+        (
             // Get the species densities
-            rhoi = rho * Eigen::Map<const Eigen::ArrayXd>(mix().Y(), ns);
+            double rho = mix.density();
+            rhoi = rho * Eigen::Map<const Eigen::ArrayXd>(mix.Y(), ns);
 
             // Get a nominal temperature vector
             tmps1.assign(nt, T);
 
-            // Compute a randomly perturbed temperature vector
+            // Compute a randomly perturbed temperature vector +- 500K
             for (int i = 0; i < nt; ++i)
-                tmps1[i] += rand_temp();
+                tmps1[i] += double(rand()) / RAND_MAX * 1000.0 - 500.0;
 
             // Set the state with the densities and perturbed temperatures
-            mix().setState(rhoi.data(), &tmps1[0], t_var_set);
+            mix.setState(rhoi.data(), &tmps1[0], t_var_set);
 
             // Check
-            mix().getEnergiesMass(species_energies.data());
-            mix().mixtureEnergies(mixture_energies.data());
+            mix.getEnergiesMass(species_energies.data());
+            mix.mixtureEnergies(mixture_energies.data());
 
             for (int i = 0; i < nt; ++i)
-                BOOST_CHECK_CLOSE(rho * mixture_energies[i],
-                    (rhoi*species_energies.segment(i*ns, ns)).sum(), tol);
-        }
-    }
+                CHECK(rho * mixture_energies[i] ==
+                    Approx((rhoi*species_energies.segment(i*ns, ns)).sum()));
+        )
+    )
 }
 
-// End of the energies test suite
-BOOST_AUTO_TEST_SUITE_END()
+
