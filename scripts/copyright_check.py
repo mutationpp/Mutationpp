@@ -1,5 +1,25 @@
+# Copyright 2017 von Karman Institute for Fluid Dynamics (VKI)
+#
+# This file is part of MUlticomponent Thermodynamic And Transport
+# properties for IONized gases in C++ (Mutation++) software package.
+#
+# Mutation++ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Mutation++ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Mutation++.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+
 # TODO: single-file check
-# TODO: test of Python and Fortran sources
+
 
 import os
 import argparse
@@ -35,7 +55,7 @@ class colors:
         cyan = '\033[36m'
         lightgrey = '\033[37m'
         darkgrey = '\033[90m'
-        lightred =' \033[91m'
+        lightred = ' \033[91m'
         lightgreen = '\033[92m'
         yellow = '\033[93m'
         lightblue = '\033[94m'
@@ -56,7 +76,8 @@ class colors:
 # Constants defining defaults for the copyright information and the copying statement
 YEAR = datetime.date.today().year
 NAME = "von Karman Institute for Fluid Dynamics (VKI)"
-STATEMENT_TEXT = """This file is part of MUlticomponent Thermodynamic And Transport
+STATEMENT_TEXT = \
+"""This file is part of MUlticomponent Thermodynamic And Transport
 properties for IONized gases in C++ (Mutation++) software package.
 
 Mutation++ is free software: you can redistribute it and/or modify
@@ -275,20 +296,22 @@ def main(args):
             statement_text = statement_file.read()
 
     # List files to be checked
-    matches = []
+    matches = set([])
     for path in path_list:
         for ext in ext_list:
             for root, dirnames, filenames in os.walk(path):
                 for filename in fnmatch.filter(filenames, '*{}'.format(ext)):
-                    matches.append(os.path.join(root, filename))
+                    matches.add(os.path.join(root, filename))
 
     # Check copyright information and correct files if requested
     for filename in matches:
             source_file_info = FileInfo(filename, statement_text)
-
             source_file_info.check()
 
-            if not source_file_info.check():
+            if args.faulty_only:
+                if not source_file_info.check():
+                    source_file_info.print_report(args.verbose)
+            else:
                 source_file_info.print_report(args.verbose)
 
             if args.update \
@@ -298,23 +321,25 @@ def main(args):
 
 
 if __name__ == "__main__":
-    default_extensions_list = ['.h', '.cpp']
-    default_paths_list = ['src', 'tests']
+    default_extensions_list = ['.h', '.cpp', '.py', '.f90']
+    default_paths_list = ['scripts', 'src', 'tests']
 
     parser = argparse.ArgumentParser(
-        description="""Check if the copyright information and headers are present and 
-                       appropriately formatted. By default, the program lists the names 
-                       of files with (1) missing, improperly formatted or outdated copyright 
-                       information or (2) incorrect or missing statement of copying 
-                       permission. A default copying statement text is provided, and it 
-                       can be overridden with the --statement option.""")
+        description="""Check if the copyright information and headers are present and
+                       appropriately formatted. The program reports the files with
+                       (1) missing, improperly formatted or outdated copyright information or
+                       (2) incorrect or missing statement of copying permission. A default
+                       copying statement text is provided, and it can be overridden with the
+                       --statement option.""")
 
     parser.add_argument("-b", "--backup", action="store_true",
                         help="Create backup if files are updated.")
     parser.add_argument("-e", "--extensions", default=" ".join(default_extensions_list),
                         help="File extension to match. Multiple extensions can be "
-                             "specified using quotes. "
+                             "specified using quotes."
                              "Defaults to \"{}\"".format(" ".join(default_extensions_list)))
+    parser.add_argument("-f", "--faulty-only", action="store_true",
+                        help="Only show faulty files when reporting.")
     parser.add_argument("-p", "--path", default=" ".join(default_paths_list),
                         help="List of paths where source files "
                              "should be inspected. Multiple paths can be "
