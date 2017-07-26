@@ -1,0 +1,12 @@
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
+
+#ifdef _WIN32
+#define COMPARISONS_FOLDER  "${CMAKE_CURRENT_SOURCE_DIR}\\comparisons\\"
+#define TEST_DATA_FOLDER    "${CMAKE_CURRENT_SOURCE_DIR}\\data\\"
+#else
+#define COMPARISONS_FOLDER  "${CMAKE_CURRENT_SOURCE_DIR}/comparisons/"
+#define TEST_DATA_FOLDER    "${CMAKE_CURRENT_SOURCE_DIR}/data/"
+#endif
+
+#endif // CONFIGURATION_H

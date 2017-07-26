@@ -1,9 +1,3 @@
-/**
- * @file test_diffusion_matrix.cpp
- *
- * @brief General tests on the Diffusion matrix provider.
- */
-
 /*
  * Copyright 2015 von Karman Institute for Fluid Dynamics (VKI)
  *
@@ -25,58 +19,81 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Stefan-Maxwell tests
-
-#include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
+#include "mutation++.h"
+#include "Configuration.h"
+#include "TestMacros.h"
+#include "catch.hpp"
 #include <Eigen/Dense>
+
+using namespace Mutation;
+using namespace Catch;
 using namespace Eigen;
 
-#include "MixtureFixtures.h"
+//==============================================================================
 
-// Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(diffusion_matrix, MixtureFromCommandLine)
-
-/*
- * Species diffusion fluxes must sum to zero.  This assumption depends on the
- * fact that the supplied driving forces also sum to zero so this must be done.
- */
-BOOST_AUTO_TEST_CASE(rhoiV_sum_is_zero)
+/// Helper class for diffusion matrix tests
+class DiffusionMatrixTests
 {
-    const int ns = mix().nSpecies();
+public:
+
+    /**
+     * Checks that species diffusion fluxes, computed by multiplying the
+     * diffusion matrix times species densities, sum to zero.
+     */
+    static void fluxesSumToZero(Mixture& mix);
+};
+
+//==============================================================================
+
+TEST_CASE
+(
+    "DiffusionMatrix yields diffusion fluxes which sum to zero",
+    "[transport][DiffusionMatrix]"
+)
+{
+    MIXTURE_LOOP(
+        //SECTION("Exact diffusion matrix") {
+        //    mix.setDiffusionMatrixAlgo("Exact");
+        //    fluxesSumToZero(mix);
+        //}
+
+        SECTION("Ramshaw diffusion matrix") {
+            mix.setDiffusionMatrixAlgo("Ramshaw");
+            DiffusionMatrixTests::fluxesSumToZero(mix);
+        }
+    )
+}
+
+//==============================================================================
+
+void DiffusionMatrixTests::fluxesSumToZero(Mixture& mix)
+{
+    const int ns = mix.nSpecies();
     VectorXd dx(ns);
     VectorXd Ji(ns);
 
-    const double tol = 1.0e-9;//10.0*std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon();
 
-    // Loop over range of pressures and temperatures
-    for (int ip = 0.0; ip < 10; ++ip) {
-        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
-        for (int it = 0.0; it < 10; ++it) {
-            double T = 1000.0*it + 1000.0;
+    // Test over several temperatures and pressures
+    EQUILIBRATE_LOOP(
+        // Compute temperature gradient as driving forces
+        mix.dXidT(dx.data());
 
-            // Set an equilibrium state and compute the driving forces for a
-            // temperature gradient in an equilibrium mixture
-            mix().equilibrate(T, P);
-            mix().dXidT(dx.data());
+        // Scale to make the temperature gradient larger and make sure they
+        // sum to zero
+        dx *= 1.0 / dx.array().abs().maxCoeff();
+        dx[0] -= dx.sum();
 
-            // Scale to make the temperature gradient larger and make sure they
-            // sum to zero
-            //dx *= 1000.0 / dx.array().abs().maxCoeff();
-            //dx[0] -= dx.sum();
+        // Compute the diffusion velocities
+        Ji = -mix.diffusionMatrix() * dx; // <- diffusion velocities
+        Ji.array() *= mix.density() * Map<const ArrayXd>(mix.Y(),ns);
 
-            // Compute the diffusion velocities
-            Ji = -mix().diffusionMatrix() * dx; // <- diffusion velocities
-            Ji.array() *= mix().density() * Map<const ArrayXd>(mix().Y(),ns);
-
-            // Make sure the sum is zero
-            BOOST_CHECK_SMALL(Ji.sum()/(Ji.norm()*ns), tol);
-        }
-    }
+        // Make sure the sum is zero
+        INFO("Ji = " << Ji);
+        INFO("dx = " << dx);
+        CHECK(Ji.sum() == Approx(0.0).margin(tol));
+    )
 }
 
-// End of the stefan_maxwell test suite
-BOOST_AUTO_TEST_SUITE_END()
+//==============================================================================
 

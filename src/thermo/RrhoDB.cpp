@@ -496,8 +496,7 @@ protected:
      */
     virtual void loadAvailableSpecies(std::list<Species>& species)
     {
-        IO::XmlDocument species_doc(
-            getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
+        IO::XmlDocument species_doc(databaseFileName("species.xml", "thermo"));
         IO::XmlElement::const_iterator species_iter = species_doc.root().begin();
         
         for ( ; species_iter != species_doc.root().end(); ++species_iter) {
@@ -529,8 +528,7 @@ protected:
         m_has_electron = (species()[0].type() == ELECTRON);
         
         // Load the RRHO models for each of the needed species
-        IO::XmlDocument species_doc(
-            getEnvironmentVariable("MPP_DATA_DIRECTORY")+"/thermo/species.xml");
+        IO::XmlDocument species_doc(databaseFileName("species.xml", "thermo"));
         
         vector<ParticleRRHO> rrhos;
         map<std::string, const ParticleRRHO*> to_expand;

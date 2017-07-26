@@ -1,9 +1,3 @@
-/**
- * @file test_set_state.cpp
- *
- * @brief General tests on the setState() function.
- */
-
 /*
  * Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
  *
@@ -25,17 +19,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE setState() tests
+#include "mutation++.h"
+#include "Configuration.h"
+#include "TestMacros.h"
+#include "catch.hpp"
+#include <Eigen/Dense>
 
-#include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-#include <boost/random.hpp>
-
-#include "MixtureFixtures.h"
-
-// Provide mixture fixture to all test cases in this suite
-BOOST_FIXTURE_TEST_SUITE(set_state, MixtureFromCommandLine)
+using namespace Mutation;
+using namespace Catch;
+using namespace Eigen;
 
 /*
  * All setState() functions (which take {rhoi, rho*Em} and {rhoi, Tm} as
@@ -43,74 +35,56 @@ BOOST_FIXTURE_TEST_SUITE(set_state, MixtureFromCommandLine)
  * This test makes sure that you can go from one to the other and get the same
  * result.
  */
-BOOST_AUTO_TEST_CASE(compare_T_from_E_from_T)
+TEST_CASE
+(
+    "setState() converts rho*Em to Tm and vice a versa",
+    "[thermodynamics]"
+)
 {
-    const int ns = mix().nSpecies();
-    const int nt = mix().nEnergyEqns();
     const int e_var_set = 0;
     const int t_var_set = 1;
 
-    // @TODO investigate why this tolerance needs to be so big
-    const double tol = 1.0e-8;//1.0e3*std::numeric_limits<double>::epsilon();
+    MIXTURE_LOOP
+    (
+        const int ns = mix.nSpecies();
+        const int nt = mix.nEnergyEqns();
 
-    std::vector<double> rhoi(ns);
-    std::vector<double> tmps1(nt);
-    std::vector<double> tmps2(nt);
+        VectorXd rhoi(ns);
+        VectorXd tmps1(nt);
+        VectorXd tmps2(nt);
 
-    // Setup random number generator
-    boost::mt19937 rng;
-    boost::uniform_real<> temp_range(-500.0, 500.0);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<> >
-        rand_temp(rng, temp_range);
-
-    // Loop over range of pressures and temperatures
-    for (int ip = 0.0; ip < 10; ++ip) {
-        double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));
-        for (int it = 0.0; it < 10; ++it) {
-            double T = 1000.0*it + 1000.0;
-
-            // Set an equilibrium state to make sure species temperatures and
-            // densities are possible
-            mix().equilibrate(T, P);
-
+        EQUILIBRATE_LOOP
+        (
             // Get the species densities
-            double rho = mix().density();
-            for (int i = 0; i < ns; ++i)
-                rhoi[i] = mix().Y()[i] * rho;
+            double rho = mix.density();
+            rhoi = rho * Eigen::Map<const Eigen::ArrayXd>(mix.Y(), ns);
 
-            // Get a nominal temperature vector
-            tmps1.assign(nt, T);
-
-            // Compute a randomly perturbed temperature vector
+            // Compute a randomly perturbed temperature vector T +- 500K
             for (int i = 0; i < nt; ++i)
-                tmps1[i] += rand_temp();
-
+                tmps1[i] = double(rand()) / RAND_MAX * 1000.0 - 500.0 + T;
 
             // Set the state with the densities and perturbed temperatures
-            mix().setState(&rhoi[0], &tmps1[0], t_var_set);
+            mix.setState(rhoi.data(), tmps1.data(), t_var_set);
 
             // Check that explicitly set properties still match
-            mix().getTemperatures(&tmps2[0]);
+            mix.getTemperatures(tmps2.data());
             for (int i = 0; i < nt; ++i)
-                BOOST_CHECK_CLOSE(tmps1[i], tmps2[i], tol);
-            BOOST_CHECK_CLOSE(rho, mix().density(), tol);
+                CHECK(tmps1[i] == Approx(tmps2[i]));
+            CHECK(rho == Approx(mix.density()));
 
             // Get the energy vector
-            mix().mixtureEnergies(&tmps2[0]);
-            for (int i = 0; i < nt; ++i)
-                tmps2[i] *= rho;
+            mix.mixtureEnergies(tmps2.data());
+            tmps2 *= rho;
 
             // Set the state of the mixture based on the energies
-            mix().setState(&rhoi[0], &tmps2[0], e_var_set);
+            mix.setState(rhoi.data(), tmps2.data(), e_var_set);
 
             // Check that implicitly set properties still match
-            mix().getTemperatures(&tmps2[0]);
+            mix.getTemperatures(tmps2.data());
             for (int i = 0; i < nt; ++i)
-                BOOST_CHECK_CLOSE(tmps1[i], tmps2[i], tol);
-            BOOST_CHECK_CLOSE(rho, mix().density(), tol);
-        }
-    }
+                CHECK(tmps1[i] ==  Approx(tmps2[i]));
+            CHECK(rho == Approx(mix.density()));
+        )
+    )
 }
 
-// End of the set_state test suite
-BOOST_AUTO_TEST_SUITE_END()

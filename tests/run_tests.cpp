@@ -1,11 +1,5 @@
-/**
- * @file test_dXidT.cpp
- *
- * @brief General tests on the dXidT function.
- */
-
 /*
- * Copyright 2015 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -25,35 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "mutation++.h"
-#include "Configuration.h"
-#include "TestMacros.h"
+// Single source file which runs all tests
+#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include <Eigen/Dense>
-
-using namespace Mutation;
-using namespace Catch;
-using namespace Eigen;
-
-
-TEST_CASE
-(
-    "Equilibrium mole fractions derivatives sum to zero",
-    "[equilibrium][thermodynamics]"
-)
-{
-    const double tol = std::numeric_limits<double>::epsilon();
-
-    MIXTURE_LOOP
-    (
-        VectorXd dx(mix.nSpecies());
-
-        EQUILIBRATE_LOOP
-        (
-            mix.dXidT(dx.data());
-            INFO("dx = " << dx);
-            REQUIRE(dx.sum() == Approx(0.0).margin(tol));
-        )
-    )
-}
-
