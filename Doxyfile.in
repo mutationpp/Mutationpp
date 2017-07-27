@@ -765,10 +765,12 @@ WARN_LOGFILE           = doxygen_log.txt
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = @PROJECT_SOURCE_DIR@/src \
+                         @PROJECT_SOURCE_DIR@/tests \
                          @PROJECT_SOURCE_DIR@/docs/manual/mainpage.h \
                          @PROJECT_SOURCE_DIR@/docs/manual/install.h \
                          @PROJECT_SOURCE_DIR@/docs/manual/input_files.h \
                          @PROJECT_SOURCE_DIR@/docs/manual/state_models.h \
+                         @PROJECT_SOURCE_DIR@/docs/manual/tests.h \
                          @PROJECT_SOURCE_DIR@/docs/manual/tools.h \
                          @PROJECT_SOURCE_DIR@/examples
 
@@ -920,7 +922,7 @@ USE_MDFILE_AS_MAINPAGE =
 # also VERBATIM_HEADERS is set to NO.
 # The default value is: NO.
 
-SOURCE_BROWSER         = NO
+SOURCE_BROWSER         = YES
 
 # Setting the INLINE_SOURCES tag to YES will include the body of functions,
 # classes and enums directly into the documentation.
@@ -2046,7 +2048,7 @@ PERL_PATH              = /usr/bin/perl
 # powerful graphs.
 # The default value is: YES.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see:
@@ -2128,7 +2130,7 @@ CLASS_GRAPH            = NO
 # The default value is: YES.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-COLLABORATION_GRAPH    = YES
+COLLABORATION_GRAPH    = NO
 
 # If the GROUP_GRAPHS tag is set to YES then doxygen will generate a graph for
 # groups, showing the direct groups dependencies.
@@ -2173,7 +2175,7 @@ TEMPLATE_RELATIONS     = YES
 # The default value is: YES.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-INCLUDE_GRAPH          = YES
+INCLUDE_GRAPH          = NO
 
 # If the INCLUDED_BY_GRAPH, ENABLE_PREPROCESSING and SEARCH_INCLUDES tags are
 # set to YES then doxygen will generate a graph for each documented file showing
