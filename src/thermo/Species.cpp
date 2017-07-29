@@ -26,7 +26,9 @@
  */
 
 #include "Species.h"
+#include "SpeciesNameFSM.h"
 #include "Utilities.h"
+#include <algorithm>
 
 using namespace std;
 using namespace Mutation::Utilities;
@@ -104,6 +106,30 @@ Species::Species(const Species& to_copy, const size_t level) :
     stringstream ss;
     ss << "(" << m_level << ")";
     m_name += ss.str();
+}
+
+//==============================================================================
+
+Species::Species(
+    const std::string& name, const PhaseType phase) :
+    m_name(name),
+    m_ground_state_name(name),
+    m_mw(0.0),
+    m_charge(0),
+    m_phase(phase),
+    m_type(ATOM),
+    m_level(0)
+{
+    // Parse the stoichiometry from the name
+    SpeciesNameFSM sm;
+    if (!sm.parse(name))
+        throw BadSpeciesFormat();
+
+    m_stoichiometry.assign(
+        sm.stoichiometry().begin(), sm.stoichiometry().end());
+
+    // Initialize everything else from the stoichiometry
+    initDataFromStoichiometry();
 }
 
 //==============================================================================
@@ -190,12 +216,8 @@ void Species::initDataFromStoichiometry()
         for ( ; el != Element::database().end(); ++el)
             if (el->name() == iter->first) break;
 
-        if (el == Element::database().end()) {
-            std::cout << "Error trying to create species " << m_name
-                      << " when element " << iter->first
-                      << " does not exist in the database!" << std::endl;
-            exit(1);
-        }
+        if (el == Element::database().end())
+            throw ElementDoesNotExist();
 
         m_mw += iter->second * el->atomicMass();
         m_charge += iter->second * el->charge();
@@ -204,212 +226,6 @@ void Species::initDataFromStoichiometry()
     // Determine the species type
     int atoms = nAtoms();
     m_type = (atoms == 0 ? ELECTRON : (atoms == 1 ? ATOM : MOLECULE));
-}
-
-//==============================================================================
-
-void Species::checkStoichiometryNameMatching(
-    const string& name, map<string, int>& stoich, 
-    const vector<Element>& elements)
-{
-    // First generate a guess of the stoichiometry based on the name of the 
-    // species.  We will assume that element names are no more than 2 characters
-    // long and that the species name is in "standard" form which is AaBbCc+
-    // where the upper case letters represent element names, lower case letters
-    // are the optional stoichiometric numbers for the element, and the '+'
-    // represents either a '+' or '-' character which represents minus or plus
-    // one electron respectively.  If the name does not fit this form, then we
-    // forego the check.
-    
-    // Step 1: Check to see if the name is in standard form
-    bool standard = isalpha(name[0]);
-    int i = 1;
-    
-    if (name.length() > 1) {
-        for ( ; i < name.length()-1; ++i)
-            standard = standard && isalnum(name[i]);
-        standard = 
-            standard && (isalnum(name[i]) || name[i] == '+' || name[i] == '-');
-    }
-        
-    if (!standard) 
-        return;
-    
-    // Step 2: Now we know that the name is in standard form, parse it to get
-    // the stoichiometry
-    int length = name.length();
-    map<string, int> guess;
-    
-    // Handle the special case of the electron
-    if (name == "e-") {
-        guess["e-"] = 1;
-        length = 0;
-    } else if (name[length-1] == '+') {
-        guess["e-"] = -1;
-        length--;
-    } else if (name[length-1] == '-') {
-        guess["e-"] = 1;
-        length--;
-    }
-    
-    // At this point we know that the name must be AaBbCc, use finite-state
-    // machine to parse    
-    enum {
-        first_char,
-        second_char,
-        number
-    } state = first_char;
-
-    string element;
-    string digits;
-    bool found;
-    
-    i = 0;
-    while (i < length) {
-        // Decide action
-        switch (state)
-        {
-            case first_char:
-                element = name[i];
-                if (i == length - 1) {
-                    found = false;
-                    for (int j = 0; j < elements.size(); ++j)
-                        if ((found = (elements[j].name() == element))) break;
-                    if (found)
-                        guess[element] = guess[element] + 1;
-                    else
-                        return;
-                } else {
-                    state = second_char;
-                }
-                break;
-            
-            case second_char:
-                // Is the second character an alphabetic letter?
-                if (isalpha(name[i])) {
-                    element += name[i];
-                    // If so check and see if the combined first and second
-                    // characters form an element name
-                    found = false;
-                    for (int j = 0; j < elements.size(); ++j)
-                        if ((found = (elements[j].name() == element))) break;
-                    if (found) {
-                        // If it does, then the next character is either part of 
-                        // the stoichiometry coefficient or beginning of a new 
-                        // element name
-                        if (i == length - 1)
-                            guess[element] = guess[element] + 1;
-                        else
-                            state = number;
-                    } else {
-                        // Otherwise we assume that the first character is an
-                        // element and the coefficient is 1 (if not, then the
-                        // name is not in standard form so give up)
-                        element = element[0];
-                        found = false;
-                        for (int j = 0; j < elements.size(); ++j)
-                            if ((found = (elements[j].name() == element))) break;
-                        if (found) {
-                            // Add this element with a stoichiometry coefficient
-                            // defaulting to 1
-                            guess[element] = guess[element] + 1;
-                            element = name[i];
-                            // If we are on the last character then we should
-                            // also add this element to the list
-                            if (i == length - 1) {
-                                found = false;
-                                for (int j = 0; j < elements.size(); ++j)
-                                    if ((found = (elements[j].name() == element)))
-                                        break;
-                                if (found)
-                                    guess[element] = guess[element] + 1;
-                                else
-                                    return;
-                            } else {                         
-                                state = second_char;
-                            }                        
-                        } else {
-                            return;
-                        }
-                    }
-                // Otherwise it has to be a number
-                } else {
-                    digits = name[i];
-                    
-                    if (i == length - 1) {
-                        found = false;
-                        for (int j = 0; j < elements.size(); ++j)
-                            if ((found = (elements[j].name() == element))) break;
-                        if (found)
-                            guess[element] = guess[element] + 
-                                atoi(digits.c_str());
-                        else
-                            return;
-                    } else {
-                        state = number;
-                    }
-                }
-                break;
-            
-            case number:
-                if (isalpha(name[i])) {
-                    found = false;
-                    for (int j = 0; j < elements.size(); ++j)
-                        if ((found = (elements[j].name() == element))) break;
-                    
-                    if (found)
-                        guess[element] = guess[element] + 
-                            std::max(atoi(digits.c_str()), 1);
-                    else
-                        return;
-                    
-                    element = name[i];
-                    if (i == length - 1) {
-                        found = false;
-                        for (int j = 0; j < elements.size(); ++j)
-                            if ((found = (elements[j].name() == element))) break;
-                        if (found)
-                            guess[element] = guess[element] + 1;
-                    } else {                        
-                        state = second_char;
-                    }
-                } else {
-                    digits += name[i];
-                    
-                    if (i == length - 1) {
-                        found = false;
-                        for (int j = 0; j < elements.size(); ++j)
-                            if ((found = (elements[j].name() == element))) break;
-                        if (found)
-                            guess[element] = guess[element] + 
-                                atoi(digits.c_str());
-                        else
-                            return;                            
-                    }
-                }
-                break;
-        }
-        
-        // Update the position
-        i++;
-    }
-    
-    // Now compare the guessed stoichiometry with the given stoichiometry
-    bool match ;
-    map<string, int>::iterator iter;
-    
-    if (guess.size() > stoich.size()) {
-        for (iter = guess.begin(); iter != guess.end(); ++iter)
-            if (!(match = (stoich[iter->first] == iter->second))) break;
-    } else {
-        for (iter = stoich.begin(); iter != stoich.end(); ++iter)
-            if (!(match = (guess[iter->first] == iter->second))) break;
-    }
-    
-    if (!match) {
-        cerr << "Warning: species \"" << name << "\" stoichiometry does "
-             << "not match species name." << endl;
-    }
 }
 
 //==============================================================================

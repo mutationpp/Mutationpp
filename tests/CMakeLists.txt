@@ -32,8 +32,10 @@ set(test_sources
     test_energies.cpp
     test_mixtures.cpp
     test_set_state.cpp
+    test_species.cpp
     test_stefan_maxwell.cpp
     test_thermal_diff_ratios.cpp
+    test_thermodb.cpp
     test_transfer_source.cpp
     test_wdot.cpp
 )

@@ -125,19 +125,15 @@ void SpeciesListDescriptor::separateSpeciesNames(std::string descriptor)
                 name += c;
             }
         } else {
-            // All white-space should be ignored
             switch(c) {
-            case ' ':
-            case '\n':
-            case '\r':
-            case '\t':
-            case '\f':
-            case '\v':
+            // All white-space should be ignored
+            case ' ': case '\n': case '\r': case '\t': case '\f': case '\v':
                 if (name.length() > 0) {
                     m_species_names.push_back(name);
                     name = "";
                 }
                 break;
+            // Cannot include quotation mark in a name
             case '\"':
                 if (name.length() > 0) {
                     std::cerr << "Error, cannot include quotation mark in ";
@@ -193,54 +189,76 @@ bool SpeciesListDescriptor::matches(const Species& species) const
 
 //==============================================================================
 
+/// Predicate returns true if species name equals given name.
+struct NameEquals {
+    NameEquals(const std::string& str) : name(str) { }
+    bool operator()(const Species& s) { return s.name() == name; }
+    std::string name;
+};
+
+/// Predicate returns true if species ground state name equals given name.
+struct GroundStateNameEquals {
+    GroundStateNameEquals(const std::string& str) : name(str) { }
+    bool operator()(const Species& s) { return s.groundStateName() == name; }
+    std::string name;
+};
+
+/// Predicate returns true if species type equals given type.
+struct TypeEquals {
+    TypeEquals(ParticleType t) : type(t) { }
+    bool operator()(const Species& s) { return s.type() == type; }
+    ParticleType type;
+};
+
+/// Predicate returns true if species is condensed.
+struct IsCondensed {
+    bool operator()(const Species& s) { return s.phase() != GAS; }
+};
+
 void SpeciesListDescriptor::order(
     std::list<Species>& input, std::vector<Species>& output,
     std::vector<std::string>& missing) const
 {
-    // Prepare memory for the ordered list
-    output.resize(input.size());
+    std::list<Species> ordered_list;
     
     int index = 0;
-    std::list<Species>::iterator species_iter;
+    std::list<Species>::iterator it;
     
     // First order all of the species that are explicitly listed
     for (std::size_t i = 0; i < m_species_names.size(); ++i) {
         const std::string& name = m_species_names[i];
         
-        if (m_expand_states.count(name) == 0) {
-            species_iter = input.begin();
-            while (species_iter != input.end() && species_iter->name() != name)
-                species_iter++;
+        // Don't expand name
+        if (m_expand_states.find(name) == m_expand_states.end()) {
+            it = std::find_if(input.begin(), input.end(), NameEquals(name));
             
-            if (species_iter == input.end())
+            if (it == input.end())
                 missing.push_back(name);
             else {
-                output[index++] = *species_iter;
-                input.erase(species_iter);
+                ordered_list.push_back(*it);
+                input.erase(it);
             }
+        // Expand name
         } else {
-            species_iter = input.begin();
-            while (species_iter->groundStateName() != name &&
-                   species_iter != input.end())
-                species_iter++;
+            it = std::find_if(
+                input.begin(), input.end(), GroundStateNameEquals(name));
             
-            std::list<Species>::iterator lowest_level = species_iter;
+            std::list<Species>::iterator lowest_level = it;
             while (lowest_level != input.end()) {
-                while (species_iter != input.end()) {
-                    if (species_iter->groundStateName() == name &&
-                        species_iter->level() < lowest_level->level())
-                        lowest_level = species_iter;
-                    species_iter++;
+                it = find_if(next(it), input.end(), GroundStateNameEquals(name));
+                while (it != input.end()) {
+                    if (it->level() < lowest_level->level())
+                        lowest_level = it;
+                    it = find_if(
+                        next(it), input.end(), GroundStateNameEquals(name));
                 }
             
-                output[index++] = *lowest_level;
+                ordered_list.push_back(*lowest_level);
                 input.erase(lowest_level);
                 
-                species_iter = input.begin();
-                while (species_iter != input.end() &&
-                       species_iter->groundStateName() != name)
-                    species_iter++;
-                lowest_level = species_iter;
+                it = std::find_if(
+                    input.begin(), input.end(), GroundStateNameEquals(name));
+                lowest_level = it;
             }
         }
     }
@@ -250,34 +268,28 @@ void SpeciesListDescriptor::order(
         return;
     
     // Now all that remains are the species that were implicitly defined
-    species_iter = input.begin();
-    while (species_iter != input.end()) {
-        output[index++] = *species_iter;
-        species_iter = input.erase(species_iter);
-    }
+    ordered_list.insert(ordered_list.end(), input.begin(), input.end());
+    input.clear();
     
     // Place the electron first
-    for (index = 0; index < output.size(); ++index)
-        if (output[index].type() == ELECTRON) break;
+    it = find_if(
+         ordered_list.begin(), ordered_list.end(), TypeEquals(ELECTRON));
 
-    if (index < output.size() && index != 0) {
-        const Species electron = output[index];
-        while (index > 0) {
-            output[index] = output[index-1];
-            index--;
-        }
-        output[0] = electron;
-    }
+    if (it != ordered_list.begin() && it != ordered_list.end())
+        ordered_list.splice(ordered_list.begin(), ordered_list, it);
 
     // Move all condensed species to the end of the list
-    int end;
-    index = end = output.size()-1;
+    int ncond = count_if(
+        ordered_list.begin(), ordered_list.end(), IsCondensed());
 
-    while (index > -1) {
-        if (output[index].phase() != GAS)
-            swap(output[index], output[end--]);
-        index--;
+    while (ncond-- > 0) {
+        it = std::find_if(
+            ordered_list.begin(), ordered_list.end(), IsCondensed());
+        ordered_list.splice(ordered_list.end(), ordered_list, it);
     }
+
+    // Finally copy the list to the output vector
+    output.assign(ordered_list.begin(), ordered_list.end());
 }
 
 //==============================================================================
