@@ -41,7 +41,7 @@
 
     <!-- Global options -->
     <global-options>
-        <tabulate Tmin="100" Tmax="50000" dT="100" />
+        <!--<tabulate Tmin="100" Tmax="50000" dT="100" />-->
         <integral type="table" interpolator="Linear" clip="true"/>
     </global-options>
 
@@ -103,25 +103,37 @@
 
     <!-- Dipole Polarizabilities -->
     <dipole-polarizabilities units="A-A-A">
-        <species name="C"   value="1.76"   ref="Wright2007"/>
-        <species name="C2"  value="37.64"  ref="Jaffe"/>
-        <species name="C2H" value="8.41"   ref="Jaffe"/>
-        <species name="C3"  value="17.02"  ref="Jaffe"/>
-        <species name="CN"  value="2.00"   ref="Wright2007"/>
-        <species name="CO"  value="1.95"   ref="Wright2007"/>
-        <species name="CO2" value="2.91"   ref="Wright2007"/>
-        <species name="H"   value="0.6668" ref="Bruno2010"/>
-        <species name="H-"  value="27.0"   ref="Bruno2010"/>
-        <species name="H2"  value="0.81"   ref="Bruno2010"/>
-        <species name="H2+" value="0.424"  ref="Bruno2010"/>
-        <species name="H3+" value="0.4663" ref="Bruno2010"/>
-        <species name="He"  value="0.205"  ref="Bruno2010"/>
-        <species name="He+" value="0.03"   ref="Bruno2010"/>
-        <species name="N"   value="1.10"   ref="Wright2007"/>
-        <species name="N2"  value="1.74"   ref="Wright2007"/>
-        <species name="NO"  value="1.70"   ref="Wright2007"/>
-        <species name="O"   value="0.80"   ref="Wright2007"/>
-        <species name="O2"  value="1.58"   ref="Wright2007"/>
+        <species name="C"    value="1.76"   ref="Wright2007"/>
+        <species name="C2"   value="37.64"  ref="Jaffe"/>
+        <species name="C2H"  value="8.41"   ref="Jaffe"/>
+        <species name="C2H2" value="3.63"   ref="Andre2010"/>
+        <species name="C3"   value="17.02"  ref="Jaffe"/>
+        <species name="CH"   value="2.27"   ref="Andre2010"/>
+        <species name="CH2"  value="2.94"   ref="Andre2010"/>
+        <species name="CH2O" value="3.74"   ref="Andre2010"/>
+        <species name="CH3"  value="2.76"   ref="Andre2010"/>
+        <species name="CH4"  value="2.493"  ref="Andre2010"/>
+        <species name="CN"   value="2.00"   ref="Wright2007"/>
+        <species name="CO"   value="1.95"   ref="Wright2007"/>
+        <species name="CO2"  value="2.91"   ref="Wright2007"/>
+        <species name="H"    value="0.6668" ref="Bruno2010"/>
+        <species name="H-"   value="27.0"   ref="Bruno2010"/>
+        <species name="H2"   value="0.81"   ref="Bruno2010"/>
+        <species name="H2+"  value="0.424"  ref="Bruno2010"/>
+        <species name="H2O"  value="1.45"   ref="Andre2010"/>
+        <species name="H3+"  value="0.4663" ref="Bruno2010"/>
+        <species name="HCN"  value="2.525"  ref="Andre2010"/>
+        <species name="He"   value="0.205"  ref="Bruno2010"/>
+        <species name="He+"  value="0.03"   ref="Bruno2010"/>
+        <species name="N"    value="1.10"   ref="Wright2007"/>
+        <species name="N2"   value="1.74"   ref="Wright2007"/>
+        <species name="N2O"  value="3.03"   ref="Andre2010"/>
+        <species name="NO"   value="1.70"   ref="Wright2007"/>
+        <species name="NO2"  value="3.02"   ref="Andre2010"/>
+        <species name="O"    value="0.80"   ref="Wright2007"/>
+        <species name="O2"   value="1.58"   ref="Wright2007"/>
+        <species name="O3"   value="3.21"   ref="Andre2010"/>
+        <species name="OH"   value="1.47"   ref="Andre2010"/>
     </dipole-polarizabilities>
     
     <!-- Explicitly defined collision pairs -->

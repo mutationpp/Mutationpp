@@ -132,6 +132,10 @@ if (BUILD_DOCUMENTATION)
     add_custom_target (docs
         COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
         SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
+    add_custom_target(test_docs
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMAND python scripts/test_docs.py)
+    add_dependencies(docs test_docs)
 endif()
 
 

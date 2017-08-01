@@ -1,8 +1,10 @@
 #ifndef TEST_MACROS_H
 #define TEST_MACROS_H
 
-// Loops over mixtures, loads each mixture and runs __CODE__ in Catch SECTION
-// which is the name of the mixture.
+/**
+ * Loops over mixtures, loads each mixture and runs __CODE__ in Catch SECTION
+ * which is the name of the mixture.
+ */
 #define MIXTURE_LOOP(__CODE__)\
 std::string _names_[10] = {\
     "air5_RRHO_ChemNonEq1T",\
@@ -25,9 +27,11 @@ for (int i = 0; i < 10; ++i) {\
 }
 
 
-// Loops over 10 temperatures and 10 pressures between 1000-10000 K (linear) and
-// 10-100000 Pa (log) and equilibrates the mixture at each (T,P) combination
-// before running the given code snippet.
+/**
+ * Loops over 10 temperatures and 10 pressures between 1000-10000 K (linear) and
+ * 10-100000 Pa (log) and equilibrates the mixture at each (T,P) combination
+ * before running the given code snippet.
+ */
 #define EQUILIBRATE_LOOP(__CODE__)\
 for (int ip = 0.0; ip < 10; ++ip) {\
     double P = std::exp(ip/9.0*std::log(100000.0)+std::log(10.0));\
