@@ -1,56 +1,45 @@
-#!/usr/bin/env python
+# Copyright 2017 von Karman Institute for Fluid Dynamics (VKI)
+#
+# This file is part of MUlticomponent Thermodynamic And Transport
+# properties for IONized gases in C++ (Mutation++) software package.
+#
+# Mutation++ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Mutation++ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Mutation++.  If not, see
+# <http://www.gnu.org/licenses/>.
+
 
 import argparse
 import collections
 import fnmatch
 import os
 import re
-
-class colors:
-    """Colors class providing easy access to ANSI escape sequences.
-
-     The generic style formatters bold, underline, reverse, etc. are defined.
-     A special reset formatter resets any applied style or coloring.
-
-    Background and foreground colors are nested in dedicated bg and fg classes.
-    """
-    reset = '\033[0m'
-    bold = '\033[01m'
-    disable = '\033[02m'
-    underline = '\033[04m'
-    reverse = '\033[07m'
-    strikethrough = '\033[09m'
-    invisible = '\033[08m'
-
-    class fg:
-        black = '\033[30m'
-        red = '\033[31m'
-        green = '\033[32m'
-        orange = '\033[33m'
-        blue = '\033[34m'
-        purple = '\033[35m'
-        cyan = '\033[36m'
-        lightgrey = '\033[37m'
-        darkgrey = '\033[90m'
-        lightred = ' \033[91m'
-        lightgreen = '\033[92m'
-        yellow = '\033[93m'
-        lightblue = '\033[94m'
-        pink = '\033[95m'
-        lightcyan = '\033[96m'
-
-    class bg:
-        black = '\033[40m'
-        red = '\033[41m'
-        green = '\033[42m'
-        orange = '\033[43m'
-        blue = '\033[44m'
-        purple = '\033[45m'
-        cyan = '\033[46m'
-        lightgrey = '\033[47m'
+from utils import colors
 
 class TestCase:
-    def __init__(self, name, tags, comment, body, file_name, line):  
+    """ Simple class representing a single test case. 
+    """
+    
+    def __init__(self, name, tags, comment, body, file_name, line):
+        """ Default constructor.
+        
+        :param name: Name of the test case.
+        :param tags: Tags this test case belongs to.
+        :param comment: Comment associated with the test case.
+        :param body: The body (or code) implementing the test case.
+        :param file_name: The name of the file this test case was defined in.
+        :param line: The line number this test case was defined at. 
+        """
+         
         self.name = name.strip()
         self.tags = re.findall(r'\[(.*?)\]', tags)
         self.comment = comment.strip()
@@ -59,10 +48,14 @@ class TestCase:
         self.line = line
 
     def print_case(self):
+        """ Simply prints test case parameters to the standard output.  Useful for 
+        debugging. 
+        """
+        
         print '------------'
         print 'file: ' + self.file_name
         print 'line: ' + str(self.line)
-        if self.comment != None:
+        if self.comment is None:
             print self.comment
         print 'TEST_CASE'
         print '('
@@ -72,65 +65,112 @@ class TestCase:
         print '{'
         print '    ' + self.body
         print '}'
+    
+    def generate_doxygen_page(self, link_name):
+        """ Generates a doxygen style manual page for this test case.
+        
+        :param page_name: The name of the link associated with this page. 
+        """
+        
+        # Header
+        doxygen_page = '/**\n'
+        doxygen_page += '\\page ' + link_name + ' Test Case: ' + self.name + '\n'
+        doxygen_page += self.file_name + ':' + str(self.line) + '\n'
+        
+        # Comment
+        if self.comment != "":
+            doxygen_page += '\\section Description\n'
+            doxygen_page += self.comment + '\n'
+        
+        # Body
+        if self.body != "":
+            doxygen_page += '\\section Code\n'
+            doxygen_page += '\\code{.cpp}\n'
+            doxygen_page += self.body + '\n'
+            doxygen_page += '\\endcode\n'
+        
+        # Tail
+        doxygen_page += '*/\n'
+        
+        return doxygen_page
 
 
-def find_enclosed_text(string, start = 0, open = '{', close = '}'):
-    pos = start = string.find(open, start) + 1
+def get_nested_block(string, start_index = 0, open_char = '{', close_char = '}'):
+    """ Extracts the first text block in the string which is between the open and close 
+    characters, accounting for nesting.
+    
+    :param string: The string to search.
+    :param start: Starting location in the string.
+    :param open: The character which opens the nested block.
+    :param close: The character which closes the nested block. 
+    """
+    
+    pos = start_index = string.find(open_char, start_index) + 1
     level = 1
     while True:
-        if string[pos] == close:
+        if string[pos] == close_char:
             level = level - 1
             if level == 0:
                 break
         else:
-            if string[pos] == open:
+            if string[pos] == open_char:
                 level = level + 1
         pos = pos + 1
         
-    return string[start:pos]
+    return string[start_index:pos]
     
 def extract_test_cases(file_name):
     """ Opens the given file and extracts all of the Catch TEST_CASEs in the file, if they
-        exist.  
+    exist.  A list of the test cases in the file is returned.
         
-        :param file_name: The name of the file."""
+    :param file_name: The name of the file.
+    """
     
     with open(file_name, 'r') as f:
         text = f.read()
     
-    regex = re.compile(r'(?:/\*((?:\*(?!/)|[^*])*)\*/\n?)?' + r'[ \t]*TEST_CASE[^(]*\([^"]*"([^"]+)"[^,]*,[^"]*"([^"]+)"[^)]*\)')
-    cases = []
+    regex = re.compile(
+        # Comment
+        r'(?:/\*((?:\*(?!/)|[^*])*)\*/\n?)?' + 
+        # TEST_CASE structure
+        r'[ \t]*TEST_CASE[^(]*\([^"]*"([^"]+)"[^,]*,[^"]*"([^"]+)"[^)]*\)')
+        
+    test_cases = []
     for m in regex.finditer(text):
         comment = m.group(1)
-        if comment == None:
+        if comment is None:
             comment = ""
-        cases.append(
+        test_cases.append(
             TestCase(
                 m.group(2), 
                 m.group(3), 
                 comment, 
-                find_enclosed_text(text, m.end()), 
+                get_nested_block(text, m.end()), 
                 file_name,
                 text.count('\n',0,m.start()) + comment.count('\n') + 1
             )
         )
     
-    return cases
+    return test_cases
 
 
-def generate_output(filename, cases):
-    """ Generates the output file given the test cases. """
+def generate_doxygen_pages(file_name, test_cases):
+    """ Generates the doxygen formatted manual pages related to the tests. 
+    
+    :param file_name: Name of the file where the output is generated.
+    :param cases: List of TestCase objects. 
+    """
     
     # Sort the tests
-    cases.sort(key=lambda c: c.name.lower())
+    test_cases.sort(key=lambda c: c.name.lower())
     
     # Create a dictionary of tests linked to tags
     tags = collections.defaultdict(list)
-    for i, c in enumerate(cases):
+    for i, c in enumerate(test_cases):
         for t in c.tags:
             tags[t].append((i, c.name))
     
-    with open(filename, 'w') as f:
+    with open(file_name, 'w') as f:
         f.write('/**\n')
         f.write('\\page tests Test Cases\n')
         
@@ -142,7 +182,7 @@ def generate_output(filename, cases):
     
         # Global list of tests
         f.write('\\section Tests\n')
-        for i, c in enumerate(cases):
+        for i, c in enumerate(test_cases):
             f.write('- [' + c.name + '](\\ref test_case_' + str(i) + ')\n')
         f.write('*/\n')
         f.write('\n')
@@ -157,26 +197,14 @@ def generate_output(filename, cases):
             f.write('\n')
         
         # Single page for each test
-        for i, c in enumerate(cases):
-            f.write('/**\n')
-            f.write('\\page test_case_' + str(i) + ' Test Case: ' + c.name + '\n')
-            f.write(c.file_name + ':' + str(c.line) + '\n')
-            if c.comment != "":
-                f.write('\\section Description\n')
-                f.write(c.comment + '\n')
-            if c.body != "":
-                f.write('\\section Code\n')
-                f.write('\\code{.cpp}\n')
-                f.write(c.body + '\n')
-                f.write('\\endcode\n')
-            f.write('*/\n')
+        for i, c in enumerate(test_cases):
+            f.write(c.generate_doxygen_page('test_case_' + str(i)))
             f.write('\n')
         
         
-
-
 def main(args):
-    """ Run the main tasks of the script. """
+    """ Run the main tasks of the script. 
+    """
     
     path_list = args.path.split()
     ext_list = args.extensions.split()
@@ -185,31 +213,28 @@ def main(args):
     matches = set([])
     for path in path_list:
         for ext in ext_list:
-            for root, dirnames, filenames in os.walk(path):
-                for filename in fnmatch.filter(filenames, '*{}'.format(ext)):
-                    matches.add(os.path.join(root, filename))
+            for root, dirnames, file_names in os.walk(path):
+                for file_name in fnmatch.filter(file_names, '*{}'.format(ext)):
+                    matches.add(os.path.join(root, file_name))
 
     # Extract the test case info from each file
     all_cases = []
-    for filename in matches:
-        cases = extract_test_cases(filename)
+    for file_name in matches:
+        cases = extract_test_cases(file_name)
         all_cases.extend(cases)
     
         if args.verbose:
-            print colors.fg.green + filename + colors.reset
+            print colors.fg.green + file_name + colors.reset
             for c in cases:
                 print '    line ' + str(c.line) + ': ' + c.name
                 print '    ' + ' '.join(c.tags)
                 
     # Generate the output
-    generate_output(args.output, all_cases)
+    generate_doxygen_pages(args.output, all_cases)
 
 
-
-#
-# Main entry point.  Parse the command line options.
-#
-if __name__ == "__main__":
+# Entry point for the program.  Parse command line options and run script.
+if __name__ == "__main__":    
     default_extensions_list = ['.cpp']
     default_paths_list = ['tests']
     default_output = 'docs/manual/tests.h'
