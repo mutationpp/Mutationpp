@@ -278,7 +278,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    default_extensions_list = ['.h', '.cpp', '.py', '.f90']
+    default_extensions_list = ['.h', '.cpp', '.py', '.f90', 'CMakeLists.txt']
     default_paths_list = ['scripts', 'src', 'tests']
 
     parser = argparse.ArgumentParser(
