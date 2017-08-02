@@ -95,7 +95,7 @@ protected:
         }
         
         // Stoichiometry
-        std::vector< std::pair<std::string, int> > stoich; 
+        Species::StoichList stoich;
         for (size_t i = 24; i < 40; i += 5) {
             // Element name
             std::string el = Utilities::String::trim(line.substr(i,2));
@@ -110,7 +110,7 @@ protected:
             
             // Number of atoms
             int n = (int)std::atof(line.substr(i+2,3).c_str());
-            stoich.push_back(make_pair(el, n));
+            stoich(el, n);
         }
         
         // Skip the next 3 lines

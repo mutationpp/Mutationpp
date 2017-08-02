@@ -32,6 +32,7 @@
 #include <string>
 //#include <set>
 #include <vector>
+#include <exception>
 
 // Forward declaration of the XmlElement Class
 namespace Mutation {
@@ -43,8 +44,6 @@ namespace IO {
 
 namespace Mutation {
     namespace Thermodynamics {
-    
-//class ParticleRRHO;
 
 /**
  * Responsible for loading element data from the elements.xml file.
@@ -118,16 +117,48 @@ class Species
 {
 public:
 
-    typedef std::vector< std::pair<std::string, int> > StoichList;
+    /// Exception thrown when species name is not formatted properly.
+    class BadSpeciesFormat : public std::runtime_error
+    {
+    public:
+        BadSpeciesFormat() :
+            std::runtime_error("Species name is not formatted correctly")
+        { }
+    };
+
+    /// Exception thrown when an element doesn't exist in the database.
+    class ElementDoesNotExist : public std::runtime_error
+    {
+    public:
+        ElementDoesNotExist() :
+            std::runtime_error("Element name does not exist")
+        { }
+    };
+
+    /// Extends a simple vector to act as a stoichiometry map.
+    class StoichList : public std::vector< std::pair<std::string, int> >
+    {
+    public:
+        StoichList& operator()(const std::string& e, int n) {
+            push_back(std::make_pair(e, n));
+            return *this;
+        }
+    };
     
+    /// Default constructor.
     Species()
         : m_name(""), m_ground_state_name(""), m_mw(0.0), m_charge(0),
           m_phase(GAS), m_type(ATOM), m_level(0)
     { }
     
+    /**
+     * Creates a new species from the species name.  Parameters are guessed from
+     * the name.
+     */
+    Species(const std::string& name, const PhaseType phase = GAS);
     
     /**
-     * Create a new species object.
+     * Create a new species object given a name, a phase, and stoichiometry.
      */
     Species(
         const std::string& name, const PhaseType phase,
@@ -263,22 +294,6 @@ private:
      */
     void initDataFromStoichiometry();
 
-    /**
-     * Determines the stoichiometry of this species from a stoichiometry string.
-     */
-    //void loadStoichiometry(
-    //    const std::string& stoichiometry, const std::vector<Element> &elements);
-
-    /**
-     * Will check the species name against its stoichiometry to determine if
-     * the stoichiometry given by the user matches the stoichiometry found by
-     * parsing the name.  Note that the name can be anything, therefore if it is
-     * not in the standard form then it will simply be ignored.
-     */
-    static void checkStoichiometryNameMatching(
-        const std::string& name, std::map<std::string, int>& stoich, 
-        const std::vector<Element>& elements);
-
 private:
 
     std::string  m_name;
@@ -290,8 +305,6 @@ private:
     std::size_t  m_level;
     
     StoichList m_stoichiometry;
-    
-    //ParticleRRHO* mp_rrho_model;
     
 }; // class Species
 

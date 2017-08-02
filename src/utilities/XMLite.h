@@ -82,6 +82,17 @@ public:
     { }
     
     /**
+     * Constructs an element from an input string.
+     */
+    XmlElement(const std::string& str)
+        : mp_parent(NULL), mp_document(NULL), m_line_number(0)
+    {
+        int line = 0;
+        std::istringstream is(str);
+        parse(is, line);
+    }
+
+    /**
      * Returns a pointer to the parent XmlElement object.
      */
     XmlElement* parent() const {
@@ -322,7 +333,7 @@ private:
 private:
 
     bool parse(
-        std::istream &is, int &line, std::string name = "", 
+        std::istream &is, int &line, std::string name = "",
         ParseState state = initial);
 
     XmlElement*                        mp_parent;

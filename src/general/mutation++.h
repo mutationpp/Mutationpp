@@ -36,6 +36,7 @@
 #include "StoichiometryManager.h"
 #include "ThirdBodyManager.h"
 #include "Species.h"
+#include "SpeciesNameFSM.h"
 #include "ThermoDB.h"
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
