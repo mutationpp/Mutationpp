@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2015 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2017 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.

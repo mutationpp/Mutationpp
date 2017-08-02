@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2015-2017 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -45,6 +45,20 @@ public:
 
 //==============================================================================
 
+/**
+ * Checks that species mass diffusion fluxes sum to zero when obtained by
+ * multiplying the diffusion matrix by suitable driving forces.
+ * \f[
+ * \sum_i J_i = - \sum_i \rho_i \sum_j D_{ij} d'_j = 0
+ * \f]
+ * Driving forces are simulated as the mole fraction gradient in an equilibrium
+ * mixture at constant pressure and elemental composition.  Under, these
+ * conditions, the driving force is then
+ * \f[
+ * d'_j = \nabla x_j = \frac{\partial x_j}{\partial T} \nabla T,
+ * \f]
+ * where \f$\nabla T\f$ is chosen to make the maximum driving force equal to 1.
+ */
 TEST_CASE
 (
     "DiffusionMatrix yields diffusion fluxes which sum to zero",

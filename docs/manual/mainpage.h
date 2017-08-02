@@ -25,6 +25,7 @@ The Mutation++ manual is divided into the following sections:
   which demonstrate key features of the library
 - Section [Bibliography](@ref citelist) lists all of the citations used throughout the manual
   and reference documentation
+- Section [Unit Tests](@ref tests) documents the unit testing currently performed.
 
 @section license Mutation++ License
 

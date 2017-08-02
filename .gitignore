@@ -1,12 +1,24 @@
+# Build directories
 build/
 install/
 
+# Documentation
+docs/manual/tests.h
+docs/html/
+
+# IDE
+.idea/
 .cproject
 .project
+
+# Python
+*.pyc
+
+# OS specifics
+.DS_Store
+
+# Others
 examples/c++/O2_dissociation
 examples/c++/air_diffusion_comparison
 examples/c++/equilibrium_air
 examples/c++/*.o
-
-# OS specifics
-.DS_Store
