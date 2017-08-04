@@ -17,6 +17,7 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+
 class colors:
     """Colors class providing easy access to ANSI escape sequences.
 
@@ -59,3 +60,9 @@ class colors:
         purple = '\033[45m'
         cyan = '\033[46m'
         lightgrey = '\033[47m'
+
+
+def reindent(s, num_spaces):
+    s = s.split("\n")
+    s = "\n".join([(num_spaces * ' ') + line.lstrip() for line in s])
+    return s
