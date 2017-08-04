@@ -30,6 +30,7 @@ set(test_sources
     test_diffusion_matrix.cpp
     test_dXidT.cpp
     test_energies.cpp
+    test_errors.cpp
     test_mixtures.cpp
     test_set_state.cpp
     test_species.cpp
