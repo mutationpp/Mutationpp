@@ -32,8 +32,8 @@
 #include "CollisionDB.h"
 #include "Utilities.h"
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Sparse>
 
 using namespace Mutation::Utilities;
 using namespace Eigen;

@@ -27,7 +27,7 @@
 
 #include "StateModel.h"
 #include "AutoRegistration.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 using namespace Eigen;
 

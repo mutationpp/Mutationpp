@@ -62,13 +62,13 @@ MARK_AS_ADVANCED(
     CMAKE_C_FLAGS_PROFILE
     CMAKE_EXE_LINKER_FLAGS_PROFILE
     CMAKE_SHARED_LINKER_FLAGS_PROFILE)
-    
+
 
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs and set the
 # default build type as Release
 if (NOT CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE "Release" CACHE STRING
-        "Choose the type of build, options are: None Debug Release 
+        "Choose the type of build, options are: None Debug Release
         RelWithDebInfo MinSizeRel Profile." FORCE)
 endif ()
 
@@ -89,7 +89,7 @@ endif ()
 ################################################################################
 # Fortran wrapper options
 ################################################################################
-option (BUILD_FORTRAN_WRAPPER 
+option (BUILD_FORTRAN_WRAPPER
     "Generate the wrapper library for using mutation++ with Fortran" OFF)
 
 if (BUILD_FORTRAN_WRAPPER)
@@ -114,19 +114,19 @@ endif()
 ################################################################################
 # Doxygen documentation generation
 ################################################################################
-option (BUILD_DOCUMENTATION 
+option (BUILD_DOCUMENTATION
     "Use Doxygen to create the HTML based API documentation" OFF)
 
 if (BUILD_DOCUMENTATION)
     FIND_PACKAGE(Doxygen)
-    
+
     if (NOT DOXYGEN_FOUND)
-        message(FATAL_ERROR 
-            "Doxygen is needed to build the documentation. Please install it 
+        message(FATAL_ERROR
+            "Doxygen is needed to build the documentation. Please install it
              correctly")
     endif()
     # Configure the Template Doxyfile for our specific project
-    configure_file(Doxyfile.in 
+    configure_file(Doxyfile.in
                     ${PROJECT_BINARY_DIR}/Doxyfile  @ONLY IMMEDIATE)
     # Add a custom target to run Doxygen when ever the project is built
     add_custom_target (docs
@@ -144,6 +144,7 @@ endif()
 ################################################################################
 # Descend into the src directory to build all targets and libraries
 include_directories(
+    ${CMAKE_SOURCE_DIR}/install/include
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/general
     ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
@@ -165,4 +166,3 @@ if (ENABLE_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()
-

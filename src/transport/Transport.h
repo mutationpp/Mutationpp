@@ -33,7 +33,7 @@
 #include "ElectronSubSystem.h"
 #include "Utilities.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {

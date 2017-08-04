@@ -38,7 +38,7 @@
 #include "ThermoDB.h"
 #include "MultiPhaseEquilSolver.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace Mutation {
     namespace Thermodynamics {

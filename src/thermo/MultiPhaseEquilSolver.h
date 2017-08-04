@@ -30,7 +30,7 @@
 #define THERMO_MULTI_PHASE_EQUIL_SOLVER
 
 #include <vector>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 
 
