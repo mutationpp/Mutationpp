@@ -31,7 +31,7 @@
 #ifndef TRANSPORT_COULOMB_INTEGRAL_H
 #define TRANSPORT_COULOMB_INTEGRAL_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {

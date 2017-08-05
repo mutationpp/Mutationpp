@@ -17,6 +17,11 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+
+import os
+import errno
+
+
 class colors:
     """Colors class providing easy access to ANSI escape sequences.
 
@@ -59,3 +64,19 @@ class colors:
         purple = '\033[45m'
         cyan = '\033[46m'
         lightgrey = '\033[47m'
+
+
+def reindent(s, num_spaces):
+    s = s.split("\n")
+    s = "\n".join([(num_spaces * ' ') + line.lstrip() for line in s])
+    return s
+
+
+def makedirs_exist_ok(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise

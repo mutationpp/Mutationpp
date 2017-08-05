@@ -31,7 +31,7 @@
 #include "ViscosityAlgorithm.h"
 #include "Wilke.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 using namespace Mutation::Utilities;
 
@@ -54,13 +54,13 @@ public:
     {
         const int nh = m_collisions.nHeavy();
         const int k  = m_collisions.nSpecies()-nh;
-        
+
         return wilke(
             m_collisions.etai(),
             m_collisions.mass().tail(nh),
             Eigen::Map<const Eigen::ArrayXd>(m_collisions.thermo().X()+k, nh));
     }
-       
+
 };
 
 // Register this algorithm

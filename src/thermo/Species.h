@@ -33,6 +33,7 @@
 //#include <set>
 #include <vector>
 #include <exception>
+#include <stdexcept>
 
 // Forward declaration of the XmlElement Class
 namespace Mutation {

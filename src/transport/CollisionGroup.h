@@ -33,7 +33,7 @@
 #include "CollisionIntegral.h"
 #include "SharedPtr.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 #include <vector>
 

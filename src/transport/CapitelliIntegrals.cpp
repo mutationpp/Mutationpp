@@ -33,7 +33,7 @@
 #include "CollisionPair.h"
 #include "XMLite.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <string>
 
 using namespace Mutation::Utilities;

@@ -28,8 +28,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include "catch.hpp"
-#include <Eigen/Dense>
+#include <catch/catch.hpp>
+#include <eigen3/Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;

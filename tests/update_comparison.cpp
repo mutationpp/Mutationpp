@@ -39,7 +39,7 @@ using namespace Mutation;
 #include <string>
 using namespace std;
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
 int main(int argc, char* argv[])

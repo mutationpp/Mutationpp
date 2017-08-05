@@ -29,7 +29,7 @@
 #define TRANSPORT_GUPTAYOS_H
 
 #include "Constants.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -42,21 +42,21 @@ namespace Mutation {
 class GuptaYos
 {
 protected:
-    
+
     template <typename E1, typename E2, typename E3>
     double guptaYos(
         const Eigen::ArrayBase<E1>& A, const Eigen::ArrayBase<E2>& a,
         const Eigen::ArrayBase<E3>& x)
     {
         const int ns = x.size();
-    
+
         // Compute a_av
         double sum1 = 0.0;
         double sum2 = 0.0;
         double temp;
-        
+
         quotient = 1.0 / a;
-        
+
         for (int j = 0; j < ns-1; ++j) {
             for (int i = j+1; i < ns; ++i) {
                 temp = quotient(i) - quotient(j);
@@ -65,18 +65,18 @@ protected:
                 sum2 += temp * A(i,j);
             }
         }
-        
+
         double a_av = sum2 / sum1;
-        
+
         // Next compute the value obtained by the Gupta-Yos formula
         sum1 = (x / (a + a_av)).sum();
         return sum1 / (1.0 - a_av * sum1);
     }
 
 private:
-    
+
     Eigen::ArrayXd quotient;
-    
+
 }; // class GuptaYos
 
     } // namespace Transport

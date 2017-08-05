@@ -29,7 +29,7 @@
 #define TESTS_COMPARE_FUNC_H
 
 #include "mutation++.h"
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <iostream>
 
 /**

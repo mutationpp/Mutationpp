@@ -33,7 +33,7 @@
 #include "ViscosityAlgorithm.h"
 
 #include <iostream>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -57,19 +57,19 @@ Transport::Transport(
       mp_diffusion_matrix(NULL),
       mp_wrk1(NULL),
       mp_tag(NULL)
-{ 
+{
     // Setup the electron subsystem object
     mp_esubsyst = new ElectronSubSystem(m_thermo, m_collisions);
 
     // Load the viscosity calculator
     setViscosityAlgo(viscosity);
-    
+
     // Load the thermal conductivity calculator
     setThermalConductivityAlgo(lambda);
-    
+
     // Load the diffusion matrix calculator
     setDiffusionMatrixAlgo("Ramshaw");
-    
+
     // Allocate work array storage
     mp_wrk1 = new double [m_thermo.nSpecies()*3];
     mp_wrk2 = mp_wrk1 + m_thermo.nSpecies();
@@ -78,19 +78,19 @@ Transport::Transport(
         mp_tag  = new int [m_thermo.nEnergyEqns()*5];
         m_thermo.getTagModes(mp_tag);
     }
-    
+
     //thermo.stateModel()->notifyOnUpdate(this);
 }
-    
+
 //==============================================================================
-    
+
 Transport::~Transport()
 {
     delete mp_esubsyst;
     delete mp_viscosity;
     delete mp_thermal_conductivity;
     delete mp_diffusion_matrix;
-    
+
     delete [] mp_wrk1;
     delete [] mp_tag;
 }
@@ -153,15 +153,15 @@ void Transport::frozenThermalConductivityVector(double* const p_lambda)
     double lambda_th, lambda_te, lambda_rot, lambda_vib, lambda_elec;
 
     if(neq > 1) {
-        lambda_th   = heavyThermalConductivity(); 
-        lambda_te   = electronThermalConductivity(); 
+        lambda_th   = heavyThermalConductivity();
+        lambda_te   = electronThermalConductivity();
         lambda_rot  = rotationalThermalConductivity();
         lambda_vib  = vibrationalThermalConductivity();
         lambda_elec = electronicThermalConductivity();
 
         for (int i_eq = 0; i_eq < neq; ++i_eq) {
-           p_lambda[i_eq] = mp_tag[i_eq*5+0] * lambda_th 
-                          + mp_tag[i_eq*5+1] * lambda_te 
+           p_lambda[i_eq] = mp_tag[i_eq*5+0] * lambda_th
+                          + mp_tag[i_eq*5+1] * lambda_te
                           + mp_tag[i_eq*5+2] * lambda_rot
                           + mp_tag[i_eq*5+3] * lambda_vib
                           + mp_tag[i_eq*5+4] * lambda_elec;
@@ -220,28 +220,28 @@ double Transport::reactiveThermalConductivity()
 {
 	// Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
-    
+
     // Compute the thermal diffusion ratios
     thermalDiffusionRatios(mp_wrk2);
-    
+
     // Combine to get the driving forces
     for (int i = 0; i < m_thermo.nSpecies(); i++)
         mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
-    
+
     // Compute the diffusion velocities
     double E;
     stefanMaxwell(mp_wrk1, mp_wrk2, E);
-    
+
     // Unitless enthalpies
     m_thermo.speciesHOverRT(mp_wrk1);
-    
+
     double lambda = 0.0;
     //const double* const X = m_thermo.X();
     const double rho = m_thermo.density();
     const double* const Y = m_thermo.Y();
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         lambda -= mp_wrk1[i] / m_thermo.speciesMw(i) * mp_wrk2[i] * Y[i] * rho;
-    
+
     return (RU * m_thermo.T() * lambda);
 }
 
@@ -327,10 +327,10 @@ double Transport::soretThermalConductivity()
 
 	// Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
-    
+
     // Compute the thermal diffusion ratios
     thermalDiffusionRatios(mp_wrk2);
-    
+
     // Combine to get the driving forces
     for (int i = 0; i < m_thermo.nSpecies(); i++)
         mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
@@ -338,7 +338,7 @@ double Transport::soretThermalConductivity()
     // Compute the diffusion velocities
     double E;
     stefanMaxwell(mp_wrk1, work.data(), E);
-    
+
     double lambda = 0.0;
     for (int i = 0; i < m_thermo.nSpecies(); i++)
         lambda -= mp_wrk2[i]*work[i];

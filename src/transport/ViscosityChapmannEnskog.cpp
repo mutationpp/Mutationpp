@@ -31,8 +31,8 @@
 #include "Thermodynamics.h"
 #include "ViscosityAlgorithm.h"
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Sparse>
 
 using namespace Eigen;
 using namespace Mutation::Utilities;
