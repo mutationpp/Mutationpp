@@ -28,7 +28,7 @@
 #ifndef TRANSPORT_WILKE_H
 #define TRANSPORT_WILKE_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {
@@ -40,7 +40,7 @@ namespace Mutation {
 class Wilke
 {
 public:
-    
+
     Wilke() { }
 
 protected:
@@ -52,10 +52,10 @@ protected:
     {
         const int ns = vals.size();
         double average = 0.0, sum, ratio, temp;
-        
+
         for (int i = 0; i < ns; ++i) {
             sum = 0.0;
-            
+
             for (int j = 0; j < ns; ++j) {
                 if (i == j)
                     sum += x(j);
@@ -65,13 +65,13 @@ protected:
                     sum += x(j) * temp * temp / std::sqrt(8.0 * (1.0 + ratio));
                 }
             }
-            
-            average += x(i) * vals(i) / sum;            
+
+            average += x(i) * vals(i) / sum;
         }
-        
+
         return average;
     }
-    
+
 }; // class Wilke
 
 

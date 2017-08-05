@@ -30,7 +30,7 @@
 
 #include <iostream>
 using namespace std;
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
 using namespace Mutation::Thermodynamics;

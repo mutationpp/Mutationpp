@@ -34,7 +34,7 @@
 #include "CollisionDB.h"
 #include "Constants.h"
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <vector>
 
 namespace Mutation {

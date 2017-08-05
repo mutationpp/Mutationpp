@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/philsquared/Catch.git
+	branch = v1.9.3
+	commit = a0ada2e935324db5c951571c52c9b07307ea422f
+	parent = 2c697cdaa0a11a3569ff3438350959ed2e2d6ea3
+	cmdver = 0.3.1

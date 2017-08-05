@@ -32,7 +32,7 @@
 #include <sstream>
 #include <cstdlib>
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
 #ifdef _GNU_SOURCE
@@ -53,7 +53,7 @@ struct OutputQuantity {
     std::string name;
     std::string units;
     std::string description;
-    
+
     OutputQuantity(
         const std::string& n, const std::string& u, const std::string& d)
         : name(n), units(u), description(d)
@@ -170,22 +170,22 @@ typedef struct {
     double T1;
     double T2;
     double dT;
-    
+
     double P1;
     double P2;
     double dP;
     double B;
-    
+
     std::vector<int> mixture_indices;
     std::vector<int> species_indices;
     std::vector<int> reaction_indices;
     std::vector<int> other_indices;
-    
+
     bool verbose;
     bool header;
-    
+
     Mutation::MixtureOptions* p_mixture_opts;
-    
+
     bool use_scientific;
     int  precision;
 } Options;
@@ -201,12 +201,12 @@ std::string getOption(int argc, char** argv, const std::string& option)
 {
     std::string value;
     char** ptr = std::find(argv, argv+argc, option);
-    
+
     if (ptr == argv+argc || ptr+1 == argv+argc)
         value = "";
     else
         value = *(ptr+1);
-    
+
     return value;
 }
 
@@ -215,9 +215,9 @@ std::string getOption(int argc, char** argv, const std::string& option)
 void printHelpMessage(const char* const name)
 {
     std::string tab("    ");
-    
+
     cout.setf(std::ios::left, std::ios::adjustfield);
-    
+
     cout << endl;
     cout << "Usage: " << name << " [OPTIONS] mixture" << endl;
     cout << "Compute equilibrium properties for mixture over a set of "
@@ -240,49 +240,49 @@ void printHelpMessage(const char* const name)
     //cout << tab << "-c             element fractions (ie: \"N:0.79,O:0.21\")" << endl;
     cout << endl;
     cout << "Mixture values (example format: \"1-3,7,9-11\"):" << endl;
-    
+
     for (int i = 0; i < NMIXTURE; ++i)
         cout << tab << setw(2) << i << ": " << setw(10)
              << mixture_quantities[i].name << setw(12)
-             << (mixture_quantities[i].units == "" ? "[-]" : 
-                "[" + mixture_quantities[i].units + "]") 
+             << (mixture_quantities[i].units == "" ? "[-]" :
+                "[" + mixture_quantities[i].units + "]")
              << mixture_quantities[i].description << endl;
 
     cout << endl;
     cout << "Species values (same format as mixture values):" << endl;
-    
+
     for (int i = 0; i < NSPECIES; ++i)
         cout << tab << setw(2) << i << ": " << setw(10)
              << species_quantities[i].name << setw(12)
-             << (species_quantities[i].units == "" ? "[-]" : 
-                "[" + species_quantities[i].units + "]") 
+             << (species_quantities[i].units == "" ? "[-]" :
+                "[" + species_quantities[i].units + "]")
              << species_quantities[i].description << endl;
-    
+
     cout << endl;
     cout << "Reaction values (same format as mixture values):" << endl;
-    
+
     for (int i = 0; i < NREACTION; ++i)
         cout << tab << setw(2) << i << ": " << setw(10)
              << reaction_quantities[i].name << setw(12)
              << (reaction_quantities[i].units == "" ? "[-]" :
                 "[" + reaction_quantities[i].units + "]")
              << reaction_quantities[i].description << endl;
-    
+
     cout << endl;
     cout << "Other values (same format as mixture values):" << endl;
-    
+
     for (int i = 0; i < NOTHER; ++i)
         cout << tab << setw(2) << i << ": " << setw(10)
              << other_quantities[i].name << setw(12)
-             << (other_quantities[i].units == "" ? "[-]" : 
-                "[" + other_quantities[i].units + "]") 
+             << (other_quantities[i].units == "" ? "[-]" :
+                "[" + other_quantities[i].units + "]")
              << other_quantities[i].description << endl;
-    
+
     cout << endl;
     cout << "Example:" << endl;
     cout << tab << name << " -T 300:100:15000 -P 101325 -m 1-3,8 air11" << endl;
     cout << endl;
-    
+
     exit(0);
 }
 
@@ -291,10 +291,10 @@ bool parseRange(const std::string& range, double& x1, double& x2, double& dx)
 {
     std::vector<std::string> tokens;
     String::tokenize(range, tokens, ":");
-    
+
     if (!String::isNumeric(tokens))
         return false;
-    
+
     switch (tokens.size()) {
         case 1:
             x1 = atof(tokens[0].c_str());
@@ -309,32 +309,32 @@ bool parseRange(const std::string& range, double& x1, double& x2, double& dx)
         default:
             return false;
     }
-    
+
     if (dx == 0.0) {
         x2 = x1;
         dx = 1.0;
     }
-    
-    return true;       
+
+    return true;
 }
 
 // Parses an index list of the form 1-3,7,9 for example
 bool parseIndices(const std::string& list, std::vector<int>& indices, int max)
 {
     indices.clear();
-    
+
     std::vector<std::string> ranges;
     std::vector<std::string> bounds;
     String::tokenize(list, ranges, ",");
-    
+
     std::vector<std::string>::const_iterator iter = ranges.begin();
     for ( ; iter != ranges.end(); ++iter) {
         bounds.clear();
         String::tokenize(*iter, bounds, "-");
-        
+
         if (!String::isNumeric(bounds))
             return false;
-        
+
         switch (bounds.size()) {
             case 1: {
                 int i = atoi(bounds[0].c_str());
@@ -346,20 +346,20 @@ bool parseIndices(const std::string& list, std::vector<int>& indices, int max)
             case 2: {
                 int i1 = atoi(bounds[0].c_str());
                 int i2 = atoi(bounds[1].c_str());
-                
+
                 if (i1 >= i2 || i1 < 0 || i1 > max || i2 > max)
                     return false;
-                    
+
                 for (int i = i1; i <= i2; ++i)
                     indices.push_back(i);
-                
+
                 break;
             }
             default:
-                return false;   
+                return false;
         }
     }
-    
+
     return true;
 }
 
@@ -367,15 +367,15 @@ bool parseIndices(const std::string& list, std::vector<int>& indices, int max)
 Options parseOptions(int argc, char** argv)
 {
     Options opts;
-    
+
     // Print the help message and exit if desired
     if (optionExists(argc, argv, "-h") || optionExists(argc, argv, "--help"))
         printHelpMessage(argv[0]);
-    
+
     // Control verbosity
-    opts.verbose = 
+    opts.verbose =
         optionExists(argc, argv, "-v") || optionExists(argc, argv, "--verbose");
-    
+
     // Check if the header should be printed or not
     opts.header = !optionExists(argc, argv, "--no-header");
 
@@ -387,10 +387,10 @@ Options parseOptions(int argc, char** argv)
     } else {
         opts.p_mixture_opts = new Mutation::MixtureOptions(argv[argc-1]);
     }
-    
+
     // Must use the equilibirum state model
     opts.p_mixture_opts->setStateModel("Equil");
-    
+
     // Elemental mole fractions
     bool comp_set = false;
     if (optionExists(argc, argv, "--elem-x")) {
@@ -400,7 +400,7 @@ Options parseOptions(int argc, char** argv)
             true
         );
     }
-    
+
     // Elemental composition
     if (optionExists(argc, argv, "--elem-comp")) {
         if (comp_set) {
@@ -419,20 +419,20 @@ Options parseOptions(int argc, char** argv)
         opts.p_mixture_opts->setThermodynamicDatabase(
             getOption(argc, argv, "--thermo-db"));
     }
-    
+
     // Get the temperature range
     if (optionExists(argc, argv, "-T")) {
         if (!parseRange(
             getOption(argc, argv, "-T"), opts.T1, opts.T2, opts.dT)) {
             cout << "Bad format for temperature range!" << endl;
             printHelpMessage(argv[0]);
-        }      
+        }
     } else {
         opts.T1 = 300.0;
         opts.T2 = 15000.0;
         opts.dT = 100.0;
     }
-    
+
     // Get the pressure range
     if (optionExists(argc, argv, "-P")) {
         if (!parseRange(
@@ -445,7 +445,7 @@ Options parseOptions(int argc, char** argv)
         opts.P2 = ONEATM;
         opts.dP = ONEATM;
     }
-    
+
     // Get the magnetic field strength
     if (optionExists(argc, argv, "-B")) {
         opts.B = atof(getOption(argc, argv, "-B").c_str());
@@ -461,7 +461,7 @@ Options parseOptions(int argc, char** argv)
             printHelpMessage(argv[0]);
         }
     }
-    
+
     // Get the species properties to print
     if (optionExists(argc, argv, "-s")) {
         if (!parseIndices(
@@ -470,7 +470,7 @@ Options parseOptions(int argc, char** argv)
             printHelpMessage(argv[0]);
         }
     }
-    
+
     // Get the reaction properties to print
     if (optionExists(argc, argv, "-r")) {
         if (!parseIndices(
@@ -478,7 +478,7 @@ Options parseOptions(int argc, char** argv)
             printHelpMessage(argv[0]);
         }
     }
-    
+
     // Get the other properties to print
     if (optionExists(argc, argv, "-o")) {
         if (!parseIndices(
@@ -487,7 +487,7 @@ Options parseOptions(int argc, char** argv)
             printHelpMessage(argv[0]);
         }
     }
-    
+
     // Check for output format
     if (optionExists(argc, argv, "--scientific")) {
         opts.use_scientific = true;
@@ -496,36 +496,36 @@ Options parseOptions(int argc, char** argv)
         opts.use_scientific = false;
         opts.precision      = 0;
     }
-    
-    // If 
-    
+
+    // If
+
     return opts;
 }
 
 // Write out the column headers
 void writeHeader(
-    const Options& opts, const Mutation::Mixture& mix, 
+    const Options& opts, const Mutation::Mixture& mix,
     std::vector<int>& column_widths)
 {
     std::string name;
     int width = (opts.use_scientific ? opts.precision + 8 : COLUMN_WIDTH);
-    
+
     std::vector<int>::const_iterator iter = opts.mixture_indices.begin();
     for ( ; iter != opts.mixture_indices.end(); ++iter) {
         name = mixture_quantities[*iter].name +
-            (mixture_quantities[*iter].units == "" ? 
+            (mixture_quantities[*iter].units == "" ?
                 "" : "[" + mixture_quantities[*iter].units + "]");
         column_widths.push_back(
             std::max(width, static_cast<int>(name.length())+2));
         if (opts.header)
             cout << setw(column_widths.back()) << name;
     }
-    
+
     iter = opts.species_indices.begin();
     for ( ; iter != opts.species_indices.end(); ++iter) {
         for (int i = 0; i < mix.nSpecies(); ++i) {
             name = "\"" + species_quantities[*iter].name + "_" + mix.speciesName(i) +
-                (species_quantities[*iter].units == "" ? 
+                (species_quantities[*iter].units == "" ?
                     "" : "[" + species_quantities[*iter].units + "]") + "\"";
             column_widths.push_back(
                 std::max(width, static_cast<int>(name.length())+2));
@@ -533,7 +533,7 @@ void writeHeader(
                 cout << setw(column_widths.back()) << name;
         }
     }
-    
+
     iter = opts.reaction_indices.begin();
     for ( ; iter != opts.reaction_indices.end(); ++iter) {
         for (int i = 0; i < mix.nReactions(); ++i) {
@@ -548,13 +548,13 @@ void writeHeader(
                 cout << setw(column_widths.back()) << name;
         }
     }
-    
+
     iter = opts.other_indices.begin();
     for ( ; iter != opts.other_indices.end(); ++iter) {
         if (other_quantities[*iter].name == "Dij") {
             for (int i = 0; i < mix.nSpecies(); ++i) {
                 for (int j = 0; j < mix.nSpecies(); ++j) {
-                    name = "D_{" + mix.speciesName(i) + "," + mix.speciesName(j) 
+                    name = "D_{" + mix.speciesName(i) + "," + mix.speciesName(j)
                         + "}";
                     column_widths.push_back(
                         std::max(width, static_cast<int>(name.length())+2));
@@ -639,7 +639,7 @@ void writeHeader(
                 cout << setw(column_widths.back()) << "lamB_tran";
         }
     }
-    
+
     if (opts.header)
         cout << endl;
 }
@@ -673,17 +673,17 @@ int main(int argc, char** argv)
     Mutation::Mixture mix(*opts.p_mixture_opts);
     mix.setBField(opts.B);
     delete opts.p_mixture_opts;
-    
+
     // Write out the column headers (and compute the column sizes)
     std::vector<int> column_widths;
     writeHeader(opts, mix, column_widths);
-    
+
     // Now we can actually perform the computations
     std::vector<int>::const_iterator iter;
     double value;
     int cw;
     std::string name, units;
-    
+
     double* species_values = new double [mix.nSpecies()];
     double* temp           = new double [
 		std::max(mix.nSpecies(), mix.nElements()*mix.nElements())];
@@ -691,18 +691,18 @@ int main(int argc, char** argv)
     double* sjac_fd        = new double [mix.nSpecies()*mix.nSpecies()];
     double* temp2          = new double [mix.nSpecies()];
     double* reaction_values = new double [mix.nReactions()];
-    
+
     /*ofstream jac_file("jac.dat");
-    
+
     for (int i = 0; i < mix.nSpecies(); ++i)
         jac_file << setw(15) << mix.speciesName(i);
     jac_file << endl;*/
-    
+
     if (opts.use_scientific) {
         cout.precision(opts.precision);
         cout << std::scientific;
     }
-    
+
     for (double P = opts.P1; P <= opts.P2; P += opts.dP) {
         for (double T = opts.T1; T <= opts.T2; T += opts.dT) {
             // Compute the equilibrium composition
@@ -710,7 +710,7 @@ int main(int argc, char** argv)
             cw = 0;
 
             // Mixture properties
-            iter = opts.mixture_indices.begin(); 
+            iter = opts.mixture_indices.begin();
             for ( ; iter < opts.mixture_indices.end(); ++iter) {
                 name  = mixture_quantities[*iter].name;
                 units = mixture_quantities[*iter].units;
@@ -846,16 +846,16 @@ int main(int argc, char** argv)
 //                    value = mix.electronHeavyCollisionFreq();
 //                else if (name == "tau_a")
 //                    value = mix.averageHeavyCollisionFreq();
-                
+
                 cout << setw(column_widths[cw++]) << value;
             }
-            
+
             // Species properties
             iter = opts.species_indices.begin();
             for ( ; iter < opts.species_indices.end(); ++iter) {
                 name  = species_quantities[*iter].name;
                 units = species_quantities[*iter].units;
-                
+
                 if (name == "X")
                     std::copy(mix.X(), mix.X()+mix.nSpecies(), species_values);
                 else if (name == "dX/dT")
@@ -877,7 +877,7 @@ int main(int argc, char** argv)
                             species_values[i] *= RU;
                     else if (units == "J/kg-K")
                         for (int i = 0; i < mix.nSpecies(); ++i)
-                            species_values[i] *= (RU / mix.speciesMw(i));                        
+                            species_values[i] *= (RU / mix.speciesMw(i));
                 } else if (name == "H") {
                     mix.speciesHOverRT(species_values);
                     if (units == "J/mol")
@@ -885,7 +885,7 @@ int main(int argc, char** argv)
                             species_values[i] *= (RU * T);
                     else if (units == "J/kg")
                         for (int i = 0; i < mix.nSpecies(); ++i)
-                            species_values[i] *= (RU * T / mix.speciesMw(i));                        
+                            species_values[i] *= (RU * T / mix.speciesMw(i));
                 } else if (name == "S") {
                     mix.speciesSOverR(species_values);
                     if (units == "J/mol-K")
@@ -893,7 +893,7 @@ int main(int argc, char** argv)
                             species_values[i] *= RU;
                     else if (units == "J/kg-K")
                         for (int i = 0; i < mix.nSpecies(); ++i)
-                            species_values[i] *= (RU / mix.speciesMw(i));                        
+                            species_values[i] *= (RU / mix.speciesMw(i));
                 } else if (name == "G") {
                     mix.speciesGOverRT(species_values);
                     if (units == "J/mol")
@@ -922,30 +922,30 @@ int main(int argc, char** argv)
                 } else if (name == "Dm") {
                     mix.averageDiffusionCoeffs(species_values);
                 }
-                
+
                 for (int i = 0; i < mix.nSpecies(); ++i)
                     cout << setw(column_widths[cw++]) << species_values[i];
             }
-            
+
             // Reaction properties
             iter = opts.reaction_indices.begin();
             for ( ; iter < opts.reaction_indices.end(); ++iter) {
                 name  = reaction_quantities[*iter].name;
-                
+
                 if (name == "kf")
                     mix.forwardRateCoefficients(reaction_values);
                 else if (name == "kb")
                     mix.backwardRateCoefficients(reaction_values);
-                
+
                 for (int i = 0; i < mix.nReactions(); ++i)
                     cout << setw(column_widths[cw++]) << reaction_values[i];
             }
-            
+
             // Other properties
             iter = opts.other_indices.begin();
             for ( ; iter < opts.other_indices.end(); ++iter) {
                 name  = other_quantities[*iter].name;
-                
+
                 if (name == "Dij") {
                     const Eigen::MatrixXd& Dij = mix.diffusionMatrix();
                     for (int i = 0; i < mix.nSpecies(); ++i)
@@ -985,15 +985,15 @@ int main(int argc, char** argv)
                         cout << setw(column_widths[cw++]) << lambda(i);
                 }
             }
-            
+
             cout << endl;
-            
+
             // Compute the exact jacobian
             /*double conc = mix.density() / mix.mixtureMw();
             for (int i = 0; i < mix.nSpecies(); ++i)
                 temp[i] = mix.X()[i] * conc;
             mix.jacobianRho(mix.T(), temp, sjac_exact);
-            
+
             // Now compute the finite-differenced jacobian
             double eps = std::sqrt(Numerics::NumConst<double>::eps);
             double delta, prev;
@@ -1008,18 +1008,18 @@ int main(int argc, char** argv)
                     sjac_fd[i*mix.nSpecies()+j] = (temp2[i]-species_values[i])/
                         (delta*mix.speciesMw(j));
             }
-            
+
             double sum1 = 0.0;
             double sum2 = 0.0;
             double x;
             for (int i = 0; i < mix.nSpecies(); ++i) {
                 for (int j = 0; j < mix.nSpecies(); ++j) {
-                    jac_file << setw(15) 
-                             //<< (sjac_fd[i*mix.nSpecies()+j] - 
-                             //       sjac_exact[i*mix.nSpecies()+j]) / 
+                    jac_file << setw(15)
+                             //<< (sjac_fd[i*mix.nSpecies()+j] -
+                             //       sjac_exact[i*mix.nSpecies()+j]) /
                              //       sjac_exact[i*mix.nSpecies()+j];
                              << sjac_exact[i*mix.nSpecies()+j];
-                
+
                     // Compute the Frobenius norm of the difference matrix
                     //x = sjac_exact[i*mix.nSpecies()+j] - sjac_fd[i*mix.nSpecies()+j];
                     //sum1 += x*x;
@@ -1032,7 +1032,7 @@ int main(int argc, char** argv)
             jac_file << endl;*/
         }
     }
-    
+
     // Clean up storage
     delete [] species_values;
     delete [] temp;
