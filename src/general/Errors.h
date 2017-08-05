@@ -36,8 +36,9 @@
 namespace Mutation {
 
 /**
- * Base class for all Mutation exceptions.  Defines a consistent look-and-feel
- * for all error messages in the library.
+ * Base class for all Mutation++ exceptions.  Defines a consistent look-and-feel
+ * for all error messages in the library.  Also ensures that catching the Error
+ * type will catch all exceptions thrown by Mutation++ code.
  */
 class Error : public std::exception
 {
@@ -49,12 +50,33 @@ public:
      * @param type A string representing the type of error.
      * @param message The error message.
      */
-    Error(const std::string& type, const std::string& message) :
-        m_type(type), m_message(message)
+    Error(const std::string& type) :
+        m_type(type)
     { }
+
+    /**
+     * Copy constructor.
+     *
+     * @param copy The object to copy.
+     */
+    Error(const Error& copy) :
+        m_type(copy.m_type),
+        m_extra_info(copy.m_extra_info),
+        m_formatted_message(copy.m_formatted_message)
+    {
+        m_message_stream << copy.m_message_stream.rdbuf();
+    }
 
     /// Destructor.
     virtual ~Error() throw() { }
+
+    /// Input stream operator allows for message to be added to error.
+    template <typename T>
+    Error& operator<< (const T& in)
+    {
+        m_message_stream << in;
+        return *this;
+    }
 
     /**
      * Creates a formatted error message.  The message is formatted as
@@ -72,26 +94,21 @@ public:
     const char* what() throw()
     {
         try {
-            std::stringstream ss;
             std::vector<std::pair<std::string, std::string> >::iterator it;
 
-            // Format the error message
-            ss << "M++ error: " << m_type << ".\n  ";
+            // Format the error message on demand
+            m_formatted_message = "M++ error: " + m_type + ".\n  ";
             for (it = m_extra_info.begin(); it != m_extra_info.end(); ++it)
-                ss << it->first << ": " << it->second << "\n  ";
-            ss << m_message << "\n";
+                m_formatted_message += it->first + ": " + it->second + "\n  ";
+            m_formatted_message += m_message_stream.str() + "\n";
 
-            // Save the formatted message (so the pointer actually points to
-            // something when the method returns!)
-            m_formatted_message = ss.str();
             return m_formatted_message.c_str();
 
         } catch (std::exception&) {
             // In the unlikely event that the formatting actually throws an
-            // error, we need to have a backup plan.  Return unformatted
-            // message.  This is guaranteed not to throw an exception according
-            // to the C++ standard library docs.
-            return m_message.c_str();
+            // error, we need to have a backup plan.  Try to return unformatted
+            // message.
+            return m_message_stream.str().c_str();
         }
     }
 
@@ -153,7 +170,7 @@ private:
     std::string m_type;
 
     /// The error message.
-    std::string m_message;
+    std::stringstream m_message_stream;
 
     /// Vector of additional (name, value) pairs
     std::vector<std::pair<std::string, std::string> > m_extra_info;
@@ -164,13 +181,60 @@ private:
 }; // class Error
 
 
-/// Reports a "file not found" error.  Includes "file" info.
-class FileNotFoundError : public Error
+/**
+ * This class bridges between the basic Error class and subclasses of Error and
+ * enables the correct polymorphism behavior while also providing function
+ * overloading for methods which need to return a reference to the Error object.
+ * Without these overloaded functions, the code
+ * @code{c++}
+ * throw DerivedError() << "some message";
+ * @endcode
+ * would actually throw an Error object, rather than the intended DerivedError
+ * type.  This is not really a problem if you just want to catch all Error
+ * types, however if you need to catch a specific derived type, this would not
+ * work. This class simply provides a convenient alternative to having to write
+ * the function overloads specifically in each subclass of Error.  All derived
+ * exception types should extend from this type.
+ */
+template <typename ConcreteType>
+class ErrorExtension : public Error
 {
 public:
-    /// Constructor taking the file name and error message.
-    FileNotFoundError(const std::string& file, const std::string& m) :
-        Error("file not found", m)
+
+    /// Destructor.
+    virtual ~ErrorExtension() throw() { }
+
+    /// Overloaded << operator.
+    template <typename T>
+    ConcreteType& operator<< (const T& in)
+    {
+        Error::operator<<(in);
+        return static_cast<ConcreteType&>(*this);
+    }
+
+    /// Overloaded () operator.
+    template <typename T>
+    ConcreteType& operator()(const std::string& name, const T& value) {
+        Error::addExtraInfo(name, value);
+        return static_cast<ConcreteType&>(*this);
+    }
+
+protected:
+
+    /// This class is only meant to be extended by concrete Error types.
+    ErrorExtension(const std::string& type) :
+        Error(type)
+    { }
+};
+
+
+/// Reports a "file not found" error.  Includes "file" info.
+class FileNotFoundError : public ErrorExtension<FileNotFoundError>
+{
+public:
+    /// Constructor taking the file name.
+    FileNotFoundError(const std::string& file) :
+        ErrorExtension<FileNotFoundError>("file not found")
     {
         addExtraInfo("file", file);
     }
@@ -183,12 +247,12 @@ public:
 
 
 /// Reports an "error parsing file" error. Includes "file" and "line" info.
-class FileParseError : public Error
+class FileParseError : public ErrorExtension<FileParseError>
 {
 public:
-    /// Constructor taking the file, line number, and error message.
-    FileParseError(const std::string& file, int line, const std::string& m) :
-        Error("error parsing file", m)
+    /// Constructor taking the file and line number.
+    FileParseError(const std::string& file, int line) :
+        ErrorExtension<FileParseError>("error parsing file")
     {
         addExtraInfo("file", file);
         addExtraInfo("line", line);
@@ -204,6 +268,36 @@ public:
         return getExtraInfo("line");
     }
 }; // class FileParseError
+
+
+/// Reports an "invalid input" error.  Includes input name and value.
+class InvalidInputError : public ErrorExtension<InvalidInputError>
+{
+public:
+    /// Constructor taking the input name and value.
+    template <typename T>
+    InvalidInputError(const std::string& input, const T& value) :
+        ErrorExtension<InvalidInputError>("invalid input"),
+        m_input(input)
+    {
+        addExtraInfo(input, value);
+    }
+
+    /// Destructor.
+    ~InvalidInputError() throw() { }
+
+    /// Returns the name of the invalid input.
+    const std::string& inputName() const {
+        return m_input;
+    }
+
+    /// Returnst the value of the invalid input.
+    const std::string& inputValue() const {
+        return getExtraInfo(m_input);
+    }
+private:
+    std::string m_input;
+}; // class InvalidInput
 
 } // namespace Mutation
 

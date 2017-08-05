@@ -36,7 +36,7 @@ TEST_CASE
 )
 {
     SECTION("Error (base class)") {
-        Error error = Error("type", "message")("info1", "value");
+        Error error = Error("type")("info1", "value") << "message";
         error("info2", 37);
         error.addExtraInfo("info3", 'a');
         CHECK(error.getExtraInfo("info1") == "value");
@@ -48,21 +48,26 @@ TEST_CASE
             std::string(error.what()) ==
             "M++ error: type.\n  info1: value\n  info2: 37\n  info3: a\n  message\n"
         );
+
+        CHECK_THROWS_AS(throw Error("type"), Error);
     }
 
     SECTION("FileNotFoundError") {
-        FileNotFoundError error = FileNotFoundError("name", "message");
+        FileNotFoundError error = FileNotFoundError("name") << "message";
         CHECK(error.getExtraInfo("file") == "name");
         CHECK(error.file() == "name");
 
         CHECK(
             std::string(error.what()) ==
-            Error("file not found", "message")("file", "name").what()
+            (Error("file not found")("file", "name") << "message").what()
         );
+
+        CHECK_THROWS_AS(throw FileNotFoundError("") << "", Error);
+        CHECK_THROWS_AS(throw FileNotFoundError("") << "", FileNotFoundError);
     }
 
     SECTION("FileParseError") {
-        FileParseError error = FileParseError("name", 18, "message");
+        FileParseError error = FileParseError("name", 18) << "message";
         CHECK(error.getExtraInfo("file") == "name");
         CHECK(error.file() == "name");
         CHECK(error.getExtraInfo("line") == "18");
@@ -70,7 +75,25 @@ TEST_CASE
 
         CHECK(
             std::string(error.what()) ==
-            Error("error parsing file", "message")("file", "name")("line", 18).what()
+            (Error("error parsing file")("file", "name")("line", 18) << "message").what()
         );
+
+        CHECK_THROWS_AS(throw FileParseError("", 0) << "", Error);
+        CHECK_THROWS_AS(throw FileParseError("", 0) << "", FileParseError);
+    }
+
+    SECTION("InvalidInputError") {
+        InvalidInputError error = InvalidInputError("input", 37) << "message";
+        CHECK(error.getExtraInfo("input") == "37");
+        CHECK(error.inputName() == "input");
+        CHECK(error.inputValue() == "37");
+
+        CHECK(
+            std::string(error.what()) ==
+            (Error("invalid input")("input", "37") << "message").what()
+        );
+
+        CHECK_THROWS_AS(throw InvalidInputError("", 0) << "", Error);
+        CHECK_THROWS_AS(throw InvalidInputError("", 0) << "", InvalidInputError);
     }
 }
