@@ -13,7 +13,7 @@ class Dependency(object):
 
     def __init__(self, name, build_cmd_seq, build_dir=None, source_dir=None):
         self.name = name
-        self.source_dir = os.path.join(THIRDPARTY_DIR, self.name) if source_dir is None else source_dir
+        self.source_dir = os.path.join(MPP_THIRDPARTY_DIRECTORY, self.name) if source_dir is None else source_dir
         self.build_dir = os.path.join(self.source_dir, "build") if build_dir is None else build_dir
         self.build_cmd_seq = build_cmd_seq
 
@@ -31,18 +31,20 @@ class Dependency(object):
 
 # Global variables
 # TODO: check if environment variables are defined
-THIRDPARTY_DIR = os.path.join(os.environ["MPP_DIR"], "thirdparty")
-INSTALL_DIR = os.path.join(os.environ["MPP_DIR"], "install")
+MPP_THIRDPARTY_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "thirdparty")
+MPP_INSTALL_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "install")
 NUM_PROC = multiprocessing.cpu_count()
 
 DEPS_DICT = \
     {
-        "eigen": Dependency(name="eigen",
-                            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(INSTALL_DIR), ".."],
-                                           ["make", "-j", str(NUM_PROC), "install"]]),
-        "catch": Dependency(name="catch",
-                            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(INSTALL_DIR), ".."],
-                                           ["make", "-j", str(NUM_PROC), "install"]]),
+        "eigen": Dependency(
+            name="eigen",
+            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY), ".."],
+                           ["make", "-j", str(NUM_PROC), "install"]]),
+        "catch": Dependency(
+            name="catch",
+            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY), ".."],
+                           ["make", "-j", str(NUM_PROC), "install"]]),
     }
 
 
