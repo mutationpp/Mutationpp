@@ -1,11 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import argparse
 import multiprocessing
 import os
 import subprocess
 
-from utils import colors, reindent
+from utils import colors, reindent, makedirs_exist_ok
 
 
 class Dependency(object):
@@ -21,7 +21,7 @@ class Dependency(object):
 
         print(colors.fg.red + "Installing " + self.name + colors.reset)
         os.chdir(self.source_dir)
-        os.makedirs(self.build_dir, exist_ok=True)  # This is why Python3 is required
+        makedirs_exist_ok(self.build_dir)
         os.chdir(self.build_dir)
 
         for cmd in self.build_cmd_seq:
