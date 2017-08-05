@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -60,7 +60,7 @@ void string_to_char(std::string string, F_STRING str, F_STRLEN length)
         if (i < string.length())
             str[i] = string[i];
         else
-            str[i] = ' ';    
+            str[i] = ' ';
 }
 
 //==============================================================================
@@ -87,7 +87,7 @@ void NAME_MANGLE(destroy)()
     delete p_mix;
     delete [] p_work_species;
     delete [] p_work_element;
-    
+
     p_mix = NULL;
     p_work_species = NULL;
     p_work_element = NULL;
@@ -259,13 +259,13 @@ void NAME_MANGLE(get_temperatures)(double* const T)
 //==============================================================================
 void NAME_MANGLE(species_cp_mass)(double* const cp)
 {
-    p_mix->getCpsMass(cp); 
+    p_mix->getCpsMass(cp);
 }
 
 //==============================================================================
 void NAME_MANGLE(species_cv_mass)(double* const cv)
 {
-    p_mix->getCvsMass(cv); 
+    p_mix->getCvsMass(cv);
 }
 
 //==============================================================================
@@ -351,7 +351,7 @@ double NAME_MANGLE(viscosity)()
 //==============================================================================
 void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 {
-    p_mix->frozenThermalConductivityVector(lambda); 
+    p_mix->frozenThermalConductivityVector(lambda);
 }
 
 //==============================================================================
@@ -403,7 +403,7 @@ void NAME_MANGLE(diffusion_matrix)(double* const p_Dij)
     Eigen::Map<Eigen::MatrixXd>(p_Dij, p_mix->nSpecies(), p_mix->nSpecies()) =
         p_mix->diffusionMatrix().transpose();
 }
-    
+
 //==============================================================================
 double NAME_MANGLE(sigma)()
 {
@@ -425,8 +425,8 @@ void NAME_MANGLE(source_energy_transfer)
 {
      p_mix->energyTransferSource(p_source_transfer);
 }
-     
-     
-     
+
+
+
 
 

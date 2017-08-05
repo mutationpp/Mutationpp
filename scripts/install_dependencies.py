@@ -55,7 +55,7 @@ def main(args):
               reindent("\n".join(deps_list), 4))
         return
 
-    if not args.deps:
+    if not args.deps:  # Means that no positional argument is provided
         for name in deps_list:
             DEPS_DICT[name].install()
     else:
