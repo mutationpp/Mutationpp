@@ -20,7 +20,7 @@
  */
 
 #include "mutation++.h"
-#include "catch.hpp"
+#include <catch/catch.hpp>
 
 using namespace Mutation;
 using namespace Catch;
