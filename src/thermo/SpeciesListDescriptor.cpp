@@ -246,12 +246,15 @@ void SpeciesListDescriptor::order(
             
             std::list<Species>::iterator lowest_level = it;
             while (lowest_level != input.end()) {
-                it = find_if(next(it), input.end(), GroundStateNameEquals(name));
+                it++;
+                it = std::find_if(
+                    it, input.end(), GroundStateNameEquals(name));
                 while (it != input.end()) {
                     if (it->level() < lowest_level->level())
                         lowest_level = it;
-                    it = find_if(
-                        next(it), input.end(), GroundStateNameEquals(name));
+                    it++;
+                    it = std::find_if(
+                        it, input.end(), GroundStateNameEquals(name));
                 }
             
                 ordered_list.push_back(*lowest_level);
