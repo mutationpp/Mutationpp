@@ -43,6 +43,7 @@ Once the environment variables are set, you must install third-party dependencie
 This can be done manually or by invoking the install script from the root of the
 Mutation++ source directory:
 
+    cd $MPP_DIRECTORY
     python scripts/install_dependencies.py
 
 Once the dependencies are installed then use the following commands from the root

@@ -2,6 +2,8 @@
 build:debian:
   stage: build
   script:
+    - export MPP_DIRECTORY=$PWD
+    - python scripts/install_dependencies.py
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -19,6 +21,8 @@ build:debian:
 build:ubuntu:
   stage: build
   script:
+    - export MPP_DIRECTORY=$PWD
+    - python scripts/install_dependencies.py
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -36,6 +40,8 @@ build:ubuntu:
 build:fedora:
   stage: build
   script:
+    - export MPP_DIRECTORY=$PWD
+    - python scripts/install_dependencies.py
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -53,6 +59,8 @@ build:fedora:
 build:centos:
   stage: build
   script:
+    - export MPP_DIRECTORY=$PWD
+    - python scripts/install_dependencies.py
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -70,6 +78,8 @@ build:centos:
 build:macos:
   stage: build
   script:
+    - export MPP_DIRECTORY=$PWD
+    - python scripts/install_dependencies.py
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -87,9 +97,10 @@ build:macos:
 test:macos:
   stage: test
   script:
-    - export MPP_DATA_DIRECTORY=$PWD/data
-    - export PATH=$PWD/install/bin:$PATH
-    - export DYLD_LIBRARY_PATH=$PWD/install/lib:$DYLD_LIBRARY_PATH
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
     - cd build/
     - ctest -V
   dependencies:
@@ -103,9 +114,10 @@ test:macos:
 test:centos:
   stage: test
   script:
-    - export MPP_DATA_DIRECTORY=$PWD/data
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
     - cd build/
     - ctest -V
   dependencies:
@@ -119,9 +131,10 @@ test:centos:
 test:fedora:
   stage: test
   script:
-    - export MPP_DATA_DIRECTORY=$PWD/data
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
     - cd build/
     - ctest -V
   dependencies:
@@ -135,9 +148,10 @@ test:fedora:
 test:debian:
   stage: test
   script:
-    - export MPP_DATA_DIRECTORY=$PWD/data
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
     - cd build/
     - ctest -V
   dependencies:
@@ -151,9 +165,10 @@ test:debian:
 test:ubuntu:
   stage: test
   script:
-    - export MPP_DATA_DIRECTORY=$PWD/data
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
     - cd build/
     - ctest -V
   dependencies:
