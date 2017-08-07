@@ -118,24 +118,6 @@ class Species
 {
 public:
 
-    /// Exception thrown when species name is not formatted properly.
-    class BadSpeciesFormat : public std::runtime_error
-    {
-    public:
-        BadSpeciesFormat() :
-            std::runtime_error("Species name is not formatted correctly")
-        { }
-    };
-
-    /// Exception thrown when an element doesn't exist in the database.
-    class ElementDoesNotExist : public std::runtime_error
-    {
-    public:
-        ElementDoesNotExist() :
-            std::runtime_error("Element name does not exist")
-        { }
-    };
-
     /// Extends a simple vector to act as a stoichiometry map.
     class StoichList : public std::vector< std::pair<std::string, int> >
     {

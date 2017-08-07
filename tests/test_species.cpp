@@ -210,9 +210,8 @@ TEST_CASE
     CHECK(s.stoichiometry()[0] == std::make_pair(std::string("N"), 2));
     CHECK(s.type() == MOLECULE);
 
-    // Check that exceptions are correctly thrown for bad input
-    CHECK_THROWS_AS(Species("N+O"), Species::BadSpeciesFormat);
-    CHECK_THROWS_AS(Species("Ab"), Species::ElementDoesNotExist);
+    CHECK_THROWS_AS(Species("N+O"), InvalidInputError);
+    CHECK_THROWS_AS(Species("AbN2"), InvalidInputError);
 }
 
 

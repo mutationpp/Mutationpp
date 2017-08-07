@@ -47,5 +47,6 @@
 #include "Units.h"
 #include "Composition.h"
 #include "ParticleRRHO.h"
+#include "Errors.h"
 
 #endif // MUTATIONPP_H
