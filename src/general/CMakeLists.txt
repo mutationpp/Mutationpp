@@ -46,6 +46,7 @@ install(FILES mutation++.h DESTINATION include/mutation++)
 install(FILES Mixture.h DESTINATION include/mutation++)
 install(FILES MixtureOptions.h DESTINATION include/mutation++)
 install(FILES Constants.h DESTINATION include/mutation++)
+install(FILES Errors.h DESTINATION include/mutation++)
 
 
 

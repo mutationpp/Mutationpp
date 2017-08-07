@@ -25,6 +25,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "Errors.h"
 #include "Species.h"
 #include "SpeciesNameFSM.h"
 #include "Utilities.h"
@@ -122,8 +123,11 @@ Species::Species(
 {
     // Parse the stoichiometry from the name
     SpeciesNameFSM sm;
-    if (!sm.parse(name))
-        throw BadSpeciesFormat();
+    if (!sm.parse(name)) {
+        throw InvalidInputError ("species name", name)
+            << "If the stoichiometry is not explicitly given, then species "
+            << "name must be formatted as a valid molecular formula.";
+    }
 
     m_stoichiometry.assign(
         sm.stoichiometry().begin(), sm.stoichiometry().end());
@@ -216,8 +220,13 @@ void Species::initDataFromStoichiometry()
         for ( ; el != Element::database().end(); ++el)
             if (el->name() == iter->first) break;
 
-        if (el == Element::database().end())
-            throw ElementDoesNotExist();
+        if (el == Element::database().end()) {
+            throw InvalidInputError("element name", iter->first)
+                ("species name", m_name)
+                << "This element is not provided in the element database, "
+                << "therefore it cannot be used to define the species "
+                << "stoichiometry.";
+        }
 
         m_mw += iter->second * el->atomicMass();
         m_charge += iter->second * el->charge();
