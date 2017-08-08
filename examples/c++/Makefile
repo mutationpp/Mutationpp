@@ -26,7 +26,6 @@ CXX_FLAGS = -I $(MUTATIONPP_INSTALL)/include \
 			-I $(MUTATIONPP_INSTALL)/include/mutation++ \
  			-O3 -g
 
-
 # use .dylib for Mac, .so for Unix
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
