@@ -31,13 +31,12 @@
 #include "CollisionIntegral.h"
 #include "CollisionPair.h"
 #include "Constants.h"
-//#include "MCHInterpolator.h"
-//#include "ChebyshevInterpolator.h"
 #include "Interpolators.h"
 #include "StringUtils.h"
 #include "SharedPtr.h"
 #include "Thermodynamics.h"
 #include "XMLite.h"
+
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -52,6 +51,7 @@ using namespace Mutation::Numerics;
 #include <iostream>
 #include <cassert>
 #include <sstream>
+
 using namespace std;
 
 namespace Mutation {
@@ -65,8 +65,13 @@ SharedPtr<CollisionIntegral> CollisionIntegral::load(
     string type;
     args.xml.getAttribute("type", type, "Integral type must be specified.");
 
-    CollisionIntegral* p_ci(
-        Config::Factory<CollisionIntegral>::create(type, args));
+    CollisionIntegral* p_ci;
+    try {
+        p_ci = Config::Factory<CollisionIntegral>::create(type, args);
+    } catch (Error& e) {
+        e << "\nWas trying to load a collision integral.";
+        throw;
+    }
 
     args.xml.parseCheck(p_ci != NULL,
         "Invalid collision integral type '" + type + "' for " + args.kind +
@@ -669,11 +674,17 @@ public:
 		    "Table rows must be same size and greater than 1.");
 
 		// Load the interpolator
-		mp_interpolator = SharedPtr< Interpolator<double> > (
-		    Config::Factory<Interpolator<double> >::create(
-		        m_interpolator_type,
-		        Interpolator<double>::ARGS(&m_T[0], &m_Q[0], m_T.size())
-		    ));
+		try {
+            mp_interpolator = SharedPtr< Interpolator<double> > (
+                Config::Factory<Interpolator<double> >::create(
+                    m_interpolator_type,
+                    Interpolator<double>::ARGS(&m_T[0], &m_Q[0], m_T.size())
+                ));
+		} catch (Error& e) {
+		    e << "\nWas trying to load a collision integral interpolation "
+		      << "scheme.";
+		    throw;
+		}
 	}
 
 	// Allow tabulation of this integral type

@@ -44,6 +44,9 @@ public:
     // Required for self registering viscosity algorithms
     typedef CollisionDB& ARGS;
     
+    /// Returns name of this type.
+    static std::string typeName() { return "ViscosityAlgorithm"; }
+
     /// Constructor taking a CollisionDB object.
     ViscosityAlgorithm(ARGS collisions)
         : m_collisions(collisions)

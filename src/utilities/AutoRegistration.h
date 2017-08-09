@@ -6,7 +6,7 @@
  * entirely taken from the SConfig library written by Andrea Lani and the
  * documentation and formatting has only been altered to match the standards
  * used in the Mutation++ library.  In addition, the use of exceptions has been
- * removed from the original code and replaced with simple cout statements.
+ * changed to match the Mutation++ exception policy.
  *
  * @author Andrea Lani
  * @author J.B. Scoggins
@@ -41,6 +41,8 @@
 #include <string>
 #include <vector>
 
+#include "Errors.h"
+
 namespace Mutation {
     namespace Utilities {
         namespace Config {
@@ -50,8 +52,7 @@ template <class PTYPE> class Provider;
 /**
  * This class stores an archive of available Provider's for a generic 
  * polymorphic type PTYPE. Once registered, they can be accessed by name.
- *
- * @author Andrea Lani
+ * This class is originally taken and modified from the VKI CoolFLUID package.
  */
 template <class PTYPE>
 class Factory 
@@ -59,15 +60,19 @@ class Factory
 public:
   
     /**
-     * Resister the Provider.
+     * Register a Provider.
      */
-    void add(Provider<PTYPE>* ptr)
+    void add(Provider<PTYPE>* p_provider)
     {
-        if (m_providers.count(ptr->getName()) == 0) {
-            m_providers[ptr->getName()] = ptr;
-        } else {
-            std::cout << "Provider < " << ptr->getName()
-                      << " > is already registered" << std::endl;            
+        typename std::map<std::string, Provider<PTYPE>*>::const_iterator it;
+        it = m_providers.find(p_provider->getName());
+
+        if (it == m_providers.end())
+            m_providers[p_provider->getName()] = p_provider;
+        else {
+            throw LogicError()
+                << "Provider <" << p_provider->getName() << "> has already "
+                << "been registered for type " << PTYPE::typeName();
         }
     }
   
@@ -76,19 +81,19 @@ public:
      */
     Provider<PTYPE>* getProvider(const std::string& key)
     {    
-        if (m_providers.count(key) == 0) {
-            std::cout << "Provider < " <<  key << " > is not registered" 
-                      << std::endl;
-            std::cout << "  possible providers are: " << std::endl;
-            
-            typename std::map<std::string, Provider<PTYPE>*>::const_iterator iter;
-            for (iter = m_providers.begin() ; iter != m_providers.end(); iter++)
-                std::cout << iter->first << std::endl;
-            return NULL;
-        }
+        typename std::map<std::string, Provider<PTYPE>*>::const_iterator it;
+        it = m_providers.find(key);
+
+        if (it != m_providers.end())
+            return dynamic_cast<Provider<PTYPE>*>(it->second);
         
-        return dynamic_cast<Provider<PTYPE>*>(
-            m_providers.find(key)->second);
+        // Error because key is not a valid provider
+        InvalidInputError error("key", key);
+        error << "Provider <" <<  key << "> for type " << PTYPE::typeName()
+              << " is not registered.  Possible providers are:\n";
+        for (it = m_providers.begin() ; it != m_providers.end(); it++)
+            error << "  " << it->first << "\n";
+        throw error;
     }
   
     /**

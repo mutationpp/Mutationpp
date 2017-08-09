@@ -62,6 +62,9 @@ public:
 
     typedef const Thermodynamics& ARGS;
     
+    /// Returns name of this type.
+    static std::string typeName() { return "StateModel"; }
+
     /**
      * Constructor initializes state.
      *

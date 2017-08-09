@@ -66,6 +66,9 @@ public:
 	    std::string kind;
 	};
 
+	/// Returns name of this type.
+	static std::string typeName() { return "CollisionIntegral"; }
+
 	/**
 	 * Constructor used in self registration.
 	 */

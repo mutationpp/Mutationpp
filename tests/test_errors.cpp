@@ -46,7 +46,7 @@ TEST_CASE
 
         CHECK(
             std::string(error.what()) ==
-            "M++ error: type.\n  info1: value\n  info2: 37\n  info3: a\n  message\n"
+            "\nM++ error: type.\ninfo1: value\ninfo2: 37\ninfo3: a\nmessage\n"
         );
 
         CHECK_THROWS_AS(throw Error("type"), Error);
@@ -84,13 +84,13 @@ TEST_CASE
 
     SECTION("InvalidInputError") {
         InvalidInputError error = InvalidInputError("input", 37) << "message";
-        CHECK(error.getExtraInfo("input") == "37");
+        CHECK(error.getExtraInfo("input") == "input = 37");
         CHECK(error.inputName() == "input");
         CHECK(error.inputValue() == "37");
 
         CHECK(
             std::string(error.what()) ==
-            (Error("invalid input")("input", "37") << "message").what()
+            (Error("invalid input")("input", "input = 37") << "message").what()
         );
 
         CHECK_THROWS_AS(throw InvalidInputError("", 0) << "", Error);

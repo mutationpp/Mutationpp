@@ -39,7 +39,12 @@ class CompareFunc
 {
 public:
     typedef double ARGS;
+
+    /// Returns name of this type.
+    static std::string typeName() { return "CompareFunc"; }
+
     CompareFunc(double tol) : m_tolerance(tol) {}
+
     virtual ~CompareFunc() {}
 
     bool compare(Mutation::Mixture& mix, Eigen::VectorXd result)

@@ -27,18 +27,25 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-#include <algorithm>
+//#include <algorithm>
 #include <exception>
+#include <iostream>
+#include <set>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace Mutation {
+
+void terminateOnError();
 
 /**
  * Base class for all Mutation++ exceptions.  Defines a consistent look-and-feel
  * for all error messages in the library.  Also ensures that catching the Error
- * type will catch all exceptions thrown by Mutation++ code.
+ * type will catch all exceptions thrown by Mutation++ code.  Finally, the last
+ * Error (or derived) object which is constructed before std::terminate is
+ * called, is guaranteed to be printed to standard output.  This ensures that a
+ * user of M++ will be notified of an uncaught Error object.
  */
 class Error : public std::exception
 {
@@ -52,7 +59,11 @@ public:
      */
     Error(const std::string& type) :
         m_type(type)
-    { }
+    {
+        // Set this Error as the most recent
+        lastError() = this;
+        m_terminate = std::set_terminate(terminateOnError);
+    }
 
     /**
      * Copy constructor.
@@ -62,13 +73,18 @@ public:
     Error(const Error& copy) :
         m_type(copy.m_type),
         m_extra_info(copy.m_extra_info),
-        m_formatted_message(copy.m_formatted_message)
+        m_formatted_message(copy.m_formatted_message),
+        m_terminate(copy.m_terminate)
     {
         m_message_stream << copy.m_message_stream.rdbuf();
     }
 
     /// Destructor.
-    virtual ~Error() throw() { }
+    virtual ~Error() throw()
+    {
+        // Reset the terminate function
+        std::set_terminate(m_terminate);
+    }
 
     /// Input stream operator allows for message to be added to error.
     template <typename T>
@@ -97,9 +113,9 @@ public:
             std::vector<std::pair<std::string, std::string> >::iterator it;
 
             // Format the error message on demand
-            m_formatted_message = "M++ error: " + m_type + ".\n  ";
+            m_formatted_message = "\nM++ error: " + m_type + ".\n";
             for (it = m_extra_info.begin(); it != m_extra_info.end(); ++it)
-                m_formatted_message += it->first + ": " + it->second + "\n  ";
+                m_formatted_message += it->first + ": " + it->second + "\n";
             m_formatted_message += m_message_stream.str() + "\n";
 
             return m_formatted_message.c_str();
@@ -164,6 +180,19 @@ public:
         return empty;
     }
 
+    // Give private access to terminate function
+    friend void terminateOnError();
+
+private:
+
+    /**
+     * Keeps track of the most recent Error.
+     */
+    static Error*& lastError() {
+        static Error* p_last_error = NULL;
+        return p_last_error;
+    }
+
 private:
 
     /// Type of error message.
@@ -178,7 +207,23 @@ private:
     /// The fully formatted message which gets displayed by what()
     std::string m_formatted_message;
 
+    /// Keep track of the terminate function to reset if successfully handled.
+    std::terminate_handler m_terminate;
+
 }; // class Error
+
+
+/**
+ * Reports the last uncaught Error.
+ */
+inline void terminateOnError()
+{
+    // Notify the user of the last error.
+    std::cout << Error::lastError()->what() << std::endl;
+
+    // Try to clean up before terminating
+    std::exit(1);
+}
 
 
 /**
@@ -276,11 +321,13 @@ class InvalidInputError : public ErrorExtension<InvalidInputError>
 public:
     /// Constructor taking the input name and value.
     template <typename T>
-    InvalidInputError(const std::string& input, const T& value) :
+    InvalidInputError(const std::string& name, const T& value) :
         ErrorExtension<InvalidInputError>("invalid input"),
-        m_input(input)
+        m_name(name)
     {
-        addExtraInfo(input, value);
+        std::stringstream ss; ss << value;
+        m_value = ss.str();
+        addExtraInfo("input", m_name + " = " + m_value);
     }
 
     /// Destructor.
@@ -288,16 +335,29 @@ public:
 
     /// Returns the name of the invalid input.
     const std::string& inputName() const {
-        return m_input;
+        return m_name;
     }
 
     /// Returnst the value of the invalid input.
     const std::string& inputValue() const {
-        return getExtraInfo(m_input);
+        return m_value;
     }
 private:
-    std::string m_input;
+    std::string m_name;
+    std::string m_value;
 }; // class InvalidInput
+
+
+/**
+ * Reports a "logic error".  This exception type should only be used in cases
+ * which fail due to programming logic errors which should be preventable and
+ * cannot be handled with simple assert() statements.
+ */
+class LogicError : public ErrorExtension<LogicError>
+{
+public:
+    LogicError() : ErrorExtension<LogicError>("logic error") { }
+}; // class LogicError
 
 } // namespace Mutation
 

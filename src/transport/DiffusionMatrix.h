@@ -45,6 +45,9 @@ public:
     // Required for self registering diffusion matrix algorithms
     typedef CollisionDB& ARGS;
 
+    /// Returns name of this type.
+    static std::string typeName() { return "DiffusionMatrix"; }
+
     /// Constructor taking a CollisionDB object.
     DiffusionMatrix(ARGS collisions)
         : m_collisions(collisions),
