@@ -51,6 +51,9 @@ public:
     // Allows self-registration of TransferModel objects
     typedef Mutation::Mixture& ARGS;
 
+    /// Returns name of this type.
+    static std::string typeName() { return "TransferModel"; }
+
     TransferModel(ARGS mix)
         : m_mixture(mix)
     { }

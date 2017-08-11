@@ -29,13 +29,10 @@
 #include "StateModel.h"
 #include "Utilities.h"
 #include "Composition.h"
-//#include "MultiPhaseEquilSolver.h"
-//#include "ParticleRRHO.h"
 
 #include <set>
 
 using namespace std;
-//using namespace Mutation::Numerics;
 using namespace Mutation::Utilities;
 using namespace Eigen;
 
@@ -53,8 +50,13 @@ Thermodynamics::Thermodynamics(
     : mp_work1(NULL), mp_work2(NULL), mp_wrkcp(NULL), mp_default_composition(NULL),
       m_has_electrons(false), m_natoms(0), m_nmolecules(0)
 {
-    // Load the thermodynamic database
-    mp_thermodb = Config::Factory<ThermoDB>::create(thermo_db, 0);
+    try {
+        // Load the thermodynamic database
+        mp_thermodb = Config::Factory<ThermoDB>::create(thermo_db, 0);
+    } catch (Error& e) {
+        e << "\nWas trying to load the thermodynamic database.";
+        throw;
+    }
     if (!mp_thermodb->load(species_descriptor)) {
         cout << "Did not load all required species... Exiting." << endl;
         exit(1);
@@ -99,9 +101,19 @@ Thermodynamics::Thermodynamics(
     // Allocate a new equilibrium solver
     mp_equil = new MultiPhaseEquilSolver(*this);
     
-    // Allocate a new state model
-    mp_state = Config::Factory<StateModel>::create(state_model, *this);
-    //mp_state->notifyOnUpdate(this);
+    try {
+        // Allocate a new state model
+        mp_state = Config::Factory<StateModel>::create(state_model, *this);
+    } catch (Error& e) {
+        // Can't save this, fail gracefully
+        delete mp_thermodb;
+        delete mp_default_composition;
+        delete mp_equil;
+
+        // Add a bit more info to the error message
+        e << "\nWas trying to load the requested state model.";
+        throw;
+    }
 
     // Allocate storage for the work array
     mp_work1 = new double [nSpecies()];

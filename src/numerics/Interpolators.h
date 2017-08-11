@@ -41,6 +41,9 @@ class Interpolator
 {
 public:
 
+    /// Returns name of this type.
+    static std::string typeName() { return "Interpolator"; }
+
     // Arguments for self registering constructor
     struct ARGS {
         ARGS(

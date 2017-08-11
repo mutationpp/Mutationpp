@@ -99,8 +99,15 @@ Transport::~Transport()
 
 void Transport::setViscosityAlgo(const std::string& algo)
 {
-    if (mp_viscosity != NULL) delete mp_viscosity;
-    mp_viscosity = Factory<ViscosityAlgorithm>::create(algo, m_collisions);
+    if (mp_viscosity != NULL)
+        delete mp_viscosity;
+
+    try {
+        mp_viscosity = Factory<ViscosityAlgorithm>::create(algo, m_collisions);
+    } catch (Error& e) {
+        e << "\nWas trying to set the viscosity algorithm.";
+        throw;
+    }
 }
 
 //==============================================================================
@@ -111,9 +118,16 @@ double Transport::viscosity() { return mp_viscosity->viscosity(); }
 
 void Transport::setThermalConductivityAlgo(const std::string& algo)
 {
-    if (mp_thermal_conductivity != NULL) delete mp_thermal_conductivity;
-    mp_thermal_conductivity = Factory<ThermalConductivityAlgorithm>::create(
-        algo, m_collisions);
+    if (mp_thermal_conductivity != NULL)
+        delete mp_thermal_conductivity;
+
+    try {
+        mp_thermal_conductivity =
+            Factory<ThermalConductivityAlgorithm>::create(algo, m_collisions);
+    } catch (Error& e) {
+        e << "\nWas trying to set the thermal conductivity algorithm.";
+        throw;
+    }
 }
 
 //==============================================================================
@@ -127,8 +141,16 @@ double Transport::heavyThermalConductivity()
 
 void Transport::setDiffusionMatrixAlgo(const std::string& algo)
 {
-    if (mp_diffusion_matrix != NULL) delete mp_diffusion_matrix;
-    mp_diffusion_matrix = Factory<DiffusionMatrix>::create(algo, m_collisions);
+    if (mp_diffusion_matrix != NULL)
+        delete mp_diffusion_matrix;
+
+    try {
+        mp_diffusion_matrix =
+            Factory<DiffusionMatrix>::create(algo, m_collisions);
+    } catch (Error& e) {
+        e << "\nWas trying to set the diffusion matrix algorithm.";
+        throw;
+    }
 }
 
 //==============================================================================

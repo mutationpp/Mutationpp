@@ -45,6 +45,9 @@ public:
     /// these arguements.
     typedef CollisionDB& ARGS;
 
+    /// Returns name of this type.
+    static std::string typeName() { return "ThermalConductivityAlgorithm"; }
+
     /**
      * Constructor.
      */

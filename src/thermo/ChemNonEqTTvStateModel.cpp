@@ -153,16 +153,23 @@ public:
     
     void initializeTransferModel(Mutation::Mixture& mix)
     {
-        // Heavy particle terms
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaVT", mix));
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaCV", mix));
-        addTransferTerm(0, Factory<TransferModel>::create("OmegaCElec", mix));
+        typedef Factory<TransferModel> Factory;
 
-        // Terms only included when electrons are present
-        if (m_thermo.hasElectrons()) {
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaET", mix));
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaCE", mix));
-            addTransferTerm(0, Factory<TransferModel>::create("OmegaI", mix));
+        try {
+            // Heavy particle terms
+            addTransferTerm(0, Factory::create("OmegaVT", mix));
+            addTransferTerm(0, Factory::create("OmegaCV", mix));
+            addTransferTerm(0, Factory::create("OmegaCElec", mix));
+
+            // Terms only included when electrons are present
+            if (m_thermo.hasElectrons()) {
+                addTransferTerm(0, Factory::create("OmegaET", mix));
+                addTransferTerm(0, Factory::create("OmegaCE", mix));
+                addTransferTerm(0, Factory::create("OmegaI", mix));
+            }
+        } catch (Error& e) {
+            e << "\nWas trying to load a energy transfer model.";
+            throw;
         }
     }
     

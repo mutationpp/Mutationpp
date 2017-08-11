@@ -57,6 +57,9 @@ public:
      */
     typedef int ARGS;
     
+    /// Returns name of this type.
+    static std::string typeName() { return "ThermoDB"; }
+
     /**
      * Constructs an empty database with a given standard state temperature and 
      * pressure.
