@@ -28,6 +28,7 @@
 #define ERRORS_H
 
 //#include <algorithm>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <set>
