@@ -27,6 +27,7 @@
 
 #include "Utilities.h" // includes Units.h
 #include "Constants.h"
+#include "Errors.h"
 
 #include <map>
 #include <vector>
@@ -198,8 +199,15 @@ void Units::initializeFromString(const std::string& str)
         if (_defined_units.find(*iter) != _defined_units.end())
             operator=(*this * _defined_units[*iter]);
         else {
-            std::cerr << *iter << " is not a defined unit!" << std::endl;
-            exit(1);
+            InvalidInputError error("units", str);
+            error << "\"" << *iter << "\" is not a defined unit. Available "
+                  << "units are:";
+            std::map<std::string, Units>::const_iterator it =
+                _defined_units.begin();
+            for ( ; it != _defined_units.end(); ++it) {
+                error << "\n" << it->first;
+            }
+            throw error;
         }
     }
     
@@ -211,8 +219,15 @@ void Units::initializeFromString(const std::string& str)
             if (_defined_units.find(*iter) != _defined_units.end())
                 operator=(*this / _defined_units[*iter]);
             else {
-                std::cerr << *iter << " is not a defined unit!" << std::endl;
-                exit(1);
+                InvalidInputError error("units", str);
+                error << "\"" << *iter << "\" is not a defined unit. Available "
+                      << "units are:";
+                std::map<std::string, Units>::const_iterator it =
+                    _defined_units.begin();
+                for ( ; it != _defined_units.end(); ++it) {
+                    error << "\n  " << it->first;
+                }
+                throw error;
             }
         }
     }
@@ -222,14 +237,48 @@ double Units::convertToBase(const double number) {
     return number * m_factor;
 }
 
-double Units::convertTo(const double number, const Units& units) {
-    for (int i = 0; i < 7; ++i)
-        assert( m_exponent[i] == units.m_exponent[i] );
+double Units::convertTo(const double number, const Units& units)
+{
+    // Make sure both units represent the same quantity
+    for (int i = 0; i < 7; ++i) {
+        if (m_exponent[i] == units.m_exponent[i])
+            continue;
+
+        throw Error("invalid unit conversion")
+            << "\"" << (*this) << "\" cannot be converted to \""
+            << units << "\".";
+    }
+
     return number * m_factor / units.m_factor;
 }
 
-double Units::convertTo(const double number, const std::string& units) {
-    return convertTo(number, Units(units));
+double Units::distance(const Units& units) const
+{
+    double d = 0, temp;
+    for (int i = 0; i < 7; ++i) {
+        temp = (m_exponent[i] - units.m_exponent[i]);
+        d += temp*temp;
+    }
+
+    return (std::sqrt(d) + std::abs(m_factor - units.m_factor));
+}
+
+std::string Units::simplestRepresentation() const
+{
+    // Vector of (distance, unit) pairs
+    std::vector<std::pair<double, std::string> > v;
+
+    std::map<std::string, Units>::const_iterator it =
+        _defined_units.begin();
+    for ( ; it != _defined_units.end(); ++it)
+        v.push_back(std::make_pair(distance(it->second), it->first));
+
+    std::sort(v.begin(), v.end());
+
+    for (int i = 0; i < v.size(); ++i)
+        std::cout << v[i].second << ": " << v[i].first << std::endl;
+
+    return "Unit";
 }
 
     } // namespace Utilities

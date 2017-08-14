@@ -29,6 +29,7 @@
 #ifndef UTILS_UNITS_H
 #define UTILS_UNITS_H
 
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -46,25 +47,38 @@ public:
     Units();
     Units(const char []);
     Units(const std::string& str);
-    //Units(std::initializer_list<double> exponents);
     Units(double e1, double e2, double e3, double e4, double e5, double e6, double e7); 
     Units(const Units& units);
     
     double convertToBase(const double number);
     double convertTo(const double number, const Units& units);
-    double convertTo(const double number, const std::string& units);
     
     Units& operator=(const Units& right);
     
+    /**
+     * Returns the simplest representation of the Units object as a string.  In
+     * other words, tries to build a string representing of the object by
+     * combining the least number of predefined unit types as possible.  For
+     * example, Units("kg-m/s-s").simplestRepresentation() would return "N" for
+     * Newton.
+     */
+    std::string simplestRepresentation() const;
+
     friend Units operator*(const Units& left, const double right);
     friend Units operator/(const Units& left, const double right);
     friend Units operator*(const Units& left, const Units& right);
     friend Units operator/(const Units& left, const Units& right);
     friend Units operator^(const Units& left, const double power);
 
+    friend std::ostream& operator<< (std::ostream& out, const Units& units) {
+        out << units.simplestRepresentation();
+        return out;
+    }
+
 private:
 
     void initializeFromString(const std::string& str);
+    double distance(const Units& units) const;
 
 private:
 
