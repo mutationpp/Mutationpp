@@ -10,6 +10,7 @@ docs/html/
 .idea/
 .cproject
 .project
+.pydevproject
 
 # Python
 *.pyc

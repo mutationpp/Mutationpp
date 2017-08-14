@@ -75,7 +75,7 @@ void comparisonTest(const std::string& filename)
         double v2 [n2];
 
         for (int i = 0; i < data.rows(); ++i) {
-            INFO("Line:" << i + 4)
+            INFO("Line:" << i + 4);
 
             // Set the state of the mixture
             Eigen::Map<Eigen::VectorXd>(v1,n1) = data.row(i).segment( 0,n1);
@@ -83,7 +83,14 @@ void comparisonTest(const std::string& filename)
             mix.setState(v1, v2, var_set);
 
             // Now compute the function and compare with expected result
-            CHECK(function->compare(mix, data.row(i).tail(result_size)));
+            try {
+                bool passed =
+                    function->compare(mix, data.row(i).tail(result_size));
+                CHECK(passed);
+            } catch (Error& e) {
+                INFO(e.what());
+                CHECK(false);
+            }
         }
 
         delete function;

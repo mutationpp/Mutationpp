@@ -102,7 +102,7 @@
     </defaults>
 
     <!-- Dipole Polarizabilities -->
-    <dipole-polarizabilities units="A-A-A">
+    <dipole-polarizabilities units="Å-Å-Å">
         <species name="C"    value="1.76"   ref="Wright2007"/>
         <species name="C2"   value="37.64"  ref="Jaffe"/>
         <species name="C2H"  value="8.41"   ref="Jaffe"/>
@@ -139,10 +139,10 @@
     <!-- Explicitly defined collision pairs -->
     <!-- e- -->
     <pair s1="e-" s2="Ar">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="15">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="15">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.12  0.19  0.43  0.55  0.66  0.89  1.12  1.68  2.23 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="15">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="15">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.17  0.30  0.79  1.05  1.31  1.81  2.25  3.07  3.48 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="15">
@@ -154,106 +154,106 @@
     </pair>
     
     <pair s1="e-" s2="C">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               2000  4000  5000  6000  8000 10000 15000,
               8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               2000  4000  5000  6000  8000 10000 15000,
               8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
               2000  4000  5000  6000  8000 10000 15000,
               1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
     
     <pair s1="e-" s2="C2"> <!-- Copying values from C -->
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
     
     <pair s1="e-" s2="C2H"> <!-- Copying values from C -->
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
     
     <pair s1="e-" s2="C3"> <!-- Copying values from C -->
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="copy C">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
     
     <pair s1="e-" s2="CN">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="50">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="50">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="50">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="50">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
     </pair>
     
     <pair s1="e-" s2="CO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
     </pair>
     
     <pair s1="e-" s2="CO2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.61  4.59  2.20  1.83  1.65  1.51  1.48  1.57  1.71 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               6.50  3.10  1.54  1.37  1.32  1.35  1.43  1.62  1.74 </Q22>
-        <Bst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               1.41  1.35  1.07  0.92  0.83  0.79  0.77  0.65  0.67 </Bst>
-        <Cst type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               0.66  0.63  0.69  0.77  0.84  0.95  1.01  1.08  1.12 </Cst>
     </pair>
@@ -331,10 +331,10 @@
     </pair>
     
     <pair s1="e-" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              9.04  4.06  3.33  2.93  2.53  2.34  2.13  1.98 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              5.68  3.71  3.52  3.42  3.30  3.20  2.95  2.58 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -346,10 +346,10 @@
     </pair>
     
     <pair s1="e-" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.56  2.17  2.91  3.59  3.80  3.93  3.99  3.91  3.57  3.29 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.46  2.07  2.96  3.88  4.09  4.15  4.04  3.85  3.41  3.12 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -361,10 +361,10 @@
     </pair>
     
     <pair s1="e-" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              4.53  4.64  4.29  3.97  3.48  3.17  2.75  2.55 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="35">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
              5.64  4.52  4.05  3.73  3.37  3.18  2.92  2.75 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -376,10 +376,10 @@
     </pair>
     
     <pair s1="e-" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="30">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.72  0.85  0.98  1.02  1.05  1.09  1.13  1.20  1.26 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="30">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              0.82  1.05  1.34  1.44  1.52  1.65  1.73  1.85  1.90 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -391,10 +391,10 @@
     </pair>
     
     <pair s1="e-" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.31  1.72  1.99  2.04  2.06  2.06  2.05  1.99  1.96 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.30  1.73  2.10  2.18  2.23  2.29  2.31  2.32  2.31 </Q22>
         <Bst type="table" ref="Wright2005" accuracy="20">
@@ -407,1050 +407,1050 @@
     
     <!-- Ar -->
     <pair s1="Ar" s2="Ar">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             11.67 10.05  8.61  7.50  6.47  6.16  5.90  5.51  5.22  4.72  4.41 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             12.88 11.12  9.66  8.60  7.57  7.23  6.96  6.53  6.20  5.60  5.17 </Q22>
     </pair>
     
     <pair s1="Ar" s2="Ar+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              49.00 45.52 41.51 38.23 36.55 35.43 34.61 33.95 32.95 32.20 31.60 30.89 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.99 22.99 15.17 10.58  9.10  8.37  7.94  7.64  7.22  6.93  6.73  6.48 </Q22>
     </pair>
 
     <pair s1="Ar" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.94  7.62  6.79  5.72  4.76  4.47  4.25  3.89  3.64  3.19 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.31  8.96  8.03  6.84  5.75  5.42  5.17  4.77  4.47  3.95 </Q22>
     </pair>
     
     <pair s1="Ar" s2="N+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.70 21.01 13.27  8.90  7.46  6.74  6.29  5.99  5.58  5.30  5.09  4.85 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.63 22.73 14.77  9.84  8.25  7.46  7.01  6.70  6.27  5.99  5.79  5.55 </Q22>
     </pair>
 
     <pair s1="Ar" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             10.93  9.57  8.35  7.40  6.51  6.22  5.98  5.61  5.31  4.80 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             11.97 10.50  9.28  8.38  7.53  7.25  7.02  6.63  6.32  5.73 </Q22>
     </pair>
     
     <pair s1="Ar" s2="N2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.26 21.77 14.82 11.16  9.92  9.29  8.88  8.60  8.19  7.91  7.70  7.45 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              31.16 23.83 16.21 12.07 10.75 10.08  9.69  9.41  8.99  8.69  8.52  8.26 </Q22>
     </pair>
 
     <pair s1="Ar" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.44 10.10  9.73  8.86  7.78  6.66  6.32  6.06  5.67  5.37  4.86 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.03 11.33 10.89  9.90  8.85  7.79  7.44  7.15  6.71  6.37  5.77 </Q22>
     </pair>
     
     <pair s1="Ar" s2="NO+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.92 21.16 13.63  9.51  8.13  7.44  7.00  6.70  6.28  5.99  5.78  5.53 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.02 23.03 15.11 10.46  8.97  8.22  7.78  7.48  7.04  6.76  6.55  6.29 </Q22>
     </pair>
 
     <pair s1="Ar" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.62  8.72  7.58  6.52  5.54  5.24  5.00  4.64  4.37  3.90  3.58 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             11.11 10.13  8.87  7.69  6.60  6.26  6.00  5.59  5.28  4.74  4.37 </Q22>
     </pair>
     
     <pair s1="Ar" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.78 21.07 13.13  8.52  6.99  6.22  5.76  5.45  5.03  4.75  4.54  4.30 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.32 22.68 14.69  9.48  7.77  6.92  6.45  6.13  5.69  5.40  5.20  4.96 </Q22>
     </pair>
 
     <pair s1="Ar" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             11.30  9.86  8.52  7.42  6.39  6.08  5.83  5.44  5.16  4.67 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             12.33 10.82  9.57  8.54  7.48  7.14  6.87  6.44  6.12  5.54 </Q22>
     </pair>
     
     <pair s1="Ar" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.95 21.24 13.17  8.35  6.74  5.94  5.46  5.14  4.71  4.43  4.22  3.99 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.22 22.68 14.74  9.33  7.51  6.63  6.13  5.79  5.34  5.06  4.85  4.62 </Q22>
     </pair>
 
     <!-- Ar+ -->
     <pair s1="Ar+" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              23.05 16.76 11.18  8.31  7.35  6.84  6.51  6.28  5.95  5.71  5.53  5.32 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              24.69 18.47 12.30  9.09  8.06  7.53  7.21  6.99  6.64  6.38  6.23  6.01 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.17 22.02 14.08  9.71  8.26  7.52  7.06  6.74  6.30  6.00  5.77  5.51 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              31.20 23.93 15.65 10.72  9.13  8.33  7.87  7.55  7.09  6.79  6.57  6.30 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.56 21.63 13.92  9.67  8.25  7.54  7.09  6.77  6.35  6.05  5.83  5.57 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              30.51 23.55 15.45 10.65  9.11  8.33  7.88  7.57  7.13  6.83  6.61  6.35 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              19.22 13.92  9.51  7.30  6.53  6.11  5.83  5.62  5.32  5.10  4.93  4.73 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              21.03 15.44 10.46  8.03  7.23  6.79  6.52  6.32  6.00  5.78  5.62  5.41 </Q22>
     </pair>
 
     <pair s1="Ar+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              28.69 20.92 13.38  9.32  7.97  7.29  6.86  6.56  6.14  5.85  5.63  5.37 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005b" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.43 22.55 14.81 10.27  8.82  8.08  7.65  7.35  6.92  6.63  6.41  6.16 </Q22>
     </pair>
     
     <!-- C -->
     <pair s1="C" s2="C">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="5">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.34 10.50  9.96  8.66  7.14  5.84  5.43  5.11  4.59  4.17  3.40  2.86 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="5">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.44 11.50 10.93  9.44  7.77  6.31  5.92  5.60  5.11  4.71  3.94  3.38 </Q22>
     </pair>
 
     <pair s1="C" s2="C+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              52.37 46.62 40.92 36.78 33.50 32.58 31.86 30.79 29.99 28.63 27.70 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              30.47 23.59 15.60 10.70  8.33  7.87  7.57  7.13  6.84  6.39 </Q22>
     </pair>
     
     <pair s1="C" s2="C2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.113337e-01 -9.844008e-01 6.435295e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.153881e-01 -9.910089e-01 6.492305e+00 </Q22>
     </pair>
 
     <pair s1="C" s2="C2H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.255756e-01 -1.211944e+00 7.295266e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.304118e-01 -1.227091e+00 7.362603e+00 </Q22>
     </pair>
 
     <pair s1="C" s2="C3">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.255034e-01 -1.210720e+00 7.289965e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.303356e-01 -1.225820e+00 7.357228e+00 </Q22>
     </pair>
 
     <pair s1="C" s2="CN">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               8.25  7.90  7.03  5.91  4.88  4.58  4.34  3.97  3.69  3.21  2.90 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.72  9.32  8.36  7.10  5.94  5.59  5.31  4.88  4.56  4.01  3.64 </Q22>
     </pair>
 
     <pair s1="C" s2="CO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000,
               9.01  8.62  7.72  6.57  5.51  5.19  4.94  4.55  4.27  3.77 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              10.48 10.08  9.07  7.80  6.63  6.26  5.98  5.54  5.21  4.63 </Q22>
     </pair>
 
     <pair s1="C" s2="CO2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.84 10.50  9.52  8.22  7.08  6.72  6.41  6.00  5.67  5.10  4.71 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.48 12.08 10.98  9.62  8.36  7.95  7.62  7.15  6.78  6.14  5.71 </Q22>
     </pair>
     
     <pair s1="C" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.057286e-01 -9.023503e-01 5.717909e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.094753e-01 -9.060096e-01 5.772985e+00 </Q22>
     </pair>
 
     <pair s1="C" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.092756e-01 -9.537805e-01 5.978558e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.132170e-01 -9.592789e-01 6.034728e+00 </Q22>
     </pair>
 
     <pair s1="C" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="5">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.17  7.65  7.25  6.43  5.63  4.81  4.54  4.33  3.98  3.69  3.13  2.72 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="5">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.31  8.67  8.33  7.33  6.29  5.33  5.07  4.87  4.53  4.26  3.71  3.27 </Q22>
     </pair>
 
     <pair s1="C" s2="N+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              29.88 21.86 13.82  9.25  6.97  6.50  6.19  5.76  5.47  5.02 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              30.52 23.53 15.37 10.21  7.70  7.22  6.90  6.46  6.17  5.72 </Q22>
     </pair>
 
     <pair s1="C" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   600  1000  2000  4000  6000  8000 10000,
              12.28 10.28  9.22  7.85  6.64  5.96  5.47  5.07 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   600  1000  2000  4000  6000  8000 10000,
              13.58 11.36 10.18  8.77  7.46  6.78  6.28  5.94 </Q22>
     </pair>
 
     <pair s1="C" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               7.97  7.65  6.86  5.82  4.87  4.58  4.35  4.00  3.74  3.29  3.00 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.34  8.98  8.10  6.93  5.86  5.54  5.28  4.88  4.58  4.07  3.72 </Q22>
     </pair>
 
     <pair s1="C" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  2000  4000  6000  8000 10000 15000 20000,
              10.35  8.82  6.49  5.29  4.56  4.08  3.70  3.02  2.66 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  2000  4000  6000  8000 10000 15000 20000,
              11.36  9.79  7.06  5.87  5.17  4.69  4.30  3.57  3.18 </Q22>
     </pair>
 
     <pair s1="C" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              29.77 21.90 13.70  8.86  6.45  5.96  5.64  5.20  4.91  4.46 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              30.47 23.54 15.31  9.86  7.16  6.66  6.33  5.87  5.58  5.13 </Q22>
     </pair>
 
     <pair s1="C" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               8.33  8.01  7.21  6.22  5.26  4.97  4.74  4.40  4.15  3.70  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.62  9.29  8.41  7.31  6.26  5.94  5.69  5.30  5.01  4.50  4.16 </Q22>
     </pair>
     
     <!-- C+ -->
     <pair s1="C+" s2="C2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
 
     <pair s1="C+" s2="C2H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C+" s2="C3">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
     
     <pair s1="C+" s2="CO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              31.97 23.48 14.82  9.89  7.42  6.91  6.56  6.09  5.76  5.24 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              33.13 25.50 16.56 10.98  8.26  7.74  7.39  6.89  6.57  6.05 </Q22>
     </pair>
     
     <pair s1="C+" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
     <pair s1="C+" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
 
     <pair s1="C+" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              22.94 16.66 10.98  8.04  6.54  6.21  5.98  5.65  5.41  5.02 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              24.47 18.36 12.11  8.81  7.22  6.89  6.66  6.32  6.06  5.70 </Q22>
     </pair>
 
     <pair s1="C+" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              19.40 13.87  9.30  7.03  6.25  5.54  5.34  5.04  4.82  4.46 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              20.85 15.31 10.25  7.74  6.49  6.21  6.01  5.70  5.48  5.12 </Q22>
     </pair>
 
     <pair s1="C+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              28.30 20.70 13.17  9.03  6.96  6.52  6.22  5.80  5.51  5.04  4.73 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              29.63 22.64 14.68 10.00  7.74  7.30  7.00  6.56  6.27  5.80  5.48 </Q22>
     </pair>
     
     <!-- C2 -->
     <pair s1="C2" s2="C2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.183714e-01 -1.093423e+00 7.067818e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.228121e-01 -1.104063e+00 7.128907e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="C2H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.326131e-01 -1.334480e+00 8.052566e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.378356e-01 -1.354402e+00 8.128210e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="C2H2,acetylene">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.256066e-01 -1.212469e+00 7.806588e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.304445e-01 -1.227636e+00 7.873957e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="C3">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.325755e-01 -1.333808e+00 8.049742e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.377959e-01 -1.353703e+00 8.125335e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="CN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.179848e-01 -1.087260e+00 7.024771e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.224043e-01 -1.097670e+00 7.085585e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="CO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.194489e-01 -1.110703e+00 7.090079e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.239487e-01 -1.121993e+00 7.151964e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="CO2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.322738e-01 -1.328420e+00 8.487972e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.374777e-01 -1.348103e+00 8.563163e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.127660e-01 -1.006046e+00 6.336713e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.168990e-01 -1.013445e+00 6.394399e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.163130e-01 -1.060844e+00 6.619516e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.206407e-01 -1.070267e+00 6.679212e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="HCN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.330297e-01 -1.341944e+00 8.195500e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.382751e-01 -1.362159e+00 8.271708e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="N">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.214606e-01 -1.143387e+00 7.046901e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.260708e-01 -1.155912e+00 7.110401e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="N+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="N2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.194489e-01 -1.110703e+00 7.087710e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.239487e-01 -1.121993e+00 7.149595e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="N2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="NO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.194489e-01 -1.110703e+00 7.065997e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.239487e-01 -1.121993e+00 7.127882e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="NO+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="O">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.206650e-01 -1.130396e+00 7.006113e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.252316e-01 -1.142429e+00 7.068954e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="O+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="O2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.210112e-01 -1.136038e+00 7.139661e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.255968e-01 -1.148285e+00 7.202786e+00 </Q22>
     </pair>
 
     <pair s1="C2" s2="O2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             9.491920e-13 -1.483455e-11 -5.000000e-01 6.661968e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
     
     <!-- C2H -->
     <pair s1="C2H" s2="C2H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.468550e-01 -1.602900e+00 9.264395e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.528594e-01 -1.633605e+00 9.364231e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="C2H2,acetylene">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.398487e-01 -1.467431e+00 8.928138e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.454684e-01 -1.492643e+00 9.014778e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="C3">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.468177e-01 -1.602160e+00 9.260972e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.528199e-01 -1.632834e+00 9.360731e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="CN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.322466e-01 -1.327934e+00 8.003670e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.374490e-01 -1.347598e+00 8.078825e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="CO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.337373e-01 -1.354673e+00 8.091184e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.390215e-01 -1.375391e+00 8.168368e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="CO2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.350832e-01 -1.379075e+00 9.123864e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.404414e-01 -1.400759e+00 9.202973e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.270083e-01 -1.236347e+00 7.198047e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.319231e-01 -1.252436e+00 7.266893e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="H+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.305551e-01 -1.297955e+00 7.540708e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.356646e-01 -1.316442e+00 7.613687e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="HCN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.472717e-01 -1.611166e+00 9.425465e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.532989e-01 -1.642208e+00 9.526168e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="N">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.318818e-01 -1.321436e+00 7.807352e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.370642e-01 -1.340844e+00 7.882026e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="N+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="N2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.318818e-01 -1.321436e+00 7.954672e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.370642e-01 -1.340844e+00 8.029347e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="N2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="NO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.336801e-01 -1.353642e+00 8.059538e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.389612e-01 -1.374319e+00 8.136643e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="NO+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="O">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.348604e-01 -1.375017e+00 8.000849e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.402062e-01 -1.396540e+00 8.079633e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="O+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="O2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.348604e-01 -1.375017e+00 8.129171e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.402062e-01 -1.396540e+00 8.207955e+00 </Q22>
     </pair>
 
     <pair s1="C2H" s2="O2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             3.773609e-15 -5.917911e-14 -5.000000e-01 6.912467e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
     
     <!-- C3 -->
     <pair s1="C3" s2="C3">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.467804e-01 -1.601422e+00 9.257562e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.527806e-01 -1.632066e+00 9.357244e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="CN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.322091e-01 -1.327266e+00 8.000878e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.374095e-01 -1.346903e+00 8.075984e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="CO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.337048e-01 -1.354088e+00 8.088798e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.389873e-01 -1.374783e+00 8.165938e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="CO2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.363111e-01 -1.401547e+00 9.168908e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.417366e-01 -1.424124e+00 9.249849e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.269709e-01 -1.235707e+00 7.195606e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.318837e-01 -1.251772e+00 7.264411e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="H+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.305179e-01 -1.297300e+00 7.538111e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.356254e-01 -1.315761e+00 7.611044e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="HCN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.472344e-01 -1.610425e+00 9.421993e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.532596e-01 -1.641437e+00 9.522619e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="N">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.304685e-01 -1.296431e+00 7.583566e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.355733e-01 -1.314859e+00 7.656438e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="N+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="N2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.337048e-01 -1.354088e+00 8.086201e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.389873e-01 -1.374783e+00 8.163341e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="N2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="NO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.336563e-01 -1.353213e+00 8.057950e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.389361e-01 -1.373873e+00 8.135022e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="NO+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="O">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.200694e-01 -1.120727e+00 6.759194e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.246033e-01 -1.132394e+00 6.821559e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="O+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="O2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.352671e-01 -1.382427e+00 8.157431e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.406353e-01 -1.404244e+00 8.236809e+00 </Q22>
     </pair>
 
     <pair s1="C3" s2="O2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             6.366877e-15 -9.985039e-14 -5.000000e-01 6.560645e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
     
     <!-- CN -->
     <pair s1="CN" s2="CN">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.67 10.24  9.19  7.79  6.52  6.13  5.83  5.36  5.01  4.41  4.01 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.50 12.02 10.85  9.28  7.85  7.42  7.07  6.54  6.14  5.44  4.98 </Q22>
     </pair>
 
     <pair s1="CN" s2="CN+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="50">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              41.30 34.75 28.63 24.71 22.25 21.65 21.20 20.62 20.25 19.92 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="40">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="40">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              38.21 29.60 20.93 14.80 10.46  9.36  8.54  7.40  6.62  5.40 </Q22>
     </pair>
 
     <pair s1="CN" s2="CO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              10.07  9.74  8.73  7.55  6.44  6.10  5.83  5.41  5.10  4.56 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              11.68 11.31 10.20  8.89  7.65  7.27  6.96  6.50  6.15  5.53 </Q22>
     </pair>
 
     <pair s1="CN" s2="CO2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.41 11.99 10.96  9.59  8.34  7.95  7.65  7.17  6.82  6.19  5.77 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.22 13.76 12.64 11.14  9.77  9.33  8.99  8.47  8.07  7.37  6.89 </Q22>
     </pair>
     
     <pair s1="CN" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.123995e-01 -1.000481e+00 6.294624e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.165124e-01 -1.007676e+00 6.352130e+00 </Q22>
     </pair>
 
     <pair s1="CN" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.159465e-01 -1.055103e+00 6.576380e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.202541e-01 -1.064313e+00 6.635845e+00 </Q22>
     </pair>
     
     <pair s1="CN" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               8.68  8.30  7.29  6.02  4.87  4.53  4.26  3.85  3.54  3.02  2.68 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.33  9.90  8.76  7.32  6.00  5.60  5.29  4.81  4.46  3.84  3.44 </Q22>
     </pair>
 
     <pair s1="CN" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.90 10.43  9.29  7.81  6.47  6.07  5.75  5.26  4.90  4.27  3.86 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.83 12.30 11.03  9.37  7.86  7.39  7.03  6.47  6.05  5.32  4.84 </Q22>
     </pair>
 
     <pair s1="CN" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.31  9.91  8.94  7.64  6.47  6.11  5.82  5.39  5.06  4.50  4.12 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.00 11.56 10.49  9.05  7.73  7.33  7.01  6.51  6.14  5.50  5.06 </Q22>
     </pair>
 
     <pair s1="CN" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               7.79  7.50  6.69  5.72  4.82  4.55  4.33  4.00  3.75  3.32  3.03 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.09  8.76  7.87  6.79  5.78  5.47  5.23  4.85  4.57  4.07  3.74 </Q22>
     </pair>
 
     <pair s1="CN" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.90  9.56  8.62  7.49  6.44  6.11  5.85  5.45  5.16  4.64  4.29 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              11.42 11.05 10.02  8.78  7.61  7.24  6.95  6.51  6.18  5.59  5.20 </Q22>
     </pair>
     
     <!-- CO -->
     <pair s1="CO" s2="CO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.12 10.90 10.54  9.63  8.41  7.09  6.67  6.33  5.81  5.42  4.74  4.29 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.67 12.18 11.77 10.81  9.57  8.16  7.70  7.33  6.75  6.31  5.54  5.01 </Q22>
     </pair>
 
     <pair s1="CO" s2="CO+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="40">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="40">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              40.94 34.48 28.47 24.62 22.20 21.61 21.16 20.59 20.23 19.90 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="40">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="40">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              37.73 29.22 20.66 14.61 10.33  9.24  8.44  7.31  6.53  5.34 </Q22>
     </pair>
 
     <pair s1="CO" s2="CO2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.18 12.36 11.88 10.77  9.52  8.26  7.86  7.54  7.05  6.68  6.04  5.60 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              16.24 13.92 13.32 12.03 10.74  9.50  9.08  8.74  8.21  7.79  7.07  6.56 </Q22>
     </pair>
     
     <pair s1="CO" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.138900e-01 -1.023228e+00 6.345104e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.180847e-01 -1.031258e+00 6.403374e+00 </Q22>
     </pair>
 
     <pair s1="CO" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.174377e-01 -1.078574e+00 6.633358e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.218271e-01 -1.088658e+00 6.693794e+00 </Q22>
     </pair>
 
     <pair s1="CO" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.54  9.09  7.69  6.53  5.43  5.06  4.76  4.29  3.92  3.26  2.82 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              11.80 10.24  8.85  7.71  6.59  6.24  5.94  5.43  5.02  4.24  3.69 </Q22>
     </pair>
 
     <pair s1="CO" s2="N+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              32.39 23.64 14.65  9.46  6.88  6.36  6.00  5.53  5.21  4.70 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              32.65 25.30 16.38 10.55  7.69  7.15  6.79  6.29  5.96  5.46 </Q22>
     </pair>
 
     <pair s1="CO" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.17 12.36 11.88 10.77  9.52  8.25  7.86  7.54  7.05  6.68  6.04  5.60 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.67 12.18 11.77 10.81  9.57  8.16  7.70  7.33  6.75  6.31  5.54  5.02 </Q22>
     </pair>
 
     <pair s1="CO" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              11.88 10.60 10.24  9.35  8.12  6.82  6.40  6.12  5.66  5.31  4.71  4.30 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.43 11.87 11.44 10.48  9.32  8.04  7.61  7.27  6.74  6.33  5.62  5.14 </Q22>
     </pair>
 
     <pair s1="CO" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               7.40  7.11  6.37  5.42  4.55  4.29  4.09  3.77  3.53  3.12  2.85 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               8.61  8.29  7.46  6.42  5.46  5.17  4.93  4.58  4.31  3.84  3.52 </Q22>
     </pair>
 
     <pair s1="CO" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              32.38 23.79 14.62  9.15  6.42  5.88  5.52  5.03  4.71  4.21 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              32.45 25.23 16.37 10.26  7.21  6.64  6.26  5.75  5.42  4.92 </Q22>
     </pair>
 
     <pair s1="CO" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              11.60 10.37 10.02  9.15  7.96  6.76  6.40  6.12  5.69  5.36  4.80  4.42 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.11 11.60 11.19 10.25  9.13  7.93  7.54  7.23  6.73  6.36  5.70  5.25 </Q22>
     </pair>
     
     <!-- CO2 -->
     <pair s1="CO2" s2="CO2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              17.35 14.39 13.66 12.12 10.66  9.47  9.13  8.86  8.44  8.12  7.54  7.15 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              20.35 16.45 15.50 13.58 11.92 10.69 10.32 10.02  9.57  9.21  8.59  8.15 </Q22>
     </pair>
     
     <pair s1="CO2" s2="H">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.280296e-01 -1.253913e+00 7.899922e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.330005e-01 -1.270684e+00 7.969899e+00 </Q22>
     </pair>
 
     <pair s1="CO2" s2="H2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.349382e-01 -1.376433e+00 8.984526e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.402883e-01 -1.398012e+00 9.063424e+00 </Q22>
     </pair>
 
     <pair s1="CO2" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.00 10.33  8.87  7.80  6.89  6.61  6.40  6.05  5.79  5.34  5.02 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.17 11.36  9.87  8.81  7.87  7.59  7.35  6.99  6.72  6.22  5.88 </Q22>
     </pair>
 
     <pair s1="CO2" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.17 12.36 11.88 10.77  9.52  8.25  7.86  7.54  7.05  6.68  6.04  5.60 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              16.24 13.91 13.32 12.03 10.74  9.49  9.08  8.74  8.20  7.79  7.06  6.56 </Q22>
     </pair>
 
     <pair s1="CO2" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.03 12.11 11.62 10.49  9.28  8.04  7.67  7.37  6.93  6.61  6.04  5.66 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              16.16 13.68 13.05 11.72 10.44  9.30  8.92  8.62  8.14  7.78  7.13  6.68 </Q22>
     </pair>
 
     <pair s1="CO2" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.15  8.88  8.12  7.11  6.19  5.91  5.68  5.34  5.09  4.62  4.33 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="30">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              10.44 10.13  9.29  8.22  7.23  6.92  6.66  6.28  6.01  5.49  5.15 </Q22>
     </pair>
 
     <pair s1="CO2" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.68 11.84 11.36 10.27  9.08  7.97  7.64  7.38  6.98  6.69  6.17  5.82 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2007" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              15.74 13.35 12.76 11.47 10.23  9.15  8.80  8.53  8.10  7.77  7.19  6.79 </Q22>
     </pair>
@@ -1607,9 +1607,9 @@
     </pair>
 
     <pair s1="H" s2="HCN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.274248e-01 -1.243495e+00 7.358887e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.323625e-01 -1.259861e+00 7.428189e+00 </Q22>
     </pair>
 
@@ -1677,72 +1677,72 @@
     </pair>
 
     <pair s1="H" s2="N">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.120348e-01 -9.949613e-01 6.092403e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.161277e-01 -1.001955e+00 6.149734e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="N+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="N2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.120348e-01 -9.949613e-01 6.252334e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.161277e-01 -1.001955e+00 6.309665e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="N2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="NO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.138333e-01 -1.022357e+00 6.312541e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.180249e-01 -1.030355e+00 6.370781e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="NO+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="O">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.150133e-01 -1.040568e+00 6.212483e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.192697e-01 -1.049239e+00 6.271386e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="O+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="O2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.150133e-01 -1.040568e+00 6.352320e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.192697e-01 -1.049239e+00 6.411223e+00 </Q22>
     </pair>
 
     <pair s1="H" s2="O2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
     
@@ -1909,9 +1909,9 @@
     </pair>
 
     <pair s1="H2" s2="HCN">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.309716e-01 -1.305302e+00 7.700887e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.361040e-01 -1.324077e+00 7.774390e+00 </Q22>
     </pair>
     
@@ -1963,72 +1963,72 @@
     </pair>
 
     <pair s1="H2" s2="N">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.155819e-01 -1.049410e+00 6.376129e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.198695e-01 -1.058408e+00 6.435371e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="N+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="N2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.155819e-01 -1.049410e+00 6.533072e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.198695e-01 -1.058408e+00 6.592314e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="N2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="NO">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.173795e-01 -1.077652e+00 6.601004e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.217658e-01 -1.087702e+00 6.661401e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="NO+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="O">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.185597e-01 -1.096431e+00 6.508908e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.230107e-01 -1.107184e+00 6.570132e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="O+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="O2">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.185597e-01 -1.096431e+00 6.646009e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.230107e-01 -1.107184e+00 6.707233e+00 </Q22>
     </pair>
 
     <pair s1="H2" s2="O2+">
-        <Q11 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="A-A" ref="Bellemans">
+        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
     
@@ -2162,369 +2162,369 @@
     
     <!-- N -->
     <pair s1="N" s2="N">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.07  7.03  5.96  5.15  4.39  4.14  3.94  3.61  3.37  2.92  2.62 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.11  7.94  6.72  5.82  4.98  4.70  4.48  4.14  3.88  3.43  3.11 </Q22>
     </pair>
     
     <pair s1="N" s2="N+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              43.30 38.20 34.30 31.40 30.00 29.00 28.30 27.70 26.90 26.20 25.60 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.40 16.40 13.30 10.50  9.15  8.33  7.74  7.26  6.48  5.84  5.31 </Q22>
     </pair>
 
     <pair s1="N" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             10.10  8.57  7.70  6.65  5.65  5.05  4.61  4.25 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             11.21  9.68  8.81  7.76  6.73  6.18  5.74  5.36 </Q22>
     </pair>
     
     <pair s1="N" s2="N2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              24.90 18.10 12.60  9.94  9.03  8.54  8.21  7.98  7.65  7.41  7.23 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              26.10 19.50 13.60 10.70  9.78  9.26  8.96  8.74  8.40  8.14  7.98 </Q22>
     </pair>
 
     <pair s1="N" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.21  7.86  6.99  5.90  4.91  4.61  4.37  4.01  3.73  3.27 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.65  9.26  8.29  7.07  5.94  5.60  5.33  4.91  4.60  4.06 </Q22>
     </pair>
     
     <pair s1="N" s2="NO+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              25.00 17.50 11.30  8.21  7.20  6.68  6.34  6.10  5.76  5.52  5.36 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              25.40 18.80 12.30  8.97  7.91  7.37  7.04  6.81  6.46  6.27  6.04 </Q22>
     </pair>
 
     <pair s1="N" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.32  7.34  6.22  5.26  4.45  4.21  4.01  3.69  3.43  2.98  2.66 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.08  8.15  7.09  6.06  5.14  4.88  4.67  4.34  4.07  3.56  3.21 </Q22>
     </pair>
     
     <pair s1="N" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.30 16.30 11.80  9.23  8.09  7.36  6.80  6.34  5.60  5.02  4.56 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.60 16.60 11.80  9.07  7.99  7.37  6.94  6.60  6.02  5.53  5.11 </Q22>
     </pair>
 
     <pair s1="N" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.56  7.26  6.55  5.60  4.75  4.49  4.28  3.96  3.72  3.31 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.68  6.63  5.67  5.38  5.14  4.78  4.51  4.04 </Q22>
     </pair>
     
     <pair s1="N" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.20 16.70 10.40  6.87  5.72  5.14  4.79  4.54  4.21  3.99  3.84 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              23.80 18.20 11.60  7.64  6.37  5.74  5.37  5.13  4.78  4.55  4.38 </Q22>
     </pair>
 
     <!-- N+ -->
     <pair s1="N+" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.30 22.40 13.80  9.02  7.48  6.71  6.24  5.92  5.50  5.21  5.01 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.20 23.70 15.20  9.97  8.28  7.45  6.98  6.66  6.21  5.92  5.70 </Q22>
     </pair>
 
     <pair s1="N+" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.50 21.70 13.20  8.63  7.17  6.44  5.98  5.68  5.26  4.98  4.79 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.40 22.90 14.60  9.55  7.96  7.18  6.72  6.41  5.98  5.69  5.47 </Q22>
     </pair>
 
     <pair s1="N+" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.60 15.10 10.90  8.33  7.07  6.21  5.56  5.06  4.33  3.82  3.44 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.80 15.40 11.10  8.61  7.52  6.75  6.13  5.64  4.90  4.37  3.98 </Q22>
     </pair>
 
     <pair s1="N+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.60 22.10 13.70  8.99  7.43  6.65  6.17  5.85  5.41  5.11  4.91 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.90 23.80 15.30 10.00  8.27  7.42  6.93  6.60  6.14  5.84  5.62 </Q22>
     </pair>
 
     <!-- N2 -->
     <pair s1="N2" s2="N2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             12.23 10.60  9.79  8.60  7.49  6.87  6.43  6.06 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             13.72 11.80 10.94  9.82  8.70  8.08  7.58  7.32 </Q22>
     </pair>
     
     <pair s1="N2" s2="N2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              49.10 43.70 37.00 32.20 30.10 28.90 28.10 27.50 26.60 26.00 25.60 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 25.30 16.80 12.10 10.70  9.93  9.50  9.19  8.74  8.41  8.20 </Q22>
     </pair>
 
     <pair s1="N2" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.88 10.61 10.24  9.35  8.12  6.82  6.43  6.12  5.66  5.31  4.71 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.44 11.87 11.44 10.48  9.32  8.04  7.61  7.27  6.74  6.33  5.62 </Q22>
     </pair>
     
     <pair s1="N2" s2="NO+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.90 24.20 14.60  9.68  8.13  7.35  6.87  6.54  6.10  5.79  5.59 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 25.10 15.80 10.60  8.97  8.16  7.69  7.36  6.90  6.67  6.36 </Q22>
     </pair>
 
     <pair s1="N2" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
              8.07  5.93  5.17  4.77  4.31  3.71  3.38 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
              8.99  6.72  5.91  5.22  5.01  4.36  3.95 </Q22>
     </pair>
     
     <pair s1="N2" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.40 22.40 13.60  8.64  7.01  6.21  5.73  5.40  4.97  4.68  4.48 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.50 23.50 15.10  9.61  7.81  6.93  6.43  6.10  5.64  5.35  5.13 </Q22>
     </pair>
 
     <pair s1="N2" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
             10.16  7.39  6.42  5.59  5.35  4.60  4.20 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
             11.23  8.36  7.35  6.47  6.21  5.42  4.94 </Q22>
     </pair>
     
     <pair s1="N2" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.90 23.20 13.90  8.55  6.78  5.92  5.40  5.05  4.60  4.30  4.10 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.40 24.10 15.40  9.56  7.59  6.64  6.10  5.74  5.26  4.96  4.73 </Q22>
     </pair>
 
     <!-- N2+ -->
     <pair s1="N2+" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.20 23.10 15.20 11.20  9.85  9.18  8.74  8.44  8.02  7.73  7.51 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.60 16.50 12.10 10.70 10.00  9.59  9.30  8.86  8.54  8.35 </Q22>
     </pair>
 
     <pair s1="N2+" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.30 15.60 11.00  8.87  8.10  7.68  7.38  7.17  6.86  6.63  6.46 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              22.20 16.50 11.80  9.60  8.85  8.42  8.15  7.95  7.62  7.37  7.21 </Q22>
     </pair>
 
     <pair s1="N2+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.60 23.30 15.20 10.90  9.53  8.85  8.41  8.11  7.69  7.39  7.17 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.60 16.10 11.70 10.40  9.67  9.26  8.97  8.54  8.22  8.02 </Q22>
     </pair>
 
     <!-- NO -->
     <pair s1="NO" s2="NO">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.66 10.33  9.97  9.09  7.90  6.60  6.24  5.96  5.54  5.23  4.70 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.25 11.58 11.15 10.16  9.07  7.91  7.53  7.21  6.73  6.36  5.72 </Q22>
     </pair>
     
     <pair s1="NO" s2="NO+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              49.20 41.60 35.00 31.10 29.40 28.20 27.30 26.60 25.70 25.10 24.70 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.70 24.40 15.60 10.60  8.99  8.20  7.74  7.42  6.97  6.76  6.45 </Q22>
     </pair>
 
     <pair s1="NO" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              7.57  7.27  6.55  5.62  4.78  4.52  4.31  4.00  3.76  3.35 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.66  6.64  5.69  5.40  5.17  4.82  4.55  4.08 </Q22>
     </pair>
     
     <pair s1="NO" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.70 23.40 13.70  8.45  6.80  6.00  5.51  5.19  4.76  4.47  4.28 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.80 23.60 14.70  9.26  7.52  6.68  6.19  5.87  5.43  5.14  4.92 </Q22>
     </pair>
 
     <pair s1="NO" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.39 10.10  9.75  8.89  7.74  6.56  6.23  5.98  5.59  5.31  4.82 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.93 11.32 10.90  9.94  8.89  7.80  7.45  7.17  6.73  6.39  5.80 </Q22>
     </pair>
     
     <pair s1="NO" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.70 22.20 13.60  8.47  6.77  5.94  5.44  5.10  4.66  4.37  4.17 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.20 23.40 15.10  9.47  7.57  6.65  6.12  5.77  5.31  5.01  4.79 </Q22>
     </pair>
     
     <!-- NO+ -->
     <pair s1="NO+" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              21.40 14.80  9.64  7.20  6.38  5.94  5.65  5.43  5.13  4.91  4.76 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              22.00 15.80 10.40  7.89  7.07  6.62  6.34  6.13  5.82  5.66  5.41 </Q22>
     </pair>
 
     <pair s1="NO+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              32.20 22.50 13.70  9.25  7.82  7.11  6.66  6.36  5.93  5.64  5.44 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.80 23.50 14.90 10.20  8.66  7.91  7.47  7.16  6.72  6.50  6.20 </Q22>
     </pair>
 
     <!-- O -->
     <pair s1="O" s2="O">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              8.53  7.28  5.89  4.84  4.00  3.76  3.57  3.27  3.05  2.65  2.39 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="5">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.46  8.22  6.76  5.58  4.67  4.41  4.20  3.88  3.64  3.21  2.91 </Q22>
     </pair>
     
     <pair s1="O" s2="O+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              33.60 29.60 27.00 24.90 23.80 23.10 22.60 22.20 21.60 21.10 20.80 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.50 14.80 11.10  8.72  7.64  6.94  6.39  5.95  5.26  4.75  4.36 </Q22>
     </pair>
 
     <pair s1="O" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             9.10   7.58  6.74  5.70  4.78  4.29  3.96  3.71 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="10">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             10.13  8.61  7.78  6.71  5.67  5.13  4.78  4.50 </Q22>
     </pair>
     
     <pair s1="O" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              19.50 13.90  8.63  5.88  4.98  4.52  4.23  4.02  3.74  3.54  3.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              20.80 15.40  9.66  6.54  5.57  5.07  4.78  4.57  4.28  4.08  3.92 </Q22>
     </pair>
 
     <!-- O+ -->
     <pair s1="O+" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.70 22.80 13.80  8.68  7.01  6.18  5.68  5.34  4.90  4.60  4.40 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.20 23.90 15.30  9.68  7.83  6.92  6.40  6.06  5.59  5.28  5.06 </Q22>
     </pair>
 
     <!-- O2 -->
     <pair s1="O2" s2="O2">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             11.12  9.88  9.53  8.69  7.60  6.52  6.22  5.99  5.64  5.39  4.94 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Wright2005" accuracy="20">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.62 11.06 10.65  9.72  8.70  7.70  7.38  7.12  6.73  6.42  5.89 </Q22>
     </pair>
     
     <pair s1="O2" s2="O2+">
-        <Q11 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              48.50 40.90 34.20 30.60 28.70 27.50 26.10 25.30 24.20 23.60 23.20 </Q11>
-        <Q22 type="table" units="K,A-A" multpi="yes" ref="Levin2004" accuracy="25">
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              31.00 23.60 14.70  9.09  7.27  6.38  5.88  5.55  5.10  4.81  4.59 </Q22>
     </pair>

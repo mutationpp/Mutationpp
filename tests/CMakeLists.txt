@@ -38,6 +38,7 @@ set(test_sources
     test_thermal_diff_ratios.cpp
     test_thermodb.cpp
     test_transfer_source.cpp
+    test_utilities.cpp
     test_wdot.cpp
 )
 
