@@ -20,8 +20,6 @@
  */
 
 #include "mutation++.h"
-#include "Configuration.h"
-#include "TestMacros.h"
 #include <catch/catch.hpp>
 #include <eigen3/Eigen/Dense>
 
@@ -30,32 +28,104 @@ using namespace Mutation::Utilities;
 using namespace Catch;
 using namespace Eigen;
 
+typedef Matrix<double,7,1> Dimension;
+
+void checkUnits(const Units& units, Dimension dimension, double factor = 1.0)
+{
+    INFO("factor = " << factor);
+    INFO("dimension = " << dimension.transpose());
+    INFO("exponents = " << units.exponents().transpose());
+    CHECK(units.factor() == Approx(factor));
+    CHECK(units.exponents().isApprox(dimension));
+}
+
+void checkUnits(
+    const char* const symbol, Dimension dimension, double factor = 1.0)
+{
+    INFO("symbol = " << symbol);
+    INFO("factor = " << factor);
+    INFO("dimension = " << dimension.transpose());
+    Units units;
+    CHECK_NOTHROW(units = Units(symbol));
+    checkUnits(units, dimension, factor);
+}
+
+/**
+ * Tests the basic functionality of the Units type.
+ */
 TEST_CASE
 (
     "Units",
     "[utilities]"
 )
 {
-    Units units;
-    CHECK_NOTHROW(units = Units("kg -m/s-s"));
-    CHECK_NOTHROW(units = Units(std::string("kg-m /s-s")));
-    CHECK_NOTHROW(units = Units(Units("kg-m/s - s")));
-    CHECK_THROWS_AS(Units("text"), InvalidInputError);
+    // Define the expected dimensions for different types of units
+    Dimension length      = MatrixXd::Identity(7,7).col(0);
+    Dimension mass        = MatrixXd::Identity(7,7).col(1);
+    Dimension time        = MatrixXd::Identity(7,7).col(2);
+    Dimension current     = MatrixXd::Identity(7,7).col(3);
+    Dimension temperature = MatrixXd::Identity(7,7).col(4);
+    Dimension quantity    = MatrixXd::Identity(7,7).col(5);
+    Dimension intensity   = MatrixXd::Identity(7,7).col(6);
+    Dimension force       = length + mass - 2*time;
+    Dimension energy      = force + length;
+    Dimension power       = energy - time;
+    Dimension area        = 2*length;
+    Dimension volume      = 3*length;
+    Dimension density     = mass - volume;
+    Dimension pressure    = force - area;
 
-    try {
-        units = Units("kg-m/b-b");
-    } catch (InvalidInputError& e) {
-        CHECK(e.inputName() == "units");
-        CHECK(e.inputValue() == "kg-m/b-b");
-    }
+    // Check them dimensions and factors of predefined units
+    checkUnits("Å"       , length, 1.0e-10);
+    checkUnits("mm"      , length, 0.001);
+    checkUnits("cm"      , length, 0.01);
+    checkUnits("m"       , length);
+    checkUnits("km"      , length, 1000.0);
+    checkUnits("g"       , mass, 0.001);
+    checkUnits("kg"      , mass);
+    checkUnits("s"       , time);
+    checkUnits("min"     , time, 60.0);
+    checkUnits("A"       , current);
+    checkUnits("K"       , temperature);
+    checkUnits("molecule", quantity, 6.0221415e-23);
+    checkUnits("mol"     , quantity);
+    checkUnits("kmol"    , quantity, 1000.0);
+    checkUnits("cd"      , intensity);
+    checkUnits("N"       , force);
+    checkUnits("meV"     , energy, 6.242e-21);
+    checkUnits("eV"      , energy, 6.242e-18);
+    checkUnits("J"       , energy);
+    checkUnits("cal"     , energy, 4.184);
+    checkUnits("kJ"      , energy, 1000.0);
+    checkUnits("kcal"    , energy, 4184.0);
+    checkUnits("Pa"      , pressure);
+    checkUnits("bar"     , pressure, 100000.0);
+    checkUnits("atm"     , pressure, 101325.0);
 
-    CHECK_NOTHROW(units = Units("g/cm-cm-cm"));
-    CHECK(units.convertToBase(1.0) == Approx(1000000.0 / 1000.0));
-    CHECK(units.convertTo(1.0, "kg/m-m-m") == units.convertToBase(1.0));
-    CHECK(units.convertTo(1.0, units) == 1.0);
+    // Check some combinations of units
+    checkUnits("kg m/s s"  , force);
+    checkUnits("cal / s"   , power, 4.184);
+    checkUnits("g/cm-cm-cm", density, 1000.0);
+    checkUnits("km-Å"      , area, 1.0e-7);
+    checkUnits("cm.K"      , length + temperature, 0.01);
+    checkUnits(Units("cm")^3, volume, 1.0e-6);
+    checkUnits(Units("kg")*Units("m")/(Units("s")^2)*100.0, force, 100.0);
 
-    CHECK(Units("kg-m/s-s").simplestRepresentation() == "N");
-    CHECK(Units("N-m").simplestRepresentation() == "J");
+    // Check that invalid input fails correctly
+    CHECK_THROWS_AS(Units(" "   )   , InvalidInputError);
+    CHECK_THROWS_AS(Units("/"   )   , InvalidInputError);
+    CHECK_THROWS_AS(Units(" /m-m")  , InvalidInputError);
+    CHECK_THROWS_AS(Units("m-m/ ")  , InvalidInputError);
+    CHECK_THROWS_AS(Units("m/kg/s") , InvalidInputError);
+    CHECK_THROWS_AS(Units("text")   , InvalidInputError);
+    CHECK_THROWS_AS(Units("m^2" )   , InvalidInputError);
 
-    CHECK(units.convertTo(1.0, "cal") == 1.0);
+    // Check conversions
+    CHECK(Units("cal").convertTo(1.0, "kJ") == Approx(4.184 / 1000.0));
+    CHECK(Units("Å.cm/s").convertTo(1.0, "m.m/s") == Approx(1.0e-12));
+    CHECK(Units("g/cm.cm.cm").convertToBase(1.0) == Approx(1000.0));
+
+    // String conversion
+    CHECK(Units("kg-m/s-s").toString() == "m kg / s^2");
+    CHECK(Units("N-m").toString() == "m^2 kg / s^2");
 }
