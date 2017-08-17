@@ -155,7 +155,7 @@ void Units::initializeFromString(const std::string& to_parse)
 {
     // Make sure string is to not empty or has '/' at front or back
     std::string str = String::trim(to_parse);
-    if (str.size() == 0 || str.front() == '/' || str.back() == '/') {
+    if (str.size() == 0 || str[0] == '/' || str[str.size()-1] == '/') {
         throw InvalidInputError("units", to_parse)
             << "String is empty or has empty numerator or denominator.";
     }
