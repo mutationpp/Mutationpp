@@ -31,8 +31,11 @@
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
-enable_language(CXX)
+# Add include path for cmake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
+# Setup languages
+enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
 endif()
