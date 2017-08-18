@@ -6,9 +6,11 @@
 @section prerequisites Prerequisites
 
 Mutation++ is designed from the ground up to be self sufficient and does not
-require any additional packages to use.  All that is required is a C++ compiler and a
+require any additional packages to use.  All that is required is a C++ compiler, a
 Python interpreter (shipped with every UNIX operating system installation) to use
-the automated install process for the third-party dependencies.
+the automated install process for the third-party dependencies and a working installation
+of CMake (make sure that command line support is enabled if your computer is
+running macOS).
 
 However, if you would like to build this reference manual, then you will need the
 [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) tool installed.  See
