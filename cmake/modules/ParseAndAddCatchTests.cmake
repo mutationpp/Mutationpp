@@ -67,7 +67,6 @@ endfunction()
 # Worker function
 function(ParseFile SourceFile TestTarget)
     if(NOT EXISTS ${SourceFile})
-        message("  file doesn't exist")
         return()
     endif()
     file(STRINGS ${SourceFile} Contents NEWLINE_CONSUME)
@@ -107,7 +106,6 @@ function(ParseFile SourceFile TestTarget)
         endif()
 
         # Add the test and set its properties
-        message("  Adding Catch test \"${CTestName}\"")
         add_test(NAME "\"${CTestName}\"" COMMAND ${TestTarget} ${Name} ${AdditionalCatchParameters})
         set_tests_properties("\"${CTestName}\"" PROPERTIES FAIL_REGULAR_EXPRESSION "No tests ran"
                                                 LABELS "${Tags}")
@@ -119,7 +117,6 @@ endfunction()
 function(ParseAndAddCatchTests TestTarget)
     get_target_property(SourceFiles ${TestTarget} SOURCES)
     foreach(SourceFile ${SourceFiles})
-        message("Parsing ${SourceFile} for Catch tests")
         ParseFile(${SourceFile} ${TestTarget})
     endforeach()
 endfunction()

@@ -72,7 +72,7 @@ MARK_AS_ADVANCED(
 if (NOT CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE "Release" CACHE STRING
         "Choose the type of build, options are: None Debug Release
-        RelWithDebInfo MinSizeRel Profile." FORCE)
+        RelWithDebInfo MinSizeRel Profile Coverage." FORCE)
 endif ()
 
 
@@ -165,7 +165,7 @@ add_subdirectory(src)
 ################################################################################
 option (ENABLE_TESTING
     "Enable regression testing with CTest (requires Boost.Test library)" OFF)
-if (ENABLE_TESTING)
+if (ENABLE_TESTING OR ${CMAKE_BUILD_TYPE} MATCHES "Coverage")
     enable_testing()
     add_subdirectory(tests)
 endif()

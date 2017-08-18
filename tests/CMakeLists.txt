@@ -45,10 +45,19 @@ set(test_sources
 add_executable(run_tests ${test_sources})
 target_link_libraries(run_tests mutation++)
 
+# Add all Catch TEST_CASEs as individual CTest tests
 include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(run_tests)
 
-#add_test(NAME Catch_tests COMMAND run_tests)
+# Setup the code coverage analysis for tests
+if (${CMAKE_BUILD_TYPE} MATCHES "Coverage")
+    include(CodeCoverage)
+    set(LCOV_REMOVE_EXTRA 
+        '${CMAKE_SOURCE_DIR}/tests/*' 
+        '${CMAKE_SOURCE_DIR}/install/*'
+    )
+    SETUP_TARGET_FOR_COVERAGE(test_coverage run_tests coverage)
+endif()
 
 # Make sure examples compile and run
 function(test_example name subdir)    
