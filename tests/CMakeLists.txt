@@ -25,27 +25,39 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
 set(test_sources
-    run_tests.cpp
-    test_comparisons.cpp
-    test_diffusion_matrix.cpp
-    test_dXidT.cpp
-    test_energies.cpp
-    test_errors.cpp
-    test_mixtures.cpp
-    test_set_state.cpp
-    test_species.cpp
-    test_stefan_maxwell.cpp
-    test_thermal_diff_ratios.cpp
-    test_thermodb.cpp
-    test_transfer_source.cpp
-    test_utilities.cpp
-    test_wdot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_diffusion_matrix.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_set_state.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_species.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_stefan_maxwell.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermal_diff_ratios.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermodb.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
 )
 
 add_executable(run_tests ${test_sources})
 target_link_libraries(run_tests mutation++)
 
-add_test(NAME Catch_tests COMMAND run_tests)
+# Add all Catch TEST_CASEs as individual CTest tests
+include(ParseAndAddCatchTests)
+ParseAndAddCatchTests(run_tests)
+
+# Setup the code coverage analysis for tests
+if (${CMAKE_BUILD_TYPE} MATCHES "Coverage")
+    include(CodeCoverage)
+    set(LCOV_REMOVE_EXTRA 
+        '${CMAKE_SOURCE_DIR}/tests/*' 
+        '${CMAKE_SOURCE_DIR}/install/*'
+    )
+    SETUP_TARGET_FOR_COVERAGE(test_coverage run_tests coverage)
+endif()
 
 # Make sure examples compile and run
 function(test_example name subdir)    
