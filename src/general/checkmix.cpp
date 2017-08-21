@@ -306,7 +306,7 @@ void printMixtureInfo(const Mixture& mixture)
          cout << setw(6)  << r.type();
 
          // Print out rate constants
-         if (typeid(*(r.rateLaw())) == typeid(Arrhenius)) {
+         if (dynamic_cast<const Arrhenius*>(r.rateLaw()) != NULL) {
              const Arrhenius& rate =
                  dynamic_cast<const Arrhenius&>(*(r.rateLaw()));
              cout << setw(12) << "Arrhenius: ";
