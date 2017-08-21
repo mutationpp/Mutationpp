@@ -26,7 +26,13 @@ class Dependency(object):
 
         for cmd in self.build_cmd_seq:
             print(colors.fg.blue + " ".join(cmd) + colors.reset)
-            subprocess.call(cmd)
+            try:
+                subprocess.call(cmd)
+            except OSError as e:
+                print(colors.fg.red +
+                      "Command call raised OSError: is {} correctly configured?".format(cmd[0]) +
+                      colors.reset)
+                raise e
 
 
 # Global variables
