@@ -139,7 +139,7 @@ OutputQuantity species_quantities[NSPECIES] = {
     OutputQuantity("omega", "kg/m^3-s", "production rates due to reactions"),
     OutputQuantity("Omega11", "m^2", "(1,1) pure species collision integrals"),
     OutputQuantity("Omega22", "m^2", "(2,2) pure species collision integrals"),
-    OutputQuantity("Chi", "?", "species thermal diffusion ratios"),
+    OutputQuantity("Chi", "", "species thermal diffusion ratios"),
     OutputQuantity("Dm", "m^2/s", "mixture averaged diffusion coefficients")
 };
 
