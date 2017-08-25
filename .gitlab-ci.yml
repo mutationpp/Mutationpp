@@ -1,4 +1,3 @@
-
 build:debian:
   stage: build
   script:
@@ -16,7 +15,7 @@ build:debian:
     - master
     - ci_implement
   tags:
-    - debian8
+    - debian9
 
 build:ubuntu:
   stage: build
