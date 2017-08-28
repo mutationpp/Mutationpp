@@ -57,8 +57,10 @@ build:fedora:
 
 build:centos:
   stage: build
+  before_script:
+    - shopt -s expand_aliases
+    - alias cmake="cmake3"
   script:
-    - alias cmake="/usr/bin/cmake3"
     - export MPP_DIRECTORY=$PWD
     - python scripts/install_dependencies.py
     - mkdir build
