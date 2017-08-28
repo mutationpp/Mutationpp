@@ -60,6 +60,7 @@ build:centos:
   before_script:
     - shopt -s expand_aliases
     - alias cmake="cmake3"
+    - type cmake
   script:
     - export MPP_DIRECTORY=$PWD
     - python scripts/install_dependencies.py
