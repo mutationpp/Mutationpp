@@ -103,8 +103,7 @@ void DiffusionMatrixTests::fluxesSumToZero(Mixture& mix)
         Ji.array() *= mix.density() * Map<const ArrayXd>(mix.Y(),ns);
 
         // Make sure the sum is zero
-        INFO("Ji = " << Ji);
-        INFO("dx = " << dx);
+        INFO("Ji = " << Ji << "\ndx = " << dx);
         CHECK(Ji.sum() == Approx(0.0).margin(tol));
     )
 }
