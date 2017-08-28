@@ -138,7 +138,7 @@ void SpeciesListDescriptor::separateSpeciesNames(std::string descriptor)
             case '\"':
                 if (name.length() > 0) {
                     std::cerr << "Error, cannot include quotation mark in ";
-                    std::cerr << "species name!" << std::cerr;
+                    std::cerr << "species name!\n";
                     std::cerr << "    " << descriptor.substr(0, i+1);
                     std::cerr << " <--" << std::endl;
                     exit(1);
