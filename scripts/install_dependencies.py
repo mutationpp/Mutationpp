@@ -30,7 +30,7 @@ class Dependency(object):
                 subprocess.call(cmd)
             except OSError as e:
                 print(colors.fg.red +
-                      "Command call raised OSError: is {} correctly configured?".format(cmd[0]) +
+                      "Command call raised OSError: {} was not found".format(cmd[0]) +
                       colors.reset)
                 raise e
 
