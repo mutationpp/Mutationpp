@@ -42,22 +42,36 @@ MPP_THIRDPARTY_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "thirdparty
 MPP_INSTALL_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "install")
 NUM_PROC = multiprocessing.cpu_count()
 
-DEPS_DICT = \
-    {
-        "eigen": Dependency(
-            name="eigen",
-            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY), ".."],
-                           ["make", "-j", str(NUM_PROC), "install"]]),
-        "catch": Dependency(
-            name="catch",
-            build_cmd_seq=[["cmake", "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY), ".."],
-                           ["make", "-j", str(NUM_PROC), "install"]]),
-    }
+
+def generate_deps_dict(cmd_dict):
+    return \
+        {
+            "eigen": Dependency(
+                name="eigen",
+                build_cmd_seq=[[cmd_dict["cmake"],
+                                "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY),
+                                ".."],
+                               [cmd_dict["make"],
+                                "-j", str(NUM_PROC),
+                                "install"]]),
+            "catch": Dependency(
+                name="catch",
+                build_cmd_seq=[[cmd_dict["cmake"],
+                                "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY),
+                                ".."],
+                               [cmd_dict["make"],
+                                "-j", str(NUM_PROC),
+                                "install"]]),
+        }
 
 
 def main(args):
 
-    deps_list = sorted(DEPS_DICT.keys())
+    cmd_dict = {"cmake": args.cmd_cmake,
+                "make": args.cmd_make}
+
+    deps_dict = generate_deps_dict(cmd_dict)
+    deps_list = sorted(deps_dict.keys())
 
     if args.list:
         print("Dependencies available for installation:\n" +
@@ -66,10 +80,10 @@ def main(args):
 
     if not args.deps:  # Means that no positional argument is provided
         for name in deps_list:
-            DEPS_DICT[name].install()
+            deps_dict[name].install()
     else:
         for name in args.deps:
-            DEPS_DICT[name].install()
+            deps_dict[name].install()
 
 
 if __name__ == "__main__":
@@ -80,6 +94,10 @@ if __name__ == "__main__":
                         help="show the list of available dependencies")
     parser.add_argument('deps', nargs='*', default=None,
                         help="list of dependencies to install (if none is specified, install all dependencies)")
+    parser.add_argument("--cmd_cmake", default="cmake",
+                        help="command to use to call cmake (defaults to cmake)")
+    parser.add_argument("--cmd_make", default="make",
+                        help="command to use to call make (defaults to make)")
     args = parser.parse_args()
 
     main(args)
