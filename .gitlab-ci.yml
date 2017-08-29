@@ -59,7 +59,7 @@ build:centos:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py
+    - python scripts/install_dependencies.py --cmd_cmake cmake3
     - mkdir build
     - cd build
     - cmake3 -DENABLE_TESTING:BOOL=ON ..
