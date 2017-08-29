@@ -118,7 +118,7 @@ test:centos:
     - export PATH=$MPP_DIRECTORY/install/bin:$PATH
     - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
     - cd build/
-    - ctest -V
+    - ctest3 -V
   dependencies:
     - build:centos
   only:
@@ -159,7 +159,7 @@ test:debian:
     - master
     - ci_implement
   tags:
-    - debian8
+    - debian9
 
 test:ubuntu:
   stage: test
