@@ -29,6 +29,7 @@
  */
 
 
+#include "Errors.h"
 #include "XMLite.h"
 #include "StringUtils.h"
 
@@ -50,10 +51,8 @@ XmlDocument::XmlDocument(const std::string &filename)
 {
     ifstream xml_file(m_filename.c_str(), ios::in);
 
-    if (!xml_file.is_open()) {
-        cerr << "Could not open file " << m_filename << " for reading!" << endl;
-        exit(1);
-    }
+    if (!xml_file.is_open())
+        throw FileNotFoundError(filename);
     
     int line = 1;
     XmlElement element(NULL, this);
@@ -79,9 +78,7 @@ void XmlElement::_parseError(
     const XmlDocument *const p_document, const long int line, 
     const std::string& error)
 {
-    cerr << "XML error: "<< p_document->file() << ": line " << line 
-         << ": " << error << endl;
-    exit(1);
+    throw FileParseError(p_document->file(), line) << error;
 }
 
 //==============================================================================

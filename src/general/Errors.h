@@ -63,7 +63,12 @@ public:
     {
         // Set this Error as the most recent
         lastError() = this;
-        m_terminate = std::set_terminate(terminateOnError);
+        errorCount()++;
+
+        // The first Error object created needs to save the current terminate
+        // handler
+        if (errorCount() == 1)
+            terminateHandler() = std::set_terminate(terminateOnError);
     }
 
     /**
@@ -74,17 +79,22 @@ public:
     Error(const Error& copy) :
         m_type(copy.m_type),
         m_extra_info(copy.m_extra_info),
-        m_formatted_message(copy.m_formatted_message),
-        m_terminate(copy.m_terminate)
+        m_formatted_message(copy.m_formatted_message)
     {
         m_message_stream << copy.m_message_stream.rdbuf();
+
+        // Set this Error as the most recent
+        lastError() = this;
+        errorCount()++;
     }
 
     /// Destructor.
     virtual ~Error() throw()
     {
         // Reset the terminate function
-        std::set_terminate(m_terminate);
+        errorCount()--;
+        if (errorCount() == 0)
+            std::set_terminate(terminateHandler());
     }
 
     /// Input stream operator allows for message to be added to error.
@@ -186,12 +196,22 @@ public:
 
 private:
 
-    /**
-     * Keeps track of the most recent Error.
-     */
+    /// Keeps track of the most recent Error.
     static Error*& lastError() {
         static Error* p_last_error = NULL;
         return p_last_error;
+    }
+
+    /// Keeps track of the number of instantiated Error objects.
+    static int& errorCount() {
+        static int count = 0;
+        return count;
+    }
+
+    /// Keeps track of the default terminate handler.
+    static std::terminate_handler& terminateHandler() {
+        static std::terminate_handler handler;
+        return handler;
     }
 
 private:
@@ -207,9 +227,6 @@ private:
 
     /// The fully formatted message which gets displayed by what()
     std::string m_formatted_message;
-
-    /// Keep track of the terminate function to reset if successfully handled.
-    std::terminate_handler m_terminate;
 
 }; // class Error
 
