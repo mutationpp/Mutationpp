@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright 2017 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
@@ -219,7 +220,7 @@ class FileInfo(object):
                 "\nCopying statement " + \
                 "{}".format(STATEMENT_CORRECT_STRING[self.statement_correct])
 
-        print report_string.replace("\n", "\n    ")
+        print(report_string.replace("\n", "\n    "))
 
     def update_cpinfo_date(self, backup=False):
         """Update copyright info line if the date is incorrect.

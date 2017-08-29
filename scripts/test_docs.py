@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright 2017 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
@@ -25,7 +26,8 @@ import os
 import re
 from utils import colors
 
-class TestCase:
+
+class TestCase(object):
     """ Simple class representing a single test case. 
     """
     
@@ -52,19 +54,19 @@ class TestCase:
         debugging. 
         """
         
-        print '------------'
-        print 'file: ' + self.file_name
-        print 'line: ' + str(self.line)
+        print('------------')
+        print('file: ' + self.file_name)
+        print('line: ' + str(self.line))
         if self.comment is None:
-            print self.comment
-        print 'TEST_CASE'
-        print '('
-        print '    "' + self.name + '",'
-        print '    "' + " ".join(self.tags) + '"'
-        print ')'
-        print '{'
-        print '    ' + self.body
-        print '}'
+            print(self.comment)
+        print('TEST_CASE')
+        print('(')
+        print('    "' + self.name + '",')
+        print('    "' + " ".join(self.tags) + '"')
+        print(')')
+        print('{')
+        print('    ' + self.body)
+        print('}')
     
     def generate_doxygen_page(self, link_name):
         """ Generates a doxygen style manual page for this test case.
@@ -176,7 +178,7 @@ def generate_doxygen_pages(file_name, test_cases):
         
         # List of tags
         f.write('\\section Tags\n')
-        for i, t in enumerate(sorted(tags.keys(), key=lambda s: s.lower())):
+        for i, t in enumerate(sorted(list(tags.keys()), key=lambda s: s.lower())):
             f.write('- \\subpage test_tag_' + str(i) + ' "' + t + '"\n')
         f.write('\n')
     
@@ -188,7 +190,7 @@ def generate_doxygen_pages(file_name, test_cases):
         f.write('\n')
         
         # Single page for each tag
-        for i, t in enumerate(sorted(tags.keys(), key=lambda s: s.lower())):
+        for i, t in enumerate(sorted(list(tags.keys()), key=lambda s: s.lower())):
             f.write('/**\n')
             f.write('\\page test_tag_' + str(i) + ' ' + t + '\n')
             for val in tags[t]:
@@ -224,10 +226,10 @@ def main(args):
         all_cases.extend(cases)
     
         if args.verbose:
-            print colors.fg.green + file_name + colors.reset
+            print(colors.fg.green + file_name + colors.reset)
             for c in cases:
-                print '    line ' + str(c.line) + ': ' + c.name
-                print '    ' + ' '.join(c.tags)
+                print('    line ' + str(c.line) + ': ' + c.name)
+                print('    ' + ' '.join(c.tags))
                 
     # Generate the output
     generate_doxygen_pages(args.output, all_cases)

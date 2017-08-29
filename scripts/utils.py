@@ -22,7 +22,7 @@ import os
 import errno
 
 
-class colors:
+class colors(object):
     """Colors class providing easy access to ANSI escape sequences.
 
      The generic style formatters bold, underline, reverse, etc. are defined.
@@ -38,7 +38,7 @@ class colors:
     strikethrough = '\033[09m'
     invisible = '\033[08m'
 
-    class fg:
+    class fg(object):
         black = '\033[30m'
         red = '\033[31m'
         green = '\033[32m'
@@ -55,7 +55,7 @@ class colors:
         pink = '\033[95m'
         lightcyan = '\033[96m'
 
-    class bg:
+    class bg(object):
         black = '\033[40m'
         red = '\033[41m'
         green = '\033[42m'
@@ -75,7 +75,7 @@ def reindent(s, num_spaces):
 def makedirs_exist_ok(path):
     try:
         os.makedirs(path)
-    except OSError as exc:  # Python >2.5
+    except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
