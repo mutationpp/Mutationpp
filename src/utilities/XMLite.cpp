@@ -78,7 +78,10 @@ void XmlElement::_parseError(
     const XmlDocument *const p_document, const long int line, 
     const std::string& error)
 {
-    throw FileParseError(p_document->file(), line) << error;
+    if (p_document == NULL)
+        throw Error("XML error") << error;
+    else
+        throw FileParseError(p_document->file(), line) << error;
 }
 
 //==============================================================================
@@ -187,28 +190,24 @@ bool XmlElement::parse(
                 }
                 break;
             case el_name:
-                if (name == "!--") {
+                if (m_tag == "!--") {
                     previous = initial;
                     state = comment;
-                    name.clear();
+                    m_tag.clear();
                     break;
                 }
                 if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-                    if (name.empty()) {
+                    if (m_tag.empty()) {
                         _parseError(mp_document, line, 
                             string("element names must begin directly after") +
                             string(" the start-tag"));
                     } else {
                         state = attributes;
-                        m_tag = name;
-                        name.clear();
                    }
                 } else if (c == '>') {
                     state = el_value;
-                    m_tag = name;
-                    name.clear();
                 } else {
-                    name += c;
+                    m_tag += c;
                 }
                 break;
             case attributes:

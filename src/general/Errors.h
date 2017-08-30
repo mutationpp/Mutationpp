@@ -118,7 +118,7 @@ public:
      * and the optional (name, value) lines correspond to extra information
      * provided by addExtraInfo() or operator().
      */
-    const char* what() throw()
+    virtual const char* what() throw()
     {
         try {
             std::vector<std::pair<std::string, std::string> >::iterator it;

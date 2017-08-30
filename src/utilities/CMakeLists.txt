@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     StringUtils.cpp
+    TemporaryFile.cpp
     Units.cpp
     XMLite.cpp
 )
@@ -33,6 +34,7 @@ install(FILES LookupTable.h DESTINATION include/mutation++)
 install(FILES ReferenceServer.h DESTINATION include/mutation++)
 install(FILES SharedPtr.h DESTINATION include/mutation++)
 install(FILES StringUtils.h DESTINATION include/mutation++)
+install(FILES TemporaryFile.h DESTINATION include/mutation++)
 install(FILES Units.h DESTINATION include/mutation++)
 install(FILES Utilities.h DESTINATION include/mutation++)
 install(FILES XMLite.h DESTINATION include/mutation++)

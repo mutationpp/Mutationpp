@@ -26,7 +26,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef UTILITIES_UTILITIES_H
 #define UTILITIES_UTILITIES_H
 
@@ -41,6 +40,7 @@
 #include "LookupTable.h"
 #include "ReferenceServer.h"
 #include "StringUtils.h"
+#include "TemporaryFile.h"
 #include "Units.h"
 #include "XMLite.h"
 
@@ -133,6 +133,7 @@ static std::string databaseFileName(
     path = prependPath(GlobalOptions::dataDirectory(), dir);
     return prependPath(path, name);
 }
+
 
     } // namespace Utilities
 } // namespace Mutation
