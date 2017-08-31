@@ -88,17 +88,12 @@ private:
 
     /**
      * Returns the value for the environment variable key.  If the key is not
-     * found, then a warning is written to the std::cout and an empty string is
-     * returned.
+     * found, then an empty string is returned.
      */
     std::string getEnvironmentVariable(const std::string& key)
     {
         char* value = std::getenv(key.c_str());
-        if (value == NULL) {
-            std::cout << "Warning: environment variable " << key << " not found" << std::endl;
-            return std::string();
-        }
-        return std::string(value);
+        return std::string(value == NULL ? "" : value);
     }
 
 private:
