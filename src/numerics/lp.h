@@ -43,14 +43,9 @@
 #include <cassert>
 #include <cmath>
 
-//#include "Vector.h"
-//#include "Matrix.h"
 
 #include <iostream>
 #include <iomanip>
-using std::cout;
-using std::endl;
-using std::setw;
 
 namespace Mutation {
     namespace Numerics {

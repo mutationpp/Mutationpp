@@ -232,10 +232,6 @@ public:
         if (m_group_map[&typeid(GroupType)] == NULL)
             m_group_map[&typeid(GroupType)] = new GroupType();
         m_group_map[&typeid(GroupType)]->addRateCoefficient(rxn, p_rate);
-        
-//        std::cout << "Added reaction " << rxn << "("
-//                  << typeid(GroupType).name() << "), " << "Ngroups = "
-//                  << m_group_map.size() << std::endl;
     }
     
     /**

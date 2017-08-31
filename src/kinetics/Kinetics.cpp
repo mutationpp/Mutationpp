@@ -43,7 +43,8 @@ using Mutation::Thermodynamics::Thermodynamics;
 
 Kinetics::Kinetics(
     const Thermodynamics& thermo, string mechanism)
-    : m_thermo(thermo),
+    : m_name("unnamed"),
+      m_thermo(thermo),
       mp_rates(NULL),
       m_thirdbodies(thermo.nSpecies(), m_thermo.hasElectrons()),
       m_jacobian(thermo),
@@ -63,11 +64,14 @@ Kinetics::Kinetics(
     IO::XmlElement root = doc.root();
     
     if (root.tag() != "mechanism") {
-        cout << "Root element in mechanism file " << mechanism
-             << " is not of 'mechanism' type!";
-        exit(1); 
+        throw FileParseError(doc.file(), root.line())
+            << "Root element in mechanism file " << mechanism
+            << " is not of 'mechanism' type!";
     }
     
+    // Get the mechanism name
+    root.getAttribute("name", m_name, m_name);
+
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
     IO::XmlElement::const_iterator iter = root.begin();
@@ -131,36 +135,23 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     
     // Validate the mechanism
     if (validate_mechanism) {
-        bool is_valid = true;
-        //cout << "Validating reaction mechanism..." << endl;
-        
         // Check for duplicate reactions
-        for (size_t i = 0; i < nReactions()-1; ++i) {
-            for (size_t j = i+1; j < nReactions(); ++j) {
-                if (m_reactions[i] == m_reactions[j]) {
-                    cerr << "Reactions " << i+1 << " \"" 
-                         << m_reactions[i].formula()
-                         << "\" and " << j+1 << " \""
-                         << m_reactions[j].formula()
-                         << "\" are identical." << endl;
-                    is_valid = false;
-                }
-            }
-        }
-        
+        for (size_t i = 0; i < nReactions()-1; ++i)
+            for (size_t j = i+1; j < nReactions(); ++j)
+                if (m_reactions[i] == m_reactions[j])
+                    throw InvalidInputError("mechanism", m_name)
+                        << "Reactions " << i+1 << " \""
+                        << m_reactions[i].formula()
+                        << "\" and " << j+1 << " \""
+                        << m_reactions[j].formula()
+                        << "\" are identical.";
+
         // Check for elemental mass and charge conservation
-        for (size_t i = 0; i < nReactions(); ++i) {
-            if (!m_reactions[i].conservesChargeAndMass()) {
-                cerr << "Reaction " << i+1 << " \"" << m_reactions[i].formula()
-                     << "\" does not conserve charge or mass." << endl;
-                is_valid = false;
-            }
-        }
-        
-        if (!is_valid) {
-            cout << "Validation checks failed!" << endl;
-            exit(1);
-        }
+        for (size_t i = 0; i < nReactions(); ++i)
+            if (!m_reactions[i].conservesChargeAndMass())
+                throw InvalidInputError("mechanism", m_name)
+                    << "Reaction " << i+1 << " \"" << m_reactions[i].formula()
+                    << "\" does not conserve charge or mass.";
     }
     
     // Allocate work arrays
@@ -359,22 +350,15 @@ void Kinetics::netProductionRates(double* const p_wdot)
     mp_rates->update(m_thermo);
     
     // Compute forward ROP
-    //cout << m_thermo.T() << ", " << m_thermo.Te() << endl;
     const double* const lnkf = mp_rates->lnkf();
-    //cout << "ln forward rate" << endl;
-    for (int i = 0; i < nReactions(); ++i) {
-    //    cout << lnkf[i] << endl;
+    for (int i = 0; i < nReactions(); ++i)
         mp_ropf[i] = std::exp(lnkf[i]);
-    }
     m_reactants.multReactions(p_wdot, mp_ropf);
     
     // Compute reverse ROP
     const double* const lnkb = mp_rates->lnkb();
-    //cout << "ln backward rate" << endl;
-    for (int i = 0; i < nReactions(); ++i) {
-    //    cout << lnkb[i] << endl;
+    for (int i = 0; i < nReactions(); ++i)
         mp_ropb[i] = std::exp(lnkb[i]);
-    }
     m_rev_prods.multReactions(p_wdot, mp_ropb);
     
     // Compute net ROP

@@ -149,12 +149,9 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
     if (typeid(*p_rate) == typeid(Arrhenius)) {
         selectRate<MAX_REACTION_TYPES-1>(rxn, reaction);
     } else {
-        std::cerr << "Rate law " << typeid(*p_rate).name()
-                  << " not implemented in RateManager!" << std::endl;
-        exit(1);
+        throw InvalidInputError("rate law", typeid(*p_rate).name())
+            << "Rate law is not implemented in RateManager.";
     }
-    
-    //cout << "Number of reactions with Tf = Tb: " << m_to_copy.size() << endl;
 }
 
 //==============================================================================

@@ -76,10 +76,9 @@ void Mixture::addComposition(const Composition& c, bool make_default)
             elements = false;
 
             if (speciesIndex(c[i].name) < 0) {
-                std::cerr << "Error: composition '" << c.name()
-                      << "' has component which is not an element or species"
-                      << " belonging to the mixture!" << std::endl;
-                std::exit(1);
+                throw InvalidInputError("composition", c.name())
+                    << "Composition has component which is not an element or "
+                    << "species belonging to the mixture.";
             }
         }
     }

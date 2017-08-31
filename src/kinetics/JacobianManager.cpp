@@ -280,15 +280,15 @@ void JacobianManager::addReaction(const Reaction& reaction)
     StoichType prodsType;
     
     if (!getJacStoich(reaction.reactants(), &p_reacs, reacsType)) {
-        std::cout << "Error: reactants' stoichiometry is invalid for reaction"
-             << "\"" << reaction.formula() << "\"!" << std::endl;
-        exit(1);
+        throw InvalidInputError("reaction", reaction.formula())
+            << "Reactants' stoichiometry is not implemented in "
+            << "JacobianManager.";
     }
     
     if (!getJacStoich(reaction.products(), &p_prods, prodsType)) {
-        std::cout << "Error: products' stoichiometry is invalid for reaction"
-             << "\"" << reaction.formula() << "\"!" << std::endl;
-        exit(1);
+        throw InvalidInputError("reaction", reaction.formula())
+            << "Products' stoichiometry is not implemented in "
+            << "JacobianManager.";
     }
     
     switch (reacsType) {
