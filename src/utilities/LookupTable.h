@@ -486,7 +486,7 @@ void LookupTable<IndexType, DataType, FunctionType>::loadTable(
         
         // Ensure that indices are ordered in ascending order and do not repeat
         if (i > 0 && mp_indices[i] <= mp_indices[i-1]) {
-            throw FileParseError(file_name)
+            throw FileParseError(file_name, i+1)
                 << "Lookup table is not ordered!\n"
                 << "Index of row " << i+1 << " is <= to row " << i << ".";
         }
