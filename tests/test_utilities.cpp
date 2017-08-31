@@ -25,6 +25,7 @@
 
 using namespace Mutation;
 using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::IO;
 using namespace Catch;
 using namespace Eigen;
 
@@ -129,3 +130,68 @@ TEST_CASE
     CHECK(Units("kg-m/s-s").toString() == "m kg / s^2");
     CHECK(Units("N-m").toString() == "m^2 kg / s^2");
 }
+
+
+/**
+ * Tests the XML classes
+ */
+TEST_CASE
+(
+    "XML classes",
+    "[utilities]"
+)
+{
+    TemporaryFile file;
+    file << "<tag att=\"100\">\n"
+         << "    <!-- comment -->\n"
+         << "    <child1> text </child1>\n"
+         << "    <child2> <child3 att=\"value\"/> </child2>\n"
+         << "</tag>";
+    file.close();
+
+    XmlDocument doc(file.filename());
+    CHECK(doc.file() == file.filename());
+
+    XmlElement& root = doc.root();
+    CHECK(root.tag() == "tag");
+    CHECK(root.text().empty());
+    CHECK(root.line() == 1);
+    CHECK(root.document() == &doc);
+
+    std::string att_str; int att_int;
+    CHECK(root.hasAttribute("att"));
+    CHECK(root.getAttribute("att", att_str) == "100");
+    CHECK(root.getAttribute("att", att_int) == 100);
+    CHECK_FALSE(root.hasAttribute("bla"));
+
+    XmlElement::const_iterator it = root.begin();
+    CHECK(it->tag() == "child1");
+    CHECK(it->text() == " text ");
+    CHECK(it->line() == 3);
+    CHECK(it->begin() == it->end());
+
+    it++;
+    CHECK(it->tag() == "child2");
+    CHECK(it->text().empty());
+    CHECK(it->line() == 4);
+    CHECK(it+1 == root.end());
+
+    it = it->begin();
+    CHECK(it->tag() == "child3");
+    CHECK(it->text().empty());
+    CHECK(it->line() == 4);
+    CHECK(it->getAttribute("att", att_str) == "value");
+
+    // Parsing errors
+    CHECK_THROWS_AS(XmlElement("a <tag/>"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag>"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag att=\" />"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag att=\"\" >"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag> text <tag>"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag> text </ta>"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag> text </tag"), Error);
+    CHECK_THROWS_AS(XmlElement("<tag> <child> </tag>"), Error);
+
+}
+

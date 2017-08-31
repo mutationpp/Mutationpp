@@ -37,6 +37,7 @@
 #include <list>
 #include <cmath>
 
+#include "Errors.h"
 #include "Functors.h"
 
 namespace Mutation {
@@ -467,10 +468,7 @@ void LookupTable<IndexType, DataType, FunctionType>::loadTable(
     // Open file for reading
     std::ifstream file(file_name.c_str(), std::ios::in);
     
-    if (!file) {
-        std::cerr << "Could not open file " + file_name + "!\n" << std::endl;
-        std::exit(1);
-    }
+    if (!file) throw FileNotFoundError(file_name);
     
     // Read the table dimensions initialize table data
     int num_indices;
@@ -488,10 +486,9 @@ void LookupTable<IndexType, DataType, FunctionType>::loadTable(
         
         // Ensure that indices are ordered in ascending order and do not repeat
         if (i > 0 && mp_indices[i] <= mp_indices[i-1]) {
-            std::cerr << "Lookup table " + file_name + " is not ordered!\n";
-            std::cerr << "Index of row " << i+1 << " is <= to row " << i << ".";
-            std::cerr << std::endl;
-            exit(1);
+            throw FileParseError(file_name)
+                << "Lookup table is not ordered!\n"
+                << "Index of row " << i+1 << " is <= to row " << i << ".";
         }
         
         // Test to see if the change in indices remains constant each row
@@ -632,10 +629,7 @@ void LookupTable<IndexType, DataType, FunctionType>::save(
     // Open file for writing
     std::ofstream file(file_name.c_str(), std::ios::out);
     
-    if (!file) {
-        std::cerr << "Could not open file " + file_name + "!\n" << std::endl;
-        std::exit(1);
-    }
+    if (!file) throw FileNotFoundError(file_name);
     
     // Set file format flags
     file.setf(std::ios::scientific | std::ios::right);
