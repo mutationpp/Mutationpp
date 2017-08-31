@@ -28,6 +28,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "Errors.h"
 #include "StoichiometryManager.h"
 
 using namespace std;
@@ -48,9 +49,9 @@ void StoichiometryManager::addReaction(const int rxn, const vector<int>& sps)
             m_stoich3_vec.push_back(Stoich3(rxn, sps[0], sps[1], sps[2]));
             break;
         default:
-            std::cout << "Error trying to add reaction with more than 3\n";
-            std::cout << "species on a single side!" << std::endl;
-            exit(1);
+            throw InvalidInputError("number of species", sps.size())
+                << "Error trying to add reaction with more than 3 "
+                << "species on a single side.";
     }
 }
 

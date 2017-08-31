@@ -407,13 +407,7 @@ public:
         : ReactionStoich<Reactants, Products>(reacs, prods), m_ns(ns),
           mp_alpha(new double [ns])
     { 
-        if (mp_alpha != NULL)
-            std::copy(alpha, alpha+ns, mp_alpha);
-        else {
-            std::cout << "Error allocating storage for ThirdbodyReactionStoich"
-                      << "::m_alpha!" << std::endl;
-            exit(1);
-        }
+        std::copy(alpha, alpha+ns, mp_alpha);
     }
     
     /**

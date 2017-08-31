@@ -195,6 +195,8 @@ private:
 
 private:
 
+    std::string m_name;
+
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     
     std::vector<Reaction> m_reactions;
