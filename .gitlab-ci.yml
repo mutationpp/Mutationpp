@@ -13,7 +13,7 @@ build:debian:
       - install/
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - debian9
 
@@ -32,7 +32,7 @@ build:ubuntu:
       - install/
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - ubuntu-lts
 
@@ -51,7 +51,7 @@ build:fedora:
       - install/
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - fedora24
 
@@ -70,7 +70,7 @@ build:centos:
       - install/
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - centos7
 
@@ -89,7 +89,7 @@ build:macos:
       - install/
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - macOS
 
@@ -106,7 +106,7 @@ test:macos:
     - build:macos
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - macOS
 
@@ -123,7 +123,7 @@ test:centos:
     - build:centos
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - centos7
 
@@ -140,7 +140,7 @@ test:fedora:
     - build:fedora
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - fedora24
 
@@ -157,7 +157,7 @@ test:debian:
     - build:debian
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - debian9
 
@@ -174,6 +174,6 @@ test:ubuntu:
     - build:ubuntu
   only:
     - master
-    - ci_implement
+    - merge-requests
   tags:
     - ubuntu-lts
