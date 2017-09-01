@@ -5,7 +5,7 @@
 
 @section input_intro Introduction
 
-Data files should be provided in one of the subdirectories under the `data` 
+Data files should be provided in one of the subdirectories under the `data`
 directory as follows:
 
 - __data__
@@ -21,7 +21,7 @@ Note that [mixture files](@ref mixtures) may also be in the local directory wher
 an excutable that utilizes Mutation++ is being run.
 
 @subsection simple_xml Simplified XML Language
-Many of these files are written in a simplified version of the Extensible Markup 
+Many of these files are written in a simplified version of the Extensible Markup
 Language (XML).  XML provides a human readable, yet complex and extensible format for data
 to be stored with only a few, limited rules.  An example XML fragment is shown below.
 
@@ -35,21 +35,21 @@ to be stored with only a few, limited rules.  An example XML fragment is shown b
 </root_tag>
 \endcode
 
-An XML document begins with a __root element__.  Every __element__ (or __node__) must begin 
-with a __tag__ that identifies what type of element it is.  The root element depicted in 
-the example is of type `root_tag`.  Every element also ends with an __end-tag__ 
-which signifies the end of the element.  Each element may have as many __attribute/value 
-pairs__ as is desired following the element's tag.  Each pair must consist of an attribute 
-name followed by an equal sign and the value of the attribute in quotations.  
+An XML document begins with a __root element__.  Every __element__ (or __node__) must begin
+with a __tag__ that identifies what type of element it is.  The root element depicted in
+the example is of type `root_tag`.  Every element also ends with an __end-tag__
+which signifies the end of the element.  Each element may have as many __attribute/value
+pairs__ as is desired following the element's tag.  Each pair must consist of an attribute
+name followed by an equal sign and the value of the attribute in quotations.
 
 Between the tag and end-tag of an element, an element may also contain one or more __child elements__
-or __text__ (but not both).  From the figure, the root element contains two child elements 
-named `child_tag` and `child2_tag`.  Note that the first child element is an example of an 
-element which contains text instead of more child elements.  The second child element is 
-an example of a short-hand format for elements which only contain attributes.  For such 
-elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute 
+or __text__ (but not both).  From the figure, the root element contains two child elements
+named `child_tag` and `child2_tag`.  Note that the first child element is an example of an
+element which contains text instead of more child elements.  The second child element is
+an example of a short-hand format for elements which only contain attributes.  For such
+elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute
 list is sufficient to end the element.  Finally, __comments__ can be inserted anywhere outside
-of element tags.  Comment strings begin with `<!-``-` and end with `-``->` and can be spread 
+of element tags.  Comment strings begin with `<!-``-` and end with `-``->` and can be spread
 over multiple lines.
 
 ----
@@ -147,9 +147,9 @@ mixture with the [checkmix](@ref checkmix) program.
 @subsection compositions Named Elemental Compositions
 
 Named elemental compositions can be included in the mixture file which can then
-be retrieved inside Mutation++ (see Mutation::Mixture::getComposition()).  Many of the 
+be retrieved inside Mutation++ (see Mutation::Mixture::getComposition()).  Many of the
 tools included with Mutation++ can also use this information to simplify input
-on the command line.  An example of a list of element compositions for the 
+on the command line.  An example of a list of element compositions for the
 11-species Air mixture are shown below.
 
 @code{.xml}
@@ -179,7 +179,7 @@ example of the Nitrogen XML node is given as
 
 __Note that the electron is treated like an element in Mutation++ and should not be
 changed__ in the `elements.xml` file.  In general, most of the known elements are
-already given in `elements.xml` and it is unlikely that it should need to be 
+already given in `elements.xml` and it is unlikely that it should need to be
 modified.
 
 ----
@@ -213,7 +213,7 @@ The integer '4'                                                  | `I1`         
 
 
 @code{.txt}
-N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1  
+N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1
  0.24159429E+01 0.17489065E-03-0.11902369E-06 0.30226244E-10-0.20360983E-14    2
  0.56133775E+05 0.46496095E+01 0.25000000E+01 0.00000000E+00 0.00000000E+00    3
  0.00000000E+00 0.00000000E+00 0.56104638E+05 0.41939088E+01 0.56850013E+05    4
@@ -228,7 +228,7 @@ Constants                                               | Format       | Columns
 Species name                                            | `A24`        | `1-24`
 Comments (data source)                                  | `A56`        | `25-80`
 <b>Line 2</b>                                           | -            | -
-Number of \f$T\f$ intervals                             | `I2`         | `2`  
+Number of \f$T\f$ intervals                             | `I2`         | `2`
 Optional identification code                            | `A6`         | `4-9`
 Chemical formulas, symbols, and numbers                 | `5(A2,F6.2)` | `11-50`
 Zero for gas, nonzero for condensed phases              | `I1`         | `52`
@@ -244,11 +244,11 @@ First five coefficients for \f$C_p^\circ/R_u\f$         | `5F16.8`     | `1-80`
 <b>Line 5</b>                                           | -            | -
 Last three coefficients for \f$C_p^\circ/R_u\f$         | `3F16.8`     | `1-48`
 Integration constants \f$ b_1 \f$ and \f$ b_2 \f$       | `2F16.8`     | `49-80`
-<i>Repeat 3, 4, and 5 for each interval...</i>          | -            | - 
+<i>Repeat 3, 4, and 5 for each interval...</i>          | -            | -
 
 
 @code{.txt}
-N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.                      
+N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
  3 tpis78 N   2.00    0.00    0.00    0.00    0.00 0   28.0134000          0.000
     200.000   1000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
  2.210371497D+04-3.818461820D+02 6.082738360D+00-8.530914410D-03 1.384646189D-05
@@ -310,13 +310,13 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 ----
 @section reaction_mechanisms Reaction Mechanisms
 
-A __mechanism name__ _referenced in a mixture file will correspond to a file with an .xml 
+A __mechanism name__ _referenced in a mixture file will correspond to a file with an .xml
 extension in the mechanisms directory_.  A mechanism file describes a reaction mechanism
 which is a set of __elementary reactions__ of the form
 
 \f[ \sum_i \nu'_{ij} \mathcal{A}_i \rightleftharpoons \sum_i \nu''_{ij} \mathcal{A}_i \f]
 
-where \f$ \mathcal{A}_i \f$ represents the i'th species and \f$\nu'_{ij}\f$ and 
+where \f$ \mathcal{A}_i \f$ represents the i'th species and \f$\nu'_{ij}\f$ and
 \f$\nu''_{ij}\f$ are the forward and reverse stoichiometric coefficients of the i'th
 species in the j'th reaction.
 
@@ -324,7 +324,7 @@ Mechanism files begin with a root element called `mechanism`.  A `name` attribut
 given but it is ignored.  The name of the mechanism is determined by the filename (without
 the `.xml` extension).
 
-The root `mechanism` element may have any number of child elements which correspond to 
+The root `mechanism` element may have any number of child elements which correspond to
 __reaction elements__ or __unit specifiers__.
 
 @subsection reaction_definitions Reaction Definitions
@@ -376,9 +376,9 @@ _note: only one of `Ea` or `T` may be used, not both_
 
 A unit specifier element is used to specify the units of the parameters in each rate law
 if needed.  A unit specifier element is denoted by a tag which has `_units` appended to
-the rate law tag (ie: `arrhenius_units`).  Unit specifiers can be placed anywhere in a 
+the rate law tag (ie: `arrhenius_units`).  Unit specifiers can be placed anywhere in a
 reaction mechanism and will apply to all rate laws of that type for reactions listed after
-the unit specifier.  The attributes of the unit specifier element correspond to the 
+the unit specifier.  The attributes of the unit specifier element correspond to the
 parameters of the rate law.  Some parameters need units specified for several physical
 quantities (such as mass, length, time, etc.).  These will be separated by commas.
 - `arrhenius_units`
@@ -404,7 +404,7 @@ controlled by an Arrhenius rate law.
 6  | \f$N+N\rightleftharpoons N_2^++e^-\f$        | 4.4e7          | 1.5   | 67500
 
 Reactions 1-4 in the above example have the same rate constants except for the
-pre-exponential factor differ only by the thirdbody species, making them good candidates 
+pre-exponential factor differ only by the thirdbody species, making them good candidates
 to combine into a generic thirdbody reaction with efficiency factors.  However, free
 electrons cannot be thirdbodies in Mutation++, so reaction 4 must be treated separately.
 Note also that there N2+ is not a possible thirdbody in reactions 1-4, thus its efficiency
@@ -414,15 +414,15 @@ resulting mechanism file `example.xml` is given below.
 \code{.xml}
 <!-- Example mechanism for 5-species N2 mix -->
 <mechanism name="example">
-    
+
     <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
-    
+
     <!-- # 1-3 -->
     <reaction formula="N2+M=2N+M">
         <arrhenius A="1.0E+21" n="-1.6" T="113200." />
         <M> N:3, N2+:0 </M>
     </reaction>
-    
+
     <!-- # 4 -->
     <reaction formula="N2+e-=2N+e-">
         <arrhenius A="7.0E+22" n="-1.6" T="113200." />
@@ -450,7 +450,7 @@ expressive data format for a wide range of integrals.
 
 For now however, all collision integral data should be given in the
 `data/transport/heavy.dat` file.  For each binary interaction, the \f$\Omega_{ij}^{11}\f$,
-\f$\Omega_{ij}^{22}\f$, and \f$B^*_{ij}\f$ functions are expressed in terms of 
+\f$\Omega_{ij}^{22}\f$, and \f$B^*_{ij}\f$ functions are expressed in terms of
 an exponential polynomial curve-fit versus temperature with units of Angstroms squared.
 
 \f[\Omega_{ij} = \exp[c_1(\ln T)^3 + c_2(\ln T)^2 + c_3(\ln T) + c_4] \f]
