@@ -5,7 +5,7 @@
 
 @section input_intro Introduction
 
-Data files should be provided in one of the subdirectories under the `data`
+The data files distributed with Mutation++ are located in one of the subdirectories under the __data__
 directory as follows:
 
 - __data__
@@ -15,10 +15,25 @@ directory as follows:
   + __transfer__ internal energy [transfer model databases](@ref transfer_databases)
   + __transport__ [collision integral database](@ref collision_integrals)
 
-The path to the `data` directory is given by the `MPP_DATA_DIRECTORY` environment
-variable which should have been setup during the [installation](@ref installation) of Mutation++.
-Note that [mixture files](@ref mixtures) may also be in the local directory where
-an excutable that utilizes Mutation++ is being run.
+@section input_location File location
+
+Mutation++ is aware of its `data_directory`. It defaults to the `MPP_DATA_DIRECTORY` environment variable,
+which should have been setup during the [installation](@ref installation) of Mutation++ and usually points
+to the aforementioned data directory.
+
+In addition, Mutation++ is aware of the `working_directory`, where an executable that utilizes Mutation++ is
+being run. [Mixture files](@ref mixtures) may also be in the working directory.
+
+When a data file `name`.`ext` is requested, Mutation++ searches for it looking up locations in the
+following order:
+
+1. `working_directory`/`name`.`ext`
+2. `working_directory`/`dir`/`name`.`ext`
+3. `data_directory`/`name`.`ext`
+4. `data_directory`/`dir`/`name`.`ext`
+
+where `dir` is any subdirectory. In practice, it allows a user to supersede a default data file with their
+own, by simply locating it in the working directory.
 
 @subsection simple_xml Simplified XML Language
 Many of these files are written in a simplified version of the Extensible Markup
