@@ -40,7 +40,6 @@ class Dependency(object):
 # TODO: check if environment variables are defined
 MPP_THIRDPARTY_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "thirdparty")
 MPP_INSTALL_DIRECTORY = os.path.join(os.environ["MPP_DIRECTORY"], "install")
-NUM_PROC = multiprocessing.cpu_count()
 
 
 def generate_deps_dict(cmd_dict):
@@ -52,7 +51,7 @@ def generate_deps_dict(cmd_dict):
                                 "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY),
                                 ".."],
                                [cmd_dict["make"],
-                                "-j", str(NUM_PROC),
+                                "-j", str(args.jobs),
                                 "install"]]),
             "catch": Dependency(
                 name="catch",
@@ -60,7 +59,7 @@ def generate_deps_dict(cmd_dict):
                                 "-DCMAKE_INSTALL_PREFIX={}".format(MPP_INSTALL_DIRECTORY),
                                 ".."],
                                [cmd_dict["make"],
-                                "-j", str(NUM_PROC),
+                                "-j", str(args.jobs),
                                 "install"]]),
         }
 
@@ -90,10 +89,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="""Install third-party dependencies for the Mutation++ software package.""")
-    parser.add_argument("-l", "--list", action="store_true",
-                        help="show the list of available dependencies")
     parser.add_argument('deps', nargs='*', default=None,
                         help="list of dependencies to install (if none is specified, install all dependencies)")
+    parser.add_argument("-l", "--list", action="store_true",
+                        help="show the list of available dependencies")
+    parser.add_argument("-j", "--jobs", default=multiprocessing.cpu_count(),
+                        help="allow JOBS jobs at once (defaults to the number of CPU units)")
     parser.add_argument("--cmd_cmake", default="cmake",
                         help="command to use to call cmake (defaults to cmake)")
     parser.add_argument("--cmd_make", default="make",
