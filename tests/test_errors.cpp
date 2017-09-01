@@ -96,4 +96,41 @@ TEST_CASE
         CHECK_THROWS_AS(throw InvalidInputError("", 0) << "", Error);
         CHECK_THROWS_AS(throw InvalidInputError("", 0) << "", InvalidInputError);
     }
+
+    SECTION("LogicError") {
+        std::stringstream ss;
+        LogicError error = LogicError() << "message"; ss << __LINE__;
+        CHECK(error.getExtraInfo("file") == __FILE__);
+        CHECK(error.file() == __FILE__);
+        CHECK(error.getExtraInfo("line") == ss.str());
+        CHECK(error.line() == ss.str());
+
+        CHECK(
+            std::string(error.what()) ==
+            (Error("logic error")("file", __FILE__)("line", ss.str()) << "message").what()
+        );
+
+        CHECK_THROWS_AS(throw LogicError() << "", Error);
+        CHECK_THROWS_AS(throw LogicError() << "", LogicError);
+    }
+
+    SECTION("NotImplementedError") {
+        std::stringstream ss;
+        NotImplementedError error = NotImplementedError("function") << "message"; ss << __LINE__;
+        CHECK(error.getExtraInfo("file") == __FILE__);
+        CHECK(error.file() == __FILE__);
+        CHECK(error.getExtraInfo("line") == ss.str());
+        CHECK(error.line() == ss.str());
+        CHECK(error.getExtraInfo("function") == "function");
+        CHECK(error.function() == "function");
+
+        CHECK(
+            std::string(error.what()) ==
+            (Error("function not implemented")("function", "function")
+                  ("file", __FILE__)("line", ss.str()) << "message").what()
+        );
+
+        CHECK_THROWS_AS(throw NotImplementedError("") << "", Error);
+        CHECK_THROWS_AS(throw NotImplementedError("") << "", NotImplementedError);
+    }
 }
