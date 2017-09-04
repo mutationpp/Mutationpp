@@ -367,15 +367,64 @@ private:
 
 
 /**
- * Reports a "logic error".  This exception type should only be used in cases
- * which fail due to programming logic errors which should be preventable and
- * cannot be handled with simple assert() statements.
+ * Reports a "logic error".  Includes file and line number.  This exception type
+ * should only be used in cases which fail due to programming logic errors which
+ * should be preventable and cannot be handled with simple assert() statements.
  */
 class LogicError : public ErrorExtension<LogicError>
 {
 public:
-    LogicError() : ErrorExtension<LogicError>("logic error") { }
+    LogicError(const char* file, int line) :
+        ErrorExtension<LogicError>("logic error")
+    {
+        addExtraInfo("file", file);
+        addExtraInfo("line", line);
+    }
+
+    /// Returns the file name.
+    const std::string& file() const {
+        return getExtraInfo("file");
+    }
+
+    /// Returns the line number (as a string).
+    const std::string& line() const {
+        return getExtraInfo("line");
+    }
 }; // class LogicError
+
+#define LogicError() LogicError(__FILE__, __LINE__)
+
+
+/// Reports a "function not implemented" error.  Includes file, line number, and
+/// function name.
+class NotImplementedError : public ErrorExtension<NotImplementedError>
+{
+public:
+    NotImplementedError(const char* func, const char* file, int line) :
+        ErrorExtension<NotImplementedError>("function not implemented")
+    {
+        addExtraInfo("function", func);
+        addExtraInfo("file", file);
+        addExtraInfo("line", line);
+    }
+
+    /// Returns the file name.
+    const std::string& file() const {
+        return getExtraInfo("file");
+    }
+
+    /// Returns the function.
+    const std::string& function() const {
+        return getExtraInfo("function");
+    }
+
+    /// Returns the line number (as a string).
+    const std::string& line() const {
+        return getExtraInfo("line");
+    }
+};
+
+#define NotImplementedError(_func_) NotImplementedError(_func_, __FILE__, __LINE__)
 
 } // namespace Mutation
 
