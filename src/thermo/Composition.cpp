@@ -29,6 +29,7 @@
 #include <cstdlib>
 
 #include "Composition.h"
+#include "Errors.h"
 #include "StringUtils.h"
 #include "XMLite.h"
 
@@ -43,11 +44,8 @@ Composition::Composition(const char* const list)
     : m_name(""), m_type(MOLE)
 {
     std::string error = componentsFromList(list);
-    if (error != "") {
-        std::cerr << "Bad composition: " << list << std::endl;
-        std::cerr << error << std::endl;
-        std::exit(1);
-    }
+    if (error != "")
+        throw InvalidInputError("composition", list) << error;
 }
 
 //=============================================================================
@@ -57,11 +55,8 @@ Composition::Composition(
     : m_name(name), m_type(type)
 {
     std::string error = componentsFromList(list);
-    if (error != "") {
-        std::cerr << "Bad composition: " << list << std::endl;
-        std::cerr << error << std::endl;
-        std::exit(1);
-    }
+    if (error != "")
+        throw InvalidInputError("composition", list)("name", name) << error;
 }
 
 //=============================================================================
@@ -115,8 +110,9 @@ void Composition::getComposition(
         if (iter != map.end())
             p_vec[iter->second] = c.fraction;
         else
-            std::cerr << "Component name in composition is not in the list of "
-                      << "possible components!" << std::endl;
+            throw LogicError()
+                << "Component name in composition is not in the list of "
+                << "possible components.";
     }
 }
 

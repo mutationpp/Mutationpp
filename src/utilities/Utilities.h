@@ -134,6 +134,24 @@ static std::string databaseFileName(
     return prependPath(path, name);
 }
 
+/**
+ * Returns the ordinal suffix of a given integer.
+ */
+static const char* ordinalSuffix(int n)
+{
+    switch (n%100) {
+    case 11: case 12: case 13: return "th";
+    default:
+        switch (n%10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default:
+            return "th";
+        }
+    }
+}
+
 
     } // namespace Utilities
 } // namespace Mutation

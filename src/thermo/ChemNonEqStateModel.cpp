@@ -102,9 +102,12 @@ public:
             break;
 
         default:
-            std::cout << "Variable-set " << vars << " not implemented in StateModel!";
-            std::cout << std::endl;
-            exit(1);
+            throw InvalidInputError("variable set", vars)
+                << "This variable-set is not implemented in ChemNonEqStateModel"
+                << ". Possible variable-sets are:\n"
+                << "  0: (species densities, static energy density)\n"
+                << "  1: (species densities, temperature)\n"
+                << "  2: (species mass fractions, pressure and temperature)";
         }
 
         // All other temperatures are the same

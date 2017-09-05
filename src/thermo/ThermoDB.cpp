@@ -155,32 +155,28 @@ void ThermoDB::cv(
 
 void ThermoDB::cpv(double T, double* const p_cp)
 {
-    cout << "cpv() is not provided in this thermodynamic database!" << endl;
-    exit(1);
+    throw NotImplementedError("ThermoDB::cpv()");
 }
 
 //==============================================================================
 
 void ThermoDB::cpel(double T, double* const p_cp)
 {
-    cout << "cpel() is not provided in this thermodynamic database!" << endl;
-    exit(1);
+    throw NotImplementedError("ThermoDB::cpel()");
 }
 
 //==============================================================================
 
 void ThermoDB::hv(double T, double* const p_h)
 {
-    cout << "hv() is not provided in this thermodynamic database!" << endl;
-    exit(1);
+    throw NotImplementedError("ThermoDB::hv()");
 }
 
 //==============================================================================
 
 void ThermoDB::hel(double T, double* const p_h)
 {
-    cout << "hel() is not provided in this thermodynamic database!" << endl;
-    exit(1);
+    throw NotImplementedError("ThermoDB::hel()");
 }
 
 //==============================================================================
