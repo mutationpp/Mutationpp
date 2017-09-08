@@ -2,7 +2,7 @@ build:debian:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py
+    - python scripts/install_dependencies.py -j 1
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -21,7 +21,7 @@ build:ubuntu:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py
+    - python scripts/install_dependencies.py -j 1
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -40,7 +40,7 @@ build:fedora:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py
+    - python scripts/install_dependencies.py -j 1
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -59,7 +59,7 @@ build:centos:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py --cmd_cmake cmake3
+    - python scripts/install_dependencies.py -j 1 --cmd_cmake cmake3
     - mkdir build
     - cd build
     - cmake3 -DENABLE_TESTING:BOOL=ON ..
@@ -78,7 +78,7 @@ build:macos:
   stage: build
   script:
     - export MPP_DIRECTORY=$PWD
-    - python scripts/install_dependencies.py
+    - python scripts/install_dependencies.py -j 1
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
