@@ -320,7 +320,7 @@ void Thermodynamics::equilibrate(double T, double P, double* const p_Xe) const
 void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 {
     //mp_equil->addConstraint(p_A);
-    cout << "Note implemented!!" << endl;
+    throw NotImplementedError("Thermodynamics::addEquilibriumConstraint()");
 }
     
 //==============================================================================
@@ -328,7 +328,7 @@ void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 void Thermodynamics::clearEquilibriumContraints()
 {
     //mp_equil->clearConstraints();
-    cout << "Note implemented!!" << endl;
+    throw NotImplementedError("Thermodynamics::clearEquilibriumContraints()");
 }
 
 //==============================================================================
