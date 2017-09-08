@@ -195,9 +195,7 @@ public:
      * Fills an array of the temperatures represented by this StateModel.
      */
     virtual void getTemperatures(double* const p_T) const {
-        std::cerr << "getTemperatures()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getTemperatures()");
     }
 
     /**
@@ -206,9 +204,7 @@ public:
 	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
     virtual void getEnergiesMass(double* const p_e) {
-        std::cerr << "getEnergiesMass()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getEnergiesMass()");
     }
     
     /**
@@ -217,9 +213,7 @@ public:
 	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
     virtual void getEnthalpiesMass(double* const p_h) {
-        std::cerr << "getEnthalpiesMass()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getEnthalpiesMass()");
     }
     
     /**
@@ -229,9 +223,7 @@ public:
      */
     
     virtual void getCpsMass(double* const p_Cp){
-        std::cerr << "getCpsMass()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getCpsMass()");
     }
 
     /**
@@ -255,18 +247,14 @@ public:
      */
     
     virtual void getCvsMass(double* const p_Cp){
-        std::cerr << "getCvsMass()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getCvsMass()");
     }
 
 	/**
 	 * Assigns a unique temperature to each energy mode.
      */
     virtual void getTagModes(int* const p_tag) {
-        std::cerr << "getTagModes()"
-                  << " not implemented by this StateModel!" << std::endl;
-        std::exit(1);
+        throw NotImplementedError("StateModel::getTagModes()");
     }
 
     /**

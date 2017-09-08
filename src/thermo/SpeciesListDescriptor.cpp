@@ -71,9 +71,10 @@ SpeciesListDescriptor::SpeciesListDescriptor(std::string descriptor)
                 m_solids = true;
                 m_liquids = true;
             } else {
-                std::cout << "Unknown phase keyword in implicit species rule"
-                          << std::endl;
-                exit(1);
+                throw InvalidInputError("species descriptor", descriptor)
+                    << "Unknown phase keyword in implicit species rule.  "
+                    << "Possible phase descriptors are 'gases', 'liquids', "
+                    << "'solids', 'condensed', and 'all'.";
             }
         }
         
@@ -137,11 +138,9 @@ void SpeciesListDescriptor::separateSpeciesNames(std::string descriptor)
             // Cannot include quotation mark in a name
             case '\"':
                 if (name.length() > 0) {
-                    std::cerr << "Error, cannot include quotation mark in ";
-                    std::cerr << "species name!\n";
-                    std::cerr << "    " << descriptor.substr(0, i+1);
-                    std::cerr << " <--" << std::endl;
-                    exit(1);
+                    throw InvalidInputError("species name", name)
+                        << "Cannot include quotation mark in species name.\n"
+                        << "    " << descriptor.substr(0, i+1) << " <--";
                 }
                 in_quotes = true;
                 break;

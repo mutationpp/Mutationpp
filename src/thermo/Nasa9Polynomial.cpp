@@ -29,8 +29,10 @@
 #include <cstdlib>
 #include <string>
 #include "Nasa9Polynomial.h"
+#include "Utilities.h"
 
 using namespace std;
+using namespace Mutation::Utilities;
 
 namespace Mutation {
 namespace Thermodynamics {
@@ -233,8 +235,10 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         double t2 = atof(line.substr(11,10).c_str()); // T_{2,i}
         
         if (t2 <= t1) {
-            cout << "Error: T2 (" << t2 << ") is less than T1 (" << t1 << ") for species " << name << endl;
-            exit(1);
+            throw InvalidInputError("NASA-9 polynomial", name)
+                << "In the " << i+1 << ordinalSuffix(i+1) << " temperature "
+                << "range for species " << name << ", "
+                << "T2 (" << t2 << ") is less than T1 (" << t1 << ").";
         }
         
         if (i == 0) {
@@ -242,9 +246,9 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
             n9.mp_tbounds[i+1] = t2;
         } else {
             if (t1 != n9.mp_tbounds[i]) {
-                cout << "Error: T1 of range " << i << " does not match T2 of "
-                     << "range " << i-1 << " for species " << name << endl;
-                exit(1);
+                throw InvalidInputError("NASA-9 polynomial", name)
+                    << "T1 of " << i+1 << ordinalSuffix(i+1) << " range " << i << " does not match T2 of "
+                    << "range " << i-1 << " for species " << name << ".";
             }
             
             n9.mp_tbounds[i+1] = t2;
@@ -253,9 +257,8 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         // Verify that there are 7 exponents because that is an assumption we
         // are making
         if (atoi(line.substr(22,1).c_str()) != 7) {
-            cout << "Error: should have 7 exponents in species " 
-                 << name << endl;
-            //exit(1);
+            throw InvalidInputError("NASA-9 polynomial", name)
+                << "Expecting 7 exponents in the polynomial.";
         }
         
         // Verify that the exponents are -2, -1, 0, 1, 2, 3, 4 because that is
@@ -270,9 +273,8 @@ std::istream& operator >> (std::istream& in, Nasa9Polynomial& n9)
         correct_exp &= (atof(line.substr(53,5).c_str()) ==  4.0f);
         
         if (!correct_exp) {
-            cout << "Error: should use exponents (-2, -1, 0, 1, 2, 3, 4) "
-                 << "in species " << name << endl;
-            //exit(1);
+            throw InvalidInputError("NASA-9 polynomial", name)
+                << "Only exponents (-2, -1, 0, 1, 2, 3, 4) are supported.";
         }
     
         // Load the coefficients from lines 4 and 5.  Note that there is a 

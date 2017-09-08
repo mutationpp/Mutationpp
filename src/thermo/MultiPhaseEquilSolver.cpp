@@ -561,28 +561,14 @@ void MultiPhaseEquilSolver::clearConstraints()
         
 void MultiPhaseEquilSolver::dNdT(double *const p_dNdt) const
 {
-//    // Compute the dg/dT = [-H/RT]/T values
-//    m_thermo.speciesHOverRT(m_T, p_dNdt);
-//    for (int j = 0; j < m_ns; ++j)
-//        p_dNdt[j] /= -m_T;
-//
-//    partialOfN(p_dNdt, p_dNdt);
-    cout << "dNdT not implemented!" << endl; exit(1);
+    throw NotImplementedError("MultiPhaseEquilSolver::dNdT");
 }
 
 //==============================================================================
 
 void MultiPhaseEquilSolver::dXdP(double *const p_dxdp) const
 {
-//    // Compute the dg/dP = 1/P for gas species
-//    RealVector dgdp(m_nsr, 1.0 / m_P);
-//    
-//    // Zero for all other species
-//    for (int j = 0; j < m_nsr; ++j)
-//        if (mp_phase[mp_sjr[j]] > 0) dgdp(j) = 0.0;
-//    
-//    partialOfX(dgdp, p_dxdp);
-    cout << "dXdP not implemented!" << endl; exit(1);
+    throw NotImplementedError("MultiPhaseEquilSolver::dXdP");
 }
 
 //==============================================================================

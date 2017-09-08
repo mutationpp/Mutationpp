@@ -183,8 +183,8 @@ void NasaDB<PolynomialType>::loadAvailableSpecies(
     std::ifstream file(db_path.c_str());
 
     if (!file.is_open()) {
-        std::cerr << "Could not open " << db_path << "!\n" << std::endl;
-        exit(1);
+        throw FileNotFoundError(db_path)
+            << "Could not find thermodynamic database.";
     }
     
     // Move to the beginning of the first species
@@ -209,8 +209,8 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
     std::ifstream file(db_path.c_str());
     
     if (!file.is_open()) {
-        std::cerr << "Could not open " << db_path << "!\n" << std::endl;
-        exit(1);
+        throw FileNotFoundError(db_path)
+            << "Could not find thermodynamic database.";
     }
     
     // Move to the beginning of the first species

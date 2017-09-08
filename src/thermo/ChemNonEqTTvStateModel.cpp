@@ -137,8 +137,11 @@ public:
             m_Tv = p_energy[1];
             break;
         default:
-            std::cout << "Variable-set " << vars << " not implemented in StateModel!" << std::endl;
-            exit(1);
+            throw InvalidInputError("variable set", vars)
+                << "This variable-set is not implemented in ChemNonEqStateModel"
+                << ". Possible variable-sets are:\n"
+                << "  0: (species densities, static energy density)\n"
+                << "  1: (species densities, T and Tv)";
         }
 
         // Set Tr, Tel, and Te

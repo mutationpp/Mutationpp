@@ -131,6 +131,53 @@ TEST_CASE
     CHECK(Units("N-m").toString() == "m^2 kg / s^2");
 }
 
+/**
+ * Tests for utility functions.
+ */
+TEST_CASE
+(
+    "Utility functions",
+    "[utilities]"
+)
+{
+    SECTION("ordinalSuffix()") {
+        CHECK(ordinalSuffix(  0) == "th");
+        CHECK(ordinalSuffix(  1) == "st");
+        CHECK(ordinalSuffix(  2) == "nd");
+        CHECK(ordinalSuffix(  3) == "rd");
+        CHECK(ordinalSuffix(  4) == "th");
+        CHECK(ordinalSuffix(  5) == "th");
+        CHECK(ordinalSuffix(  6) == "th");
+        CHECK(ordinalSuffix(  7) == "th");
+        CHECK(ordinalSuffix(  8) == "th");
+        CHECK(ordinalSuffix(  9) == "th");
+        CHECK(ordinalSuffix( 10) == "th");
+        CHECK(ordinalSuffix( 11) == "th");
+        CHECK(ordinalSuffix( 12) == "th");
+        CHECK(ordinalSuffix( 13) == "th");
+        CHECK(ordinalSuffix( 14) == "th");
+        CHECK(ordinalSuffix( 15) == "th");
+        CHECK(ordinalSuffix( 16) == "th");
+        CHECK(ordinalSuffix( 17) == "th");
+        CHECK(ordinalSuffix( 18) == "th");
+        CHECK(ordinalSuffix( 19) == "th");
+        CHECK(ordinalSuffix( 20) == "th");
+        CHECK(ordinalSuffix( 21) == "st");
+        CHECK(ordinalSuffix( 22) == "nd");
+        CHECK(ordinalSuffix( 23) == "rd");
+        CHECK(ordinalSuffix(501) == "st");
+        CHECK(ordinalSuffix(502) == "nd");
+        CHECK(ordinalSuffix(503) == "rd");
+        CHECK(ordinalSuffix(504) == "th");
+        CHECK(ordinalSuffix(511) == "th");
+        CHECK(ordinalSuffix(512) == "th");
+        CHECK(ordinalSuffix(513) == "th");
+        CHECK(ordinalSuffix(521) == "st");
+        CHECK(ordinalSuffix(522) == "nd");
+        CHECK(ordinalSuffix(523) == "rd");
+    }
+}
+
 
 /**
  * Tests the XML classes

@@ -58,8 +58,9 @@ Thermodynamics::Thermodynamics(
         throw;
     }
     if (!mp_thermodb->load(species_descriptor)) {
-        cout << "Did not load all required species... Exiting." << endl;
-        exit(1);
+        throw InvalidInputError("species list", species_descriptor)
+            << "Could not find all required species in the thermodynamic "
+            << "database.";
     }
     
     // Store the species and element order information for easy access
@@ -319,7 +320,7 @@ void Thermodynamics::equilibrate(double T, double P, double* const p_Xe) const
 void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 {
     //mp_equil->addConstraint(p_A);
-    cout << "Note implemented!!" << endl;
+    throw NotImplementedError("Thermodynamics::addEquilibriumConstraint()");
 }
     
 //==============================================================================
@@ -327,7 +328,7 @@ void Thermodynamics::addEquilibriumConstraint(const double* const p_A)
 void Thermodynamics::clearEquilibriumContraints()
 {
     //mp_equil->clearConstraints();
-    cout << "Note implemented!!" << endl;
+    throw NotImplementedError("Thermodynamics::clearEquilibriumContraints()");
 }
 
 //==============================================================================

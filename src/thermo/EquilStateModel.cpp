@@ -182,8 +182,12 @@ public:
 
             // Unknown variable set
             default:
-                std::cout << "Unknown variable set in Equil StateModel!" << std::endl;
-                exit(1);
+                throw InvalidInputError("variable set", vars)
+                    << "This variable-set is not implemented in EquilStateModel"
+                    << ". Possible variable-sets are:\n"
+                    << "  0: (mixture density, static energy density)\n"
+                    << "  1: (pressure, temperature)\n"
+                    << "  2: (element mole fractions, pressure and temperature)";
         }
 
         // Set the remaining temperatures
