@@ -221,6 +221,10 @@ Mutation::Utilities::Config::ObjectProvider<
 
 //==============================================================================
 
+/**
+ * Computes the collision integral associated with the Pirani potential, using
+ * the curve-fits of Laricchiuta.
+ */
 class LaricchiutaEq15ColInt : public CapitelliIntegral
 {
 public:
@@ -231,26 +235,9 @@ public:
     LaricchiutaEq15ColInt(CollisionIntegral::ARGS args) :
         CapitelliIntegral(args), m_phi0(0.0), m_sig2(0.0)
     {
-        // Find Laricchiuta-Eq(15)-Data element
-        IO::XmlElement::const_iterator pair = args.pair.findPair();
-        if (pair == args.xml.document()->end())
-            args.xml.parseError(
-                "Must provide Laricchiuta-Eq(15)-Data to use Laricchiuta-Eq(15) integral.");
-
-        IO::XmlElement::const_iterator data =
-            pair->findTag("Laricchiuta-Eq(15)-Data");
-        if (data == pair->end())
-            args.xml.parseError(
-                "Must provide Laricchiuta-Eq(15)-Data to use Laricchiuta-Eq(15) integral.");
-
         // Load the parameters associated with this pair
         double beta, re;
-        data->getAttribute("beta", beta, "must have a 'beta' attribute.");
-        data->getAttribute("re", re, "must have an 're' attribute.");
-        data->getAttribute("phi0", m_phi0, "must have a 'phi0' attribute.");
-        m_phi0 = Units("meV").convertToBase(m_phi0);
-        std::string ref; data->getAttribute("ref", ref);
-        setReference(ref);
+        loadPotentialParameters(args, beta, re, m_phi0);
 
         // Lastly, need to compute the fitting parameters based on this type
         Eigen::Matrix<double, 3,1> b; b << 1.0, beta, beta*beta;
@@ -283,22 +270,62 @@ private:
 
     double compute_(double T)
     {
-        double x  = std::log(KB*T/m_phi0);
-        double e1 = std::exp((x - m_a[2])/m_a[3]);
-        double e2 = std::exp((x - m_a[5])/m_a[6]);
+        const double x  = std::log(KB*T/m_phi0);
+        const double e1 = std::exp((x - m_a[2])/m_a[3]);
+        const double e2 = std::exp((x - m_a[5])/m_a[6]);
 
-        return m_sig2*std::exp((m_a[0]+x*m_a[1])*e1/(e1+1.0/e1)+m_a[4]*e2/(e2+1.0/e2));
+        return (
+            m_sig2 * std::exp(
+                (m_a[0] + x*m_a[1])*e1/(e1+1.0/e1) +
+                m_a[4]*e2/(e2+1.0/e2)
+            )
+        );
     }
 
     /**
      * Returns true if the coefficients are the same.
      */
-    bool isEqual(const CollisionIntegral& ci) const {
+    bool isEqual(const CollisionIntegral& ci) const
+    {
         const LaricchiutaEq15ColInt& compare =
             dynamic_cast<const LaricchiutaEq15ColInt&>(ci);
         return (m_a == compare.m_a &&
                 m_phi0 == compare.m_phi0 &&
                 m_sig2 == compare.m_sig2);
+    }
+
+
+    /**
+     * Searches the database and puts together the potential parameters, if
+     * possible.
+     */
+    void loadPotentialParameters(
+        CollisionIntegral::ARGS args, double& beta, double& re, double& phi0)
+    {
+        // First try and find data specific to this pair
+        IO::XmlElement::const_iterator pair = args.pair.findPair(), data;
+        if (pair != args.xml.document()->end()) {
+            data = pair->findTag("Laricchiuta-Eq(15)-Data");
+            if (data != pair->end()) {
+                data->getAttribute(
+                    "beta", beta, "must have a 'beta' attribute.");
+                data->getAttribute(
+                    "re", re, "must have an 're' attribute.");
+                data->getAttribute(
+                    "phi0", phi0, "must have a 'phi0' attribute.");
+                phi0 = Units("meV").convertToBase(phi0);
+
+                std::string ref; data->getAttribute("ref", ref);
+                setReference(ref);
+                return;
+            }
+        }
+
+        // Otherwise, try to guess the parameters from
+
+
+        args.xml.parseError(
+            "Must provide either Laricchiuta-Eq(15)-Data or to use Laricchiuta-Eq(15) integral.");
     }
 
 private:
