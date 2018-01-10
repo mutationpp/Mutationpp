@@ -161,6 +161,18 @@ protected:
 	 */
 	void setFactor(double fac) { m_fac = fac; }
 
+	/**
+	 * Loads pure species parameter from the collision database with the given
+	 * name for the given species in base units.  If the parameter is not
+	 * found, then the default value is returned.
+	 */
+	double loadSpeciesParameter(
+	    Mutation::Utilities::IO::XmlElement& root,
+	    const std::string& parameter,
+	    const std::string& species,
+	    const std::string units = "",
+	    double def = -1.0);
+
 private:
 
 	std::string m_ref;
