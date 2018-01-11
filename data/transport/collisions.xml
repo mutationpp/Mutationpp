@@ -1520,31 +1520,31 @@
     </pair>
     
     <pair s1="H" s2="H-">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="7.05" phi0="15.151" re="4.975" />
+        <Pirani-Data ref="Bruno2010" beta="7.05" phi0="15.151" re="4.975" />
         <Q11 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.6322e+02 -3.9812e+01  1.0922e+00 </Q2> </Q11>
         <Q12 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.4995e+02 -3.9084e+01  1.0922e+00 </Q2> </Q12>
         <Q13 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.4018e+02 -3.8538e+01  1.0922e+00 </Q2> </Q13>
         <Q14 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.3247e+02 -3.8101e+01  1.0922e+00 </Q2> </Q14>
         <Q15 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.2612e+02 -3.7737e+01  1.0922e+00 </Q2> </Q15>
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -1575,32 +1575,32 @@
     </pair>
     
     <pair s1="H" s2="H2+">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="8.00" phi0="73.104" re="2.769" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="8.00" phi0="73.104" re="2.769" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
 
     <pair s1="H" s2="H3+">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="7.98" phi0="70.982" re="2.797" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="7.98" phi0="70.982" re="2.797" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -1797,16 +1797,16 @@
     
     <!-- H- -->
     <pair s1="H-" s2="H2">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="7.27" phi0="18.896" re="4.962" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="7.27" phi0="18.896" re="4.962" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -1862,47 +1862,47 @@
     </pair>
     
     <pair s1="H2" s2="H2+">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="8.97" phi0="83.283" re="2.809" />
+        <Pirani-Data ref="Bruno2010" beta="8.97" phi0="83.283" re="2.809" />
         <Q11 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.8237e+01 -3.8755e+00  9.8299e-02 </Q2> </Q11>
         <Q12 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.6945e+01 -3.8101e+00  9.8307e-02 </Q2> </Q12>
         <Q13 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.5992e+01 -3.7608e+00  9.8299e-02 </Q2> </Q13>
         <Q14 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.5242e+01 -3.7220e+00  9.8329e-02 </Q2> </Q14>
         <Q15 type="Murphy">
-            <Q1 type="Laricchiuta-Eq(15)" />
+            <Q1 type="Pirani" />
             <Q2 type="Bruno-Eq(17)" ref="Bruno2010">
                 3.4620e+01 -3.6888e+00  9.8306e-02 </Q2> </Q15>
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
 
     <pair s1="H2" s2="H3+">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="8.93" phi0="80.981" re="2.838" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="8.93" phi0="80.981" re="2.838" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -1916,32 +1916,32 @@
     </pair>
     
     <pair s1="H2" s2="He">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="9.29" phi0="1.865" re="3.189" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="9.29" phi0="1.865" re="3.189" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
 
     <pair s1="H2" s2="He+">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="9.22" phi0="177.500" re="2.223" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="9.22" phi0="177.500" re="2.223" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -2034,16 +2034,16 @@
     
     <!-- H2+ -->
     <pair s1="H2+" s2="He">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="9.73" phi0="30.664" re="2.574" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="9.73" phi0="30.664" re="2.574" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>
@@ -2051,16 +2051,16 @@
     
     <!-- H3+ -->
     <pair s1="H3+" s2="He">
-        <Laricchiuta-Eq(15)-Data ref="Bruno2010" beta="9.66" phi0="29.471" re="2.606" />
-        <Q11 type="Laricchiuta-Eq(15)" />
-        <Q12 type="Laricchiuta-Eq(15)" />
-        <Q13 type="Laricchiuta-Eq(15)" />
-        <Q14 type="Laricchiuta-Eq(15)" />
-        <Q15 type="Laricchiuta-Eq(15)" />
-        <Q22 type="Laricchiuta-Eq(15)" />
-        <Q23 type="Laricchiuta-Eq(15)" />
-        <Q24 type="Laricchiuta-Eq(15)" />
-        <Q33 type="Laricchiuta-Eq(15)" />
+        <Pirani-Data ref="Bruno2010" beta="9.66" phi0="29.471" re="2.606" />
+        <Q11 type="Pirani" />
+        <Q12 type="Pirani" />
+        <Q13 type="Pirani" />
+        <Q14 type="Pirani" />
+        <Q15 type="Pirani" />
+        <Q22 type="Pirani" />
+        <Q23 type="Pirani" />
+        <Q24 type="Pirani" />
+        <Q33 type="Pirani" />
         <Ast type="from A*"/>
         <Bst type="from B*"/>
         <Cst type="from C*"/>

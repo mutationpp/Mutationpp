@@ -139,7 +139,7 @@ Mutation::Utilities::Config::ObjectProvider<
 
 //==============================================================================
 
-LaricchiutaEq15ColInt::LaricchiutaEq15ColInt(CollisionIntegral::ARGS args) :
+PiraniColInt::PiraniColInt(CollisionIntegral::ARGS args) :
     CapitelliIntegral(args), m_loaded(true), m_phi0(0.0), m_sig2(0.0)
 {
     CollisionType type = args.pair.type();
@@ -179,7 +179,7 @@ LaricchiutaEq15ColInt::LaricchiutaEq15ColInt(CollisionIntegral::ARGS args) :
     m_a = iter->second * b;
 }
 
-double LaricchiutaEq15ColInt::compute_(double T)
+double PiraniColInt::compute_(double T)
 {
     const double x  = std::log(KB*T/m_phi0);
     const double e1 = std::exp((x - m_a[2])/m_a[3]);
@@ -193,23 +193,23 @@ double LaricchiutaEq15ColInt::compute_(double T)
     );
 }
 
-bool LaricchiutaEq15ColInt::isEqual(const CollisionIntegral& ci) const
+bool PiraniColInt::isEqual(const CollisionIntegral& ci) const
 {
-    const LaricchiutaEq15ColInt& compare =
-        dynamic_cast<const LaricchiutaEq15ColInt&>(ci);
+    const PiraniColInt& compare =
+        dynamic_cast<const PiraniColInt&>(ci);
     return (m_a == compare.m_a &&
             m_phi0 == compare.m_phi0 &&
             m_sig2 == compare.m_sig2);
 }
 
 
-void LaricchiutaEq15ColInt::loadPotentialParameters(
+void PiraniColInt::loadPotentialParameters(
     CollisionIntegral::ARGS args, double& beta, double& re, double& phi0)
 {
     // First try and find data specific to this pair
     IO::XmlElement::const_iterator pair = args.pair.findPair(), data;
     if (pair != args.xml.document()->root().end()) {
-        data = pair->findTag("Laricchiuta-Eq(15)-Data");
+        data = pair->findTag("Pirani-Data");
         if (data != pair->end()) {
             data->getAttribute(
                 "beta", beta, "must have a 'beta' attribute.");
@@ -353,7 +353,7 @@ std::map<std::string, Eigen::Matrix<double,7,3> > init_c4()
 
     return c4_map;
 }
-std::map<std::string, Eigen::Matrix<double,7,3> > LaricchiutaEq15ColInt::sm_c4 = init_c4();
+std::map<std::string, Eigen::Matrix<double,7,3> > PiraniColInt::sm_c4 = init_c4();
 
 // Initialization of the ci coefficients for m = 6, Table 2 in Laricchiuta2007.
 std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
@@ -398,11 +398,11 @@ std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
 
     return c6_map;
 }
-std::map<std::string, Eigen::Matrix<double,7,3> > LaricchiutaEq15ColInt::sm_c6 = init_c6();
+std::map<std::string, Eigen::Matrix<double,7,3> > PiraniColInt::sm_c6 = init_c6();
 
 // Register the "Laricchiuta-Eq(15)" CollisionIntegral
 Mutation::Utilities::Config::ObjectProvider<
-    LaricchiutaEq15ColInt, CollisionIntegral> laricchiuta15_ci("Laricchiuta-Eq(15)");
+    PiraniColInt, CollisionIntegral> laricchiuta15_ci("Pirani");
 
 //==============================================================================
 

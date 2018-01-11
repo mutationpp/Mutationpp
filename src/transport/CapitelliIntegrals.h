@@ -119,12 +119,12 @@ private:
 
 /**
  * Computes the collision integral associated with the Pirani potential, using
- * the curve-fits of Laricchiuta.
+ * the approximate curve-fits of Laricchiuta et al. @cite Laricchiuta2007.
  */
-class LaricchiutaEq15ColInt : public CapitelliIntegral
+class PiraniColInt : public CapitelliIntegral
 {
 public:
-    LaricchiutaEq15ColInt(CollisionIntegral::ARGS args);
+    PiraniColInt(CollisionIntegral::ARGS args);
     virtual bool loaded() const { return m_loaded; }
 
 private:
@@ -148,7 +148,7 @@ private:
     double m_sig2;
     static std::map<std::string, Eigen::Matrix<double,7,3> > sm_c4;
     static std::map<std::string, Eigen::Matrix<double,7,3> > sm_c6;
-}; // class LaricchiutaEq15ColInt
+}; // class PiraniColInt
 
 } // namespace Transport
 } // namespace Mutation
