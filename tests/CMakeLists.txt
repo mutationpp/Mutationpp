@@ -26,6 +26,7 @@ configure_file(Configuration.h.in Configuration.h)
 
 set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_capitelli_integrals.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_diffusion_matrix.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp

@@ -156,24 +156,23 @@ LaricchiutaEq15ColInt::LaricchiutaEq15ColInt(CollisionIntegral::ARGS args) :
         return;
     }
 
-    std::cout << args.pair.name() << ": " << beta << ", " << re << ", " << m_phi0 << std::endl;
     m_phi0 = Units("meV").convertToBase(m_phi0);
 
     // Lastly, need to compute the fitting parameters based on this type
     Eigen::Matrix<double, 3,1> b; b << 1.0, beta, beta*beta;
-    std::map<std::string, Eigen::Matrix<double,7,3> >& map = sm_c4;
+    std::map<std::string, Eigen::Matrix<double,7,3> >* p_map = NULL;
 
     if (type == ION_NEUTRAL) {
-        map = sm_c4;
-        m_sig2 = 0.7564*std::pow(beta, 2.0*0.064605)*re*re;
+        p_map = &sm_c4;
+        m_sig2 = 0.7564*0.7564*std::pow(beta, 2.0*0.064605)*re*re;
     } else {
-        map = sm_c6;
-        m_sig2 = 0.8002*std::pow(beta, 2.0*0.049256)*re*re;
+        p_map = &sm_c6;
+        m_sig2 = 0.8002*0.8002*std::pow(beta, 2.0*0.049256)*re*re;
     }
 
     std::map<std::string, Eigen::Matrix<double,7,3> >::const_iterator
-        iter = map.find(args.kind);
-    if (iter == map.end())
+        iter = p_map->find(args.kind);
+    if (iter == p_map->end())
         args.xml.parseError(
             "Laricchiuta-Eq(15) is not supported for " + args.kind + " integral.");
 
@@ -210,7 +209,6 @@ void LaricchiutaEq15ColInt::loadPotentialParameters(
     // First try and find data specific to this pair
     IO::XmlElement::const_iterator pair = args.pair.findPair(), data;
     if (pair != args.xml.document()->root().end()) {
-        std::cout << pair->line() << std::endl;
         data = pair->findTag("Laricchiuta-Eq(15)-Data");
         if (data != pair->end()) {
             data->getAttribute(
@@ -233,8 +231,6 @@ void LaricchiutaEq15ColInt::loadPotentialParameters(
     double a2 = 1.0e30 * loadSpeciesParameter(
         root, "dipole-polarizabilities", args.pair.sp2Name());
 
-    // TODO: we shouldn't actually throw an error here because maybe it's ok
-    // to not have the data for this integral (could have other defaults)
     if (a1 < 0 || a2 < 0) {
         phi0 = -1;
         return;
@@ -274,7 +270,7 @@ void LaricchiutaEq15ColInt::loadPotentialParameters(
         }
         double rho = ai/(z*z*(1+std::pow(2*ai/an, 2.0/3.0))*std::sqrt(an));
         re = 1.767 * (s1 + s2) / std::pow(a1*a2*(1.0+1.0/rho), 0.095);
-        phi0 = 5.2 * z*z*an*(1+rho) / std::pow(re, 4.0);
+        phi0 = 5.2e3 * z*z*an*(1+rho) / std::pow(re, 4.0);
     }
 }
 
@@ -363,7 +359,6 @@ std::map<std::string, Eigen::Matrix<double,7,3> > LaricchiutaEq15ColInt::sm_c4 =
 std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
 {
     std::map<std::string, Eigen::Matrix<double,7,3> > c6_map;
-    Eigen::Matrix<double,7,3> ci;
 
     c6_map["Q11"] <<
          7.884756e-1, -2.438494e-2,  0.0,
