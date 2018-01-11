@@ -114,6 +114,41 @@ CollisionIntegral::CollisionIntegral(CollisionIntegral::ARGS args) :
 
 //==============================================================================
 
+double CollisionIntegral::loadSpeciesParameter(
+    Mutation::Utilities::IO::XmlElement& root, const std::string& parameter,
+    const std::string& species, std::string units, double def)
+{
+    // First look for the parameter table
+    XmlElement::const_iterator db_iter =
+        root.findTag(parameter);
+    if (db_iter == root.end())
+        return def;
+
+    // Load default units if available
+    db_iter->getAttribute("units", units, units);
+
+    // Look for species name
+    XmlElement::const_iterator sp_iter =
+        db_iter->findTagWithAttribute("species", "name", species);
+    if (sp_iter == db_iter->end())
+        return def;
+
+    // Found it so load the value
+    double value;
+    sp_iter->getAttribute("value", value, "must have a 'value' attribute.");
+
+    // Check if units are different then the default
+    sp_iter->getAttribute("units", units, units);
+
+    // Return value in base units
+    if (units.empty())
+        return value;
+
+    return Units(units).convertToBase(value);
+}
+
+//==============================================================================
+
 /**
  * Represents a constant value collision integral which writes a warning that
  * the requested integral is not found in the database.

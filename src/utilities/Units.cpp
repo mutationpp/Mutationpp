@@ -91,7 +91,7 @@ std::map<std::string, Units> Units::initializeUnits()
     units["kJ"]   = units["J"] * 1000.0;
     units["cal"]  = units["J"] * 4.184;
     units["kcal"] = units["cal"] * 1000.0;
-    units["eV"]   = units["J"] / 6.242e18;
+    units["eV"]   = units["J"] / 6.241509e18;
     units["meV"]  = units["eV"] / 1000.0;
     
     // pressure

@@ -28,9 +28,9 @@
  */
 
 #include "AutoRegistration.h"
-#include "Constants.h"
-#include "CollisionIntegral.h"
+#include "CapitelliIntegrals.h"
 #include "CollisionPair.h"
+#include "Species.h"
 #include "XMLite.h"
 
 #include <eigen3/Eigen/Dense>
@@ -43,71 +43,31 @@ namespace Mutation {
 
 //==============================================================================
 
-class CapitelliIntegral : public CollisionIntegral
+BrunoEq11ColInt::BrunoEq11ColInt(CollisionIntegral::ARGS args) :
+    CapitelliIntegral(args)
 {
-public:
+    // Load the coefficients
+    std::istringstream ss(args.xml.text());
+    for (int i = 0; i < 7; ++i)
+        if(!(ss >> m_a[i]))
+            args.xml.parseError("Must provide 7 coefficients.");
+}
 
-    /**
-     * Self registering constructor.
-     */
-    CapitelliIntegral(CollisionIntegral::ARGS args) :
-        CollisionIntegral(args)
-    {
-        setFactor(PI);
-        setUnits("A-A");
-    }
-
-    bool canTabulate() const { return true; }
-};
-
-//==============================================================================
-
-/**
- * Represents collision integrals computed using the curve-fit found in Eq. (11)
- * of \cite{Bruno2010}.
- */
-class BrunoEq11ColInt : public CapitelliIntegral
+double BrunoEq11ColInt::compute_(double T)
 {
-public:
+    double x  = std::log(T);
+    double e1 = std::exp((x - m_a[2])/m_a[3]);
+    double e2 = std::exp((x - m_a[5])/m_a[6]);
 
-    /**
-     * Self registering constructor.
-     */
-    BrunoEq11ColInt(CollisionIntegral::ARGS args) :
-        CapitelliIntegral(args)
-    {
-        // Load the coefficients
-        std::istringstream ss(args.xml.text());
-        for (int i = 0; i < 7; ++i)
-            if(!(ss >> m_a[i]))
-                args.xml.parseError("Must provide 7 coefficients.");
-    }
+    return (m_a[0]+x*m_a[1])*e1/(e1+1.0/e1) + m_a[4]*e2/(e2+1.0/e2);
+}
 
-private:
-
-    double compute_(double T)
-    {
-        double x  = std::log(T);
-        double e1 = std::exp((x - m_a[2])/m_a[3]);
-        double e2 = std::exp((x - m_a[5])/m_a[6]);
-
-        return (m_a[0]+x*m_a[1])*e1/(e1+1.0/e1) + m_a[4]*e2/(e2+1.0/e2);
-    }
-
-    /**
-     * Returns true if the coefficients are the same.
-     */
-    bool isEqual(const CollisionIntegral& ci) const {
-        const BrunoEq11ColInt& compare =
-            dynamic_cast<const BrunoEq11ColInt&>(ci);
-        return (m_a == compare.m_a);
-    }
-
-private:
-
-    Eigen::Matrix<double,7,1> m_a;
-
-}; // class BrunoEq11ColInt
+bool BrunoEq11ColInt::isEqual(const CollisionIntegral& ci) const
+{
+    const BrunoEq11ColInt& compare =
+        dynamic_cast<const BrunoEq11ColInt&>(ci);
+    return (m_a == compare.m_a);
+}
 
 // Register the "Bruno-Eq(11)" CollisionIntegral
 Mutation::Utilities::Config::ObjectProvider<
@@ -115,51 +75,32 @@ Mutation::Utilities::Config::ObjectProvider<
 
 //==============================================================================
 
-/**
- * Represents collision integrals computed using the curve-fit found in Eq. (17)
- * of \cite{Bruno2010}.
- */
-class BrunoEq17ColInt : public CapitelliIntegral
+BrunoEq17ColInt::BrunoEq17ColInt(CollisionIntegral::ARGS args) :
+    CapitelliIntegral(args)
 {
-public:
+    // Load the coefficients
+    std::istringstream ss(args.xml.text());
+    for (int i = 0; i < 3; ++i)
+        if(!(ss >> m_d[i]))
+            args.xml.parseError("Must provide 3 coefficients.");
+}
 
-    /**
-     * Self registering constructor.
-     */
-    BrunoEq17ColInt(CollisionIntegral::ARGS args) :
-        CapitelliIntegral(args)
-    {
-        // Load the coefficients
-        std::istringstream ss(args.xml.text());
-        for (int i = 0; i < 3; ++i)
-            if(!(ss >> m_d[i]))
-                args.xml.parseError("Must provide 3 coefficients.");
-    }
 
-    virtual bool canTabulate() const { return true; }
+double BrunoEq17ColInt::compute_(double T)
+{
+    double x  = std::log(T);
+    return m_d[0] + x*(m_d[1] + x*m_d[2]);
+}
 
-private:
-
-    double compute_(double T)
-    {
-        double x  = std::log(T);
-        return m_d[0] + x*(m_d[1] + x*m_d[2]);
-    }
-
-    /**
-     * Returns true if the coefficients are the same.
-     */
-    bool isEqual(const CollisionIntegral& ci) const {
-        const BrunoEq17ColInt& compare =
-            dynamic_cast<const BrunoEq17ColInt&>(ci);
-        return (m_d == compare.m_d);
-    }
-
-private:
-
-    Eigen::Vector3d m_d;
-
-}; // class BrunoEq17ColInt
+/**
+ * Returns true if the coefficients are the same.
+ */
+bool BrunoEq17ColInt::isEqual(const CollisionIntegral& ci) const
+{
+    const BrunoEq17ColInt& compare =
+        dynamic_cast<const BrunoEq17ColInt&>(ci);
+    return (m_d == compare.m_d);
+}
 
 // Register the "Bruno-Eq(17)" CollisionIntegral
 Mutation::Utilities::Config::ObjectProvider<
@@ -167,53 +108,30 @@ Mutation::Utilities::Config::ObjectProvider<
 
 //==============================================================================
 
-/**
- * Represents collision integrals computed using the curve-fit found in Eq. (19)
- * of \cite{Bruno2010}.
- */
-class BrunoEq19ColInt : public CapitelliIntegral
+BrunoEq19ColInt::BrunoEq19ColInt(CollisionIntegral::ARGS args) :
+    CapitelliIntegral(args)
 {
-public:
+    // Load the coefficients
+    std::istringstream ss(args.xml.text());
+    for (int i = 0; i < 8; ++i)
+        if(!(ss >> m_g[i]))
+            args.xml.parseError("Must provide 8 coefficients.");
+}
 
-    /**
-     * Self registering constructor.
-     */
-    BrunoEq19ColInt(CollisionIntegral::ARGS args) :
-        CapitelliIntegral(args)
-    {
-        // Load the coefficients
-        std::istringstream ss(args.xml.text());
-        for (int i = 0; i < 8; ++i)
-            if(!(ss >> m_g[i]))
-                args.xml.parseError("Must provide 8 coefficients.");
-    }
+double BrunoEq19ColInt::compute_(double T)
+{
+    double x  = std::log(T);
+    double e1 = std::exp((x-m_g[0])/m_g[1]);
+    double f1 = (x-m_g[6])/m_g[7];
+    return m_g[2]*std::pow(x,m_g[4])*e1/(e1+1.0/e1)+m_g[5]*std::exp(-f1*f1)+m_g[3];
+}
 
-    virtual bool canTabulate() const { return true; }
-
-private:
-
-    double compute_(double T)
-    {
-        double x  = std::log(T);
-        double e1 = std::exp((x-m_g[0])/m_g[1]);
-        double f1 = (x-m_g[6])/m_g[7];
-        return m_g[2]*std::pow(x,m_g[4])*e1/(e1+1.0/e1)+m_g[5]*std::exp(-f1*f1)+m_g[3];
-    }
-
-    /**
-     * Returns true if the coefficients are the same.
-     */
-    bool isEqual(const CollisionIntegral& ci) const {
-        const BrunoEq19ColInt& compare =
-            dynamic_cast<const BrunoEq19ColInt&>(ci);
-        return (m_g == compare.m_g);
-    }
-
-private:
-
-    Eigen::Matrix<double,8,1> m_g;
-
-}; // class BrunoEq19ColInt
+bool BrunoEq19ColInt::isEqual(const CollisionIntegral& ci) const
+{
+    const BrunoEq19ColInt& compare =
+        dynamic_cast<const BrunoEq19ColInt&>(ci);
+    return (m_g == compare.m_g);
+}
 
 // Register the "Bruno-Eq(19)" CollisionIntegral
 Mutation::Utilities::Config::ObjectProvider<
@@ -221,97 +139,140 @@ Mutation::Utilities::Config::ObjectProvider<
 
 //==============================================================================
 
-class LaricchiutaEq15ColInt : public CapitelliIntegral
+PiraniColInt::PiraniColInt(CollisionIntegral::ARGS args) :
+    CapitelliIntegral(args), m_loaded(true), m_phi0(0.0), m_sig2(0.0)
 {
-public:
+    CollisionType type = args.pair.type();
+    if (type != NEUTRAL_NEUTRAL && type != ION_NEUTRAL)
+        args.xml.parseError(
+            "Laricchiuta-Eq(15) only provided for ion-neutral and neutral-neutral collisions.");
 
-    /**
-     * Self registering constructor.
-     */
-    LaricchiutaEq15ColInt(CollisionIntegral::ARGS args) :
-        CapitelliIntegral(args), m_phi0(0.0), m_sig2(0.0)
-    {
-        // Find Laricchiuta-Eq(15)-Data element
-        IO::XmlElement::const_iterator pair = args.pair.findPair();
-        if (pair == args.xml.document()->end())
-            args.xml.parseError(
-                "Must provide Laricchiuta-Eq(15)-Data to use Laricchiuta-Eq(15) integral.");
+    // Load the parameters associated with this pair
+    double beta, re;
+    loadPotentialParameters(args, beta, re, m_phi0);
 
-        IO::XmlElement::const_iterator data =
-            pair->findTag("Laricchiuta-Eq(15)-Data");
-        if (data == pair->end())
-            args.xml.parseError(
-                "Must provide Laricchiuta-Eq(15)-Data to use Laricchiuta-Eq(15) integral.");
+    if (m_phi0 < 0) {
+        m_loaded = false;
+        return;
+    }
 
-        // Load the parameters associated with this pair
-        double beta, re;
-        data->getAttribute("beta", beta, "must have a 'beta' attribute.");
-        data->getAttribute("re", re, "must have an 're' attribute.");
-        data->getAttribute("phi0", m_phi0, "must have a 'phi0' attribute.");
-        m_phi0 = Units("meV").convertToBase(m_phi0);
-        std::string ref; data->getAttribute("ref", ref);
-        setReference(ref);
+    m_phi0 = Units("meV").convertToBase(m_phi0);
 
-        // Lastly, need to compute the fitting parameters based on this type
-        Eigen::Matrix<double, 3,1> b; b << 1.0, beta, beta*beta;
-        std::map<std::string, Eigen::Matrix<double,7,3> >& map = sm_c4;
+    // Lastly, need to compute the fitting parameters based on this type
+    Eigen::Matrix<double, 3,1> b; b << 1.0, beta, beta*beta;
+    std::map<std::string, Eigen::Matrix<double,7,3> >* p_map = NULL;
 
-        switch (args.pair.type()) {
-        case ION_NEUTRAL:
-            map = sm_c4;
-            m_sig2 = 0.7564*std::pow(beta, 2.0*0.064605)*re*re;
-            break;
-        case NEUTRAL_NEUTRAL:
-            map = sm_c6;
-            m_sig2 = 0.8002*std::pow(beta, 2.0*0.049256)*re*re;
-            break;
-        default:
-            args.xml.parseError(
-                "Laricchiuta-Eq(15) only provided for ion-neutral and neutral-neutral collisions.");
+    if (type == ION_NEUTRAL) {
+        p_map = &sm_c4;
+        m_sig2 = 0.7564*0.7564*std::pow(beta, 2.0*0.064605)*re*re;
+    } else {
+        p_map = &sm_c6;
+        m_sig2 = 0.8002*0.8002*std::pow(beta, 2.0*0.049256)*re*re;
+    }
+
+    std::map<std::string, Eigen::Matrix<double,7,3> >::const_iterator
+        iter = p_map->find(args.kind);
+    if (iter == p_map->end())
+        args.xml.parseError(
+            "Laricchiuta-Eq(15) is not supported for " + args.kind + " integral.");
+
+    m_a = iter->second * b;
+}
+
+double PiraniColInt::compute_(double T)
+{
+    const double x  = std::log(KB*T/m_phi0);
+    const double e1 = std::exp((x - m_a[2])/m_a[3]);
+    const double e2 = std::exp((x - m_a[5])/m_a[6]);
+
+    return (
+        m_sig2 * std::exp(
+            (m_a[0] + x*m_a[1])*e1/(e1+1.0/e1) +
+            m_a[4]*e2/(e2+1.0/e2)
+        )
+    );
+}
+
+bool PiraniColInt::isEqual(const CollisionIntegral& ci) const
+{
+    const PiraniColInt& compare =
+        dynamic_cast<const PiraniColInt&>(ci);
+    return (m_a == compare.m_a &&
+            m_phi0 == compare.m_phi0 &&
+            m_sig2 == compare.m_sig2);
+}
+
+
+void PiraniColInt::loadPotentialParameters(
+    CollisionIntegral::ARGS args, double& beta, double& re, double& phi0)
+{
+    // First try and find data specific to this pair
+    IO::XmlElement::const_iterator pair = args.pair.findPair(), data;
+    if (pair != args.xml.document()->root().end()) {
+        data = pair->findTag("Pirani-Data");
+        if (data != pair->end()) {
+            data->getAttribute(
+                "beta", beta, "must have a 'beta' attribute.");
+            data->getAttribute(
+                "re", re, "must have an 're' attribute.");
+            data->getAttribute(
+                "phi0", phi0, "must have a 'phi0' attribute.");
+
+            std::string ref; data->getAttribute("ref", ref);
+            setReference(ref);
+            return;
+        }
+    }
+
+    // Otherwise, try to guess the parameters from
+    IO::XmlElement& root = args.xml.document()->root();
+    double a1 = 1.0e30 * loadSpeciesParameter(
+        root, "dipole-polarizabilities", args.pair.sp1Name());
+    double a2 = 1.0e30 * loadSpeciesParameter(
+        root, "dipole-polarizabilities", args.pair.sp2Name());
+
+    if (a1 < 0 || a2 < 0) {
+        phi0 = -1;
+        return;
+    }
+
+    // softness
+    double s1 = std::pow(a1, 1.0/3.0);
+    double s2 = std::pow(a2, 1.0/3.0);
+
+    beta = 6.0 + 5.0/(s1 + s2);
+
+    if (args.pair.type() == NEUTRAL_NEUTRAL) {
+        // neutral-neutral
+        double N1 = loadSpeciesParameter(
+            root, "effective-electrons", args.pair.sp1Name());
+        double N2 = loadSpeciesParameter(
+            root, "effective-electrons", args.pair.sp2Name());
+        if (N1 < 0 || N2 < 0) {
+            phi0 = -1;
+            return;
         }
 
-        std::map<std::string, Eigen::Matrix<double,7,3> >::const_iterator
-            iter = map.find(args.kind);
-        if (iter == map.end())
-            args.xml.parseError(
-                "Laricchiuta-Eq(15) is not supported for " + args.kind + " integral.");
-
-        m_a = iter->second * b;
+        re = 1.767 * (s1 + s2) / std::pow(a1*a2, 0.095);
+        double Cd = 15.7e3 * a1*a2 / (std::sqrt(a1/N1) + std::sqrt(a2/N2));
+        phi0 = 0.72 * Cd / std::pow(re, 6.0);
+    } else {
+        // ion-neutral
+        double ai, an, z;
+        if (args.pair.sp1().isIon()) {
+            ai = a1;
+            an = a2;
+            z = args.pair.sp1().charge();
+        } else {
+            ai = a2;
+            an = a1;
+            z = args.pair.sp2().charge();
+        }
+        double rho = ai/(z*z*(1+std::pow(2*ai/an, 2.0/3.0))*std::sqrt(an));
+        re = 1.767 * (s1 + s2) / std::pow(a1*a2*(1.0+1.0/rho), 0.095);
+        phi0 = 5.2e3 * z*z*an*(1+rho) / std::pow(re, 4.0);
     }
-
-private:
-
-    double compute_(double T)
-    {
-        double x  = std::log(KB*T/m_phi0);
-        double e1 = std::exp((x - m_a[2])/m_a[3]);
-        double e2 = std::exp((x - m_a[5])/m_a[6]);
-
-        return m_sig2*std::exp((m_a[0]+x*m_a[1])*e1/(e1+1.0/e1)+m_a[4]*e2/(e2+1.0/e2));
-    }
-
-    /**
-     * Returns true if the coefficients are the same.
-     */
-    bool isEqual(const CollisionIntegral& ci) const {
-        const LaricchiutaEq15ColInt& compare =
-            dynamic_cast<const LaricchiutaEq15ColInt&>(ci);
-        return (m_a == compare.m_a &&
-                m_phi0 == compare.m_phi0 &&
-                m_sig2 == compare.m_sig2);
-    }
-
-private:
-
-    Eigen::Matrix<double,7,1> m_a;
-
-    double m_phi0;
-    double m_sig2;
-
-    static std::map<std::string, Eigen::Matrix<double,7,3> > sm_c4;
-    static std::map<std::string, Eigen::Matrix<double,7,3> > sm_c6;
-
-}; // class LaricchiutaEq15ColInt
+}
 
 // Initialization of the ci coefficients for m = 4, Table 1 in Laricchiuta2007.
 std::map<std::string, Eigen::Matrix<double,7,3> > init_c4()
@@ -392,13 +353,12 @@ std::map<std::string, Eigen::Matrix<double,7,3> > init_c4()
 
     return c4_map;
 }
-std::map<std::string, Eigen::Matrix<double,7,3> > LaricchiutaEq15ColInt::sm_c4 = init_c4();
+std::map<std::string, Eigen::Matrix<double,7,3> > PiraniColInt::sm_c4 = init_c4();
 
 // Initialization of the ci coefficients for m = 6, Table 2 in Laricchiuta2007.
 std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
 {
     std::map<std::string, Eigen::Matrix<double,7,3> > c6_map;
-    Eigen::Matrix<double,7,3> ci;
 
     c6_map["Q11"] <<
          7.884756e-1, -2.438494e-2,  0.0,
@@ -408,6 +368,24 @@ std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
         -3.373058e+0,  2.458538e-1, -4.850047e-3,
          4.161981e+0,  2.202737e-1, -1.718010e-2,
          2.462523e+0,  3.231308e-1, -2.281072e-2;
+
+    c6_map["Q12"] <<
+         7.123565e-1, -2.688875e-2,  0.0,
+        -2.910530e-1, -2.065175e-3,  0.0,
+         4.187065e-2,  4.060236e-2,  0.0,
+        -9.287685e-1, -2.342270e-2,  0.0,
+        -3.598542e+0,  2.545120e-1, -4.685966e-3,
+         3.934824e+0,  2.699944e-1, -2.009886e-2,
+         2.578084e+0,  3.449024e-1, -2.292710e-2;
+
+    c6_map["Q13"] <<
+         6.606022e-1, -2.831448e-2,  0.0,
+        -2.870900e-1, -2.232827e-3,  0.0,
+        -2.519690e-1,  3.778211e-2,  0.0,
+        -9.173046e-1, -1.864476e-2,  0.0,
+        -3.776812e+0,  2.552528e-1, -4.237220e-3,
+         3.768103e+0,  3.155025e-1, -2.218849e-2,
+         2.695440e+0,  3.597998e-1, -2.267102e-2;
 
     c6_map["Q22"] <<
          7.898524e-1, -2.114115e-2,  0.0,
@@ -420,11 +398,11 @@ std::map<std::string, Eigen::Matrix<double,7,3> > init_c6()
 
     return c6_map;
 }
-std::map<std::string, Eigen::Matrix<double,7,3> > LaricchiutaEq15ColInt::sm_c6 = init_c6();
+std::map<std::string, Eigen::Matrix<double,7,3> > PiraniColInt::sm_c6 = init_c6();
 
 // Register the "Laricchiuta-Eq(15)" CollisionIntegral
 Mutation::Utilities::Config::ObjectProvider<
-    LaricchiutaEq15ColInt, CollisionIntegral> laricchiuta15_ci("Laricchiuta-Eq(15)");
+    PiraniColInt, CollisionIntegral> laricchiuta15_ci("Pirani");
 
 //==============================================================================
 

@@ -82,7 +82,8 @@ public:
         int s = int(kind[2])-48;
 
         // Load the dipole polarizability of the neutral in m^3
-        m_alpha = loadPolarizability(neutral, args.xml.document()->root());
+        m_alpha = loadSpeciesParameter(
+            args.xml.document()->root(), "dipole-polarizabilities", neutral);
 
         // Compute the factor that is multiplied by sqrt(alpha/T)
         const double sfac [5] = {0.66467, 0.55389, 0.48466, 0.43619, 0.39984};
@@ -106,36 +107,6 @@ private:
     bool isEqual(const CollisionIntegral& ci) const {
         const LangevinColInt& compare = dynamic_cast<const LangevinColInt&>(ci);
         return (m_fac == compare.m_fac && m_alpha == compare.m_alpha);
-    }
-
-    // Finds the polarizability for a given species
-    static double loadPolarizability(const string& name, XmlElement& root)
-    {
-        // First look for the dipole polarizability data
-        XmlElement::const_iterator db_iter =
-            root.findTag("dipole-polarizabilities");
-        if (db_iter == root.end())
-            return 0.0;
-
-        // Load default units if available (defaults to A^3)
-        string units = "A-A-A";
-        db_iter->getAttribute("units", units, units);
-
-        // Look for species name
-        XmlElement::const_iterator sp_iter =
-            db_iter->findTagWithAttribute("species", "name", name);
-        if (sp_iter == db_iter->end())
-            return 0.0;
-
-        // Found it so load the value
-        double value;
-        sp_iter->getAttribute("value", value, "must have a 'value' attribute.");
-
-        // Check if units are different then the default
-        sp_iter->getAttribute("units", units, units);
-
-        // Return value in base units
-        return Units(units).convertToBase(value);
     }
 
 private:
