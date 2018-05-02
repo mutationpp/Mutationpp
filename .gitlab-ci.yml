@@ -39,7 +39,7 @@ build:fedora:
   stage: build
   script:
     - dnf upgrade -y
-    - dnf install -y cmake @development-tools
+    - dnf install -y make automake gcc gcc-c++ cmake kernel-devel
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -58,10 +58,10 @@ build:centos:
   script:
     - yum upgrade -y
     - yum install -y cmake
-    - yum groupinstall "Development Tools"
+    - yum install -y make automake gcc gcc-c++ cmake kernel-devel
     - mkdir build
     - cd build
-    - cmake3 -DENABLE_TESTING:BOOL=ON ..
+    - cmake -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
