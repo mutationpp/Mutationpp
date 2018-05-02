@@ -51,6 +51,9 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
 )
 
+# Add Catch2 headers
+include_directories(${Catch2_INCLUDE_DIRS})
+
 add_executable(run_tests ${test_sources})
 target_link_libraries(run_tests mutation++)
 

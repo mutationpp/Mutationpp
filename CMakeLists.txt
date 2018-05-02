@@ -143,6 +143,14 @@ if (BUILD_DOCUMENTATION)
     add_dependencies(docs test_docs)
 endif()
 
+################################################################################
+# ThirdParty Libraries
+################################################################################
+
+# Eigen
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
 
 ################################################################################
 # Source code
@@ -169,9 +177,12 @@ add_subdirectory(src)
 ################################################################################
 # CTest
 ################################################################################
+<<<<<<< HEAD
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 
 if (ENABLE_TESTING OR ENABLE_COVERAGE)
+    # Look for Catch2
+    find_package(Catch2 REQUIRED)
     enable_testing()
     add_subdirectory(tests)
 endif()

@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <catch/catch.hpp>
+#include <catch.hpp>
 #include "mutation++.h"
 #include "Configuration.h"
 #include "CompareFunc.h"
 #include "MatrixHelper.h"
 
 #include <string>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Catch;
 using namespace Mutation;

@@ -20,8 +20,8 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Utilities;

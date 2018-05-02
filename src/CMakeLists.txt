@@ -45,15 +45,6 @@ function (add_sources target)
   set_property(GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction()
 
-################################################################################
-# Link ThirdParty Libraries
-################################################################################
-
-# Generally Eigen3 provides cmake config files if installed using Cmake
-find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
-
-
 add_subdirectory(general)
 add_subdirectory(kinetics)
 add_subdirectory(numerics)
