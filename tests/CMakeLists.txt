@@ -52,6 +52,7 @@ set(test_sources
 )
 
 # Add Catch2 headers
+find_package(Catch2 REQUIRED)
 include_directories(${Catch2_INCLUDE_DIRS})
 
 add_executable(run_tests ${test_sources})

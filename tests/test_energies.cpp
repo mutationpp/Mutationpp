@@ -36,7 +36,7 @@ TEST_CASE
     "[thermodynamics]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
     const int e_var_set = 0;
     const int t_var_set = 1;
 

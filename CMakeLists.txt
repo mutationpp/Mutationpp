@@ -177,7 +177,6 @@ add_subdirectory(src)
 ################################################################################
 # CTest
 ################################################################################
-<<<<<<< HEAD
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 
 if (ENABLE_TESTING OR ENABLE_COVERAGE)

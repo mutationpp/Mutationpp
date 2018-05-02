@@ -42,7 +42,7 @@ TEST_CASE
     "[equilibrium][thermodynamics]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (

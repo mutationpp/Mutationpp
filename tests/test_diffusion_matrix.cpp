@@ -86,7 +86,7 @@ void DiffusionMatrixTests::fluxesSumToZero(Mixture& mix)
     VectorXd dx(ns);
     VectorXd Ji(ns);
 
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     // Test over several temperatures and pressures
     EQUILIBRATE_LOOP(

@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Numerics;

@@ -35,7 +35,7 @@ TEST_CASE
     "[transport]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (
@@ -68,7 +68,7 @@ TEST_CASE
     "[transport]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (

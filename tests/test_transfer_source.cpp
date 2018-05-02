@@ -41,7 +41,7 @@ TEST_CASE
         "OmegaCE", "OmegaCElec", "OmegaCV", "OmegaET", "OmegaI", "OmegaVT"
     };
 
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (
