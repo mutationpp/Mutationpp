@@ -1,9 +1,6 @@
 build:debian:
-  image: debian:latest
   stage: build
   script:
-    - apt-get update -qq
-    - apt-get install -y -qq cmake build-essential
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -15,13 +12,13 @@ build:debian:
   only:
     - master
     - merge-requests
+  tags:
+      - debian9
 
 build:ubuntu:
   image: ubuntu:latest
   stage: build
   script:
-    - apt-get update -qq
-    - apt-get install -y -qq cmake build-essential
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -33,13 +30,13 @@ build:ubuntu:
   only:
     - master
     - merge-requests
+  tags:
+      - ubuntu-lts
 
 build:fedora:
   image: fedora:latest
   stage: build
   script:
-    - dnf upgrade -y
-    - dnf install -y make automake gcc gcc-c++ cmake kernel-devel
     - mkdir build
     - cd build
     - cmake -DENABLE_TESTING:BOOL=ON ..
@@ -51,17 +48,16 @@ build:fedora:
   only:
     - master
     - merge-requests
+  tags: 
+    - fedora26
 
 build:centos:
   image: centos:latest
   stage: build
   script:
-    - yum upgrade -y
-    - yum install -y cmake
-    - yum install -y make automake gcc gcc-c++ cmake kernel-devel
     - mkdir build
     - cd build
-    - cmake -DENABLE_TESTING:BOOL=ON ..
+    - cmake3 -DENABLE_TESTING:BOOL=ON ..
     - make install
   artifacts:
     paths:
@@ -70,6 +66,8 @@ build:centos:
   only:
     - master
     - merge-requests
+  tags: 
+    - centos7
 
 build:macos:
   stage: build
@@ -104,6 +102,8 @@ test:centos:
   only:
     - master
     - merge-requests
+  tags: 
+    - centos7
 
 test:fedora:
   image: fedora:latest
@@ -120,6 +120,8 @@ test:fedora:
   only:
     - master
     - merge-requests
+  tags: 
+    - fedora26
 
 test:debian:
   image: debian:latest
@@ -136,6 +138,8 @@ test:debian:
   only:
     - master
     - merge-requests
+  tags: 
+    - debian9
 
 test:ubuntu:
   image: ubuntu:latest
@@ -152,6 +156,8 @@ test:ubuntu:
   only:
     - master
     - merge-requests
+  tags: 
+    - ubuntu-lts
 
 test:macos:
   stage: test
@@ -169,4 +175,3 @@ test:macos:
     - merge-requests
   tags:
     - macOS
-
