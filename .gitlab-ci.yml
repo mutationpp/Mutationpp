@@ -1,0 +1,172 @@
+build:debian:
+  image: debian:latest
+  stage: build
+  script:
+    - apt-get update -qq
+    - apt-get install -y -qq cmake build-essential
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_TESTING:BOOL=ON ..
+    - make install
+  artifacts:
+    paths:
+      - build/
+      - install/
+  only:
+    - master
+    - merge-requests
+
+build:ubuntu:
+  image: ubuntu:latest
+  stage: build
+  script:
+    - apt-get update -qq
+    - apt-get install -y -qq cmake build-essential
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_TESTING:BOOL=ON ..
+    - make install
+  artifacts:
+    paths:
+      - build/
+      - install/
+  only:
+    - master
+    - merge-requests
+
+build:fedora:
+  image: fedora:latest
+  stage: build
+  script:
+    - dnf upgrade -y
+    - dnf install -y cmake @development-tools
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_TESTING:BOOL=ON ..
+    - make install
+  artifacts:
+    paths:
+      - build/
+      - install/
+  only:
+    - master
+    - merge-requests
+
+build:centos:
+  image: centos:latest
+  stage: build
+  script:
+    - yum upgrade -y
+    - yum install -y cmake
+    - yum groupinstall "Development Tools"
+    - mkdir build
+    - cd build
+    - cmake3 -DENABLE_TESTING:BOOL=ON ..
+    - make install
+  artifacts:
+    paths:
+      - build/
+      - install/
+  only:
+    - master
+    - merge-requests
+
+build:macos:
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_TESTING:BOOL=ON ..
+    - make install
+  artifacts:
+    paths:
+      - build/
+      - install/
+  only:
+    - master
+    - merge-requests
+  tags:
+    - macOS
+
+
+test:centos:
+  image: centos:latest
+  stage: test
+  script:
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+    - cd build/
+    - ctest3 -V
+  dependencies:
+    - build:centos
+  only:
+    - master
+    - merge-requests
+
+test:fedora:
+  image: fedora:latest
+  stage: test
+  script:
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+    - cd build/
+    - ctest -V
+  dependencies:
+    - build:fedora
+  only:
+    - master
+    - merge-requests
+
+test:debian:
+  image: debian:latest
+  stage: test
+  script:
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+    - cd build/
+    - ctest -V
+  dependencies:
+    - build:debian
+  only:
+    - master
+    - merge-requests
+
+test:ubuntu:
+  image: ubuntu:latest
+  stage: test
+  script:
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+    - cd build/
+    - ctest -V
+  dependencies:
+    - build:ubuntu
+  only:
+    - master
+    - merge-requests
+
+test:macos:
+  stage: test
+  script:
+    - export MPP_DIRECTORY=$PWD
+    - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+    - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+    - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
+    - cd build/
+    - ctest -V
+  dependencies:
+    - build:macos
+  only:
+    - master
+    - merge-requests
+  tags:
+    - macOS
+
