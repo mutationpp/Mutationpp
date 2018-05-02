@@ -28,7 +28,7 @@
 #ifndef INTERPOLATORS_H
 #define INTERPOLATORS_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <vector>
 

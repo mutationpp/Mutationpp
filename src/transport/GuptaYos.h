@@ -29,7 +29,7 @@
 #define TRANSPORT_GUPTAYOS_H
 
 #include "Constants.h"
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {

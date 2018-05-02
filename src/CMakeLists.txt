@@ -45,6 +45,15 @@ function (add_sources target)
   set_property(GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction()
 
+################################################################################
+# Link ThirdParty Libraries
+################################################################################
+
+# Generally Eigen3 provides cmake config files if installed using Cmake
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
+
 add_subdirectory(general)
 add_subdirectory(kinetics)
 add_subdirectory(numerics)
@@ -58,7 +67,10 @@ if (BUILD_FORTRAN_WRAPPER)
     add_subdirectory(fortran)
 endif()
 
+
+
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
+
 install(TARGETS mutation++ DESTINATION lib)
 add_coverage(mutation++)

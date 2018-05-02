@@ -31,7 +31,7 @@
 #include "ViscosityAlgorithm.h"
 #include "Wilke.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Mutation::Utilities;
 

@@ -34,7 +34,7 @@
 #include <vector>
 #include <string>
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Utilities {
