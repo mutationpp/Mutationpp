@@ -17,7 +17,7 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.2)
 
 # c++ examples
 add_subdirectory(c++)
