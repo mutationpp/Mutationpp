@@ -184,7 +184,9 @@ if (ENABLE_TESTING OR ENABLE_COVERAGE)
     find_package(Catch2 REQUIRED)
     enable_testing()
     add_subdirectory(tests)
-endif()
+    add_subdirectory(examples)
+
+endif(ENABLE_TESTING OR ${CMAKE_BUILD_TYPE} MATCHES "Coverage")
 
 list(APPEND LCOV_REMOVE_PATTERNS 
     "/usr/*"

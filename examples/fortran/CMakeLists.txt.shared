@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.6)
+
+project(${CMAKE_SOURCE_DIR})
+
+# Let's require mutation++. It should export a suitable config that also
+# exports include directories for Eigen
+find_package(mutation++ REQUIRED)
+
+include(${mutation++_USE_FILE})
+
+add_executable(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}.f90)
+target_link_libraries(${PROJECT_NAME} mutation++_fortran)
+
