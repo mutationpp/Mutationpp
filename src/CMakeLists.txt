@@ -45,6 +45,27 @@ function (add_sources target)
   set_property(GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction()
 
+# - Add headers for a target (in order to be installed later)
+function (add_headers target)
+  # define the <target>_HDRS properties if necessary
+  get_property(prop_defined GLOBAL PROPERTY ${target}_HDRS DEFINED)
+  if(NOT prop_defined)
+      define_property(GLOBAL PROPERTY ${target}_HDRS
+          BRIEF_DOCS "Headers for the ${target} target"
+      FULL_DOCS "List of header files for the ${target} target")
+  endif()
+  # create list of sources (absolute paths)
+  set(HDRS)
+  foreach(hfile IN LISTS ARGN)
+    if(NOT IS_ABSOLUTE "${hfile}")
+      get_filename_component(hfile "${hfile}" ABSOLUTE)
+    endif()
+    list(APPEND HDRS "${hfile}")
+  endforeach()
+  # append to global property
+  set_property(GLOBAL APPEND PROPERTY "${target}_HDRS" "${HDRS}")
+endfunction()
+
 add_subdirectory(general)
 add_subdirectory(kinetics)
 add_subdirectory(numerics)
@@ -63,5 +84,9 @@ endif()
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
 
-install(TARGETS mutation++ DESTINATION lib)
 add_coverage(mutation++)
+install(
+    TARGETS mutation++ 
+    EXPORT mutation++Targets
+    RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+    LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib)

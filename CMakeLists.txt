@@ -46,21 +46,21 @@ endif()
 ################################################################################
 
 # Profile
-SET (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
+set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
     "Flags used by the C++ compiler during Profile builds."
     FORCE )
-SET (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG" CACHE STRING
+set (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG" CACHE STRING
     "Flags used by the C compiler during Profile builds."
     FORCE )
-SET (CMAKE_EXE_LINKER_FLAGS_PROFILE
+set (CMAKE_EXE_LINKER_FLAGS_PROFILE
     "" CACHE STRING
     "Flags used for linking binaries during Profile builds."
     FORCE )
-SET (CMAKE_SHARED_LINKER_FLAGS_PROFILE
+set (CMAKE_SHARED_LINKER_FLAGS_PROFILE
     "" CACHE STRING
     "Flags used by the shared libraries linker during Profile builds."
     FORCE )
-MARK_AS_ADVANCED(
+mark_as_advanced(
     CMAKE_CXX_FLAGS_PROFILE
     CMAKE_C_FLAGS_PROFILE
     CMAKE_EXE_LINKER_FLAGS_PROFILE
@@ -79,9 +79,16 @@ endif ()
 ################################################################################
 # Install prefix settings
 ################################################################################
-SET (CMAKE_INSTALL_PREFIX "../install" CACHE STRING
+set(CMAKE_INSTALL_PREFIX "../install" CACHE STRING
     "Install path prefix, prepended onto install directories." FORCE)
-MARK_AS_ADVANCED (CMAKE_INSTALL_PREFIX)
+
+# Offer the user the choice of overriding the installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include/mutation++ CACHE PATH
+  "Installation directory for header files")
+
+mark_as
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     #set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wold-style-cast")
@@ -173,6 +180,9 @@ include_directories(
 )
 add_subdirectory(src)
 
+# Export targets to be used by projects that will use mutation++
+export(TARGETS mutation++ ${mutation_exes} FILE 
+    "${PROJECT_BINARY_DIR}/mutation++Targets.cmake")
 
 ################################################################################
 # CTest

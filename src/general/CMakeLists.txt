@@ -26,27 +26,26 @@ add_sources(mutation++
     MixtureOptions.cpp
 )
 
-# Build the checkmix code
-add_executable(checkmix checkmix.cpp)
-target_link_libraries(checkmix mutation++)
-install(TARGETS checkmix DESTINATION bin)
+# Build and install executables
+set(mutation++_exes checkmix mppequil bprime)
+foreach (exe ${mutation++_exes})
+    add_executable(${exe} ${exe}.cpp)
+    target_link_libraries(${exe} mutation++)
+    install(
+        TARGETS ${exe}
+        EXPORT mutation++Targets
+        RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+endforeach(exe ${mutation++_exes})
 
-# Build the mppequil code
-add_executable(mppequil mppequil.cpp)
-target_link_libraries(mppequil mutation++)
-install(TARGETS mppequil DESTINATION bin)
-
-add_executable(bprime bprime.cpp)
-target_link_libraries(bprime mutation++)
-install(TARGETS bprime DESTINATION bin)
-
-# Install the header files
-install(FILES GlobalOptions.h DESTINATION include/mutation++)
-install(FILES mutation++.h DESTINATION include/mutation++)
-install(FILES Mixture.h DESTINATION include/mutation++)
-install(FILES MixtureOptions.h DESTINATION include/mutation++)
-install(FILES Constants.h DESTINATION include/mutation++)
-install(FILES Errors.h DESTINATION include/mutation++)
+# Register header files (to be installed later)
+add_headers(mutation++
+    GlobalOptions.h 
+    mutation++.h 
+    Mixture.h 
+    MixtureOptions.h 
+    Constants.h 
+    Errors.h
+)
 
 
 
