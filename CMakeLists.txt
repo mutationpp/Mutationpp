@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 #
 # High level cmake configuration file for the Mutation++ project and associated
 # helper tools and binaries.  All of the various configuration options are
@@ -6,7 +6,7 @@
 #
 # author: J.B. Scoggins (scoggins@vki.ac.be)
 #
-################################################################################
+###############################################################################
 #
 # Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
 #
@@ -31,6 +31,11 @@
 cmake_minimum_required(VERSION 2.6)
 project(mutation++)
 
+set(MUTATIONPP_MAJOR_VERSION 0)
+set(MUTATIONPP_MINOR_VERSION 2)
+set(MUTATIONPP_VERSION 
+    ${MUTATIONPP_MAJOR_VERSION}.${MUTATIONPP_MINOR_VERSION})
+
 # Add include path for cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
@@ -41,9 +46,9 @@ if (BUILD_FORTRAN_WRAPPER)
 endif()
 
 
-################################################################################
+###############################################################################
 # Build types
-################################################################################
+###############################################################################
 
 # Profile
 set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
@@ -76,37 +81,63 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 
-################################################################################
+###############################################################################
 # Install prefix settings
-################################################################################
-set(CMAKE_INSTALL_PREFIX "../install" CACHE STRING
-    "Install path prefix, prepended onto install directories." FORCE)
+###############################################################################
+set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH
+    "Install path prefix, prepended onto install directories.")
+
+if(NOT IS_ABSOLUTE ${CMAKE_INSTALL_PREFIX})
+    message(FATAL_ERROR "You must provide an absolute install prefix...
+    Try to use `readlink -f` or `realpath` commands")
+endif()
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include/mutation++ CACHE PATH
   "Installation directory for header files")
+set(INSTALL_CMAKE_DIR share/cmake/mutation++ CACHE PATH
+  "Installation directory for CMake files")
 
-mark_as
+foreach (dir LIB BIN INCLUDE CMAKE)
+    set(inst_dir INSTALL_${dir}_DIR)
+    # Mark install dirs preferences advanced
+    mark_as_advanced(${inst_dir})
+
+    # Make the paths absolute (the ${${var}} notation is evaluating the
+    # evaluated variable. :: I.e. ${inst_dir} first evaluates, for example, 
+    # to INSTALL_LIB_DIR. Then ${${inst_dir}} evaluates to ${INSTALL_LIB_DIR}
+    # that respectively evaluates to the directory path containing libraries
+    if(NOT IS_ABSOLUTE "${${inst_dir}}")
+        set(${inst_dir} "${CMAKE_INSTALL_PREFIX}/${${inst_dir}}")
+    endif()
+endforeach()
+
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     #set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wold-style-cast")
     set (CMAKE_CXX_FLAGS "-g")
 endif ()
 
+<<<<<<< HEAD
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_MACOSX_RPATH 1)
 endif()
 ################################################################################
+=======
+
+###############################################################################
+>>>>>>> WIP
 # Fortran wrapper options
-################################################################################
+###############################################################################
 option (BUILD_FORTRAN_WRAPPER
     "Generate the wrapper library for using mutation++ with Fortran" OFF)
 
 if (BUILD_FORTRAN_WRAPPER)
     # FFLAGS depend on the compiler
-    get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+    get_filename_component (
+        Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
     if (Fortran_COMPILER_NAME STREQUAL "gfortran")
         # gfortran
@@ -123,9 +154,9 @@ endif()
 
 
 
-################################################################################
+###############################################################################
 # Doxygen documentation generation
-################################################################################
+###############################################################################
 option (BUILD_DOCUMENTATION
     "Use Doxygen to create the HTML based API documentation" OFF)
 
@@ -150,21 +181,25 @@ if (BUILD_DOCUMENTATION)
     add_dependencies(docs test_docs)
 endif()
 
-################################################################################
+###############################################################################
 # ThirdParty Libraries
-################################################################################
+###############################################################################
 
 # Eigen
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
 
-################################################################################
+###############################################################################
 # Source code
+<<<<<<< HEAD
 ################################################################################
 option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
 find_package(codecov)
 
+=======
+###############################################################################
+>>>>>>> WIP
 # Descend into the src directory to build all targets and libraries
 include_directories(
     ${CMAKE_SOURCE_DIR}/install/include
@@ -180,12 +215,22 @@ include_directories(
 )
 add_subdirectory(src)
 
+###############################################################################
+# Exporting configuration files to be used by other projects that need 
+# mutation++
+###############################################################################
+
 # Export targets to be used by projects that will use mutation++
 export(TARGETS mutation++ ${mutation_exes} FILE 
     "${PROJECT_BINARY_DIR}/mutation++Targets.cmake")
 
-################################################################################
+# Install the export set for use with the install-tree
+install(EXPORT mutation++Targets DESTINATION
+  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+###############################################################################
 # CTest
+<<<<<<< HEAD
 ################################################################################
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 
