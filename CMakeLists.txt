@@ -233,6 +233,7 @@ set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 configure_file(mutation++Config.cmake.in
   "${PROJECT_BINARY_DIR}/mutation++Config.cmake" @ONLY)
 
+
 # ... for the install tree
 set(CONF_INCLUDE_DIRS "\${MUTATIONPP_CMAKE_DIR}/${REL_INCLUDE_DIR}")
 configure_file(mutation++Config.cmake.in
@@ -256,6 +257,7 @@ export(TARGETS mutation++ ${mutation_exes} FILE
 # Install the export set for use with the install-tree
 install(EXPORT mutation++Targets DESTINATION
   "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
 
 ###############################################################################
 # CTest
