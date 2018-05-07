@@ -88,8 +88,10 @@ set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH
     "Install path prefix, prepended onto install directories.")
 
 if(NOT IS_ABSOLUTE ${CMAKE_INSTALL_PREFIX})
-    message(FATAL_ERROR "You must provide an absolute install prefix...
-    Try to use `readlink -f` or `realpath` commands")
+    message(FATAL_ERROR 
+        "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}"
+        "You must provide an absolute install prefix...
+        Try to use `readlink -f` or `realpath` commands")
 endif()
 
 # Offer the user the choice of overriding the installation directories
@@ -120,15 +122,12 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set (CMAKE_CXX_FLAGS "-g")
 endif ()
 
-<<<<<<< HEAD
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_MACOSX_RPATH 1)
 endif()
-################################################################################
-=======
 
-###############################################################################
->>>>>>> WIP
+################################################################################
+
 # Fortran wrapper options
 ###############################################################################
 option (BUILD_FORTRAN_WRAPPER
@@ -199,7 +198,11 @@ find_package(codecov)
 
 =======
 ###############################################################################
+<<<<<<< HEAD
 >>>>>>> WIP
+=======
+
+>>>>>>> Add exporting of Configuration File
 # Descend into the src directory to build all targets and libraries
 include_directories(
     ${CMAKE_SOURCE_DIR}/install/include
@@ -220,6 +223,32 @@ add_subdirectory(src)
 # mutation++
 ###############################################################################
 
+# Create the configure file adding the correct paths
+# tutorials/How-to-create-a-ProjectConfig.cmake-file 
+file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
+   "${INSTALL_INCLUDE_DIR}")
+
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(mutation++Config.cmake.in
+  "${PROJECT_BINARY_DIR}/mutation++Config.cmake" @ONLY)
+
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${MUTATIONPP_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(mutation++Config.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mutation++Config.cmake" @ONLY)
+
+# ... for both
+configure_file(mutation++ConfigVersion.cmake.in
+  "${PROJECT_BINARY_DIR}/mutation++ConfigVersion.cmake" @ONLY)
+
+# Install the mutation++Config.cmake and mutation++ConfigVersion.cmake
+install(FILES
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mutation++Config.cmake"
+  "${PROJECT_BINARY_DIR}/mutation++ConfigVersion.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+
 # Export targets to be used by projects that will use mutation++
 export(TARGETS mutation++ ${mutation_exes} FILE 
     "${PROJECT_BINARY_DIR}/mutation++Targets.cmake")
@@ -230,7 +259,6 @@ install(EXPORT mutation++Targets DESTINATION
 
 ###############################################################################
 # CTest
-<<<<<<< HEAD
 ################################################################################
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 

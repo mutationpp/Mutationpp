@@ -83,10 +83,18 @@ endif()
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
-
 add_coverage(mutation++)
+
+# Install the library
 install(
     TARGETS mutation++ 
     EXPORT mutation++Targets
     RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
     LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib)
+
+# Install the headers
+get_property(mutation++_HDRS GLOBAL PROPERTY mutation++_HDRS)
+install(FILES ${mutation++_HDRS}
+    DESTINATION "${INSTALL_INCLUDE_DIR}"
+    COMPONENT dev
+)

@@ -26,6 +26,15 @@ add_sources(mutation++
     MixtureOptions.cpp
 )
 
+add_headers(mutation++
+    GlobalOptions.h 
+    mutation++.h 
+    Mixture.h 
+    MixtureOptions.h 
+    Constants.h 
+    Errors.h
+)
+
 # Build and install executables
 set(mutation++_exes checkmix mppequil bprime)
 foreach (exe ${mutation++_exes})
@@ -37,15 +46,6 @@ foreach (exe ${mutation++_exes})
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
 endforeach(exe ${mutation++_exes})
 
-# Register header files (to be installed later)
-add_headers(mutation++
-    GlobalOptions.h 
-    mutation++.h 
-    Mixture.h 
-    MixtureOptions.h 
-    Constants.h 
-    Errors.h
-)
 
 
 

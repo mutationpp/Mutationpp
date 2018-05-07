@@ -27,5 +27,5 @@ install(TARGETS mutation++_fortran DESTINATION lib)
 install(
     FILES 
     ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod 
-    DESTINATION include/mutation++)
+    DESTINATION ${INSTALL_INCLUDE_DIR})
 

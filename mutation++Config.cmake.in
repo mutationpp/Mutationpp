@@ -1,0 +1,24 @@
+# - Config file for the mutation++ package
+# It defines the following variables
+#  MUTATIONPP_INCLUDE_DIRS          - include directories for FooBar
+#  MUTATIONPP_LIBRARIES             - libraries to link against
+#  MUTATIONPP_CHECKMIX_EXECUTABLE   - the checkmix executable
+#  MUTATIONPP_MPPEQUIL_EXECUTABLE   - the mppequil executable
+#  MUTATIONPP_BPRIME_EXECUTABLE     - the bprime executable
+
+
+# Compute paths
+get_filename_component(MUTATIONPP_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(MUTATIONPP_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET mutation++)
+  include("${MUTATIONPP_CMAKE_DIR}/FooBarTargets.cmake")
+endif()
+
+# These are IMPORTED targets created by FooBarTargets.cmake
+set(MUTATIONPP_LIBRARIES mutation++)
+set(MUTATIONPP_CHECKMIX_EXECUTABLE checkmix)
+set(MUTATIONPP_MPPEQUIL_EXECUTABLE mppequil)
+set(MUTATIONPP_BPRIME_EXECUTABLE bprime)
+
