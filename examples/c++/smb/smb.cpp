@@ -40,7 +40,7 @@ using namespace Mutation::Thermodynamics;
 int main()
 {
     // Generate the default options for the air11 mixture
-    Mixture mix("Johnston22");
+    Mixture mix("air11");
     double Tw = 2500.0;
     double Pw = 10000.0;
 
@@ -58,7 +58,7 @@ int main()
         xip[i] = mix.X()[i];
 
     mix.smb(Tw, Pw, rhoi.data(), xip.data(), 0.0001);
-    
+
     cout << "xip = \n";
     for (int i = 0; i < mix.nSpecies(); ++i)
         cout << setw(20) << mix.speciesName(i) << " " << xip[i] << endl;
@@ -72,7 +72,7 @@ int main()
     mix.computeSurfaceSource(mdotci);
     cout << mdotci << endl;
     cout << mdotci.sum() << endl;
-    
+
     return 0;
 }
 /// [example_code]
