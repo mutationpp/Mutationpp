@@ -3,7 +3,7 @@ build:debian:
   script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(realpath ../install) -DENABLE_TESTING:BOOL=ON ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(python -c "import os; print(os.path.realpath('../install'))") -DENABLE_TESTING:BOOL=ON ..
     - make -j $(nproc) install 
   artifacts:
     paths:
@@ -21,7 +21,7 @@ build:ubuntu:
   script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(realpath ../install) -DENABLE_TESTING:BOOL=ON ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(python -c "import os; print(os.path.realpath('../install'))") -DENABLE_TESTING:BOOL=ON ..
     - make -j $(nproc) install 
   artifacts:
     paths:
@@ -39,7 +39,7 @@ build:fedora:
   script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(realpath ../install) -DENABLE_TESTING:BOOL=ON ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(python -c "import os; print(os.path.realpath('../install'))") -DENABLE_TESTING:BOOL=ON ..
     - make -j $(nproc) install 
   artifacts:
     paths:
@@ -57,7 +57,7 @@ build:centos:
   script:
     - mkdir build
     - cd build
-    - cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$(realpath ../install) -DENABLE_TESTING:BOOL=ON ..
+    - cmake3 -DCMAKE_INSTALL_PREFIX:PATH=$(python -c "import os; print(os.path.realpath('../install'))") -DENABLE_TESTING:BOOL=ON ..
     - make -j $(nproc) install 
   artifacts:
     paths:
@@ -74,7 +74,7 @@ build:macos:
   script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(realpath ../install) -DENABLE_TESTING:BOOL=ON ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=$(python -c "import os; print(os.path.realpath('../install'))") -DENABLE_TESTING:BOOL=ON ..
     - make -j $(nproc) install 
   artifacts:
     paths:
