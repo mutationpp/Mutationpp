@@ -27,7 +27,7 @@ ListSubDirs(example_subdirs ${CMAKE_CURRENT_LIST_DIR})
 foreach(subdir ${example_subdirs})
     add_subdirectory(${subdir})
     add_test(
-        NAME example_${name}
+        NAME example_${subdir}
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${subdir}
-        COMMAND ${name} )
+        COMMAND ${subdir} )
 endforeach()
