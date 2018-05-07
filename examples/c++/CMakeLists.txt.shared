@@ -7,8 +7,11 @@ project(${example_name})
 # Let's require mutation++. It should export a suitable config that also
 # exports include directories for Eigen
 find_package(mutation++ REQUIRED)
+if (NOT mutation++_FOUND)
+    message(FATAL_ERROR "mutation++ not found")
+endif()
 
-include_directories(${mutation++_INCLUDE_DIRS})
+include_directories(${MUTATIONPP_INCLUDE_DIRS})
 
 add_executable(${example_name} ${example_name}.cpp)
 target_link_libraries(${example_name} mutation++)
