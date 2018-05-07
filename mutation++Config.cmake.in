@@ -13,7 +13,7 @@ set(MUTATIONPP_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
 if(NOT TARGET mutation++)
-  include("${MUTATIONPP_CMAKE_DIR}/FooBarTargets.cmake")
+  include("${MUTATIONPP_CMAKE_DIR}/mutation++Targets.cmake")
 endif()
 
 # These are IMPORTED targets created by FooBarTargets.cmake
