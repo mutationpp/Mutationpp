@@ -36,6 +36,7 @@
 #include "MixtureOptions.h"
 #include "StateModel.h"
 #include "Composition.h"
+#include "GasSurfaceInteraction.h"
 
 namespace Mutation {
 
@@ -52,7 +53,8 @@ namespace Mutation {
 class Mixture
     : public Thermodynamics::Thermodynamics, 
       public Transport::Transport, 
-      public Kinetics::Kinetics
+      public Kinetics::Kinetics,
+      public GasSurfaceInteraction::GasSurfaceInteraction
 {
 public:
 

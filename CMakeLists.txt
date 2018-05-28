@@ -156,6 +156,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/transfer
     ${CMAKE_CURRENT_SOURCE_DIR}/src/transport
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gsi
 )
 add_subdirectory(src)
 

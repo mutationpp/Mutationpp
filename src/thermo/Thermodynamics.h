@@ -489,6 +489,13 @@ public:
     }
     
     /**
+     * Returns an array of the species molecular weight in kg/mol.
+     */
+    const Eigen::ArrayXd& speciesMw() const {
+        return m_species_mw;
+    }
+
+    /**
      * Returns the atomic weight in kg/mol of the element with the given index
      * in the element array.
      */

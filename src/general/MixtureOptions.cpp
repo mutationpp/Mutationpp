@@ -50,6 +50,7 @@ void swap(MixtureOptions& opt1, MixtureOptions& opt2)
     std::swap(opt1.m_mechanism, opt2.m_mechanism);
     std::swap(opt1.m_viscosity, opt2.m_viscosity);
     std::swap(opt1.m_thermal_conductivity, opt2.m_thermal_conductivity);
+    std::swap(opt1.m_gsi_mechanism, opt2.m_gsi_mechanism);
 }
 
 MixtureOptions::MixtureOptions()
@@ -84,6 +85,7 @@ void MixtureOptions::setDefaultOptions()
     m_mechanism   = "none";
     m_viscosity   = "Chapmann-Enskog_LDLT";
     m_thermal_conductivity = "Chapmann-Enskog_LDLT";
+    m_gsi_mechanism = "none";
 }
 
 void MixtureOptions::loadFromFile(const string& mixture)
@@ -121,6 +123,9 @@ void MixtureOptions::loadFromXmlElement(IO::XmlElement& element)
     element.getAttribute(
         "thermal_conductivity", m_thermal_conductivity, m_thermal_conductivity);
     
+    // Get the type of Gas-Surface Interaction for the wall
+    element.getAttribute("gsi_mechanism", m_gsi_mechanism, m_gsi_mechanism);
+
     // Get the state model
     element.getAttribute("state_model", m_state_model, m_state_model);
 
