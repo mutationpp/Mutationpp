@@ -1,10 +1,35 @@
 #ifndef GSI_REACTION_H
 #define GSI_REACTION_H
 
-#include "DataGSIReaction.h"
+#include <string>
+#include <vector>
+
+#include "Transport.h"
+#include "Utilities.h"
+
+#include "GSIRateLaw.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+
+class SurfaceProperties;
+
+//==============================================================================
+
+/**
+ * Structure which stores the necessary inputs for the GSIReaction class.
+ */
+struct DataGSIReaction {
+    Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    const Mutation::Transport::Transport& s_transport;
+    const SurfaceProperties& s_surf_props;
+    Mutation::Utilities::IO::XmlElement::const_iterator s_iter_reaction;
+};
+
+//==============================================================================
+
 /**
  * Abstract base class that defines a complete reaction. Contains information
  * for the reactants, products, reversibility and rate laws. Solid classes can
@@ -62,7 +87,7 @@ protected:
      * Error function if no reaction formula has been provided.
      */
     inline const char* errorNoFormulainReaction() const {
-    	return "No formula specied with reaction!"; }
+    	return "No formula specified with reaction!"; }
 
     /**
      * Determines the reactants and products of a heterogeneous reaction
@@ -73,16 +98,16 @@ protected:
      * reactants and three products.
      */
     void parseFormula(
-        const Mutation::Thermodynamics::Thermodynamics& l_thermo,
-        const Mutation::Utilities::IO::XmlElement& l_node_reaction,
-        const SurfaceProperties& l_surf_props)
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
+        const Mutation::Utilities::IO::XmlElement& node_reaction,
+        const SurfaceProperties& surf_props)
     {
-        std::string l_reactants;
-        std::string l_products;
-        splitFormulainReactantsProducts(l_reactants, l_products, l_node_reaction);
+        std::string reactants;
+        std::string products;
+        splitFormulainReactantsProducts(reactants, products, node_reaction);
         
-        parseSpecies(m_reactants, l_reactants, l_node_reaction, l_thermo, l_surf_props);
-        parseSpecies(m_products, l_products, l_node_reaction, l_thermo, l_surf_props);
+        parseSpecies(m_reactants, reactants, node_reaction, thermo, surf_props);
+        parseSpecies(m_products, products, node_reaction, thermo, surf_props);
     }
     
     /**
@@ -90,18 +115,19 @@ protected:
      * reactants and products in order for them to be parsed into species.
      */
     virtual void splitFormulainReactantsProducts(
-        std::string& l_reactants, std::string& l_products,
-        const Mutation::Utilities::IO::XmlElement& l_node_reaction)
+        std::string& reactants, std::string& products,
+        const Mutation::Utilities::IO::XmlElement& node_reaction)
     {
-        size_t l_pos_equal = m_formula.find("=");
-        if(l_pos_equal == std::string::npos){
-            l_node_reaction.parseError(
+        size_t pos_equal = m_formula.find("=");
+        if(pos_equal == std::string::npos){
+            node_reaction.parseError(
                 (std::string("Reaction formula ") + m_formula
                  + std::string(" does not have '=' or '=>'!")).c_str());
         }
 
-        l_reactants = m_formula.substr(0, l_pos_equal);
-        l_products = m_formula.substr(l_pos_equal + 2, m_formula.length() - l_pos_equal - 1);
+        reactants = m_formula.substr(0, pos_equal);
+        products = m_formula.substr(pos_equal + 2, m_formula.length()
+                                                   - pos_equal - 1);
     }
 
     /**
@@ -117,10 +143,10 @@ protected:
      * species list.
      */
     virtual void parseSpecies(
-        std::vector<int>& l_species, std::string& l_str_chem_species,
-        const Mutation::Utilities::IO::XmlElement& l_node_reaction,
-        const Mutation::Thermodynamics::Thermodynamics& l_thermo,
-        const SurfaceProperties& l_surf_props) = 0;
+        std::vector<int>& species, std::string& str_chem_species,
+        const Mutation::Utilities::IO::XmlElement& node_reaction,
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
+        const SurfaceProperties& surf_props) = 0;
 }; // class GSIReaction
 
     } // namespace GasSurfaceInteraction

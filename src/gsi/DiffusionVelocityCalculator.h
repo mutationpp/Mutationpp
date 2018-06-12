@@ -1,35 +1,38 @@
 #ifndef DIFFUSION_VELOCITY_CALCULATOR_H
 #define DIFFUSION_VELOCITY_CALCULATOR_H
 
-#include <vector>
-#include <eigen3/Eigen/Dense>
-
-#include "Thermodynamics.h"
-#include "Transport.h"
-
-#include "DiffusionDrivingForces.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class DiffusionVelocityCalculator {
+class VectorXd;
 
+class Thermodynamics;
+class Transport;
+
+class DiffusionVelocityCalculator
+{
 public:
-    DiffusionVelocityCalculator( const Mutation::Thermodynamics::Thermodynamics& l_thermo, Mutation::Transport::Transport& l_transport );
+    DiffusionVelocityCalculator(
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport);
+
     ~DiffusionVelocityCalculator();
 
-    void setDiffusionModel(const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx);
-    void setConductiveHeatFluxModel(const double& l_T, const double& l_dx_T);
-    void computeDiffusionVelocities(const Eigen::VectorXd& lv_mole_frac, Eigen::VectorXd& lv_diff_velocities);
-    double computeConductiveHeatFlux(const double& l_T);
+    void setDiffusionModel(
+        const Eigen::VectorXd& v_mole_frac_edge, const double& dx);
+
+    void computeDiffusionVelocities(
+        const Eigen::VectorXd& v_mole_frac,
+        Eigen::VectorXd& v_diff_velocities);
 
 private:
     Mutation::Transport::Transport& m_transport;
 
-    std::vector<DiffusionDrivingForces*> v_driving_forces;
+    Eigen::VectorXd mv_mole_frac_edge;
+    Eigen::VectorXd mv_dxidx;
 
-    Eigen::VectorXd v_rhs; // Rename to something that I will understand
-
+    double m_dx;
+    bool m_is_diff_set;
 };
 
     } // namespace GasSurfaceInteraction

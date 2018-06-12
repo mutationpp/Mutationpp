@@ -1,7 +1,10 @@
 #include "AutoRegistration.h"
+#include "Thermodynamics.h"
 #include "Utilities.h"
 
 #include "SurfaceProperties.h"
+
+using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -23,8 +26,9 @@ public:
 
 }; // class SurfacePropertiesNull
 
-Mutation::Utilities::Config::ObjectProvider<SurfacePropertiesNull, SurfaceProperties> surface_properties_gamma_null("gamma");
-Mutation::Utilities::Config::ObjectProvider<SurfacePropertiesNull, SurfaceProperties> surface_properties_gamma_energy_null("gamma_energy");
+ObjectProvider<
+    SurfacePropertiesNull, SurfaceProperties>
+    surface_properties_gamma_null("gamma");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation 

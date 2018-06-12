@@ -20,14 +20,6 @@ add_sources(mutation++
     WallProductionPyrolysis.cpp
 )
 
-install(FILES DataGSIRateLaw.h DESTINATION include/mutation++)
-install(FILES DataGSIRateManager.h DESTINATION include/mutation++)
-install(FILES DataGSIReaction.h DESTINATION include/mutation++)
-install(FILES DataMassBlowingRate.h DESTINATION include/mutation++)
-install(FILES DataSurfaceBalanceSolver.h DESTINATION include/mutation++)
-install(FILES DataSurfaceProperties.h DESTINATION include/mutation++)
-install(FILES DataWallProductionTerms.h DESTINATION include/mutation++)
-install(FILES DiffusionDrivingForces.h DESTINATION include/mutation++)
 install(FILES DiffusionVelocityCalculator.h DESTINATION include/mutation++)
 install(FILES GasSurfaceInteraction.h DESTINATION include/mutation++)
 install(FILES GSIRateLaw.h DESTINATION include/mutation++)

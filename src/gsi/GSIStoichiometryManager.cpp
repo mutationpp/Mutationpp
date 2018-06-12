@@ -1,14 +1,17 @@
-#include <iostream>
 #include <cstdlib>
+#include <eigen3/Eigen/Dense>
 
+#include "Errors.h"
 #include "GSIStoichiometryManager.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-//========================================================================================
+//==============================================================================
 
-void GSIStoichiometryManager::addReaction(const int rxn, const std::vector<int>& sps){
+void GSIStoichiometryManager::addReaction(
+    const int rxn, const std::vector<int>& sps)
+{
     switch (sps.size()){
         case 0:
             break;
@@ -22,13 +25,13 @@ void GSIStoichiometryManager::addReaction(const int rxn, const std::vector<int>&
             m_stoich3_vec.push_back(Stoich3(rxn, sps[0], sps[1], sps[2]));
             break;
         default:
-            std::cout << "Error trying to add Gas Surface interaction reaction with\n";
-            std::cout << "more than 3 species on a single side!" << std::endl;
-            exit(1);
+            throw InvalidInputError("number of species", sps.size())
+                << "Error trying to add reaction with more than 3 "
+                << "species on a single side.";
     }
 }
 
-//========================================================================================
+//=============================================================================
 
 #define STOICH_MGR_APPLY_FUNC(__my_func__,__stoic_func__)\
 template<class Iterator, class Vec1, class Vec2>\
@@ -41,9 +44,9 @@ inline static void _##__my_func__ (\
 void GSIStoichiometryManager:: __my_func__ (\
     const Eigen::VectorXd& in, Eigen::VectorXd& out) const\
 {\
-    _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
-    _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in , out );\
-    _##__my_func__ (m_stoich3_vec.begin(), m_stoich3_vec.end(), in , out );\
+    _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in, out);\
+    _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in, out);\
+    _##__my_func__ (m_stoich3_vec.begin(), m_stoich3_vec.end(), in, out);\
 }\
 
 STOICH_MGR_APPLY_FUNC(multReactions, multReaction)
@@ -55,20 +58,7 @@ STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies)
 
 #undef STOICH_MGR_APPLY_FUNC
 
-// #define STOICH_MGR_FRC_APPLY_FUNC(__my_func__,__stoic_func__)\
-// template<class Iterator, class Vec1, class Vec2>\
-// void GSIStoichiometryManagerFRC:: __my_func__ (\
-//     const Eigen::VectorXd& in, Eigen::VectorXd& out) const\
-// {\
-//     _##__my_func__ (m_stoich1_vec.begin(), m_stoich1_vec.end(), in , out );\
-//     _##__my_func__ (m_stoich2_vec.begin(), m_stoich2_vec.end(), in , out );\
-// }\
-//
-// STOICH_MGR_FRC_APPLY_FUNC(multReactions, multReaction)
-//
-// #undef STOICH_MGR_FRC_APPLY_FUNC
-
-//=======================================================================================
+//=============================================================================
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

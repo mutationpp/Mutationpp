@@ -1,10 +1,32 @@
 #ifndef GSI_RATE_LAW_H
 #define GSI_RATE_LAW_H
 
-#include "DataGSIRateLaw.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+class Transport;
+class xmlElement;
+
+class SurfaceProperties;
+
+//==============================================================================
+
+/**
+ * Structure for passing the data in the self registration
+ * for GSIRateLaw class
+ */
+struct DataGSIRateLaw
+{
+    Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    const Mutation::Transport::Transport& s_transport;
+    const Mutation::Utilities::IO::XmlElement& s_node_rate_law;
+    const SurfaceProperties& s_surf_props;
+    const std::vector<int>& s_reactants;
+    const std::vector<int>& s_products;
+};
+
+//==============================================================================
 
 /**
  * Abstract base class that computes the forward reaction rate coefficient

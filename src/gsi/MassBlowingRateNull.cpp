@@ -1,3 +1,6 @@
+#include "AutoRegistration.h"
+#include "Thermodynamics.h"
+
 #include "MassBlowingRate.h"
 
 namespace Mutation {

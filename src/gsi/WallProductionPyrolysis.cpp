@@ -1,15 +1,21 @@
 #include "AutoRegistration.h"
-#include "Utilities.h"
 #include "Composition.h"
+#include "Thermodynamics.h"
+#include "Transport.h"
+#include "Utilities.h"
 
-#include "DataGSIRateManager.h"
-#include "DataGSIReaction.h"
 #include "WallProductionTerms.h"
+#include "WallState.h"
+
+#include "GSIRateManager.h"
+#include "GSIReaction.h"
+
+using namespace Mutation::Thermodynamics;
+using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::IO;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class WallProductionSurfaceChemistry;
 
 class WallProductionPyrolysis : public WallProductionTerms
 {
@@ -26,42 +32,50 @@ public:
           v_equil_comp(m_ns),
           p_Pwall(args.sp_pres)
     {
-         Mutation::Utilities::IO::XmlElement::const_iterator iter_xml_elem_data;
+         XmlElement::const_iterator iter_xml_elem_data;
 
          // Getting the data
          iter_xml_elem_data = args.s_node_prod_terms.findTag("properties");
 
-         iter_xml_elem_data->getAttribute("phi", m_phi, "The ratio of the charred and virgin material should be provided.");
+         iter_xml_elem_data->getAttribute("phi", m_phi,
+             "The ratio of the charred and virgin material phi "
+             "should be provided.");
 
          std::map<std::string, int> l_map;
-         for(int i_elem = 0; i_elem < m_thermo.nElements(); i_elem++){
+         for(int i_elem = 0; i_elem < m_thermo.nElements(); i_elem++) {
              l_map[m_thermo.elementName(i_elem)] = i_elem;
          }
 
-         Mutation::Utilities::IO::XmlElement xml_comp(*args.s_node_prod_terms.findTag("composition"));
+         XmlElement xml_comp(*args.s_node_prod_terms.findTag("composition"));
 
-         Mutation::Thermodynamics::Composition m_comp(xml_comp);
+         Composition m_comp(xml_comp);
          m_comp.getComposition(l_map, v_el_comp.data());
 
          pv_wall_prod = args.sp_surf_prod;
     }
 
-//======================================================================================
+//==============================================================================
 
     ~WallProductionPyrolysis(){}
 
-//======================================================================================
+//==============================================================================
 
-    void productionRate(Eigen::VectorXd& lv_pyrolysis_mass_source)
+    void productionRate(Eigen::VectorXd& v_pyrolysis_mass_source)
     {
-        lv_pyrolysis_mass_source.setZero();
+        v_pyrolysis_mass_source.setZero();
         static Eigen::VectorXd v_wrk(m_neqns);
 
+        // At steady state the mass of the pyrolysis gases are proportional to
+        // the mass of the blowing gases. The following part computes the mass
+        // produced due to ablation reactions. From all the surface terms, only
+        // the ones with the tag "surface_chemistry" are considered.
         m_mass_char = 0.0;
         for(int i_term = 0; i_term < pv_wall_prod->size(); ++i_term)
         {
         	v_wrk.setZero();
-            if(((*pv_wall_prod)[i_term]->getWallProductionTermTag()).compare("surface_chemistry") == 0){
+            if(((*pv_wall_prod)[i_term]->
+                getWallProductionTermTag()).compare("surface_chemistry") == 0)
+            {
                 (*pv_wall_prod)[i_term]->productionRate(v_wrk);
                 m_mass_char += v_wrk.sum();
             }
@@ -75,17 +89,16 @@ public:
                                         v_equil_comp.data());
 
         // Units of v_equil_comp
-        m_thermo.convert<Mutation::Thermodynamics::X_TO_Y>(v_equil_comp.data(), v_equil_comp.data());
+        m_thermo.convert<X_TO_Y>(v_equil_comp.data(), v_equil_comp.data());
 
-        lv_pyrolysis_mass_source = v_equil_comp * m_phi * m_mass_char;
+        v_pyrolysis_mass_source = v_equil_comp * m_phi * m_mass_char;
 
     }
 
-//======================================================================================
+//==============================================================================
 
     const std::string& getWallProductionTermTag() const { return m_tag; }
 
-//======================================================================================
 private:
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
 
@@ -105,13 +118,11 @@ private:
     Eigen::VectorXd v_el_comp;
     Eigen::VectorXd v_equil_comp;
 
-//======================================================================================
-
 }; // class SurfaceProductionsRates
 
-//======================================================================================
-
-Mutation::Utilities::Config::ObjectProvider<WallProductionPyrolysis, WallProductionTerms> wall_production_pyrolysis("pyrolysis");
+Config::ObjectProvider<
+    WallProductionPyrolysis, WallProductionTerms>
+    wall_production_pyrolysis("pyrolysis");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

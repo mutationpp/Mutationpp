@@ -1,18 +1,29 @@
 #ifndef MASS_BLOWING_RATE_H
 #define MASS_BLOWING_RATE_H
 
-#include "Utilities.h"
-
-#include "DataMassBlowingRate.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+class WallProductionTerms;
+
+//==============================================================================
+
+/**
+ * Structure which stores the necessary inputs for the MassBlowingRate class.
+ */
+struct DataMassBlowingRate {
+    const Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    std::vector<WallProductionTerms*>& vs_wall_productions_terms;
+};
+
+//==============================================================================
 
 /**
  * Abstract class which returns the mass blowing rate for a heterogeneous
  * reactions. It is the base of a Null object (not used yet) which returns
- * zero blow flux. This is imporatnt for the case of purely catalytic or
- * oxydation reactions. In the case where ablative reactions take place,
+ * zero blow flux. This is important for the case of purely catalytic or
+ * oxidation reactions. In the case where ablative reactions take place,
  * a solid class ablation is available.
  */
 
@@ -42,9 +53,7 @@ public:
         double elementalCharMassFraction,
         double elementalGasMassFraction)
     {
-        std::cerr << "setEquilibriumParameters can only be called for surfaces "
-                  << "in equilibrium." << std::endl;
-        exit(1);
+        throw NotImplementedError("MassBlowingRate::getEquilibriumParameters");
     };
 
 }; // class MassBlowingRate

@@ -3,18 +3,34 @@
 
 #include <eigen3/Eigen/Dense>
 
-#include "NewtonSolver.h"
-#include "Thermodynamics.h"
-#include "Transport.h"
 #include "Utilities.h"
-
-#include "DataSurfaceBalanceSolver.h"
-#include "DiffusionVelocityCalculator.h"
-#include "MassBlowingRate.h"
-#include "WallProductionTerms.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+class Transport;
+
+class SurfaceProperties;
+class WallState;
+
+//==============================================================================
+
+/**
+ * Structure which stores the necessary inputs for the SurfaceBalanceSolver
+ * class.
+ */
+struct DataSurfaceBalanceSolver {
+    Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    Mutation::Transport::Transport& s_transport;
+    const std::string& s_gsi_mechanism;
+    const Mutation::Utilities::IO::XmlElement& s_node_diff_model;
+    const Mutation::Utilities::IO::XmlElement& s_node_prod_terms;
+    SurfaceProperties& s_surf_props;
+    WallState& s_wall_state;
+};
+
+//==============================================================================
 
 /**
  * This is the abstract class for the solution of the mass and energy balances
@@ -42,8 +58,8 @@ public:
      * Purely virtual function. Temporary solution for setting up a diffusion
      * model for the surface balances.
      */
-    virtual void setDiffusionModel(const Eigen::VectorXd& lv_mole_frac_edge, const double& l_dx) = 0;
-    virtual void setConductiveHeatFluxModel(const double& l_T, const double& l_dx_T){
+    virtual void setDiffusionModel(const Eigen::VectorXd& v_mole_frac_edge, const double& dx) = 0;
+    virtual void setConductiveHeatFluxModel(const Eigen::VectorXd& p_T, const double& dx){
         std::cerr << "setConductiveHeatFluxModel can be called only when solving "
                   << "the surface energy balance!" << std::endl;
         exit(1);

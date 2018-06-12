@@ -1,3 +1,7 @@
+#include "AutoRegistration.h"
+#include "Thermodynamics.h"
+#include "Transport.h"
+
 #include "MassBlowingRate.h"
 #include "WallProductionTerms.h"
 

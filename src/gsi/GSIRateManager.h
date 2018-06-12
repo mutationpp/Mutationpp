@@ -1,13 +1,28 @@
 #ifndef GSI_RATE_MANAGER_H
 #define GSI_RATE_MANAGER_H
 
-#include<eigen3/Eigen/Dense>
-
-#include "DataGSIRateManager.h"
-#include "GSIReaction.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+
+class GSIReaction;
+class SurfaceProperties;
+class WallState;
+
+//==============================================================================
+
+/**
+ * Structure which stores the necessary inputs for the GSIRateManager class.
+ */
+struct DataGSIRateManager {
+    const Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    const SurfaceProperties& s_surf_props;
+    const WallState& s_wall_state;
+    const std::vector<GSIReaction*>& s_reactions;
+};
+
+//==============================================================================
 
 class GSIRateManager
 {
@@ -36,8 +51,8 @@ public:
     virtual ~GSIRateManager(){ };
 
     /**
-     * This purely virtual function returns the surface production rates according
-     * to the selected gas surface interaction model.
+     * This purely virtual function returns the surface production rates
+     * according to the selected gas surface interaction model.
      *
      * @return Vector of the gas phase species production rates in kg/m^2-s
      */

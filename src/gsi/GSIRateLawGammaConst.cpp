@@ -1,3 +1,6 @@
+#include "Thermodynamics.h"
+#include "Transport.h"
+
 #include "GSIRateLaw.h"
 
 namespace Mutation {
@@ -8,11 +11,9 @@ class GSIRateLawGammaConst : public GSIRateLaw
 public:
     GSIRateLawGammaConst(ARGS args)
         : GSIRateLaw (args),
-          v_reactants(args.s_reactants) {
-
+          v_reactants(args.s_reactants)
+    {
         assert(args.s_node_rate_law.tag() == "gamma_const");
-
-        if (v_reactants.size() > 2) { /** errorMoreThanTwoReactants @todo */; }
 
         int l_diff_reac = 1;
         for (int i_reac = 0; i_reac < v_reactants.size() - 1; ++i_reac){

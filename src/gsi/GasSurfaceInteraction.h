@@ -1,18 +1,15 @@
 #ifndef GAS_SURFACE_INTERACTION_H
 #define GAS_SURFACE_INTERACTION_H
 
-#include <eigen3/Eigen/Dense>
-#include <string>
-
-#include "Thermodynamics.h"
-#include "Transport.h"
-
-#include "SurfaceProperties.h"
-#include "WallState.h"
-#include "SurfaceBalanceSolver.h" 
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+class Transport;
+
+class SurfaceBalanceSolver;
+class SurfaceProperties;
+class WallState;
 
 /**
  *  Interface for the computation of the Gas-Surface Interaction
@@ -70,7 +67,7 @@ public:
      * the state_variable.
      */
     void setWallState(
-        const double* const l_mass, const double* const l_energy,
+        const double* const p_mass, const double* const p_energy,
 		const int state_variable);
 
     /**
@@ -87,7 +84,7 @@ public:
      * variable.
      */
     void getWallState(
-        double* const l_mass, double* const l_energy,
+        double* const p_mass, double* const p_energy,
         const int state_variable);
 
     /**
@@ -97,7 +94,7 @@ public:
      *
      * return surface production rates in kg/m^2-s.
      */
-    void surfaceProductionRates(double* const lp_wall_prod_rates);
+    void surfaceProductionRates(double* const p_wall_prod_rates);
     
     /**
      * Temporary function which set ups the diffusion model in order to compute
@@ -112,13 +109,13 @@ public:
      * the wall
      */
     void setDiffusionModel(
-        const double* const lp_mole_frac_edge, const double& l_dx);
+        const double* const p_mole_frac_edge, const double& dx);
 
     /*
      *  Function for the energy balance at the wall... Experimental...
      */
     void setConductiveHeatFluxModel(
-        const double& lp_T_edge, const double& l_dx_T);
+        const double* const p_T_edge, const double& dx);
 
     /**
      * Function to be called in order to solve the mass and energy balances at
@@ -130,34 +127,29 @@ public:
     /**
      *
      */
-    void getMassBlowingRate(double& l_mdot);
+    void getMassBlowingRate(double& mdot);
 
     /**
      *
      */
-    void getBprimeCharSpecies(std::vector<std::string>& l_species_char_names);
+    void getBprimeCharSpecies(std::vector<std::string>& v_species_char_names);
 
     /**
      *
      */
     void getBprimeSolution(
-        double& l_bprime_char, std::vector<double>& lv_species_char_mass_frac);
+        double& l_bprime_char, std::vector<double>& v_species_char_mass_frac);
 
 private:
-//    /**
-//     * Helper function which locates the input file.
-//     */
-//    void locateGSIInputFile(std::string& l_gsi_mechanism_file);
-
     /**
      * Error function; wrong type of Gas Surface Interaction input file.
      */
-    inline void errorWrongTypeofGSIFile(const std::string& l_gsi_root_tag);
+    inline void errorWrongTypeofGSIFile(const std::string& gsi_root_tag);
 
     /**
      * Error function; invalid Gas Surface Interaction file properties.
      */
-    inline void errorInvalidGSIFileProperties(const std::string& l_gsi_option);
+    inline void errorInvalidGSIFileProperties(const std::string& gsi_option);
 
 private:
 

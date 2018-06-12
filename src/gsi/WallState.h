@@ -1,63 +1,48 @@
 #ifndef WALL_STATE_H
 #define WALL_STATE_H
 
-#include "Thermodynamics.h"
 #include <eigen3/Eigen/Dense>
-
-#include "SurfaceProperties.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
+
+class Thermodynamics;
+class SurfaceProperties;
 
 class WallState{
 
 public:
     WallState(
-        const Mutation::Thermodynamics::Thermodynamics& l_thermo,
-        const SurfaceProperties& l_surf_props);
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
+        const SurfaceProperties& surf_props);
 
     /**
      * Destructor
      */
     ~WallState();
     
-    void setWallState(const double* const p_mass, const double* const p_energy, const int state_variable){
-    	switch(state_variable){
-    	case 0:
-            setWallP(*p_mass); // @todo Verify that this is well implemented
-            setWallT(p_energy);
-            break;
-    	case 1:
-            setWallRhoi(p_mass);
-            setWallT(p_energy);
-            break;
-    	default:
-    		// @todo giveError();
-    		exit(1);
-    	}
-        wallStateSet();
-    }
+    void setWallState(
+        const double* const p_mass,
+        const double* const p_energy,
+        const int state_var = 1);
 
-    void getWallState(double* const p_rhoi, double* const p_rhoie, const int state_variable){
-        for (int i_sp = 0; i_sp < m_ns; ++i_sp) { p_rhoi[i_sp] = getWallRhoi()(i_sp); }
-        for (int i_T = 0; i_T < m_nT ; ++i_T) { p_rhoie[i_T] = getWallT()(i_T); }
-    }
+    void getWallState(
+        double* const p_rhoi,
+        double* const p_rhoie,
+        const int state_var = 1);
 
     void setWallRhoi(const double* const p_rhoi);
     void setWallT(const double* const p_T);
-    void setWallP(const double& l_p);
+    void setWallP(const double& p);
 
-    const Eigen::VectorXd& getWallRhoi() const { return v_rhoi; }
-    const Eigen::VectorXd& getWallT() const { return v_T; }
+    const Eigen::VectorXd& getWallRhoi() const { return mv_rhoi; }
+    const Eigen::VectorXd& getWallT() const { return mv_T; }
     double getWallP() const { return m_p; }
 
-    void wallStateSet();  // @todo REVIEW
-    bool isWallStateSet() const ;
+    bool isWallStateSet() const{ return m_is_wall_state_set; }
 
     // Below are FRC Properties!
-    void getNdStateGasSurf(Eigen::VectorXd& lv_wall_state) const;
-//    void setSurfPropState( const Eigen::VectorXd& lv_surf_props_state ){ v_surf_props_state = lv_surf_props_state; };
-//    Eigen::VectorXd getSurfPropState(){ return v_surf_props_state; }
+    void getNdStateGasSurf(Eigen::VectorXd& v_wall_state) const;
 
 private:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
@@ -65,23 +50,23 @@ private:
 
     void initializeSurfState();
 
-    const int m_ns;
-    const int m_nT;
+    const size_t m_ns;
+    const size_t m_nT;
     const int m_ns_surf;
 
     const int m_set_state_rhoi_T;
 
-    Eigen::VectorXd v_rhoi;
-    Eigen::VectorXd v_T;
+    Eigen::VectorXd mv_rhoi;
+    Eigen::VectorXd mv_T;
     double m_p;
 
-    Eigen::VectorXd v_surf_props_state;
+    Eigen::VectorXd mv_surf_props_state;
 
-    bool m_wall_state_set;
+    bool m_is_wall_state_set;
 
 }; // class WallState
 
-//======================================================================================
+//==============================================================================
 
     } // namespace GasSurfaceInteraction 
 } // namespace Mutation

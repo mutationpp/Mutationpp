@@ -426,7 +426,45 @@ void NAME_MANGLE(source_energy_transfer)
      p_mix->energyTransferSource(p_source_transfer);
 }
 
+//==============================================================================
+void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars)
+{
+     p_mix->setWallState(v1, v2, *vars);
+}
 
+//==============================================================================
+void NAME_MANGLE(wall_production_rates)(double* const v1)
+{
+     p_mix->surfaceProductionRates(v1);
+}
+
+//==============================================================================
+void NAME_MANGLE(set_diffusion_model)(double* xi_edge, double* dx)
+{
+     p_mix->setDiffusionModel(xi_edge, *dx);
+}
+
+//==============================================================================
+void NAME_MANGLE(set_cond_heat_flux)(double* T_edge, double* dx)
+{
+     p_mix->setConductiveHeatFluxModel(T_edge, *dx);
+}
+//==============================================================================
+void NAME_MANGLE(solve_surface_balance)()
+{
+     p_mix->solveSurfaceBalance();
+}
+
+//==============================================================================
+void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars)
+{
+     p_mix->getWallState(v1, v2, *vars);
+}
+//==============================================================================
+void NAME_MANGLE(mass_blowing_rate)(double* mdot)
+{
+    p_mix->getMassBlowingRate(*mdot);
+}
 
 
 

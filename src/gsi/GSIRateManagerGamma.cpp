@@ -1,5 +1,10 @@
+#include "Thermodynamics.h"
+
+#include "GSIReaction.h"
 #include "GSIRateManager.h"
 #include "GSIStoichiometryManager.h"
+#include "SurfaceProperties.h"
+#include "WallState.h"
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -55,8 +60,8 @@ public:
 
 private:
 
-    const int m_ns;
-    const int m_nr;
+    const size_t m_ns;
+    const size_t m_nr;
 
     Eigen::VectorXd v_wall_reaction_rate_constant;
     Eigen::VectorXd v_work;

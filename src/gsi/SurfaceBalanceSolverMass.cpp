@@ -1,12 +1,27 @@
-#include "DataWallProductionTerms.h"
+#include "NewtonSolver.h"
+#include "Thermodynamics.h"
+#include "Transport.h"
+#include "Utilities.h"
+
+#include "DiffusionVelocityCalculator.h"
+#include "MassBlowingRate.h"
+#include "WallProductionTerms.h"
 #include "SurfaceBalanceSolver.h"
+#include "SurfaceProperties.h"
+#include "WallState.h"
+
+using namespace Mutation::Utilities::Config;
+using namespace Mutation::Utilities::IO;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 //======================================================================================
 
-class SurfaceBalanceSolverMass : public SurfaceBalanceSolver, public Mutation::Numerics::NewtonSolver<Eigen::VectorXd, SurfaceBalanceSolverMass>
+class SurfaceBalanceSolverMass :
+    public SurfaceBalanceSolver,
+    public Mutation::Numerics::NewtonSolver<
+        Eigen::VectorXd, SurfaceBalanceSolverMass>
 {
 public:
 SurfaceBalanceSolverMass(ARGS args)
@@ -18,53 +33,52 @@ SurfaceBalanceSolverMass(ARGS args)
       m_ns(m_thermo.nSpecies()),
       m_nE(m_thermo.nEnergyEqns()),
       v_rhoi(m_ns),
-      v_Twall(m_nE),
+      mv_Twall(m_nE),
       v_X(m_ns),
       v_dX(m_ns),
       v_f(m_ns),
       v_f_unpert(m_ns),
       v_jac(m_ns, m_ns),
-      m_pert(1.e-8),
+      m_pert(1.e-7),
       pos_T_trans(0),
       set_state_with_rhoi_T(1),
       v_sep_mass_prod_rate(m_ns)
 {
-                                            
-    Mutation::Utilities::IO::XmlElement::const_iterator iter_prod_terms = args.s_node_prod_terms.begin();
-
+    XmlElement::const_iterator iter_prod_terms =
+                                   args.s_node_prod_terms.begin();
 
     std::string s_tag;
     for(; iter_prod_terms != args.s_node_prod_terms.end(); ++iter_prod_terms)
     {
-        DataWallProductionTerms l_data_wall_production_terms = { m_thermo,
-                                                                 args.s_transport,
-                                                                 args.s_gsi_mechanism,
-                                                                 *iter_prod_terms,
-                                                                 m_surf_props,
-                                                                 m_wall_state,
-                                                                 &v_surf_prod,
-                                                                 &m_Pwall};
+        DataWallProductionTerms data_wall_prod_terms = { m_thermo,
+                                                         args.s_transport,
+                                                         args.s_gsi_mechanism,
+                                                         *iter_prod_terms,
+                                                         m_surf_props,
+                                                         m_wall_state,
+                                                         &v_surf_prod,
+                                                         &m_Pwall};
 
         s_tag = iter_prod_terms->tag();
-        addSurfaceProductionTerm(Mutation::Utilities::Config::Factory<WallProductionTerms>::create(
-            s_tag, l_data_wall_production_terms));
+        addSurfaceProductionTerm(Factory<WallProductionTerms>::create(
+            s_tag, data_wall_prod_terms));
     }
     errorEmptyWallProductionTerms();
  
     // DiffusionVelocityCalculator
-    mp_diff_vel_calc = new DiffusionVelocityCalculator(m_thermo, args.s_transport);
+    mp_diff_vel_calc = new DiffusionVelocityCalculator(
+        m_thermo, args.s_transport);
 
     // MassBlowingRate
-    DataMassBlowingRate l_data_mass_blowing_rate = {m_thermo, v_surf_prod};
+    DataMassBlowingRate data_mass_blowing_rate = {m_thermo, v_surf_prod};
     const std::string s_mass_blowing = "isOn";
-    mp_mass_blowing_rate = Mutation::Utilities::Config::Factory<MassBlowingRate>::create(
-    s_mass_blowing, l_data_mass_blowing_rate);
+    mp_mass_blowing_rate = Factory<MassBlowingRate>::create(
+    s_mass_blowing, data_mass_blowing_rate);
 
     // Setup NewtonSolver
-    setMaxIterations(30); // @todo Write a wrapper around the maximum number of iterations.
+    setMaxIterations(5);
     setWriteConvergenceHistory(false);
-    setEpsilon(1.e-8);
-
+    setEpsilon(1.e-18);
 }
 
 //======================================================================================
@@ -114,19 +128,21 @@ SurfaceBalanceSolverMass(ARGS args)
 
     	// Getting the state
         v_rhoi = m_wall_state.getWallRhoi();
+
         for (int i_E = 0; i_E < m_nE; i_E++) {
-            v_Twall(i_E) = m_wall_state.getWallT()(i_E);
+            mv_Twall(i_E) = m_wall_state.getWallT()(i_E);
         }
         saveUnperturbedPressure(v_rhoi);
 
         // Changing to the solution variables and solving
         computeMoleFracfromPartialDens(v_rhoi, v_X);
+
         v_X = solve(v_X);
+
         computePartialDensfromMoleFrac(v_X, v_rhoi);
 
         // Setting the state again DO SET THE STATE!
-        m_wall_state.setWallState(v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
-
+        m_wall_state.setWallState(v_rhoi.data(), mv_Twall.data(), set_state_with_rhoi_T);
     }
 
 //======================================================================================
@@ -137,17 +153,15 @@ SurfaceBalanceSolverMass(ARGS args)
         mdot = mp_mass_blowing_rate->computeBlowingFlux();
 
         return mdot;
-
     }
     //======================================================================================
 
     void updateFunction(Eigen::VectorXd& lv_mole_frac)
     {
-
     	// Setting Initial Gas and Wall State;
         computePartialDensfromMoleFrac(lv_mole_frac, v_rhoi);
-        m_thermo.setState(v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
-        m_wall_state.setWallState(v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
+        m_thermo.setState(v_rhoi.data(), mv_Twall.data(), set_state_with_rhoi_T);
+        m_wall_state.setWallState(v_rhoi.data(), mv_Twall.data(), set_state_with_rhoi_T);
 
         // Diffusion Fluxes
         mp_diff_vel_calc->computeDiffusionVelocities(lv_mole_frac, v_f);
@@ -158,7 +172,6 @@ SurfaceBalanceSolverMass(ARGS args)
 
         // Blowing Fluxes
         v_f += v_rhoi * mp_mass_blowing_rate->computeBlowingFlux() / v_rhoi.sum();
-
     }
     
     //======================================================================================
@@ -194,7 +207,8 @@ SurfaceBalanceSolverMass(ARGS args)
 
     double norm()
     {
-        return v_f.lpNorm<Eigen::Infinity>();
+        return v_dX.lpNorm<Eigen::Infinity>();
+//        return v_f.lpNorm<Eigen::Infinity>();
     }
 
 //======================================================================================
@@ -205,15 +219,15 @@ private:
 
 //======================================================================================
 
-    void saveUnperturbedPressure( Eigen::VectorXd& lv_rhoi ){
-        m_thermo.setState(lv_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
+    void saveUnperturbedPressure(Eigen::VectorXd& v_rhoi){
+        m_thermo.setState(v_rhoi.data(), mv_Twall.data(), set_state_with_rhoi_T);
         m_Pwall = m_thermo.P();
     }
 
 //======================================================================================
 
     void computeMoleFracfromPartialDens(Eigen::VectorXd& lv_rhoi, Eigen::VectorXd& lv_xi){ // Return Eigen::VectorXd
-        m_thermo.setState(lv_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
+        m_thermo.setState(lv_rhoi.data(), mv_Twall.data(), set_state_with_rhoi_T);
         lv_xi = Eigen::Map<const Eigen::VectorXd>( m_thermo.X(), m_ns );
     }
 
@@ -221,7 +235,7 @@ private:
 
     void computePartialDensfromMoleFrac(Eigen::VectorXd& lv_xi, Eigen::VectorXd& lv_rhoi){
     	lv_rhoi = lv_xi.cwiseProduct(m_thermo.speciesMw().matrix()) *
-    			  m_Pwall / (v_Twall(pos_T_trans) * Mutation::RU);
+    			  m_Pwall / (mv_Twall(pos_T_trans) * Mutation::RU);
     }
 //======================================================================================
 
@@ -256,7 +270,7 @@ private:
     // VARIABLES FOR SOLVER
     const size_t m_ns;
     const size_t m_nE;
-    Eigen::VectorXd v_Twall;
+    Eigen::VectorXd mv_Twall;
     double m_Pwall;
     Eigen::VectorXd v_rhoi;
     Eigen::VectorXd v_X;
@@ -275,7 +289,6 @@ private:
 //======================================================================================
 
 Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverMass, SurfaceBalanceSolver> surface_balance_solver_mass_gamma("gamma");
-Mutation::Utilities::Config::ObjectProvider<SurfaceBalanceSolverMass, SurfaceBalanceSolver> surface_balance_solver_mass_frc("frc");
  
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
