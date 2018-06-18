@@ -56,6 +56,13 @@ public:
         mp_hveq = new double [m_ns];
     }
 
+    virtual ~OmegaVT()
+    {
+        delete [] mp_Mw;
+        delete [] mp_hv;
+        delete [] mp_hveq;
+    }
+
     /**
      * Computes the source terms of the Vibration-Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
      * using a Landau-Teller formula taking into account Park's correction (default; can be disabled by making zero the appropriate flag, see below):
