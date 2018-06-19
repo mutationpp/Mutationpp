@@ -3,13 +3,12 @@
 
 #include <eigen3/Eigen/Dense>
 
-#include "Utilities.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 class Thermodynamics;
 class Transport;
+class XmlElement;
 
 class SurfaceProperties;
 class WallState;
@@ -52,36 +51,48 @@ public:
     /**
      * Returns
      */
-    virtual Eigen::VectorXd computeGSIProductionRates() = 0; //  @todo const correctness // reference?
+    virtual Eigen::VectorXd computeGSIProductionRates() = 0;
 
     /**
-     * Purely virtual function. Temporary solution for setting up a diffusion
-     * model for the surface balances.
+     * Function for setting up the diffu
      */
-    virtual void setDiffusionModel(const Eigen::VectorXd& v_mole_frac_edge, const double& dx) = 0;
-    virtual void setConductiveHeatFluxModel(const Eigen::VectorXd& p_T, const double& dx){
-        std::cerr << "setConductiveHeatFluxModel can be called only when solving "
-                  << "the surface energy balance!" << std::endl;
-        exit(1);
+    virtual void setDiffusionModel(
+        const Eigen::VectorXd& v_mole_frac_edge, const double& dx) = 0;
+
+    virtual void setConductiveHeatFluxModel(
+        const Eigen::VectorXd& p_T, const double& dx)
+    {
+        throw LogicError()
+        << "setConductiveHeatFluxModel can be called only when solving "
+        << "the surface energy balance!";
     }
 
     /**
-     * Purely virtual function to be called in order to solve the surface balance.
+     * Purely virtual function to be called in order to solve the
+     * surface balance.
      */
     virtual void solveSurfaceBalance() = 0;
 
+    /**
+     * Purely virtual function returning the total mass blowing flux
+     * due to surface and bulk phase processes.
+     */
     virtual double massBlowingRate() = 0;
 
-    virtual void getBprimeCondensedSpecies(std::vector<std::string>& CondensedSpecies){
-        std::cerr << "getBprimeCondensedSpecies can be called only for a "
-                  << "surface in Equilibrium!" << std::endl;
-        exit(1);
+    virtual void getBprimeCondensedSpecies(
+        std::vector<std::string>& CondensedSpecies)
+    {
+        throw LogicError()
+        << "getBprimeCondensedSpecies can be called only for a "
+        << "surface in Equilibrium!";
     }
 
-    virtual void getBprimeParameters(double & Bprime_char, std::vector<double>& CondensedMoleFrac){
-        std::cerr << "getBprimeParameters can be called only for a "
-                  << "surface in Equilibrium!" << std::endl;
-        exit(1);
+    virtual void getBprimeParameters(
+        double & Bprime_char, std::vector<double>& CondensedMoleFrac)
+    {
+        throw LogicError()
+        << "getBprimeParameters can be called only for a "
+        << "surface in Equilibrium!";
     }
 
 }; // class SurfaceBalanceSolver

@@ -12,7 +12,6 @@
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
-using namespace Mutation::Utilities::IO;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -32,7 +31,8 @@ public:
           v_equil_comp(m_ns),
           p_Pwall(args.sp_pres)
     {
-         XmlElement::const_iterator iter_xml_elem_data;
+         Mutation::Utilities::IO::XmlElement::const_iterator
+             iter_xml_elem_data;
 
          // Getting the data
          iter_xml_elem_data = args.s_node_prod_terms.findTag("properties");
@@ -46,7 +46,8 @@ public:
              l_map[m_thermo.elementName(i_elem)] = i_elem;
          }
 
-         XmlElement xml_comp(*args.s_node_prod_terms.findTag("composition"));
+         Mutation::Utilities::IO::XmlElement xml_comp(
+             *args.s_node_prod_terms.findTag("composition"));
 
          Composition m_comp(xml_comp);
          m_comp.getComposition(l_map, v_el_comp.data());

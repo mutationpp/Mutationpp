@@ -1,3 +1,4 @@
+#include "Errors.h"
 #include "Thermodynamics.h"
 
 #include "SurfaceProperties.h"
@@ -93,7 +94,7 @@ void WallState::setWallT(const double* const p_T){
 
 //==============================================================================
 
-void WallState::setWallP(const double& p){ //@todo Pass it by pointer
+void WallState::setWallP(const double& p){
     m_p = p;
 }
 

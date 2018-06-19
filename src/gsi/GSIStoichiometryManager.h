@@ -4,7 +4,7 @@
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
- class VectorXd;
+class VectorXd;
 
 template <int N>
 class Stoich

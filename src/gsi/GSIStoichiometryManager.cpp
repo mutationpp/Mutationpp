@@ -7,7 +7,7 @@
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-//==============================================================================
+//===============================================================================
 
 void GSIStoichiometryManager::addReaction(
     const int rxn, const std::vector<int>& sps)
@@ -31,7 +31,7 @@ void GSIStoichiometryManager::addReaction(
     }
 }
 
-//=============================================================================
+//===============================================================================
 
 #define STOICH_MGR_APPLY_FUNC(__my_func__,__stoic_func__)\
 template<class Iterator, class Vec1, class Vec2>\
@@ -58,7 +58,7 @@ STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies)
 
 #undef STOICH_MGR_APPLY_FUNC
 
-//=============================================================================
+//==============================================================================
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

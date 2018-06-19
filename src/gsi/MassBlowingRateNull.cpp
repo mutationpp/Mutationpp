@@ -3,6 +3,8 @@
 
 #include "MassBlowingRate.h"
 
+using namespace Mutation::Utilities::Config;
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
@@ -20,7 +22,9 @@ private:
 
 }; // class MassBlowingRateNull
 
-Mutation::Utilities::Config::ObjectProvider<MassBlowingRateNull, MassBlowingRate> mass_blowing_rate_null("zero");
+ObjectProvider<
+    MassBlowingRateNull, MassBlowingRate>
+    mass_blowing_rate_null("zero");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

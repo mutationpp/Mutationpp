@@ -1,6 +1,8 @@
 #include "Thermodynamics.h"
+#include "Transport.h" // WHY DO I NEED THIS?
 
 #include "GSIReaction.h"
+#include "GSIRateLaw.h"
 #include "GSIRateManager.h"
 #include "GSIStoichiometryManager.h"
 #include "SurfaceProperties.h"
@@ -35,7 +37,7 @@ public:
 //=============================================================================
 
     /**
-     * @toadddoc
+     *
      */
     Eigen::VectorXd computeRate()
     {
@@ -59,7 +61,6 @@ public:
 //=============================================================================
 
 private:
-
     const size_t m_ns;
     const size_t m_nr;
 

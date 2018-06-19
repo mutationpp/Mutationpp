@@ -4,16 +4,14 @@
 #include <string>
 #include <vector>
 
-#include "Transport.h"
-#include "Utilities.h"
-
-#include "GSIRateLaw.h"
-
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
+class Transport;
 class Thermodynamics;
+class XmlElement;
 
+class GSIRateLaw;
 class SurfaceProperties;
 
 //==============================================================================

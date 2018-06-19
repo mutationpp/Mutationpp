@@ -4,10 +4,10 @@
 
 #include "DiffusionVelocityCalculator.h"
 
+using namespace Eigen;
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-//==============================================================================
 
 DiffusionVelocityCalculator::DiffusionVelocityCalculator(
     const Mutation::Thermodynamics::Thermodynamics& thermo,
@@ -26,7 +26,7 @@ DiffusionVelocityCalculator::~DiffusionVelocityCalculator(){}
 //==============================================================================
 
 void DiffusionVelocityCalculator::setDiffusionModel(
-    const Eigen::VectorXd& v_mole_frac_edge, const double& dx)
+    const VectorXd& v_mole_frac_edge, const double& dx)
 {
     mv_mole_frac_edge = v_mole_frac_edge;
 
@@ -44,8 +44,8 @@ void DiffusionVelocityCalculator::setDiffusionModel(
 //==============================================================================
 
 void DiffusionVelocityCalculator::computeDiffusionVelocities(
-    const Eigen::VectorXd& v_mole_frac,
-    Eigen::VectorXd& v_diff_velocities)
+    const VectorXd& v_mole_frac,
+    VectorXd& v_diff_velocities)
 {
     if (!m_is_diff_set) {
     	throw LogicError()
@@ -61,8 +61,6 @@ void DiffusionVelocityCalculator::computeDiffusionVelocities(
         v_diff_velocities.data(),
         electric_field);
 }
-
-//==============================================================================
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

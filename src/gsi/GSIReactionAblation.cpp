@@ -1,11 +1,12 @@
 #include "Thermodynamics.h"
+#include "Transport.h"
 #include "Utilities.h"
 
+#include "GSIRateLaw.h"
 #include "GSIReaction.h"
 #include "SurfaceProperties.h"
 
 using namespace Mutation::Utilities::Config;
-using namespace Mutation::Utilities::IO;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
@@ -27,7 +28,8 @@ public:
             *(args.s_iter_reaction),
             args.s_surf_props);
 
-        const XmlElement& node_rate_law = *(args.s_iter_reaction->begin());
+        const Mutation::Utilities::IO::XmlElement& node_rate_law =
+            *(args.s_iter_reaction->begin());
         DataGSIRateLaw data_gsi_rate_law = { args.s_thermo,
                                              args.s_transport,
                                              node_rate_law,

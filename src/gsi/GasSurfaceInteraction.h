@@ -12,36 +12,23 @@ class SurfaceProperties;
 class WallState;
 
 /**
- *  Interface for the computation of the Gas-Surface Interaction
- *  chemical source terms. After setting the wall state the surface
- *  chemical production rates can be returned. The solution of the
- *  surface mass balance can also be provided.
+ *  Interface for the part of Mutation++ responsible for modeling Gas-Surface
+ *  interaction phenomena.
  *
- *  Currently, gamma and elementary reactions models for catalysis
- *  have been implemented and some basic models for ablation are
- *  available.
+ *  After setting the wall state the surfac  chemical production rates can be
+ *  returned. The solution of the surface mass balance can also be provided.
  *
- *  In the future, the solution of the energy balance at the wall
- *  will be provided and the composition of an equilibrium catalytic
- *  and ablative wall.
- *
- *  To be extended to support multiple different chemically reacting
- *  walls for a single simulation.
- *
- *  @todo Solution of the energy balance.
- *  @todo Equilibrium wall
- *  @todo Multiple chemically reacting walls.
- *
+ *  Currently, gamma models for catalysis and ablation are available.
  */
+
 class GasSurfaceInteraction
 {
 public:
 
 	/**
-	 * Constructor of the Gas Surface Interaction interface. Takes as inputs a
+	 * Constructor of the GasSurfaceInteraction class. Takes as inputs a
 	 * reference to the thermodynamics and transport classes and the name of
-	 * the gas surface interaction file. Firstly, it searches in the current
-	 * directory for the file and then in /mutation++/data/gsi/
+	 * the gas surface interaction file.
 	 */
     GasSurfaceInteraction(
     	Mutation::Thermodynamics::Thermodynamics& l_thermo,
@@ -56,15 +43,12 @@ public:
     /**
      * Function which sets the thermodynamic state of the wall. Takes as inputs
      * a pointer to the partial densities and pointer to the temperature of the
-     * wall. Currently the state_variable input does not play a role.
+     * wall.
      *
      * @param l_mass - The "mass" vector.
      * @param l_energy - The "energy" vector.
      * @param state_variable - Index representing which variable set is given in
      * the mass and energy vector.
-     *
-     * @todo Set the wall state according to the gas phase state model, using
-     * the state_variable.
      */
     void setWallState(
         const double* const p_mass, const double* const p_energy,
@@ -73,15 +57,12 @@ public:
     /**
      * Function which returns the thermodynamic state of the wall. It returns
      * the values in a pointer for the partial densities and a pointer for the
-     * wall temperatures. Currently, the state_variable does not play a role.
+     * wall temperatures.
      *
      * @param l_mass - The "mass" vector.
      * @param l_energy - The "energy" vector.
      * @param state_variable - Index representing which variable set is given in
      * the mass and energy vector.
-     *
-     * @todo Get the wall state in the variable set according to the state
-     * variable.
      */
     void getWallState(
         double* const p_mass, double* const p_energy,
@@ -112,7 +93,7 @@ public:
         const double* const p_mole_frac_edge, const double& dx);
 
     /*
-     *  Function for the energy balance at the wall... Experimental...
+     *  Function for the energy balance at the wall. Not used yet.
      */
     void setConductiveHeatFluxModel(
         const double* const p_T_edge, const double& dx);
@@ -152,7 +133,6 @@ private:
     inline void errorInvalidGSIFileProperties(const std::string& gsi_option);
 
 private:
-
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     Mutation::Transport::Transport& m_transport;
 
@@ -161,7 +141,6 @@ private:
     SurfaceBalanceSolver* mp_surf_solver;
 
     std::string m_gsi_mechanism;
-
 };
 
     } // namespace GasSurfaceInteraction

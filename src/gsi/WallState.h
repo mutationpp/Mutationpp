@@ -7,10 +7,11 @@ namespace Mutation {
     namespace GasSurfaceInteraction {
 
 class Thermodynamics;
+
 class SurfaceProperties;
 
-class WallState{
-
+class WallState
+{
 public:
     WallState(
         const Mutation::Thermodynamics::Thermodynamics& thermo,
@@ -64,7 +65,7 @@ private:
 
     bool m_is_wall_state_set;
 
-}; // class WallState
+};
 
 //==============================================================================
 

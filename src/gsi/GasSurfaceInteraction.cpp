@@ -14,7 +14,7 @@ using namespace Mutation::Utilities::IO;
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-//======================================================================================
+//==============================================================================
 
 GasSurfaceInteraction::GasSurfaceInteraction(
     Mutation::Thermodynamics::Thermodynamics& l_thermo,
@@ -31,22 +31,21 @@ GasSurfaceInteraction::GasSurfaceInteraction(
     l_gsi_input_file = databaseFileName(l_gsi_input_file, "gsi");
 
     XmlDocument l_xml_doc(l_gsi_input_file);
-    XmlElement l_root_element = l_xml_doc.root();
+    Mutation::Utilities::IO::XmlElement l_root_element = l_xml_doc.root();
 
     errorWrongTypeofGSIFile(l_root_element.tag());
 
     l_root_element.getAttribute("gsi_mechanism", m_gsi_mechanism, "none");
 
     // Finding the position of the XmlElements
-    XmlElement::const_iterator xml_pos_surf_props =
+    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_surf_props =
         l_root_element.findTag("surface_properties");
-    XmlElement::const_iterator xml_pos_diff_model =
+    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_diff_model =
         l_root_element.findTag("diffusion_model");
-    XmlElement::const_iterator xml_pos_prod_terms =
+    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_prod_terms =
         l_root_element.findTag("production_terms");
 
     // Creating Surface Properties class
-    // xml_pos_surf_props.tag("none" or whatever) and then m_gsi_mechanism->to this
     DataSurfaceProperties l_data_surface_properties =
         {m_thermo, *xml_pos_surf_props};
     mp_surf_props = Factory<SurfaceProperties>::create(
@@ -64,7 +63,7 @@ GasSurfaceInteraction::GasSurfaceInteraction(
 
 }
 
-//======================================================================================
+//==============================================================================
 
 GasSurfaceInteraction::~GasSurfaceInteraction()
 {
@@ -73,7 +72,7 @@ GasSurfaceInteraction::~GasSurfaceInteraction()
     if (mp_surf_solver != NULL) {delete mp_surf_solver;}
 }
 
-//======================================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::setWallState(
     const double* const p_mass, const double* const p_energy,
@@ -82,7 +81,7 @@ void GasSurfaceInteraction::setWallState(
     mp_wall_state->setWallState(p_mass, p_energy, state_variable);
 }
 
-//======================================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::getWallState(
     double* const p_mass, double* const p_energy,
@@ -91,9 +90,10 @@ void GasSurfaceInteraction::getWallState(
     mp_wall_state->getWallState(p_mass, p_energy, state_variable);
 }
 
-//======================================================================================
+//==============================================================================
 
-void GasSurfaceInteraction::surfaceProductionRates(double* const p_wall_prod_rates)
+void GasSurfaceInteraction::surfaceProductionRates(
+    double* const p_wall_prod_rates)
 {
     Eigen::VectorXd v_wall_rates = mp_surf_solver->computeGSIProductionRates();
 	for (int i_sp = 0; i_sp < m_thermo.nSpecies(); i_sp++){
@@ -101,7 +101,7 @@ void GasSurfaceInteraction::surfaceProductionRates(double* const p_wall_prod_rat
 	}
 }
 
-//======================================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::setDiffusionModel(
     const double* const p_mole_frac_edge, const double& dx)
@@ -110,28 +110,29 @@ void GasSurfaceInteraction::setDiffusionModel(
         p_mole_frac_edge, m_thermo.nSpecies()), dx);
 }
 
-//======================================================================================
+//==============================================================================
 
-void GasSurfaceInteraction::setConductiveHeatFluxModel( // Experimental
+void GasSurfaceInteraction::setConductiveHeatFluxModel(
     const double* const p_T_edge, const double& dx_T)
 {
-//    mp_surf_solver->setConductiveHeatFluxModel(p_T_edge, dx);
+    throw NotImplementedError(
+        "GasSurfaceInteraction::setConductiveHeatFluxModel");
 }
 
-//======================================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::solveSurfaceBalance()
 {
     mp_surf_solver->solveSurfaceBalance();
 }
 
-//=================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::getMassBlowingRate(double& mdot){
     mdot = mp_surf_solver->massBlowingRate();
 }
 
-//=================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::getBprimeCharSpecies(
 		std::vector<std::string>& v_species_char_names)
@@ -139,7 +140,7 @@ void GasSurfaceInteraction::getBprimeCharSpecies(
     mp_surf_solver->getBprimeCondensedSpecies(v_species_char_names);
 }
 
-//=================================================================
+//==============================================================================
 
 void GasSurfaceInteraction::getBprimeSolution(
     double& bprime_char, std::vector<double>& v_species_char_mass_frac)
@@ -147,27 +148,28 @@ void GasSurfaceInteraction::getBprimeSolution(
     mp_surf_solver->getBprimeParameters(bprime_char, v_species_char_mass_frac);
 }
 
-//======================================================================================
+//==============================================================================
 
-inline void GasSurfaceInteraction::errorWrongTypeofGSIFile(const std::string& gsi_root_tag)
+inline void GasSurfaceInteraction::errorWrongTypeofGSIFile(
+    const std::string& gsi_root_tag)
 {
     if (gsi_root_tag != "gsi"){
-        std::cerr << "Root element in Gas Surface Interaction input file " << gsi_root_tag
-        		  << " is not of 'gsi' type!" << std::endl; // @todo FIX ERROR not l_gsi_root_tag. Instead name of file...
-        exit(1);
+        throw InvalidInputError("GasSurfaceInteraction", gsi_root_tag)
+        << "Root element in Gas Surface Interaction input file "
+        << gsi_root_tag << " is not of 'gsi' type!";
     }
 }
 
-//======================================================================================
+//==============================================================================
 
-inline void GasSurfaceInteraction::errorInvalidGSIFileProperties(const std::string& gsi_option)
+inline void GasSurfaceInteraction::errorInvalidGSIFileProperties(
+    const std::string& gsi_option)
 {
-    std::cerr << gsi_option << " is not a valid gas surface interaction file option!"
-              << std::endl;
-    exit(1);
+    throw InvalidInputError("GasSurfaceInteraction", gsi_option)
+    << gsi_option << " is not a valid gas surface interaction file option!";
 }
 
-//======================================================================================
+//==============================================================================
 
     } // namespace GasSurfaceInteraction 
 } // namespace Mutation
