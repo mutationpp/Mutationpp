@@ -16,11 +16,11 @@ public:
 
 private:
 	/**
-	 * Returns blowing flux equal to zero.
+	 * Returns mass blowing flux equal to zero.
 	 */
 	double computeBlowingFlux(){ return 0.0; }
 
-}; // class MassBlowingRateNull
+};
 
 ObjectProvider<
     MassBlowingRateNull, MassBlowingRate>

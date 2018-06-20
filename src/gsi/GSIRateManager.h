@@ -1,10 +1,10 @@
 #ifndef GSI_RATE_MANAGER_H
 #define GSI_RATE_MANAGER_H
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Thermodynamics;
 
 class GSIReaction;
 class SurfaceProperties;
@@ -24,6 +24,11 @@ struct DataGSIRateManager {
 
 //==============================================================================
 
+/*
+ * Abstract class responsible for computing the chemical production rate for
+ * Gas-Surface Interaction reactions. Its implementation is different for
+ * macroscopic and microscopic approaches.
+ */
 class GSIRateManager
 {
 public:
@@ -39,11 +44,11 @@ public:
      * Constructor of the abstract base class, taking as input a structure
      * of type DataGSIRateManager.
      */
-    GSIRateManager(ARGS l_data_rate_manager)
-       : m_thermo( l_data_rate_manager.s_thermo ),
-         m_surf_props( l_data_rate_manager.s_surf_props ),
-         m_wall_state( l_data_rate_manager.s_wall_state ),
-         v_reactions( l_data_rate_manager.s_reactions ) { }
+    GSIRateManager(ARGS args)
+       : m_thermo(args.s_thermo ),
+         m_surf_props(args.s_surf_props ),
+         m_wall_state(args.s_wall_state ),
+         v_reactions(args.s_reactions ) { }
 
     /**
      * Destructor
@@ -65,7 +70,7 @@ protected:
     const WallState& m_wall_state;
     const std::vector<GSIReaction*>& v_reactions;
 
-}; // class GSIRateManager
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

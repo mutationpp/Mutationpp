@@ -30,6 +30,7 @@ public:
 
         const Mutation::Utilities::IO::XmlElement& node_rate_law =
             *(args.s_iter_reaction->begin());
+
         DataGSIRateLaw data_gsi_rate_law = { args.s_thermo,
                                              args.s_transport,
                                              node_rate_law,
@@ -139,7 +140,7 @@ public:
         // Sort the species vector
         std::sort(species.begin(), species.end());
     }
-}; //class GSIReactionAblation
+};
 
 ObjectProvider<
     GSIReactionAblation, GSIReaction>

@@ -1,10 +1,11 @@
 #ifndef MASS_BLOWING_RATE_H
 #define MASS_BLOWING_RATE_H
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class Thermodynamics;
 class WallProductionTerms;
 
 //==============================================================================
@@ -54,10 +55,8 @@ public:
         double elementalGasMassFraction)
     {
         throw NotImplementedError("MassBlowingRate::getEquilibriumParameters");
-    };
-
-}; // class MassBlowingRate
-
+    }
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

@@ -308,7 +308,7 @@ private:
 
     const int pos_T_trans;
     const int set_state_with_rhoi_T;
-}; // class SurfaceBalanceSolverMass
+};
 
 ObjectProvider<
     SurfaceBalanceSolverMass, SurfaceBalanceSolver>

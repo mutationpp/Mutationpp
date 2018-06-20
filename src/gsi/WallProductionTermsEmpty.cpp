@@ -4,6 +4,8 @@
 
 #include "WallProductionTerms.h"
 
+using namespace Eigen;
+
 using namespace Mutation::Utilities;
 
 namespace Mutation {
@@ -12,8 +14,8 @@ namespace Mutation {
 class WallProductionsTermsEmpty : public WallProductionTerms
 {
 public:
-    WallProductionsTermsEmpty( ARGS l_data_wall_prod_terms )
-                         : WallProductionTerms(l_data_wall_prod_terms),
+    WallProductionsTermsEmpty(ARGS args)
+                         : WallProductionTerms(args),
                            m_tag("empty") {}
 
 //==============================================================================
@@ -22,7 +24,7 @@ public:
 
 //==============================================================================
 
-    void productionRate(Eigen::VectorXd& v_mass_prod_rate){
+    void productionRate(VectorXd& v_mass_prod_rate){
         v_mass_prod_rate.setZero();
     }
 

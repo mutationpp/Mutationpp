@@ -3,13 +3,17 @@
 
 #include <eigen3/Eigen/Dense>
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class Thermodynamics;
-
 class SurfaceProperties;
 
+//==============================================================================
+/*
+ *
+ */
 class WallState
 {
 public:
@@ -66,8 +70,6 @@ private:
     bool m_is_wall_state_set;
 
 };
-
-//==============================================================================
 
     } // namespace GasSurfaceInteraction 
 } // namespace Mutation

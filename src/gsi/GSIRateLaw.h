@@ -1,12 +1,14 @@
 #ifndef GSI_RATE_LAW_H
 #define GSI_RATE_LAW_H
 
+#include <eigen3/Eigen/Dense>
+
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
+namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Thermodynamics;
-class Transport;
-class xmlElement;
 
 class SurfaceProperties;
 
@@ -59,17 +61,22 @@ public:
 
     /**
      * Purely virtual function which returns the forward reaction rate
-     * coefficients. Its units depend on the specific process and gas-surface
-     * interaction model.
+     * coefficients in kg/s. Its units depend on the specific process and
+     * gas-surface interaction model.
+     *
+     * @param rhoi   species densities at the wall in kg/s
+     * @param Twall  wall temperature at the wall according to the
+     *               state model in K
      */
     virtual double forwardReactionRateCoefficient(
-        const Eigen::VectorXd& v_rhoi, const Eigen::VectorXd& v_Twall) const = 0;
+        const Eigen::VectorXd& v_rhoi,
+        const Eigen::VectorXd& v_Twall) const = 0;
 
 protected:
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
     const Mutation::Transport::Transport& m_transport;
 
-}; // class GSIRateLaw
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

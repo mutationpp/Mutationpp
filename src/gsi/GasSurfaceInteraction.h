@@ -1,11 +1,11 @@
 #ifndef GAS_SURFACE_INTERACTION_H
 #define GAS_SURFACE_INTERACTION_H
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Thermodynamics;
-class Transport;
 
 class SurfaceBalanceSolver;
 class SurfaceProperties;
@@ -31,9 +31,9 @@ public:
 	 * the gas surface interaction file.
 	 */
     GasSurfaceInteraction(
-    	Mutation::Thermodynamics::Thermodynamics& l_thermo,
-        Mutation::Transport::Transport& l_transport,
-        std::string l_gsi_mechanism_file);
+    	Mutation::Thermodynamics::Thermodynamics& thermo,
+        Mutation::Transport::Transport& transport,
+        std::string gsi_mechanism_file);
 
     /**
      * Destructor
@@ -52,7 +52,7 @@ public:
      */
     void setWallState(
         const double* const p_mass, const double* const p_energy,
-		const int state_variable);
+		const int state_var);
 
     /**
      * Function which returns the thermodynamic state of the wall. It returns
@@ -66,7 +66,7 @@ public:
      */
     void getWallState(
         double* const p_mass, double* const p_energy,
-        const int state_variable);
+        const int state_var);
 
     /**
      * Return the chemical production terms of all the species in the mixture
@@ -84,10 +84,9 @@ public:
      * in meters for the distance of the distance of this composition from the
      * wall.
      *
-     * @param lp_mole_frac_edge     variable containing the mole fractions far
-     *  from the wall used to compute the gradient for diffusion.
-     * @param l_dx                  distance of the above mole fractions from
-     * the wall
+     * @param mole_frac_edge   mole fractions at a distance from the wall
+     *                         used to compute the gradient for diffusion
+     * @param dx               distance from the wall in m
      */
     void setDiffusionModel(
         const double* const p_mole_frac_edge, const double& dx);
@@ -106,20 +105,22 @@ public:
     void solveSurfaceBalance();
 
     /**
+     * Function which return the total mass blowing flux.
      *
+     * @param mdot on return mass blowing flux kg/(m^2-s)
      */
     void getMassBlowingRate(double& mdot);
 
     /**
-     *
+     * Function for the wall in equilibrium. Not used yet.
      */
     void getBprimeCharSpecies(std::vector<std::string>& v_species_char_names);
 
     /**
-     *
+     * Function for the wall in equilibrium. Not used yet.
      */
     void getBprimeSolution(
-        double& l_bprime_char, std::vector<double>& v_species_char_mass_frac);
+        double& bprime_char, std::vector<double>& v_species_char_mass_frac);
 
 private:
     /**

@@ -17,49 +17,49 @@ namespace Mutation {
 //==============================================================================
 
 GasSurfaceInteraction::GasSurfaceInteraction(
-    Mutation::Thermodynamics::Thermodynamics& l_thermo,
-	Mutation::Transport::Transport& l_transport,
-	std::string l_gsi_input_file)
-    : m_thermo(l_thermo),
-      m_transport(l_transport),
+    Mutation::Thermodynamics::Thermodynamics& thermo,
+	Mutation::Transport::Transport& transport,
+	std::string gsi_input_file)
+    : m_thermo(thermo),
+      m_transport(transport),
       mp_surf_solver(NULL),
       mp_surf_props(NULL),
       mp_wall_state(NULL)
 {
-    if (l_gsi_input_file == "none"){return;}
+    if (gsi_input_file == "none"){return;}
 
-    l_gsi_input_file = databaseFileName(l_gsi_input_file, "gsi");
+    gsi_input_file = databaseFileName(gsi_input_file, "gsi");
 
-    XmlDocument l_xml_doc(l_gsi_input_file);
-    Mutation::Utilities::IO::XmlElement l_root_element = l_xml_doc.root();
+    XmlDocument xml_doc(gsi_input_file);
+    Mutation::Utilities::IO::XmlElement root_element = xml_doc.root();
 
-    errorWrongTypeofGSIFile(l_root_element.tag());
+    errorWrongTypeofGSIFile(root_element.tag());
 
-    l_root_element.getAttribute("gsi_mechanism", m_gsi_mechanism, "none");
+    root_element.getAttribute("gsi_mechanism", m_gsi_mechanism, "none");
 
     // Finding the position of the XmlElements
     Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_surf_props =
-        l_root_element.findTag("surface_properties");
+        root_element.findTag("surface_properties");
     Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_diff_model =
-        l_root_element.findTag("diffusion_model");
+        root_element.findTag("diffusion_model");
     Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_prod_terms =
-        l_root_element.findTag("production_terms");
+        root_element.findTag("production_terms");
 
     // Creating Surface Properties class
-    DataSurfaceProperties l_data_surface_properties =
+    DataSurfaceProperties data_surface_properties =
         {m_thermo, *xml_pos_surf_props};
     mp_surf_props = Factory<SurfaceProperties>::create(
-    		m_gsi_mechanism, l_data_surface_properties);
+        m_gsi_mechanism, data_surface_properties);
 
     // Creating Wall State class
     mp_wall_state = new WallState(m_thermo, *mp_surf_props);
 
     // Creating the SurfaceBalanceSolver class
-    DataSurfaceBalanceSolver l_data_surface_balance_solver =
+    DataSurfaceBalanceSolver data_surface_balance_solver =
         {m_thermo, m_transport, m_gsi_mechanism, *xml_pos_diff_model,
          *xml_pos_prod_terms, *mp_surf_props, *mp_wall_state };
     mp_surf_solver = Factory<SurfaceBalanceSolver>::create(
-        m_gsi_mechanism, l_data_surface_balance_solver );
+        m_gsi_mechanism, data_surface_balance_solver );
 
 }
 
@@ -168,8 +168,6 @@ inline void GasSurfaceInteraction::errorInvalidGSIFileProperties(
     throw InvalidInputError("GasSurfaceInteraction", gsi_option)
     << gsi_option << " is not a valid gas surface interaction file option!";
 }
-
-//==============================================================================
 
     } // namespace GasSurfaceInteraction 
 } // namespace Mutation

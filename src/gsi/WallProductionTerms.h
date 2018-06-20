@@ -3,12 +3,12 @@
 
 #include <eigen3/Eigen/Dense>
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
+namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Thermodynamics;
-class Transport;
-class xmlElement;
 
 class GSIReaction;
 class GSIRateManager;
@@ -32,24 +32,33 @@ struct DataWallProductionTerms {
 };
 
 //==============================================================================
-
+/*
+ *  Abstract class
+ */
 class WallProductionTerms
 {
 public:
+//==============================================================================
     typedef const DataWallProductionTerms& ARGS;
 
+//==============================================================================
+    // Constructor
     WallProductionTerms(ARGS args){}
 
+//==============================================================================
 	/// Returns name of this type.
 	static std::string typeName() { return "WallProductionTerms"; }
 
+//==============================================================================
     virtual ~WallProductionTerms(){}
 
+//==============================================================================
     virtual void productionRate(Eigen::VectorXd& lv_mass_prod_rate) = 0;
 
+//==============================================================================
     virtual const std::string& getWallProductionTermTag() const = 0;
 
-}; // class WallProductionTerms
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

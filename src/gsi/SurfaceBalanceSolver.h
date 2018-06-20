@@ -3,12 +3,12 @@
 
 #include <eigen3/Eigen/Dense>
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
+namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Thermodynamics;
-class Transport;
-class XmlElement;
 
 class SurfaceProperties;
 class WallState;
@@ -79,6 +79,9 @@ public:
      */
     virtual double massBlowingRate() = 0;
 
+    /**
+     * Function for the wall in equilibrium. Not used yet.
+     */
     virtual void getBprimeCondensedSpecies(
         std::vector<std::string>& CondensedSpecies)
     {
@@ -87,6 +90,9 @@ public:
         << "surface in Equilibrium!";
     }
 
+    /**
+     * Function for the wall in equilibrium. Not used yet.
+     */
     virtual void getBprimeParameters(
         double & Bprime_char, std::vector<double>& CondensedMoleFrac)
     {
@@ -95,7 +101,7 @@ public:
         << "surface in Equilibrium!";
     }
 
-}; // class SurfaceBalanceSolver
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

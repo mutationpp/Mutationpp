@@ -1,13 +1,13 @@
 #ifndef SURFACE_PROPERTIES_H
 #define SURFACE_PROPERTIES_H
 
+#include <eigen3/Eigen/Dense>
+
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class VectorXd;
-class XmlElement;
-
-//==============================================================================
 
 /**
  * Structure which stores the necessary inputs for the SurfaceProperties class.
@@ -99,7 +99,7 @@ public:
         Eigen::VectorXd & lv_pyrolisysComposition,
         Eigen::VectorXd & lv_charComposition) const {}
 
-}; // class SurfaceProperties
+};
 
     } // namespace GasSurfaceInteraction 
 } // namespace Mutation

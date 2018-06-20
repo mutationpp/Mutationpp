@@ -34,20 +34,23 @@ public:
     /*
      * Function used to set up the mole fractions at a distance from the wall.
      *
-     * @para v_mole_frac_edge
-     * @para dx ds
+     * @para mole_frac_edge mole fractions of the species at a distance
+     * @para dx distance in m
      */
     void setDiffusionModel(
         const Eigen::VectorXd& v_mole_frac_edge, const double& dx);
 
 //==============================================================================
-/*
- *
- *
- * @param Input mole fractions at the wall
- * @param Output diffusion velocities
- *
- */
+    /*
+     * Function used to compute the diffusion velocities with the given
+     * mole fraction at the wall the ones imposed at a given distance from the
+     * wall after the diffusion model has been set. The mole fraction gradients
+     * are computed with simple first order differentiation.
+     *
+     * @param mole_frac mole fractions of the species at the wall
+     * @param on return diffusion velocities in m/s
+     *
+     */
     void computeDiffusionVelocities(
         const Eigen::VectorXd& v_mole_frac,
         Eigen::VectorXd& v_diff_velocities);

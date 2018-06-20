@@ -8,6 +8,8 @@
 #include "GSIRateManager.h"
 #include "GSIReaction.h"
 
+using namespace Eigen;
+
 using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
@@ -39,12 +41,12 @@ public:
         }
 
         // Assigning the mp_rate_manager pointer
-        DataGSIRateManager l_data_rate_manager = { args.s_thermo,
-                                                   args.s_surf_props,
-												   args.s_wall_state,
-                                                   mv_reaction };
+        DataGSIRateManager data_rate_manager = { args.s_thermo,
+                                                 args.s_surf_props,
+                                                 args.s_wall_state,
+                                                 mv_reaction };
         mp_rate_manager = Factory<GSIRateManager>::create(
-            args.s_gsi_mechanism, l_data_rate_manager);
+            args.s_gsi_mechanism, data_rate_manager);
     }
 
 //==============================================================================
@@ -62,12 +64,12 @@ public:
 
 //==============================================================================
 
-    void productionRate(Eigen::VectorXd& lv_mass_prod_rate)
+    void productionRate(VectorXd& v_mass_prod_rate)
     {
-        Eigen::VectorXd lv_wrk = mp_rate_manager->computeRate();
+        VectorXd v_wrk = mp_rate_manager->computeRate();
 
-        lv_mass_prod_rate.setZero();
-        lv_mass_prod_rate.head(m_ns) = lv_wrk;
+        v_mass_prod_rate.setZero();
+        v_mass_prod_rate.head(m_ns) = v_wrk;
     }
 
 //==============================================================================
@@ -87,7 +89,7 @@ private:
         mv_reaction.push_back(l_gsi_reaction);
     }
 
-}; // class WallProductionSurfaceChemistry
+};
 
 ObjectProvider<
     WallProductionSurfaceChemistry, WallProductionTerms>

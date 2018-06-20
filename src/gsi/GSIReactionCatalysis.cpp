@@ -127,10 +127,7 @@ public:
         }
         std::sort( species.begin(), species.end() );
     }
-
-//==============================================================================
-
-}; // class GSIReactionCatalysis
+};
 
 ObjectProvider<
     GSIReactionCatalysis, GSIReaction>

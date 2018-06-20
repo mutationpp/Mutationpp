@@ -1,5 +1,4 @@
 #include <cstdlib>
-#include <eigen3/Eigen/Dense>
 
 #include "Errors.h"
 #include "GSIStoichiometryManager.h"
@@ -31,7 +30,7 @@ void GSIStoichiometryManager::addReaction(
     }
 }
 
-//===============================================================================
+//==============================================================================
 
 #define STOICH_MGR_APPLY_FUNC(__my_func__,__stoic_func__)\
 template<class Iterator, class Vec1, class Vec2>\
@@ -57,8 +56,6 @@ STOICH_MGR_APPLY_FUNC(incrSpecies, incrSpecies)
 STOICH_MGR_APPLY_FUNC(decrSpecies, decrSpecies)
 
 #undef STOICH_MGR_APPLY_FUNC
-
-//==============================================================================
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
+namespace Mutation { namespace Utilities { namespace IO {class XmlElement; }}}
+
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class Transport;
-class Thermodynamics;
-class XmlElement;
 
 class GSIRateLaw;
 class SurfaceProperties;
@@ -145,7 +145,7 @@ protected:
         const Mutation::Utilities::IO::XmlElement& node_reaction,
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         const SurfaceProperties& surf_props) = 0;
-}; // class GSIReaction
+};
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
