@@ -1090,30 +1090,30 @@ void Thermodynamics::surfaceMassBalance(
     const int ne = nElements();
     const int ng = nGas();
     
-    double p_Xw [ne];
+    std::vector<double> Xw(ne);
     double* p_X  = (p_Xs != NULL ? p_Xs : mp_work1);
     double* p_h  = mp_work2;
     
     // Initialize the wall element fractions to be the pyrolysis gas fractions
     double sum = 0.0;
     for (int i = 0; i < ne; ++i) {
-        p_Xw[i] = p_Yke[i] + Bg*p_Ykg[i];
-        sum += p_Xw[i];
+        Xw[i] = p_Yke[i] + Bg*p_Ykg[i];
+        sum += Xw[i];
     }
     
     // Use "large" amount of carbon to simulate infinite char
     int ic = elementIndex("C");
     //double carbon = std::min(1000.0, std::max(100.0,1000.0*Bg));
     double carbon = std::max(100.0*Bg, 200.0);
-    p_Xw[ic] += carbon;
+    Xw[ic] += carbon;
     sum += carbon;
     
     for (int i = 0; i < ne; ++i)
-        p_Xw[i] /= sum;
+        Xw[i] /= sum;
     
     // Compute equilibrium
-    convert<YE_TO_XE>(p_Xw, p_Xw);
-    equilibriumComposition(T, P, p_Xw, p_X, IN_PHASE);
+    convert<YE_TO_XE>(Xw.data(), Xw.data());
+    equilibriumComposition(T, P, Xw.data(), p_X, IN_PHASE);
     
     // Compute the gas mass fractions at the wall
     double mwg = 0.0;

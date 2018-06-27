@@ -74,8 +74,8 @@ int main(int argc, char* argv[])
     file.close();
 
     // Loop over the states
-    double v1 [n1];
-    double v2 [n2];
+    std::vector<double> v1(n1);
+    std::vector<double> v2(n2);
     bool matches = true;
 
     VectorXd result(result_size);
@@ -89,9 +89,9 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i < data.rows(); ++i) {
         // Set the state of the mixture
-        Map<VectorXd>(v1,n1) = data.row(i).segment( 0,n1);
-        Map<VectorXd>(v2,n2) = data.row(i).segment(n1,n2);
-        mix.setState(v1, v2, var_set);
+        Map<VectorXd>(v1.data(),n1) = data.row(i).segment( 0,n1);
+        Map<VectorXd>(v2.data(),n2) = data.row(i).segment(n1,n2);
+        mix.setState(v1.data(), v2.data(), var_set);
 
         // Compute the functions
         function->compute(mix, result);

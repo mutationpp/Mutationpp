@@ -352,7 +352,8 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     
     // Declare other variables
     Real bmax;
-    int l1[n], nl1, kp, ip, i, j, is;
+    std::vector<int> l1(n);
+    int nl1, kp, ip, i, j, is;
     bool need_exchange;
     
     // Initialize the list of columns admissible for exchange and make all
@@ -373,7 +374,8 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     if (m2 + m3 != 0) {
         // Initialize the list of m2 constraints whose slack variables have
         // never been exchanged out of the initial basis
-        int l3[m2], kh;
+        std::vector<int> l3(m2);
+        int kh;
         for (i = 0; i < m2; ++i)
             l3[i] = 1;
         
@@ -386,7 +388,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
         
         // Use simplex algorithm on auxiliary objective function
         while (true) {
-            simp1(tableau, n, m+1, l1, nl1, false, kp, bmax);       
+            simp1(tableau, n, m+1, l1.data(), nl1, false, kp, bmax);       
 
             // If auxiliary function is negative and can't be improved then no
             // feasible solution exists
@@ -399,7 +401,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
                 need_exchange = false;
                 for (ip = m1+m2; ip < m; ++ip) {
                     if (iposv[ip] == n+ip) {
-                        simp1(tableau, n, ip, l1, nl1, true, kp, bmax);
+                        simp1(tableau, n, ip, l1.data(), nl1, true, kp, bmax);
                         if (bmax > eps) {
                             need_exchange = true;
                             break;
@@ -465,7 +467,7 @@ int simplex(Real *const tableau, const int m, const int n, const int m1,
     // Found initial feasible solution, now optimize it
     while (true) {
         // Test z-row for doneness
-        simp1(tableau, n, 0, l1, nl1, false, kp, bmax);
+        simp1(tableau, n, 0, l1.data(), nl1, false, kp, bmax);
         
         if (bmax <= eps)
             return 0;

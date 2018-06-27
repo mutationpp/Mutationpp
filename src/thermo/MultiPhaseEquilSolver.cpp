@@ -121,7 +121,8 @@ void MultiPhaseEquilSolver::Solution::initialize(int np, int nc, int ns)
 //==============================================================================
 
 bool MultiPhaseEquilSolver::Solution::setupOrdering(
-        int* species_group, bool* zero_constraint)
+        const std::vector<int>& species_group, 
+        const std::vector<bool>& zero_constraint)
 {
     static std::vector<int> previous_order(m_np+m_nc+4, 0);
 
@@ -278,10 +279,10 @@ int MultiPhaseEquilSolver::Solution::removePhase(int phase)
     // to the right to make the non-empty species list contiguous
     const int size = mp_sizes[phase+1] - mp_sizes[phase];
     if (phase != m_npr-1) {
-        int temp [size];
+        std::vector<int> temp(size);
 
         // First copy the phase to be removed into temporary array
-        int* ip = temp;
+        int* ip = temp.data();
         for (int j = mp_sizes[phase]; j < mp_sizes[phase+1]; ++j)
             *ip++ = mp_sjr[j];
 
@@ -294,7 +295,7 @@ int MultiPhaseEquilSolver::Solution::removePhase(int phase)
         // determined species)
         for (int m = phase+1; m < m_np; ++m)
             mp_sizes[m] = mp_sizes[m+1] - size;
-        ip = temp;
+        ip = temp.data();
         for (int j = mp_sizes[m_np-1]; j < mp_sizes[m_np]; ++j)
             mp_sjr[j] = *ip++;
 
@@ -331,10 +332,10 @@ int MultiPhaseEquilSolver::Solution::addPhase(int phase)
     // it to the front
     int size = mp_sizes[phase+1] - mp_sizes[phase];
     if (phase > m_npr) {
-        int temp [size];
+        std::vector<int> temp(size);
 
         // First copy the phase to be added into temporary array
-        int* p = temp;
+        int* p = temp.data();
         for (int i = mp_sizes[phase]; i < mp_sizes[phase+1]; ++i)
             *p++ = mp_sjr[i];
 
@@ -346,7 +347,7 @@ int MultiPhaseEquilSolver::Solution::addPhase(int phase)
         // Place the added phase at the end of the included list
         for (int i = phase+1; i > m_npr; --i)
             mp_sizes[i] = mp_sizes[i-1] + size;
-        p = temp;
+        p = temp.data();
         for (int i = mp_sizes[m_npr]; i < mp_sizes[m_npr+1]; ++i)
             mp_sjr[i] = *p++;
     }
@@ -1316,8 +1317,8 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
 {
     // First determine which species must be zero (either due to constraints or
     // to temperature limits on condensed species)
-    int  species_group[m_ns];
-    bool zero_constraint[m_nc];
+    std::vector<int> species_group(m_ns);
+    std::vector<bool> zero_constraint(m_nc);
     
     // Group each species
     for (int i = 0; i < m_ns; ++i) {
@@ -1358,7 +1359,7 @@ bool MultiPhaseEquilSolver::checkForDeterminedSpecies()
         }
     }
 
-    m_solution.setupOrdering(&species_group[0], zero_constraint);
+    m_solution.setupOrdering(species_group, zero_constraint);
     return true;
 }
 
@@ -1537,9 +1538,10 @@ bool MultiPhaseEquilSolver::updateMinGSolution(const double* const p_g)
     DEBUG(endl)
 
     // Use the simplex algorithm to get the min-g solution
-    int izrov [nsr];
-    int iposv [ncr];
-    int ret = Numerics::simplex(mp_tableau, ncr, nsr, 0, 0, izrov, iposv, 1.0E-9);
+    std::vector<int> izrov(nsr);
+    std::vector<int> iposv(ncr);
+    int ret = Numerics::simplex(
+        mp_tableau, ncr, nsr, 0, 0, izrov.data(), iposv.data(), 1.0E-9);
     
     // Error check
     if (ret != 0) {
@@ -1614,9 +1616,10 @@ bool MultiPhaseEquilSolver::updateMaxMinSolution()
     DEBUG(endl)
 
     // Use the simplex algorithm to get the max-min solution
-    int izrov [nsr];
-    int iposv [ncr];
-    int ret = Numerics::simplex(mp_tableau, ncr, nsr+1, 0, 0, izrov, iposv, 1.0E-9);
+    std::vector<int> izrov(nsr);
+    std::vector<int> iposv(ncr);
+    int ret = Numerics::simplex(
+        mp_tableau, ncr, nsr+1, 0, 0, izrov.data(), iposv.data(), 1.0E-9);
 
     // Error check
     if (ret != 0) {

@@ -368,7 +368,9 @@ private:
          * constraints.
          * @retval true if internal ordering information changed after this call
          */
-        bool setupOrdering(int* species_group, bool* zero_constraint);
+        bool setupOrdering(
+            const std::vector<int>& species_group, 
+            const std::vector<bool>& zero_constraint);
         
         /**
          * Updates the solution by adding dx to lambda and dlnNbar and

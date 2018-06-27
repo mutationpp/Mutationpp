@@ -112,8 +112,7 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
     
     // Check for charge and mass conservation
     const size_t ne = thermo.nElements();
-    int sums [ne];
-    std::fill(sums, sums+ne, 0.0);
+    std::vector<int> sums(ne, 0);
     for (int i = 0; i < nReactants(); ++i)
         for (int k = 0; k < ne; ++k)
             sums[k] += thermo.elementMatrix()(m_reactants[i],k);
