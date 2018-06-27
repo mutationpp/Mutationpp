@@ -84,7 +84,7 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
                 String::tokenize(iter->text(), tokens, ":, ");
                 for (int i = 0; i < tokens.size(); i+=2) {
                     int index = thermo.speciesIndex(tokens[i]);
-                    if (index == 0 and thermo.hasElectrons()) {
+                    if ((index == 0) && (thermo.hasElectrons())) {
                         iter->parseError(
                             "Electron cannot be a thirdbody species!");
                     }
