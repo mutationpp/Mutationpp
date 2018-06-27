@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "Portability.h"
 #include "Species.h"
 #include "Constants.h"
 #include "ThermoDB.h"
@@ -75,7 +76,7 @@ enum ConversionType {
 /**
  * Provides functions which are related to the thermodynamics of a mixture.
  */
-class Thermodynamics //: public StateModelUpdateHandler
+class MUTATION_API Thermodynamics //: public StateModelUpdateHandler
 {
 public:
     

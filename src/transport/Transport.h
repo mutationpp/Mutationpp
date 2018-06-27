@@ -28,6 +28,7 @@
 #ifndef TRANSPORT_TRANSPORT_H
 #define TRANSPORT_TRANSPORT_H
 
+#include "Portability.h"
 #include "Thermodynamics.h"
 #include "CollisionDB.h"
 #include "ElectronSubSystem.h"
@@ -45,7 +46,7 @@ class ViscosityAlgorithm;
 /**
  * Manages the computation of transport properties.
  */
-class Transport
+class MUTATION_API Transport
 {
 public:
     

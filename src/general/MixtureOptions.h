@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 
+#include "Portability.h"
 #include "XMLite.h"
 #include "Composition.h"
 
@@ -42,7 +43,7 @@ namespace Mutation {
  * enforces the default options so that a user will not have to set any options
  * unless they wish to change from the default behavior.
  */
-class MixtureOptions
+class MUTATION_API MixtureOptions
 {
 public:
 

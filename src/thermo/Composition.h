@@ -33,6 +33,7 @@
 #include <map>
 #include <cassert>
 
+#include "Portability.h"
 #include "XMLite.h"
 
 namespace Mutation {
@@ -43,7 +44,7 @@ namespace Mutation {
  * Provides a convenient object for representing elemental or species
  * compositions with consistent error checking and normalization.
  */
-class Composition
+class MUTATION_API Composition
 {
 public:
     enum Type {

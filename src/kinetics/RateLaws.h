@@ -32,6 +32,7 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "Portability.h"
 #include "Utilities.h"
 
 namespace Mutation {
@@ -41,7 +42,7 @@ namespace Mutation {
  * Abstract base class for all rate laws which allows owners such as class 
  * Reaction to store any rate law polymorphically.
  */
-class RateLaw
+class MUTATION_API RateLaw
 {
 public:
 
@@ -52,7 +53,7 @@ public:
 /**
  * Arrhenius rate law \f$ k_f(T) = A T^\eta exp(-E_a / (R_u T)) \f$.
  */
-class Arrhenius : public RateLaw
+class MUTATION_API Arrhenius : public RateLaw
 {
 public:
 

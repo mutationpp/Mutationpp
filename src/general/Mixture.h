@@ -30,6 +30,7 @@
 
 #include <vector>
 
+#include "Portability.h"
 #include "Thermodynamics.h"
 #include "Kinetics.h"
 #include "Transport.h"
@@ -49,7 +50,7 @@ namespace Mutation {
  * @see Transport::Transport
  * @see Kinetics::Kinetics
  */
-class Mixture
+class MUTATION_API Mixture
     : public Thermodynamics::Thermodynamics, 
       public Transport::Transport, 
       public Kinetics::Kinetics
