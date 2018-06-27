@@ -29,7 +29,7 @@
 #   else
 #       define MUTATION_API __declspec( dllimport )
 #   endif
-#   define NAME_MANGLE(__name__)  MUTATION_API  mpp_##__name__
+#   define NAME_MANGLE(__name__)  MUTATION_API  mpp_##__name__##_
 #   pragma warning(disable: 4251) // 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
 
 // Other OS
@@ -37,7 +37,7 @@
 #   include <alloca.h>
 
 #   define MUTATION_API
-#   define NAME_MANGLE(__name__) mpp_##__name__
+#   define NAME_MANGLE(__name__) mpp_##__name__##_
 #endif
 
 #endif // PORTABILITY_H
