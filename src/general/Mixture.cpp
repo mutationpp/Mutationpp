@@ -50,7 +50,11 @@ Mixture::Mixture(const MixtureOptions& options)
         options.getThermalConductivityAlgorithm()),
       Kinetics(
         static_cast<const Thermodynamics&>(*this),
-        options.getMechanism())
+        options.getMechanism()),
+      GasSurfaceInteraction(
+        *this,
+        *this,
+        options.getGSIMechanism())
 {
     // Add all the compositions given in mixture options to the composition list
     for (int i = 0; i < options.compositions().size(); ++i)

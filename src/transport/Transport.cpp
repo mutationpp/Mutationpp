@@ -797,6 +797,18 @@ double Transport::electronMeanFreePath()
 }
 
 //==============================================================================
+double Transport::speciesThermalSpeed(const int& i) const
+{
+	if (i < m_thermo.hasElectrons()){
+	    const double T = m_thermo.Te();
+        return sqrt(8.0*RU*T/(PI*m_thermo.speciesMw(i)));
+	}
+
+    const double T = m_thermo.T();
+    return sqrt(8.0*RU*T/(PI*m_thermo.speciesMw(i)));
+}
+
+//==============================================================================
 double Transport::averageHeavyThermalSpeed()
 {
     const int ns = m_thermo.nSpecies();

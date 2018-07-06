@@ -52,6 +52,7 @@ add_subdirectory(thermo)
 add_subdirectory(transfer)
 add_subdirectory(transport)
 add_subdirectory(utilities)
+add_subdirectory(gsi)
 
 if (BUILD_FORTRAN_WRAPPER)
     add_subdirectory(fortran)

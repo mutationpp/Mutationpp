@@ -32,7 +32,6 @@
 #include <cassert>
 #include <typeinfo>
 #include <iostream>
-#include "Matrix.h"
 
 namespace Mutation {
     namespace Numerics {
@@ -127,7 +126,7 @@ T& NewtonSolver<T, Solver>::solve(T& x)
     
     // Compute the initial function value and its norm
     static_cast<Solver&>(*this).updateFunction(x);
-    double f0_norm = static_cast<Solver&>(*this).norm();
+    double f0_norm = 1.0; // = static_cast<Solver&>(*this).norm();
     double resnorm = 1.0;
     
     // Let user know Newton's method is being called and print initial residual
@@ -160,11 +159,10 @@ T& NewtonSolver<T, Solver>::solve(T& x)
             cout << ", relative residual = " << resnorm << endl;
     }
     
-    if (resnorm > m_epsilon) {
+    if (resnorm > m_epsilon && m_conv_hist) {
         cout << "Newton failed to converge after " << m_max_iter
              << " iterations with a relative residual of " << resnorm << endl;
     }
-    
     return x;
 }
 
