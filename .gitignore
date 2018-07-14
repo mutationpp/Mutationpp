@@ -11,6 +11,7 @@ docs/html/
 .cproject
 .project
 .pydevproject
+.metadata/
 
 # Python
 *.pyc
