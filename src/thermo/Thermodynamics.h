@@ -830,8 +830,28 @@ public:
     inline void convert(const double *const a, double *const b) const { }
     
     /**
-     * Solves the surface mass balance equation for a pure Carbon char and
-     * returns the non-dimensional ablation mass flux and wall enthalpy.
+     * Solves a surface mass balance (SMB) equation for a pure Carbon char and
+     * returns the non-dimensional ablation mass flux and wall enthalpy.  The
+     * elemental SMB is given for each element \f$k\f$ as
+     * \f[
+     * y_{w,k}(B'_c + B'_g + 1) = B'_c y_{c,k} + B'_g y_{g,k} + y_{e,k},
+     * \f]
+     * where \f$B'\f$ is a non-dimenaional mass flux, defined as \f$\dot{m}/
+     * (\rho_e u_e C_M)\f$.  Subscripts \f$c, g, w\f$ refer to char,
+     * pyrolysis gas, and wall quantities, respectively and \f$y_{z,k}\f$ is
+     * the elemenal mass fraction of element \f$k\f$ for gas \f$z\f$.  In this
+     * implementation, it is assumed that \f$y_{c,C}  = 1\f$ (pure carbon 
+     * char).
+     * 
+     * @param p_Yke Element mass fractions of boundary layer edge.
+     * @param p_Ykg Element mass fractions of the pyrolysis gas.
+     * @param T Temperature at the surface in K.
+     * @param P Pressure at the surface in Pa.
+     * @param Bg Non-dimensional pyrolysis gas mass blowing rate.
+     * @param Bc On return, non-dimensional char gas mass blowing rate.
+     * @param hw On return, enthalpy of the mixed gas at the surface in J/kg.
+     * @param p_Xs (optional) On return, vector of species mole fractions at
+     * the surface.
      */
     void surfaceMassBalance(
         const double *const p_Yke, const double *const p_Ykg, const double T, 
