@@ -39,6 +39,9 @@ namespace Mutation {
 using namespace std;
 using namespace Utilities;
 
+/**
+ * @brief Adds support for the new NASA-9 polynomial formatted database.
+ */
 class Nasa9DB : public NasaDB<Nasa9Polynomial>
 {
 public:
@@ -183,11 +186,28 @@ protected:
 // Register this database type
 Utilities::Config::ObjectProvider<Nasa9DB, ThermoDB> nasa9DB("NASA-9");
 
+
+/**
+ * @brief Adds support for the new NASA-9 polynomial formatted database.
+ * 
+ * The database is detailed in Scoggins et al. Aerospace Science and Technology 
+ * 66:177-192, 2017.  Since it is still being vetted, loading it will display a 
+ * warning to the user.
+ * 
+ * @todo Finalize the new NASA-9 database and provide a better name.
+ */
 class Nasa9NewDB : public Nasa9DB
 {
 public:
     Nasa9NewDB(int arg) : Nasa9DB(arg)
-    { }
+    { 
+        std::cout 
+            << "Warning: the NASA-9-New thermodynamic database is assembled "
+            << "from a collection of sources and is still being vetted. See "
+            << "Scoggins et al. Aerospace Science and Technology 66:177-192, "
+            << "2017. for more details.  The name of this database may change "
+            << "in the future." << std::endl;
+    }
 
 protected:
     /**
