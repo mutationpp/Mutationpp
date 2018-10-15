@@ -37,6 +37,9 @@
 namespace Mutation {
     namespace Thermodynamics {
 
+/**
+ * @brief Adds support for the new NASA-7 polynomial formatted database.
+ */
 class Nasa7DB : public NasaDB<Nasa7Polynomial>
 {
 public:
