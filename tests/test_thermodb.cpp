@@ -238,6 +238,20 @@ TEST_CASE
 }
 
 /**
+ * Checks that data is loaded correctly from the new NASA-9 thermodynamic 
+ * database.
+ */
+TEST_CASE
+(
+    "Loading NASA-9-New thermodynamic database",
+    "[thermodynamics][loading]"
+)
+{
+    ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-9-New", 0);
+    checkThermoDBLoad(db, DEFAULTS | AIR5);
+}
+
+/**
  * Checks that data is loaded correctly from the RRHO thermodynamic database.
  */
 TEST_CASE
