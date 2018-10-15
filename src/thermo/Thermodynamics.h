@@ -560,22 +560,60 @@ public:
      */
     void speciesCpOverR(double *const p_cp) const;
     
+    /**
+     * Returns the unitless vector of species specific heats at constant
+     * pressure \f$ C_{p,i} / R_u \f$ given temperature in K.
+     */
     void speciesCpOverR(double T, double* const p_cp) const;
     
+    /**
+     * Returns unitless species specific heats at constant pressure \f$ C_{p,i} 
+     * / R_u \f$ given temperatures in K.
+     * 
+     * @param Th Heavy particle translational temperature.
+     * @param Te Electron translational temperature.
+     * @param Tv Vibrational temperture.
+     * @param Tel Electronic temperature.
+     * @param p_cp Species total specific heats.
+     * @param p_cpt Species translatioal specific heats.
+     * @param p_cpr Species rotational specific heats.
+     * @param p_cpv Species vibrational specific heats.
+     * @param p_cpel Species electronic specific heats.
+     */
     void speciesCpOverR(
         double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cp, double *const p_cpt, double *const p_cpr,
         double *const p_cpv, double *const p_cpel) const;
     
     /**
-     * Returns the unitless vector of species specific heats at constant volume
-     * \f$ C_{v,i} / R_u \f$.
+     * Returns unitless species specific heats at constant volume \f$ C_{v,i} 
+     * / R_u \f$ given temperatures in K.
+     * 
+     * @param Th Heavy particle translational temperature.
+     * @param Te Electron translational temperature.
+     * @param Tv Vibrational temperture.
+     * @param Tel Electronic temperature.
+     * @param p_cv Species total specific heats.
+     * @param p_cvt Species translatioal specific heats.
+     * @param p_cvr Species rotational specific heats.
+     * @param p_cvv Species vibrational specific heats.
+     * @param p_cvel Species electronic specific heats.
      */
     void speciesCvOverR(
         double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cv, double *const p_cvt, double *const p_cvr,
         double *const p_cvv, double *const p_cvel) const;
     
+    /**
+     * Returns unitless species specific heats at constant volume \f$ C_{v,i} 
+     * / R_u \f$ at current temperatures.
+     * 
+     * @param p_cv Species total specific heats.
+     * @param p_cvt Species translatioal specific heats.
+     * @param p_cvr Species rotational specific heats.
+     * @param p_cvv Species vibrational specific heats.
+     * @param p_cvel Species electronic specific heats.
+     */
     void speciesCvOverR(
         double *const p_cv, double *const p_cvt, double *const p_cvr,
         double *const p_cvv, double *const p_cvel) const
@@ -619,27 +657,6 @@ public:
      * Returns the mixture averaged specific heat at constant volume in J/kg-K.
      */
     double mixtureFrozenCvMass() const;
-    
-    /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * volume in J/mol-K.
-     */
-    //double mixtureEquilibriumCvMole(
-    //    double T, double P, const double* const Xeq) const;
-    
-    /**
-     * Returns the current equilibrium mixture averaged specific heat at
-     * constant volume in J/mol-K.  This method assumes that the current state of
-     * the mixture was already set using the equilibrate() method.
-     */
-    //double mixtureEquilibriumCvMole() const;
-    
-    /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * volume in J/kg-K.
-     */
-    //double mixtureEquilibriumCvMass(
-    //    double T, double P, const double* const Xeq) const;
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
@@ -686,7 +703,9 @@ public:
     void dXidP(double* const dxdp) const;
 
     /**
-     *
+     * Returns the species derivatives of mole fractioni w.r.t. elemental
+     * constraint i for the given equilibrium mixture.  It is assumed that the
+     * state model is an equilibrium one.
      */
     void dXjdci(int i, double* const p_dxdc) const;
 
@@ -777,9 +796,7 @@ public:
     /**
      * Returns the current equilibrium sound speed of the mixture in m/s.
      */
-    double equilibriumSoundSpeed();// {
-    //    return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
-    //}
+    double equilibriumSoundSpeed();
     
     /**
      * Returns the unitless vector of species entropies \f$ S_i / R_u \f$.
@@ -803,7 +820,17 @@ public:
      * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
      */
     void speciesGOverRT(double* const p_g) const;
+
+    /**
+     * Returns the unitless vector of species Gibbs free energies
+     * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
+     */
     void speciesGOverRT(double T, double P, double* const p_g) const;
+    
+    /**
+     * Returns the unitless vector of species Gibbs free energies
+     * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
+     */
     void speciesSTGOverRT(double T, double* const p_g) const;
     
     /**
