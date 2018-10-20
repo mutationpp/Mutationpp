@@ -68,7 +68,9 @@ public:
     /**
      * Constructor initializes state.
      *
-     * @param ns - number of species
+     * @param thermo - thermodynamic object
+     * @param nenergy -number of energy equations
+     * @param nmass - number od mass equations
      */
     StateModel(ARGS thermo, const int nenergy, const int nmass)
         : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
@@ -173,9 +175,13 @@ public:
     }
     
     /**
-     * Sets the mixture to an equilibrium state at the given temperature and
-     * pressure.  The elemental mole fractions may also be given, otherwise, the
+     * @brief Sets the mixture to an equilibrium state at the given temperature and
+     * pressure. The elemental mole fractions may also be given, otherwise, the
      * default mole fractions are used.
+     *
+     * @param T - temperature
+     * @param P - pressure
+     * @param p_Xe - "vector" for the elemental mole fractions
      */
     void equilibrate(double T, double P, double* const p_Xe = NULL)
     {
@@ -225,20 +231,6 @@ public:
     virtual void getCpsMass(double* const p_Cp){
         throw NotImplementedError("StateModel::getCpsMass()");
     }
-
-    /**
-     * Computes the vector of mixture averaged specific heats at constant
-     * pressure, \f$c_{p,m}=\left.\frac{\partial h_m}{\partial T_m}\right|_p\f$.
-     * Input vector should be at least nEnergyEqns() long.
-     */
-    //void getMixtureCpsMass(double* const cp);
-
-    /**
-     * Computes the species specific heats at constant pressure for each energy
-     * mode, \f$c_{p,im}=\left.\frac{\partial h_{im}}{\partial T_m}\right|_p\f$.
-     * Input vector should be at least nEnergyEqns()*nSpecies() long.
-     */
-    //virtual void getSpeciesCpsMass(double* const p_cp);
 
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
@@ -405,7 +397,6 @@ protected:
         m_transfer_models;
 private:
 
-   //double* mp_work1;
 
 }; // class StateModel
 

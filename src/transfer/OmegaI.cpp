@@ -67,7 +67,8 @@ public:
 
 	/**
 	  * Computes the Electron-Impact reactions heat Generation in \f$ [J/(m^3\cdot s)] \f$
-	  * which acts as a shrink to the free electron energy equation.
+	  * which acts as a shrink to the free electron energy equation. Considers both reactions
+	  * such as electron impact ionization and dissociation
 	  *
 	  * \f[ \Omega^{I} = - \sum_{r \in \mathcal{R}} \Delta h_r \xi_r \f]
 	  *
@@ -75,13 +76,13 @@ public:
 	  * \f[ \Delta h_r \f] is the reaction enthalpy \f[ [J/mol] \f]
 	  * \f[ \xi_r \f] is the molar rate of progress \f[ [mol/(m^3\cdot s)] \f]
 	  *
+	  * @todo consider the ionization energy for N and O from an already
+	  * excited state as suggested by Johnston (PhD thesis)
 	  */
 	double source()
 	{
 		// Get Formation enthalpy
 		m_mixture.speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
-		//for (int i = 0; i < m_ns; ++i)
-		//	mp_hf[i]*= RU*m_mixture.T();
 
 		// Get reaction enthalpies
 		std::fill(mp_delta, mp_delta+m_nr, 0.0);
@@ -99,22 +100,6 @@ public:
 
 		return (-src*RU*m_mixture.T());
 
-//		m_mixture.speciesHOverRT(298.15, mp_hf);
-//        // Get reaction enthalpies
-//        std::fill(mp_delta, mp_delta+m_nr, 0.0);
-//        m_mixture.getReactionDelta(mp_hf,mp_delta);
-//
-//        // Get molar rates of progress
-//        m_mixture.netRatesOfProgress(mp_rate);
-//
-//        double src = 0.0;
-//        int j;
-//        for (int i = 0; i < m_rId.size(); ++i) {
-//            j = m_rId[i].first;
-//            src += m_rId[i].second*mp_delta[j]*mp_rate[j];
-//        }
-//
-//        return (-src*RU*298.15);
 	}
 
 private:

@@ -33,6 +33,12 @@ namespace Mutation {
 
 /**
  * Represents a coupling between chemistry and electronic energy modes.
+ *
+ * \f[ \sum_{i \in \varepsilon } \dot{\omega}_i e^E_i \f].
+ *
+ * where the index \f$ \varepsilon \f$ represents the set oh heavy species
+ *
+ * More information about the above model can be found in @cite Panesi 2008
  */
 class OmegaCElec : public TransferModel
 {

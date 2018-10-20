@@ -46,10 +46,13 @@ namespace Mutation {
  * where relaxation time \f$\tau^{ET}\f$ is given by
  * \f[
  * \frac{1}{\tau^{ET}} = \sum_{j\in\mathcal{H}} \frac{2m_e}{m_i}\nu_{ei}.
- * \f]
  *
- * @todo Check that the equations in the documentation match the implementation.
- * @todo Merge compute_tau_ET() into the source() function directly.
+ * \\f]
+ * and the collision frequency \f$\nu_{ei}\f$ is given by
+ * \f[
+ * \nu_{ei} = (8/3)v_e n_j \overline{\Omega}_{ej}^{11}
+ *
+ *\\f]
  */
 class OmegaET : public TransferModel
 {
@@ -69,7 +72,17 @@ public:
         double T = m_mixture.T();
         double Te = m_mixture.Te();
 
-        double tau = compute_tau_ET();
+        const double ns = m_mixture.nSpecies();
+        Map<const ArrayXd> X(m_mixture.X(),ns);
+
+        // CollisionDB data
+        const ArrayXd& Q11ei = m_collisions.Q11ei();
+        const ArrayXd& mass  = m_collisions.mass();
+
+        // Electron velocity
+        double ve = sqrt(KB*8.*Te/(PI*mass(0)));
+        double tau = 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
+
         return 1.5*KB*nd*p_X[0]*(T-Te)/tau;
 	}
 
@@ -77,28 +90,8 @@ private:
 	Transport::CollisionDB& m_collisions;
 	bool m_has_electrons;
 
-	double const compute_tau_ET();
 };
 
-
-double const OmegaET::compute_tau_ET()
-{
-	const double T = m_mixture.T();
-    const double Te = m_mixture.Te();
-    const double nd = m_mixture.numberDensity();
-    const double ns = m_mixture.nSpecies();
-    Map<const ArrayXd> X(m_mixture.X(),ns);
-
-    // CollisionDB data
-    const ArrayXd& Q11ei = m_collisions.Q11ei();
-    const ArrayXd& mass  = m_collisions.mass();
-
-    // Electron velocity
-    double ve = sqrt(KB*8.*Te/(PI*mass(0)));
-
-    // Tau
-    return 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
-}
 
 // Register the transfer model
 Mutation::Utilities::Config::ObjectProvider<

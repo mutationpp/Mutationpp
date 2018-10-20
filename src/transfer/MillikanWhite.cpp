@@ -93,9 +93,6 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
             // Add Millikan-White data using defaults
             m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
         }
-
-        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
-        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
 }
 
@@ -130,8 +127,6 @@ MillikanWhiteVibrator::MillikanWhiteVibrator(
         
         // Add Millikan-White data using defaults
         m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
-        //std::cout << vibrator.name() << " - " << partner.name() << "(a,b) = ";
-        //std::cout << m_partners.back().a() << ", " << m_partners.back().b() << std::endl;
     }
 }
 
@@ -187,6 +182,8 @@ MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
         
         // If this molecule can vibrate, add it to the list
         if (species.type() == MOLECULE) {
+            // If vibrator is not in in VT.xml take the characteristic vibrational
+            // temperature from species.xml
             if ((iter = root.findTagWithAttribute(
                 "vibrator", "species", species.name())) != root.end())
                 m_vibrators.push_back(
