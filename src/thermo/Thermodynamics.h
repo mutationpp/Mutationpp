@@ -560,22 +560,60 @@ public:
      */
     void speciesCpOverR(double *const p_cp) const;
     
+    /**
+     * Returns the unitless vector of species specific heats at constant
+     * pressure \f$ C_{p,i} / R_u \f$ given temperature in K.
+     */
     void speciesCpOverR(double T, double* const p_cp) const;
     
+    /**
+     * Returns unitless species specific heats at constant pressure \f$ C_{p,i} 
+     * / R_u \f$ given temperatures in K.
+     * 
+     * @param Th Heavy particle translational temperature.
+     * @param Te Electron translational temperature.
+     * @param Tv Vibrational temperture.
+     * @param Tel Electronic temperature.
+     * @param p_cp Species total specific heats.
+     * @param p_cpt Species translatioal specific heats.
+     * @param p_cpr Species rotational specific heats.
+     * @param p_cpv Species vibrational specific heats.
+     * @param p_cpel Species electronic specific heats.
+     */
     void speciesCpOverR(
         double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cp, double *const p_cpt, double *const p_cpr,
         double *const p_cpv, double *const p_cpel) const;
     
     /**
-     * Returns the unitless vector of species specific heats at constant volume
-     * \f$ C_{v,i} / R_u \f$.
+     * Returns unitless species specific heats at constant volume \f$ C_{v,i} 
+     * / R_u \f$ given temperatures in K.
+     * 
+     * @param Th Heavy particle translational temperature.
+     * @param Te Electron translational temperature.
+     * @param Tv Vibrational temperture.
+     * @param Tel Electronic temperature.
+     * @param p_cv Species total specific heats.
+     * @param p_cvt Species translatioal specific heats.
+     * @param p_cvr Species rotational specific heats.
+     * @param p_cvv Species vibrational specific heats.
+     * @param p_cvel Species electronic specific heats.
      */
     void speciesCvOverR(
         double Th, double Te, double Tr, double Tv, double Tel,
         double *const p_cv, double *const p_cvt, double *const p_cvr,
         double *const p_cvv, double *const p_cvel) const;
     
+    /**
+     * Returns unitless species specific heats at constant volume \f$ C_{v,i} 
+     * / R_u \f$ at current temperatures.
+     * 
+     * @param p_cv Species total specific heats.
+     * @param p_cvt Species translatioal specific heats.
+     * @param p_cvr Species rotational specific heats.
+     * @param p_cvv Species vibrational specific heats.
+     * @param p_cvel Species electronic specific heats.
+     */
     void speciesCvOverR(
         double *const p_cv, double *const p_cvt, double *const p_cvr,
         double *const p_cvv, double *const p_cvel) const
@@ -619,27 +657,6 @@ public:
      * Returns the mixture averaged specific heat at constant volume in J/kg-K.
      */
     double mixtureFrozenCvMass() const;
-    
-    /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * volume in J/mol-K.
-     */
-    //double mixtureEquilibriumCvMole(
-    //    double T, double P, const double* const Xeq) const;
-    
-    /**
-     * Returns the current equilibrium mixture averaged specific heat at
-     * constant volume in J/mol-K.  This method assumes that the current state of
-     * the mixture was already set using the equilibrate() method.
-     */
-    //double mixtureEquilibriumCvMole() const;
-    
-    /**
-     * Returns the equilibrium mixture averaged specific heat at constant
-     * volume in J/kg-K.
-     */
-    //double mixtureEquilibriumCvMass(
-    //    double T, double P, const double* const Xeq) const;
     
     /**
      * Returns the current equilibrium mixture averaged specific heat at
@@ -686,7 +703,9 @@ public:
     void dXidP(double* const dxdp) const;
 
     /**
-     *
+     * Returns the species derivatives of mole fractioni w.r.t. elemental
+     * constraint i for the given equilibrium mixture.  It is assumed that the
+     * state model is an equilibrium one.
      */
     void dXjdci(int i, double* const p_dxdc) const;
 
@@ -777,9 +796,7 @@ public:
     /**
      * Returns the current equilibrium sound speed of the mixture in m/s.
      */
-    double equilibriumSoundSpeed();// {
-    //    return std::sqrt(mixtureEquilibriumGamma() / dRhodP());
-    //}
+    double equilibriumSoundSpeed();
     
     /**
      * Returns the unitless vector of species entropies \f$ S_i / R_u \f$.
@@ -803,7 +820,17 @@ public:
      * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
      */
     void speciesGOverRT(double* const p_g) const;
+
+    /**
+     * Returns the unitless vector of species Gibbs free energies
+     * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
+     */
     void speciesGOverRT(double T, double P, double* const p_g) const;
+    
+    /**
+     * Returns the unitless vector of species Gibbs free energies
+     * \f$ G_i / R_u T = H_i / R_u T - S_i / R_u \f$.
+     */
     void speciesSTGOverRT(double T, double* const p_g) const;
     
     /**
@@ -830,8 +857,28 @@ public:
     inline void convert(const double *const a, double *const b) const { }
     
     /**
-     * Solves the surface mass balance equation for a pure Carbon char and
-     * returns the non-dimensional ablation mass flux and wall enthalpy.
+     * Solves a surface mass balance (SMB) equation for a pure Carbon char and
+     * returns the non-dimensional ablation mass flux and wall enthalpy.  The
+     * elemental SMB is given for each element \f$k\f$ as
+     * \f[
+     * y_{w,k}(B'_c + B'_g + 1) = B'_c y_{c,k} + B'_g y_{g,k} + y_{e,k},
+     * \f]
+     * where \f$B'\f$ is a non-dimenaional mass flux, defined as \f$\dot{m}/
+     * (\rho_e u_e C_M)\f$.  Subscripts \f$c, g, w\f$ refer to char,
+     * pyrolysis gas, and wall quantities, respectively and \f$y_{z,k}\f$ is
+     * the elemenal mass fraction of element \f$k\f$ for gas \f$z\f$.  In this
+     * implementation, it is assumed that \f$y_{c,C}  = 1\f$ (pure carbon 
+     * char).
+     * 
+     * @param p_Yke Element mass fractions of boundary layer edge.
+     * @param p_Ykg Element mass fractions of the pyrolysis gas.
+     * @param T Temperature at the surface in K.
+     * @param P Pressure at the surface in Pa.
+     * @param Bg Non-dimensional pyrolysis gas mass blowing rate.
+     * @param Bc On return, non-dimensional char gas mass blowing rate.
+     * @param hw On return, enthalpy of the mixed gas at the surface in J/kg.
+     * @param p_Xs (optional) On return, vector of species mole fractions at
+     * the surface.
      */
     void surfaceMassBalance(
         const double *const p_Yke, const double *const p_Ykg, const double T, 

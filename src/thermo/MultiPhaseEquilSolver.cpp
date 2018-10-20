@@ -1614,7 +1614,7 @@ bool MultiPhaseEquilSolver::updateMaxMinSolution()
     DEBUG(endl)
 
     // Use the simplex algorithm to get the max-min solution
-    int izrov [nsr];
+    int izrov [nsr+1];
     int iposv [ncr];
     int ret = Numerics::simplex(mp_tableau, ncr, nsr+1, 0, 0, izrov, iposv, 1.0E-9);
 
