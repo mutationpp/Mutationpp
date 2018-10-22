@@ -67,8 +67,10 @@ public:
 
         // The first Error object created needs to save the current terminate
         // handler
-        if (errorCount() == 1)
+        if (errorCount() == 1) {
             terminateHandler() = std::set_terminate(terminateOnError);
+            std::cout << "Set terminate called\n";
+        }
     }
 
     /**
@@ -93,8 +95,10 @@ public:
     {
         // Reset the terminate function
         errorCount()--;
-        if (errorCount() == 0)
+        if (errorCount() == 0) {
             std::set_terminate(terminateHandler());
+            std::cout << "Set terminate reset\n";
+        }
     }
 
     /// Input stream operator allows for message to be added to error.
@@ -138,6 +142,8 @@ public:
             return m_message_stream.str().c_str();
         }
     }
+
+    virtual const char* what() const throw() { return m_message_stream.str().c_str(); }
 
     /**
      * Adds a (name, value) pair as an additional piece of information for the
@@ -236,6 +242,8 @@ private:
  */
 inline void terminateOnError()
 {
+    std::cout << "terminateOnError called\n";
+
     // Notify the user of the last error.
     std::cout << Error::lastError()->what() << std::endl;
 

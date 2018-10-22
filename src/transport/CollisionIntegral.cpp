@@ -228,7 +228,13 @@ Config::ObjectProvider<ConstantColInt, CollisionIntegral> const_ci("constant");
 //==============================================================================
 
 /**
- * Represents a collision integral evaluated from an exponential polynomial.
+ * @brief A collision integral evaluated as an exponential polynomial.
+ * 
+ * The general exponential polynomial is given as 
+ * \f[
+ *     f(T) = \exp( \sum_{i=0}^{n-1} A_i (\ln T)^i ),
+ * \f]
+ * where \f$A_i\f$ are the polynomial coefficients.
  */
 class ExpPolyColInt : public CollisionIntegral
 {
@@ -481,7 +487,7 @@ public:
     FromCstColInt(CollisionIntegral::ARGS args) :
         CollisionIntegral(args)
     {
-        // Determine the type of B* expression to evaluate
+        // Determine the type of C* expression to evaluate
         string tag = args.xml.tag();
              if (tag == "Cst") m_type = CST;
         else if (tag == "Q11") m_type = Q11;
@@ -613,7 +619,13 @@ Config::ObjectProvider<RatioColInt, CollisionIntegral> ratio_ci("ratio");
 
 /**
  * Represents a collision integral computed using Murphy's phenomenological
- * approximation to combine elastic and charge-exchange integrals.
+ * approximation to combine elastic and charge-exchange integrals.  The
+ * approximation is given as
+ * \f[
+ *    f(T) = \sqrt(Q_1(T)^2 + Q_2(T)^2)
+ * \f]
+ * where \f$\sqrt(Q_1)\f$ and \f$\sqrt(Q_2)\f$ are the elastic and
+ * charge-exchange integrals, respectively.
  */
 class MurphyColInt : public CollisionIntegral
 {
@@ -673,8 +685,15 @@ private:
 Config::ObjectProvider<MurphyColInt, CollisionIntegral> murphy_ci("Murphy");
 
 //==============================================================================
+
 /**
- * Represents a collision integral which is interpolated from a given table.
+ * @brief Represents a collision integral which is interpolated from a table.
+ * 
+ * The default interpolation scheme is linear, however this can be changed
+ * by setting the interpolator attribute of the integral.  In addition, the
+ * default behavior is to clip the integral value at the bounds of the table
+ * (min and max temperature) to the values at those temperatures.  This too can
+ * be turned off by setting the the clip attribute to false or no.
  */
 class TableColInt : public CollisionIntegral
 {
