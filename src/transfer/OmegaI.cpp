@@ -67,7 +67,7 @@ public:
 
 	/**
 	  * Computes the Electron-Impact reactions heat Generation in \f$ [J/(m^3\cdot s)] \f$
-	  * which acts as a shrink to the free electron energy equation. Considers both reactions
+	  * which acts as a sink to the free electron energy equation. Considers both reactions
 	  * such as electron impact ionization and dissociation
 	  *
 	  * \f[ \Omega^{I} = - \sum_{r \in \mathcal{R}} \Delta h_r \xi_r \f]

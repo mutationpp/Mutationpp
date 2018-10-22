@@ -250,6 +250,37 @@ private:
 Utilities::Config::ObjectProvider<
     EquilStateModel, StateModel> equil_sm("Equil");
 
+/**
+ * @ingroup statemodels
+ *
+ * This class is just provided for backward compatibility purposes and may be
+ * removed in the future.  Use the EquilStateModel instead which is more general
+ * and will continue to be maintained in the future.
+ *
+ * @see EquilStateModel
+ */
+class EquilTPStateModel : public EquilStateModel
+{
+public:
+     EquilTPStateModel(const Thermodynamics& thermo)
+         : EquilStateModel(thermo)
+     { }
+
+     /**
+      * Sets the state of the equilibrium mixture given temperature and pressure.
+      */
+     virtual void setState(
+         const double* const p_T, const double* const p_P, const int vars = 1)
+     {
+          //assert(vars == 1);
+          EquilStateModel::setState(p_P, p_T, 1);
+     }
+};
+
+// Register the state model
+Utilities::Config::ObjectProvider<
+    EquilTPStateModel, StateModel> equiltp_sm("EquilTP");
+
 
     } // namespace Thermodynamics
 } // namespace Mutation
