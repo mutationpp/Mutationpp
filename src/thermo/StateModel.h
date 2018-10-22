@@ -57,6 +57,8 @@ class Transport;
  * temperatures that represent the various energy modes in the mixture.  This
  * base class provides the framework for defining new state models.
  *
+ * @todo making mp_X and a EigenVector
+ *
  */
 class StateModel
 {
