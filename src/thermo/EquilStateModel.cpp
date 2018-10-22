@@ -26,6 +26,8 @@
  */
 
 #include "StateModel.h"
+#include "Thermodynamics.h"
+#include "Transport.h"
 
 namespace Mutation {
     namespace Thermodynamics {

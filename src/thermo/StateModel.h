@@ -28,14 +28,15 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-#include "Thermodynamics.h"
+
 #include "Kinetics.h"
-#include "Transport.h"
 #include "TransferModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
+class Thermodynamics;
+class Transport;
 
 /**
  * @defgroup statemodels State Models
@@ -56,7 +57,6 @@ namespace Mutation {
  * temperatures that represent the various energy modes in the mixture.  This
  * base class provides the framework for defining new state models.
  *
- * @todo include forward declaration for faster compiling
  */
 class StateModel
 {

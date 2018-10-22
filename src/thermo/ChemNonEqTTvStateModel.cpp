@@ -28,6 +28,8 @@
 #include "StateModel.h"
 #include "AutoRegistration.h"
 #include <eigen3/Eigen/Dense>
+#include "Thermodynamics.h"
+#include "Transport.h"
 
 using namespace Eigen;
 
