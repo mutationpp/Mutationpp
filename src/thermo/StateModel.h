@@ -55,6 +55,8 @@ namespace Mutation {
  * example, a mixture could be modeled using a single temperature or multiple
  * temperatures that represent the various energy modes in the mixture.  This
  * base class provides the framework for defining new state models.
+ *
+ * @todo include forward declaration for faster compiling
  */
 class StateModel
 {
@@ -263,6 +265,9 @@ public:
     
     /**
      * This function provides the total energy transfer source terms
+     *
+     * @todo loop over all energy equations making the source term
+     * for the total energy equal to zero
      */
     virtual void energyTransferSource(double* const p_omega)
     {
@@ -275,7 +280,11 @@ public:
     }
     
 protected:
-
+    /**
+    * @todo add a removeTransferTerm for the case wehen the
+    * source term is negative, e.g, solving Vibrational
+    * and Electronic energy equations
+    */
     void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
     {
         assert(i >= 0);
