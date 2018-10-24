@@ -1022,27 +1022,29 @@ template <>
 inline void Thermodynamics::convert<Y_TO_YE>(
         const double *const a, double *const b) const {
 
-    for (int i = 0; i < nElements(); ++i){
-        b[i] = 0.;
-    }
+    Eigen::Map<Eigen::VectorXd> Ye(b, nElements());
+    Eigen::VectorXd Y(nSpecies());
 
-    for (int i = 0; i < nElements(); ++i){
-        for (int j =0; j < nSpecies(); ++j){
-            b[i] += (elementMatrix()(j,i)* a[j]*atomicMass(i))/speciesMw(j);}}
+    Y =  Eigen::Map<const Eigen::ArrayXd>(a, nSpecies()) / speciesMw();
 
-    const double sum = std::accumulate(b, b + nElements(), 0.0);
+    Ye = m_element_matrix.transpose() * Y;
 
-    if (sum > 1.E-5){
-        for (int i = 0; i < nElements(); ++i)
-            b[i] /= sum;}
+    for(int i = 0; i < nElements(); ++i)
+        Ye(i) *= atomicMass(i);
+
+    Ye /= Ye.sum();
+
 }
 
 
-//template <>
-//inline void Thermodynamics::convert<Y_TO_XE>(
-//    const double *const a, double *const b) const {
-//
-//}
+template <>
+inline void Thermodynamics::convert<Y_TO_XE>(
+   const double *const a, double *const b) const {
+
+    convert<Y_TO_YE>(a, b);
+    convert<YE_TO_XE>(b, b);
+
+}
 /// @endcond
 
     } // namespace Thermodynamics

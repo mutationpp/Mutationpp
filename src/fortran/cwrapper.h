@@ -479,14 +479,6 @@ void NAME_MANGLE(convert_ye_to_xe)(
 void NAME_MANGLE(convert_ys_to_ye)(
         const double* species_y, double* elements_y);
 
-/**
- * Returns the number of elements
- *
- * @param element - number of elements
- */
-
-void NAME_MANGLE(number_of_elements)(int& element);
-
 #ifdef __cplusplus
 }
 #endif
