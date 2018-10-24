@@ -253,6 +253,42 @@ as follows.
 Note that the types of `Q1` and `Q2` can be any valid collision integral type.
 
 @subsection collision_types_pirani Pirani
+The phenomenological Pirani potential has been introduced in \cite Pirani2004, 
+taking the form
+\f[
+\phi = \epsilon_0 \big[ \frac{m}{n(x)-m} \big(\frac{1}{x}\big)^{n(x)} -
+\frac{n(x)}{n(x)-m} \big(\frac{1}{x}\big)^{m} \big],
+\f]
+where \f$ x = r/r_e\f$ and \f$n(x) = \beta + 4x^2\f$.  For netural-neutral and
+ion-neutral interactions, m has the value of 6 and 4, respectively.  The value
+of \f$\beta\f$ ranges from 6 to 10 depending on the "hardness" of the the 
+interacting electronic distribution densities and can be estimated as 
+\f[
+\beta = 6 + \frac{5}{s_1 + s_2},
+\f]
+where \f$s_1\f$ and \f$s_2\f$ are the softness values of the colliding partners
+1 and 2.  This is defined as the cubic root of the dipole polarizabilities of 
+the two species.  The remaining parameters, \f$r_e\f$ and \f$\epsilon_0\f$ must
+be either fit to match experimental observations or estimated based on correlations.
+Both options are available:
+\code{xml}
+<!-- Option 1: provide necessary parameters -->
+<Q11 type="Pirani" beta="7.2644" eps0="0.00798" re="3.621" />
+
+<!-- Option 2: estimate parameters
+<Q11 type="Pirani" />
+\endcode
+Laricchiuta et al. \cite Laricchiuta2007 provide the necessary correlation
+formulas for determining the missing parameters if option 2 is chosen.  The
+correlations rely on needing the [dipole polarizabilities](@ref collisions_polarizabilities) 
+of the interacting species and, for neutral-neutral interactions, the 
+[effective electrons](\ref collisions_effective_electrons) contributing to the 
+polarization of the neutral species.
+
+Curve-fits of the collision integrals computed using the Pirani potential have
+been provided in \cite Laricchiuta2007.  These are used to evaluate collision
+integrals using this potential, automatically taking into account the type of
+interaction and integral.
 
 @subsection collision_types_ratio ratio
 Use a ratio of another defined collision integral.
@@ -288,9 +324,102 @@ crashing.
 
 ----
 @section collisions_defaults Specifying default behavior
+Specifying collision integral data for every collision pair in your mixture may
+sound like a daunting task.  Chances are that most of the integrals you
+need are already provided in the database.  For the ones that aren't available
+already, the database provides a facility to specify default behavior by
+specifying the `defaults` node.
+\code{xml}
+<!-- Default collision integral data -->
+<defaults>
+    <!-- Neutral-Neutral interactions -->
+    <neutral-neutral>
+        <!-- Collision integral definitions -->
+    </neutral-neutral>
+    
+    <!-- Ion-Neutral interactions -->
+    <ion-neutral>
+        <!-- Collision integral definitions -->
+    </ion-neutral>
+    
+    <!-- Electron-Neutral interactions -->
+    <electron-neutral>
+        <!-- Collision integral definitions -->
+    </electron-neutral>
+    
+    <!-- Charged interactions -->
+    <charged>
+        <!-- Collision integral definitions -->
+    </charged>
+</defaults>
+\endcode
+
+The `defaults` node allows the user to configure how to provide default
+collision integrals for missing data, based on the four general types of 
+interactions: neutral-neutral, ion-neutral, electron-neutral, and charged.
+Whenever the user requests to load a specific integral, the library will first
+search the database for the explicit collision pair/integral kind requested. If
+the pair or integral type is not found explicitely, the library will then resort
+to the default integral provided in `defaults`, according to the type of 
+interaction specified by the pair.  This approach has several benefits:
+- The default behavior is self-documenting and easily tunable without writing
+new code or recompiling the library
+- Complex expressions can be created to find the most accurate collision model
+when data is missing
+- No extra work is required to add new species pairs if the default behavior is
+good enough.
+
+This last point is particularly valid in the case of charged interactions, for 
+which the screened Coulomb potential is nearly always a valid approximation.
+Therefore, all charged interaction pairs can be supported easily by setting
+\code{xml}
+<defaults>
+    <!-- Charged interactions -->
+    <charged>
+        <Q11 type="Debye-Huckel"/>
+        <Q12 type="Debye-Huckel"/>
+        <Q13 type="Debye-Huckel"/>
+        <Q13 type="Debye-Huckel"/>
+        <Q14 type="Debye-Huckel"/>
+        <Q15 type="Debye-Huckel"/>
+        <Q22 type="Debye-Huckel"/>
+        <Q23 type="Debye-Huckel"/>
+        <Q24 type="Debye-Huckel"/>
+        <Ast type="Debye-Huckel"/>
+        <Bst type="Debye-Huckel"/>
+        <Cst type="Debye-Huckel"/>
+    </charged>
+
+    <!-- Other interactions -->
+</defaults>
+\endcode
+Other cases can be envisaged as well.  For example, using the 
+[Langevin](@ref collision_types_langevin) model as default for all ion-neutral 
+interactions means that only the [dipole polarizability](\ref collisions_polarizabilities) 
+of the neutral species needs to be specified to add a new ion-neutral pair.
 
 ----
 @section collisions_global_options Global options
+The `global-options` node specifies options that act on the whole collision
+integral database.  For the moment, there are only two options that can be set.
+\code{xml}
+<global-options>
+    <tabulate Tmin="100" Tmax="50000" dT="100" />
+    <integral type="table" interpolator="Linear" clip="true"/>
+</global-options>
+\endcode
+
+The `tabulate` option instructs the database manager to tabulate all collision
+integrals after loading them.  The temperature grid used in the tabulation is
+specified through the `Tmin`, `Tmax`, and `dT` attributes which are the minimum
+and maximum temperatures, and the constant temperature spacing, respectively.
+
+The second option shown, `integral`, is used to specify global options for a 
+specific collision integral type.  In the example, the default `interoplator`
+and `clip` attributes for all [table](\ref collision_types_table) collision 
+integrals are set to `Linear` and `true` respectively.  Note that for the moment, 
+only attributes of [table](\ref collision_types_table) can be specified in this
+way.
 
 ----
 @section collisions_species_data Species data
@@ -333,5 +462,19 @@ is given below.
 \endcode
 
 @subsection collisions_effective_electrons Number of effective electrons in polarization
-
+The number of effective electrons in the polarization of a given species is used
+in the [Pirani](@ref collision_types_pirani) collision integral model.  These
+values are stored in the species database `effective-electrons`, following the
+example below.
+\code{xml}
+<effective-electrons>
+    <species name="C"    value="4.0"   />
+    <species name="C2"   value="6.00"  />
+    <species name="C2H"  value="8.11"  />
+    <species name="C2H2" value="10.00" />
+    <species name="C2H4" value="12.00" />
+</effective-electrons>
+\endcode
+The value of the effective electrons for new species can be estimated using the
+approach of Cambi et al. \cite Cambi1991.
 */
