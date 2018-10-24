@@ -4,11 +4,50 @@
 @tableofcontents
 
 @section collisions_intro Introduction
+The collision integral database is provided in the `data/transport/collisions.xml` file.
+This page documents how collision integral data is stored and configured.  In particular,
+- how to define [collision pairs](\ref collisions_pairs),
+- how to use different [collision integral models](\ref collisions_types),
+- how to tune the [default behavior](\ref collisions_defaults),
+- how to specify [global options](\ref collisions_global_options),
+- and finally, how to provide [species-specific data](\ref collisions_species_data) needed
+  for some collision integral models.
 
+All collision integral databases must be contained within a `collisions` XML element as
+follows.
+\code{xml}
+<collisions>
+    <!-- All data corresponding to collision pairs and integrals go here -->
+</collisions>
+\endcode
+
+----
 @section collisions_pairs Defining collision pairs
+The most basic node type which can be given as a child of `collisions` is a `pair`
+node, which specifies an individual collision pair.
+\code{xml}
+<pair s1="first species name" s2="second species name">
+    <!-- Specify models for each collision integral kind here -->
+</pair>
+\endcode
+The `pair` node has two attributes, `s1` and `s2`, which are the names of the two
+interacting species in the pair.  Child nodes can then be given which provide the
+data necessary to compute any of the collision integrals for that pair.  The format
+of the collision integral nodes is described next.
 
+----
 @section collisions_types Collision integral types
-
+Specific collision integral data are provided as XML nodes with the node tag as the 
+name of the collision integral kind.  For example, to specify the 
+\f$\overline{Q}^{(1,1)}\f$ integral for the N-O interaction pair, use
+\code{xml}
+<pair s1="N" s2="O">
+    <Q11 type="model" />
+</pair>
+\endcode
+where the `type` attribute is the collision integral model to use.  The attributes and
+possible child nodes or text needed in the collision integral XML node depends on the
+type of model being used.
 The following table summarizes the various collision integral types which are
 available.  Additional information, including their respective XML format, can
 be found in the following subsections.
@@ -30,6 +69,37 @@ type              | Description
 `ratio`           | Ratio of another integral
 `table`           | Tabulated data
 `warning`         | Prints a warning if used
+
+Regardless of the `type`, all collision integral nodes can specify the following 
+attributes.
+
+Attribute  | Description
+-----------|------------
+`accuracy` | The estimated accuracy of the integral in percent off true value
+`multpi`   | (`yes` or `no`) Should the integral be multipled by \f$\pi\f$?
+`ref`      | A reference for the data
+`units`    | The units of the integral provided by the data
+
+Note that while theoretically any name can be used as a tag for specifying collision
+integrals, the following names are reserved for use within the various transport 
+algorithms: `Q11`, `Q12`, `Q13`, `Q14`, `Q15`, `Q22`, `Q23`, `Q24`, `Ast`, `Bst`, and
+`Cst`.
+
+The following code snippet taken from the `collisions.xml` file provided with the library
+shows the specification of the collision integrals needed for the N2-N2 interaction.
+\code{xml}
+<pair s1="N2" s2="N2">
+    <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
+            300   600  1000  2000  4000  6000  8000 10000,
+          12.23 10.60  9.79  8.60  7.49  6.87  6.43  6.06 </Q11>
+    <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
+            300   600  1000  2000  4000  6000  8000 10000,
+          13.72 11.80 10.94  9.82  8.70  8.08  7.58  7.32 </Q22>
+</pair>
+\endcode
+
+Note that the values of B* and C* which are also need for the neutral-neutral interaction
+are not shown because they are specified through [default behaviour](\ref collisions_defaults).
 
 @subsection collision_types_bruno_11 Bruno-Eq(11)
 Implements the curve-fit found in Eq. (11) of Bruno et al. \cite Bruno2010,
@@ -216,10 +286,13 @@ crashing.
 <Q11 type="warning" value="1.0e-20"/>  
 \endcode
 
+----
 @section collisions_defaults Specifying default behavior
 
+----
 @section collisions_global_options Global options
 
+----
 @section collisions_species_data Species data
 Some of the collision integral models detailed above require additional information
 about individual species, such as their dipole polarizabilities.  These parameters are
