@@ -33,8 +33,10 @@ namespace Mutation {
     namespace Transfer {
 
 /**
- * Represents a coupling between chemistry and electrons.
+ * Represents a coupling between chemistry and electrons by
+ *  \f$ \dot{\omega _e} e^T_e \f$.
  **/
+
 class OmegaCE : public TransferModel
 {
 public:

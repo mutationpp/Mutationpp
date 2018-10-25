@@ -28,6 +28,8 @@
 #include "StateModel.h"
 #include "AutoRegistration.h"
 #include <eigen3/Eigen/Dense>
+#include "Thermodynamics.h"
+#include "Transport.h"
 
 using namespace Eigen;
 
@@ -94,38 +96,8 @@ public:
         // Compute the temperatures and make sure the variable set is implemented
         switch (vars) {
         case 0: {
-            // First step is to solve one nonlinear equation to get Tv from the
-            // vibrational energy density equation
-//            if (!getTFromRhoE(
-//                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0)) {
-//                std::cout << "was trying to compute Tv..." << std::endl;
-//                std::cout << "rhoe_v = " << p_energy[1] << std::endl;
-//                for (int i = 0; i < m_thermo.nSpecies(); ++i)
-//                    std::cout << m_thermo.speciesName(i) << p_mass[i] << std::endl;
-//                std::cout << std::endl;
-//            }
-//
-//            // Next compute the temperature using the total energy density
-//            m_Tel = m_Te = m_Tv;
-//
-//            if (!getTFromRhoE(
-//                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0)) {
-//                std::cout << "was trying to compute T..." << std::endl;
-//                for (int i = 0; i < m_thermo.nSpecies(); ++i)
-//                    std::cout << p_mass[i] << std::endl;
-//                std::cout << std::endl;
-//            }
-//
-//            m_Tr = m_T;
 
             solveEnergies(p_mass, p_energy);
-//            getTFromRhoE(
-//                Cvv(m_thermo), Ev(m_thermo), p_energy[1], m_Tv, mp_work1, 0.0);
-//            m_Tel = m_Te = m_Tv;
-//
-//            // Next compute the temperature using the total energy density
-//            getTFromRhoE(
-//                Cv(m_thermo), E(m_thermo, m_Tv), p_energy[0], m_T, mp_work1, 0.0);
 
             break;
         }
@@ -153,7 +125,11 @@ public:
             mp_X[i] /= conc;
         m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
-    
+    /**
+     *  Add proper
+     *   0: {species densities}, {total energy density, vib. energy density}
+     *   1: {species densities} and {T, Tv}
+     */
     void initializeTransferModel(Mutation::Mixture& mix)
     {
         typedef Factory<TransferModel> Factory;
@@ -255,7 +231,12 @@ public:
      	p_tag[3] = 0; p_tag[8] = 1; // Vibration excitation
      	p_tag[4] = 0; p_tag[9] = 1; // Electronic excitation
     }
-    
+  /**
+  * @brief Get temperatures from total energy by solving a non-linear system
+  *
+  * @param p_rhoi - "vector of the partial densities
+  * @param p_rhoe - total and internal mass energy
+  */
 
     void solveEnergies(const double* const p_rhoi, const double* const p_rhoe)
     {
@@ -302,115 +283,6 @@ public:
             std::cout << "Warning, didn't converge temperatures: f = " << f.norm() << std::endl;
     }
 
-    private:
-
-    /**
-     * Small helper class which provides wrapper to
-     * Thermodynamics::speciesCpOverR() to be used with getTFromRhoE().
-     */
-    
-    class Cv {
-    public:
-        Cv(const Thermodynamics& t) : thermo(t) {
-             p_cvt = new double [thermo.nSpecies()]; 
-             p_cvr = new double [thermo.nSpecies()]; 
-        }
-        ~Cv() {
-             delete [] p_cvt;
-             delete [] p_cvr;
-        }
-        void operator () (double T, double* const cv) const {
-          thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cvt, p_cvr, NULL, NULL);
-          int n_species = thermo.nSpecies();
-          for(int iCv = 0; iCv < n_species; ++iCv) 
-              cv[iCv] = p_cvt[iCv]+p_cvr[iCv]-1.0;
-          if(thermo.hasElectrons())
-              cv[0] = 0.0;
-        }
-
-    private:
-        const Thermodynamics& thermo;
-        double* p_cvt;
-        double* p_cvr;
-    }; // class Cp
-    
-    class Cvv {
-    public:
-        Cvv(const Thermodynamics& t) : thermo(t) {
-             p_cvt = new double [thermo.nSpecies()]; 
-             p_cvv = new double [thermo.nSpecies()];
-             p_cvel = new double [thermo.nSpecies()];
-        }
-        ~Cvv() {
-             delete [] p_cvt;
-             delete [] p_cvv;
-             delete [] p_cvel;
-        }
-        void operator () (double T, double* const cv) const {
-            thermo.speciesCpOverR(T, T, T, T, T, NULL, p_cvt, NULL, p_cvv, p_cvel);
-            for(int iCvv = 0; iCvv < thermo.nSpecies(); ++iCvv)
-                cv[iCvv] = p_cvv[iCvv] + p_cvel[iCvv];
-            if(thermo.hasElectrons())
-                cv[0] = p_cvt[0]-1.0;
-        }
-    private:
-        const Thermodynamics& thermo;
-	double* p_cvt;
-	double* p_cvv;
-	double* p_cvel;
-    }; // class Cpv
-
-    /**
-     * Small helper classes which provide wrapper to
-     * Thermodynamics::speciesHOverRT() to be used with getTFromRhoE().
-     */
-    
-    class E {
-    public:
-        E(const Thermodynamics& t, const double& T_vibration) : thermo(t) {
-            Tv = T_vibration;
-        }
-        void operator () (double T, double* const e) const {
-          thermo.speciesHOverRT(T, Tv, T, Tv, Tv, e, NULL, NULL, NULL, NULL, NULL);
-
-          int offset = (thermo.hasElectrons() ? 1 : 0);
-          for(int i = offset; i < thermo.nSpecies(); ++i)
-              e[i] -= 1.0;
-          if(thermo.hasElectrons())
-              e[0] -= Tv/T;
-
-        }
-    private:
-        const Thermodynamics& thermo;
-        double Tv;
-    }; // class E
-    
-    class Ev {
-    public:
-        Ev(const Thermodynamics& t) : thermo(t) { 
-             p_et  = new double [thermo.nSpecies()]; 
-             p_ev  = new double [thermo.nSpecies()]; 
-             p_eel = new double [thermo.nSpecies()]; 
-        }
-        ~Ev() {
-             delete [] p_et;
-             delete [] p_ev;
-             delete [] p_eel;
-        }
-        void operator () (double T, double* const e) const {
-            thermo.speciesHOverRT(T, T, T, T, T, NULL, p_et, NULL, p_ev, p_eel, NULL);
-            for(int iev = 0; iev < thermo.nSpecies(); ++iev){
-                e[iev] = p_ev[iev] + p_eel[iev];
-            if(thermo.hasElectrons())
-                e[0] = p_et[0]-1.0;
-            }
-        }
-    private:
-        const Thermodynamics& thermo;
-        double* p_et;
-        double* p_ev;
-        double* p_eel;
-    }; // class Ev
 
 private:
     double* mp_work1;

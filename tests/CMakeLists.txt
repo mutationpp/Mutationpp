@@ -28,6 +28,7 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_collision_integrals.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_convert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_diffusion_matrix.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp

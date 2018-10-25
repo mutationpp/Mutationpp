@@ -465,6 +465,23 @@ void NAME_MANGLE(mass_blowing_rate)(double* mdot)
 {
     p_mix->getMassBlowingRate(*mdot);
 }
+//==============================================================================
+void NAME_MANGLE(convert_ye_to_xe)(
+        const double* const element_y, double* const element_x)
+{
+    p_mix->convert<YE_TO_XE>(element_y, element_x);
+}
+//==============================================================================
+void NAME_MANGLE(convert_ys_to_ye)(
+        const double* species_y, double* elements_y)
+{
+
+    p_mix->convert<Y_TO_YE>(species_y, elements_y);
+}
+
+//==============================================================================
+
+
 
 
 

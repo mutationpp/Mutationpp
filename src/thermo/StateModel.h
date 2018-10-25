@@ -28,14 +28,15 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-#include "Thermodynamics.h"
+
 #include "Kinetics.h"
-#include "Transport.h"
 #include "TransferModel.h"
 
 namespace Mutation {
     namespace Thermodynamics {
 
+class Thermodynamics;
+class Transport;
 
 /**
  * @defgroup statemodels State Models
@@ -55,6 +56,9 @@ namespace Mutation {
  * example, a mixture could be modeled using a single temperature or multiple
  * temperatures that represent the various energy modes in the mixture.  This
  * base class provides the framework for defining new state models.
+ *
+ * @todo making mp_X and a EigenVector
+ *
  */
 class StateModel
 {
@@ -68,7 +72,9 @@ public:
     /**
      * Constructor initializes state.
      *
-     * @param ns - number of species
+     * @param thermo - thermodynamic object
+     * @param nenergy -number of energy equations
+     * @param nmass - number od mass equations
      */
     StateModel(ARGS thermo, const int nenergy, const int nmass)
         : m_thermo(thermo), m_nenergy(nenergy), m_nmass(nmass)
@@ -173,9 +179,13 @@ public:
     }
     
     /**
-     * Sets the mixture to an equilibrium state at the given temperature and
-     * pressure.  The elemental mole fractions may also be given, otherwise, the
+     * @brief Sets the mixture to an equilibrium state at the given temperature and
+     * pressure. The elemental mole fractions may also be given, otherwise, the
      * default mole fractions are used.
+     *
+     * @param T - temperature
+     * @param P - pressure
+     * @param p_Xe - "vector" for the elemental mole fractions
      */
     void equilibrate(double T, double P, double* const p_Xe = NULL)
     {
@@ -227,20 +237,6 @@ public:
     }
 
     /**
-     * Computes the vector of mixture averaged specific heats at constant
-     * pressure, \f$c_{p,m}=\left.\frac{\partial h_m}{\partial T_m}\right|_p\f$.
-     * Input vector should be at least nEnergyEqns() long.
-     */
-    //void getMixtureCpsMass(double* const cp);
-
-    /**
-     * Computes the species specific heats at constant pressure for each energy
-     * mode, \f$c_{p,im}=\left.\frac{\partial h_{im}}{\partial T_m}\right|_p\f$.
-     * Input vector should be at least nEnergyEqns()*nSpecies() long.
-     */
-    //virtual void getSpeciesCpsMass(double* const p_cp);
-
-    /**
      * Returns a vector of length n_species times n_energies with each corresponding
 	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
      * model. The first one is associated with the heavy particle translational temperature. 
@@ -271,6 +267,9 @@ public:
     
     /**
      * This function provides the total energy transfer source terms
+     *
+     * @todo loop over all energy equations making the source term
+     * for the total energy equal to zero
      */
     virtual void energyTransferSource(double* const p_omega)
     {
@@ -283,7 +282,11 @@ public:
     }
     
 protected:
-
+    /**
+    * @todo add a removeTransferTerm for the case wehen the
+    * source term is negative, e.g, solving Vibrational
+    * and Electronic energy equations
+    */
     void addTransferTerm(int i, Mutation::Transfer::TransferModel* p_term)
     {
         assert(i >= 0);
@@ -405,7 +408,6 @@ protected:
         m_transfer_models;
 private:
 
-   //double* mp_work1;
 
 }; // class StateModel
 

@@ -69,7 +69,12 @@ public:
 		delete [] mp_wrk1;
 		delete [] mp_wrk2;
 	};
-
+/**
+ * Computes the source terms of the Vibration-Chemistry energy transfer in \f$ [J/(m^3\cdot s)] \f$
+ *
+ * \f[ \Omega^{CV}_{mi} = \sum c_1 e^V_{mi} \dot{\omega}_i\f]
+ *
+ */
 	double source()
 	{
 		static int i_transfer_model = 0;
@@ -91,19 +96,19 @@ private:
 	double const compute_source_Candler();
 };
 
+ /**
+ * Non-preferential Model according to Candler with
+ *
+ * with \f$ c_1 \f$ equal to 1 for non-preferential models. For more information:
+ *
+ * G. V. Candler, MacCormack, Computation of weakly ionized hypersonic flows in thermochemical nonequilibrium, Journal of
+ * Thermophysics and Heat Transfer, 1991, 5(11):266
+ *
+ */
+
 double const OmegaCV::compute_source_Candler()
 {
-	/**
-	 * Non-preferential Model according to Candler with
-	 *
-	 * \f[ \Omega^{CV}_{mi} = \sum c_1 e^V_{mi} \dot{\omega}_i\f]
-	 *
-	 * with \f$ c_1 \f$ equal to 1 for non-preferential models. For more information:
-	 *
-	 * G. V. Candler, MacCormack, Computation of weakly ionized hypersonic flows in thermochemical nonequilibrium, Journal of
-	 * Thermophysics and Heat Transfer, 1991, 5(11):266
-	 *
-	 */
+
 
 	 // Getting Vibrational Energy
 	 m_mixture.speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);

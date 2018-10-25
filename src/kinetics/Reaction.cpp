@@ -354,8 +354,12 @@ void Reaction::determineType(const class Thermodynamics& thermo)
       }else {
     // ground electronic state reactions
     if (reactant_ion) {
-        if (product_ion)
-            m_type = CHARGE_EXCHANGE;
+        if (product_ion){
+            if (m_inert_e)
+                m_type = IONIZATION_E; // Assigning impact ionization to the production of double ionized species
+            else
+                m_type = CHARGE_EXCHANGE;}
+
         else {
             if (m_inert_e)
                 m_type = ION_RECOMBINATION_E;

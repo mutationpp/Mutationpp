@@ -459,8 +459,25 @@ void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars);
 void NAME_MANGLE(mass_blowing_rate)(double* mdot);
 
 /**
- * @}
+ * Converts the element mass fractions to element mole fractions.
+ *
+ * @param element_y - element mass fractions
+ * @param element_x - element mole fractions on return
  */
+void NAME_MANGLE(convert_ye_to_xe)(
+        const double* element_y, double* element_x);
+
+
+
+/**
+ * Converts the species mass fractions to element mass fractions.
+ *
+ * @param species_y - species mass fractions
+ * @param elements_y - element mass fractions
+ */
+
+void NAME_MANGLE(convert_ys_to_ye)(
+        const double* species_y, double* elements_y);
 
 #ifdef __cplusplus
 }

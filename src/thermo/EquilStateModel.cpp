@@ -26,6 +26,8 @@
  */
 
 #include "StateModel.h"
+#include "Thermodynamics.h"
+#include "Transport.h"
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -248,7 +250,6 @@ private:
 Utilities::Config::ObjectProvider<
     EquilStateModel, StateModel> equil_sm("Equil");
 
-
 /**
  * @ingroup statemodels
  *
@@ -261,24 +262,25 @@ Utilities::Config::ObjectProvider<
 class EquilTPStateModel : public EquilStateModel
 {
 public:
-    EquilTPStateModel(const Thermodynamics& thermo)
-        : EquilStateModel(thermo)
-    { }
+     EquilTPStateModel(const Thermodynamics& thermo)
+         : EquilStateModel(thermo)
+     { }
 
-    /**
-     * Sets the state of the equilibrium mixture given temperature and pressure.
-     */
-    virtual void setState(
-        const double* const p_T, const double* const p_P, const int vars = 1)
-    {
-        //assert(vars == 1);
-        EquilStateModel::setState(p_P, p_T, 1);
-    }
+     /**
+      * Sets the state of the equilibrium mixture given temperature and pressure.
+      */
+     virtual void setState(
+         const double* const p_T, const double* const p_P, const int vars = 1)
+     {
+          //assert(vars == 1);
+          EquilStateModel::setState(p_P, p_T, 1);
+     }
 };
 
 // Register the state model
 Utilities::Config::ObjectProvider<
     EquilTPStateModel, StateModel> equiltp_sm("EquilTP");
+
 
     } // namespace Thermodynamics
 } // namespace Mutation
