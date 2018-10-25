@@ -53,7 +53,7 @@ public:
     Reaction(
         const Mutation::Utilities::IO::XmlElement& node,
         const Mutation::Thermodynamics::Thermodynamics& thermo);
-    
+
     /**
      * Copy constructor.
      */
