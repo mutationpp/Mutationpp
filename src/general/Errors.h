@@ -59,7 +59,9 @@ public:
      * @param message The error message.
      */
     Error(const std::string& type) :
-        m_type(type)
+        m_type(type),
+        m_extra_info(),
+        m_formatted_message()
     {
         // Set this Error as the most recent
         lastError() = this;
@@ -69,6 +71,8 @@ public:
         // handler
         if (errorCount() == 1)
             terminateHandler() = std::set_terminate(terminateOnError);
+        
+        formatMessage();
     }
 
     /**
@@ -102,6 +106,7 @@ public:
     Error& operator<< (const T& in)
     {
         m_message_stream << in;
+        formatMessage();
         return *this;
     }
 
@@ -118,25 +123,8 @@ public:
      * and the optional (name, value) lines correspond to extra information
      * provided by addExtraInfo() or operator().
      */
-    virtual const char* what() throw()
-    {
-        try {
-            std::vector<std::pair<std::string, std::string> >::iterator it;
-
-            // Format the error message on demand
-            m_formatted_message = "\nM++ error: " + m_type + ".\n";
-            for (it = m_extra_info.begin(); it != m_extra_info.end(); ++it)
-                m_formatted_message += it->first + ": " + it->second + "\n";
-            m_formatted_message += m_message_stream.str() + "\n";
-
-            return m_formatted_message.c_str();
-
-        } catch (std::exception&) {
-            // In the unlikely event that the formatting actually throws an
-            // error, we need to have a backup plan.  Try to return unformatted
-            // message.
-            return m_message_stream.str().c_str();
-        }
+    virtual const char* what() const throw() {
+        return m_formatted_message.c_str();
     }
 
     /**
@@ -158,6 +146,7 @@ public:
             std::stringstream ss;
             ss << value;
             m_extra_info.push_back(make_pair(name, ss.str()));
+            formatMessage();
         } catch (std::exception&) {
             // In the unlikely event this throws an exception, just ignore the
             // extra info.  It is better to protect this exception and get some
@@ -195,6 +184,30 @@ public:
     friend void terminateOnError();
 
 private:
+
+    /**
+     * Creates a formatted error message.  The message is formatted as
+     *
+     * @code
+     * M++ error: <type>.
+     *   <name>: <value>
+     *   <message>
+     * @endcode
+     *
+     * where <type> and <message> correspond to the arguments in the constructor
+     * and the optional (name, value) lines correspond to extra information
+     * provided by addExtraInfo() or operator().
+     */
+    void formatMessage()
+    {
+        m_formatted_message = "\nM++ error: " + m_type + ".\n";
+        
+        std::vector<std::pair<std::string, std::string> >::iterator it;
+        for (it = m_extra_info.begin(); it != m_extra_info.end(); ++it)
+            m_formatted_message += it->first + ": " + it->second + "\n";
+        
+        m_formatted_message += m_message_stream.str() + "\n";
+    }
 
     /// Keeps track of the most recent Error.
     static Error*& lastError() {
