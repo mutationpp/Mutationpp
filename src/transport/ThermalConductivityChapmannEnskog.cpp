@@ -92,24 +92,6 @@ public:
 
         p_k[0] = 0.0;
         Map<ArrayXd>(p_k+k,nh) = (m_sys*m_alpha)/KB;
-
-        // Do we need to compute electron contributions?
-        // !!! This needs to be dealt with since the electron thermal diffusion
-        // ratios have been moved to electron sub system !!!
-//        if (k == 0)
-//            return;
-//
-//        // Compute the lambdas
-//        const ArrayXd& L01ei = m_collisions.L01ei();
-//        const ArrayXd& L02ei = m_collisions.L02ei();
-//        const Matrix3d& Lee  = m_collisions.Lee<3>();
-//        const double Te      = m_collisions.thermo().Te();
-//        const double Th      = m_collisions.thermo().T();
-//        const double Xe      = m_collisions.X()(0);
-//
-//        Map<ArrayXd>(p_k,ns) += 2.5*Te/Th*Xe*(Lee(2,2)*L01ei-Lee(1,2)*L02ei)/
-//            (Lee(1,1)*Lee(2,2)-Lee(1,2)*Lee(1,2));
-
     }
 
 private:
