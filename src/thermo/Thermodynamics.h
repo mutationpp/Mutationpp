@@ -1023,14 +1023,14 @@ inline void Thermodynamics::convert<Y_TO_YE>(
         const double *const a, double *const b) const {
 
     Eigen::Map<Eigen::VectorXd> Ye(b, nElements());
-    Eigen::VectorXd Y(nSpecies());
 
-    Y =  Eigen::Map<const Eigen::ArrayXd>(a, nSpecies()) / speciesMw();
+    Ye.setZero();
 
-    Ye = m_element_matrix.transpose() * Y;
+    for (int j = 0; j < nSpecies(); ++j)
+        Ye += (a[j]/speciesMw(j)) * elementMatrix().row(j);
 
-    for(int i = 0; i < nElements(); ++i)
-        Ye(i) *= atomicMass(i);
+    for (int i = 0; i < nElements(); ++i)
+            Ye(i) *= atomicMass(i);
 
     Ye /= Ye.sum();
 

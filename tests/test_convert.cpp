@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -40,25 +40,39 @@ TEST_CASE
 
     MIXTURE_LOOP
     (
-            Eigen::VectorXd Ys(mix.nSpecies());
-            Eigen::VectorXd rhoi(mix.nSpecies());
+        Eigen::VectorXd Ys(mix.nSpecies());
+        Eigen::VectorXd rhoi(mix.nSpecies());
 
-            Eigen::VectorXd Ye(mix.nElements());
-            Eigen::VectorXd Xe(mix.nElements());
+        Eigen::VectorXd Ye(mix.nElements());
+        Eigen::VectorXd Xe(mix.nElements());
 
         EQUILIBRATE_LOOP
         (
             mix.densities(rhoi.data());
 
             mix.convert<Mutation::Thermodynamics::RHO_TO_CONC>(rhoi.data(),Ys.data());
+
             mix.convert<Mutation::Thermodynamics::CONC_TO_Y>(Ys.data(),Ys.data());
+
+            CHECK(Ys.sum() == Approx(1.0).margin(tol));
+
             mix.convert<Mutation::Thermodynamics::Y_TO_X>(Ys.data(),Ys.data());
+
+            CHECK(Ys.sum() == Approx(1.0).margin(tol));
+
             mix.convert<Mutation::Thermodynamics::X_TO_Y>(Ys.data(),Ys.data());
+
+            CHECK(Ys.sum() == Approx(1.0).margin(tol));
+
             mix.convert<Mutation::Thermodynamics::Y_TO_YE>(Ys.data(),Ye.data());
+
+            CHECK(Ys.sum() == Approx(1.0).margin(tol));
+
             mix.convert<Mutation::Thermodynamics::YE_TO_XE>(Ye.data(),Xe.data());
 
-            for (int i = 0; i < mix.nElements(); ++i)
-                CHECK((Xe(i) - mix.getDefaultComposition(i))  == Approx(0.0).margin(tol));
+            CHECK(Ys.sum() == Approx(1.0).margin(tol));
+
+            CHECK( Xe.isApprox(Eigen::Map<const Eigen::VectorXd>(mix.getDefaultComposition(),mix.nElements())));
         )
     )
 }
