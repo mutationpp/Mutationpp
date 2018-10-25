@@ -23,7 +23,6 @@
 #include <catch/catch.hpp>
 
 using namespace Mutation;
-using namespace Mutation::Thermodynamics;
 using namespace Mutation::Kinetics;
 using namespace Mutation::Utilities::IO;
 using namespace Catch;
@@ -31,7 +30,7 @@ using namespace Catch;
 void checkReactionType(const std::string& formula, ReactionType type)
 {
     // Setup a shared thermo object for testing reaction types
-    static Thermodynamics::Thermodynamics thermo(
+    static Mutation::Thermodynamics::Thermodynamics thermo(
         "e- N Ar(1) Ar(2) N+ O O- O+ NO NO+ N2 N2+ O2", "RRHO", "ChemNonEq1T");
 
     XmlElement node(
