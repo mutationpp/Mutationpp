@@ -56,7 +56,7 @@ TEST_CASE
             for (int i = 0; i < 20; ++i) {
                 tmps.setConstant(500.0*i + 500.0);
                 mix.setState(rhoi.data(), tmps.data(), 1);
-                mix.thermalDiffusionRatios(chii.data());
+                mix.heavyThermalDiffusionRatios(chii.data());
                 CHECK(chii.sum() == Approx(0.0).margin(tol));
             }
         }
@@ -67,7 +67,7 @@ TEST_CASE
                 for (int k = 0; k < mix.nEnergyEqns(); ++k)
                     tmps[k] = T + 100.0*k*std::pow(-1.0,(double) k);
                 mix.setState(rhoi.data(), tmps.data(), 1);
-                mix.thermalDiffusionRatios(chii.data());
+                mix.heavyThermalDiffusionRatios(chii.data());
                 INFO("chii = " << chii);
                 CHECK(chii.sum() == Approx(0.0).margin(tol));
             }

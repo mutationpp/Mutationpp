@@ -183,8 +183,8 @@ public:
      */
     double soretThermalConductivity();
     
-    /// Returns the thermal diffusion ratios for each species.
-    void thermalDiffusionRatios(double* const p_k);
+    /// Returns the heavy thermal diffusion ratios for each species.
+    void heavyThermalDiffusionRatios(double* const p_k);
     
     /// Returns the multicomponent diffusion coefficient matrix.
     const Eigen::MatrixXd& diffusionMatrix();
@@ -355,10 +355,28 @@ public:
     void stefanMaxwell(
         const double* const p_dp, double* const p_V, double& E, int order = 1);
 
+    /**
+     * Computes the species diffusion velocities and ambipolar electric field 
+     * using the Ramshaw approximation of the generalized Stefan-Maxwell 
+     * equations and the supplied modified driving forces
+     *
+     * \f[ d^{'}_i = \frac{\nabla p_i}{n k_B T_h} - \frac{y_i p}{n k_B T_h}
+     *     \nabla \ln p + k^h_{Ti} \nabla \ln T_h + k^e_{Ti} \frac{T_h}{T_e}
+     *     \nabla \ln T_e \f]
+     *
+     * @param Th   - heavy particle translational temperature
+     * @param Te   - free electron translational temperature
+     * @param p_dp - the vector of modified driving forces \f$ d^{'}_i \f$
+     * @param p_V  - on return, the vector of diffusion velocities
+     * @param E    - on return, the ambipolar electric field
+     */
     void stefanMaxwell(double Th, double Te,
         const double* const p_dp, double* const p_V, double& E, int order = 1);
 
+    /// Computes the electron corrections for the Stefan-Maxwell equations.
     void smCorrectionsElectron(int order, Eigen::ArrayXd& phi);
+    
+    /// Computes the heavy corrections for the Stefan-Maxwell equations.
     void smCorrectionsHeavy(int order, Eigen::ArrayXd& phi);
         
     //==========================================================================
@@ -442,83 +460,68 @@ public:
     }
 
 
-
-    double sigmaParallel();
-//    /// Electric conductivity perpendicular to the magnetic field in S/m.
-    double sigmaPerpendicular();
-//    /// Electriic conductivity transverse to the magnetic field in S/m.
-    double sigmaTransverse();
-//
-//    /// Mean free path of the mixture in m.
+    /// Mean free path of the mixture in m.
     double meanFreePath();
-//    /// Mean free path of electrons in m.
+    /// Mean free path of electrons in m.
     double electronMeanFreePath();
-//    /// Thermal speed of species i in m/s
+    /// Thermal speed of species i in m/s
     double speciesThermalSpeed(const int& i) const;
-//    /// Average heavy particle thermal speed of mixture in m/s.
-   double averageHeavyThermalSpeed();
-//    /// Electron thermal speed of mixture in m/s.
+    /// Average heavy particle thermal speed of mixture in m/s.
+    double averageHeavyThermalSpeed();
+    /// Electron thermal speed of mixture in m/s.
     double electronThermalSpeed();
-//
-//    /// Electron-heavy collision frequency in 1/s.
+    /// Electron-heavy collision frequency in 1/s.
     double electronHeavyCollisionFreq();
-//
-//    /// Average collision frequency of heavy particles in mixture in 1/s.
+    /// Average collision frequency of heavy particles in mixture in 1/s.
     double averageHeavyCollisionFreq();
-//
-//    /// Coulomb mean collision time of the mixture in s.
+    /// Coulomb mean collision time of the mixture in s.
     double coulombMeanCollisionTime();
-//    /// Hall parameter.
+    /// Hall parameter.
     double hallParameter();
-//
-//    // Anisotropic Diffusion Coefficient
-    double parallelDiffusionCoefficient();
-    double perpDiffusionCoefficient();
-    double transverseDiffusionCoefficient();
-//
-//    // Anisotropic Thermal Diffusion Coefficient
-    double parallelThermalDiffusionCoefficient();
-    double perpThermalDiffusionCoefficient();
-    double transverseThermalDiffusionCoefficient();
-//
-//
-//    //Anisotropic Electron Thermal Conductivity
-    double parallelElectronThermalConductivity();
-    double perpElectronThermalConductivity();
-    double transverseElectronThermalConductivity();
-//
-//    // Thermal diffusion ratios
-    std::vector<double> parallelThermalDiffusionRatio2();
-    double parallelThermalDiffusionRatio();
-    std::vector<double> perpThermalDiffusionRatio2();
-    double perpThermalDiffusionRatio();
-    std::vector<double> transverseThermalDiffusionRatio2();
-    double transverseThermalDiffusionRatio();
-//    // Return ratios of anisotropic properties
-//    double ratioSigmaPerpPar();
-//    double ratioSigmaTransPar();
-//    double ratioLambdaPerpPar();
-//    double ratioLambdaTransPar();
-//    std::vector<double> ratiokTPerpPar();
-//    std::vector<double> ratiokTTransPar();
- double taueLambda();
- double taueLambdaBr();
-double perpLambdaeBr();
-double transLambdaeBr();
 
-double coefficientFriction();
-double perpfriccoeffBr();
-double transfriccoeffBr();
+    // @todo Determine if these functions are necessary
+    
+    // // Anisotropic Diffusion Coefficient
+    // double parallelDiffusionCoefficient();
+    // double perpDiffusionCoefficient();
+    // double transverseDiffusionCoefficient();
 
- double tauViscosity();
- double tauViscosityBr();
-double tauLambdaHeavy();
-double tauLambdaHeavyBr();
-double tauEnergy();
-double tauEnergyBr();
-double etaohmbraginskii();
-double transetaohmBr();
-double perpetaohmBr();
+    // // Anisotropic Thermal Diffusion Coefficient
+    // double parallelThermalDiffusionCoefficient();
+    // double perpThermalDiffusionCoefficient();
+    // double transverseThermalDiffusionCoefficient();
+
+    // //Anisotropic Electron Thermal Conductivity
+    // double parallelElectronThermalConductivity();
+    // double perpElectronThermalConductivity();
+    // double transverseElectronThermalConductivity();
+
+    // // Thermal diffusion ratios
+    // std::vector<double> parallelThermalDiffusionRatio2();
+    // double parallelThermalDiffusionRatio();
+    // std::vector<double> perpThermalDiffusionRatio2();
+    // double perpThermalDiffusionRatio();
+    // std::vector<double> transverseThermalDiffusionRatio2();
+    // double transverseThermalDiffusionRatio();
+
+    // double taueLambda();
+    // double taueLambdaBr();
+    // double perpLambdaeBr();
+    // double transLambdaeBr();
+
+    // double coefficientFriction();
+    // double perpfriccoeffBr();
+    // double transfriccoeffBr();
+
+    // double tauViscosity();
+    // double tauViscosityBr();
+    // double tauLambdaHeavy();
+    // double tauLambdaHeavyBr();
+    // double tauEnergy();
+    // double tauEnergyBr();
+    // double etaohmbraginskii();
+    // double transetaohmBr();
+    // double perpetaohmBr();
 
 
 private:
@@ -534,6 +537,8 @@ private:
 	 * F^h = \sum_{i=1}^{N_S} h_i \rho_i \sum_{j=1}^{N_S} D_{ij}\alpha_j,
 	 * \f]
 	 * where \f$\alpha_j\f$ is some species-valued vector.
+     * 
+     * @todo Document how this modifies the mp_wrk1 and mp_wrk2 arrays.
 	 *
 	 * @see equilibriumFickP
 	 * @see equilibriumFickT
