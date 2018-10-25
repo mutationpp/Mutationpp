@@ -56,7 +56,7 @@ static std::string uniqueFileName()
 //==============================================================================
 
 TemporaryFile::TemporaryFile() :
-    m_filename(uniqueFileName())
+    m_filename(uniqueFileName()), m_delete(true)
 {
     // Create the file
     if (!std::ofstream(m_filename.c_str()).is_open())
@@ -73,7 +73,7 @@ TemporaryFile::~TemporaryFile()
 {
     // Close and delete the file
     if (m_fstream.is_open()) m_fstream.close();
-    std::remove(m_filename.c_str());
+    if (m_delete) std::remove(m_filename.c_str());
 }
 
 //==============================================================================

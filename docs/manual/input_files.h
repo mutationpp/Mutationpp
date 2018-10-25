@@ -13,7 +13,7 @@ directory as follows:
   + __mixtures__ [mixture definitions](@ref mixtures)
   + __thermo__ [elemental](@ref elements) and species [thermodynamic databases](@ref thermodynamic_databases)
   + __transfer__ internal energy [transfer model databases](@ref transfer_databases)
-  + __transport__ [collision integral database](@ref collision_integrals)
+  + __transport__ @subpage collisions "collision integral database"
 
 @section input_location File location
 
@@ -455,31 +455,6 @@ resulting mechanism file `example.xml` is given below.
 
 </mechanism>
 \endcode
-
-----
-@section collision_integrals Collision Integrals
-
-Collision integral data is currently the only input data which does not use the
-[XML format](@ref simple_xml).  This will be updated in the future to allow a more
-expressive data format for a wide range of integrals.
-
-For now however, all collision integral data should be given in the
-`data/transport/heavy.dat` file.  For each binary interaction, the \f$\Omega_{ij}^{11}\f$,
-\f$\Omega_{ij}^{22}\f$, and \f$B^*_{ij}\f$ functions are expressed in terms of
-an exponential polynomial curve-fit versus temperature with units of Angstroms squared.
-
-\f[\Omega_{ij} = \exp[c_1(\ln T)^3 + c_2(\ln T)^2 + c_3(\ln T) + c_4] \f]
-
-An example entry in the `heavy.dat` file is given below for the binary collision
-of two Nitrogen molecules.
-
-@code{.unparsed}
-.N2-N2.
- -0.0065954     0.13921     -1.1559      6.9352
- -0.0087373     0.19482     -1.6023      8.1845
-          0           0           0      0.1398
-@endcode
-
 
 ----
 @section transfer_databases Energy Transfer Model Data

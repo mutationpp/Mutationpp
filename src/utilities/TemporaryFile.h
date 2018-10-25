@@ -54,6 +54,16 @@ public:
     /// Closes the file.
     void close() { m_fstream.close(); }
 
+    /**
+     * @brief Sets whether or not to delete the temporary file when the object
+     * is destroyed.
+     * 
+     * This can be useful for testing.
+     * 
+     * @param del Defaults to true.
+     */
+    void deleteOnDestruct(bool del) { m_delete = del; }
+
     /// Reopens the file
     void open();
 
@@ -73,6 +83,8 @@ private:
 
     std::string m_filename;
     std::fstream m_fstream;
+    bool m_delete;
+
 }; // class TemporaryFile
 
 } // namespace IO
