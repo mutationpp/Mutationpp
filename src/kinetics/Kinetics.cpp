@@ -29,7 +29,10 @@
 #include "Constants.h"
 #include "Utilities.h"
 
+#include <eigen3/Eigen/Dense>
+
 using namespace std;
+using namespace Eigen;
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 
@@ -212,9 +215,8 @@ void Kinetics::forwardRateCoefficients(double* const p_kf)
         return;
 
     mp_rates->update(m_thermo);
-    const double* const p_lnkf = mp_rates->lnkf();
-    for (int i = 0; i < nReactions(); ++i)
-        p_kf[i] = std::exp(p_lnkf[i]);
+    Map<ArrayXd>(p_kf, nReactions()) = 
+        Map<const ArrayXd>(mp_rates->lnkf(), nReactions()).exp();
 }
 
 //==============================================================================
@@ -225,32 +227,56 @@ void Kinetics::backwardRateCoefficients(double* const p_kb)
         return;
 
     mp_rates->update(m_thermo);
-    const double* const p_lnkb = mp_rates->lnkb();
-    for (int i = 0; i < nReactions(); ++i)
-        p_kb[i] = std::exp(p_lnkb[i]);
+    Map<ArrayXd>(p_kb, nReactions()) = 
+        Map<const ArrayXd>(mp_rates->lnkb(), nReactions()).exp();
 }
 
-/*
+
+//==============================================================================
+
+void Kinetics::forwardRatesOfProgress(double* const p_ropf)
+{
+    // Compute species concentrations (mol/m^3)
+    ArrayXd conc =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
+
+    forwardRatesOfProgress(conc.data(), p_ropf);
+}
+
 //==============================================================================
 
 void Kinetics::forwardRatesOfProgress(
-    const double T, const double* const p_conc, double* const p_ropf)
+    const double* const p_conc, double* const p_ropf)
 {
-    forwardRateCoefficients(T, p_ropf);
+    forwardRateCoefficients(p_ropf);
     m_reactants.multReactions(p_conc, p_ropf);
     m_thirdbodies.multiplyThirdbodies(p_conc, p_ropf);
 }
 
 //==============================================================================
 
-void Kinetics::backwardRatesOfProgress(
-    const double T, const double* const p_conc, double* const p_ropb)
+void Kinetics::backwardRatesOfProgress(double* const p_ropb)
 {
-    backwardRateCoefficients(T, p_ropb);
+    // Compute species concentrations (mol/m^3)
+    ArrayXd conc =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
+
+    backwardRatesOfProgress(conc.data(), p_ropb);
+}
+
+//==============================================================================
+
+void Kinetics::backwardRatesOfProgress(
+    const double* const p_conc, double* const p_ropb)
+{
+    backwardRateCoefficients(p_ropb);
     m_rev_prods.multReactions(p_conc, p_ropb);
     m_thirdbodies.multiplyThirdbodies(p_conc, p_ropb);
 }
 
+/*
 //==============================================================================
 
 void Kinetics::updateROP(
@@ -271,44 +297,24 @@ void Kinetics::updateROP(
 
 void Kinetics::netRatesOfProgress(double* const p_rop)
 {
-    // Special case of no reactions
-    if (nReactions() == 0) {
-        for (int i = 0; i < nReactions(); ++i)
-            p_rop[i] = 0.0;
-        return;
-    }
-
     // Compute species concentrations (mol/m^3)
-    const double mix_conc = m_thermo.numberDensity() / NA;
-    const double* const p_x = m_thermo.X();
-    for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        mp_wdot[i] = p_x[i] * mix_conc;
+    ArrayXd conc =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
     
-    // Update the forward and backward rate coefficients
-    mp_rates->update(m_thermo);
-    
-    // Compute forward ROP
-    const double* const lnkf = mp_rates->lnkf();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropf[i] = std::exp(lnkf[i]);
-    m_reactants.multReactions(mp_wdot, mp_ropf);
-    
-    // Compute reverse ROP
-    const double* const lnkb = mp_rates->lnkb();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropb[i] = std::exp(lnkb[i]);
-    m_rev_prods.multReactions(mp_wdot, mp_ropb);
-    
-    // Compute net ROP
-    for (int i = 0; i < nReactions(); ++i)
-        mp_rop[i] = mp_ropf[i] - mp_ropb[i];
-    
-    // Thirdbody efficiencies
-    m_thirdbodies.multiplyThirdbodies(mp_wdot, mp_rop);
-    
-    // Multiply by species molecular weights
-    for (int i = 0; i < nReactions(); ++i)
-        p_rop[i] = mp_rop[i];
+    netRatesOfProgress(conc.data(), p_rop);
+}
+
+//==============================================================================
+
+void Kinetics::netRatesOfProgress(
+    const double* const p_conc, double* const p_rop)
+{
+    forwardRatesOfProgress(p_conc, mp_ropf);
+    backwardRatesOfProgress(p_conc, mp_ropb);
+
+    Map<ArrayXd>(p_rop, nReactions()) = 
+        Map<ArrayXd>(mp_ropf, nReactions()) - Map<ArrayXd>(mp_ropb, nReactions());
 }
 
 /*
@@ -334,46 +340,22 @@ void Kinetics::netProductionRates(double* const p_wdot)
 {
     // Special case of no reactions
     if (nReactions() == 0) {
-        for (int i = 0; i < m_thermo.nSpecies(); ++i)
-            p_wdot[i] = 0.0;
+        std::fill(p_wdot, p_wdot + m_thermo.nSpecies(), 0);
         return;
     }
 
     // Compute species concentrations (mol/m^3)
-    const double mix_conc = m_thermo.numberDensity() / NA;
-    const double* const p_x = m_thermo.X();
-    for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        p_wdot[i] = p_x[i] * mix_conc;
+    Map<ArrayXd>(p_wdot, m_thermo.nSpecies()) =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
 
-    
-    // Update the forward and backward rate coefficients
-    mp_rates->update(m_thermo);
-    
-    // Compute forward ROP
-    const double* const lnkf = mp_rates->lnkf();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropf[i] = std::exp(lnkf[i]);
-    m_reactants.multReactions(p_wdot, mp_ropf);
-    
-    // Compute reverse ROP
-    const double* const lnkb = mp_rates->lnkb();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropb[i] = std::exp(lnkb[i]);
-    m_rev_prods.multReactions(p_wdot, mp_ropb);
-    
-    // Compute net ROP
-    for (int i = 0; i < nReactions(); ++i)
-        mp_rop[i] = mp_ropf[i] - mp_ropb[i];
-
-    // Thirdbody efficiencies
-    m_thirdbodies.multiplyThirdbodies(p_wdot, mp_rop);
+    netRatesOfProgress(p_wdot, mp_rop);
     
     // Sum all contributions from every reaction
     std::fill(p_wdot, p_wdot+m_thermo.nSpecies(), 0.0);
     m_reactants.decrSpecies(mp_rop, p_wdot);
     m_rev_prods.incrSpecies(mp_rop, p_wdot);
     m_irr_prods.incrSpecies(mp_rop, p_wdot);
-
 
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)

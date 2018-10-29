@@ -43,7 +43,7 @@ class TemporaryFile
 public:
 
     /// Opens a temporary filename which can be read and written to.
-    TemporaryFile();
+    TemporaryFile(const char* const extension = "");
 
     /// Close and delete the temporary file.
     virtual ~TemporaryFile();

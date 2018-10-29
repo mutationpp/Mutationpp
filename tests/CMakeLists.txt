@@ -35,6 +35,7 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_reactions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_mechanism.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_rates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_set_state.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_species.cpp

@@ -117,32 +117,56 @@ public:
      * Fills the vector ropf with the forward rate of progress variables for
      * each reaction \f$ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
      *
-     * @param T     the temperature in K
-     * @param conc  the species concentration vector in mol/m^3
-     * @param ropf  on return, the forward rates of progress in mol/m^3-s
+     * @param p_ropf  on return, the forward rates of progress in mol/m^3-s
      */
-    //void forwardRatesOfProgress(
-    //    const double T, const double* const p_conc, double* const p_ropf);
+    void forwardRatesOfProgress(double* const p_ropf);
+
+    /**
+     * Fills the vector ropf with the forward rate of progress variables for
+     * each reaction \f$ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
+     *
+     * @param p_conc  the species concentration vector in mol/m^3
+     * @param p_ropf  on return, the forward rates of progress in mol/m^3-s
+     */
+    void forwardRatesOfProgress(
+        const double* const p_conc, double* const p_ropf);
     
     /**
      * Fills the vector ropb with the backward rates of progress variables for
      * each reaction \f$ k_{b,j} \prod_i C_i^{\nu_{ij}^{"}} \Theta_{TB} \f$.
      *
-     * @param T     the temperature in K
+     * @param ropb  on return, the backward rates of progress in mol/m^3-s
+     */
+    void backwardRatesOfProgress(double* const p_ropb);
+
+    /**
+     * Fills the vector ropb with the backward rates of progress variables for
+     * each reaction \f$ k_{b,j} \prod_i C_i^{\nu_{ij}^{"}} \Theta_{TB} \f$.
+     *
      * @param conc  the species concentration vector in mol/m^3
      * @param ropb  on return, the backward rates of progress in mol/m^3-s
      */
-    //void backwardRatesOfProgress(
-    //    const double T, const double* const p_conc, double* const p_ropb);
+    void backwardRatesOfProgress(
+        const double* const p_conc, double* const p_ropb);
     
     /**
      * Fills the vector rop with the net rates of progress for each reaction
      * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
      *
-     * @param rop   on return, the net rates of progress in mol/m^3-s
+     * @param p_rop on return, the net rates of progress in mol/m^3-s
      */
     void netRatesOfProgress(double* const p_rop);
+
+    /**
+     * Fills the vector rop with the net rates of progress for each reaction
+     * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
+     * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
+     *
+     * @param p_conc the species concentration vector in mol/m^3
+     * @param p_rop on return, the net rates of progress in mol/m^3-s
+     */
+    void netRatesOfProgress(const double* const p_conc, double* const p_rop);
     
     /**
      * Fills the vector wdot with the net species production rates due to the
