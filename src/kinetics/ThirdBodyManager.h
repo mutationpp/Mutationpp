@@ -28,8 +28,11 @@
 #ifndef KINETICS_THIRDBODYMANAGER_H
 #define KINETICS_THIRDBODYMANAGER_H
 
+#include <numeric>
 #include <vector>
 #include <utility>
+
+#include <iostream>
 
 namespace Mutation {
     namespace Kinetics {
@@ -104,9 +107,7 @@ public:
      */
     void multiplyThirdbodies(const double* const p_s, double* const p_r) const
     {
-        double sum = 0.0;
-        for (size_t i = m_offset; i < m_ns; ++i)
-            sum += p_s[i];
+        double sum = std::accumulate(p_s+m_offset, p_s+m_ns, 0.0);
         
         std::vector<PartialThirdbodyEffs>::const_iterator iter = m_effs.begin();
         for ( ; iter != m_effs.end(); ++iter)

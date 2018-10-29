@@ -29,7 +29,7 @@ namespace IO {
 
 //==============================================================================
 
-static std::string uniqueFileName()
+static std::string uniqueFileName(const char* const extension)
 {
     // List of characters to use in the file name
     const std::string char_set =
@@ -48,6 +48,7 @@ static std::string uniqueFileName()
             lfsr =  (lfsr >> 1) | (bit << 15);
             name += char_set[lfsr % char_set.length()];
         }
+        name += extension;
     } while (std::ifstream(name.c_str()).is_open());
 
     return name;
@@ -55,8 +56,8 @@ static std::string uniqueFileName()
 
 //==============================================================================
 
-TemporaryFile::TemporaryFile() :
-    m_filename(uniqueFileName()), m_delete(true)
+TemporaryFile::TemporaryFile(const char* const extension) :
+    m_filename(uniqueFileName(extension)), m_delete(true)
 {
     // Create the file
     if (!std::ofstream(m_filename.c_str()).is_open())
