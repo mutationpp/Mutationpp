@@ -14,10 +14,10 @@ install:
 
 jobs:
   include:
-    - stage: Build
+    - stage: build
         script: 
           - mkdir build; cd build
           - cmake -DENABLE_TESTING:BOOL=ON ..
           - make install
-    -stage: Test
+    -stage: test
         script: ctest -V
