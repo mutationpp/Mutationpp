@@ -12,16 +12,8 @@ install:
   - export MPP_DIRECTORY=$PWD
   - python scripts/install_dependencies.py -j 1
 
-stages:
-  - build
-  - test
-
-jobs:
-  include:
-    - stage: build
-        script: 
-          - mkdir build; cd build
-          - cmake -DENABLE_TESTING:BOOL=ON ..
-          - make install
-    -stage: test
-        script: ctest -V
+script: 
+  - mkdir build; cd build
+  - cmake -DENABLE_TESTING:BOOL=ON ..
+  - make install
+  - ctest -V
