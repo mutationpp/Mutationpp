@@ -12,6 +12,10 @@ install:
   - export MPP_DIRECTORY=$PWD
   - python scripts/install_dependencies.py -j 1
 
+stages:
+  - build
+  - test
+
 jobs:
   include:
     - stage: build
