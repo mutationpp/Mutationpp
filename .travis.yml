@@ -1,1 +1,11 @@
 language: C++
+
+compiler:
+  - gcc
+  - clang
+
+script: 
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j6
