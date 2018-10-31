@@ -43,10 +43,11 @@ using namespace Mutation::Utilities;
  * @page bprime B' Solver (bprime)
  * __Usage__:
  *
- *    bprime \f$T_1\f$ \f$T_2\f$ \f$\Delta T\f$ \f$p\f$ \f$B'_g\f$ mixture BL Pyrolysis
+ *    bprime \f$-T\f$ \f$T_1\f$:\f$\Delta T\f$:\f$T_2\f$ \f$-p\f
+ *    \f$p\f$ \f$-b\f \f$B'_g\f$ \f$-m\f mixture \f$-bl\f BL \f$-py\f Pyrolysis
  *
  * This program generates a so-called "B-prime" table for a given temperature
- * range and stepsize in K, a fixed pressure in atm, a value of \f$B'_g\f$
+ * range and stepsize in K, a fixed pressure in Pa, a value of \f$B'_g\f$
  * (pyrolysis mass flux, nondimensionalized by the boundary layer edge mass
  * flux), a given mixture name.  Currently, this program assumes the char
  * composition to be solid graphite (which must be included in the mixture file).
@@ -259,13 +260,9 @@ int main(int argc, char* argv[])
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
     
-    Eigen::VectorXd p_Yke (ne);
-    Eigen::VectorXd p_Ykg (ne);
-    Eigen::VectorXd p_Xw (ns);
-
-    p_Yke.setZero();
-    p_Ykg.setZero();
-    p_Xw.setZero();
+    std::vector<double> p_Yke (ne,0);
+    std::vector<double> p_Ykg (ne,0);
+    std::vector<double> p_Xw (ns,0);
 
     // Run conditions
     double T1 = opts.T1;
