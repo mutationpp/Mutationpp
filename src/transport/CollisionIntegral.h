@@ -172,6 +172,19 @@ protected:
 	    const std::string& species,
 	    const std::string units = "",
 	    double def = -1.0);
+	
+	/**
+	 * Returns the alias of this species in the collision integral database.
+	 * If there is no alias found, then the name is returned.
+	 * 
+	 * @param root Root XMLElement representing the collision integral
+	 * database.
+	 * @param species The species.
+	 * @return std::string The alias name.
+	 */
+	std::string speciesAlias(
+		Mutation::Utilities::IO::XmlElement& root,
+		const std::string& species);
 
 private:
 
