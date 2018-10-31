@@ -40,7 +40,7 @@ TEST_CASE
 
     SECTION("Catalysis Gamma Homonuclear Reactions.")
     {
-/*        // Setting up M++
+        // Setting up M++
         MixtureOptions opts("o2_gsi_RRHO_ChemNonEq1T");
         Mixture mix(opts);
         const size_t ns = mix.nSpecies();
@@ -79,10 +79,10 @@ TEST_CASE
                 << wdot(i) << ".\n");
                 CHECK(wdot(i) == Approx(omega(i)).epsilon(tol));
             }
-        }*/
+        }
     }
 
-    SECTION("Catalysis Gamma Heteronuclear Reactions Single Temperature.")
+/*    SECTION("Catalysis Gamma Heteronuclear Reactions Single Temperature.")
     {
         // Setting up M++
         MixtureOptions opts("air5_gsi_RRHO_ChemNonEq1T");
@@ -323,6 +323,6 @@ TEST_CASE
                 CHECK(wdot(i) == Approx(omega(i)).epsilon(tol));
             }
         }
-    }
+    }*/
 
 }
