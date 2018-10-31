@@ -1,7 +1,7 @@
 /**
- * @file WallProductionTerms.h
+ * @file SurfaceRadiation.h
  *
- * @brief Declaration of abstract WallProductionTerms class.
+ * @brief Declaration of SurfaceRadiation class.
  */
 
 /*
@@ -26,69 +26,65 @@
  */
 
 
-#ifndef WALL_PRODUCTION_TERMS_H
-#define WALL_PRODUCTION_TERMS_H
+#ifndef SURFACE_RADIATION_H
+#define SURFACE_RADIATION_H
 
 #include <eigen3/Eigen/Dense>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
-namespace Mutation { namespace Transport { class Transport; }}
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class GSIReaction;
-class GSIRateManager;
-class WallState;
-class SurfaceProperties;
-class WallProductionTerms;
+class SurfaceState;
 
-/**
- * Structure which stores the necessary inputs for the
- * WallProductionTerms class.
- */
-struct DataWallProductionTerms {
-    Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    const Mutation::Transport::Transport& s_transport;
-    const std::string& s_gsi_mechanism;
-    const Mutation::Utilities::IO::XmlElement& s_node_prod_terms;
-    const SurfaceProperties& s_surf_props;
-    const WallState& s_wall_state;
-    std::vector<WallProductionTerms*>* sp_surf_prod;
-    const double* const sp_pres;
-};
-
-//==============================================================================
 /*
- *  Abstract class
+ *  Surface Radiation class
  */
-class WallProductionTerms
+class SurfaceRadiation
 {
 public:
-//==============================================================================
-    typedef const DataWallProductionTerms& ARGS;
 
-//==============================================================================
     // Constructor
-    WallProductionTerms(ARGS args){}
+    SurfaceRadiation(
+        Mutation::Thermodynamics::Thermodynamics& thermo,
+        const Mutation::Utilities::IO::XmlElement& xml_surf_rad,
+        const SurfaceState& surf_state,
+        bool gas_rad_on);
 
 //==============================================================================
-	/// Returns name of this type.
-	static std::string typeName() { return "WallProductionTerms"; }
+
+    ~SurfaceRadiation();
 
 //==============================================================================
-    virtual ~WallProductionTerms(){}
+
+    double surfaceNetRadiativeHeatFlux();
 
 //==============================================================================
-    virtual void productionRate(Eigen::VectorXd& lv_mass_prod_rate) = 0;
+
+    void gasRadiativeHeatFlux(const double& gas_rad_heat_flux){
+        if (is_gas_rad_on) m_gas_rad_heat_flux = gas_rad_heat_flux;
+    }
 
 //==============================================================================
-    virtual const std::string& getWallProductionTermTag() const = 0;
 
+private:
+    const int pos_T_trans;
+    const int pos_E;
+
+    const bool is_gas_rad_on;
+
+    double m_eps;
+    double m_T_env;
+    double m_gas_rad_heat_flux;
+
+    const double m_stef_bolt_const;
+
+    const SurfaceState& m_surf_state;
 };
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // WALL_PRODUCTION_TERMS_H
+#endif // SURFACE_RADIATION_H

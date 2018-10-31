@@ -1,7 +1,7 @@
 /**
- * @file SurfaceProperties.h
+ * @file SurfaceChemistry.h
  *
- * @brief  Purely virtual class SurfaceProperties.
+ * @brief Class which takes care of the surface chemistry.
  */
 
 /*
@@ -26,85 +26,77 @@
  */
 
 
-#ifndef SURFACE_PROPERTIES_H
-#define SURFACE_PROPERTIES_H
+#ifndef SURFACE_CHEMISTRY_H
+#define SURFACE_CHEMISTRY_H
 
 #include <eigen3/Eigen/Dense>
+#include <string>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-/**
- * Structure which stores the necessary inputs for the SurfaceProperties class.
- */
-struct DataSurfaceProperties
-{
-    const Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    const Mutation::Utilities::IO::XmlElement& s_node_surf_props;
-};
+class GSIReaction;
+class GSIRateManager;
+class SurfaceState;
 
 //==============================================================================
-
-class SurfaceProperties
+/**
+ *  Class which ...
+ */
+class SurfaceChemistry
 {
 public:
-	/**
-	 * Structure containg the information needed by the SurfaceProperties
-     * classes.
-	 */
-    typedef const DataSurfaceProperties& ARGS;
+    // Constructor
+    SurfaceChemistry(
+        Mutation::Thermodynamics::Thermodynamics& thermo,
+        const Mutation::Transport::Transport& transport,
+        const std::string& gsi_mechanism,
+        const Mutation::Utilities::IO::XmlElement& xml_surf_chem,
+        const SurfaceState& surf_state);
 
 //==============================================================================
     /**
-     * Returns name of this type.
-	 */
-	static std::string typeName() { return "SurfaceProperties"; }
-
-//==============================================================================
-
-    /**
-     * Default Constructor.
+     * Default destructor
      */
-    SurfaceProperties(ARGS args){ }
-
-//==============================================================================
-
-    /**
-     * Default Destructor.
-     */
-    virtual ~SurfaceProperties(){ }
+    ~SurfaceChemistry();
 
 //==============================================================================
     /**
-     * Returns the index associated with the surface species. It is always
-     * number of gas species plus the surface phase index.
+     * Chemical source term per kg
      */
-    virtual int surfaceSpeciesIndex(const std::string& str_sp) const {
-        return -1;
+    void surfaceReactionRates(Eigen::VectorXd& v_mass_chem_rate) const;
+
+//==============================================================================
+
+    void surfaceReactionRatesPerReaction(Eigen::VectorXd& v_rate_per_reaction);
+
+//==============================================================================
+    /**
+     * What do I do if these are zero!
+     */
+    int nSurfaceReactions();
+
+//==============================================================================
+
+private:
+    void addReaction(GSIReaction* gsi_reaction){
+        mv_reaction.push_back(gsi_reaction);
     }
 
-//==============================================================================
-    /**
-     * Returns the gas phase species associated with the surface species.
-     */
-    virtual int surfaceToGasIndex(const int& i_surf_species) const {
-        return -1;
-    }
+private:
+    const size_t m_ns;
 
-//==============================================================================
-    /**
-     * Returns the number of surface species.
-     */
-    virtual size_t nSurfaceSpecies() const { return 0; }
+    std::string m_reaction_type;
 
-//==============================================================================
-
+    std::vector<GSIReaction*> mv_reaction;
+    GSIRateManager* mp_rate_manager;
 };
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // SURFACE_PROPERTIES_H
+#endif // SURFACE_CHEMISTRY_H

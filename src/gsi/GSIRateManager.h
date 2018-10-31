@@ -35,8 +35,7 @@ namespace Mutation {
     namespace GasSurfaceInteraction {
 
 class GSIReaction;
-class SurfaceProperties;
-class WallState;
+class SurfaceState;
 
 //==============================================================================
 
@@ -45,8 +44,7 @@ class WallState;
  */
 struct DataGSIRateManager {
     const Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    const SurfaceProperties& s_surf_props;
-    const WallState& s_wall_state;
+    const SurfaceState& s_surf_state;
     const std::vector<GSIReaction*>& s_reactions;
 };
 
@@ -68,20 +66,25 @@ public:
 	/// Returns name of this type.
 	static std::string typeName() { return "GSIRateManager"; }
 
+//==============================================================================
+
     /**
      * Constructor of the abstract base class, taking as input a structure
      * of type DataGSIRateManager.
      */
     GSIRateManager(ARGS args)
        : m_thermo(args.s_thermo ),
-         m_surf_props(args.s_surf_props ),
-         m_wall_state(args.s_wall_state ),
+         m_surf_state(args.s_surf_state ),
          v_reactions(args.s_reactions ) { }
+
+//==============================================================================
 
     /**
      * Destructor
      */
     virtual ~GSIRateManager(){ };
+
+//==============================================================================
 
     /**
      * This purely virtual function returns the surface production rates
@@ -91,13 +94,23 @@ public:
      */
     virtual Eigen::VectorXd computeRate() = 0;
 
+//==============================================================================
+
+    virtual Eigen::VectorXd computeRatePerReaction(){
+        throw NotImplementedError("GSIRateManager::computeRatePerReaction");
+    }
+
+//==============================================================================
+
+    virtual int nSurfaceReactions(){
+        throw NotImplementedError("GSIRateManager::nSurfaceReactions");
+    }
+
+//==============================================================================
 protected:
-
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    const SurfaceProperties& m_surf_props;
-    const WallState& m_wall_state;
+    const SurfaceState& m_surf_state;
     const std::vector<GSIReaction*>& v_reactions;
-
 };
 
     } // namespace GasSurfaceInteraction

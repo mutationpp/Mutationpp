@@ -427,15 +427,15 @@ void NAME_MANGLE(source_energy_transfer)
 }
 
 //==============================================================================
-void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars)
+void NAME_MANGLE(set_surface_state)(double* v1, double* v2, int* vars)
 {
-     p_mix->setWallState(v1, v2, *vars);
+     p_mix->setSurfaceState(v1, v2, *vars);
 }
 
 //==============================================================================
 void NAME_MANGLE(wall_production_rates)(double* const v1)
 {
-     p_mix->surfaceProductionRates(v1);
+     p_mix->surfaceReactionRates(v1);
 }
 
 //==============================================================================
@@ -447,7 +447,7 @@ void NAME_MANGLE(set_diffusion_model)(double* xi_edge, double* dx)
 //==============================================================================
 void NAME_MANGLE(set_cond_heat_flux)(double* T_edge, double* dx)
 {
-     p_mix->setConductiveHeatFluxModel(T_edge, *dx);
+     p_mix->setGasFourierHeatFluxModel(T_edge, *dx);
 }
 //==============================================================================
 void NAME_MANGLE(solve_surface_balance)()
@@ -456,9 +456,9 @@ void NAME_MANGLE(solve_surface_balance)()
 }
 
 //==============================================================================
-void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars)
+void NAME_MANGLE(get_surface_state)(double* v1, double* v2, int* vars)
 {
-     p_mix->getWallState(v1, v2, *vars);
+     p_mix->getSurfaceState(v1, v2, *vars);
 }
 //==============================================================================
 void NAME_MANGLE(mass_blowing_rate)(double* mdot)

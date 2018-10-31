@@ -1,8 +1,7 @@
 /**
- * @file MassBlowingRateAblation.cpp
+ * @file SolidProperties.h
  *
- * @brief Class which computes the mass blowing flux produced due to
- *        ablation reactions.
+ * @brief  Purely virtual class SurfaceProperties.
  */
 
 /*
@@ -27,64 +26,53 @@
  */
 
 
+#ifndef SOLID_PROPERTIES_H
+#define SOLID_PROPERTIES_H
+
 #include <eigen3/Eigen/Dense>
 
-#include "Thermodynamics.h"
-#include "Utilities.h"
 
-#include "SurfaceChemistry.h"
-#include "MassBlowingRate.h"
-
-using namespace Eigen;
-
-using namespace Mutation::Utilities::Config;
+namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class MassBlowingRateAblation : public MassBlowingRate
+class SolidProperties
 {
 public:
-    MassBlowingRateAblation(ARGS args)
-        : mv_wrk(args.s_thermo.nSpecies()),
-          m_surf_chem(args.s_surf_chem)
-    {}
+    /**
+     * Default Constructor.
+     */
+    SolidProperties(
+        const Mutation::Utilities::IO::XmlElement& xml_solid_props);
 
 //==============================================================================
+
     /**
-     * Destructor
+     * Default Destructor.
      */
-    ~MassBlowingRateAblation(){}
+    ~SolidProperties(){}
 
 //==============================================================================
+
     /**
-     * This function returns the mass blowing flux in kg/m^2-s as the sum of
-     * the heterogeneous reactions production rates on the surface.
+     *
      */
-    double computeBlowingFlux(){
-        m_surf_chem.surfaceReactionRates(mv_wrk);
-        return mv_wrk.sum();
-    }
+    double getPhiRatio() const { return m_phi; }
+//==============================================================================
+
+    /**
+     *
+     */
+    double getEnthalpyVirginMaterial() const { return m_h_v; }
 
 //==============================================================================
-    /**
-     * This function returns the mass blowing flux in kg/m^2-s as the sum of
-     * the heterogeneous reactions production rates on the surface
-     * given the chemical production rates for all species.
-     */
-    double computeBlowingFlux(const Eigen::VectorXd& v_chem_rates){
-        return v_chem_rates.sum();
-    }
-
 private:
-    const SurfaceChemistry& m_surf_chem;
-
-    VectorXd mv_wrk;
+    double m_phi;
+    double m_h_v;
 };
-
-ObjectProvider<
-    MassBlowingRateAblation, MassBlowingRate>
-    mass_blowing_rate_ablation("isOn");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
+
+#endif // SOLID_PROPERTIES_H

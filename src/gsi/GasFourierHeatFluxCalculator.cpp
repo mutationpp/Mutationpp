@@ -1,8 +1,8 @@
 /**
- * @file DiffusionVelocityCalculator.cpp
+ * @file GasFourierHeatFluxCalculator.cpp
  *
- * @brief Class which computes the diffusion velocities needed by
- *        the surface balances.
+ * @brief Class which computes the gas heat flux needed by
+ *        the surface energy balances.
  */
 
 /*
@@ -31,64 +31,62 @@
 #include "Thermodynamics.h"
 #include "Transport.h"
 
-#include "DiffusionVelocityCalculator.h"
+#include "GasFourierHeatFluxCalculator.h"
 
 using namespace Eigen;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-DiffusionVelocityCalculator::DiffusionVelocityCalculator(
+GasFourierHeatFluxCalculator::GasFourierHeatFluxCalculator(
     const Mutation::Thermodynamics::Thermodynamics& thermo,
     Mutation::Transport::Transport& transport)
-        : mv_dxidx(thermo.nSpecies()),
-          mv_mole_frac_edge(thermo.nSpecies()),
+        : mv_dTdx(thermo.nEnergyEqns()),
+          mv_T_edge(thermo.nEnergyEqns()),
+          mv_lambda(thermo.nEnergyEqns()),
           m_transport(transport),
           m_dx(0.),
-          m_is_diff_set(false)
+          m_is_cond_set(false)
 { }
 
 //==============================================================================
 
-DiffusionVelocityCalculator::~DiffusionVelocityCalculator(){}
+GasFourierHeatFluxCalculator::~GasFourierHeatFluxCalculator(){}
 
 //==============================================================================
 
-void DiffusionVelocityCalculator::setDiffusionModel(
-    const VectorXd& v_mole_frac_edge, const double& dx)
+void GasFourierHeatFluxCalculator::setGasFourierHeatFluxModel(
+    const VectorXd& v_T_edge, const double& dx)
 {
-    mv_mole_frac_edge = v_mole_frac_edge;
+    mv_T_edge = v_T_edge;
 
     if (dx <= 0.) {
     	throw LogicError()
-        << "Calling DiffusionVelocityCalculator::setDiffusionModel() with a "
-        << "distance less or equal to zero. The distance dx should always be "
-           "positive.";
+        << "Calling GasFourierHeatFluxCalculator::setGasFourierHeatFluxModel()"
+        << " with a distance less or equal to zero. The distance dx should "
+        << "always be positive.";
     }
     m_dx = dx;
 
-    m_is_diff_set = true;
+    m_is_cond_set = true;
 }
 
 //==============================================================================
 
-void DiffusionVelocityCalculator::computeDiffusionVelocities(
-    const VectorXd& v_mole_frac,
-    VectorXd& v_diff_velocities)
+double GasFourierHeatFluxCalculator::computeGasFourierHeatFlux(
+    const VectorXd& v_T)
 {
-    if (!m_is_diff_set) {
+    if (!m_is_cond_set) {
     	throw LogicError()
-        << "Calling DiffusionVelocityCalculator::computeDrivingForces() before "
-        << "calling DiffusionVelocityCalculator::setDiffusionCalculator().";
+        << "Calling GasFourierHeatFluxCalculator::"
+        << "HeatFluxCalculator() before "
+        << "calling GasFourierHeatFluxCalculator::"
+        << "setGasFourierHeatFluxModel().";
     }
 
-    mv_dxidx = (v_mole_frac - mv_mole_frac_edge)/m_dx;
-
-    double electric_field = 0.E0;
-    m_transport.stefanMaxwell(
-        mv_dxidx.data(),
-        v_diff_velocities.data(),
-        electric_field);
+    mv_dTdx = (v_T - mv_T_edge)/m_dx;
+    m_transport.frozenThermalConductivityVector(mv_lambda.data());
+    return mv_lambda.dot(mv_dTdx);
 }
 
     } // namespace GasSurfaceInteraction

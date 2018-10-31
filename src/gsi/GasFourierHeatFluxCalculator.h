@@ -1,7 +1,7 @@
 /**
- * @file DiffusionVelocityCalculator.h
+ * @file GasFourierHeatFluxCalculator.h
  *
- * @brief Declaration of DiffustionVelocityCalculator class.
+ * @brief Declaration of GasFourierHeatFluxCalculator class.
  */
 
 /*
@@ -26,8 +26,8 @@
  */
 
 
-#ifndef DIFFUSION_VELOCITY_CALCULATOR_H
-#define DIFFUSION_VELOCITY_CALCULATOR_H
+#ifndef GAS_FOURIER_HEAT_CALCULATOR_H
+#define GAS_FOURIER_HEAT_CALCULATOR_H
 
 #include <eigen3/Eigen/Dense>
 
@@ -38,17 +38,16 @@ namespace Mutation {
     namespace GasSurfaceInteraction {
 
 /*
- * Class responsible for computing the diffusion velocity in the gas.
+ * Class responsible for computing the gas to surface heat flux based on
+ * Fourier's law.
  */
-class DiffusionVelocityCalculator
+class GasFourierHeatFluxCalculator
 {
 public:
 	/*
-	 * Constructor of the class. It takes as arguments a copy of the
-	 * thermodynamics class and a copy of the transport class in order
-	 * to call the Stefan-Maxwell method.
+	 * Constructor
 	 */
-    DiffusionVelocityCalculator(
+    GasFourierHeatFluxCalculator(
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         Mutation::Transport::Transport& transport);
 
@@ -56,45 +55,44 @@ public:
     /*
      * Default Destructor
      */
-    ~DiffusionVelocityCalculator();
+    ~GasFourierHeatFluxCalculator();
 
 //==============================================================================
     /*
-     * Function used to set up the mole fractions at a distance from the
-     * surface.
+     * Function used to set up the temperature at a distance from the surface.
      *
-     * @para mole_frac_edge mole fractions of the species at a distance
+     * @para Temperature at a distance
      * @para dx distance in m
      */
-    void setDiffusionModel(
-        const Eigen::VectorXd& v_mole_frac_edge, const double& dx);
+    void setGasFourierHeatFluxModel(
+        const Eigen::VectorXd& v_T_edge, const double& dx);
 
 //==============================================================================
     /*
-     * Function used to compute the diffusion velocities with the given
-     * mole fraction at the surface the ones imposed at a given distance from
-     * the surface after the diffusion model has been set. The mole fraction
-     * gradients are computed with simple first order differentiation.
+     * Function used to compute the total fourier heat flux in
+     * the gas with given the surface temperature(s) and the ones imposed at
+     * a given distance from the surface. The temperature gradients
+     * are computed based on a first order differentiation.
      *
-     * @param mole_frac mole fractions of the species on the surface
-     * @param on return diffusion velocities in m/s
+     * @param Surface temperatures
      *
      */
-    void computeDiffusionVelocities(
-        const Eigen::VectorXd& v_mole_frac,
-        Eigen::VectorXd& v_diff_velocities);
+    double computeGasFourierHeatFlux(
+        const Eigen::VectorXd& v_T);
 
 private:
     Mutation::Transport::Transport& m_transport;
 
-    Eigen::VectorXd mv_mole_frac_edge;
-    Eigen::VectorXd mv_dxidx;
+    Eigen::VectorXd mv_T_edge;
+    Eigen::VectorXd mv_dTdx;
+
+    Eigen::VectorXd mv_lambda;
 
     double m_dx;
-    bool m_is_diff_set;
+    bool m_is_cond_set;
 };
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // DIFFUSION_VELOCITY_CALCULATOR_H
+#endif // GAS_FOURIER_HEAT_FLUX_CALCULATOR_H

@@ -1,7 +1,7 @@
 /**
  * @file MassBlowingRateNull.cpp
  *
- * @brief Class which set the mass blowing flux equal to zero when 
+ * @brief Class which set the mass blowing flux equal to zero when
  *        no ablation reactions are present.
  */
 
@@ -43,12 +43,17 @@ public:
 	MassBlowingRateNull(ARGS args){ }
 	~MassBlowingRateNull(){ }
 
-private:
 	/**
 	 * Returns mass blowing flux equal to zero.
 	 */
 	double computeBlowingFlux(){ return 0.0; }
 
+	/**
+	 * Returns mass blowing flux equal to zero.
+	 */
+    double computeBlowingFlux(const Eigen::VectorXd& v_chem_rates){
+		return 0.;
+	}
 };
 
 ObjectProvider<

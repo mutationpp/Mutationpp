@@ -28,14 +28,14 @@
 
 
 #include "Thermodynamics.h"
-#include "Transport.h" // Cross dependence to be investigated
+#include "Transport.h"
 
 #include "GSIReaction.h"
 #include "GSIRateLaw.h"
 #include "GSIRateManager.h"
 #include "GSIStoichiometryManager.h"
 #include "SurfaceProperties.h"
-#include "WallState.h"
+#include "SurfaceState.h"
 
 using namespace Eigen;
 
@@ -77,7 +77,8 @@ public:
             mv_react_rate_const(i_r) =
                 v_reactions[i_r]->getRateLaw()->
                     forwardReactionRateCoefficient(
-                        m_wall_state.getWallRhoi(), m_wall_state.getWallT());
+                        m_surf_state.getSurfaceRhoi(),
+                        m_surf_state.getSurfaceT());
         }
 
         // Constant rate times densities of species
@@ -90,6 +91,13 @@ public:
 
     }
 
+//=============================================================================
+
+    int nSurfaceReactions(){
+        return m_nr;
+    }
+
+//=============================================================================
 private:
     const size_t m_ns;
     const size_t m_nr;
@@ -99,7 +107,6 @@ private:
 
     GSIStoichiometryManager m_reactants;
     GSIStoichiometryManager m_irr_products;
-
 };
 
 ObjectProvider<

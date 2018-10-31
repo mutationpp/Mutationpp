@@ -49,6 +49,24 @@ for (int i = 0; i < 10; ++i) {\
 
 
 /**
+ * Loops over mixtures for Gas-Surface Interaction,
+ * loads each mixture and runs __CODE__ in Catch SECTION
+ * which is the name of the mixture.
+ */
+#define MIXTURE_GSI_LOOP(__CODE__)\
+std::string _names_[1] = {\
+    "o2_gsi_RRHO_ChemNonEq1T",\
+};\
+Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);\
+for (int i = 0; i < 1; ++i) {\
+    SECTION(_names_[i]) {\
+        Mixture mix(_names_[i]);\
+        __CODE__ ;\
+    }\
+}
+
+
+/**
  * Loops over 10 temperatures and 10 pressures between 1000-10000 K (linear) and
  * 10-100000 Pa (log) and equilibrates the mixture at each (T,P) combination
  * before running the given code snippet.

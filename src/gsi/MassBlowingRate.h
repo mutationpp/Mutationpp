@@ -34,7 +34,7 @@ namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class WallProductionTerms;
+class SurfaceChemistry;
 
 //==============================================================================
 
@@ -43,7 +43,7 @@ class WallProductionTerms;
  */
 struct DataMassBlowingRate {
     const Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    std::vector<WallProductionTerms*>& vs_wall_productions_terms;
+    const SurfaceChemistry& s_surf_chem;
 };
 
 //==============================================================================
@@ -77,13 +77,12 @@ public:
      */
     virtual double computeBlowingFlux() = 0;
 
-    virtual void getEquilibriumParameters(
-        double elementalMassDiff,
-        double elementalCharMassFraction,
-        double elementalGasMassFraction)
-    {
-        throw NotImplementedError("MassBlowingRate::getEquilibriumParameters");
-    }
+    /**
+     * Purely virtual function which return the blowing flux in kg/m^2-s
+     * given the chemical production rates for all species.
+     */
+    virtual double computeBlowingFlux(
+        const Eigen::VectorXd& v_chem_rates) = 0;
 };
 
     } // namespace GasSurfaceInteraction

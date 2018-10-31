@@ -1,5 +1,5 @@
 /**
- * @file WallProductionTermsEmpty.cpp
+ * @file urfaceRadiation.cpp
  *
  * @brief Class which should be used when no surface processes occur,
  */
@@ -26,48 +26,54 @@
  */
 
 
-#include "AutoRegistration.h"
-#include "Transport.h"
+#include "Thermodynamics.h"
 #include "Utilities.h"
 
-#include "WallProductionTerms.h"
+#include "SurfaceRadiation.h"
+#include "SurfaceState.h"
 
 using namespace Eigen;
 
+using namespace Mutation;
 using namespace Mutation::Utilities;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-class WallProductionsTermsEmpty : public WallProductionTerms
+SurfaceRadiation::SurfaceRadiation(
+    Mutation::Thermodynamics::Thermodynamics& thermo,
+    const Mutation::Utilities::IO::XmlElement& xml_surf_rad,
+    const SurfaceState& surf_state,
+    bool gas_rad_on)
+        :  m_surf_state(surf_state),
+           m_gas_rad_heat_flux(0.),
+           is_gas_rad_on(gas_rad_on),
+           pos_E(thermo.nSpecies()),
+           pos_T_trans(0),
+           m_stef_bolt_const(2. * pow(PI, 5.0) * pow(KB, 4.0) /
+                (15. * pow(HP, 3.0) * pow(C0, 2.0)))
 {
-public:
-    WallProductionsTermsEmpty(ARGS args)
-                         : WallProductionTerms(args),
-                           m_tag("empty") {}
+    xml_surf_rad.getAttribute("emissivity", m_eps,
+        "Error in the surface radiation input. Surface emissivity "
+        "coefficient should be provided");
+    xml_surf_rad.getAttribute("T_env", m_T_env, 0.);
+
+    if (!is_gas_rad_on)
+        m_gas_rad_heat_flux = m_stef_bolt_const * std::pow(m_T_env, 4.0);
+}
 
 //==============================================================================
 
-    ~WallProductionsTermsEmpty(){}
+SurfaceRadiation::~SurfaceRadiation(){}
 
 //==============================================================================
 
-    void productionRate(VectorXd& v_mass_prod_rate){
-        v_mass_prod_rate.setZero();
-    }
-
-//==============================================================================
-
-    const std::string& getWallProductionTermTag() const { return m_tag; }
-
-private:
-    const std::string m_tag;
-
-};
-
-Config::ObjectProvider<
-    WallProductionsTermsEmpty, WallProductionTerms>
-    wall_productions_terms_empty("empty");
+double SurfaceRadiation::surfaceNetRadiativeHeatFlux()
+{
+    double T_surf = (m_surf_state.getSurfaceT())(pos_T_trans);
+    return m_eps * (m_stef_bolt_const * std::pow(T_surf, 4.0)
+        - m_gas_rad_heat_flux);
+}
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

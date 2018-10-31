@@ -1,7 +1,7 @@
 /**
- * @file SurfacePropertiesNull.cpp
+ * @file SolidProperties.cpp
  *
- * @brief SurfaceProperties class when no surface properties are required
+ * @brief SolidProperties class when no surface properties are required
  *        to be stored.
  */
 
@@ -27,36 +27,28 @@
  */
 
 
-#include "AutoRegistration.h"
-#include "Thermodynamics.h"
 #include "Utilities.h"
 
-#include "SurfaceProperties.h"
+#include "SolidProperties.h"
 
 using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
-/**
- * Class invoked when no surface properties are required, like in the case
- * of a purely catalytic surface modeled with the gamma model.
- */
-class SurfacePropertiesNull : public SurfaceProperties
-{
-public:
-	SurfacePropertiesNull(ARGS args) : SurfaceProperties(args) { }
+SolidProperties::SolidProperties(
+    const Mutation::Utilities::IO::XmlElement& xml_solid_props)
+        : m_phi(1.),
+          m_h_v(0.)
+    {
+        if (xml_solid_props.tag() == "solid_properties"){
+            xml_solid_props.getAttribute(
+                "virgin_to_char_density_ratio", m_phi, 1.);
+            xml_solid_props.getAttribute(
+                "enthalpy_virgin", m_h_v, 0.);
+        }
+    }
 
-//==============================================================================
-/*
- * Default destructor
- */
-    ~SurfacePropertiesNull(){ }
-};
-
-ObjectProvider<
-    SurfacePropertiesNull, SurfaceProperties>
-    surface_properties_null("none");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
