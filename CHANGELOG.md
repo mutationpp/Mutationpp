@@ -17,7 +17,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
         * NASA-7, 
         * NASA-9, 
         * RRHO (custom for some species)
-        * New NASA-9 database from Aero. Sci. and Tech. paper
     * Pure species thermo
     * Mixture thermo (mostly multi-temperature models)
 
@@ -55,19 +54,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
     * ChemNonEq1T: thermal equilibrium, chemical nonequilibrium
     * ChemNonEqTTv: two temperature chemical nonequilibrium (Park model)
 
-* `Predefined Mixtures/Models/Data`
+* `Included Mixtures/Models/Data`
   
-    * Air5: all state models, thermo, mechanism, collision integrals, MW coefficients
-    * Air11: all state models,  thermo, mechanism, collision integrals, MW coefficients
-    * Air13: all state models,  thermo, mechanism, collision integrals, MW coefficients
-    * CO28: all state models,  thermo, mechanism, collision integrals, MW coefficients
-    * Tacot24: equilibrium,  thermo, collision integrals
-    * Preliminary approach for Argon STS: 1T,  thermo, mechanism, collision integrals (ground state)
-    * Chromosphere model (H/He): all state models, magnetized,  thermo, mechanism, collision integrals, MW coefficients
+    * Air5
+    * Air11
+    * Air13
+    * CO28
    
 * `Interfaces to other languages`
     * Fortran
-    * Python
 
 * `Supported OSs`
     * Linux
