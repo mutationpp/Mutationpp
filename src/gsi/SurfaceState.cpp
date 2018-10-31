@@ -46,8 +46,7 @@ namespace Mutation {
 
 SurfaceState::SurfaceState(
     const Mutation::Thermodynamics::Thermodynamics& thermo,
-    const Mutation::Utilities::IO::XmlElement& xml_surf_props,
-    const Mutation::Utilities::IO::XmlElement& xml_solid_props)
+    const Mutation::Utilities::IO::XmlElement& xml_surf_props)
     : m_thermo(thermo),
       m_ns(thermo.nSpecies()),
       m_nT(thermo.nEnergyEqns()),
@@ -55,7 +54,8 @@ SurfaceState::SurfaceState(
       mv_T(m_nT),
       m_is_surface_state_set(false),
       mp_surf_props(NULL),
-      mp_solid_props(NULL)
+      mp_solid_props(NULL),
+      are_solid_props_set(false)
 {
     DataSurfaceProperties data_surf_props = {
         m_thermo,
@@ -70,7 +70,6 @@ SurfaceState::SurfaceState(
 
     mp_surf_props = Factory<SurfaceProperties>::create(
         name_surf_props, data_surf_props);
-    mp_solid_props = new SolidProperties(xml_solid_props);
 }
 
 //==============================================================================
@@ -138,6 +137,12 @@ void SurfaceState::setSurfaceT(const double* const p_T){
 }
 
 //==============================================================================
+
+void SurfaceState::setSolidProperties(
+    const Mutation::Utilities::IO::XmlElement& xml_solid_props) {
+        mp_solid_props = new SolidProperties(xml_solid_props);
+        are_solid_props_set = true;
+}
 
     } // GasSurfaceInteraction
 } // Mutation

@@ -277,7 +277,11 @@ public:
             mv_f(pos_E) += mp_surf_rad->surfaceNetRadiativeHeatFlux();
 
         // Steady state assumption virgin material enthalpy
+        // if (ss -> )
         mv_f(pos_E) -= mass_blow * (1+m_phi) * m_h_v;
+        // else
+        // mv_f(pos_E) -= mass_blow * m_h_s;
+        // mv_f(pos_e) -= q_cond;
     }
 
 //==============================================================================

@@ -70,18 +70,24 @@ GasSurfaceInteraction::GasSurfaceInteraction(
     // Finding the position of the XmlElements
     XmlElement::const_iterator xml_pos_surf_props =
         root_element.findTag("surface_properties");
-    XmlElement::const_iterator xml_pos_solid_props =
-        root_element.findTag("solid_properties");
     XmlElement::const_iterator xml_pos_surf_feats =
         root_element.findTag("surface_features");
+
+    // Creating Surface State class
+    mp_surf_state = new SurfaceState(
+        m_thermo, *xml_pos_surf_props);
+
+    // Finding the position of the XmlElements
     XmlElement::const_iterator xml_pos_surf_chem =
         root_element.findTag("surface_chemistry");
     XmlElement::const_iterator xml_pos_surf_rad =
         root_element.findTag("surface_radiation");
 
-    // Creating Surface State class
-    mp_surf_state = new SurfaceState(
-        m_thermo, *xml_pos_surf_props, *xml_pos_solid_props);
+    // Setting up solid properties
+    XmlElement::const_iterator xml_pos_solid_props =
+        root_element.findTag("solid_properties");
+    if (xml_pos_solid_props != root_element.end())
+        mp_surf_state->setSolidProperties(*xml_pos_solid_props);
 
     // Creating the Surface class
     DataSurface data_surface = {
