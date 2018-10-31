@@ -26,6 +26,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <iterator>
 
 #include "AutoRegistration.h"
 #include "Thermodynamics.h"
