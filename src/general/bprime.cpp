@@ -44,7 +44,7 @@ using namespace Mutation::Utilities;
  * __Usage__:
  *
  *    bprime \f$-T\f$ \f$T_1\f$:\f$\Delta T\f$:\f$T_2\f$ \f$-p\f
- *    \f$p\f$ \f$-b\f \f$B'_g\f$ \f$-m\f mixture \f$-bl\f BL \f$-py\f Pyrolysis
+ *    \f$p\f$ \f$-b\f \f$B'_g\f$ \f$-m\f mixture \f$-bl\f BL \f$-py \f Pyrolysis
  *
  * This program generates a so-called "B-prime" table for a given temperature
  * range and stepsize in K, a fixed pressure in Pa, a value of \f$B'_g\f$
@@ -260,9 +260,9 @@ int main(int argc, char* argv[])
     const int ne = mix.nElements();
     const int ns = mix.nSpecies();
     
-    std::vector<double> p_Yke (ne,0);
-    std::vector<double> p_Ykg (ne,0);
-    std::vector<double> p_Xw (ns,0);
+    std::vector<double> Yke (ne,0);
+    std::vector<double> Ykg (ne,0);
+    std::vector<double> Xw (ns,0);
 
     // Run conditions
     double T1 = opts.T1;
@@ -272,10 +272,10 @@ int main(int argc, char* argv[])
     double Bg = opts.Bg;
     double Bc, hw;
     
-    mix.getComposition(opts.boundary_layer_comp, p_Yke.data(), Composition::MASS);
+    mix.getComposition(opts.boundary_layer_comp, Yke.data(), Composition::MASS);
 
     if(opts.pyrolysis_exist)
-        mix.getComposition(opts.pyrolysis_composition, p_Ykg.data(), Composition::MASS);
+        mix.getComposition(opts.pyrolysis_composition, Ykg.data(), Composition::MASS);
 
 
     cout << setw(10) << "\"Tw[K]\""
@@ -286,10 +286,10 @@ int main(int argc, char* argv[])
     cout << endl;
     
     for (double T = T1; T < T2 + 1.0e-6; T += dt) {
-        mix.surfaceMassBalance(p_Yke.data(), p_Ykg.data(), T, P, Bg, Bc, hw, p_Xw.data());
+        mix.surfaceMassBalance(Yke.data(), Ykg.data(), T, P, Bg, Bc, hw, Xw.data());
         cout << setw(10) << T << setw(15) << Bc << setw(15) << hw / 1.0e6;
         for (int i = 0; i < ns; ++i)
-            cout << setw(25) << p_Xw[i];
+            cout << setw(25) << Xw[i];
         cout << endl;
     }
 
