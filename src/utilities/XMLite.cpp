@@ -55,11 +55,11 @@ XmlDocument::XmlDocument(const std::string &filename)
         throw FileNotFoundError(filename);
     
     int line = 1;
-    XmlElement element(NULL, this);
-    while (element.parse(xml_file, line)) {
-        m_elements.push_back(element);
-        element = XmlElement(NULL, this);
+    m_elements.push_back(XmlElement(NULL, this));
+    while (m_elements.back().parse(xml_file, line)) {
+        m_elements.push_back(XmlElement(NULL, this));
     }
+    m_elements.pop_back();
     
     xml_file.close();
 }
@@ -259,8 +259,9 @@ bool XmlElement::parse(
                 }
                 if (c == ' ') {
                     XmlElement element(this, mp_document);
-                    element.parse(is, line, name, attributes);
+                    //element.parse(is, line, name, attributes);
                     m_children.push_back(element);
+                    m_children.back().parse(is, line, name, attributes);
                     name = "";
                     state = el_value;
                 } else if (c == '>') {
@@ -273,8 +274,9 @@ bool XmlElement::parse(
                                 "found <"+name+">");
                     } else {
                         XmlElement element(this, mp_document);
-                        element.parse(is, line, name, el_value);
+                        //element.parse(is, line, name, el_value);
                         m_children.push_back(element);
+                        m_children.back().parse(is, line, name, el_value);
                         name = "";
                         state = el_value;
                     }
