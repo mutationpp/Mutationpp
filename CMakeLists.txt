@@ -88,7 +88,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set (CMAKE_CXX_FLAGS "-g")
 endif ()
 
-
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_MACOSX_RPATH 1)
+endif()
 ################################################################################
 # Fortran wrapper options
 ################################################################################
