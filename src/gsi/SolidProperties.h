@@ -1,11 +1,11 @@
 /**
  * @file SolidProperties.h
  *
- * @brief  Purely virtual class SurfaceProperties.
+ * @brief  Purely virtual class SolidProperties.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -31,20 +31,41 @@
 
 #include <eigen3/Eigen/Dense>
 
-
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
+/**
+ * Structure which stores the necessary inputs for the SolidProperties class.
+ */
+struct DataSolidProperties
+{
+    const Mutation::Utilities::IO::XmlElement& s_node_solid_props;
+};
+
+//==============================================================================
+
 class SolidProperties
 {
 public:
+	/**
+	 * Structure containg the information needed by the SolidProperties
+     * classes.
+	 */
+    typedef const DataSolidProperties& ARGS;
+
+//==============================================================================
+    /**
+     * Returns name of this type.
+	 */
+	static std::string typeName() { return "SolidProperties"; }
+
+//==============================================================================
     /**
      * Default Constructor.
      */
-    SolidProperties(
-        const Mutation::Utilities::IO::XmlElement& xml_solid_props);
+    SolidProperties(ARGS args){}
 
 //==============================================================================
 
@@ -56,20 +77,17 @@ public:
 //==============================================================================
 
     /**
-     *
+     * Virtual function which returns parameter phi defined as the ratio
+     * between the virgin material density and the surface density minus 1.
      */
-    double getPhiRatio() const { return m_phi; }
+    virtual double getPhiRatio() const { return 1.; }
 //==============================================================================
 
     /**
-     *
+     * Virtual function which returns the enthalpy of the virgin material
+     * equal to the one set in the gsi input file.
      */
-    double getEnthalpyVirginMaterial() const { return m_h_v; }
-
-//==============================================================================
-private:
-    double m_phi;
-    double m_h_v;
+    virtual double getEnthalpyVirginMaterial() const { return 0.; }
 };
 
     } // namespace GasSurfaceInteraction

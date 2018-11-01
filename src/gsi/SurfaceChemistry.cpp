@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -92,14 +92,15 @@ SurfaceChemistry::~SurfaceChemistry()
 //==============================================================================
 
 void SurfaceChemistry::surfaceReactionRates(VectorXd& v_mass_chem_rate) const {
-    v_mass_chem_rate = mp_rate_manager->computeRate();
+    v_mass_chem_rate = mp_rate_manager->computeRates();
 }
 
 //==============================================================================
 
 void SurfaceChemistry::surfaceReactionRatesPerReaction(
-    Eigen::VectorXd& v_rate_per_reaction) {
-    v_rate_per_reaction = mp_rate_manager->computeRatePerReaction();
+    Eigen::VectorXd& v_rate_per_reaction)
+{
+    v_rate_per_reaction = mp_rate_manager->computeRatesPerReaction();
 }
 
 //==============================================================================

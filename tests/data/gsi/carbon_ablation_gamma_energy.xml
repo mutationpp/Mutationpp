@@ -1,16 +1,20 @@
 <gsi gsi_mechanism = "gamma_energy">
 
     <surface_properties type = "ablation" >
-        <surface label="b" species="C" />
+        <surface label="b" species="C"
+                 enthalpy_surface="0." />
     </surface_properties>
 
     <solid_properties
         virgin_to_char_density_ratio = "1."
-        enthalpy_virgin = "0." />
+        enthalpy_virgin = "0."
+    />
 
     <surface_features
+        solid_conduction = "steady_state"
         surface_in_thermal_equil = "true"
-        gas_phase_radiation = "false" />
+        gas_phase_radiation = "false"
+    />
 
     <surface_chemistry>
         <!-- 1 -->
@@ -26,7 +30,7 @@
             <sublimation vap_coef="0.1" pre_exp="5.19E15" T="90845." />
         </reaction>
         <!-- 4 -->
-        <reaction type= "catalysis" formula="N+N=>N2">
+        <reaction type= "catalysis" formula="N + N => N2">
             <gamma_const> N:0.001 </gamma_const>
         </reaction>
     </surface_chemistry>

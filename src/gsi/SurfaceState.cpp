@@ -54,8 +54,7 @@ SurfaceState::SurfaceState(
       mv_T(m_nT),
       m_is_surface_state_set(false),
       mp_surf_props(NULL),
-      mp_solid_props(NULL),
-      are_solid_props_set(false)
+      mp_solid_props(NULL)
 {
     DataSurfaceProperties data_surf_props = {
         m_thermo,
@@ -139,9 +138,10 @@ void SurfaceState::setSurfaceT(const double* const p_T){
 //==============================================================================
 
 void SurfaceState::setSolidProperties(
-    const Mutation::Utilities::IO::XmlElement& xml_solid_props) {
-        mp_solid_props = new SolidProperties(xml_solid_props);
-        are_solid_props_set = true;
+    const std::string& solid_model,
+    const DataSolidProperties& data_solid_props) {
+        mp_solid_props = Factory<SolidProperties>::create(
+            solid_model, data_solid_props);
 }
 
     } // GasSurfaceInteraction

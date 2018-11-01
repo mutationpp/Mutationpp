@@ -82,7 +82,7 @@ TEST_CASE
         }
     }
 
-/*    SECTION("Catalysis Gamma Heteronuclear Reactions Single Temperature.")
+    SECTION("Catalysis Gamma Heteronuclear Reactions Single Temperature.")
     {
         // Setting up M++
         MixtureOptions opts("air5_gsi_RRHO_ChemNonEq1T");
@@ -323,6 +323,5 @@ TEST_CASE
                 CHECK(wdot(i) == Approx(omega(i)).epsilon(tol));
             }
         }
-    }*/
-
+    }
 }

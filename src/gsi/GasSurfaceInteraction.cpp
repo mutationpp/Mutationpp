@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -31,6 +31,7 @@
 #include "Utilities.h"
 
 #include "GasSurfaceInteraction.h"
+#include "SolidProperties.h"
 #include "Surface.h"
 #include "SurfaceState.h"
 
@@ -84,10 +85,20 @@ GasSurfaceInteraction::GasSurfaceInteraction(
         root_element.findTag("surface_radiation");
 
     // Setting up solid properties
-    XmlElement::const_iterator xml_pos_solid_props =
-        root_element.findTag("solid_properties");
-    if (xml_pos_solid_props != root_element.end())
-        mp_surf_state->setSolidProperties(*xml_pos_solid_props);
+    std::string solid_model;
+    if (xml_pos_surf_feats != root_element.end())
+        xml_pos_surf_feats->getAttribute("solid_conduction", solid_model);
+
+    if (solid_model == "steady_state") {
+        XmlElement::const_iterator xml_pos_solid_props =
+            root_element.findTag("solid_properties");
+        if (xml_pos_solid_props == root_element.end())
+            errorSolidPropertiesNotProvided(solid_model);
+    } else {
+        solid_model = "none";
+    }
+    DataSolidProperties data_solid_props = { *xml_pos_surf_props };
+    mp_surf_state->setSolidProperties(solid_model, data_solid_props);
 
     // Creating the Surface class
     DataSurface data_surface = {
@@ -223,6 +234,15 @@ inline void GasSurfaceInteraction::errorInvalidGSIFileProperties(
 {
     throw InvalidInputError("GasSurfaceInteraction", gsi_option)
     << gsi_option << " is not a valid gas surface interaction file option!";
+}
+
+//==============================================================================
+inline void GasSurfaceInteraction::errorSolidPropertiesNotProvided(
+    const std::string& error_steady_state)
+{
+    throw InvalidInputError("GasSurfaceInteraction", error_steady_state)
+    << "Solid properties should be provided when steady state assumption "
+    << "is assumed for conduction or pyrolysis gases.";
 }
 
     } // namespace GasSurfaceInteraction

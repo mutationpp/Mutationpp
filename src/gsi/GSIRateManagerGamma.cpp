@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -70,7 +70,7 @@ public:
 
 //=============================================================================
 
-    Eigen::VectorXd computeRate()
+    Eigen::VectorXd computeRates()
     {
         // Get reaction rate constant
         for (int i_r = 0; i_r < m_nr; ++i_r) {
@@ -88,14 +88,28 @@ public:
 
         // Multiply by molar mass
         return mv_work.cwiseProduct(m_thermo.speciesMw().matrix());
-
     }
 
 //=============================================================================
 
-    int nSurfaceReactions(){
-        return m_nr;
+    Eigen::VectorXd computeRatesPerReaction()
+    {
+    	// Getting the kfs with the initial conditions
+        for (int i_r = 0; i_r < m_nr; ++i_r) {
+            mv_react_rate_const(i_r) =
+                v_reactions[i_r]->getRateLaw()->forwardReactionRateCoefficient(
+            		m_surf_state.getSurfaceRhoi(), m_surf_state.getSurfaceT());
+        }
+        m_reactants.multReactions(
+            m_surf_state.getSurfaceRhoi(), mv_react_rate_const);
+
+        return mv_react_rate_const;
     }
+
+
+//=============================================================================
+
+    int nSurfaceReactions(){ return m_nr; }
 
 //=============================================================================
 private:
@@ -109,8 +123,7 @@ private:
     GSIStoichiometryManager m_irr_products;
 };
 
-ObjectProvider<
-    GSIRateManagerGamma, GSIRateManager>
+ObjectProvider<GSIRateManagerGamma, GSIRateManager>
     gsi_rate_manager_gamma("gamma");
 
     } // namespace GasSurfaceInteraction

@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -34,7 +34,8 @@ add_sources(mutation++
     GSIStoichiometryManager.cpp
     MassBlowingRateAblation.cpp
     MassBlowingRateNull.cpp
-    SolidProperties.cpp
+    SolidPropertiesNull.cpp
+    SolidPropertiesSteadyState.cpp
     SurfaceChemistry.cpp
     SurfaceRadiation.cpp
     SurfaceBalanceSolverMass.cpp

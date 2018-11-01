@@ -1,12 +1,12 @@
 /**
- * @file SolidProperties.cpp
+ * @file SolidPropertiesNull.cpp
  *
- * @brief SolidProperties class when no surface properties are required
+ * @brief SolidProperties class when no solid properties are required
  *        to be stored.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -27,6 +27,7 @@
  */
 
 
+#include "AutoRegistration.h"
 #include "Utilities.h"
 
 #include "SolidProperties.h"
@@ -35,20 +36,28 @@ using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
+/**
+ * Class invoked when no solid properties are required, like in the case
+ * of a purely catalytic solid modeled with the gamma model or when the solid
+ * conduction is an external input to the code.
+ */
+class SolidPropertiesNull : public SolidProperties {
+public:
+/**
+ * Default constructor
+ */
+    SolidPropertiesNull(ARGS args) : SolidProperties(args) {}
 
-SolidProperties::SolidProperties(
-    const Mutation::Utilities::IO::XmlElement& xml_solid_props)
-        : m_phi(1.),
-          m_h_v(0.)
-    {
-        if (xml_solid_props.tag() == "solid_properties"){
-            xml_solid_props.getAttribute(
-                "virgin_to_char_density_ratio", m_phi, 1.);
-            xml_solid_props.getAttribute(
-                "enthalpy_virgin", m_h_v, 0.);
-        }
-    }
+//==============================================================================
+/**
+ * Default destructor
+ */
+    ~SolidPropertiesNull(){}
+};
 
+ObjectProvider<
+    SolidPropertiesNull, SolidProperties>
+    solid_properties_null("none");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

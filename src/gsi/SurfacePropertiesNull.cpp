@@ -45,6 +45,9 @@ namespace Mutation {
 class SurfacePropertiesNull : public SurfaceProperties
 {
 public:
+/**
+ * Default constructor
+ */
 	SurfacePropertiesNull(ARGS args) : SurfaceProperties(args) { }
 
 //==============================================================================

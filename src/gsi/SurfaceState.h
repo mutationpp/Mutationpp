@@ -31,6 +31,7 @@
 #define SURFACE_STATE_H
 
 #include <eigen3/Eigen/Dense>
+#include <string>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
@@ -38,6 +39,7 @@ namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
+class DataSolidProperties;
 class SurfaceProperties;
 class SolidProperties;
 
@@ -114,10 +116,11 @@ public:
     bool isSurfaceStateSet() const { return m_is_surface_state_set; }
 
     /**
-     * Helper function to set the solid properties
+     * Helper function to set up the solid properties
      */
     void setSolidProperties(
-        const Mutation::Utilities::IO::XmlElement& xml_solid_props);
+        const std::string& solid_model,
+        const DataSolidProperties& data_solid_props);
 
     /**
      * Returns a constant reference to the surface properties class.
@@ -130,18 +133,12 @@ public:
      * Returns a constant reference to the surface properties class.
      */
     const SolidProperties& solidProps() const {
-        if (!are_solid_props_set)
-            throw LogicError()
-                << "Solid_properties should be set in the gsi input"
-                << " file to use this type of model!";
         return *mp_solid_props;
     }
 
 private:
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     const SurfaceProperties* mp_surf_props;
-
-    bool are_solid_props_set;
     const SolidProperties* mp_solid_props;
 
     const size_t m_ns;

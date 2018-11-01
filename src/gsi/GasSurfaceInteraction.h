@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -146,6 +146,14 @@ public:
      */
     void setGasRadHeatFlux(const double* const m_gas_rad_heat_flux);
 
+    /*
+     * Function for the energy balance at the surface. Works only when the
+     * surface_feature solid_conduction is set to input. Otherwise conduction is
+     * computed based on the steady state model or it is neglected.
+     */
+    void setSolidCondHeatFlux(const double* const m_solid_heat_flux){}
+
+
     /**
      * Function to be called in order to solve the mass and energy balances at
      * the surface according to the input model. The output state is stored in the
@@ -176,6 +184,12 @@ private:
      * Error function; invalid Gas Surface Interaction file properties.
      */
     inline void errorInvalidGSIFileProperties(const std::string& gsi_option);
+
+    /**
+     * Error function; No solid properties were provided.
+     */
+    inline void errorSolidPropertiesNotProvided(
+        const std::string& error_steady_state);
 
 private:
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
