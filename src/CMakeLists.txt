@@ -19,50 +19,7 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-#- Add sources for a target
-#
-#  ADD_SOURCES(<target> <source1> [<source2> ...])
-#
-function (add_sources target)
-  # define the <target>_SRCS properties if necessary
-  get_property(prop_defined GLOBAL PROPERTY ${target}_SRCS DEFINED)
-  if(NOT prop_defined)
-    define_property(GLOBAL PROPERTY ${target}_SRCS
-      BRIEF_DOCS "Sources for the ${target} target"
-      FULL_DOCS "List of source files for the ${target} target")
-  endif()
-  # create list of sources (absolute paths)
-  set(SRCS)
-  foreach(src IN LISTS ARGN)
-    if(NOT IS_ABSOLUTE "${src}")
-      get_filename_component(src "${src}" ABSOLUTE)
-    endif()
-    list(APPEND SRCS "${src}")
-  endforeach()
-  # append to global property
-  set_property(GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
-endfunction()
-
-# - Add headers for a target (in order to be installed later)
-function (add_headers target)
-  # define the <target>_HDRS properties if necessary
-  get_property(prop_defined GLOBAL PROPERTY ${target}_HDRS DEFINED)
-  if(NOT prop_defined)
-      define_property(GLOBAL PROPERTY ${target}_HDRS
-          BRIEF_DOCS "Headers for the ${target} target"
-      FULL_DOCS "List of header files for the ${target} target")
-  endif()
-  # create list of sources (absolute paths)
-  set(HDRS)
-  foreach(hfile IN LISTS ARGN)
-    if(NOT IS_ABSOLUTE "${hfile}")
-      get_filename_component(hfile "${hfile}" ABSOLUTE)
-    endif()
-    list(APPEND HDRS "${hfile}")
-  endforeach()
-  # append to global property
-  set_property(GLOBAL APPEND PROPERTY "${target}_HDRS" "${HDRS}")
-endfunction()
+include(MutationTools)
 
 add_subdirectory(general)
 add_subdirectory(kinetics)
@@ -73,15 +30,21 @@ add_subdirectory(transport)
 add_subdirectory(utilities)
 add_subdirectory(gsi)
 
-if (BUILD_FORTRAN_WRAPPER)
-    add_subdirectory(fortran)
+# If not building the python bindings, build the executables
+if (NOT DEFINED SKBUILD)
+    add_subdirectory(apps)
 endif()
 
-
-
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
-add_library(mutation++ SHARED ${mutation++_SRCS})
-add_library(mutation++::mutation++ ALIAS mutation++)
+
+# Statically link if building with Python
+if (SKBUILD)
+    add_library(mutation++ OBJECT ${mutation++_SRCS})
+else()
+    add_library(mutation++ SHARED ${mutation++_SRCS})
+    add_library(mutation++::mutation++ ALIAS mutation++)
+endif()
+
 target_include_directories(mutation++
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/general>
@@ -127,16 +90,18 @@ write_basic_package_version_file("mutation++ConfigVersion.cmake"
     COMPATIBILITY SameMajorVersion
 )
 
+# Install Headers and Cmake Files (only if not building the Python bindings)
+if (NOT DEFINED SKBUILD)
 install(FILES 
     "${CMAKE_CURRENT_BINARY_DIR}/mutation++Config.cmake" 
     "${CMAKE_CURRENT_BINARY_DIR}/mutation++ConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mutation++
 )
 
-# Install Headers
-get_property(mutation++_HDRS GLOBAL PROPERTY mutation++_HDRS)
-set_target_properties(mutation++ PROPERTIES PUBLIC_HEADER "${mutation++_HDRS}")
-set(MUTATIONPP_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}/mutation++")
+    get_property(mutation++_HDRS GLOBAL PROPERTY mutation++_HDRS)
+    set_target_properties(mutation++ PROPERTIES PUBLIC_HEADER "${mutation++_HDRS}")
+    set(MUTATIONPP_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}/mutation++")
+endif()
 
 install(TARGETS mutation++ ${mutation_exes} EXPORT mutation++Targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -151,9 +116,12 @@ export(EXPORT mutation++Targets
     NAMESPACE mutation++::
 )
 
+# Install targets file only if not building the Python bindings
+if (NOT DEFINED SKBUILD)
 install(EXPORT mutation++Targets
     FILE        mutation++Targets.cmake
     NAMESPACE   mutation++::
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mutation++"
     EXPORT_LINK_INTERFACE_LIBRARIES
 )
+endif()

@@ -19,8 +19,6 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 2.6)
-
 add_sources(mutation++
     MillikanWhite.cpp
     OmegaCE.cpp
