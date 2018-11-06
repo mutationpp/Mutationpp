@@ -47,12 +47,12 @@ public:
           m_phi(1.),
           m_h_v(0.)
     {
-/*            if (xml_solid_props.tag() == "solid_properties") {
-                xml_solid_props.getAttribute(
-                    "virgin_to_char_density_ratio", m_phi, 1.);
-                xml_solid_props.getAttribute(
+            if (args.s_node_solid_props.tag() == "solid_properties") {
+                args.s_node_solid_props.getAttribute(
+                    "virgin_to_surf_density_ratio", m_phi, 1.);
+                args.s_node_solid_props.getAttribute(
                     "enthalpy_virgin", m_h_v, 0.);
-            } */
+            }
     }
 
 //==============================================================================

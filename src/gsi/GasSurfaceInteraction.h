@@ -123,25 +123,30 @@ public:
      * Function which set ups the diffusion model in order to compute
      * the gradient of mole fractions. Requires as input a mole fraction
      * pointer for the chemical state of the gas near the surface and a distance
-     * in meters for the distance of the distance of this composition from the
-     * surface.
+     * these mole fractions are computed in meters.
      *
-     * @param mole_frac_edge   mole fractions at a distance from the surface
-     *                         used to compute the gradient for diffusion
-     * @param dx               distance from the surface in m
+     * @param p_mole_frac_edge   mole fractions at a distance from the surface
+     *                           used to compute the gradient for diffusion
+     * @param dx                 distance from the surface in m
      */
     void setDiffusionModel(
         const double* const p_mole_frac_edge, const double& dx);
 
-    /*
-     *  Function for the energy balance at the surface.
+     /**
+     * Function which set ups the conductive heat flux model necessary for the
+     * energy balance. Requires as input the temperature vector at a distance
+     * from the surface and the distance in meters.
+     *
+     * @param p_T_edge         temperatures at a distance from the surface
+     *                         used to compute the gradient for diffusion
+     * @param dx               distance from the surface in m
      */
     void setGasFourierHeatFluxModel(
         const double* const p_T_edge, const double& dx);
 
     /*
      * Function for the energy balance at the surface. Works only when the
-     * surface_feature gasradiation is on. Otherwise the Tenv can be imposed
+     * surface_feature gas radiation is on. Otherwise the Tenv can be imposed
      * to compute the far field incoming radiation.
      */
     void setGasRadHeatFlux(const double* const m_gas_rad_heat_flux);

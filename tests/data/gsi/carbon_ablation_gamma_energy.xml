@@ -6,14 +6,14 @@
     </surface_properties>
 
     <solid_properties
-        virgin_to_char_density_ratio = "1."
+        virgin_to_surf_density_ratio = "1."
         enthalpy_virgin = "0."
     />
 
     <surface_features
         solid_conduction = "steady_state"
         surface_in_thermal_equil = "true"
-        gas_phase_radiation = "false"
+        gas_radiation = "false"
     />
 
     <surface_chemistry>

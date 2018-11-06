@@ -1,8 +1,7 @@
 /**
  * @file SurfaceChemistry.cpp
  *
- * @brief Class which computes the chemical source terms for the
- *        chemical reactions occuring on the surface.
+ * @brief Implementation of the SurfaceChemistry class.
  */
 
 /*

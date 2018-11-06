@@ -126,5 +126,8 @@ private:
 ObjectProvider<GSIRateManagerGamma, GSIRateManager>
     gsi_rate_manager_gamma("gamma");
 
+ObjectProvider<GSIRateManagerGamma, GSIRateManager>
+    gsi_rate_manager_gamma_energy("gamma_energy");
+
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

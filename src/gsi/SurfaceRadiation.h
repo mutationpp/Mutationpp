@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -39,14 +39,22 @@ namespace Mutation {
 
 class SurfaceState;
 
-/*
- *  Surface Radiation class
+/**
+ * Class responsible for computing the radiative heat flux of the surface
+ * assuming it is grey body. The incoming gas radiation can be considered
+ * as an input to the balance by setting the surface feature
+ * gas_phase_radiation to true and by calling the gasRadiativeHeatFlux
+ * function. If the option gas_phase_radiation is set to false, then
+ * the gas phase radiation is either completely neglected or it can
+ * be considered equal to the black body radiation at a temperature,
+ * an assumption which is not recommended.
  */
 class SurfaceRadiation
 {
 public:
-
-    // Constructor
+    /**
+     *  Constructor
+     */
     SurfaceRadiation(
         Mutation::Thermodynamics::Thermodynamics& thermo,
         const Mutation::Utilities::IO::XmlElement& xml_surf_rad,
@@ -54,15 +62,21 @@ public:
         bool gas_rad_on);
 
 //==============================================================================
-
+    /**
+     *  Destructor
+     */
     ~SurfaceRadiation();
 
 //==============================================================================
-
+    /**
+     *  Function which returns the net radiative heat flux.
+     */
     double surfaceNetRadiativeHeatFlux();
 
 //==============================================================================
-
+    /**
+     *  Function which takes the incoming radiative heat from the gas .
+     */
     void gasRadiativeHeatFlux(const double& gas_rad_heat_flux){
         if (is_gas_rad_on) m_gas_rad_heat_flux = gas_rad_heat_flux;
     }

@@ -1,7 +1,8 @@
 /**
  * @file SurfaceChemistry.h
  *
- * @brief Class which takes care of the surface chemistry.
+ * @brief Class which computes the chemical source terms for the
+ *        chemical reactions occuring on the surface.
  */
 
 /*
@@ -66,23 +67,27 @@ public:
 
 //==============================================================================
     /**
-     * Chemical source term per kg
+     * Computes the chemical source terms for every species in the gas mixture
+     * in \f$kg/(m^2 s)\f$.
      */
     void surfaceReactionRates(Eigen::VectorXd& v_mass_chem_rate) const;
 
 //==============================================================================
-
+    /**
+     * Computes the chemical source terms per reaction in \f$kg/(m^2 s)\f$.
+     */
     void surfaceReactionRatesPerReaction(Eigen::VectorXd& v_rate_per_reaction);
 
 //==============================================================================
     /**
-     * What do I do if these are zero!
+     * Returns the number of surface reactions considered.
      */
     int nSurfaceReactions();
 
-//==============================================================================
-
 private:
+    /**
+     * Helper class to add reactions.
+     */
     void addReaction(GSIReaction* gsi_reaction){
         mv_reaction.push_back(gsi_reaction);
     }

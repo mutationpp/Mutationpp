@@ -1,7 +1,7 @@
 /**
  * @file SolidProperties.h
  *
- * @brief  Purely virtual class SolidProperties.
+ * @brief  Purely virtual class containing the solid properties.
  */
 
 /*

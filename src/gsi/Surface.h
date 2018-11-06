@@ -83,7 +83,8 @@ public:
 //==============================================================================
 
     /**
-     * Returns
+     * Purely virtual function which returns the surface reaction rates for
+     * all species in the gas mixture in \f$ kg/m^2 \f$.
      */
     virtual void computeSurfaceReactionRates(
         Eigen::VectorXd& v_surf_chem_rates) = 0;
@@ -114,7 +115,14 @@ public:
 //==============================================================================
 
     /**
-     * Function for setting up the diffu
+     * Function which set ups the diffusion model in order to compute
+     * the gradient of mole fractions. Requires as input a mole fraction
+     * vector for the chemical state of the gas near the surface and a distance
+     * these mole fractions are computed in meters.
+     *
+     * @param v_mole_frac_edge   mole fractions at a distance from the surface
+     *                           used to compute the gradient for diffusion
+     * @param dx                 distance from the surface in m
      */
     virtual void setDiffusionModel(
         const Eigen::VectorXd& v_mole_frac_edge, const double& dx)
@@ -125,9 +133,17 @@ public:
         }
 
 //==============================================================================
-
+     /**
+     * Function which set ups the conductive heat flux model necessary for the
+     * energy balance. Requires as input the temperature vector at a distance
+     * from the surface and the distance in meters.
+     *
+     * @param v_T_edge         temperatures at a distance from the surface
+     *                         used to compute the gradient for diffusion
+     * @param dx               distance from the surface in m
+     */
     virtual void setGasFourierHeatFluxModel(
-        const Eigen::VectorXd& p_T, const double& dx)
+        const Eigen::VectorXd& v_T, const double& dx)
     {
         throw LogicError()
         << "setConductiveHeatFluxModel can be called only when solving "

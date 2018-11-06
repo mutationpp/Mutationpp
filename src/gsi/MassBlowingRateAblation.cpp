@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -45,6 +45,10 @@ namespace Mutation {
 class MassBlowingRateAblation : public MassBlowingRate
 {
 public:
+//==============================================================================
+    /**
+     * Constructor
+     */
     MassBlowingRateAblation(ARGS args)
         : mv_wrk(args.s_thermo.nSpecies()),
           m_surf_chem(args.s_surf_chem)
