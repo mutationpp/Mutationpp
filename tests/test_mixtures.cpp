@@ -161,19 +161,40 @@ private:
     std::streambuf* m_old_buffer;
 };
 
-TEST_CASE("Loading tacot-air mixture", "[loading][mixtures]")
+void checkLoadMixture(
+    const std::string& mix_name, int ns, int ne, int nr)
 {
     std::auto_ptr<Mixture> mix;
-    CHECK_NOTHROW(mix.reset(new Mixture("tacot-air")));
+    CHECK_NOTHROW(mix.reset(new Mixture(mix_name)));
 
-    CHECK(mix->nSpecies() == 35);
-    CHECK(mix->nElements() == 4);
-    CHECK(mix->nReactions() == 0);
+    CHECK(mix->nSpecies() == ns);
+    CHECK(mix->nElements() == ne);
+    CHECK(mix->nReactions() == nr);
 
-    { // Check that collision integral data is found without any warnings
+    {
         CoutRedirect cout;
         CHECK_NOTHROW(mix->collisionDB().Q11ij());
         INFO("standard out =\n" << cout.str());
         CHECK(cout.str().find("Warning") == std::string::npos);
     }
+}
+
+TEST_CASE("Loading air_5 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("air_5", 5, 2, 5);
+}
+
+TEST_CASE("Loading air_11 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("air_11", 11, 3, 22);
+}
+
+TEST_CASE("Loading Mars_19 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("Mars_19", 19, 4, 27);
+}
+
+TEST_CASE("Loading tacot-air_35 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("tacot-air_35", 35, 4, 0);
 }

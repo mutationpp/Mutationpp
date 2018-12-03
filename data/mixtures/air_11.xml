@@ -1,7 +1,8 @@
-<mixture mechanism="air5">
-    
+<!-- Ionized 11 species air mixture -->
+<mixture mechanism="air11_Park">
+
     <species>
-        N O NO N2 O2
+        e- N+ O+ NO+ N2+ O2+ N O NO N2 O2
     </species>
     
     <element_compositions default="air">
@@ -9,3 +10,4 @@
     </element_compositions>
     
 </mixture>
+

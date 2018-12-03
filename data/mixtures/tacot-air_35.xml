@@ -1,5 +1,5 @@
 
-<!-- TACOT / Air mixture -->
+<!-- Mixture of TACOT and air species -->
 <mixture thermo_db="NASA-9" >
 
     <species>
