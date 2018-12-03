@@ -127,13 +127,16 @@ double CollisionIntegral::loadSpeciesParameter(
     // Load default units if available
     db_iter->getAttribute("units", units, units);
 
+    // Check if the species name has an alias
+    std::string name = speciesAlias(root, species);
+
     // Look for species name
     XmlElement::const_iterator sp_iter =
-        db_iter->findTagWithAttribute("species", "name", species);
+        db_iter->findTagWithAttribute("species", "name", name);
     if (sp_iter == db_iter->end())
         return def;
 
-    // Found it so load the value
+    // Found it, get value
     double value;
     sp_iter->getAttribute("value", value, "must have a 'value' attribute.");
 
@@ -145,6 +148,29 @@ double CollisionIntegral::loadSpeciesParameter(
         return value;
 
     return Units(units).convertToBase(value);
+}
+
+//==============================================================================
+
+std::string CollisionIntegral::speciesAlias(
+	Mutation::Utilities::IO::XmlElement& root, const std::string& species)
+{
+    // First look for the aliases list
+    XmlElement::const_iterator db_iter =
+        root.findTag("aliases");
+    if (db_iter == root.end())
+        return species;
+    
+    // Look for species name
+    XmlElement::const_iterator sp_iter =
+        db_iter->findTagWithAttribute("species", "name", species);
+    if (sp_iter == db_iter->end())
+        return species;
+    
+    // Get the alias name
+    std::string alias;
+    sp_iter->getAttribute("alias", alias, "must specify a species alias");
+    return alias;
 }
 
 //==============================================================================

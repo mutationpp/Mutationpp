@@ -318,6 +318,9 @@ bool XmlElement::parse(
     // If this element has children then force no value
     if (m_children.size() > 0)
         m_text.clear();
+
+    // Add special end element
+    m_children.push_back(XmlEndElement());
         
     return true;
 }

@@ -49,13 +49,13 @@
     <defaults>
         <!-- Neutral-Neutral interactions -->
         <neutral-neutral>
-            <!-- Warn user if missing Q11 or Q22 -->
-            <Q11 type="warning" value="1.0e-20"/>
-            <Q22 type="warning" value="1.0e-20"/>
-            
+            <Q11 type="Pirani"/>
+            <Q12 type="Pirani"/>
+            <Q13 type="Pirani"/>
+            <Q22 type="Pirani"/>
             <Ast type="from A*"/>
-            <Bst type="constant" value="1.15" ref="Wright2005"/>
-            <Cst type="constant" value="0.92" ref="Wright2005"/>
+            <Bst type="from B*"/>
+            <Cst type="from C*"/>
         </neutral-neutral>
         
         <!-- Ion-Neutral interactions -->
@@ -89,7 +89,6 @@
             <Q11 type="Debye-Huckel"/>
             <Q12 type="Debye-Huckel"/>
             <Q13 type="Debye-Huckel"/>
-            <Q13 type="Debye-Huckel"/>
             <Q14 type="Debye-Huckel"/>
             <Q15 type="Debye-Huckel"/>
             <Q22 type="Debye-Huckel"/>
@@ -101,41 +100,121 @@
         </charged>
     </defaults>
 
+    <aliases>
+        <!-- NASA-9 names -->
+        <species name="C2H2,acetylene" alias="C2H2" />
+        <species name="C4H2,butadiyne" alias="C2H4" />
+        <species name="C3H3,1-propynl" alias="1-C3H3" />
+        <species name="C3H3,2-propynl" alias="2-C3H3" />
+        <species name="C6H5O,phenoxy" alias="C6H5O" />
+        <species name="C6H5OH,phenol" alias="C6H5OH" />
+    </aliases>
+    
     <!-- Dipole Polarizabilities -->
     <dipole-polarizabilities units="Å-Å-Å">
-        <species name="C"    value="1.76"   ref="Wright2007"/>
-        <species name="C2"   value="37.64"  ref="Jaffe"/>
-        <species name="C2H"  value="8.41"   ref="Jaffe"/>
-        <species name="C2H2" value="3.63"   ref="Andre2010"/>
-        <species name="C3"   value="17.02"  ref="Jaffe"/>
-        <species name="CH"   value="2.27"   ref="Andre2010"/>
-        <species name="CH2"  value="2.94"   ref="Andre2010"/>
-        <species name="CH2O" value="3.74"   ref="Andre2010"/>
-        <species name="CH3"  value="2.76"   ref="Andre2010"/>
-        <species name="CH4"  value="2.493"  ref="Andre2010"/>
-        <species name="CN"   value="2.00"   ref="Wright2007"/>
-        <species name="CO"   value="1.95"   ref="Wright2007"/>
-        <species name="CO2"  value="2.91"   ref="Wright2007"/>
-        <species name="H"    value="0.6668" ref="Bruno2010"/>
-        <species name="H-"   value="27.0"   ref="Bruno2010"/>
-        <species name="H2"   value="0.81"   ref="Bruno2010"/>
-        <species name="H2+"  value="0.424"  ref="Bruno2010"/>
-        <species name="H2O"  value="1.45"   ref="Andre2010"/>
-        <species name="H3+"  value="0.4663" ref="Bruno2010"/>
-        <species name="HCN"  value="2.525"  ref="Andre2010"/>
-        <species name="He"   value="0.205"  ref="Bruno2010"/>
-        <species name="He+"  value="0.03"   ref="Bruno2010"/>
-        <species name="N"    value="1.10"   ref="Wright2007"/>
-        <species name="N2"   value="1.74"   ref="Wright2007"/>
-        <species name="N2O"  value="3.03"   ref="Andre2010"/>
-        <species name="NO"   value="1.70"   ref="Wright2007"/>
-        <species name="NO2"  value="3.02"   ref="Andre2010"/>
-        <species name="O"    value="0.80"   ref="Wright2007"/>
-        <species name="O2"   value="1.58"   ref="Wright2007"/>
-        <species name="O3"   value="3.21"   ref="Andre2010"/>
-        <species name="OH"   value="1.47"   ref="Andre2010"/>
+        <species name="C"      value="1.76"   ref="Wright2007"/>
+        <species name="C2"     value="7.25"   ref="Jaffe" />
+        <species name="C2H"    value="3.78"   ref="Jaffe" />
+        <species name="C2H2"   value="2.54"   ref="Jaffe" />
+        <species name="C2H4"   value="4.15"   ref="Jaffe" />
+        <species name="C2H6"   value="4.31"   ref="Jaffe" />
+        <species name="C3"     value="5.00"   ref="Jaffe" />
+        <species name="C32H14" value="45.76"  ref="Weber2008" />
+        <species name="C3H"    value="5.30"   ref="Jaffe" />
+        <species name="1-C3H3" value="5.78"   ref="Jaffe" />
+        <species name="2-C3H3" value="7.29"   ref="Jaffe" />
+        <species name="C3HN"   value="5.40"   ref="chemkin" />
+        <species name="C4"     value="5.56"   ref="Jaffe" />
+        <species name="C5"     value="10.49"  ref="Jaffe" />
+        <species name="C6H2"   value="6.19"   ref="Jaffe" />
+        <species name="C6H5O"  value="11.16"  ref="Jaffe" />
+        <species name="C6H5OH" value="11.13"  ref="Jaffe" />
+        <species name="C6H6"   value="10.28"  ref="Jaffe" />
+        <species name="C8H2"   value="12.20"  ref="Chemkin" />
+        <species name="C9H8"   value="15.20"  ref="Chemkin" />
+        <species name="CH"     value="2.27"   ref="Andre2010"/>
+        <species name="CH2"    value="2.94"   ref="Andre2010"/>
+        <species name="CH2O"   value="3.74"   ref="Andre2010"/>
+        <species name="CH2OH"  value="3.23"   ref="Jaffe" />
+        <species name="CH3"    value="2.76"   ref="Andre2010"/>
+        <species name="CH4"    value="2.493"  ref="Andre2010"/>
+        <species name="CN"     value="2.00"   ref="Wright2007"/>
+        <species name="CNC"    value="4.49"   ref="Jaffe" />
+        <species name="CNCN"   value="5.09"   ref="Kobayashi94" />
+        <species name="CNCOCN" value="6.99"   ref="Jaffe" />
+        <species name="CNN"    value="3.95"   ref="Jaffe" />
+        <species name="CO"     value="1.95"   ref="Wright2007"/>
+        <species name="CO2"    value="2.91"   ref="Wright2007"/>
+        <species name="H"      value="0.6668" ref="Bruno2010"/>
+        <species name="H-"     value="27.0"   ref="Bruno2010"/>
+        <species name="H2"     value="0.81"   ref="Bruno2010"/>
+        <species name="H2+"    value="0.424"  ref="Bruno2010"/>
+        <species name="H2O"    value="1.45"   ref="Andre2010"/>
+        <species name="H3+"    value="0.4663" ref="Bruno2010"/>
+        <species name="HCCCCH" value="7.43"   ref="Karamanis" />
+        <species name="HCN"    value="2.525"  ref="Andre2010"/>
+        <species name="HNC"    value="2.35"   ref="Jaffe" />
+        <species name="He"     value="0.205"  ref="Bruno2010"/>
+        <species name="He+"    value="0.03"   ref="Bruno2010"/>
+        <species name="N"      value="1.10"   ref="Wright2007"/>
+        <species name="N2"     value="1.74"   ref="Wright2007"/>
+        <species name="N2O"    value="3.03"   ref="Andre2010"/>
+        <species name="NO"     value="1.70"   ref="Wright2007"/>
+        <species name="NO2"    value="3.02"   ref="Andre2010"/>
+        <species name="O"      value="0.80"   ref="Wright2007"/>
+        <species name="O2"     value="1.58"   ref="Wright2007"/>
+        <species name="O3"     value="3.21"   ref="Andre2010"/>
+        <species name="OH"     value="1.47"   ref="Andre2010"/>
     </dipole-polarizabilities>
-    
+        
+    <!-- Effective electrons participating in polarization -->
+    <effective-electrons>
+        <species name="C" value="4.0" />
+        <species name="C2" value="6.00" />
+        <species name="C2H" value="8.11" />
+        <species name="C2H2" value="10.00" />
+        <species name="C2H4" value="12.00" />
+        <species name="C2H6" value="14.00" />
+        <species name="C3" value="9.33" />
+        <species name="C32H14" value="142.0" />
+        <species name="C3H" value="13.0" />
+        <species name="1-C3H3" value="14.07" />
+        <species name="2-C3H3" value="14.07" />
+        <species name="C3HN" value="16.2" />
+        <species name="C4" value="14.25" />
+        <species name="C5" value="16.80" />
+        <species name="C6H2" value="26.0" />
+        <species name="C6H5O" value="30.71" />
+        <species name="C6H5OH" value="32.44" />
+        <species name="C6H6" value="30.00" />
+        <species name="C8H2" value="34.0" />
+        <species name="C9H8" value="44.0" />
+        <species name="CH" value="3.80" />
+        <species name="CH2" value="4.67" />
+        <species name="CH2OH" value="9.92" />
+        <species name="CH3" value="6.14" />
+        <species name="CH4" value="8.00" />
+        <species name="CN" value="7.00" />
+        <species name="CNC" value="9.92" />
+        <species name="CNCN" value="14.9" />
+        <species name="CNCOCN" value="22.29" />
+        <species name="CNN" value="10.50" />
+        <species name="CO" value="7.60" />
+        <species name="CO2" value="12.00" />
+        <species name="H" value="1.0" />
+        <species name="H2" value="2.00" />
+        <species name="H2O" value="6.00" />
+        <species name="HCCCCH" value="18.0" />
+        <species name="HCN" value="8.40" />
+        <species name="HNC" value="8.4" />
+        <species name="N" value="3.8" />
+        <species name="N2" value="7.60" />
+        <species name="NO" value="8.3" />
+        <species name="O" value="4.7" />
+        <species name="O2" value="9.33" />
+        <species name="OH" value="5.57" />
+    </effective-electrons>
+
     <!-- Explicitly defined collision pairs -->
     <!-- e- -->
     <pair s1="e-" s2="Ar">
@@ -167,8 +246,143 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
+
+    <pair s1="e-" s2="CH"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C2H4"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="CH4"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="HCCCCH"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
     
     <pair s1="e-" s2="C2"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C6H2"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C8H2"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C9H8"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C32H14"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="CH"> <!-- Copying values from C -->
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
               8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
@@ -197,6 +411,21 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
+
+    <pair s1="e-" s2="C2H2"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
     
     <pair s1="e-" s2="C3"> <!-- Copying values from C -->
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
@@ -212,6 +441,22 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
+
+    <pair s1="e-" s2="C3H"> <!-- Copying values from C -->
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.24  6.44  5.63  5.03  4.28  3.87  3.40 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              8.86  6.57  5.95  5.56  5.11  4.86  4.30 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              1.39  1.39  1.30  1.22  1.10  1.05  1.23 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="copy C">
+              2000  4000  5000  6000  8000 10000 15000,
+              0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
+    </pair>
+
     
     <pair s1="e-" s2="CN">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
@@ -228,6 +473,81 @@
               1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
     </pair>
     
+    <pair s1="e-" s2="CNCN">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="HCN">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="HNC">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="C3HN">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="CN">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              3.45  4.63  6.30  6.71  6.86  6.68  6.23  5.14  4.39 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              2.94  4.13  6.31  6.81  6.93  6.58  6.01  4.79  4.02 </Q22>
+        <Bst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              0.66  0.60  0.91  1.14  1.28  1.41  1.41  1.31  1.24 </Bst>
+        <Cst type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
+              1000  2000  4000  5000  6000  8000 10000 15000 20000,
+              1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
+    </pair>
+
     <pair s1="e-" s2="CO">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -389,6 +709,36 @@
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.09  1.08  1.06  1.05  1.05  1.05  1.05  1.05  1.06 </Cst>
     </pair>
+
+    <pair s1="e-" s2="OH">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.72  0.85  0.98  1.02  1.05  1.09  1.13  1.20  1.26 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.82  1.05  1.34  1.44  1.52  1.65  1.73  1.85  1.90 </Q22>
+        <Bst type="table" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.81  0.85  0.89  0.90  0.91  0.90  0.89  0.87  0.86 </Bst>
+        <Cst type="table" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             1.09  1.08  1.06  1.05  1.05  1.05  1.05  1.05  1.06 </Cst>
+    </pair>
+
+    <pair s1="e-" s2="H2O">
+        <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.72  0.85  0.98  1.02  1.05  1.09  1.13  1.20  1.26 </Q11>
+        <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.82  1.05  1.34  1.44  1.52  1.65  1.73  1.85  1.90 </Q22>
+        <Bst type="table" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             0.81  0.85  0.89  0.90  0.91  0.90  0.89  0.87  0.86 </Bst>
+        <Cst type="table" ref="Copy O">
+             1000  2000  4000  5000  6000  8000 10000 15000 20000,
+             1.09  1.08  1.06  1.05  1.05  1.05  1.05  1.05  1.06 </Cst>
+    </pair>
     
     <pair s1="e-" s2="O2">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
@@ -413,6 +763,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             12.88 11.12  9.66  8.60  7.57  7.23  6.96  6.53  6.20  5.60  5.17 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="Ar+">
@@ -431,6 +783,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.31  8.96  8.03  6.84  5.75  5.42  5.17  4.77  4.47  3.95 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="N+">
@@ -449,6 +803,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             11.97 10.50  9.28  8.38  7.53  7.25  7.02  6.63  6.32  5.73 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="N2+">
@@ -467,6 +823,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.03 11.33 10.89  9.90  8.85  7.79  7.44  7.15  6.71  6.37  5.77 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="NO+">
@@ -485,6 +843,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
             11.11 10.13  8.87  7.69  6.60  6.26  6.00  5.59  5.28  4.74  4.37 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="O+">
@@ -503,6 +863,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000,
             12.33 10.82  9.57  8.54  7.48  7.14  6.87  6.44  6.12  5.54 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="Ar" s2="O2+">
@@ -742,12 +1104,7 @@
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
 
-    <pair s1="C+" s2="H2">
-        <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
-            2.742307e-15 -4.302137e-14 -5.000000e-01 5.945814e+00 </Q11>
-        <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
-            2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
-    </pair>
+
 
     <pair s1="C+" s2="N">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
@@ -2168,6 +2525,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.11  7.94  6.72  5.82  4.98  4.70  4.48  4.14  3.88  3.43  3.11 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N" s2="N+">
@@ -2186,6 +2545,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             11.21  9.68  8.81  7.76  6.73  6.18  5.74  5.36 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N" s2="N2+">
@@ -2204,6 +2565,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              9.65  9.26  8.29  7.07  5.94  5.60  5.33  4.91  4.60  4.06 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N" s2="NO+">
@@ -2222,6 +2585,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.08  8.15  7.09  6.06  5.14  4.88  4.67  4.34  4.07  3.56  3.21 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N" s2="O+">
@@ -2240,6 +2605,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.68  6.63  5.67  5.38  5.14  4.78  4.51  4.04 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N" s2="O2+">
@@ -2296,6 +2663,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             13.72 11.80 10.94  9.82  8.70  8.08  7.58  7.32 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N2" s2="N2+">
@@ -2314,6 +2683,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.44 11.87 11.44 10.48  9.32  8.04  7.61  7.27  6.74  6.33  5.62 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N2" s2="NO+">
@@ -2332,6 +2703,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
              8.99  6.72  5.91  5.22  5.01  4.36  3.95 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N2" s2="O+">
@@ -2350,6 +2723,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300  1000  2000  4000  5000 10000 15000,
             11.23  8.36  7.35  6.47  6.21  5.42  4.94 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="N2" s2="O2+">
@@ -2397,6 +2772,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             13.25 11.58 11.15 10.16  9.07  7.91  7.53  7.21  6.73  6.36  5.72 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="NO" s2="NO+">
@@ -2415,6 +2792,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500   600  1000  2000  4000  5000  6000  8000 10000 15000,
              8.79  8.47  7.66  6.64  5.69  5.40  5.17  4.82  4.55  4.08 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="NO" s2="O+">
@@ -2433,6 +2812,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.93 11.32 10.90  9.94  8.89  7.80  7.45  7.17  6.73  6.39  5.80 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="NO" s2="O2+">
@@ -2471,6 +2852,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
               300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              9.46  8.22  6.76  5.58  4.67  4.41  4.20  3.88  3.64  3.21  2.91 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="O" s2="O+">
@@ -2489,6 +2872,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="10">
               300   600  1000  2000  4000  6000  8000 10000,
             10.13  8.61  7.78  6.71  5.67  5.13  4.78  4.50 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="O" s2="O2+">
@@ -2518,6 +2903,8 @@
         <Q22 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
               300   500   600  1000  2000  4000  5000  6000  8000 10000 15000,
             12.62 11.06 10.65  9.72  8.70  7.70  7.38  7.12  6.73  6.42  5.89 </Q22>
+        <Bst type="constant" value="1.15" ref="Wright2005"/>
+        <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
     
     <pair s1="O2" s2="O2+">
