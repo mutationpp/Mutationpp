@@ -185,10 +185,11 @@ SharedPtr<CollisionIntegral> CollisionPair::loadIntegral(const string& kind)
 {
     IO::XmlElement::const_iterator iter =
         findXmlElementWithIntegralType(kind);
+
     if (iter == mp_xml->end()) {
-        cout << "Collision integral " << kind << " is not given for the pair "
-             << name() << "." << endl;
-        exit(1);
+        throw Mutation::MissingDataError() 
+            << "Collision integral " << kind << " is not given for the pair "
+            << name() << '.';
     }
 
     return CollisionIntegral::load(CollisionIntegral::ARGS(*iter, *this, kind));

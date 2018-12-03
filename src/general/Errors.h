@@ -437,6 +437,15 @@ public:
     }
 };
 
+/// Reports a "missing data" error.  
+class MissingDataError : public ErrorExtension<MissingDataError>
+{
+public:
+    MissingDataError() :
+        ErrorExtension<MissingDataError>("missing data")
+    { }
+};
+
 #define NotImplementedError(_func_) NotImplementedError(_func_, __FILE__, __LINE__)
 
 } // namespace Mutation
