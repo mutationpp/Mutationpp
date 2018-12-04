@@ -887,10 +887,11 @@ at a temperature \f$ T_{\text{s}} \f$  emitting energy following the Stefan-Bolt
 \dot{\Omega}_{\text{s},e} = \dot{\Omega}_{\text{rad}} = \epsilon \left( \sigma T_{\text{s}}^4
 - q_{\text{rad},g} \right)
 \f]
-with $\sigma$ being the Stefan-Boltzmann constant and \f$ \epsilon \f$ being the emissivity
-coefficient.  and \f$ T_{\text{env}} \f$ is the surrounding environment temperature.
-
-\f$ \sigma T_{\text{env}}^4 \f$.
+with \f$ \sigma \f$ being the Stefan-Boltzmann constant and \f$ \epsilon \f$ the emissivity
+of the surface. \f$ T_{\text{env}} \f$ is the surrounding environment temperature which can
+be used to simulate the far field radiative heat flux based on the formula
+\f$ \sigma T_{\text{env}}^4 \f$, which replaces the term \f$ q_{\text{rad},g} \f$.
+This is a relatively bad approximation and, therefore, it is better to be omitted.
 
 In order to obtain the value for the conductive heat flux on the solid,
 either a material code should be used or one should at least solve the

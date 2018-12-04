@@ -89,15 +89,15 @@ GasSurfaceInteraction::GasSurfaceInteraction(
     if (xml_pos_surf_feats != root_element.end())
         xml_pos_surf_feats->getAttribute("solid_conduction", solid_model);
 
+    XmlElement::const_iterator xml_pos_solid_props;
     if (solid_model == "steady_state") {
-        XmlElement::const_iterator xml_pos_solid_props =
-            root_element.findTag("solid_properties");
+        xml_pos_solid_props = root_element.findTag("solid_properties");
         if (xml_pos_solid_props == root_element.end())
             errorSolidPropertiesNotProvided(solid_model);
     } else {
         solid_model = "none";
     }
-    DataSolidProperties data_solid_props = { *xml_pos_surf_props };
+    DataSolidProperties data_solid_props = { *xml_pos_solid_props };
     mp_surf_state->setSolidProperties(solid_model, data_solid_props);
 
     // Creating the Surface class
