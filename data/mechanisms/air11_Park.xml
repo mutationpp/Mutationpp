@@ -1,19 +1,19 @@
-<!-- 
+<!--
 Park air11 reaction mechanism
 Rates taken from:
     1) Park et al., JTHT 15(1):76-90, 2001.
     2) Park, JTHT 7(3):385-398, 1993.
 -->
 <mechanism name="air_11_Park">
-    
+
     <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
-    
+
     <!-- Park, 2001 -->
     <reaction formula="N2+M=2N+M">
         <arrhenius A="3.0E+22" n="-1.6" T="113200.0" />
         <M>N2:0.2333, NO:0.2333, O2:0.2333, O2+:0.0</M>
     </reaction>
-    
+
     <!-- Park, 2001 -->
     <reaction formula="N2+e-=2N+e-">
         <arrhenius A="3.0E+24" n="-1.6" T="113200." />
@@ -35,7 +35,7 @@ Rates taken from:
     <reaction formula="N2+O=NO+N">
         <arrhenius A="5.7E+12" n="0.42" T="42938.0" />
     </reaction>
-    
+
     <!-- Park, 2001 -->
     <reaction formula="NO+O=O2+N">
         <arrhenius A="8.4E+12" n="0.0" T="19400.0" />
