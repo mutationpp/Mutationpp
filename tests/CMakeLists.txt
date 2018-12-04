@@ -55,13 +55,15 @@ include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(run_tests)
 
 # Setup the code coverage analysis for tests
-if (${CMAKE_BUILD_TYPE} MATCHES "Coverage")
-    include(CodeCoverage)
-    set(LCOV_REMOVE_EXTRA 
-        '${CMAKE_SOURCE_DIR}/tests/*' 
-        '${CMAKE_SOURCE_DIR}/install/*'
+if (ENABLE_COVERAGE)
+    find_package(codecov)
+    add_coverage(run_tests)
+    list(APPEND LCOV_REMOVE_PATTERNS 
+        "/usr/" 
+        "${CMAKE_SOURCE_DIR}/tests/*" 
+        "${CMAKE_SOURCE_DIR}/install/*"
     )
-    SETUP_TARGET_FOR_COVERAGE(test_coverage run_tests coverage)
+    coverage_evaluate()
 endif()
 
 # Make sure examples compile and run

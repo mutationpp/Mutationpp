@@ -166,9 +166,10 @@ add_subdirectory(src)
 ################################################################################
 # CTest
 ################################################################################
-option (ENABLE_TESTING
-    "Enable regression testing with CTest (requires Boost.Test library)" OFF)
-if (ENABLE_TESTING OR ${CMAKE_BUILD_TYPE} MATCHES "Coverage")
+option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
+option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
+
+if (ENABLE_TESTING OR ENABLE_COVERAGE)
     enable_testing()
     add_subdirectory(tests)
 endif()

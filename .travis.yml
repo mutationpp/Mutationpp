@@ -1,13 +1,76 @@
 language: cpp
-sudo: false
 
-os:
-  - linux
-  - osx
+matrix:
+  include:
 
-compiler:
-  - gcc
-  - clang
+    # Linux / Clang builds
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages: ['clang-4.0']
+      env: COMPILER='clang++-4.0'
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages: ['clang-5.0']
+      env: COMPILER='clang++-5.0'
+    
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages: ['clang-6.0']
+      env: COMPILER='clang++-6.0'
+    
+    # Linux / GCC builds
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['g++-4.9']
+      env: COMPILER='g++-4.9'
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['g++-5']
+      env: COMPILER='g++-5'
+    
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['g++-6']
+      env: COMPILER='g++-6'
+    
+    # OSX / Clang Builds
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env: COMPILER='clang++'
+    
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: COMPILER='clang++'
+    
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+      env: COMPILER='clang++'
+    
+    # Code coverage
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['lcov', 'g++-7']
+      env: COMPILER='g++-7' COVERAGE=1
+
 
 install: 
   - export MPP_DIRECTORY=$PWD
@@ -19,15 +82,12 @@ install:
 
 script: 
   - mkdir build; cd build
-  - cmake -DENABLE_TESTING:BOOL=ON ..
-  - make install
-  - ctest -V
-
-# after_success:
-#     # Creating report
-#   - cd ${TRAVIS_BUILD_DIR}
-#   - lcov --directory . --capture --output-file coverage.info # capture coverage info
-#   - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
-#   - lcov --list coverage.info #debug info
-#   # Uploading report to CodeCov
-#   - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+  - cmake -DENABLE_TESTING:BOOL=ON -DENABLE_COVERAGE={COVERAGE} ..
+  - make -j 2 install
+  - ctest -j 2
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
+      make gcov
+      make lcov
+      bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
+    fi
