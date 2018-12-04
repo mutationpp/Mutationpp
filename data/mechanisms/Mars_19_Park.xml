@@ -1,0 +1,142 @@
+<!-- Park Martian Reaction Mechanism from  Park 1994: Journal of Thermophysics and Heat Transfer Vol. 8 No. 1-->
+<!-- Note that this mechanism needs to be verified, the source is not entirely clear. -->
+<mechanism name="Mars_19_Park">
+
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+
+    <!-- 6 Park 1994-->
+    <reaction formula="CO+M=C+O+M">
+        <arrhenius A="2.3E+20" n="-1.00" T="129000." />
+        <M>N:1.47826087, O:1.47826087, C:1.47826087</M>
+    </reaction>
+
+    <!-- 4 Park 1994-->
+    <reaction formula="N2+M=2N+M">
+        <arrhenius A="7E+21" n="-1.60" T="113200." />
+        <M>N:4.28571428571, O:4.28571428571, C:4.28571428571</M>
+    </reaction>
+
+    <!-- 2 Park 1994-->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="2.0E+21" n="-1.50" T="59750."/>
+        <M>N:5.0, O:5.0, C:5.0</M>
+    </reaction>
+
+    <!-- 7 Park 1994-->
+    <reaction formula="NO+M=N+O+M">
+        <arrhenius A="5.00E+15" n="+0.00" T="75500." />
+        <M>N:22, O:22, C:22, NO:22, CO2:22</M>
+    </reaction>
+
+    <!-- 11 Park 1994-->
+    <reaction formula="CO+O=O2+C">
+        <arrhenius A="3.90E+13" n="-0.18" T="69200." />
+    </reaction>
+
+    <!-- 10 Park 1994-->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="6.40E+17" n="-1.00" T="38370." />
+    </reaction>
+
+    <!-- 17 Park 1994-->
+    <reaction formula="CO2+O=O2+CO">
+        <arrhenius A="2.10E+13" n="0.00" T="27800." />
+    </reaction>
+
+    <reaction formula="C2+M=2C+M">
+        <arrhenius A="3.70E+14" n="0.00" T="69900." />
+    </reaction>
+
+    <reaction formula="NO+O=N+O2">
+        <arrhenius A="8.40E+12" n="0.00" T="19450." />
+    </reaction>
+
+    <reaction formula="CO+C=C2+O">
+        <arrhenius A="2.0E+17" n="-1.00" T="58000." />
+    </reaction>
+
+     <reaction formula="NO++C=NO+C+">
+        <arrhenius A="1.00E+13" n="0.00" T="23200." />
+    </reaction>
+
+    <reaction formula="O2++O=O++O2">
+        <arrhenius A="4.00E+12" n="-0.09" T="18000." />
+    </reaction>
+
+    <reaction formula="NO++N=O++N2">
+        <arrhenius A="3.40E+13" n="-1.08" T="12800." />
+    </reaction>
+
+    <reaction formula="NO++O=O2++N">
+        <arrhenius A="7.20E+12" n="0.29" T="48600." />
+    </reaction>
+
+    <reaction formula="CO+C+=CO++C">
+        <arrhenius A="1.00E+13" n="0.00" T="31400." />
+    </reaction>
+
+
+    <reaction formula="O2+C+=O2++C">
+        <arrhenius A="1.00E+13" n="0.00" T="9400." />
+    </reaction>
+
+   <reaction formula="CO2+M=CO+O+M">
+        <arrhenius A="6.90E+21" n="-1.50" T="63275." />
+        <M>N:2.028985507, O:2.028985507, C:2.028985507</M>
+    </reaction>
+
+    <!-- Johnston reaction rates
+    <reaction formula="CO2+M=CO+O+M">
+        <arrhenius A="2.80E+22" n="-1.50" T="63280." />
+        <M>N:2.028985507, O:2.028985507, C:2.028985507</M>
+    </reaction>-->
+
+    <!-- Associative Ionization Reaction -->
+    <reaction formula="N+O=NO++e-">
+        <arrhenius A="8.80E+08" n="1.00" T="31900." />
+    </reaction>
+
+    <reaction formula="O+O=O2++e-">
+        <arrhenius A="7.10E+02" n="2.70" T="80600." />
+    </reaction>
+
+    <reaction formula="C+O=CO++e-">
+        <arrhenius A="8.80E+08" n="1.00" T="33100." />
+    </reaction>
+
+     <!-- Electron Impact -->
+    <reaction formula="O+e-=O++e-+e-">
+        <arrhenius A="3.9E+33" n="-3.78" T="158500." />
+    </reaction>
+
+    <reaction formula="C+e-=C++e-+e-">
+        <arrhenius A="3.9E+33" n="-3.78" T="130700." />
+    </reaction>
+
+    <!-- Reactions for CN
+    <reaction formula="CN+M=C+N+M">
+        <arrhenius A="2.5E+14" n="0.00" T="71000." />
+    </reaction> -->
+
+    <!-- Reactions for CN (different rates)-->
+    <reaction formula="CN+M=C+N+M">
+        <arrhenius A="2.50E+14" n="0.00" T="87000." />
+    </reaction>
+
+    <reaction formula="CO+N=CN+O">
+        <arrhenius A="1.00E+14" n="0.00" T="38600." />
+    </reaction>
+
+    <reaction formula="N2+C=CN+N">
+        <arrhenius A="1.10E+14" n="-0.11" T="23200." />
+    </reaction>
+
+    <reaction formula="CN+O=NO+C">
+        <arrhenius A="1.60E+13" n="0.10" T="14600." />
+    </reaction>
+
+    <reaction formula="CN+C=C2+N">
+        <arrhenius A="5.00E+13" n="0.00" T="13000." />
+    </reaction>
+
+</mechanism>

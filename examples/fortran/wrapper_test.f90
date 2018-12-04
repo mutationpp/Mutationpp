@@ -36,7 +36,7 @@ program main
     real(8), dimension(:), allocatable :: species_x, wdot, species_y
     real(8), dimension(:), allocatable :: mwi
     
-    mixture     = "air11"
+    mixture     = "air_11"
     state_model = "Equil"
     var = 1
     
