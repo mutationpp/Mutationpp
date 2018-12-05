@@ -54,18 +54,6 @@ target_link_libraries(run_tests mutation++)
 include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(run_tests)
 
-# Setup the code coverage analysis for tests
-if (ENABLE_COVERAGE)
-    find_package(codecov)
-    add_coverage(run_tests)
-    list(APPEND LCOV_REMOVE_PATTERNS 
-        "/usr/" 
-        "${CMAKE_SOURCE_DIR}/tests/*" 
-        "${CMAKE_SOURCE_DIR}/install/*"
-    )
-    coverage_evaluate()
-endif()
-
 # Make sure examples compile and run
 function(test_example name subdir)    
     add_test(
@@ -90,5 +78,8 @@ endif()
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
+
+# Setup the code coverage analysis for tests
+add_coverage(run_tests)
 
 
