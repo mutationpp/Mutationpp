@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     ChemNonEqStateModel.cpp
+    ChemNonEqvSTSModel.cpp
     ChemNonEqTTvStateModel.cpp
     Composition.cpp
     EquilStateModel.cpp
@@ -32,7 +33,9 @@ add_sources(mutation++
     Nasa7DB.cpp
     Nasa9DB.cpp
     ParticleRRHO.cpp
+    ParticleRRaHO.cpp
     RrhoDB.cpp
+    RrahoDB.cpp
     Species.cpp
     SpeciesListDescriptor.cpp
     SpeciesNameFSM.cpp
@@ -43,6 +46,7 @@ add_sources(mutation++
 install(FILES Composition.h DESTINATION include/mutation++)
 install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
 install(FILES ParticleRRHO.h DESTINATION include/mutation++)
+install(FILES ParticleRRaHO.h DESTINATION include/mutation++)
 install(FILES Species.h DESTINATION include/mutation++)
 install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)
 install(FILES SpeciesNameFSM.h DESTINATION include/mutation++)
