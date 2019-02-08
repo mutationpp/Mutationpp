@@ -447,11 +447,34 @@ void Thermodynamics::speciesCpOverR(
 
 //==============================================================================
 
+void Thermodynamics::speciesCvOverR(double *const p_cv) const
+{
+    // WARNING: The total cv only makes sense at thermal equilibirum
+    mp_thermodb->cv(
+        mp_state->T(), mp_state->T(), mp_state->T(), mp_state->T(),
+        mp_state->T(), p_cv, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesCvOverR(double T, double* const p_cv) const
+{
+    mp_thermodb->cv(
+        T, T, T, T, T, p_cv, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
 void Thermodynamics::speciesCvOverR(
     double Th, double Te, double Tr, double Tv, double Tel, double *const p_cv, 
     double *const p_cvt, double *const p_cvr, double *const p_cvv, 
     double *const p_cvel) const
 {
+    // TODO: implement this and comment the version below
+    // since we compute cv first.
+    //mp_thermodb->cv(
+    //    Th, Te, Tr, Tv, Tel, p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
+
     mp_thermodb->cp(Th, Te, Tr, Tv, Tel, p_cv, p_cvt, p_cvr, p_cvv, p_cvel);
 
     // WARNING: the total cv only makes sense at thermal equilibrium    
@@ -927,6 +950,7 @@ void Thermodynamics::speciesHOverRT(double T, double* const h) const
 }
 
 //==============================================================================
+
 void Thermodynamics::speciesHOverRT(
     double T, double Te, double Tr, double Tv, double Tel,
     double* const h, double* const ht, double* const hr, double* const hv,
@@ -935,6 +959,37 @@ void Thermodynamics::speciesHOverRT(
     mp_thermodb->enthalpy(
         T, Te, Tr, Tv, Tel,
         h, ht, hr, hv, hel, hf);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesEOverRT(
+    double* const e, double* const et, double* const er, double* const ev,
+    double* const eel, double* const ef) const
+{
+    mp_thermodb->energy(
+        mp_state->T(), mp_state->Te(), mp_state->Tr(), mp_state->Tv(),
+        mp_state->Tel(), e, et, er, ev, eel, ef);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesEOverRT(double T, double* const e) const 
+{
+    mp_thermodb->energy(
+        T, T, T, T ,T, e, NULL, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesEOverRT(
+    double T, double Te, double Tr, double Tv, double Tel,
+    double* const e, double* const et, double* const er, double* const ev,
+    double* const eel, double* const ef) const
+{
+    mp_thermodb->energy(
+        T, Te, Tr, Tv, Tel,
+        e, et, er, ev, eel, ef);
 }
 
 //==============================================================================
@@ -1147,5 +1202,3 @@ void Thermodynamics::surfaceMassBalance(
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-

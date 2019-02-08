@@ -1,7 +1,7 @@
 /**
- * @file RrhoDB.cpp
+ * @file RrahoDB.cpp
  *
- * @brief Provides a Rigid-Rotator Harmonic Oscillator thermodynamic database.
+ * @brief Provides a Rigid-Rotator anHarmonic Oscillator thermodynamic database.
  */
 
 /*
@@ -28,7 +28,8 @@
 #include "Constants.h"
 #include "ThermoDB.h"
 #include "Species.h"
-#include "ParticleRRHO.h"
+#include "ParticleRRaHO.h"
+#include "ParticleRRaHO.h"
 #include "AutoRegistration.h"
 #include "Functors.h"
 #include "LookupTable.h"
@@ -96,15 +97,15 @@ typedef struct {
 
 
 /**
- * A thermodynamic database that uses the Rigid-Rotator Harmonic-Oscillator
- * model for computing species thermodynamic properties.  See the individual 
+ * A thermodynamic database that uses the Rigid-Rotator anHarmonic-Oscillator
+ * model for computing species thermodynamic properties. See the individual 
  * thermodynamic functions for specific descriptions of the model.
  */
-class RrhoDB : public ThermoDB
+class RrahoDB : public ThermoDB
 {
 public:
 
-    RrhoDB(int arg)
+    RrahoDB(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
           m_use_tables(true),
@@ -114,7 +115,7 @@ public:
     /**
      * Destructor.
      */
-    ~RrhoDB() 
+    ~RrahoDB() 
     {
         delete [] mp_lnqtmw;
         delete [] mp_hform;
@@ -454,7 +455,7 @@ public:
 //    {
 //        EelFunctor()(Tel, p_eel, m_elec_data, Eq());
 //    }
-    
+
     /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.
@@ -602,7 +603,7 @@ private:
 protected:
 
     /**
-     * Loads all of the species from the RRHO database.
+     * Loads all of the species from the RRaHO database.
      */
     virtual void loadAvailableSpecies(std::list<Species>& species)
     {
@@ -615,17 +616,23 @@ protected:
             
             // We can also add all of the excited states as implicitly defined
             // species
-            IO::XmlElement::const_iterator rrho_iter =
+            IO::XmlElement::const_iterator rraho_iter =
                 species_iter->findTagWithAttribute(
-                    "thermodynamics", "type", "RRHO");
+                    "thermodynamics", "type", "RRaHO");
             
-            if (rrho_iter == species_iter->end())
+            if (rraho_iter == species_iter->end())
                 continue;
             
             Species& ground_state = species.back();
-            ParticleRRHO rrho(*rrho_iter);
-            for (size_t i = 0; i < rrho.nElectronicLevels(); ++i)
+            ParticleRRaHO rraho(*rraho_iter);
+            for (size_t i = 0; i < rraho.nElectronicLevels(); ++i)
                 species.push_back(Species(ground_state, i));
+
+	    //for (size_t e = 0; e < rraho.nElectronicLevels(); ++e) {
+            //    for (size_t v = 0; v < rraho.nVibrationalLevels(e); ++v) {
+            //        species.push_back(Species(ground_state, e, v));
+            //    }
+            //}
         }
     }
     
@@ -637,33 +644,33 @@ protected:
         m_ns = species().size();
         m_has_electron = (species()[0].type() == ELECTRON);
         
-        // Load the RRHO models for each of the needed species
+        // Load the RRaHO models for each of the needed species
         IO::XmlDocument species_doc(databaseFileName("species.xml", "thermo"));
         
-        vector<ParticleRRHO> rrhos;
-        map<std::string, const ParticleRRHO*> to_expand;
+        vector<ParticleRRaHO> rrahos;
+        map<std::string, const ParticleRRaHO*> to_expand;
         
         for (int i = 0; i < m_ns; ++i) {
             if (species()[i].name() == species()[i].groundStateName()) {
-                rrhos.push_back(*(species_doc.root().findTagWithAttribute(
+                rrahos.push_back(*(species_doc.root().findTagWithAttribute(
                     "species", "name", species()[i].groundStateName())->
-                        findTagWithAttribute("thermodynamics", "type", "RRHO")));
+                        findTagWithAttribute("thermodynamics", "type", "RRaHO")));
             }
             else {
-                const ParticleRRHO* p_rrho = to_expand[species()[i].groundStateName()];
-                if (p_rrho == NULL) {
-                    p_rrho = new ParticleRRHO(
+                const ParticleRRaHO* p_rraho = to_expand[species()[i].groundStateName()];
+                if (p_rraho == NULL) {
+                    p_rraho = new ParticleRRaHO(
                         *(species_doc.root().findTagWithAttribute(
                             "species", "name", species()[i].groundStateName())->
-                                findTagWithAttribute("thermodynamics", "type", "RRHO")));
-                    to_expand[species()[i].groundStateName()] = p_rrho;
+                                findTagWithAttribute("thermodynamics", "type", "RRaHO")));
+                    to_expand[species()[i].groundStateName()] = p_rraho;
                 }
                 
-                rrhos.push_back(ParticleRRHO(*p_rrho, species()[i].level()));
+                rrahos.push_back(ParticleRRaHO(*p_rraho, species()[i].level()));
             }
         }
         
-        map<std::string, const ParticleRRHO*>::iterator iter =
+        map<std::string, const ParticleRRaHO*>::iterator iter =
             to_expand.begin();
         while (iter != to_expand.end()) {
             delete iter->second;
@@ -702,17 +709,17 @@ protected:
         
         // Store the species formation enthalpies in K
         mp_hform = new double [m_ns];
-        LOOP(mp_hform[i] = rrhos[i].formationEnthalpy() / RU)
+        LOOP(mp_hform[i] = rrahos[i].formationEnthalpy() / RU)
 
         // Store the molecule's rotational energy parameters
         mp_rot_data = new RotData [m_nm];
         LOOP_MOLECULES(
-            const ParticleRRHO& rrho = rrhos[j];
-            int linear = rrho.linearity();
+            const ParticleRRaHO& rraho = rrahos[j];
+            int linear = rraho.linearity();
             mp_rot_data[i].linearity  = linear / 2.0;
             mp_rot_data[i].ln_omega_t = 
-                std::log(rrho.rotationalTemperature()) + 2.0 / linear *
-                std::log(rrho.stericFactor());
+                std::log(rraho.rotationalTemperature()) + 2.0 / linear *
+                std::log(rraho.stericFactor());
         )
         
         // Store the vibrational temperatures of all the molecules in a compact
@@ -720,16 +727,16 @@ protected:
         mp_nvib = new int [m_nm];
         int nvib = 0;
         LOOP_MOLECULES(
-            mp_nvib[i] = rrhos[j].nVibrationalLevels();
+            mp_nvib[i] = rrahos[j].nVibrationalLevels();
             nvib += mp_nvib[i];
         )
         
         mp_vib_temps = new double [nvib];
         int itemp = 0;
         LOOP_MOLECULES(
-            const ParticleRRHO& rrho = rrhos[j];
+            const ParticleRRaHO& rraho = rrahos[j];
             for (int k = 0; k < mp_nvib[i]; ++k, itemp++)
-                mp_vib_temps[itemp] = rrho.vibrationalEnergy(k);
+                mp_vib_temps[itemp] = rraho.vibrationalEnergy(k);
         )
         
         // Finally store the electronic energy levels in a compact form like the
@@ -737,19 +744,19 @@ protected:
         m_elec_data.p_nelec = new int [m_na + m_nm];
         m_elec_data.nlevels = 0;
         LOOP_HEAVY(
-            m_elec_data.p_nelec[i] = rrhos[j].nElectronicLevels();
+            m_elec_data.p_nelec[i] = rrahos[j].nElectronicLevels();
             m_elec_data.nlevels += m_elec_data.p_nelec[i];
         )
         
         m_elec_data.p_levels = new ElecLevel [m_elec_data.nlevels];
         int ilevel = 0;
         LOOP_HEAVY(
-            const ParticleRRHO& rrho = rrhos[j];
+            const ParticleRRaHO& rraho = rrahos[j];
             for (int k = 0; k < m_elec_data.p_nelec[i]; ++k, ilevel++) {
                 m_elec_data.p_levels[ilevel].g =
-                    rrho.electronicEnergy(k).first;
+                    rraho.electronicEnergy(k).first;
                 m_elec_data.p_levels[ilevel].theta = 
-                    rrho.electronicEnergy(k).second;
+                    rraho.electronicEnergy(k).second;
             }
         )        
         
@@ -1074,14 +1081,14 @@ private:
     //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;
     //Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
 
-}; // class RrhoDB
+}; // class RrahoDB
 
 #undef LOOP
 #undef LOOP_HEAVY
 #undef LOOP_MOLECULES
 
-// Register the RRHO model with the other thermodynamic databases
-Utilities::Config::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
+// Register the RRaHO model with the other thermodynamic databases
+Utilities::Config::ObjectProvider<RrahoDB, ThermoDB> rrahoDB("RRaHO");
 
     } // namespace Thermodynamics
 } // namespace Mutation

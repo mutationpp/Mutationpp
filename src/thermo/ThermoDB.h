@@ -209,6 +209,38 @@ public:
     virtual void hel(double Tel, double* const p_hel);
 
     /**
+     * Computes the unitless species energy \f$ e_i/R_U T_h\f$ of each
+     * species in thermal nonequilibrium, which is non-dimensionalized by the 
+     * heavy particle translational temperature. 
+     *
+     * @param Th  - heavy particle translational temperature
+     * @param Te  - free electron temperature
+     * @param Tr  - mixture rotational temperature
+     * @param Tv  - mixture vibrational temperature
+     * @param Tel - mixture electronic temperature
+     * @param e   - on return, the array of species non-dimensional energies
+     * @param et  - if not NULL, the array of species translational energies
+     * @param er  - if not NULL, the array of species rotational energies
+     * @param ev  - if not NULL, the array of species vibrational energies
+     * @param eel - if not NULL, the array of species electronic energies
+     * @param ef  - if not NULL, the array of the species formation energies
+     */
+    virtual void energy(
+        double Th, double Te, double Tr, double Tv, double Tel, double* const e,
+        double* const et, double* const er, double* const ev, double* const eel,
+        double* const ef) = 0;
+
+    /**
+     * Returns the species vibrational energy at the given temperature.
+     */
+    virtual void ev(double Tv, double* const p_ev);
+
+    /**
+     * Returns the species electronic energy at the given temperature.
+     */
+    virtual void eel(double Tel, double* const p_eel);
+
+    /**
      * Computes the unitless species entropy \f$s_i/R_u\f$ allowing for thermal 
      * nonequilibrium.
      *
@@ -282,4 +314,3 @@ private:
 } // namespace Mutation
 
 #endif // THERMO_THERMODB_H
-

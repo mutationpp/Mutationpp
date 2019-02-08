@@ -181,6 +181,20 @@ void ThermoDB::hel(double T, double* const p_h)
 
 //==============================================================================
 
+void ThermoDB::ev(double T, double* const p_e)
+{
+    throw NotImplementedError("ThermoDB::ev()");
+}
+
+//==============================================================================
+
+void ThermoDB::eel(double T, double* const p_e)
+{
+    throw NotImplementedError("ThermoDB::eel()");
+}
+
+//==============================================================================
+
 void ThermoDB::cpint(double T, double* const p_cp) {
     cp(T, T, T, T, T, p_cp);
     Map<ArrayXd>(p_cp, m_species.size()) -= 2.5;

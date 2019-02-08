@@ -98,6 +98,9 @@ void Nasa9Polynomial::enthalpy(const double *const p_params, double &h) const
         h += mp_coefficients[tr][i] * p_params[i];
 }
 
+void Nasa9Polynomial::energy(const double *const p_params, double &e) const
+{}
+
 void Nasa9Polynomial::entropy(const double *const p_params, double &s) const
 {
     int tr = tRange(p_params[3]);

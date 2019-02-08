@@ -587,6 +587,18 @@ public:
         double *const p_cpv, double *const p_cpel) const;
     
     /**
+     * Returns the unitless vector of species specific heats at constant
+     * volume \f$ C_{v,i} / R_u \f$.
+     */
+    void speciesCvOverR(double *const p_cv) const;
+
+    /**
+     * Returns the unitless vector of species specific heats at constant
+     * volume \f$ C_{v,i} / R_u \f$ given temperature in K.
+     */
+    void speciesCvOverR(double T, double* const p_cv) const;
+
+    /**
      * Returns unitless species specific heats at constant volume \f$ C_{v,i} 
      * / R_u \f$ given temperatures in K.
      * 
@@ -732,7 +744,7 @@ public:
 
      /**
      * Computes the unitless species enthalpies and can optionally fill vectors
-     * for each energy mode by explicitly passing each individual temperature .  
+     * for each energy mode by explicitly passing each individual temperature.  
      */
     void speciesHOverRT(
         double T, double Te, double Tr, double Tv, double Tel,
@@ -740,6 +752,30 @@ public:
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
     
+    /**
+     * Returns the unitless vector of species energies \f$ E_i / R_u T \f$.
+     */
+    void speciesEOverRT(double T, double* const e) const; 
+    
+    /**
+     * Computes the unitless species energies and can optionally fill vectors
+     * for each energy mode.  
+     */
+    void speciesEOverRT(
+        double* const e, double* const et = NULL, 
+        double* const er = NULL, double* const ev = NULL,
+        double* const eel = NULL, double* const ef = NULL) const;
+
+     /**
+     * Computes the unitless species energies and can optionally fill vectors
+     * for each energy mode by explicitly passing each individual temperature.  
+     */
+    void speciesEOverRT(
+        double T, double Te, double Tr, double Tv, double Tel,
+        double* const e, double* const et = NULL, 
+        double* const er = NULL, double* const ev = NULL,
+        double* const eel = NULL, double* const ef = NULL) const;
+
     /**
      * Returns the mixture averaged enthalpy in J/mol.
      */

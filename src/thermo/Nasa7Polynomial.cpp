@@ -79,6 +79,9 @@ void Nasa7Polynomial::enthalpy(const double *const p_params, double &h) const
         mp_coefficients[index][5] * p_params[5];
 }
 
+void Nasa7Polynomial::energy(const double *const p_params, double &e) const
+{}
+
 void Nasa7Polynomial::entropy(const double *const p_params, double &s) const
 {
     int index = tRange(p_params[1]);

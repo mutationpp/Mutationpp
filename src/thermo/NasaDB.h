@@ -66,6 +66,11 @@ public:
         double Th, double Te, double Tr, double Tv, double Tel, 
         double* const h, double* const ht, double* const hr, double* const hv, 
         double* const hel, double* const hf);
+
+    void energy(
+        double Th, double Te, double Tr, double Tv, double Tel, 
+        double* const e, double* const et, double* const er, double* const ev, 
+        double* const eel, double* const ef);
     
     void entropy(
         double Th, double Te, double Tr, double Tv, double Tel, double P,
@@ -136,6 +141,13 @@ void NasaDB<PolynomialType>::enthalpy(
     if (hel != NULL) std::fill(hel, hel+m_ns, 0.0);
     if (hf != NULL) std::fill(hf, hf+m_ns, 0.0);      
 }
+
+template <typename PolynomialType>
+void NasaDB<PolynomialType>::energy(
+    double Th, double Te, double Tr, double Tv, double Tel,
+    double* const e, double* const et, double* const er, double* const ev, 
+    double* const eel, double* const ef)
+{}
 
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::entropy(

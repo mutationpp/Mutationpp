@@ -136,6 +136,12 @@ public:
     void enthalpy(const double *const p_params, double &h) const;
     
     /**
+     * Computes dimensionless energy E/Ru/T.
+     * @see computeParams()
+     */
+    void energy(const double *const p_params, double &e) const;
+
+    /**
      * Computes dimensionless entropy S/Ru.
      * @see computeParams()
      */
