@@ -111,6 +111,25 @@ Species::Species(const Species& to_copy, const size_t level) :
 
 //==============================================================================
 
+Species::Species(const Species& to_copy, const size_t elev, const size_t vlev)
+    : m_name(to_copy.m_name),
+      m_ground_state_name(to_copy.m_name),
+      m_mw(to_copy.m_mw),
+      m_charge(to_copy.m_charge),
+      m_phase(to_copy.m_phase),
+      m_type(to_copy.m_type),
+      m_elevel(elev),
+      m_vlevel(vlev),
+      m_stoichiometry(to_copy.m_stoichiometry)
+{ 
+    stringstream es, vs;
+    es << "(" << m_elevel << ")";
+    vs << "(" << m_vlevel << ")";
+    m_name += es.str() + vs.str();
+}
+
+//==============================================================================
+
 Species::Species(
     const std::string& name, const PhaseType phase) :
     m_name(name),
@@ -255,5 +274,3 @@ void swap(Species& s1, Species& s2)
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-

@@ -152,6 +152,13 @@ ParticleRRaHO::ParticleRRaHO(const IO::XmlElement& xml_element)
                             m_rotational_energies.push_back(rot);
                         }
                     }
+
+		    std::cout << " Particle's vibrational energy at electron level "
+                         << e << " are: " << "\n";
+                         for (size_t i = 0; i < m_vibrational_energies.size(); ++i)
+                             std::cout << i << " "
+                                << m_vibrational_energies.at(i) << std::endl;
+
                 }
             }
         }
@@ -224,4 +231,3 @@ ParticleRRaHO::ParticleRRaHO(const ParticleRRaHO& rraho, const size_t level)
 
     } // namespace Thermodynamics
 } // namespace Mutation
-

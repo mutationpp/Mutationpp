@@ -95,6 +95,15 @@ SpeciesListDescriptor::SpeciesListDescriptor(std::string descriptor)
             m_expand_states.insert(m_species_names[i]);
         }
     }
+
+    // Check on any species whose excited vibrational states should be expanded
+    for (int i = 0; i < m_species_names.size(); ++i) {
+        const size_t size = m_species_names[i].size();
+        if (size > 3 && m_species_names[i].substr(size-3,3) == "(v)") {
+            m_species_names[i] = m_species_names[i].substr(0, size-3);
+            m_expand_states.insert(m_species_names[i]);
+        }
+    }
 }
 
 //==============================================================================

@@ -1,0 +1,11 @@
+<mixture mechanism="argonCR_mech" thermo_db="RRHO">
+
+    <species>
+        e- Ar+ Ar(*)
+    </species>
+    
+    <element_compositions default="argon">
+        <composition name="argon"> Ar:1. </composition>
+    </element_compositions>
+
+</mixture>

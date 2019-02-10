@@ -2060,6 +2060,41 @@
 				0.0
 			</formation_enthalpy>
 		</thermodynamics>
+		<thermodynamics type="RRaHO">
+			<mass 				units="kg">	4.6517344343135997e-26	</mass>
+                	<diameter 			units="m">	3.40385035355259e-10	</diameter>
+			<LJeps 		      		units="J">	1.3465465015559998e-21	</LJeps>
+			<formation_energy 		units="J">	0.0			</formation_energy>
+			<ionization_potential 		units="J">	2.4963524978729996e-18	</ionization_potential>
+			<inertia_moment 		units="J*s^2">	1.4069671675713432e-46	</inertia_moment>
+			<parker_zeta_infty>				20.38982192804293	</parker_zeta_infty>
+                	<reduced_oscillator_mass>			1.1629336085783999e-26	</reduced_oscillator_mass>
+			<internuclear_distance_r_e 	units="m">	1.09768e-10		</internuclear_distance_r_e>
+			<mA_mAB> 					0.5 			</mA_mAB>
+			<mB_mAB>					0.5			</mB_mAB>
+			<linear>					yes			</linear>
+			<rotational_temperature 	units="K">	2.886			</rotational_temperature>
+			<steric_factor>					2			</steric_factor>
+			<vibrational_temperatures 	units="K">	3408.464		</vibrational_temperatures>
+			<formation_enthalpy T="298 K" P="1 atm" units="J/mol">	0.0		</formation_enthalpy>
+			<electronic_levels 		units="J">
+				<level degeneracy="1" elec_energy="0.0" diss_energy="1.5636156480913654e-18" we="235857.0" wexe="1432.4" weye="-0.226"  weze="-0.024"  Be="199.824" ae="1.7318" De="787.10" />
+				<!--
+                                <level degeneracy="3" elec_energy="9.9726731368952e-19"    diss_energy="1.5871290919903015e-18" we="146064"   wexe="1387"   weye="1.03"    weze="-0.197"  Be="145.46"  ae="1.7999" De="0"/>
+                                <level degeneracy="6" elec_energy="1.18430608598617e-18"   diss_energy="1.9687535419515974e-18" we="173339"   wexe="1412.2" weye="-5.69"   weze="0.361"   Be="163.745" ae="1.791"  De="0"/>
+                                <level degeneracy="6" elec_energy="1.1880535160256001e-18" diss_energy="1.968746589383343e-18"  we="150140"   wexe="1160"   weye="0.0"     weze="0.0"     Be="147"     ae="1.71"   De="0"/>
+                                <level degeneracy="3" elec_energy="1.31646531961368e-18"   diss_energy="2.1597513008910746e-18" we="151688"   wexe="1218"   weye="4.186"   weze="-0.0732" Be="147.33"  ae="1.6660" De="0"/>
+                                <level degeneracy="1" elec_energy="1.35381646036714e-18"   diss_energy="2.35063483939477e-18"   we="153025"   wexe="1207"   weye="4.1290"  weze="-0.029"  Be="147.99"  ae="1.657"  De="0"/>
+                                <level degeneracy="2" elec_energy="1.376270449338092e-18"  diss_energy="2.350641990552581e-18"  we="169420"   wexe="1394.9" weye="0.7935"  weze="0.0291"  Be="161.69"  ae="1.7930" De="0"/>
+                                <level degeneracy="2" elec_energy="1.4321678428454e-18"    diss_energy="2.3506407985676955e-18" we="155926"   wexe="1163"   weye="0.0"     weze="0.0"     Be="149.8"   ae="1.66"   De="0"/>
+                                <level degeneracy="5" elec_energy="1.5183597269752e-18"    diss_energy="1.5868523789926422e-18" we="66700"    wexe="0"      weye="0.0"     weze="0.0"     Be="92.10"   ae="0.0"    De="0"/>
+                                <level degeneracy="6" elec_energy="1.74608587578e-18"      diss_energy="1.9687465882114123e-18" we="74249"    wexe="1185"   weye="0.0"     weze="0.0"     Be="92.80"   ae="1.61"   De="0"/>
+				<level degeneracy="6" elec_energy="1.7706383461152e-18"    diss_energy="1.968726723701608e-18"  we="204718"   wexe="2844.5" weye="208.833" weze="-53.5"   Be="182.473" ae="1.868"  De="0"/>
+				-->
+			</electronic_levels>
+			<vibrational_levels units="J">
+			</vibrational_levels>
+		</thermodynamics>
 	</species>
  
 	<!-- Nitrogen diatomic cation -->

@@ -154,6 +154,12 @@ public:
     Species(const Species& species, const size_t level);
     
     /**
+     * Instantiate a new species object which represents a single vibrational
+     * state of the given species at a specific electronic state.
+     */
+    Species(const Species& species, const size_t elevel, const size_t vlevel);
+
+    /**
      * Copy constructor.
      */
     Species(const Species& to_copy);
@@ -286,6 +292,8 @@ private:
     PhaseType    m_phase;
     ParticleType m_type;
     std::size_t  m_level;
+    std::size_t  m_elevel;
+    std::size_t  m_vlevel;
     
     StoichList m_stoichiometry;
     

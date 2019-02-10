@@ -40,7 +40,8 @@ endif
 EXAMPLES  = \
 	equilibrium_air \
 	O2_dissociation \
-	air_diffusion_comparison
+	air_diffusion_comparison \
+	Ar_vSTS
 
 all : $(EXAMPLES)
 
@@ -51,6 +52,9 @@ O2_dissociation : O2_dissociation.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 air_diffusion_comparison : air_diffusion_comparison.o
+	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
+
+Ar_vSTS : Ar_vSTS.o
 	$(CXX) -o $@ $(CXX_FLAGS) $^ $(CXX_LIBS)
 
 %.o : %.cpp

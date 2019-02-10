@@ -29,7 +29,6 @@
 #include "ThermoDB.h"
 #include "Species.h"
 #include "ParticleRRaHO.h"
-#include "ParticleRRaHO.h"
 #include "AutoRegistration.h"
 #include "Functors.h"
 #include "LookupTable.h"
@@ -80,11 +79,14 @@ for (int i = 0, j = 0; i < m_na + m_nm; ++i) {\
 typedef struct {
     double ln_omega_t;  // ln(omega^(2 / L) * theta)
     double linearity;   // L / 2
+    int sym;		// symmetry/steric factor
 } RotData;
 
 typedef struct {
     double g;           // degeneracy
     double theta;       // characteristic temperature
+    double energy;      // electronic energy
+    double we;          // spectroscopic constant
 } ElecLevel;
 
 typedef struct {
@@ -119,6 +121,7 @@ public:
     {
         delete [] mp_lnqtmw;
         delete [] mp_hform;
+        delete [] mp_eform;
         delete [] mp_indices;
         delete [] mp_rot_data;
         delete [] mp_nvib;
@@ -233,6 +236,110 @@ public:
 //    void cpel(double Tel, double* const p_cpel)
 //    {
 //        CpelFunctor()(Tel, p_cpel, m_elec_data, Eq());
+//    }
+
+    /**
+     * Computes the unitless species specific heat at constant volume
+     * \f$ C_{V,i} / R_U\f$ in thermal nonequilibrium.
+     *
+     * @param Th  - heavy particle translational temperature
+     * @param Te  - free electron temperature
+     * @param Tr  - mixture rotational temperature
+     * @param Tv  - mixture vibrational temperature
+     * @param Tel - mixture electronic temperature
+     * @param cv   - on return, the array of species non-dimensional \f$C_V\f$'s
+     * @param cvt  - if not NULL, the array of species translational \f$C_V\f$'s
+     * @param cvr  - if not NULL, the array of species rotational \f$C_V\f$'s
+     * @param cvv  - if not NULL, the array of species vibrational \f$C_V\f$'s
+     * @param cvel - if not NULL, the array of species electronic \f$C_V\f$'s
+     *
+     * @todo Compute \f$C_V\f$ directly instead of using finite-differencs.
+     */
+    void cv(
+        double Th, double Te, double Tr, double Tv, double Tel, 
+        double* const cv, double* const cvt, double* const cvr, 
+        double* const cvv, double* const cvel)
+    {
+        // Special case if we only want total Cv
+        if (cv != NULL && cvt == NULL && cvr == NULL && cvv == NULL && 
+            cvel == NULL)
+        {
+            cvT(cv, Eq());
+            cvR(cv, PlusEq());
+	    //cvR(Tr, cv, PlusEq());
+            cvV(Tv, cv, PlusEq());
+            cvE(Tel, cv, PlusEq());
+            return;
+        }
+        
+        // Otherwise we have to compute each component directly.
+        // Translation
+        if (cvt == NULL) {
+            if (cv != NULL)
+                cvT(cv, Eq());
+        } else {
+            cvT(cvt, Eq());
+            if (cv != NULL) 
+                LOOP(cv[i] = cvt[i]);
+        }
+        
+        // Rotation
+        if (cvr == NULL) {
+            if (cv != NULL)
+                cvR(cv, PlusEq());
+	        //cvR(Tr, cv, PlusEq());
+        } else {
+            cvR(cvr, Eq());
+	    //cvR(Tr, cvr, Eq());
+            if (cv != NULL) 
+                LOOP_MOLECULES(cv[j] += cvr[j]);
+        }
+        
+        // Vibration
+        if (cvv == NULL) {
+            if (cv != NULL)
+                cvV(Tv, cv, PlusEq());
+        } else {
+            cvV(Tv, cvv, Eq());
+            if (cv != NULL) 
+                LOOP_MOLECULES(cv[j] += cvv[j]);
+        }
+        
+        // Electronic
+        if (cvel == NULL) {
+            if (cv != NULL)
+                cvE(Tel, cv, PlusEq());
+        } else {
+            cvE(Tel, cvel, Eq());
+            if (cv != NULL)
+                LOOP_HEAVY(cv[j] += cvel[j]);
+        }
+    }
+    
+//    /** TODO
+//     * Computes the species vibrational specific heats at the given temperature
+//     * nondimensionalized by Ru.
+//     */
+//    void cvv(double Tv, double* const p_cvv)
+//    {
+//    //    int ilevel = 0;
+//    //    double sum, fac1, fac2;
+//    //    LOOP_MOLECULES(
+//    //        sum = 0.0;
+//    //        for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+//    //            fac1 = mp_vib_temps[ilevel] / Tv;
+//    //            fac2 = std::exp(fac1);
+//    //            fac1 = fac1 / (fac2 - 1.0);
+//    //            sum += fac2*fac1;
+//    //        }
+//    //        p_cvv[j] = sum;
+//    //    )
+//    }
+//  
+//    // TODO
+//    void cvel(double Tel, double* const p_cvel)
+//    {
+//        CvelFunctor()(Tel, p_cvel, m_elec_data, Eq());
 //    }
 
     /**
@@ -625,14 +732,18 @@ protected:
             
             Species& ground_state = species.back();
             ParticleRRaHO rraho(*rraho_iter);
-            for (size_t i = 0; i < rraho.nElectronicLevels(); ++i)
-                species.push_back(Species(ground_state, i));
 
-	    //for (size_t e = 0; e < rraho.nElectronicLevels(); ++e) {
-            //    for (size_t v = 0; v < rraho.nVibrationalLevels(e); ++v) {
-            //        species.push_back(Species(ground_state, e, v));
-            //    }
-            //}
+	    // Add electronic levels as pseudo-species
+            //for (size_t i = 0; i < rraho.nElectronicLevels(); ++i)
+            //    species.push_back(Species(ground_state, i));
+
+	    // Add vibrational levels as pseudo-species
+	    // Maybe just consider ground electronic state ...
+	    for (size_t e = 0; e < rraho.nElectronicLevels(); ++e) {
+                for (size_t v = 0; v < rraho.nVibrationalLevels(e); ++v) {
+                    species.push_back(Species(ground_state, e, v));
+                }
+            }
         }
     }
     
@@ -710,6 +821,10 @@ protected:
         // Store the species formation enthalpies in K
         mp_hform = new double [m_ns];
         LOOP(mp_hform[i] = rrahos[i].formationEnthalpy() / RU)
+
+        // Store the species formation enrergies in K
+        mp_eform = new double [m_ns];
+        LOOP(mp_eform[i] = rrahos[i].formationEnergy() / RU)
 
         // Store the molecule's rotational energy parameters
         mp_rot_data = new RotData [m_nm];
@@ -800,7 +915,6 @@ private:
 
         m_last_bfacs_T = T;
     }
-
     
     /**
      * Computes the translational Cp/Ru for each species.
@@ -862,6 +976,68 @@ private:
         }
     }
 
+    /** TODO
+     * Computes the translational Cv/Ru for each species.
+     */
+    template <typename OP>
+    void cvT(double* const cv, const OP& op) 
+    {
+    //    LOOP(op(cv[i], 2.5));
+    }
+
+    /** TODO
+     * Computes the rotational Cv/Ru for each species.
+     */
+    template <typename OP>
+    void cvR(double* const cv, const OP& op) 
+    {
+    //    op(cv[0], 0.0);
+    //    LOOP_ATOMS(op(cv[j], 0.0));
+    //    LOOP_MOLECULES(op(cv[j], mp_rot_data[i].linearity));
+    }
+
+    /** TODO
+     * Computes the vibratinoal Cv/Ru for each species.
+     */
+    template <typename OP>
+    void cvV(double Tv, double* const cv, const OP& op) 
+    {
+    //    int ilevel = 0;
+    //    double sum, fac1, fac2;
+    //    op(cv[0], 0.0);
+    //    LOOP_ATOMS(op(cv[j], 0.0));
+    //    LOOP_MOLECULES(
+    //        sum = 0.0;
+    //        for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+    //            fac1 = mp_vib_temps[ilevel] / Tv;
+    //            fac2 = std::exp(fac1);
+    //            fac1 *= fac1*fac2;
+    //            fac2 -= 1.0;
+    //            sum += fac1/(fac2*fac2);
+    //        }
+    //        op(cv[j], sum);
+    //    )
+    }
+
+    /** TODO
+     * Computes the electronic specific heat of each species and applies the
+     * value to the array using the given operation.
+     */
+    template <typename OP>
+    void cvE(double T, double* const p_cv, const OP& op)
+    {
+    //    updateElecBoltzmannFactors(T);
+    //    op(p_cv[0], 0.0);
+
+    //    double* facs = mp_el_bfacs;
+    //    for (unsigned int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
+    //        if (m_elec_data.p_nelec[i] > 1)
+    //            op(p_cv[i+m_elec_data.offset],
+    //                (facs[2]*facs[0]-facs[1]*facs[1])/(T*T*facs[0]*facs[0]));
+    //        else
+    //            op(p_cv[i+m_elec_data.offset], 0.0);
+    //    }
+    }
 
     /**
      * Computes the translational enthalpy of each species in K.
@@ -928,7 +1104,7 @@ private:
         LOOP(op(h[i], mp_hform[i] - mp_part_sst[i]))
     }
     
-    /**
+    /** TODO
      * Computes the translational energy of each species in K.
      */
     template <typename OP>
@@ -938,7 +1114,7 @@ private:
     //    LOOP_HEAVY(op(h[j], 2.5 * T))
     }
     
-    /**
+    /** TODO
      * Computes the rotational energy of each species in K.
      */
     template <typename OP>
@@ -946,7 +1122,7 @@ private:
     //    LOOP_MOLECULES(op(h[j], mp_rot_data[i].linearity * T))
     }
     
-    /**
+    /** TODO
      * Computes the vibrational energy of each species in K.
      */
     template <typename OP>
@@ -966,7 +1142,7 @@ private:
     //    }
     }
     
-    /**
+    /** TODO
      * Computes the electronic energy of each species in K and applies the
      * value to the energy array using the given operation.
      */
@@ -985,12 +1161,12 @@ private:
     //    }
     }
     
-    /**
+    /** TODO
      * Computes the formation energy of each species in K.
      */
     template <typename OP>
     void eF(double* const e, const OP& op) {
-    //    LOOP(op(e[i], mp_eform[i] - mp_part_sst[i]))
+        LOOP(op(e[i], mp_eform[i] - mp_part_sst[i]))
     }
 
     /**
@@ -1064,6 +1240,7 @@ private:
     
     double* mp_lnqtmw;
     double* mp_hform;
+    double* mp_eform;
     double* mp_part_sst;
     
     int*       mp_indices;
@@ -1078,8 +1255,10 @@ private:
     double m_last_bfacs_T;
 
     //Mutation::Utilities::LookupTable<double, double, HelFunctor>* mp_hel_table;
+    //Mutation::Utilities::LookupTable<double, double, EelFunctor>* mp_eel_table;
     //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;
     //Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
+    //Mutation::Utilities::LookupTable<double, double, CvelFunctor>* mp_cvel_table;
 
 }; // class RrahoDB
 
@@ -1092,5 +1271,3 @@ Utilities::Config::ObjectProvider<RrahoDB, ThermoDB> rrahoDB("RRaHO");
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-
