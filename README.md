@@ -1,12 +1,13 @@
 <a id="top"></a>
 
+## Mutation++
+MUlticomponent Thermodynamic And Transport properties for partially IONized gases in C++
+
 [![Build Status](https://travis-ci.org/mutationpp/Mutationpp.svg?branch=master)](https://travis-ci.org/mutationpp/Mutationpp)
 [![codecov](https://codecov.io/gh/mutationpp/Mutationpp/branch/master/graph/badge.svg)](https://codecov.io/gh/mutationpp/Mutationpp)
 [![license: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-## Mutation++
-
-MUlticomponent Thermodynamic And Transport properties for partially IONized gases in C++ is an open-source library originally developed at the [von Karman Institute for Fluid Dynamics](https://vki.ac.be), designed to couple with conventional computational fluid dynamics codes to provide thermodynamic, transport, chemistry, and energy transfer properties associated with subsonic to hypersonic flows.
+Mutation++ is an open-source library originally developed at the [von Karman Institute for Fluid Dynamics](https://www.vki.ac.be), designed to couple with conventional computational fluid dynamics codes to provide thermodynamic, transport, chemistry, and energy transfer properties associated with subsonic to hypersonic flows.
 
 ## How to get started
 * [Check out what Mutation++ can do](docs/capabilities.md#top)
