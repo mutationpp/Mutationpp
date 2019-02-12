@@ -6,3 +6,14 @@ Mutation++ has been developed with help from the following funding sources:
     * [Proof of Concept](https://cordis.europa.eu/project/rcn/204970/factsheet/en) MUTX
     * [Starting Grant](https://cordis.europa.eu/project/rcn/95576/factsheet/en) AEROSPACEPHYS
 * [European Space Agency](https://www.esa.int/ESA)
+    * <details>
+        <summary> Project </summary>
+
+        Abstract text bla bla bla
+    </details>
+
+<details>
+        <summary> Project </summary>
+
+    Abstract text bla bla bla
+</details>
