@@ -52,15 +52,15 @@ CollisionDB::CollisionDB(
     m_database(databaseFileName(db_name, "transport")),
     m_thermo(thermo),
     m_tabulate(false), m_table_min(300.),  m_table_max(20000.), m_table_del(100.),
-    m_mass(thermo.nSpecies()),
+    m_mass(thermo.nGas()),
     m_etai(thermo.nHeavy()), m_etafac(thermo.nHeavy()),
-    m_nDei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
-    m_Deifac(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
+    m_nDei(thermo.nGas()*(thermo.hasElectrons() ? 1 : 0)),
+    m_Deifac(thermo.nGas()*(thermo.hasElectrons() ? 1 : 0)),
     m_nDij(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
     m_Dijfac(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
-    m_Dim(thermo.nSpecies()),
-    m_L01ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
-    m_L02ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0))
+    m_Dim(thermo.nGas()),
+    m_L01ei(thermo.nGas()*(thermo.hasElectrons() ? 1 : 0)),
+    m_L02ei(thermo.nGas()*(thermo.hasElectrons() ? 1 : 0))
 {
     XmlElement& root = m_database.root();
 
@@ -91,8 +91,8 @@ CollisionDB::CollisionDB(
 
     // Loop over the species and create the list of species pairs
     const vector<Species>& species = m_thermo.species();
-    for (int i = 0; i < species.size(); ++i)
-        for (int j = i; j < species.size(); ++j)
+    for (int i = 0; i < nSpecies(); ++i)
+        for (int j = i; j < nSpecies(); ++j)
             m_pairs.push_back(CollisionPair(species[i], species[j], &root));
 
     // Compute species masses
@@ -105,25 +105,27 @@ CollisionDB::CollisionDB(
     m_etafac = 5./16.*std::sqrt(PI*KB)*m_mass.tail(nh).sqrt();
 
     // Compute the nDei factors
-    if (m_thermo.nSpecies() > nh) {
+    if (m_thermo.nGas() > nh) {
         m_Deifac.fill(3./16.*std::sqrt(TWOPI*KB/m_mass(0)));
         m_Deifac(0) *= 2./SQRT2;
     }
 
     // Compute the nDij factors
-    for (int i = k, index = 0; i < thermo.nSpecies(); ++i)
-        for (int j = i; j < thermo.nSpecies(); ++j, index++)
+    for (int i = k, index = 0; i < thermo.nGas(); ++i)
+        for (int j = i; j < thermo.nGas(); ++j, index++)
             m_Dijfac(index) = 3./16.*std::sqrt(TWOPI*KB*
                 (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
 }
 
 //==============================================================================
 
-int CollisionDB::nSpecies() const { return m_thermo.nSpecies(); }
+int CollisionDB::nSpecies() const { return m_thermo.nGas(); }
 
 //==============================================================================
 
-int CollisionDB::nHeavy() const { return m_thermo.nHeavy(); }
+int CollisionDB::nHeavy() const { 
+    return m_thermo.nHeavy() - m_thermo.nCondensed();
+}
 
 //==============================================================================
 
