@@ -555,18 +555,15 @@ void Transport::stefanMaxwell(double Th, double Te,
     ArrayXd Y = X * Mi / (Mi*X).sum();
     G.topLeftCorner(ns,ns) += a * Y.matrix() * Y.matrix().transpose();
 
-//    if (Th == 7800.0 && Te == 7800.0) {
-//        std::cout << G << "\n" << std::endl;
-//        exit(1);
-//    }
-
     // Form the right hand side
     VectorXd b = VectorXd::Zero(ns+k);
     b.head(ns) = -Map<const VectorXd>(p_dp, ns);
     if (k == 1) b(0) *= Th/Te;
 
     // Solve the system
+    // Modified solver because old one failing
     VectorXd x = G.colPivHouseholderQr().solve(b);
+   // VectorXd x = G.householderQr().solve(b);
 
     // Retrieve the solution
     Map<VectorXd>(p_V, ns) = x.head(ns);
