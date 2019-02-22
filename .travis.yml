@@ -1,0 +1,23 @@
+language: cpp
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
+install: 
+  - export MPP_DIRECTORY=$PWD
+  - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+  - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+  - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+  - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
+  - python scripts/install_dependencies.py -j 1
+
+script: 
+  - mkdir build; cd build
+  - cmake -DENABLE_TESTING:BOOL=ON ..
+  - make install
+  - ctest -V

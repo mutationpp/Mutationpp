@@ -92,6 +92,16 @@ public:
         parse(is, line);
     }
 
+    XmlElement() :
+        mp_parent(NULL), 
+        mp_document(NULL),
+        m_attributes(),
+        m_children(),
+        m_tag(),
+        m_text(),
+        m_line_number(0)
+    { }
+
     /**
      * Returns a pointer to the parent XmlElement object.
      */
@@ -184,7 +194,7 @@ public:
      * Returns an iterator pointing to the end of the child element list.
      */
     const_iterator end() const {
-        return m_children.end();
+        return (m_children.end()-1);
     }
     
     /**
@@ -344,6 +354,21 @@ private:
     std::string                        m_text;
     long int                           m_line_number;
     
+};
+
+/**
+ * @brief Special XmlElement which represents end of children list.
+ * 
+ * This class is necessary in order to avoid rare bug in which the end() pointer
+ * for XmlElement accidently points to another real element (due to how the
+ * memory is allcoated).
+ */
+class XmlEndElement : public XmlElement
+{
+public:
+    XmlEndElement()
+        : XmlElement()
+    { }
 };
 
 /**

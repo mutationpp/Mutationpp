@@ -52,6 +52,7 @@ individuals:
 - J.B. Scoggins _creator and main developer_
 - Laurent Soucasse
 - Georgios Bellas-Chatzigeordis
+- Bruno Dias
 - Aurelie Bellemans
 - Pierre Schrooyen
 - Alessandro Turchi
