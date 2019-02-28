@@ -7,7 +7,7 @@ Mutation++ is an open-source, community-driven software framework and as such, w
 Bruno Dias <br>
 Georgios Bellas-Chatzigeordis <br>
 Aurelie Bellemans <br>
-[Andrea Lani](www.researchgate.net/profile/Andrea_Lani) - [COOLFluid](https://github.com/andrealani/COOLFluiD/wiki) <br>
+[Andrea Lani](https://www.researchgate.net/profile/Andrea_Lani) - [COOLFluid](https://github.com/andrealani/COOLFluiD/wiki) <br>
 Vincent Leroy <br>
 Pierre Schrooyen <br>
 Laurent Soucasse <br>
