@@ -24,7 +24,7 @@ Mutation++ has been developed with help from the following funding sources:
         The ESA TRP project on "Ablation and Radiation in the presence of light Ablators" (AblaRadAbla) aims at developing measurement techniques and efficient numerical tools for modeling ablation and radiation for on space re-entry heat shields, characterized by light ablators. The general objective is advancing the modeling capabilities to simulate the interaction between ablation and radiation, with focus on experimental data collection for numerical model validation. The numerical and modeling parts of the study aim at improving the modeling capabilities of both material and radiation tools. 
     </details>
 
-    * Ablacod
+    * Ablaccod
 * [US Air Force Office of Scientific Research](https://www.wpafb.af.mil/afrl/afosr/)
     * <details>
         <summary> Plasmut </summary>
