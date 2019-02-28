@@ -58,33 +58,35 @@ and
 ```
 then the command `checkmix air5` will produce the following output:
 
-> 5 species containing 2 elements
-> 5 reactions
-> Species info:
-> -------------
->     N   O  Mw (g/mol)    Charge       Phase
-> Gas Species (5):
-> N     1   0     14.0067         0         gas
-> O     0   1     15.9994         0         gas
-> NO    1   1     30.0061         0         gas
-> N2    2   0     28.0134         0         gas
-> O2    0   2     31.9988         0         gas
-> Default elemental composition:
-> ------------------------------
->    N  :   0.5
->    O  :   0.5
-> Reaction info:
-> --------------
-> Type ID Key
->    3: heavy particle impact dissociation
->    7: exchange
-> Reactions
->    #  Formula             Type  Rate Law     A (m,s,mol)      n    Ta (K)
->    1: N2+M=2N+M           3     Arrhenius:     3.000e+16  -1.60  113200.0
->       N2: 0.23, NO: 0.23, O2: 0.23
->    2: O2+M=2O+M           3     Arrhenius:     1.000e+16  -1.50   59360.0
->       N2: 0.50, NO: 0.50, O2: 0.50
->    3: NO+M=N+O+M          3     Arrhenius:     5.000e+09   0.00   75500.0
->       NO: 20.00, N: 20.00, O: 20.00
->    4: N2+O=NO+N           7     Arrhenius:     5.690e+06   0.42   42938.0
->    5: O2+N=NO+O           7     Arrhenius:     2.490e+03   1.18    4005.5
+```
+5 species containing 2 elements
+5 reactions
+Species info:
+-------------
+    N   O  Mw (g/mol)    Charge       Phase
+Gas Species (5):
+N     1   0     14.0067         0         gas
+O     0   1     15.9994         0         gas
+NO    1   1     30.0061         0         gas
+N2    2   0     28.0134         0         gas
+O2    0   2     31.9988         0         gas
+Default elemental composition:
+------------------------------
+   N  :   0.5
+   O  :   0.5
+Reaction info:
+--------------
+Type ID Key
+   3: heavy particle impact dissociation
+   7: exchange
+Reactions
+   #  Formula             Type  Rate Law     A (m,s,mol)      n    Ta (K)
+   1: N2+M=2N+M           3     Arrhenius:     3.000e+16  -1.60  113200.0
+      N2: 0.23, NO: 0.23, O2: 0.23
+   2: O2+M=2O+M           3     Arrhenius:     1.000e+16  -1.50   59360.0
+      N2: 0.50, NO: 0.50, O2: 0.50
+   3: NO+M=N+O+M          3     Arrhenius:     5.000e+09   0.00   75500.0
+      NO: 20.00, N: 20.00, O: 20.00
+   4: N2+O=NO+N           7     Arrhenius:     5.690e+06   0.42   42938.0
+   5: O2+N=NO+O           7     Arrhenius:     2.490e+03   1.18    4005.5
+```
