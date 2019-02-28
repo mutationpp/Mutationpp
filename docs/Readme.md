@@ -3,7 +3,7 @@
 # Reference
 
 **Command line tools:**
-- [checkmix](docs/checkmix.md#top) - check that data files are loaded correctly
+- [checkmix](checkmix.md#top) - check that data files are loaded correctly
 - [mppequil](docs/mppequil.md#top) - compute equilibrium properties
 
 **Using Mutation++ in your code:**
