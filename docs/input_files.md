@@ -23,10 +23,9 @@ When a data file `name`.`ext` is requested, Mutation++ searches for it looking u
 3. `data_directory`/`name`.`ext`
 4. `data_directory`/`dir`/`name`.`ext`
 
-where `dir` is any subdirectory. In practice, it allows a user to supersede a default data file with their
-own, by simply locating it in the working directory.
+where `dir` is any subdirectory. In practice, it allows a user to supersede a default data file with their own, by simply locating it in the working directory.
 
-@subsection simple_xml Simplified XML Language
+### Simplified XML Language
 Many of these files are written in a simplified version of the Extensible Markup
 Language (XML).  XML provides a human readable, yet complex and extensible format for data
 to be stored with only a few, limited rules.  An example XML fragment is shown below.
@@ -41,22 +40,14 @@ to be stored with only a few, limited rules.  An example XML fragment is shown b
 </root_tag>
 ```
 
-An XML document begins with a __root element__.  Every __element__ (or __node__) must begin
-with a __tag__ that identifies what type of element it is.  The root element depicted in
-the example is of type `root_tag`.  Every element also ends with an __end-tag__
-which signifies the end of the element.  Each element may have as many __attribute/value
-pairs__ as is desired following the element's tag.  Each pair must consist of an attribute
+An XML document begins with a _root element_.  Every _element_ (or _node_) must begin
+with a _tag_ that identifies what type of element it is.  The root element depicted in
+the example is of type `root_tag`.  Every element also ends with an _end-tag_
+which signifies the end of the element.  Each element may have as many _attribute_ / _value
+pairs_ as is desired following the element's tag.  Each pair must consist of an attribute
 name followed by an equal sign and the value of the attribute in quotations.
 
-Between the tag and end-tag of an element, an element may also contain one or more __child elements__
-or __text__ (but not both).  From the figure, the root element contains two child elements
-named `child_tag` and `child2_tag`.  Note that the first child element is an example of an
-element which contains text instead of more child elements.  The second child element is
-an example of a short-hand format for elements which only contain attributes.  For such
-elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute
-list is sufficient to end the element.  Finally, __comments__ can be inserted anywhere outside
-of element tags.  Comment strings begin with `<!-``-` and end with `-``->` and can be spread
-over multiple lines.
+Between the tag and end-tag of an element, an element may also contain one or more _child elements_ or _text_ (but not both).  From the figure, the root element contains two child elements named `child1_tag` and `child2_tag`.  Note that the first child element is an example of an element which contains text instead of more child elements.  The second child element is an example of a short-hand format for elements which only contain attributes.  For such elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute list is sufficient to end the element.  Finally, _comments_ can be inserted anywhere outside of element tags.  Comment strings begin with `<!--` and end with `-->` and can be spread over multiple lines.
 
 ## Mixtures 
 <a id="mixtures"></a>
@@ -75,7 +66,6 @@ well as any options that can be used to control the behavior of Mutation++.
 ```
 
 ### Mixture Options
-
 The following options are available as attributes in the `mixture` element.  If an attribute is not given, then the __bold value__ is taken as the __default__.
 
 Attribute              | Possible Values                                     | Description
@@ -103,10 +93,10 @@ list.  The format for this descriptor is
 ```
 
 where `category` can be one of the following strings:
-- __gases__ selects from all gases in the database
-- __liquids__ selects from all liquids in the database
-- __solids__ selects from all solids in the database
-- __condensed__ combines __liquids__ and __solids__
+- `gases` selects from all gases in the database
+- `liquids` selects from all liquids in the database
+- `solids` selects from all solids in the database
+- `condensed` combines `liquids` and `solids`
 - __all__ selects from all species in the database
 
 The `element_list` should be a comma-separated list of [element names](#elements).
@@ -138,14 +128,12 @@ Species names given in any data file, must obey the following rules:
 
 **Species Order** <br>
 
-A list of species may not be represented internally in Mutation++ in the order they
-are specified in the species list descriptor.  Mutation++ places
-the species in an order which makes indexing the species the most convenient.  In
-general, the following steps are taken to order the species:
--# if present, the electron is placed at the beginning of the list
--# gas species are placed in front of condensed phase species
--# if electronic states are specified for any species, they are expanded in place
--# finally, species take the order given in the [list descriptor](@ref species_list)
+A list of species __may not be__ represented internally in Mutation++ in the same order they
+are specified in the species list descriptor.  Mutation++ places the species in an order which makes indexing the species the most convenient.  In general, the following steps are taken to order the species:
+1. if present, the electron is placed at the beginning of the list
+2. gas species are placed in front of condensed phase species
+3. if electronic states are specified for any species, they are expanded in place
+4. finally, species take the order given in the [list descriptor](#species-list-descriptor)
 
 A good way to see how the species are actually ordered in Mutation++ is to check the
 mixture with the [checkmix](checkmix.md) program.
@@ -153,10 +141,7 @@ mixture with the [checkmix](checkmix.md) program.
 ## Named Elemental Compositions
 
 Named elemental compositions can be included in the mixture file which can then
-be retrieved inside Mutation++ (see Mutation::Mixture::getComposition()).  Many of the
-tools included with Mutation++ can also use this information to simplify input
-on the command line.  An example of a list of element compositions for the
-11-species Air mixture are shown below.
+be retrieved inside Mutation++.  Many of the tools included with Mutation++ can also use this information to simplify input on the command line.  An example of a list of element compositions for the 11-species Air mixture are shown below.
 
 ```xml
 <element_compositions default="air1">
@@ -167,10 +152,11 @@ on the command line.  An example of a list of element compositions for the
 
 Note that if the `default` attribute is used as above, the composition with the
 name in the `default` value will be use as the default composition when computing
-equilibrium calculations.
+equilibrium calculations.  If no default is specified, then the first composition is used by default.
 
 ----
-@section elements Elements
+## Elements
+<a id="elements"></a>
 
 Element names and molecular weights are stored in the `elements.xml` file in the
 `data/thermo` directory.  Each element is given as an XML node in the file.  An
@@ -189,9 +175,10 @@ already given in `elements.xml` and it is unlikely that it should need to be
 modified.
 
 ----
-@section thermodynamic_databases Thermodynamic Databases
+## Thermodynamic Databases
+<a id="thermodynamic-databases"></a>
 
-@subsection nasa_7 NASA 7-Coefficient Polynomials
+### NASA 7-Coefficient Polynomials
 
 Constants                                                        | Format       | Columns
 -----------------------------------------------------------------|--------------|--------
@@ -218,7 +205,7 @@ Coefficients \f$b_1\f$ and \f$b_2\f$ for lower temperature range | `2(F15.8)`   
 The integer '4'                                                  | `I1`         | `80`
 
 
-@code{.txt}
+```
 N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1
  0.24159429E+01 0.17489065E-03-0.11902369E-06 0.30226244E-10-0.20360983E-14    2
  0.56133775E+05 0.46496095E+01 0.25000000E+01 0.00000000E+00 0.00000000E+00    3
@@ -253,7 +240,7 @@ Integration constants \f$ b_1 \f$ and \f$ b_2 \f$       | `2F16.8`     | `49-80`
 <i>Repeat 3, 4, and 5 for each interval...</i>          | -            | -
 
 
-@code{.txt}
+```
 N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
  3 tpis78 N   2.00    0.00    0.00    0.00    0.00 0   28.0134000          0.000
     200.000   1000.0007 -2.0 -1.0  0.0  1.0  2.0  3.0  4.0  0.0         8670.104
