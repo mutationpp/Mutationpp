@@ -1,17 +1,39 @@
 <a id="top"></a>
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [File Location](#file-location)
+  - [Simplified XML Language](#xml-language)
+- [Mixture](#mixtures)
+  - [Mixture Options](#mixture-options)
+  - [Species List Descriptor](#species-list-descriptor)
+  - [Named Elemental Compositions](#elemental-compositions)
+- [Elements](#elements)
+- [Thermodynamic Databases](#thermodynamic-databases)
+  - [NASA 7-Coefficient Polynomials](#nasa-7)
+  - [NASA 9-Coefficient Polynomials](#nasa-9)
+  - [Rigid-Rotor / Harmonic-Oscillator](#rrho)
+- [Reaction Mechanisms](#reaction-mechanisms)
+  - [Reaction Definitions](#reaction-definitions)
+  - [Unit Specifiers](#unit-specifiers)
+  - [Example Mechanism](#example-mechanism)
+
+----
 ## Introduction
+<a id="top"></a>
 
 The data files distributed with Mutation++ are located in one of the subdirectories under the __data__ directory as follows:
 
 - __data__
-  + __mechanisms__ chemical [reaction mechanisms](#reaction_mechanisms)
+  + __mechanisms__ chemical [reaction mechanisms](#reaction-mechanisms)
   + __mixtures__ [mixture definitions](#mixtures)
-  + __thermo__ [elemental](#elements) and species [thermodynamic databases](#thermodynamic_databases)
-  + __transfer__ internal energy [transfer model databases](#transfer_databases)
+  + __thermo__ [elemental](#elements) and species [thermodynamic databases](#thermodynamic-databases)
+  + __transfer__ internal energy [transfer model databases](#transfer-databases)
   + __transport__ @subpage collisions "collision integral database"
 
-## File location
+### File location
+<a id="file-location"></a>
 
 Mutation++ is aware of its `data_directory`. It defaults to the `MPP_DATA_DIRECTORY` environment variable, which should have been setup during the [installation](@ref installation) of Mutation++ and usually points to the aforementioned data directory.
 
@@ -26,6 +48,7 @@ When a data file `name`.`ext` is requested, Mutation++ searches for it looking u
 where `dir` is any subdirectory. In practice, it allows a user to supersede a default data file with their own, by simply locating it in the working directory.
 
 ### Simplified XML Language
+<a id="xml-language"></a>
 Many of these files are written in a simplified version of the Extensible Markup
 Language (XML).  XML provides a human readable, yet complex and extensible format for data
 to be stored with only a few, limited rules.  An example XML fragment is shown below.
@@ -49,6 +72,7 @@ name followed by an equal sign and the value of the attribute in quotations.
 
 Between the tag and end-tag of an element, an element may also contain one or more _child elements_ or _text_ (but not both).  From the figure, the root element contains two child elements named `child1_tag` and `child2_tag`.  Note that the first child element is an example of an element which contains text instead of more child elements.  The second child element is an example of a short-hand format for elements which only contain attributes.  For such elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute list is sufficient to end the element.  Finally, _comments_ can be inserted anywhere outside of element tags.  Comment strings begin with `<!--` and end with `-->` and can be spread over multiple lines.
 
+----
 ## Mixtures 
 <a id="mixtures"></a>
 Mixture files are located in the `data/mixtures` directory.  They are the primary
@@ -66,6 +90,7 @@ well as any options that can be used to control the behavior of Mutation++.
 ```
 
 ### Mixture Options
+<a id="mixture-options"></a>
 The following options are available as attributes in the `mixture` element.  If an attribute is not given, then the __bold value__ is taken as the __default__.
 
 Attribute              | Possible Values                                     | Description
@@ -139,7 +164,7 @@ A good way to see how the species are actually ordered in Mutation++ is to check
 mixture with the [checkmix](checkmix.md) program.
 
 ### Named Elemental Compositions
-
+<a id="elemental-compositions"></a>
 Named elemental compositions can be included in the mixture file which can then
 be retrieved inside Mutation++.  Many of the tools included with Mutation++ can also use this information to simplify input on the command line.  An example of a list of element compositions for the 11-species Air mixture are shown below.
 
@@ -179,6 +204,7 @@ modified.
 <a id="thermodynamic-databases"></a>
 
 ### NASA 7-Coefficient Polynomials
+<a id="nasa-7"></a>
 
 Constants                                                        | Format       | Columns
 -----------------------------------------------------------------|--------------|--------
@@ -213,6 +239,7 @@ N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1
 ```
 
 ### NASA 9-Coefficient Polynomials
+<a id="nasa-9"></a>
 
 [McBride and Sanford (1996)](bibliography.md#McBride1996)
 
@@ -256,6 +283,7 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 ```
 
 ### Rigid-Rotator Harmonic-Oscillators
+<a id="rrho"></a>
 
 ```xml
 <!-- Nitrogen diatomic -->
@@ -300,9 +328,9 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 </species>
 ```
 
-
 ----
 ## Reaction Mechanisms
+<a id="reaction-mechanisms"></a>
 
 A mechanism name referenced in a mixture file will correspond to a file with an .xml
 extension in the mechanisms directory.  A mechanism file describes a reaction mechanism
@@ -316,6 +344,7 @@ The root `mechanism` element may have any number of child elements which corresp
 __reaction elements__ or __unit specifiers__.
 
 ### Reaction Definitions
+<a id="reaction-definitions"></a>
 
 Below is an example `reaction` element
 ```xml
@@ -350,19 +379,19 @@ when evaluating the forward rate coefficient.  The rate law node is specified by
 and its corresponding attributes correspond to the parameters for that given rate law.  The
 following rate rate laws are currently supported.
 
-- `arrhenius`  k(T) = A T<sup>n</sup> exp[-E<sub>a</sub> / (R T)]
+- `arrhenius`  k(T) = A T<sup>n</sup> exp[-Ea / (Ru T)]
 
 Att. | Value
 -----|--------
 `A`  | pre-exponential factor
 `n`  | temperature exponent
 `Ea` | activation energy
-`T`  | characteristic temperature E<sub>a</sub> / R
+`T`  | characteristic temperature Ea / Ru
 
 _note: only one of `Ea` or `T` may be used, not both_
 
-
 ### Unit Specifiers
+<a id="unit-specifiers"></a>
 
 A unit specifier element is used to specify the units of the parameters in each rate law
 if needed.  A unit specifier element is denoted by a tag which has `_units` appended to
@@ -379,8 +408,8 @@ Att. | Value                               | Description
 `A`  | quantity, length, time, temperature | units of pre-exponential factor
 `E`  | energy, quantity, temperature       | units of activation energy and characteristic temperature
 
-
 ### Example Mechanism
+<a id="example-mechanism"></a>
 
 As an example of how to create a mechanism file, consider the following example reaction
 mechanism for a 5-species Nitrogen mixture of N2, N2+, N, N+ and e- with each reaction
@@ -399,7 +428,7 @@ Reactions 1-4 in the above example have the same rate constants except for the
 pre-exponential factor differ only by the thirdbody species, making them good candidates
 to combine into a generic thirdbody reaction with efficiency factors.  However, free
 electrons cannot be thirdbodies in Mutation++, so reaction 4 must be treated separately.
-Note also that there N2+ is not a possible thirdbody in reactions 1-4, thus its efficiency
+Note also that N2+ is not a possible thirdbody in reactions 1-4, thus its efficiency
 factor should be zero.  The remaining reactions, 5-6, should be specified normally.  The
 resulting mechanism file `example.xml` is given below.
 
@@ -432,6 +461,3 @@ resulting mechanism file `example.xml` is given below.
 
 </mechanism>
 ```
-
-----
-## Energy Transfer Model Data
