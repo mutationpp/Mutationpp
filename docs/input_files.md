@@ -193,15 +193,15 @@ Common temperature (blank for default of 1000 K)                 | `F8.0`       
 Atomic symbols and formula (blank if not needed)                 | `A2,I3`      | `74-78`
 The integer '1'                                                  | `I1`         | `80`
 <b>Line 2</b>                                                    | -            | -
-Coefficients \f$a_1-a_5\f$ for upper temperature range           | `5(F15.8)`   | `1-75`
+Coefficients a_1-a_5 for upper temperature range           | `5(F15.8)`   | `1-75`
 The integer '2'                                                  | `I1`         | `80`
 <b>Line 3</b>                                                    | -            | -
-Coefficients \f$b_1\f$ and \f$b_2\f$ for upper temperature range | `2(F15.8)`   | `1-30`
-Coefficients \f$ a_1-a_3\f$ for lower temperature range          | `3(F15.8)`   | `31-75`
+Coefficients b_1 and b_2 for upper temperature range | `2(F15.8)`   | `1-30`
+Coefficients  a_1-a_3 for lower temperature range          | `3(F15.8)`   | `31-75`
 The integer '3'                                                  | `I1`         | `80`
 <b>Line 4</b>                                                    | -            | -
-Coefficients \f$a_4-a_5\f$ for lower temperature range           | `2(F15.8)`   | `1-30`
-Coefficients \f$b_1\f$ and \f$b_2\f$ for lower temperature range | `2(F15.8)`   | `31-60`
+Coefficients a_4-a_5 for lower temperature range           | `2(F15.8)`   | `1-30`
+Coefficients b_1 and b_2 for lower temperature range | `2(F15.8)`   | `31-60`
 The integer '4'                                                  | `I1`         | `80`
 
 
@@ -222,7 +222,7 @@ Constants                                               | Format       | Columns
 Species name                                            | `A24`        | `1-24`
 Comments (data source)                                  | `A56`        | `25-80`
 <b>Line 2</b>                                           | -            | -
-Number of \f$T\f$ intervals                             | `I2`         | `2`
+Number of T intervals                             | `I2`         | `2`
 Optional identification code                            | `A6`         | `4-9`
 Chemical formulas, symbols, and numbers                 | `5(A2,F6.2)` | `11-50`
 Zero for gas, nonzero for condensed phases              | `I1`         | `52`
@@ -230,14 +230,14 @@ Molecular weight                                        | `F13.5`      | `53-65`
 Heat of formation at 298.15 K, J/mol                    | `F13.5`      | `66-80`
 <b>Line 3</b>                                           | -            | -
 Temperature range                                       | `2F10.3`     | `2-21`
-Number of coefficients for \f$C_p^\circ/R_u\f$          | `I1`         | `23`
-\f$T\f$ exponents in polynomial for \f$C_p^\circ/R_u\f$ | `8F5.1`      | `24-63`
-\f$H^\circ (298.15)-H^\circ (0)\f$, J/mol               | `F15.3`      | `66-80`
+Number of coefficients for C_p^\circ/R_u          | `I1`         | `23`
+T exponents in polynomial for C_p^\circ/R_u | `8F5.1`      | `24-63`
+H^\circ (298.15)-H^\circ (0), J/mol               | `F15.3`      | `66-80`
 <b>Line 4</b>                                           | -            | -
-First five coefficients for \f$C_p^\circ/R_u\f$         | `5F16.8`     | `1-80`
+First five coefficients for C_p^\circ/R_u         | `5F16.8`     | `1-80`
 <b>Line 5</b>                                           | -            | -
-Last three coefficients for \f$C_p^\circ/R_u\f$         | `3F16.8`     | `1-48`
-Integration constants \f$ b_1 \f$ and \f$ b_2 \f$       | `2F16.8`     | `49-80`
+Last three coefficients for C_p^\circ/R_u         | `3F16.8`     | `1-48`
+Integration constants  b_1  and  b_2        | `2F16.8`     | `49-80`
 <i>Repeat 3, 4, and 5 for each interval...</i>          | -            | -
 
 
@@ -320,7 +320,7 @@ __reaction elements__ or __unit specifiers__.
 Below is an example `reaction` element
 ```xml
 <reaction formula="N2+M=2N+M">
-	<arrhenius A="7.0E+21" n="-1.6" T="113200." />
+    <arrhenius A="7.0E+21" n="-1.6" T="113200." />
     <M>N2:3,N:4</M>
 </reaction>
 ```
@@ -350,14 +350,14 @@ when evaluating the forward rate coefficient.  The rate law node is specified by
 and its corresponding attributes correspond to the parameters for that given rate law.  The
 following rate rate laws are currently supported.
 
-- `arrhenius`  k(T) = A T<sup>n<sup> exp[-E<sub>a<sub> / (R T)]
+- `arrhenius`  k(T) = A T<sup>n</sup> exp[-E<sub>a</sub> / (R T)]
 
 Att. | Value
 -----|--------
 `A`  | pre-exponential factor
 `n`  | temperature exponent
 `Ea` | activation energy
-`T`  | characteristic temperature E<sub>a<sub> / R
+`T`  | characteristic temperature E<sub>a</sub> / R
 
 _note: only one of `Ea` or `T` may be used, not both_
 
@@ -371,7 +371,9 @@ reaction mechanism and will apply to all rate laws of that type for reactions li
 the unit specifier.  The attributes of the unit specifier element correspond to the
 parameters of the rate law.  Some parameters need units specified for several physical
 quantities (such as mass, length, time, etc.).  These will be separated by commas.
+
 - `arrhenius_units`
+
 Att. | Value                               | Description
 -----|-------------------------------------|-------------
 `A`  | quantity, length, time, temperature | units of pre-exponential factor
@@ -384,14 +386,14 @@ As an example of how to create a mechanism file, consider the following example 
 mechanism for a 5-species Nitrogen mixture of N2, N2+, N, N+ and e- with each reaction
 controlled by an Arrhenius rate law.
 
-\# | Formula                                   | A [mol,cm,s,K] | n     | Ea [K]
----|-------------------------------------------|----------------|-------|--------
-1  | N_2 + N_2 \rightleftharpoons 2N + N_2 \f$ | 1.0e21         | -1.6  | 113200
-2  | N_2 + N \rightleftharpoons 2N + N \f$     | 3.0e21         | -1.6  | 113200
-3  | N_2 + N^+ \rightleftharpoons 2N + N^+ \f$ | 1.0e21         | -1.6  | 113200
-4  | N_2 + e^- \rightleftharpoons 2N + e^-\f$  | 7.0e22         | -1.6  | 113200
-5  | N+e^-\rightleftharpoons N^++e^-+e^-\f$    | 2.5e30         | -3.82 | 168200
-6  | $N+N\rightleftharpoons N_2^++e^-$         | 4.4e7          | 1.5   | 67500
+\# | Formula                                  | A [mol,cm,s,K] | n     | Ea [K]
+---|------------------------------------------|----------------|-------|--------
+1  | N2 + N_2 <-> 2N + N2    | 1.0e21         | -1.6  | 113200
+2  | N2 + N <-> 2N + N       | 3.0e21         | -1.6  | 113200
+3  | N2 + N^+ <-> 2N + N+    | 1.0e21         | -1.6  | 113200
+4  | N2 + e- <-> 2N + e-     | 7.0e22         | -1.6  | 113200
+5  | N + e- <-> N+ + e- + e- | 2.5e30         | -3.82 | 168200
+6  | N + N <-> N2+ + e-      | 4.4e7          | 1.5   | 67500
 
 Reactions 1-4 in the above example have the same rate constants except for the
 pre-exponential factor differ only by the thirdbody species, making them good candidates
