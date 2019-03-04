@@ -19,7 +19,7 @@
   - [Unit Specifiers](#unit-specifiers)
   - [Example Mechanism](#example-mechanism)
 
-----
+
 ## Introduction
 <a id="top"></a>
 
@@ -72,7 +72,7 @@ name followed by an equal sign and the value of the attribute in quotations.
 
 Between the tag and end-tag of an element, an element may also contain one or more _child elements_ or _text_ (but not both).  From the figure, the root element contains two child elements named `child1_tag` and `child2_tag`.  Note that the first child element is an example of an element which contains text instead of more child elements.  The second child element is an example of a short-hand format for elements which only contain attributes.  For such elements, a full end-tag is not necessary.  Instead, simply putting `/>` after the attribute list is sufficient to end the element.  Finally, _comments_ can be inserted anywhere outside of element tags.  Comment strings begin with `<!--` and end with `-->` and can be spread over multiple lines.
 
-----
+
 ## Mixtures 
 <a id="mixtures"></a>
 Mixture files are located in the `data/mixtures` directory.  They are the primary
@@ -179,7 +179,7 @@ Note that if the `default` attribute is used as above, the composition with the
 name in the `default` value will be use as the default composition when computing
 equilibrium calculations.  If no default is specified, then the first composition is used by default.
 
-----
+
 ## Elements
 <a id="elements"></a>
 
@@ -199,7 +199,7 @@ changed__ in the `elements.xml` file.  In general, most of the known elements ar
 already given in `elements.xml` and it is unlikely that it should need to be
 modified.
 
-----
+
 ## Thermodynamic Databases
 <a id="thermodynamic-databases"></a>
 
@@ -328,7 +328,7 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 </species>
 ```
 
-----
+
 ## Reaction Mechanisms
 <a id="reaction-mechanisms"></a>
 
