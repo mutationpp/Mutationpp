@@ -49,6 +49,7 @@ where `dir` is any subdirectory. In practice, it allows a user to supersede a de
 
 ### Simplified XML Language
 <a id="xml-language"></a>
+
 Many of these files are written in a simplified version of the Extensible Markup
 Language (XML).  XML provides a human readable, yet complex and extensible format for data
 to be stored with only a few, limited rules.  An example XML fragment is shown below.
@@ -75,6 +76,7 @@ Between the tag and end-tag of an element, an element may also contain one or mo
 
 ## Mixtures 
 <a id="mixtures"></a>
+
 Mixture files are located in the `data/mixtures` directory.  They are the primary
 input mode in Mutation++ because they provide the list of species to be loaded as
 well as any options that can be used to control the behavior of Mutation++.
@@ -91,6 +93,7 @@ well as any options that can be used to control the behavior of Mutation++.
 
 ### Mixture Options
 <a id="mixture-options"></a>
+
 The following options are available as attributes in the `mixture` element.  If an attribute is not given, then the __bold value__ is taken as the __default__.
 
 Attribute              | Possible Values                                     | Description
@@ -104,6 +107,7 @@ Attribute              | Possible Values                                     | D
 
 ### Species List Descriptor
 <a id="species-list-descriptor"></a>
+
 A _species list descriptor_ tells Mutation++ which species to load from the chosen
 thermodynamic database.  The simplest version of a descriptor is a list of species
 names separated by white space as in the example mixture above.
