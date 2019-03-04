@@ -138,7 +138,7 @@ are specified in the species list descriptor.  Mutation++ places the species in 
 A good way to see how the species are actually ordered in Mutation++ is to check the
 mixture with the [checkmix](checkmix.md) program.
 
-## Named Elemental Compositions
+### Named Elemental Compositions
 
 Named elemental compositions can be included in the mixture file which can then
 be retrieved inside Mutation++.  Many of the tools included with Mutation++ can also use this information to simplify input on the command line.  An example of a list of element compositions for the 11-species Air mixture are shown below.
@@ -212,9 +212,10 @@ N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1
  0.00000000E+00 0.00000000E+00 0.56104638E+05 0.41939088E+01 0.56850013E+05    4
 ```
 
-@subsection nasa_9 NASA 9-Coefficient Polynomials
+### NASA 9-Coefficient Polynomials
 
-@cite McBride1996
+[McBride et al. (1995)](bibliography.md#McBride1995)
+
 Constants                                               | Format       | Columns
 --------------------------------------------------------|--------------|--------
 <b>Line 1</b>                                           | -            | -
@@ -254,7 +255,7 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 -9.705954110D-11 1.437538881D-15                 4.938707040D+06-1.672099740D+03
 ```
 
-@subsection rrho Rigid-Rotator Harmonic-Oscillators
+### Rigid-Rotator Harmonic-Oscillators
 
 ```xml
 <!-- Nitrogen diatomic -->
@@ -301,7 +302,7 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 
 
 ----
-@section reaction_mechanisms Reaction Mechanisms
+## Reaction Mechanisms
 
 A __mechanism name__ _referenced in a mixture file will correspond to a file with an .xml
 extension in the mechanisms directory_.  A mechanism file describes a reaction mechanism
@@ -320,7 +321,7 @@ the `.xml` extension).
 The root `mechanism` element may have any number of child elements which correspond to
 __reaction elements__ or __unit specifiers__.
 
-@subsection reaction_definitions Reaction Definitions
+### Reaction Definitions
 
 Below is an example `reaction` element
 ```xml
@@ -365,7 +366,7 @@ Att. | Value
 _note: only one of `Ea` or `T` may be used, not both_
 
 
-@subsection unit_specifiers Unit Specifiers
+### Unit Specifiers
 
 A unit specifier element is used to specify the units of the parameters in each rate law
 if needed.  A unit specifier element is denoted by a tag which has `_units` appended to
@@ -381,7 +382,7 @@ Att. | Value                               | Description
 `E`  | energy, quantity, temperature       | units of activation energy and characteristic temperature
 
 
-@subsection example_mechanism Example Mechanism
+### Example Mechanism
 
 As an example of how to create a mechanism file, consider the following example reaction
 mechanism for a 5-species Nitrogen mixture of N2, N2+, N, N+ and e- with each reaction
@@ -435,4 +436,4 @@ resulting mechanism file `example.xml` is given below.
 ```
 
 ----
-@section transfer_databases Energy Transfer Model Data
+## Energy Transfer Model Data
