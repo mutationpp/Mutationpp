@@ -12,7 +12,7 @@ Mutation++ is an open-source library originally developed at the [von Karman Ins
 ## How to get started
 * [Check out what Mutation++ can do](docs/capabilities.md#top)
 * [Getting started tutorial](docs/getting-started.md#top)
-* [Next steps](docs/Readme.md#top)
+* [Next steps](docs/Readme.md#top) - full reference section
 
 ## More
 * Feature requests and bugs can be raised on the [Github issue tracker](https://github.com/mutationpp/Mutationpp/issues)
