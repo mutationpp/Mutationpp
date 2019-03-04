@@ -26,7 +26,6 @@ configure_file(Configuration.h.in Configuration.h)
 
 set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_catalysis.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_collision_integrals.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_convert.cpp
@@ -34,6 +33,8 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass.cpp
+#    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass_energy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_rates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_reactions.cpp

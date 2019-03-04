@@ -184,7 +184,7 @@ void GasSurfaceInteraction::setDiffusionModel(
 void GasSurfaceInteraction::setGasFourierHeatFluxModel(
     const double* const p_T_edge, const double& dx) {
     mp_surf->setGasFourierHeatFluxModel(Map<const VectorXd>(
-        p_T_edge, m_thermo.nSpecies()), dx);
+        p_T_edge, m_thermo.nEnergyEqns()), dx);
 }
 
 //==============================================================================

@@ -37,7 +37,7 @@ TEST_CASE
 {
     const double tol = std::numeric_limits<double>::epsilon();
 
-    MIXTURE_GSI_LOOP
+    MIXTURE_GSI_MASS_LOOP
     (
         // Setting up
         const size_t set_state_with_rhoi_T = 1;
@@ -49,43 +49,43 @@ TEST_CASE
         VectorXd Teq = VectorXd::Constant(nT, 3000.);
         double Peq = 100.; // Pa
         mix.equilibrate(Teq(pos_T_trans), Peq);
-        VectorXd rhoiw(ns);
-        mix.densities(rhoiw.data());
+        VectorXd rhoi_s(ns);
+        mix.densities(rhoi_s.data());
 
-        VectorXd Tsurf = VectorXd::Constant(nT, 300.);
+        VectorXd T_s = VectorXd::Constant(nT, 300.);
 
         // Setting number of iterations
         const int iter = 100;
         mix.setIterationsSurfaceBalance(iter);
 
         // Mass gradient
-        VectorXd xi_edge(ns);
-        xi_edge = Eigen::Map<const Eigen::VectorXd>(mix.X(), ns);
+        VectorXd xi_e(ns);
+        xi_e = Map<const VectorXd>(mix.X(), ns);
         double dx = 1.;
 
         // Solving mass balance
-        mix.setSurfaceState(rhoiw.data(), Tsurf.data(), set_state_with_rhoi_T);
-        mix.setDiffusionModel(xi_edge.data(), dx);
+        mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
+        mix.setDiffusionModel(xi_e.data(), dx);
 
         mix.solveSurfaceBalance();
-        mix.getSurfaceState(rhoiw.data(), Tsurf.data(), set_state_with_rhoi_T);
+        mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Verifying the solution gives low residual in the balance equations
-        mix.setState(rhoiw.data(), Tsurf.data(), set_state_with_rhoi_T);
-        VectorXd xi(ns);
-        xi = Eigen::Map<const Eigen::VectorXd>(mix.X(), ns);
+        mix.setState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
+        VectorXd xi_s(ns);
+        xi_s = Map<const VectorXd>(mix.X(), ns);
 
         // Compute diffusion velocities
         VectorXd dxidx(ns);
-        dxidx = (xi - xi_edge) / dx;
+        dxidx = (xi_s - xi_e) / dx;
         VectorXd vdi(ns);
         double E = 0.;
         mix.stefanMaxwell(dxidx.data(), vdi.data(), E);
 
         // Get surface production rates
-        VectorXd wdotcat(ns);
-        mix.setSurfaceState(rhoiw.data(), Tsurf.data(), set_state_with_rhoi_T);
-        mix.surfaceReactionRates(wdotcat.data());
+        VectorXd wdot(ns);
+        mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
+        mix.surfaceReactionRates(wdot.data());
 
         // Blowing flux (should be zero for catalysis)
         double mblow;
@@ -93,8 +93,8 @@ TEST_CASE
 
         // Building mass balance functions
         VectorXd F(ns);
-        double rho = rhoiw.sum();
-        F = (rhoiw/rhoiw.sum())*mblow + rhoiw.cwiseProduct(vdi) - wdotcat;
+        double rho = rhoi_s.sum();
+        F = (rhoi_s/rhoi_s.sum())*mblow + rhoi_s.cwiseProduct(vdi) - wdot;
 
         // Compute error
          double err = F.lpNorm<Infinity>();
