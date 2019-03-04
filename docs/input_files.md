@@ -214,7 +214,7 @@ N                 L 6/88N   1    0    0    0G   200.000  6000.000 1000.        1
 
 ### NASA 9-Coefficient Polynomials
 
-[McBride et al. (1995)](bibliography.md#McBride1995)
+[McBride and Sanford (1996)](bibliography.md#McBride1996)
 
 Constants                                               | Format       | Columns
 --------------------------------------------------------|--------------|--------
@@ -304,15 +304,9 @@ N2                Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.
 ----
 ## Reaction Mechanisms
 
-A __mechanism name__ _referenced in a mixture file will correspond to a file with an .xml
-extension in the mechanisms directory_.  A mechanism file describes a reaction mechanism
-which is a set of __elementary reactions__ of the form
-
-\f[ \sum_i \nu'_{ij} \mathcal{A}_i \rightleftharpoons \sum_i \nu''_{ij} \mathcal{A}_i \f]
-
-where \f$ \mathcal{A}_i \f$ represents the i'th species and \f$\nu'_{ij}\f$ and
-\f$\nu''_{ij}\f$ are the forward and reverse stoichiometric coefficients of the i'th
-species in the j'th reaction.
+A mechanism name referenced in a mixture file will correspond to a file with an .xml
+extension in the mechanisms directory.  A mechanism file describes a reaction mechanism
+which is a set of elementary reactions.
 
 Mechanism files begin with a root element called `mechanism`.  A `name` attribute may be
 given but it is ignored.  The name of the mechanism is determined by the filename (without
@@ -333,7 +327,7 @@ Below is an example `reaction` element
 
 `reaction` elements must contain a `formula` attribute which specifies the reaction
 formula for the given reaction.  The `formula` string must obey the following rules:
-- species names are separated the `+` symbol
+- species names are separated by the `+` symbol
 - an `M` in the reactant and product lists indicate a thirdbody reaction (note that this
   character is reserved and cannot be a species name)
 - stoichiometric coefficients must directly precede a species name (if the coefficient is
@@ -349,20 +343,22 @@ colon-separated pairs of species names and efficiency factor, each separated by 
 such as in the example above.  __Any efficiency factors which are not specified default to__
 __a value of 1.  Free electrons do not participate in thirdbody reactions.__
 
-@subsubsection rate_laws Rate Laws
+**Rate Laws** <br>
 
-A `reaction` element __must contain a child node which describes which rate law__ to use
+A `reaction` element __must contain a child node which describes which rate law to use__
 when evaluating the forward rate coefficient.  The rate law node is specified by the tag
 and its corresponding attributes correspond to the parameters for that given rate law.  The
 following rate rate laws are currently supported.
 
-- `arrhenius`  \f$ k_f(T_f) = A T_f^n \exp(\frac{E_a}{R_u T_f}) \f$
+- `arrhenius`  k(T) = A T<sup>n<sup> exp[-E<sub>a<sub> / (R T)]
+
 Att. | Value
 -----|--------
 `A`  | pre-exponential factor
 `n`  | temperature exponent
 `Ea` | activation energy
-`T`  | characteristic temperature (\f$E_a/R_u\f$)
+`T`  | characteristic temperature E<sub>a<sub> / R
+
 _note: only one of `Ea` or `T` may be used, not both_
 
 
@@ -388,14 +384,14 @@ As an example of how to create a mechanism file, consider the following example 
 mechanism for a 5-species Nitrogen mixture of N2, N2+, N, N+ and e- with each reaction
 controlled by an Arrhenius rate law.
 
-\# | Formula                                      | A [mol,cm,s,K] | n     | Ea [K]
----|----------------------------------------------|----------------|-------|--------
-1  | \f$N_2 + N_2 \rightleftharpoons 2N + N_2 \f$ | 1.0e21         | -1.6  | 113200
-2  | \f$N_2 + N \rightleftharpoons 2N + N \f$     | 3.0e21         | -1.6  | 113200
-3  | \f$N_2 + N^+ \rightleftharpoons 2N + N^+ \f$ | 1.0e21         | -1.6  | 113200
-4  | \f$N_2 + e^- \rightleftharpoons 2N + e^-\f$  | 7.0e22         | -1.6  | 113200
-5  | \f$N+e^-\rightleftharpoons N^++e^-+e^-\f$    | 2.5e30         | -3.82 | 168200
-6  | \f$N+N\rightleftharpoons N_2^++e^-\f$        | 4.4e7          | 1.5   | 67500
+\# | Formula                                   | A [mol,cm,s,K] | n     | Ea [K]
+---|-------------------------------------------|----------------|-------|--------
+1  | N_2 + N_2 \rightleftharpoons 2N + N_2 \f$ | 1.0e21         | -1.6  | 113200
+2  | N_2 + N \rightleftharpoons 2N + N \f$     | 3.0e21         | -1.6  | 113200
+3  | N_2 + N^+ \rightleftharpoons 2N + N^+ \f$ | 1.0e21         | -1.6  | 113200
+4  | N_2 + e^- \rightleftharpoons 2N + e^-\f$  | 7.0e22         | -1.6  | 113200
+5  | N+e^-\rightleftharpoons N^++e^-+e^-\f$    | 2.5e30         | -3.82 | 168200
+6  | $N+N\rightleftharpoons N_2^++e^-$         | 4.4e7          | 1.5   | 67500
 
 Reactions 1-4 in the above example have the same rate constants except for the
 pre-exponential factor differ only by the thirdbody species, making them good candidates
