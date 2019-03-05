@@ -35,7 +35,7 @@ using namespace Mutation::Utilities;
 using namespace Mutation::Thermodynamics;
 
 namespace Mutation {
-    namespace Kinetics {
+namespace Kinetics {
 
 //==============================================================================
 
@@ -65,14 +65,14 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
     assert( node.tag() == "reaction" );
 
     // Store the reaction formula (must have)
-    node.getAttribute("formula", m_formula, 
+    node.getAttribute("formula", m_formula,
         "No formula specied with reaction!");
-    
+
     // Parse the formula to determine which species are involved, whether or
     // not this is a third-body reaction, and reversibility of the reaction
     parseFormula(node, thermo);
-    
-    // Now loop through the children of this node to determine the other 
+
+    // Now loop through the children of this node to determine the other
     // attributes of the reaction
     IO::XmlElement::const_iterator iter = node.begin();
     for ( ; iter != node.end(); ++iter) {
@@ -105,11 +105,11 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
             }
         }
     }
-    
+
     // Make sure we got a RateLaw out of all that
     if (mp_rate == NULL)
         node.parseError("A rate law must be supplied with this reaction!");
-    
+
     // Check for charge and mass conservation
     const size_t ne = thermo.nElements();
     int sums [ne];
@@ -122,7 +122,7 @@ Reaction::Reaction(const IO::XmlElement& node, const class Thermodynamics& therm
             sums[k] -= thermo.elementMatrix()(m_products[i],k);
     for (int i = 0; i < ne; ++i)
         m_conserves &= (sums[i] == 0);
-    
+
     // Figure out what type of reaction this is
     determineType(thermo);
 }
@@ -140,7 +140,7 @@ bool Reaction::operator == (const Reaction& r)
         if (m_reactants == r.m_reactants &&
             m_products == r.m_products)
             return true;
-    
+
         // A + B <=> AB  =  AB <=> A + B,
         // A + B  => AB  =  AB <=> A + B,
         // A + B <=> AB  =  AB  => A + B
@@ -149,7 +149,7 @@ bool Reaction::operator == (const Reaction& r)
             !(isReversible() && r.isReversible()))
             return true;
     }
-    
+
     // In the case where one reaction is thirdbody, we have to check if the non-
     // thirdbody reaction is a special case of the thirdbody reaction
     // (ie: N + O + M <=> NO + M (alpha_N != 0)  and  2N + O <=> NO + N)
@@ -169,10 +169,10 @@ void Reaction::parseFormula(
         node.parseError((
             std::string("Reaction formula ") + m_formula +
             std::string(" does not have '=' or '=>'!")).c_str());
-    
+
     std::string reactants = m_formula.substr(0, pos);
     std::string products;
-    
+
     if (m_formula[pos+1] == '>') {
         m_reversible = false;
         products = m_formula.substr(pos+2, m_formula.length()-pos-1);
@@ -180,8 +180,8 @@ void Reaction::parseFormula(
         m_reversible = true;
         products = m_formula.substr(pos+1, m_formula.length()-pos);
     }
-    
-    // Now that we have reactant and product strings, we can parse each 
+
+    // Now that we have reactant and product strings, we can parse each
     // separately using the same algorithm
     parseSpecies(m_reactants, reactants, node, thermo);
     parseSpecies(m_products,  products,  node, thermo);
@@ -205,10 +205,10 @@ void Reaction::parseSpecies(
     size_t e = 0;
     int nu   = 1;
     bool add_species = false;
-    
+
     // Remove all spaces to simplify the state machine logic
     String::eraseAll(str, " ");
-    
+
     // Loop over every character
     while (c != str.size()) {
         // Decide what action to do
@@ -220,7 +220,7 @@ void Reaction::parseSpecies(
                 } else {
                     nu = 1;
                     s = c;
-                }                    
+                }
                 state = name;
                 break;
             case name:
@@ -229,21 +229,21 @@ void Reaction::parseSpecies(
                 break;
             case plus:
                 if (str[c] != '+') {
-                    e = c - 2;                        
+                    e = c - 2;
                     c--;
                     add_species = true;
                     state = coefficient;
                 }
-                break;                     
+                break;
         }
-        
+
         // Add the last species which would not be counted because c will
         // equal str.size() on the next iteration
         if (c == str.size() - 1) {
             add_species = true;
             e = c;
         }
-        
+
         // If we found the start and end position of a species, add it to
         // the list nu times (unless it is the special case of 'M')
         if (add_species) {
@@ -260,11 +260,11 @@ void Reaction::parseSpecies(
             }
             add_species = false;
         }
-        
+
         // Move on to the next character
         c++;
     }
-    
+
     // Sort the species vector
     std::sort(species.begin(), species.end());
 }
@@ -273,17 +273,13 @@ void Reaction::parseSpecies(
 
 void Reaction::determineType(const class Thermodynamics& thermo)
 {
-   
+
     bool reactant_ion      = false;
     bool reactant_electron = false;
     bool product_ion       = false;
     bool product_electron  = false;
     bool m_inert           = isThirdbody();
     bool m_inert_e         = false;
-//     bool excited_react     = false;
-//     bool excited_prod      = false;
-//     bool excited           = false;
-//     bool exciting          = false;
     int ecount             = 0;
     int chgcount           = 0;
     
@@ -298,7 +294,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             reactant_ion = true;
         }
     }
-    
+
     // Check products
     for (int i=0; i < nProducts(); ++i) {
         const Species& species = thermo.species(m_products[i]);
@@ -310,7 +306,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             product_ion = true;
         }
     }
-    
+
     // Check for an inert species if not explicitly a thirdbody reaction
     if (!m_inert) {
         for (int i=0; i < nReactants(); ++i) {
@@ -319,26 +315,9 @@ void Reaction::determineType(const class Thermodynamics& thermo)
             }
         }
     }
-    
+
     // Is there an inert electron?
     m_inert_e = (product_electron && reactant_electron);
-    
-
-//     // Are there any excited states ?
-//      for (int i=0; i < nReactants(); ++i) {
-//         const Species& species = thermo.species(m_reactants[i]);
-//         if (species.level() >0)
-//            excited_react = true;
-//           
-//     }
-//        for (int i=0; i < nProducts(); ++i) {
-//         const Species& species = thermo.species(m_products[i]);
-//         if (species.level() >0)
-//            excited_prod = true;
-//     }
-//     if (excited_prod or excited_react)
-//            excited = true;
-
 
     // ---------------- Logic tree ----------------
     if (ecount > 0) {
@@ -400,14 +379,12 @@ void Reaction::determineType(const class Thermodynamics& thermo)
                 m_type = EXCITATION_M;
             else
                 m_type = EXCHANGE;  // exchange of charge, atom, or both simultaneously
-        }
-        
+        } 
     }
-    
 }
 
 //==============================================================================
 
-    } // namespace Kinetics
+} // namespace Kinetics
 } // namespace Mutation
 
