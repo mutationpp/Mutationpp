@@ -1,6 +1,6 @@
 <a id="top"></a>
 
-![Mutation++](docs/artwork/mpp-logo.png)
+<img src="docs/artwork/mpp-logo.png" alt="Mutation++" width="600"/>
 
 [![Build Status](https://travis-ci.org/mutationpp/Mutationpp.svg?branch=master)](https://travis-ci.org/mutationpp/Mutationpp)
 [![codecov](https://codecov.io/gh/mutationpp/Mutationpp/branch/master/graph/badge.svg)](https://codecov.io/gh/mutationpp/Mutationpp)
