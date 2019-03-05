@@ -1,7 +1,6 @@
 <a id="top"></a>
 
-## Mutation++
-MUlticomponent Thermodynamic And Transport properties for partially IONized gases in C++
+![Mutation++](docs/artwork/mpp-logo.png)
 
 [![Build Status](https://travis-ci.org/mutationpp/Mutationpp.svg?branch=master)](https://travis-ci.org/mutationpp/Mutationpp)
 [![codecov](https://codecov.io/gh/mutationpp/Mutationpp/branch/master/graph/badge.svg)](https://codecov.io/gh/mutationpp/Mutationpp)
