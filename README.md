@@ -8,10 +8,10 @@
 
 Mutation++ is an open-source library originally developed at the [von Karman Institute for Fluid Dynamics](https://www.vki.ac.be), designed to couple with conventional computational fluid dynamics codes to provide thermodynamic, transport, chemistry, and energy transfer properties associated with subsonic to hypersonic flows.
 
-## How to get started
-* [Check out what Mutation++ can do](docs/capabilities.md#top)
-* [Getting started tutorial](docs/getting-started.md#top)
-* [Next steps](docs/Readme.md#top) - full reference section
+## Get started
+* [See what Mutation++ can do](docs/capabilities.md#top)
+* [Introductory tutorial](docs/getting-started.md#top)
+* [Going further](docs/Readme.md#top) - full reference section
 
 ## More
 * Feature requests and bugs can be raised on the [Github issue tracker](https://github.com/mutationpp/Mutationpp/issues)
