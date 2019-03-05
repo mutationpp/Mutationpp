@@ -31,7 +31,7 @@ void checkReactionType(const std::string& formula, ReactionType type)
 {
     // Setup a shared thermo object for testing reaction types
     static Mutation::Thermodynamics::Thermodynamics thermo(
-        "e- N Ar(1) Ar(2) N+ O O- O+ NO NO+ N2 N2+ O2", "RRHO", "ChemNonEq1T");
+        "e- N N+ Ar(1) Ar(2) O O- O+ NO NO+ N2 N2+ O2 O2+ He+ He++", "RRHO", "ChemNonEq1T");
 
     XmlElement node(
         "<reaction formula=\"" + formula + "\" >"
@@ -68,44 +68,56 @@ TEST_CASE
 )
 {
     // ASSOCIATIVE_IONIZATION and DISSOCIATIVE_RECOMBINATION
-    checkReactionType("N + O", "NO+ + e-", 
-        ASSOCIATIVE_IONIZATION, DISSOCIATIVE_RECOMBINATION);
-    checkReactionType("N + N", "N2+ + e-", 
-        ASSOCIATIVE_IONIZATION, DISSOCIATIVE_RECOMBINATION);
+    checkReactionType("N + O", "NO+ + e-", ASSOCIATIVE_IONIZATION, DISSOCIATIVE_RECOMBINATION);
+    checkReactionType("N + N", "N2+ + e-", ASSOCIATIVE_IONIZATION, DISSOCIATIVE_RECOMBINATION);
 
-    // CHARGE_EXCHANGE
-    checkReactionType("N+ + O = N + O+", CHARGE_EXCHANGE);
-
+    // ASSOCIATIVE_DETACHMENT and DISSOCIATIVE_ATTACHMENT
+    checkReactionType("O- + O", "O2 + e-", ASSOCIATIVE_DETACHMENT, DISSOCIATIVE_ATTACHMENT);
+    
     // DISSOCIATION_E and RECOMBINATION_E
     checkReactionType("NO + e-", "N + O + e-", DISSOCIATION_E, RECOMBINATION_E);
     checkReactionType("N2 + e-", "2N + e-",    DISSOCIATION_E, RECOMBINATION_E);
+    checkReactionType("NO+ + e-", "N+ + O + e-", DISSOCIATION_E, RECOMBINATION_E);
 
     // DISSOCIATION_M and RECOMBINATION_M
     checkReactionType("NO + M", "N + O + M", DISSOCIATION_M, RECOMBINATION_M);
     checkReactionType("N2 + M", "2N + M",    DISSOCIATION_M, RECOMBINATION_M);
     checkReactionType("NO + N", "2N + O",    DISSOCIATION_M, RECOMBINATION_M);
     checkReactionType("N2 + N", "3N",        DISSOCIATION_M, RECOMBINATION_M);
+    checkReactionType("N2 + N2", "4N",          DISSOCIATION_M, RECOMBINATION_M);
+    checkReactionType("N2+ + M", "N+ + N + M",  DISSOCIATION_M, RECOMBINATION_M);
+    checkReactionType("NO + O+", "N + O + O+",  DISSOCIATION_M, RECOMBINATION_M);
     
-    // ELECTRONIC_ATTACHMENT and ELECTRONIC_DETACHMENT
-    // checkReactionType("O + e- + N", "O- + N", 
-    //     ELECTRONIC_ATTACHMENT, ELECTRONIC_DETACHMENT);
-    // checkReactionType("O + e- + M", "O- + M", 
-    //     ELECTRONIC_ATTACHMENT, ELECTRONIC_DETACHMENT);
+    // ELECTRONIC_DETACHMENT_E and ELECTRONIC_ATTACHMENT_E
+    checkReactionType("O + 2e-", "O- + e-", ELECTRONIC_ATTACHMENT_E, ELECTRONIC_DETACHMENT_E);
 
+    // ELECTRONIC_DETACHMENT_M and ELECTRONIC_ATTACHMENT_M
+    checkReactionType("O + e- + N", "O- + N", ELECTRONIC_ATTACHMENT_M, ELECTRONIC_DETACHMENT_M);
+    checkReactionType("O + e- + M", "O- + M", ELECTRONIC_ATTACHMENT_M, ELECTRONIC_DETACHMENT_M);
+    
     // EXCHANGE
     checkReactionType("N2 + O2 = 2NO",   EXCHANGE);
     checkReactionType("NO + O = O2 + N", EXCHANGE);
+    checkReactionType("N+ + O = N + O+", EXCHANGE);
+    checkReactionType("O+ + O- = 2O",    EXCHANGE);
+    checkReactionType("NO+ + NO = N2 + O2+", EXCHANGE);
+    checkReactionType("N2+ + O = NO + N+", EXCHANGE);
+    checkReactionType("N2 + O+ = NO + N+", EXCHANGE);
 
     // IONIZATION_E and ION_RECOMBINATION_E
     checkReactionType("N + e-", "N+ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("NO + e-", "NO+ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("He+ + e-", "He++ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
 
     // IONIZATION_M and ION_RECOMBINATION_M
     checkReactionType("N + M", "N+ + M + e-", IONIZATION_M, ION_RECOMBINATION_M);
     checkReactionType("N + N", "N+ + N + e-", IONIZATION_M, ION_RECOMBINATION_M);
+    checkReactionType("He+ + M", "He++ + M + e-", IONIZATION_M, ION_RECOMBINATION_M);
+    checkReactionType("NO + N2", "NO+ + N2 + e-", IONIZATION_M, ION_RECOMBINATION_M);
 
-    // EXCITATION_E and DEEXCITATION_E
-    // checkReactionType("Ar(1) + e-", "Ar(2) + e-", EXCITATION_E, DEEXCITATION_E);
+    // EXCITATION_E
+    checkReactionType("Ar(1) + e-", "Ar(2) + e-", EXCITATION_E, EXCITATION_E);
 
-    // EXCITATION_M and DEEXCITATION_M
-    // checkReactionType("Ar(1) + M", "Ar(2) + M", EXCITATION_M, DEEXCITATION_M);
+    // EXCITATION_M
+    checkReactionType("Ar(1) + M", "Ar(2) + M", EXCITATION_M, EXCITATION_M);
 }
