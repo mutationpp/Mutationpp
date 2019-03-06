@@ -280,124 +280,106 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     bool product_electron  = false;
     bool m_inert           = isThirdbody();
     bool m_inert_e         = false;
-    bool excited_react     = false;
-    bool excited_prod      = false;
-    bool excited           = false;
-    bool exciting          = false;
-
+    int ecount             = 0;
+    int chgcount           = 0;
+    
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
         const Species& species = thermo.species(m_reactants[i]);
-        if (species.type() == ELECTRON)
+        if (species.type() == ELECTRON) {
+            ecount++;
             reactant_electron = true;
-        else if (species.isIon())
+        } else if (species.isIon()) {
+            chgcount += abs(species.charge());
             reactant_ion = true;
+        }
     }
 
     // Check products
     for (int i=0; i < nProducts(); ++i) {
         const Species& species = thermo.species(m_products[i]);
-        if (species.type() == ELECTRON)
+        if (species.type() == ELECTRON) {
+            ecount--;
             product_electron = true;
-        else if (species.isIon())
+        } else if (species.isIon()) {
+            chgcount -= abs(species.charge());
             product_ion = true;
+        }
     }
 
     // Check for an inert species if not explicitly a thirdbody reaction
     if (!m_inert) {
         for (int i=0; i < nReactants(); ++i) {
-            for (int j=0; j < nProducts(); ++j)
+            for (int j=0; j < nProducts(); ++j) {
                 m_inert |= (m_reactants[i] == m_products[j]);
+            }
         }
     }
 
     // Is there an inert electron?
     m_inert_e = (product_electron && reactant_electron);
 
-    // Are there any excited states ?
-    for (int i=0; i < nReactants(); ++i) {
-        const Species& species = thermo.species(m_reactants[i]);
-        if (species.level() >0)
-            excited_react = true;
-    }
-
-    for (int i=0; i < nProducts(); ++i) {
-        const Species& species = thermo.species(m_products[i]);
-        if (species.level() >0)
-            excited_prod = true;
-    }
-
-    if (excited_prod or excited_react)
-           excited = true;
-
-    // Logic tree for ground electronic state reactions || reactions involving excited states
-    if (excited) {
-    // excited state reactions
-        if (m_inert_e) {
-           if (product_ion)
-              m_type = IONIZATION_E;
-           else if (reactant_ion)
+    // ---------------- Logic tree ----------------
+    if (ecount > 0) {
+        
+        if (chgcount > 0) {
+           if (m_inert_e)
               m_type = ION_RECOMBINATION_E;
-           else
-              m_type = EXCITATION_E;
-       } else {
-            if (product_ion)
-               m_type = IONIZATION_M;
-            else if (reactant_ion)
-               m_type = ION_RECOMBINATION_M;
-            else
-               m_type = EXCITATION_M;
-        }
-
-    } else {
-        // ground electronic state reactions
-        if (reactant_ion) {
-            if (product_ion){
-                if (m_inert_e)
-                    m_type = IONIZATION_E; // Assigning impact ionization to the production of double ionized species
-                else
-                    m_type = CHARGE_EXCHANGE;
-            } else {
-                if (m_inert_e)
-                    m_type = ION_RECOMBINATION_E;
-                else if (m_inert)
-                    m_type = ION_RECOMBINATION_M;
-                else {
-                    if (product_electron)
-                        m_type = ELECTRONIC_DETACHMENT;
-                    else
-                        m_type = DISSOCIATIVE_RECOMBINATION;
-                }
-            }
+           else if (m_inert)
+              m_type = ION_RECOMBINATION_M;
+           else 
+              m_type = DISSOCIATIVE_RECOMBINATION;
+           
         } else {
-            if (m_inert) {
-                if (product_ion) {
-                    if (m_inert_e)
-                        m_type = IONIZATION_E;
-                    else
-                        m_type = IONIZATION_M;
-                } else {
-                    if (nReactants() > nProducts()) {
-                        if (m_inert_e)
-                            m_type = RECOMBINATION_E;
-                        else
-                            m_type = RECOMBINATION_M;
-                    } else {
-                        if (m_inert_e)
-                            m_type = DISSOCIATION_E;
-                        else
-                            m_type = DISSOCIATION_M;
-                    }
-                }
-            } else {
-                if (product_electron)
-                    m_type = ASSOCIATIVE_IONIZATION;
-                else if (reactant_electron)
-                    m_type = ELECTRONIC_ATTACHMENT;
-                else
-                    m_type = EXCHANGE;
-            }
+            if (m_inert_e)
+               m_type = ELECTRONIC_ATTACHMENT_E;
+            else if (m_inert)
+               m_type = ELECTRONIC_ATTACHMENT_M;
+            else 
+               m_type = DISSOCIATIVE_ATTACHMENT;
         }
+        
+    } else if (ecount < 0) {
+        
+        if (chgcount > 0) {
+            if (m_inert_e)
+                m_type = ELECTRONIC_DETACHMENT_E;
+            else if (m_inert)
+                m_type = ELECTRONIC_DETACHMENT_M;
+            else 
+                m_type = ASSOCIATIVE_DETACHMENT;
+            
+        } else {
+            if (m_inert_e)
+                m_type = IONIZATION_E;
+            else if (m_inert)
+                m_type = IONIZATION_M;
+            else 
+                m_type = ASSOCIATIVE_IONIZATION;
+        }
+        
+    } else {
+        
+        if (nReactants() > nProducts()) {
+            if (m_inert_e)
+                m_type = RECOMBINATION_E;
+            else
+                m_type = RECOMBINATION_M;   // including double recombination        
+                
+        } else if (nReactants() < nProducts()) {
+            if (m_inert_e)
+                m_type = DISSOCIATION_E;
+            else
+                m_type = DISSOCIATION_M;   // including double dissociation  
+            
+        } else {
+            if (m_inert_e)
+                m_type = EXCITATION_E;
+            else if (m_inert)
+                m_type = EXCITATION_M;
+            else
+                m_type = EXCHANGE;  // exchange of charge, atom, or both simultaneously
+        } 
     }
 }
 

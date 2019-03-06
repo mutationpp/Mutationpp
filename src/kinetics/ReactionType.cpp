@@ -37,8 +37,12 @@ const char* const reactionTypeString(const ReactionType type)
     switch (type) {
         case ASSOCIATIVE_IONIZATION:
             return "associative ionization";
-        case CHARGE_EXCHANGE:
-            return "charge exchange";
+        case DISSOCIATIVE_RECOMBINATION:
+            return "dissociative recombination"; 
+        case ASSOCIATIVE_DETACHMENT:
+            return "associative detachment";   
+        case DISSOCIATIVE_ATTACHMENT:
+            return "dissociative attachment"; 
         case DISSOCIATION_M:
             return "heavy particle impact dissociation";
         case DISSOCIATION_E:
@@ -47,14 +51,6 @@ const char* const reactionTypeString(const ReactionType type)
             return "heavy particle impact recombination";
         case RECOMBINATION_E:
             return "electron impact recombination";
-        case DISSOCIATIVE_RECOMBINATION:
-            return "dissociative recombination";
-        case ELECTRONIC_ATTACHMENT:
-            return "electron attachment";
-        case ELECTRONIC_DETACHMENT:
-            return "electron detachment";
-        case EXCHANGE:
-            return "exchange";
         case IONIZATION_M:
             return "heavy particle impact ionization";
         case IONIZATION_E:
@@ -63,14 +59,20 @@ const char* const reactionTypeString(const ReactionType type)
             return "heavy particle impact ion recombination";
         case ION_RECOMBINATION_E:
             return "electron impact ion recombination";
+        case ELECTRONIC_ATTACHMENT_E:
+            return "electron impact electron attachment";
+        case ELECTRONIC_DETACHMENT_E:
+            return "electron impact electron detachment";
+        case ELECTRONIC_ATTACHMENT_M:
+            return "heavy particle impact electron attachment";
+        case ELECTRONIC_DETACHMENT_M:
+            return "heavy particle impact electron detachment";  
+        case EXCHANGE:
+            return "exchange";
         case EXCITATION_E:
-            return "electron impact excitation";
+            return "electron impact excitation/deexcitation";
         case EXCITATION_M:
-            return "heavy particle impact excitation";	
-        case DEEXCITATION_E:
-            return "electron impact deexcitation";
-        case DEEXCITATION_M:
- 	        return "heavy particle impact deexcitation";
+            return "heavy particle impact excitation/deexcitation";
         default:
             return "unknown type";
     }
