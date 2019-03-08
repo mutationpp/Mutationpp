@@ -14,7 +14,7 @@ You can contribute to Mutation++ in two ways:
 
 The rules to follow are simple:
 
-* You must comply to the [workflow](workflow).
-* Your committed work must comply to the rules detailed in the [coding style guide](coding-style)
-* Your committed code must be documented as explained in the [documentation guidelines](documenting-code)
+* You must comply to the [workflow](workflow.md#top).
+* Your committed work must comply to the rules detailed in the [coding style guide](coding-style.md#top)
+* Your committed code must be documented as explained in the [documentation guidelines](documenting-code.md#top)
 * You are expected to show courtesy in your comments and messages.
