@@ -62,13 +62,13 @@ make -j N install
 where `N` is the number of CPU units to use for the build process (e.g. 4).
 
 ## Test
-A simply way to check that the installation process was successful, open a new terminal and run 
+A simply way to check that the installation process was successful is to try the [checkmix](checkmix.md#top) command. 
 
 ```
 checkmix air11
 ```
 
-This should print out information about the species and reactions in the air11 mixture.  You can also now use the `mppequil` program for calculating equilibrium properties of a given mixture.  For more information about `mppequil`, simply type
+This should print information about the species and reactions in the air11 mixture.  You can also now use the [mppequil](mppequil.md#top) program for calculating equilibrium properties of a given mixture.  For more information about `mppequil`, simply type
 
 ```
 mppequil --help
