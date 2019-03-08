@@ -8,7 +8,7 @@ First of all, thank you for your enthusiasm in contributing to Mutation++. Pleas
 You can contribute to Mutation++ in two ways:
 
 1. Reporting issues or suggesting features with the [issue tracker](https://github.com/mutationpp/Mutationpp/issues)
-2. Proposing fixes and code improvements through [pull requests](https://help.github.com/en/articles/about-pull-requests)
+2. Proposing fixes and code improvements through [pull requests](https://help.github.com/en/articles/about-pull-requests).  See the next section for specifics.
 
 ## How should I work?
 
