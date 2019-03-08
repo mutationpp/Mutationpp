@@ -156,6 +156,7 @@ Species names given in any data file, must obey the following rules:
     electronic energy levels for that species
 
 **Species Order** <br>
+<a id="species-order"></a>
 
 A list of species __may not be__ represented internally in Mutation++ in the same order they
 are specified in the species list descriptor.  Mutation++ places the species in an order which makes indexing the species the most convenient.  In general, the following steps are taken to order the species:
