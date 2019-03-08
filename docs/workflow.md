@@ -1,3 +1,4 @@
+<a id="top"></a>
 # Workflow Guide
 
 The Mutation++ development workflow follows the [GitHub flow](https://guides.github.com/introduction/flow/index.html) closely. This simple workflow has the following features:
