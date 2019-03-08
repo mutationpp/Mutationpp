@@ -1,7 +1,7 @@
 <a id="top"></a>
 
 # checkmix
-This is a utility program which loads a mixture and prints information about the various elements, species, and reactions in the [mixture](@ref mixtures).  A mixture is loaded just as it would be in any other application, so this tool is useful to check for any syntax errors or missing data in a given mixture before using it elsewhere.  It can also be used to see [exactly which order species](@ref species_order) and reactions are stored internally in Mutation++ for a given mixture.
+This is a utility program which loads a mixture and prints information about the various elements, species, and reactions in the [mixture](input-files.md#mixtures).  A mixture is loaded just as it would be in any other application, so this tool is useful to check for any syntax errors or missing data in a given mixture before using it elsewhere.  It can also be used to see [exactly which order species](input-files.md#species-order) and reactions are stored internally in Mutation++ for a given mixture.
 
 ## Usage
 **Method 1:** From a Mixture file
@@ -16,8 +16,8 @@ checkmix [NASA-7 | NASA-9 | RRHO] "species-descriptor"
 `species-descriptor` should follow the rules given [here](@ref species_list).
 
 ## Example
-Assuming you have a [mixture file](@ref mixtures) called `air5.xml` and a
-[mechanism file](@ref reaction_mechanisms) called `air5-chem.xml` (inther
+Assuming you have a [mixture file](input-files.md#mixtures) called `air5.xml` and a
+[mechanism file](input-files.md#reaction-mechanisms) called `air5-chem.xml` (inther
 your local directory or the `data/mixtures` and `data/mechanisms`
 directories) which are as follows
 ```xml
