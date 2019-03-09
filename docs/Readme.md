@@ -19,12 +19,16 @@ Quick reference for all the documentation.
 - [State Models](state-models.md)
 - [API documentation](api.md)
 
-## Other
+## For developers
 
 - [Contributing](contributing.md#top)
-- [Contributors](contributors.md#top)
 - [Dealing with dependencies](dependencies.md#top)
+- [Version numbering policy](versioning.md#top)
+
+## Other
+
+- [Contributors](contributors.md#top)
 - [Funding](funding.md#top)
 - [Release Notes](release-notes.md#top)
 - [Users](users.md#top)
-- [Version numbering policy](versioning.md#top)
+
