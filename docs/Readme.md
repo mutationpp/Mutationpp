@@ -23,6 +23,8 @@ Quick reference for all the documentation.
 
 - [Contributing](contributing.md#top)
 - [Contributors](contributors.md#top)
+- [Dealing with dependencies](dependencies.md#top)
 - [Funding](funding.md#top)
 - [Release Notes](release-notes.md#top)
 - [Users](users.md#top)
+- [Version numbering policy](versioning.md#top)
