@@ -16,7 +16,7 @@ Please follow these general guidelines when working in __ANY__ programming langu
 - Normal indentation is 4 spaces for each logical level
 - Use spaces for indentation, not tabs
 - Avoid trailing whitespace
-- All files should be documented according to the [documentation guidelines](documenting-code)
+- All files should be documented according to the [documentation guidelines](documenting-code.md#top)
 - Use only standard language features
 
 ## 2. C++
@@ -43,7 +43,7 @@ All C++ code should be placed in either a `header file` or `source file` accordi
     ```
 
     - Class members should be implemented in a separate `source file` with the same name
-    - Small helper classes and/or child classes may be included in the main/base class header and source file when appropriate, each class should be documented separately according to the [documentation guidelines](documenting-code)
+    - Small helper classes and/or child classes may be included in the main/base class header and source file when appropriate, each class should be documented separately according to the [documentation guidelines](documenting-code.md#top)
     - Use `const` whenever possible
     - Avoid explicitly inlining functions
 - Control structures (`if`, `else`, `for`, `while`, etc.)
