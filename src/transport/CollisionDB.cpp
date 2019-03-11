@@ -107,14 +107,14 @@ CollisionDB::CollisionDB(
     m_etafac = 5./16.*std::sqrt(PI*KB)*m_mass.tail(nh).sqrt();
 
     // Compute the nDei factors
-    if (m_ng > nh) {
+    if (nSpecies() > nh) {
         m_Deifac.fill(3./16.*std::sqrt(TWOPI*KB/m_mass(0)));
         m_Deifac(0) *= 2./SQRT2;
     }
 
     // Compute the nDij factors
-    for (int i = k, index = 0; i < m_ng; ++i)
-        for (int j = i; j < m_ng; ++j, index++)
+    for (int i = k, index = 0; i < nSpecies(); ++i)
+        for (int j = i; j < nSpecies(); ++j, index++)
             m_Dijfac(index) = 3./16.*std::sqrt(TWOPI*KB*
                 (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
 }
