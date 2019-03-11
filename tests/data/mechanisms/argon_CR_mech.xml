@@ -120,7 +120,7 @@
       <FitGoodness Rsquare="0.99995"/>
    </reaction>
    <reaction formula="Ar(1)+e-=Ar(1)+e-"><!--1_1-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(1)+e-=Ar(2)+e-"><!--1_2-->
@@ -244,7 +244,7 @@
       <FitGoodness Rsquare="0.99683"/>
    </reaction>
    <reaction formula="Ar(2)+e-=Ar(2)+e-"><!--2_2-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(2)+e-=Ar(3)+e-"><!--2_3-->
@@ -368,7 +368,7 @@
       <FitGoodness Rsquare="0.99587"/>
    </reaction>
    <reaction formula="Ar(3)+e-=Ar(3)+e-"><!--3_3-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(3)+e-=Ar(4)+e-"><!--3_4-->
@@ -492,7 +492,7 @@
       <FitGoodness Rsquare="0.99458"/>
    </reaction>
    <reaction formula="Ar(4)+e-=Ar(4)+e-"><!--4_4-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(4)+e-=Ar(5)+e-"><!--4_5-->
@@ -616,7 +616,7 @@
       <FitGoodness Rsquare="0.98551"/>
    </reaction>
    <reaction formula="Ar(5)+e-=Ar(5)+e-"><!--5_5-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(5)+e-=Ar(6)+e-"><!--5_6-->
@@ -740,7 +740,7 @@
       <FitGoodness Rsquare="0.99769"/>
    </reaction>
    <reaction formula="Ar(6)+e-=Ar(6)+e-"><!--6_6-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(6)+e-=Ar(7)+e-"><!--6_7-->
@@ -864,7 +864,7 @@
       <FitGoodness Rsquare="0.99996"/>
    </reaction>
    <reaction formula="Ar(7)+e-=Ar(7)+e-"><!--7_7-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(7)+e-=Ar(8)+e-"><!--7_8-->
@@ -988,7 +988,7 @@
       <FitGoodness Rsquare="0.99966"/>
    </reaction>
    <reaction formula="Ar(8)+e-=Ar(8)+e-"><!--8_8-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(8)+e-=Ar(9)+e-"><!--8_9-->
@@ -1112,7 +1112,7 @@
       <FitGoodness Rsquare="0.99996"/>
    </reaction>
    <reaction formula="Ar(9)+e-=Ar(9)+e-"><!--9_9-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(9)+e-=Ar(10)+e-"><!--9_10-->
@@ -1236,7 +1236,7 @@
       <FitGoodness Rsquare="0.99909"/>
    </reaction>
    <reaction formula="Ar(10)+e-=Ar(10)+e-"><!--10_10-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(10)+e-=Ar(11)+e-"><!--10_11-->
@@ -1360,7 +1360,7 @@
       <FitGoodness Rsquare="0.99999"/>
    </reaction>
    <reaction formula="Ar(11)+e-=Ar(11)+e-"><!--11_11-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(11)+e-=Ar(12)+e-"><!--11_12-->
@@ -1484,7 +1484,7 @@
       <FitGoodness Rsquare="0.99996"/>
    </reaction>
    <reaction formula="Ar(12)+e-=Ar(12)+e-"><!--12_12-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(12)+e-=Ar(13)+e-"><!--12_13-->
@@ -1608,7 +1608,7 @@
       <FitGoodness Rsquare="0.99993"/>
    </reaction>
    <reaction formula="Ar(13)+e-=Ar(13)+e-"><!--13_13-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(13)+e-=Ar(14)+e-"><!--13_14-->
@@ -1732,7 +1732,7 @@
       <FitGoodness Rsquare="0.99809"/>
    </reaction>
    <reaction formula="Ar(14)+e-=Ar(14)+e-"><!--14_14-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(14)+e-=Ar(15)+e-"><!--14_15-->
@@ -1856,7 +1856,7 @@
       <FitGoodness Rsquare="0.98984"/>
    </reaction>
    <reaction formula="Ar(15)+e-=Ar(15)+e-"><!--15_15-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(15)+e-=Ar(16)+e-"><!--15_16-->
@@ -1980,7 +1980,7 @@
       <FitGoodness Rsquare="0.99996"/>
    </reaction>
    <reaction formula="Ar(16)+e-=Ar(16)+e-"><!--16_16-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(16)+e-=Ar(17)+e-"><!--16_17-->
@@ -2104,7 +2104,7 @@
       <FitGoodness Rsquare="0.99983"/>
    </reaction>
    <reaction formula="Ar(17)+e-=Ar(17)+e-"><!--17_17-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(17)+e-=Ar(18)+e-"><!--17_18-->
@@ -2228,7 +2228,7 @@
       <FitGoodness Rsquare="0.99946"/>
    </reaction>
    <reaction formula="Ar(18)+e-=Ar(18)+e-"><!--18_18-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(18)+e-=Ar(19)+e-"><!--18_19-->
@@ -2352,7 +2352,7 @@
       <FitGoodness Rsquare="0.99988"/>
    </reaction>
    <reaction formula="Ar(19)+e-=Ar(19)+e-"><!--19_19-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(19)+e-=Ar(20)+e-"><!--19_20-->
@@ -2476,7 +2476,7 @@
       <FitGoodness Rsquare="0.99974"/>
    </reaction>
    <reaction formula="Ar(20)+e-=Ar(20)+e-"><!--20_20-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(20)+e-=Ar(21)+e-"><!--20_21-->
@@ -2600,7 +2600,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(21)+e-=Ar(21)+e-"><!--21_21-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(21)+e-=Ar(22)+e-"><!--21_22-->
@@ -2724,7 +2724,7 @@
       <FitGoodness Rsquare="0.99995"/>
    </reaction>
    <reaction formula="Ar(22)+e-=Ar(22)+e-"><!--22_22-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(22)+e-=Ar(23)+e-"><!--22_23-->
@@ -2848,7 +2848,7 @@
       <FitGoodness Rsquare="0.99999"/>
    </reaction>
    <reaction formula="Ar(23)+e-=Ar(23)+e-"><!--23_23-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(23)+e-=Ar(24)+e-"><!--23_24-->
@@ -2972,7 +2972,7 @@
       <FitGoodness Rsquare="0.99971"/>
    </reaction>
    <reaction formula="Ar(24)+e-=Ar(24)+e-"><!--24_24-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(24)+e-=Ar(25)+e-"><!--24_25-->
@@ -3096,7 +3096,7 @@
       <FitGoodness Rsquare="0.99963"/>
    </reaction>
    <reaction formula="Ar(25)+e-=Ar(25)+e-"><!--25_25-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(25)+e-=Ar(26)+e-"><!--25_26-->
@@ -3220,7 +3220,7 @@
       <FitGoodness Rsquare="0.99995"/>
    </reaction>
    <reaction formula="Ar(26)+e-=Ar(26)+e-"><!--26_26-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(26)+e-=Ar(27)+e-"><!--26_27-->
@@ -3344,7 +3344,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(27)+e-=Ar(27)+e-"><!--27_27-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(27)+e-=Ar(28)+e-"><!--27_28-->
@@ -3468,7 +3468,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(28)+e-=Ar(28)+e-"><!--28_28-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(28)+e-=Ar(29)+e-"><!--28_29-->
@@ -3592,7 +3592,7 @@
       <FitGoodness Rsquare="0.99998"/>
    </reaction>
    <reaction formula="Ar(29)+e-=Ar(29)+e-"><!--29_29-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(29)+e-=Ar(30)+e-"><!--29_30-->
@@ -3716,136 +3716,136 @@
       <FitGoodness Rsquare="0.99976"/>
    </reaction>
    <reaction formula="Ar(30)+e-=Ar(30)+e-"><!--30_30-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(1)+e-=Ar(0)+e-"><!--1_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(2)+e-=Ar(0)+e-"><!--2_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(3)+e-=Ar(0)+e-"><!--3_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(4)+e-=Ar(0)+e-"><!--4_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(5)+e-=Ar(0)+e-"><!--5_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(6)+e-=Ar(0)+e-"><!--6_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(7)+e-=Ar(0)+e-"><!--7_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(8)+e-=Ar(0)+e-"><!--8_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(9)+e-=Ar(0)+e-"><!--9_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(10)+e-=Ar(0)+e-"><!--10_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(11)+e-=Ar(0)+e-"><!--11_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(12)+e-=Ar(0)+e-"><!--12_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(13)+e-=Ar(0)+e-"><!--13_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(14)+e-=Ar(0)+e-"><!--14_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(15)+e-=Ar(0)+e-"><!--15_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(16)+e-=Ar(0)+e-"><!--16_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(17)+e-=Ar(0)+e-"><!--17_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(18)+e-=Ar(0)+e-"><!--18_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(19)+e-=Ar(0)+e-"><!--19_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(20)+e-=Ar(0)+e-"><!--20_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(21)+e-=Ar(0)+e-"><!--21_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(22)+e-=Ar(0)+e-"><!--22_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(23)+e-=Ar(0)+e-"><!--23_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(24)+e-=Ar(0)+e-"><!--24_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(25)+e-=Ar(0)+e-"><!--25_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(26)+e-=Ar(0)+e-"><!--26_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(27)+e-=Ar(0)+e-"><!--27_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(28)+e-=Ar(0)+e-"><!--28_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(29)+e-=Ar(0)+e-"><!--29_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(30)+e-=Ar(0)+e-"><!--30_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+e-=Ar(0)+e-"><!--0_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    
       <reaction formula="Ar(0)+Ar(0)=Ar(1)+Ar(0)"><!--0_1-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(2)+Ar(0)"><!--0_2-->
@@ -3853,7 +3853,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(3)+Ar(0)"><!--0_3-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(4)+Ar(0)"><!--0_4-->
@@ -3861,47 +3861,47 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(5)+Ar(0)"><!--0_5-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(6)+Ar(0)"><!--0_6-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(7)+Ar(0)"><!--0_7-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(8)+Ar(0)"><!--0_8-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(9)+Ar(0)"><!--0_9-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(10)+Ar(0)"><!--0_10-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(11)+Ar(0)"><!--0_11-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(12)+Ar(0)"><!--0_12-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(13)+Ar(0)"><!--0_13-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(14)+Ar(0)"><!--0_14-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(15)+Ar(0)"><!--0_15-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(16)+Ar(0)"><!--0_16-->
@@ -3909,23 +3909,23 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(17)+Ar(0)"><!--0_17-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(18)+Ar(0)"><!--0_18-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(19)+Ar(0)"><!--0_19-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(20)+Ar(0)"><!--0_20-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(21)+Ar(0)"><!--0_21-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(22)+Ar(0)"><!--0_22-->
@@ -3933,7 +3933,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(23)+Ar(0)"><!--0_23-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(24)+Ar(0)"><!--0_24-->
@@ -3941,19 +3941,19 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(25)+Ar(0)"><!--0_25-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(26)+Ar(0)"><!--0_26-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(27)+Ar(0)"><!--0_27-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(28)+Ar(0)"><!--0_28-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(29)+Ar(0)"><!--0_29-->
@@ -3965,7 +3965,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(1)+Ar(0)=Ar(1)+Ar(0)"><!--1_1-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(1)+Ar(0)=Ar(2)+Ar(0)"><!--1_2-->
@@ -4089,7 +4089,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(2)+Ar(0)=Ar(2)+Ar(0)"><!--2_2-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(2)+Ar(0)=Ar(3)+Ar(0)"><!--2_3-->
@@ -4213,7 +4213,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(3)+Ar(0)=Ar(3)+Ar(0)"><!--3_3-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(3)+Ar(0)=Ar(4)+Ar(0)"><!--3_4-->
@@ -4337,7 +4337,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(4)+Ar(0)=Ar(4)+Ar(0)"><!--4_4-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(4)+Ar(0)=Ar(5)+Ar(0)"><!--4_5-->
@@ -4461,7 +4461,7 @@
       <FitGoodness Rsquare="0.99912"/>
    </reaction>
    <reaction formula="Ar(5)+Ar(0)=Ar(5)+Ar(0)"><!--5_5-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(5)+Ar(0)=Ar(6)+Ar(0)"><!--5_6-->
@@ -4585,7 +4585,7 @@
       <FitGoodness Rsquare="0.99998"/>
    </reaction>
    <reaction formula="Ar(6)+Ar(0)=Ar(6)+Ar(0)"><!--6_6-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(6)+Ar(0)=Ar(7)+Ar(0)"><!--6_7-->
@@ -4709,7 +4709,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(7)+Ar(0)=Ar(7)+Ar(0)"><!--7_7-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(7)+Ar(0)=Ar(8)+Ar(0)"><!--7_8-->
@@ -4833,7 +4833,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(8)+Ar(0)=Ar(8)+Ar(0)"><!--8_8-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(8)+Ar(0)=Ar(9)+Ar(0)"><!--8_9-->
@@ -4957,7 +4957,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(9)+Ar(0)=Ar(9)+Ar(0)"><!--9_9-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(9)+Ar(0)=Ar(10)+Ar(0)"><!--9_10-->
@@ -5081,7 +5081,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(10)+Ar(0)=Ar(10)+Ar(0)"><!--10_10-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(10)+Ar(0)=Ar(11)+Ar(0)"><!--10_11-->
@@ -5205,7 +5205,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(11)+Ar(0)=Ar(11)+Ar(0)"><!--11_11-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(11)+Ar(0)=Ar(12)+Ar(0)"><!--11_12-->
@@ -5329,7 +5329,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(12)+Ar(0)=Ar(12)+Ar(0)"><!--12_12-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(12)+Ar(0)=Ar(13)+Ar(0)"><!--12_13-->
@@ -5453,7 +5453,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(13)+Ar(0)=Ar(13)+Ar(0)"><!--13_13-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(13)+Ar(0)=Ar(14)+Ar(0)"><!--13_14-->
@@ -5577,7 +5577,7 @@
       <FitGoodness Rsquare="0.99999"/>
    </reaction>
    <reaction formula="Ar(14)+Ar(0)=Ar(14)+Ar(0)"><!--14_14-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(14)+Ar(0)=Ar(15)+Ar(0)"><!--14_15-->
@@ -5701,7 +5701,7 @@
       <FitGoodness Rsquare="0.99989"/>
    </reaction>
    <reaction formula="Ar(15)+Ar(0)=Ar(15)+Ar(0)"><!--15_15-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(15)+Ar(0)=Ar(16)+Ar(0)"><!--15_16-->
@@ -5825,7 +5825,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(16)+Ar(0)=Ar(16)+Ar(0)"><!--16_16-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(16)+Ar(0)=Ar(17)+Ar(0)"><!--16_17-->
@@ -5949,7 +5949,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(17)+Ar(0)=Ar(17)+Ar(0)"><!--17_17-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(17)+Ar(0)=Ar(18)+Ar(0)"><!--17_18-->
@@ -6073,7 +6073,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(18)+Ar(0)=Ar(18)+Ar(0)"><!--18_18-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(18)+Ar(0)=Ar(19)+Ar(0)"><!--18_19-->
@@ -6197,7 +6197,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(19)+Ar(0)=Ar(19)+Ar(0)"><!--19_19-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(19)+Ar(0)=Ar(20)+Ar(0)"><!--19_20-->
@@ -6321,7 +6321,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(20)+Ar(0)=Ar(20)+Ar(0)"><!--20_20-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(20)+Ar(0)=Ar(21)+Ar(0)"><!--20_21-->
@@ -6445,7 +6445,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(21)+Ar(0)=Ar(21)+Ar(0)"><!--21_21-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(21)+Ar(0)=Ar(22)+Ar(0)"><!--21_22-->
@@ -6569,7 +6569,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(22)+Ar(0)=Ar(22)+Ar(0)"><!--22_22-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(22)+Ar(0)=Ar(23)+Ar(0)"><!--22_23-->
@@ -6693,7 +6693,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(23)+Ar(0)=Ar(23)+Ar(0)"><!--23_23-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(23)+Ar(0)=Ar(24)+Ar(0)"><!--23_24-->
@@ -6817,7 +6817,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(24)+Ar(0)=Ar(24)+Ar(0)"><!--24_24-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(24)+Ar(0)=Ar(25)+Ar(0)"><!--24_25-->
@@ -6941,7 +6941,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(25)+Ar(0)=Ar(25)+Ar(0)"><!--25_25-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(25)+Ar(0)=Ar(26)+Ar(0)"><!--25_26-->
@@ -7065,7 +7065,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(26)+Ar(0)=Ar(26)+Ar(0)"><!--26_26-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(26)+Ar(0)=Ar(27)+Ar(0)"><!--26_27-->
@@ -7189,7 +7189,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(27)+Ar(0)=Ar(27)+Ar(0)"><!--27_27-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(27)+Ar(0)=Ar(28)+Ar(0)"><!--27_28-->
@@ -7313,7 +7313,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(28)+Ar(0)=Ar(28)+Ar(0)"><!--28_28-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(28)+Ar(0)=Ar(29)+Ar(0)"><!--28_29-->
@@ -7437,7 +7437,7 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(29)+Ar(0)=Ar(29)+Ar(0)"><!--29_29-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(29)+Ar(0)=Ar(30)+Ar(0)"><!--29_30-->
@@ -7561,131 +7561,131 @@
       <FitGoodness Rsquare="1"/>
    </reaction>
    <reaction formula="Ar(30)+Ar(0)=Ar(30)+Ar(0)"><!--30_30-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(1)+Ar(0)=Ar(0)+Ar(0)"><!--1_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(2)+Ar(0)=Ar(0)+Ar(0)"><!--2_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(3)+Ar(0)=Ar(0)+Ar(0)"><!--3_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(4)+Ar(0)=Ar(0)+Ar(0)"><!--4_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(5)+Ar(0)=Ar(0)+Ar(0)"><!--5_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(6)+Ar(0)=Ar(0)+Ar(0)"><!--6_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(7)+Ar(0)=Ar(0)+Ar(0)"><!--7_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(8)+Ar(0)=Ar(0)+Ar(0)"><!--8_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(9)+Ar(0)=Ar(0)+Ar(0)"><!--9_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(10)+Ar(0)=Ar(0)+Ar(0)"><!--10_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(11)+Ar(0)=Ar(0)+Ar(0)"><!--11_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(12)+Ar(0)=Ar(0)+Ar(0)"><!--12_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(13)+Ar(0)=Ar(0)+Ar(0)"><!--13_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(14)+Ar(0)=Ar(0)+Ar(0)"><!--14_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(15)+Ar(0)=Ar(0)+Ar(0)"><!--15_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(16)+Ar(0)=Ar(0)+Ar(0)"><!--16_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(17)+Ar(0)=Ar(0)+Ar(0)"><!--17_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(18)+Ar(0)=Ar(0)+Ar(0)"><!--18_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(19)+Ar(0)=Ar(0)+Ar(0)"><!--19_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(20)+Ar(0)=Ar(0)+Ar(0)"><!--20_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(21)+Ar(0)=Ar(0)+Ar(0)"><!--21_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(22)+Ar(0)=Ar(0)+Ar(0)"><!--22_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(23)+Ar(0)=Ar(0)+Ar(0)"><!--23_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(24)+Ar(0)=Ar(0)+Ar(0)"><!--24_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(25)+Ar(0)=Ar(0)+Ar(0)"><!--25_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(26)+Ar(0)=Ar(0)+Ar(0)"><!--26_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(27)+Ar(0)=Ar(0)+Ar(0)"><!--27_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(28)+Ar(0)=Ar(0)+Ar(0)"><!--28_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(29)+Ar(0)=Ar(0)+Ar(0)"><!--29_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(30)+Ar(0)=Ar(0)+Ar(0)"><!--30_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
    <reaction formula="Ar(0)+Ar(0)=Ar(0)+Ar(0)"><!--0_0-->
-      <arrhenius A="0" T="0" n="0"/>
+      <arrhenius A="0.0001" T="0" n="0"/>
       <FitGoodness Rsquare="0"/>
    </reaction>
 
