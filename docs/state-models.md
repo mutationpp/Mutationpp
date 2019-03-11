@@ -1,13 +1,14 @@
-/**
-@page state_models State Models
+<a id="top"></a>
 
-@tableofcontents
+_This is an incomplete file brought over from the original Wiki and needs to be heavily edited and updated._
 
-@section state_intro Introduction
+# State Models
 
-@section general_ges Generalized Governing Equations
+## Introduction
 
-@subsection mass_cons Mass Conservation
+## Generalized Governing Equations
+
+### Mass Conservation
 A general set of mass conservation equations can be written as
 \f[
 \frac{\partial \rho_i}{\partial t} + \nabla\cdot(\rho_i\vec{v}) +
@@ -30,7 +31,7 @@ chemical reactions.  In general, both mass diffusion fluxes and production rates
 are linearly dependent following \f$\sum_{i\in\mathscr{M}}\vec{J}_i = \vec{0}\f$ and
 \f$\sum_{i\in\mathscr{M}}\dot{\omega}_i = 0\f$.
 
-@subsection mtm_cons Momentum Conservation
+### Momentum Conservation
 Momentum conservation is written as
 \f[
 \frac{\partial\rho\vec{v}}{\partial t} + \nabla\cdot(\rho\vec{v}\otimes\vec{v})
@@ -47,7 +48,7 @@ Pressure is given by Dalton's Law as \f$p = \sum_{k\in\mathscr{S}} p_k =
 translation temperature \f$T_h\f$ may or may not equal the electron temperature
 \f$T_e\f$ depending on the model in use.
 
-@subsection total_energy Total Energy Conservation
+### Total Energy Conservation
 The internal energy of the system may be considered split into \f$n^\mathscr{E}\f$ different
 energy modes which follow Boltzmann distributions according to an individual temperature
 prescribed to each mode. Total energy conservation is then written accordingly as
@@ -73,7 +74,7 @@ energy mode.
 \vec{q}^m = \sum_{k\in\mathscr{S}}\rho_k h_k^m\vec{V}_k-\lambda^m\nabla T^m
 \f]
 
-@subsection internal_energy Internal Energy Conservation
+### Internal Energy Conservation
 \f$n^\mathscr{E}-1\f$ additional energy conservation equations are necessary to
 close the system.  They may be written as
 \f[
@@ -86,7 +87,7 @@ the index of the energy mode which includes the free electron energy contributio
 \f$\Omega^m\f$ is the energy transfered into the energy mode \f$m\f$ (and out of
 all other modes).
 
-@section sm_interface StateModel Interface
+## StateModel Interface
 
 Symbol          | Description           | Function
 :--------------:|:----------------------|:-------------------------
@@ -103,4 +104,3 @@ Symbol          | Description           | Function
 \f$\Omega^m\f$ | Energy transfer source terms | (not available)
 \f$\mathscr{I_e}\f$ | Index of free electron energy mode | (not available)
 
-*/
