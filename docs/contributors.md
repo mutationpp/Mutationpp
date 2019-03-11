@@ -5,7 +5,7 @@ Mutation++ is an open-source, community-driven software framework and as such, w
 
 [James B. Scoggins](http://www.jbscoggins.com) (creator and main developer) <br>
 Bruno Dias <br>
-Georgios Bellas-Chatzigeordis <br>
+Georgios Bellas-Chatzigeorgis <br>
 Aurelie Bellemans <br>
 [Andrea Lani](https://www.researchgate.net/profile/Andrea_Lani) - [COOLFluid](https://github.com/andrealani/COOLFluiD/wiki) <br>
 Vincent Leroy <br>
