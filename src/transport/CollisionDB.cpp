@@ -175,7 +175,7 @@ const CollisionGroup& CollisionDB::group(const string& name)
             m_tabulate, m_table_min, m_table_max, m_table_del))).first->second;
 
     // Determine start and end iterator for this group
-    const int ns = m_ng;
+    const int ns = nSpecies();
     const int e  = (m_thermo.hasElectrons() ? 1 : 0);
     const int k  = e*ns;
 
@@ -238,7 +238,7 @@ const ArrayXd& CollisionDB::nDij()
 
 const ArrayXd& CollisionDB::Dim()
 {
-    const int ns = m_ng;
+    const int ns = nSpecies();
     const int nh = m_nh;
     const int k  = ns - nh;
     const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-12);
