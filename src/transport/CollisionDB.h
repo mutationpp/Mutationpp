@@ -302,6 +302,10 @@ private:
     Mutation::Utilities::IO::XmlDocument m_database;
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
 
+    // Storing gaseous species (all and heavy)
+    const int m_ng;
+    const int m_nh;
+
     // Tabulation parameters
     bool m_tabulate;
     double m_table_min;

@@ -51,16 +51,18 @@ CollisionDB::CollisionDB(
     const string& db_name, const Thermodynamics::Thermodynamics& thermo) :
     m_database(databaseFileName(db_name, "transport")),
     m_thermo(thermo),
+    m_ng(thermo.nGas()),
+    m_nh(thermo.nHeavy() - thermo.nCondensed()),
     m_tabulate(false), m_table_min(300.),  m_table_max(20000.), m_table_del(100.),
-    m_mass(thermo.nSpecies()),
-    m_etai(thermo.nHeavy()), m_etafac(thermo.nHeavy()),
-    m_nDei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
-    m_Deifac(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
-    m_nDij(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
-    m_Dijfac(thermo.nHeavy()*(thermo.nHeavy()+1)/2),
-    m_Dim(thermo.nSpecies()),
-    m_L01ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0)),
-    m_L02ei(thermo.nSpecies()*(thermo.hasElectrons() ? 1 : 0))
+    m_mass(m_ng),
+    m_etai(m_nh), m_etafac(m_nh),
+    m_nDei(m_ng*(thermo.hasElectrons() ? 1 : 0)),
+    m_Deifac(m_ng*(thermo.hasElectrons() ? 1 : 0)),
+    m_nDij(m_nh*(m_nh+1)/2),
+    m_Dijfac(m_nh*(m_nh+1)/2),
+    m_Dim(m_ng),
+    m_L01ei(m_ng*(thermo.hasElectrons() ? 1 : 0)),
+    m_L02ei(m_ng*(thermo.hasElectrons() ? 1 : 0))
 {
     XmlElement& root = m_database.root();
 
@@ -91,8 +93,8 @@ CollisionDB::CollisionDB(
 
     // Loop over the species and create the list of species pairs
     const vector<Species>& species = m_thermo.species();
-    for (int i = 0; i < species.size(); ++i)
-        for (int j = i; j < species.size(); ++j)
+    for (int i = 0; i < nSpecies(); ++i)
+        for (int j = i; j < nSpecies(); ++j)
             m_pairs.push_back(CollisionPair(species[i], species[j], &root));
 
     // Compute species masses
@@ -105,25 +107,25 @@ CollisionDB::CollisionDB(
     m_etafac = 5./16.*std::sqrt(PI*KB)*m_mass.tail(nh).sqrt();
 
     // Compute the nDei factors
-    if (m_thermo.nSpecies() > nh) {
+    if (nSpecies() > nh) {
         m_Deifac.fill(3./16.*std::sqrt(TWOPI*KB/m_mass(0)));
         m_Deifac(0) *= 2./SQRT2;
     }
 
     // Compute the nDij factors
-    for (int i = k, index = 0; i < thermo.nSpecies(); ++i)
-        for (int j = i; j < thermo.nSpecies(); ++j, index++)
+    for (int i = k, index = 0; i < nSpecies(); ++i)
+        for (int j = i; j < nSpecies(); ++j, index++)
             m_Dijfac(index) = 3./16.*std::sqrt(TWOPI*KB*
                 (m_mass(i)+m_mass(j))/(m_mass(i)*m_mass(j)));
 }
 
 //==============================================================================
 
-int CollisionDB::nSpecies() const { return m_thermo.nSpecies(); }
+int CollisionDB::nSpecies() const { return m_ng; }
 
 //==============================================================================
 
-int CollisionDB::nHeavy() const { return m_thermo.nHeavy(); }
+int CollisionDB::nHeavy() const { return m_nh; }
 
 //==============================================================================
 
@@ -173,7 +175,7 @@ const CollisionGroup& CollisionDB::group(const string& name)
             m_tabulate, m_table_min, m_table_max, m_table_del))).first->second;
 
     // Determine start and end iterator for this group
-    const int ns = m_thermo.nSpecies();
+    const int ns = nSpecies();
     const int e  = (m_thermo.hasElectrons() ? 1 : 0);
     const int k  = e*ns;
 
@@ -236,8 +238,8 @@ const ArrayXd& CollisionDB::nDij()
 
 const ArrayXd& CollisionDB::Dim()
 {
-    const int ns = m_thermo.nSpecies();
-    const int nh = m_thermo.nHeavy();
+    const int ns = nSpecies();
+    const int nh = m_nh;
     const int k  = ns - nh;
     const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-12);
 

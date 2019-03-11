@@ -123,7 +123,7 @@ public:
     template <typename E>
     double euken(const Eigen::ArrayBase<E>& cp)
     {
-        const int ns = m_thermo.nSpecies();  assert(cp.size() == ns);
+        const int ns = m_thermo.nGas();  assert(cp.size() == ns);
         const int nh = m_thermo.nHeavy();
         const int k  = ns-nh;
 
@@ -194,7 +194,7 @@ public:
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
      */
     void averageDiffusionCoeffs(double *const p_Di) {
-        Eigen::Map<Eigen::ArrayXd>(p_Di, m_thermo.nSpecies()) =
+        Eigen::Map<Eigen::ArrayXd>(p_Di, m_thermo.nGas()) =
             m_collisions.Dim();
     }
     
