@@ -65,12 +65,12 @@ public:
         Eigen::Map<const Eigen::ArrayXd> X = m_collisions.X();
         Eigen::Map<const Eigen::ArrayXd> Y = m_collisions.Y();
 
-        // Compute average diffusion coefficients
-        const Eigen::ArrayXd& Dim = m_collisions.Dim();
+        // Compute average diffusion coefficients without 1-X(j) term
+        const Eigen::ArrayXd& Dim = m_collisions.Dim(false);
 
         // Form the matrix
         for (int j = 0; j < ns; ++j) {
-            m_Dij.col(j).fill(-Y[j]/X[j]*(1.-Y[j])/(1.-X[j])*Dim(j));
+            m_Dij.col(j).fill(-Y[j]/X[j]*(1.-Y[j])*Dim(j));
             m_Dij(j,j) -= m_Dij(j,j)/Y[j];
         }
 
