@@ -32,7 +32,6 @@
 
 #include <cassert>
 #include <iostream>
-using std::cout;
 
 using namespace Mutation::Utilities;
 
