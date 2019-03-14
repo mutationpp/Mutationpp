@@ -236,7 +236,7 @@ const ArrayXd& CollisionDB::nDij()
 
 //==============================================================================
 
-const ArrayXd& CollisionDB::Dim()
+const ArrayXd& CollisionDB::Dim(bool include_one_minus_x)
 {
     const int ns = nSpecies();
     const int nh = m_nh;
@@ -260,9 +260,14 @@ const ArrayXd& CollisionDB::Dim()
         }
     }
 
-    // Compute (1-X_i) as sum_j!=i X_j for better accuracy
-    for (int i = 0; i < ns; ++i)
-        m_Dim(i) = (X.head(i).sum() + X.tail(ns-i-1).sum()) / m_Dim(i);
+    if (include_one_minus_x) {
+        // Compute (1-X_i) as sum_j!=i X_j for better accuracy
+        for (int i = 0; i < ns; ++i)
+            m_Dim(i) = (X.head(i).sum() + X.tail(ns-i-1).sum()) / m_Dim(i);
+    }
+    else {
+        m_Dim = 1.0 / m_Dim;
+    }
 
     // Remove number density and return
     return (m_Dim /= m_thermo.numberDensity());

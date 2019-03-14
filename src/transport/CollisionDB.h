@@ -163,8 +163,11 @@ public:
     /**
      * Returns the average diffusion coefficients.
      * \f[ D_{im} = \frac{(1-x_i)}{\sum_{j\ne i}x_j/\mathscr{D}_{ij}} \f]
+     * If include_one_minus_x is false, the \f$1-x_i\f$ term taken to be 1.
+     * This is sometimes useful when only the partial evaluation of Dim is 
+     * required.
      */
-    const Eigen::ArrayXd& Dim();
+    const Eigen::ArrayXd& Dim(bool include_one_minus_x = true);
 
     /// Returns the \f$\Lambda^{01}_{ei}\f$ array.
     const Eigen::ArrayXd& L01ei();

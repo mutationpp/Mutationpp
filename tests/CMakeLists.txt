@@ -64,6 +64,9 @@ function(test_example name subdir)
         NAME example_${name}_run
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
         COMMAND ${name} )
+    set_property(
+        TEST example_${name}_run 
+        APPEND PROPERTY DEPENDS example_${name}_compile)
 endfunction()
 
 # C++ examples
