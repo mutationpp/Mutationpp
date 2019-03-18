@@ -55,11 +55,11 @@ for (int i = 0; i < 10; ++i) {\
  */
 #define MIXTURE_GSI_MASS_LOOP(__CODE__)\
 std::string _names_[5] = {\
-    "o2_gsi_RRHO_ChemNonEq1T",\
-    "air5_gsi_RRHO_ChemNonEq1T",\
-    "oxidation_smb_NASA9_ChemNonEq1T",\
-    "sublimation_smb_NASA9_ChemNonEq1T",\
-    "aircarbon11_gsi_RRHO_ChemNonEq1T"\
+    "smb_o2_RRHO_ChemNonEq1T",\
+    "smb_air5_RRHO_ChemNonEq1T",\
+    "smb_oxidation_NASA9_ChemNonEq1T",\
+    "smb_sublimation_NASA9_ChemNonEq1T",\
+    "smb_aircarbon11_RRHO_ChemNonEq1T"\
 };\
 Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);\
 for (int i = 0; i < 5; ++i) {\
