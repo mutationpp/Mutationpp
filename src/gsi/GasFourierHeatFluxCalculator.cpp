@@ -86,7 +86,7 @@ double GasFourierHeatFluxCalculator::computeGasFourierHeatFlux(
 
     mv_dTdx = (v_T - mv_T_edge)/m_dx;
     m_transport.frozenThermalConductivityVector(mv_lambda.data());
-    return mv_lambda.dot(mv_dTdx);
+    return -mv_lambda.dot(mv_dTdx);
 }
 
     } // namespace GasSurfaceInteraction

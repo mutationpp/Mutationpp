@@ -67,6 +67,7 @@ public:
           mv_f_unpert(m_ns),
           m_jac(m_ns, m_ns),
           m_pert(1.e-2),
+          m_tol(1.e-15),
           pos_T_trans(0),
           set_state_with_rhoi_T(1),
           mv_surf_reac_rates(m_ns)
@@ -170,6 +171,7 @@ public:
         // Changing to the solution variables and solving
         computeMoleFracfromPartialDens(mv_rhoi, mv_X);
         mv_X = solve(mv_X);
+        applyTolerance(mv_X);
         computePartialDensfromMoleFrac(mv_X, mv_rhoi);
 
         // Setting the state again
@@ -183,8 +185,7 @@ public:
 
 //==============================================================================
 
-    double massBlowingRate()
-    {
+    double massBlowingRate() {
         return mp_mass_blowing_rate->computeBlowingFlux();
     }
 
@@ -239,23 +240,22 @@ public:
     Eigen::VectorXd& systemSolution()
     {
         double a = m_jac.diagonal().maxCoeff();
-
         mv_dX = (m_jac + a*Eigen::MatrixXd::Ones(m_ns,m_ns)).
-                    fullPivLu().solve((1 + a)*mv_f_unpert);
+            fullPivLu().solve(mv_f_unpert);
+
         return mv_dX;
     }
 //==============================================================================
 
     double norm()
     {
-        return mv_f.lpNorm<Eigen::Infinity>();
+        return mv_f_unpert.lpNorm<Eigen::Infinity>();
         // return mv_dX.lpNorm<Eigen::Infinity>();
     }
 
 //==============================================================================
 private:
-    void saveUnperturbedPressure(Eigen::VectorXd& v_rhoi)
-    {
+    void saveUnperturbedPressure(Eigen::VectorXd& v_rhoi) {
         m_thermo.setState(
             v_rhoi.data(), mv_Tsurf.data(), set_state_with_rhoi_T);
         m_Psurf = m_thermo.P();
@@ -263,8 +263,7 @@ private:
 //==============================================================================
 
     void computeMoleFracfromPartialDens(
-        Eigen::VectorXd& v_rhoi, Eigen::VectorXd& v_xi)
-    {
+        Eigen::VectorXd& v_rhoi, Eigen::VectorXd& v_xi) {
         m_thermo.setState(
             v_rhoi.data(), mv_Tsurf.data(), set_state_with_rhoi_T);
         v_xi = Eigen::Map<const Eigen::VectorXd>(m_thermo.X(), m_ns);
@@ -272,22 +271,24 @@ private:
 //==============================================================================
 
     void computePartialDensfromMoleFrac(
-        Eigen::VectorXd& v_xi, Eigen::VectorXd& v_rhoi)
-    {
+        Eigen::VectorXd& v_xi, Eigen::VectorXd& v_rhoi) {
     	v_rhoi = v_xi.cwiseProduct(m_thermo.speciesMw().matrix()) *
     			  m_Psurf / (mv_Tsurf(pos_T_trans) * RU);
     }
-
 //==============================================================================
 
-    void errorSurfaceStateNotSet() const
-    {
+    void errorSurfaceStateNotSet() const {
         if (!m_surf_state.isSurfaceStateSet()) {
             throw LogicError()
                 << "The surface state must have been set!";
         }
     }
+//==============================================================================
 
+    void applyTolerance(Eigen::VectorXd& v_x) const {
+        for (int i = 0; i < m_ns; i++)
+            if (abs(v_x(i)) < m_tol) v_x(i) = 0.;
+    }
 //==============================================================================
 private:
     Mutation::Thermodynamics::Thermodynamics& m_thermo;
@@ -314,6 +315,8 @@ private:
     double m_X_unpert;
     Eigen::VectorXd mv_f_unpert;
     Eigen::VectorXd mv_surf_reac_rates;
+
+    const double m_tol;
 
     const int pos_T_trans;
     const int set_state_with_rhoi_T;

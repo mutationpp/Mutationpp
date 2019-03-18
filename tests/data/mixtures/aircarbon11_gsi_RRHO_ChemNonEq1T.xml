@@ -8,7 +8,7 @@
     </species>
 
     <element_compositions default="air">
-        <composition name="air"> C:0.3  N:0.553, O:0.147 </composition>
+        <composition name="air"> C:0.05,  N:0.75, O:0.2 </composition>
     </element_compositions>
 
 </mixture>

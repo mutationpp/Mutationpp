@@ -81,7 +81,6 @@ void DiffusionVelocityCalculator::computeDiffusionVelocities(
         << "Calling DiffusionVelocityCalculator::computeDrivingForces() before "
         << "calling DiffusionVelocityCalculator::setDiffusionCalculator().";
     }
-
     mv_dxidx = (v_mole_frac - mv_mole_frac_edge)/m_dx;
 
     double electric_field = 0.E0;
@@ -89,6 +88,10 @@ void DiffusionVelocityCalculator::computeDiffusionVelocities(
         mv_dxidx.data(),
         v_diff_velocities.data(),
         electric_field);
+
+    // Making zero the diffusion velocities which are very small
+    for (int i = 0; i < v_diff_velocities.size(); i++)
+        if ((v_diff_velocities.cwiseAbs())(i) < 1.e-16) v_diff_velocities(i) = 0.;
 }
 
     } // namespace GasSurfaceInteraction

@@ -61,18 +61,20 @@ public:
           mp_diff_vel_calc(NULL),
           mp_mass_blowing_rate(NULL),
           m_ns(m_thermo.nSpecies()),
-          m_nE(m_thermo.nEnergyEqns()),
-          m_neqns(m_thermo.nSpecies()+1),
+          m_nT(m_thermo.nEnergyEqns()),
+          m_nE(1),
+          m_neqns(m_ns+m_nE),
           mv_wdot(m_ns),
           mv_rhoi(m_ns),
-          mv_hi(m_ns),
+          mv_hi(m_ns*m_nE),
           mv_Vdiff(m_ns),
           mv_X(m_neqns),
           mv_dX(m_neqns),
           mv_f(m_neqns),
           mv_f_unpert(m_neqns),
           m_jac(m_neqns, m_neqns),
-          m_pert(1.e-2),
+          m_pert_m(1.e-2),
+          m_pert_T(1.e-5),
           pos_E(m_ns),
           pos_T_trans(0),
           m_phi(m_surf_state.solidProps().getPhiRatio()),
@@ -183,7 +185,7 @@ public:
 
 //=============================================================================
 
-    virtual void setGasRadHeatFlux(const double& gas_rad_heat_flux)
+    void setGasRadHeatFlux(const double& gas_rad_heat_flux)
     {
         if (mp_surf_rad != NULL)
             mp_surf_rad->gasRadiativeHeatFlux(gas_rad_heat_flux);
@@ -202,23 +204,26 @@ public:
 
         // Impose equilibrium
         if (is_surf_in_thermal_eq){
-             mv_X.tail(m_nE).setConstant(T_trans);
+            mv_X.tail(m_nT).setConstant(T_trans);
         } else {
-            mv_X.tail(m_nE) = m_surf_state.getSurfaceT();
+            mv_X.tail(m_nT) = m_surf_state.getSurfaceT();
         }
 
-        saveUnperturbedPressure(mv_rhoi, mv_X.tail(m_nE));
+        saveUnperturbedPressure(mv_rhoi, mv_X.tail(m_nT));
 
+        std::cout << "Before Solving!" << std::endl;
         // Changing to the solution variables and solving
-        computeMoleFracfromPartialDens(mv_rhoi, mv_X.tail(m_nE), mv_X);
+        computeMoleFracfromPartialDens(mv_rhoi, mv_X.tail(m_nT), mv_X);
         mv_X = solve(mv_X);
+        std::cout << "Everything went fine! The solution is \n" << mv_X
+                  << "\n with sum " << mv_X.head(m_ns).sum() << std::endl;
 
         computePartialDensfromMoleFrac(
-            mv_X.head(m_ns), mv_X.tail(m_nE), mv_rhoi);
+            mv_X.head(m_ns), mv_X.tail(m_nT), mv_rhoi);
 
         // Setting the state again
         m_surf_state.setSurfaceState(
-            mv_rhoi.data(), mv_X.tail(m_nE).data(), set_state_with_rhoi_T);
+            mv_rhoi.data(), mv_X.tail(m_nT).data(), set_state_with_rhoi_T);
     }
 
 //==============================================================================
@@ -238,61 +243,79 @@ public:
 
     void updateFunction(Eigen::VectorXd& v_X)
     {
+        std::cout << "Begin with v_X = " << v_X(pos_E) << std::endl;
+        // Comment: (+) If it exits the volume.
+        // Assuming the normal vector of the surface to be pointing from the
+        // solid to the gas phase.
         mv_f.setZero();
 
     	// Setting Initial Gas and Surface State;
-        computePartialDensfromMoleFrac(
-            v_X.head(m_ns), v_X.tail(m_nE), mv_rhoi);
+         computePartialDensfromMoleFrac(
+            v_X.head(m_ns), v_X.tail(m_nT), mv_rhoi);
 
         m_thermo.setState(
-            mv_rhoi.data(), v_X.tail(m_nE).data(), set_state_with_rhoi_T);
+            mv_rhoi.data(), v_X.tail(m_nT).data(), set_state_with_rhoi_T);
         m_surf_state.setSurfaceState(
-            mv_rhoi.data(), v_X.tail(m_nE).data(), set_state_with_rhoi_T);
+            mv_rhoi.data(), v_X.tail(m_nT).data(), set_state_with_rhoi_T);
 
         // Diffusion Fluxes
         mp_diff_vel_calc->computeDiffusionVelocities(
             v_X.head(m_ns), mv_Vdiff);
-        mv_f = mv_rhoi.cwiseProduct(mv_Vdiff);
+        mv_f.head(m_ns) += mv_rhoi.cwiseProduct(mv_Vdiff);
+        std::cout << "Diffusion Fluxes: " << mv_rhoi.cwiseProduct(mv_Vdiff) << std::endl;
 
         // Chemical Production Rates
         computeSurfaceReactionRates(mv_surf_reac_rates);
-        mv_f -= mv_surf_reac_rates;
+        mv_f.head(m_ns) -= mv_surf_reac_rates;
+        std::cout << "Function after surface chemistry\n" << mv_f << std::endl;
 
         // Blowing flux
         double mass_blow = mp_mass_blowing_rate->computeBlowingFlux(
             mv_surf_reac_rates);
+        std::cout << "Mass Blowing Rate: " << mass_blow << std::endl;
         mv_f.head(m_ns) += mv_rhoi * mass_blow / mv_rhoi.sum();
 
         // Energy
         m_thermo.getEnthalpiesMass(mv_hi.data());
         double hmix = m_thermo.mixtureHMass();
 
-        mv_f(pos_E) += mv_hi.dot(mv_Vdiff.cwiseProduct(mv_rhoi));
-        mv_f(pos_E) += mp_gas_heat_flux_calc->
-                           computeGasFourierHeatFlux(v_X.tail(m_nE));
-        mv_f(pos_E) += hmix * mass_blow;
+        // mv_f(pos_E) +=
+        //    mv_hi.topLeftCorner(m_ns,m_ns).dot(mv_Vdiff.cwiseProduct(mv_rhoi));
+        mv_f(pos_E) -= mp_gas_heat_flux_calc->
+                           computeGasFourierHeatFlux(v_X.tail(m_nT));
+        // mv_f(pos_E) -= hmix * mass_blow;
 
         // Radiation
         if (mp_surf_rad != NULL)
             mv_f(pos_E) += mp_surf_rad->surfaceNetRadiativeHeatFlux();
 
+        std::cout << "Conductive Heating " << -mp_gas_heat_flux_calc->computeGasFourierHeatFlux(v_X.tail(m_nT)) << std::endl;
+        // std::cout << "The incoming diffusive heat flux = " << mv_hi.topLeftCorner(m_ns,m_ns).dot(mv_Vdiff.cwiseProduct(mv_rhoi)) << std::endl;
+        // std::cout << "The blowing enthalpy flux = " << hmix * mass_blow << std::endl;
+        std::cout << "Radiative Heating " << mp_surf_rad->surfaceNetRadiativeHeatFlux() << std::endl;
+
         // Steady state assumption virgin material enthalpy
         // if (ss -> )
-        mv_f(pos_E) -= mass_blow * (1+m_phi) * m_h_v;
+        // mv_f(pos_E) -= mass_blow*(1 + m_phi)*m_h_v;
         // else
         // mv_f(pos_E) -= mass_blow * m_h_s;
-        // mv_f(pos_e) -= q_cond;
+        // mv_f(pos_E) -= q_cond; */
+
+        std::cout << "Function: \n" << mv_f << std::endl;
+        //double in; std::cin >> in;
+        std::cout << "End!" << std::endl;
     }
 
 //==============================================================================
 
     void updateJacobian(Eigen::VectorXd& v_X)
     {
+        std::cout << "Begin Jac" << std::endl;
         // Perturbing Mass
         mv_f_unpert = mv_f;
         for (int i_ns = 0; i_ns < m_ns; i_ns++){
             double X_unpert = v_X(i_ns);
-            double pert = m_pert;
+            double pert = m_pert_m;
             v_X(i_ns) += pert;
 
             updateFunction(v_X);
@@ -305,7 +328,7 @@ public:
         }
 
         // Perturbing Energy
-        double T_pert = m_pert;
+        double T_pert = m_pert_T;
         double X_unpert = v_X(pos_E);
         v_X(pos_E) += T_pert;
 
@@ -313,16 +336,30 @@ public:
         m_jac.col(pos_E) = (mv_f-mv_f_unpert) / T_pert;
 
         v_X(pos_E) = X_unpert;
+        std::cout << "End Jac" << std::endl;
     }
 
 //==============================================================================
 
     Eigen::VectorXd& systemSolution()
     {
-        double a = m_jac.diagonal().maxCoeff();
-
-        mv_dX = (m_jac + a*Eigen::MatrixXd::Ones(m_ns,m_ns)).
-                    fullPivLu().solve((1 + a)*mv_f_unpert);
+        for (int i = 0; i < m_ns; i++){
+        //    m_jac(i,i) = 1.;
+            m_jac(pos_E, i) = 0.;
+            m_jac(i, pos_E) = 0.;
+        }
+        std::cout << "Begin Sol with Jac = \n" << m_jac << std::endl;
+        //double a = 1.; // (m_jac.topLeftCorner(m_ns, m_ns).diagonal().cwiseAbs()).maxCoeff();
+        //std::cout << "a = " << a << std::endl;
+        //m_jac.topLeftCorner(m_ns, m_ns) += a*Eigen::MatrixXd::Ones(m_ns,m_ns);
+        //mv_f_unpert.head(m_ns) += Eigen::MatrixXd::Ones(m_ns,1);
+        //mv_dX =
+        //    (m_jac + a*Eigen::MatrixXd::Ones(m_ns,m_ns)).
+        //    fullPivLu().solve((1 + a)*mv_f_unpert);
+        mv_dX = m_jac.fullPivLu().solve(mv_f_unpert);
+        std::cout << "mv_dX = \n" << mv_dX << std::endl;
+        std::cout << "End Sol" << std::endl;
+        double in; std::cin >> in;
         return mv_dX;
     }
 //==============================================================================
@@ -389,6 +426,7 @@ private:
     bool is_gas_rad_on;
 
     const size_t m_ns;
+    const size_t m_nT;
     const size_t m_nE;
     const size_t m_neqns;
 
@@ -404,16 +442,17 @@ private:
     Eigen::VectorXd mv_dX;
     Eigen::VectorXd mv_f;
     Eigen::MatrixXd m_jac;
-    double m_pert;
     Eigen::VectorXd mv_f_unpert;
     Eigen::VectorXd mv_surf_reac_rates;
+    double m_pert_m;
+    double m_pert_T;
 
     const double m_phi;
     const double m_h_v;
 
-    const int pos_E;
-    const int pos_T_trans;
-    const int set_state_with_rhoi_T;
+    const size_t pos_E;
+    const size_t pos_T_trans;
+    const size_t set_state_with_rhoi_T;
 };
 
 ObjectProvider<

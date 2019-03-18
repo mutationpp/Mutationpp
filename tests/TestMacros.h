@@ -54,28 +54,15 @@ for (int i = 0; i < 10; ++i) {\
  * which is the name of the mixture.
  */
 #define MIXTURE_GSI_MASS_LOOP(__CODE__)\
-std::string _names_[1] = {\
+std::string _names_[5] = {\
     "o2_gsi_RRHO_ChemNonEq1T",\
+    "air5_gsi_RRHO_ChemNonEq1T",\
+    "oxidation_smb_NASA9_ChemNonEq1T",\
+    "sublimation_smb_NASA9_ChemNonEq1T",\
+    "aircarbon11_gsi_RRHO_ChemNonEq1T"\
 };\
 Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);\
-for (int i = 0; i < 1; ++i) {\
-    SECTION(_names_[i]) {\
-        Mixture mix(_names_[i]);\
-        __CODE__ ;\
-    }\
-}
-
-/**
- * Loops over mixtures for Gas-Surface Interaction Mass
- * and Energy Balance, loads each mixture and runs __CODE__ in
- * Catch SECTION which is the name of the mixture.
- */
-#define MIXTURE_GSI_MASS_ENERGY_LOOP(__CODE__)\
-std::string _names_[1] = {\
-    "o2_gsi_RRHO_ChemNonEq1T",\
-};\
-Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);\
-for (int i = 0; i < 1; ++i) {\
+for (int i = 0; i < 5; ++i) {\
     SECTION(_names_[i]) {\
         Mixture mix(_names_[i]);\
         __CODE__ ;\
