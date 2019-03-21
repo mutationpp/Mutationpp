@@ -18,9 +18,9 @@
 
     <surface_chemistry>
         <!-- 1 -->
-        <!--reaction type= "ablation" formula="C-b + O => CO">
+        <reaction type= "ablation" formula="C-b + O => CO">
             <gamma_T pre_exp="0.63" T="1160.0" />
-        </reaction-->
+        </reaction>
     </surface_chemistry>
 
     <surface_radiation emissivity="0.86" T_env="0."/>

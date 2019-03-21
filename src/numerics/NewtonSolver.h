@@ -126,7 +126,7 @@ T& NewtonSolver<T, Solver>::solve(T& x)
 
     // Compute the initial function value and its norm
     static_cast<Solver&>(*this).updateFunction(x);
-    double f0_norm = 1.0; // = static_cast<Solver&>(*this).norm();
+    double f0_norm = 1.;// f0_norm = static_cast<Solver&>(*this).norm(); // 1.
     double resnorm = 1.0;
 
     // Let user know Newton's method is being called and print initial residual

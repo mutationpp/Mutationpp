@@ -1,7 +1,7 @@
 <mixture mechanism="none"
          thermo_db="RRHO"
          state_model="ChemNonEq1T"
-         gsi_mechanism="carbon_ablation_gamma">
+         gsi_mechanism="smb_carbon_ablation_park">
 
     <species>
         N O NO N2 O2 C C2 C3 CN CO CO2

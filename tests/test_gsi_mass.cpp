@@ -35,7 +35,7 @@ TEST_CASE
     "[gsi]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = 10*std::numeric_limits<double>::epsilon();
 
     MIXTURE_GSI_MASS_LOOP
     (
@@ -99,7 +99,6 @@ TEST_CASE
         // Compute error
          double err = F.lpNorm<Infinity>();
 
-        CHECK(err == Approx(0.0).margin(tol));
+        CHECK(err == Approx(0.0).epsilon(tol));
     )
-
 }

@@ -1,7 +1,7 @@
 <mixture mechanism="none"
          thermo_db="NASA-9"
          state_model="ChemNonEq1T"
-         gsi_mechanism="seb_air_catalysis_gamma_rad_eq">
+         gsi_mechanism="seb_inert_rad_eq">
 
     <species>
         N O NO N2 O2

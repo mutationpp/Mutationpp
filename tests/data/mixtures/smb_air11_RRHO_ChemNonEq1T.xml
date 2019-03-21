@@ -1,7 +1,7 @@
 <mixture mechanism="air11_mech"
          thermo_db="RRHO"
          state_model="ChemNonEq1T"
-         gsi_mechanism="air11_gsi_catalysis_gamma_ion_recomb">
+         gsi_mechanism="smb_air_catalysis_gamma_ions">
 
     <species>
         e- N O NO N2 O2 N+ O+ NO+ N2+ O2+

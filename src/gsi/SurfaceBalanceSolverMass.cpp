@@ -66,8 +66,8 @@ public:
           mv_f(m_ns),
           mv_f_unpert(m_ns),
           m_jac(m_ns, m_ns),
-          m_pert(1.e-2),
           m_tol(1.e-15),
+          m_pert(1.e-2),
           pos_T_trans(0),
           set_state_with_rhoi_T(1),
           mv_surf_reac_rates(m_ns)
@@ -311,12 +311,12 @@ private:
     Eigen::VectorXd mv_dX;
     Eigen::VectorXd mv_f;
     Eigen::MatrixXd m_jac;
+    const double m_tol;
     double m_pert;
     double m_X_unpert;
     Eigen::VectorXd mv_f_unpert;
     Eigen::VectorXd mv_surf_reac_rates;
 
-    const double m_tol;
 
     const int pos_T_trans;
     const int set_state_with_rhoi_T;

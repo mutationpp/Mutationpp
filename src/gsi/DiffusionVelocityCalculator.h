@@ -92,6 +92,7 @@ private:
 
     double m_dx;
     bool m_is_diff_set;
+
 };
 
     } // namespace GasSurfaceInteraction
