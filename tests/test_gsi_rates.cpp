@@ -38,50 +38,6 @@ TEST_CASE
     const double tol = std::numeric_limits<double>::epsilon();
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);
 
-    SECTION("Catalysis Gamma Homonuclear Reactions.")
-    {
-        // Setting up M++
-        MixtureOptions opts("smb_o2_RRHO_ChemNonEq1T");
-        Mixture mix(opts);
-        const size_t ns = mix.nSpecies();
-        double mol_mass = mix.speciesMw(0);
-
-        const size_t nr = 1;
-        CHECK(nr == mix.nSurfaceReactions());
-
-        // Conditions Surface
-        size_t nT = 4;
-        for (int iT = 0; iT < nT; iT++) {
-            double Tsurf = 300. + iT * 200;
-
-            // Conditions dissociated
-            double T = 3000.;
-            double P = 100.;
-            VectorXd rho(ns);
-            mix.equilibrate(T, P);
-            mix.densities(rho.data());
-
-            // Catalysis
-            const double gamma = 1.;
-            double flux = sqrt((RU*Tsurf)/(2*PI*mol_mass));
-            VectorXd omega(ns);
-            omega(0) =  gamma*flux*rho(0);
-            omega(1) = -gamma*flux*rho(0);
-
-            // Getting it from Mutation
-            const size_t set_state_with_rhoi_T = 1;
-            mix.setSurfaceState(rho.data(),&Tsurf, set_state_with_rhoi_T);
-            VectorXd wdot(ns);
-            mix.surfaceReactionRates(wdot.data());
-            for (int i = 0; i < ns; i++){
-                INFO("The analytical solution for species " << i
-                << " is equal to " << omega(i) << " while Mutation++ gives "
-                << wdot(i) << ".\n");
-                CHECK(wdot(i) == Approx(omega(i)).epsilon(tol));
-            }
-        }
-    }
-
     SECTION("Catalysis Gamma Heteronuclear Reactions Single Temperature.")
     {
         // Setting up M++
@@ -317,6 +273,50 @@ TEST_CASE
             VectorXd wdot(ns);
             mix.surfaceReactionRates(wdot.data());
             for (int i = 0; i < ns; i++) {
+                INFO("The analytical solution for species " << i
+                << " is equal to " << omega(i) << " while Mutation++ gives "
+                << wdot(i) << ".\n");
+                CHECK(wdot(i) == Approx(omega(i)).epsilon(tol));
+            }
+        }
+    }
+
+    SECTION("Catalysis Gamma Homonuclear Reactions.")
+    {
+        // Setting up M++
+        MixtureOptions opts("smb_o2_RRHO_ChemNonEq1T");
+        Mixture mix(opts);
+        const size_t ns = mix.nSpecies();
+        double mol_mass = mix.speciesMw(0);
+
+        const size_t nr = 1;
+        CHECK(nr == mix.nSurfaceReactions());
+
+        // Conditions Surface
+        size_t nT = 4;
+        for (int iT = 0; iT < nT; iT++) {
+            double Tsurf = 300. + iT * 200;
+
+            // Conditions dissociated
+            double T = 3000.;
+            double P = 100.;
+            VectorXd rho(ns);
+            mix.equilibrate(T, P);
+            mix.densities(rho.data());
+
+            // Catalysis
+            const double gamma = 1.;
+            double flux = sqrt((RU*Tsurf)/(2*PI*mol_mass));
+            VectorXd omega(ns);
+            omega(0) =  gamma*flux*rho(0);
+            omega(1) = -gamma*flux*rho(0);
+
+            // Getting it from Mutation
+            const size_t set_state_with_rhoi_T = 1;
+            mix.setSurfaceState(rho.data(),&Tsurf, set_state_with_rhoi_T);
+            VectorXd wdot(ns);
+            mix.surfaceReactionRates(wdot.data());
+            for (int i = 0; i < ns; i++){
                 INFO("The analytical solution for species " << i
                 << " is equal to " << omega(i) << " while Mutation++ gives "
                 << wdot(i) << ".\n");
