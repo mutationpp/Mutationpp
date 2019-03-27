@@ -11,7 +11,7 @@
     </solid_properties>
 
     <surface_features 
-        solid_conduction = "none"
+        solid_conduction = "steady_state"
         surface_in_thermal_equil = "true"
         gas_radiation = "false">
     </surface_features>

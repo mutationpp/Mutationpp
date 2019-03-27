@@ -3,11 +3,11 @@
     <surface_properties type = "none" >
     </surface_properties>
 
-    <surface_features
+    <surface_features 
         solid_conduction = "none"
         surface_in_thermal_equil = "true"
-        gas_radiation = "false"
-    />
+        gas_radiation = "false">
+    </surface_features>
 
     <surface_chemistry>
         <!-- 1 -->

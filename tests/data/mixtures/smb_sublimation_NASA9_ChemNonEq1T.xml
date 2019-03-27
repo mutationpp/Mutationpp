@@ -4,10 +4,10 @@
          gsi_mechanism="smb_carbon_sublimation">
 
     <species>
-        C C3 C2 O2
+        C C3 O2
     </species>
 
-    <element_compositions default="air_carbon">
-        <composition name="air_carbon"> C:0.01, O:0.99 </composition>
+    <element_compositions default="default">
+        <composition name="default"> C:0.01, O:0.99 </composition>
     </element_compositions>
 </mixture>

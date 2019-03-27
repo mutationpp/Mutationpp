@@ -66,8 +66,9 @@ public:
           mv_f(m_ns),
           mv_f_unpert(m_ns),
           m_jac(m_ns, m_ns),
-          m_tol(1.e-15),
+          m_tol(1.e-13),
           m_pert(1.e-2),
+          mv_X_unpert(m_ns),
           pos_T_trans(0),
           set_state_with_rhoi_T(1),
           mv_surf_reac_rates(m_ns)
@@ -95,7 +96,7 @@ public:
         // Setup NewtonSolver
         setMaxIterations(5);
         setWriteConvergenceHistory(false);
-        setEpsilon(1.e-18);
+        setEpsilon(m_tol);
     }
 
 //=============================================================================
@@ -168,9 +169,12 @@ public:
 
         saveUnperturbedPressure(mv_rhoi);
 
-        // Changing to the solution variables and solving
+        // Changing to the solution variables
         computeMoleFracfromPartialDens(mv_rhoi, mv_X);
+
+        // Solving
         mv_X = solve(mv_X);
+
         applyTolerance(mv_X);
         computePartialDensfromMoleFrac(mv_X, mv_rhoi);
 
@@ -193,6 +197,8 @@ public:
 
     void updateFunction(Eigen::VectorXd& v_mole_frac)
     {
+        applyTolerance(v_mole_frac);
+
     	// Setting Initial Gas and Surface State;
         computePartialDensfromMoleFrac(v_mole_frac, mv_rhoi);
         m_thermo.setState(
@@ -203,6 +209,7 @@ public:
 
         // Diffusion Fluxes
         mp_diff_vel_calc->computeDiffusionVelocities(v_mole_frac, mv_f);
+        applyTolerance(mv_f);
         mv_f = mv_rhoi.cwiseProduct(mv_f);
 
         // Chemical Production Rates
@@ -221,7 +228,7 @@ public:
     {
         mv_f_unpert = mv_f;
         for (int i_ns = 0 ; i_ns < m_ns ; i_ns++){
-            m_X_unpert = v_mole_frac(i_ns);
+            mv_X_unpert = v_mole_frac;
             double pert = m_pert;
             v_mole_frac(i_ns) += pert;
 
@@ -231,7 +238,7 @@ public:
             m_jac.col(i_ns) = (mv_f - mv_f_unpert) / pert;
 
             // Unperturbed mole fractions
-            v_mole_frac(i_ns) = m_X_unpert;
+            v_mole_frac = mv_X_unpert;
         }
     }
 
@@ -239,18 +246,19 @@ public:
 
     Eigen::VectorXd& systemSolution()
     {
-        double a = m_jac.diagonal().maxCoeff();
+        double a = (m_jac.diagonal()).cwiseAbs().maxCoeff();
         mv_dX = (m_jac + a*Eigen::MatrixXd::Ones(m_ns,m_ns)).
             fullPivLu().solve(mv_f_unpert);
 
+        applyTolerance(mv_dX);
         return mv_dX;
     }
 //==============================================================================
 
     double norm()
     {
-        return mv_f_unpert.lpNorm<Eigen::Infinity>();
-        // return mv_dX.lpNorm<Eigen::Infinity>();
+        // return mv_f_unpert.lpNorm<Eigen::Infinity>();
+        return mv_dX.lpNorm<Eigen::Infinity>();
     }
 
 //==============================================================================
@@ -285,7 +293,7 @@ private:
     }
 //==============================================================================
 
-    void applyTolerance(Eigen::VectorXd& v_x) const {
+    inline void applyTolerance(Eigen::VectorXd& v_x) const {
         for (int i = 0; i < m_ns; i++)
             if (abs(v_x(i)) < m_tol) v_x(i) = 0.;
     }
@@ -313,7 +321,7 @@ private:
     Eigen::MatrixXd m_jac;
     const double m_tol;
     double m_pert;
-    double m_X_unpert;
+    Eigen::VectorXd mv_X_unpert;
     Eigen::VectorXd mv_f_unpert;
     Eigen::VectorXd mv_surf_reac_rates;
 

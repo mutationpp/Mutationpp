@@ -7,8 +7,8 @@
         O O2 C CO
     </species>
 
-    <element_compositions default="air">
-        <composition name="air"> C:.1, O:.9 </composition>
+    <element_compositions default="default">
+        <composition name="default"> C:.1, O:.9 </composition>
     </element_compositions>
 
 </mixture>

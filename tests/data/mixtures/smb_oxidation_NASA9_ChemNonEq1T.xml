@@ -7,7 +7,7 @@
         O C CO
     </species>
 
-    <element_compositions default="air">
-        <composition name="air"> C:0., O:1. </composition>
+    <element_compositions default="default">
+        <composition name="default"> C:0., O:1. </composition>
     </element_compositions>
 </mixture>
