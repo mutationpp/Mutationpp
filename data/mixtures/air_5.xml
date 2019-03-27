@@ -1,0 +1,12 @@
+<!-- Neutral 5 species air mixture -->
+<mixture mechanism="air5_Park">
+
+    <species>
+        N O NO N2 O2
+    </species>
+
+    <element_compositions default="air">
+        <composition name="air"> N:0.79, O: 0.21 </composition>
+    </element_compositions>
+
+</mixture>

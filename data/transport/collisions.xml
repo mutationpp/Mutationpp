@@ -1,40 +1,40 @@
 <!--============================================================================
- 
+
                  ========================================
                   MUTATION++ collision integral database
                  ========================================
- 
+
  Default collision integral values are given in <defaults>, followed by 
  explicitly input collision integrals. Default data is further split into the
  4 types of collisions: <neutral-neutral>, <ion-neutral>, <electron-neutral>,
  and <charged>.  Data for each unique collision pair is given in a <pair>
  XML node.
- 
+
  Please maintain the following ordering to aid manual searching:
      1) Electron-Neutral pairs first with electron as s1 and neutral as s2
      2) All other pairs with s1 and s2 ordered alphabetically
 
  History:
  ========
- 25/09/15: (JBS) Initial development 
+ 25/09/15: (JBS) Initial development
  - first pass at creating the structure for all of the required data
- 
+
  05/10/15: (JBS) All data and integral types added for Air13 mixture
- 
+
  09/10/15: (JBS) Added additional integrals for Mars and Venus mixtures
  - added the Langevin integral type for default ion-neutral interactions
- 
+
  12/10/15: (JBS) Added integrals for Jupiter mixtures
- 
+
  12/01/16: (JBS) Added neutral-neutral interactions and polarizabilities for C2, 
  C2H, H, and H2.
  - added the exponential polynomial integral type
- 
+
  31/05/16: (JBS) Added a warning integral type which allows the user to throw
  a warning when the integral is loaded using default data.  Defaults are now 
  given for all possible integrals with warnings for integrals that really should
  have explicit data given.
- 
+
  26/11/16: (JBS) Setup the global options element
 =============================================================================-->
 <collisions>
@@ -57,18 +57,18 @@
             <Bst type="from B*"/>
             <Cst type="from C*"/>
         </neutral-neutral>
-        
+
         <!-- Ion-Neutral interactions -->
         <ion-neutral>
             <!-- Requires dipole-polarizability of neutral species -->
             <Q11 type="Langevin"/>
-            
+
             <Q22 type="ratio" ratio="1.1" integral="Q11" ref="Wright2007"/>
             <Ast type="from A*"/>
             <Bst type="constant" value="1.20" ref="Wright2005"/>
             <Cst type="constant" value="0.85" ref="Wright2005"/>
         </ion-neutral>
-        
+
         <!-- Electron-Neutral interactions -->
         <electron-neutral>
             <!-- Warn user if missing Q11, Q22, B*, or C* -->
@@ -76,14 +76,14 @@
             <Q22 type="warning" value="1.0e-20"/>
             <Bst type="warning" value="1.0"/>
             <Cst type="warning" value="1.0"/>
-            
+
             <Q12 type="from C*"/>
             <Q13 type="from B*"/>
             <Q14 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
             <Q15 type="ratio" ratio="1.0" integral="Q13" ref="Magin"/>
             <Ast type="from A*"/>
         </electron-neutral>
-        
+
         <!-- Charged interactions -->
         <charged>
             <Q11 type="Debye-Huckel"/>
@@ -109,7 +109,7 @@
         <species name="C6H5O,phenoxy" alias="C6H5O" />
         <species name="C6H5OH,phenol" alias="C6H5OH" />
     </aliases>
-    
+
     <!-- Dipole Polarizabilities -->
     <dipole-polarizabilities units="Å-Å-Å">
         <species name="C"      value="1.76"   ref="Wright2007"/>
@@ -166,7 +166,7 @@
         <species name="O3"     value="3.21"   ref="Andre2010"/>
         <species name="OH"     value="1.47"   ref="Andre2010"/>
     </dipole-polarizabilities>
-        
+
     <!-- Effective electrons participating in polarization -->
     <effective-electrons>
         <species name="C" value="4.0" />
@@ -231,7 +231,7 @@
              2000  4000  5000  6000  8000 10000 15000 20000,
              1.40  1.36  1.35  1.34  1.34  1.34  1.34  1.31 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="C">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               2000  4000  5000  6000  8000 10000 15000,
@@ -306,7 +306,7 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="C2"> <!-- Copying values from C -->
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
@@ -396,7 +396,7 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="C2H"> <!-- Copying values from C -->
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
@@ -426,7 +426,7 @@
               2000  4000  5000  6000  8000 10000 15000,
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="C3"> <!-- Copying values from C -->
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="copy C">
               2000  4000  5000  6000  8000 10000 15000,
@@ -457,7 +457,6 @@
               0.98  0.81  0.79  0.80  0.83  0.87  0.90 </Cst>
     </pair>
 
-    
     <pair s1="e-" s2="CN">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="50">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -472,7 +471,7 @@
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="CNCN">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Copy CN">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -562,7 +561,7 @@
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               1.15  1.15  1.12  1.07  1.01  0.93  0.87  0.82  0.82 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="CO2">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -577,7 +576,7 @@
               1000  2000  4000  5000  6000  8000 10000 15000 20000,
               0.66  0.63  0.69  0.77  0.84  0.95  1.01  1.08  1.12 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="H">
         <Q11 type="Bruno-Eq(19)" ref="Bruno2010">
             1.035291134e+1 -1.583011620e+0 1.245844036e+1 -2.328519000e-1 5.366285730e-2 -5.343729290e+0 9.355617520e+0 -2.154634270e+0 </Q11>
@@ -649,7 +648,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="e-" s2="N">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
@@ -664,7 +663,7 @@
              2000  4000  5000  6000  8000 10000 15000 20000,
              0.63  0.67  0.74  0.79  0.87  0.90  0.93  0.89 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="N2">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="25">
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -679,7 +678,7 @@
               500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.18  1.16  1.12  1.09  1.08  1.05  0.99  0.95  0.91  0.91 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="NO">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="35">
              2000  4000  5000  6000  8000 10000 15000 20000,
@@ -694,7 +693,7 @@
              2000  4000  5000  6000  8000 10000 15000 20000,
              1.15  0.90  0.87  0.85  0.85  0.87  0.90  0.93 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="O">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="30">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -739,7 +738,7 @@
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.09  1.08  1.06  1.05  1.05  1.05  1.05  1.05  1.06 </Cst>
     </pair>
-    
+
     <pair s1="e-" s2="O2">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="20">
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -754,7 +753,7 @@
              1000  2000  4000  5000  6000  8000 10000 15000 20000,
              1.16  1.10  1.04  1.03  1.01  0.99  0.98  0.98  0.98 </Cst>
     </pair>
-    
+
     <!-- Ar -->
     <pair s1="Ar" s2="Ar">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
@@ -766,7 +765,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="Ar+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -786,7 +785,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="N+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -806,7 +805,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="N2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -826,7 +825,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="NO+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -846,7 +845,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="O+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -866,7 +865,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="Ar" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005b" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
@@ -921,7 +920,7 @@
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000 15000,
              29.43 22.55 14.81 10.27  8.82  8.08  7.65  7.35  6.92  6.63  6.41  6.16 </Q22>
     </pair>
-    
+
     <!-- C -->
     <pair s1="C" s2="C">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="5">
@@ -940,7 +939,7 @@
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              30.47 23.59 15.60 10.70  8.33  7.87  7.57  7.13  6.84  6.39 </Q22>
     </pair>
-    
+
     <pair s1="C" s2="C2">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.113337e-01 -9.844008e-01 6.435295e+00 </Q11>
@@ -988,7 +987,7 @@
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              12.48 12.08 10.98  9.62  8.36  7.95  7.62  7.15  6.78  6.14  5.71 </Q22>
     </pair>
-    
+
     <pair s1="C" s2="H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.057286e-01 -9.023503e-01 5.717909e+00 </Q11>
@@ -1065,7 +1064,7 @@
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
               9.62  9.29  8.41  7.31  6.26  5.94  5.69  5.30  5.01  4.50  4.16 </Q22>
     </pair>
-    
+
     <!-- C+ -->
     <pair s1="C+" s2="C2">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
@@ -1087,7 +1086,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
-    
+
     <pair s1="C+" s2="CO">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
@@ -1096,15 +1095,13 @@
                300   500  1000  2000  4000  5000  6000  8000 10000 15000,
              33.13 25.50 16.56 10.98  8.26  7.74  7.39  6.89  6.57  6.05 </Q22>
     </pair>
-    
+
     <pair s1="C+" s2="H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             7.393884e-16 -1.161346e-14 -5.000000e-01 5.852791e+00 </Q11>
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
-
-
 
     <pair s1="C+" s2="N">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="25">
@@ -1132,7 +1129,7 @@
                300   500  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              29.63 22.64 14.68 10.00  7.74  7.30  7.00  6.56  6.27  5.80  5.48 </Q22>
     </pair>
-    
+
     <!-- C2 -->
     <pair s1="C2" s2="C2">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
@@ -1273,7 +1270,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             8.829372e-15 -1.384963e-13 -5.000000e-01 6.499449e+00 </Q22>
     </pair>
-    
+
     <!-- C2H -->
     <pair s1="C2H" s2="C2H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
@@ -1414,7 +1411,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             1.008561e-13 -1.579053e-12 -5.000000e-01 6.749948e+00 </Q22>
     </pair>
-    
+
     <!-- C3 -->
     <pair s1="C3" s2="C3">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
@@ -1541,7 +1538,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.836854e-13 -4.439291e-12 -5.000000e-01 6.398126e+00 </Q22>
     </pair>
-    
+
     <!-- CN -->
     <pair s1="CN" s2="CN">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
@@ -1578,7 +1575,7 @@
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              14.22 13.76 12.64 11.14  9.77  9.33  8.99  8.47  8.07  7.37  6.89 </Q22>
     </pair>
-    
+
     <pair s1="CN" s2="H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.123995e-01 -1.000481e+00 6.294624e+00 </Q11>
@@ -1592,7 +1589,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.202541e-01 -1.064313e+00 6.635845e+00 </Q22>
     </pair>
-    
+
     <pair s1="CN" s2="N">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="30">
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
@@ -1637,7 +1634,7 @@
                500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              11.42 11.05 10.02  8.78  7.61  7.24  6.95  6.51  6.18  5.59  5.20 </Q22>
     </pair>
-    
+
     <!-- CO -->
     <pair s1="CO" s2="CO">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
@@ -1665,7 +1662,7 @@
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              16.24 13.92 13.32 12.03 10.74  9.50  9.08  8.74  8.21  7.79  7.07  6.56 </Q22>
     </pair>
-    
+
     <pair s1="CO" s2="H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.138900e-01 -1.023228e+00 6.345104e+00 </Q11>
@@ -1742,7 +1739,7 @@
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              13.11 11.60 11.19 10.25  9.13  7.93  7.54  7.23  6.73  6.36  5.70  5.25 </Q22>
     </pair>
-    
+
     <!-- CO2 -->
     <pair s1="CO2" s2="CO2">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2007" accuracy="20">
@@ -1752,7 +1749,7 @@
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              20.35 16.45 15.50 13.58 11.92 10.69 10.32 10.02  9.57  9.21  8.59  8.15 </Q22>
     </pair>
-    
+
     <pair s1="CO2" s2="H">
         <Q11 type="exp-poly" units="Å-Å" ref="Bellemans">
             -4.942712e-03 1.280296e-01 -1.253913e+00 7.899922e+00 </Q11>
@@ -1811,7 +1808,7 @@
                300   500   600  1000  2000  4000  5000  6000  8000 10000 15000 20000,
              15.74 13.35 12.76 11.47 10.23  9.15  8.80  8.53  8.10  7.77  7.19  6.79 </Q22>
     </pair>
-    
+
     <!-- H -->
     <pair s1="H" s2="H">
         <Q11 type="Bruno-Eq(11)" ref="Bruno2010">
@@ -1875,7 +1872,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H" s2="H-">
         <Pirani-Data ref="Bruno2010" beta="7.05" phi0="15.151" re="4.975" />
         <Q11 type="Murphy">
@@ -1930,7 +1927,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H" s2="H2+">
         <Pirani-Data ref="Bruno2010" beta="8.00" phi0="73.104" re="2.769" />
         <Q11 type="Pirani" />
@@ -2017,7 +2014,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H" s2="He++">
         <Q11 type="Langevin" ref="Bruno2010" />
         <Q12 type="Langevin" ref="Bruno2010" />
@@ -2102,7 +2099,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.064674e-12 -3.236419e-11 -5.000000e-01 5.690272e+00 </Q22>
     </pair>
-    
+
     <!-- H+ -->
     <pair s1="H+" s2="H2">
         <Q11 type="Bruno-Eq(11)" ref="Bruno2010">
@@ -2151,7 +2148,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <!-- H- -->
     <pair s1="H-" s2="H2">
         <Pirani-Data ref="Bruno2010" beta="7.27" phi0="18.896" re="4.962" />
@@ -2168,7 +2165,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H-" s2="He">
         <Q11 type="Bruno-Eq(11)" ref="Bruno2010">
               16.83383128  -1.40086033   9.03792344  -3.76712840  76.18192207   0.01286480  -2.87368310 </Q11>
@@ -2192,8 +2189,8 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
-    <!-- H2 -->   
+
+    <!-- H2 -->
     <pair s1="H2" s2="H2">
         <Q11 type="Bruno-Eq(11)" ref="Bruno2010">
               24.00841090  -1.61027553   3.88885724  -8.89043396   0.44260972   8.88408687  -1.05402226 </Q11>
@@ -2217,7 +2214,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H2" s2="H2+">
         <Pirani-Data ref="Bruno2010" beta="8.97" phi0="83.283" re="2.809" />
         <Q11 type="Murphy">
@@ -2271,7 +2268,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             -5.214044e-03 1.361040e-01 -1.324077e+00 7.774390e+00 </Q22>
     </pair>
-    
+
     <pair s1="H2" s2="He">
         <Pirani-Data ref="Bruno2010" beta="9.29" phi0="1.865" re="3.189" />
         <Q11 type="Pirani" />
@@ -2303,7 +2300,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="H2" s2="He++">
         <Q11 type="Langevin" ref="Bruno2010" />
         <Q12 type="Langevin" ref="Bruno2010" />
@@ -2388,7 +2385,7 @@
         <Q22 type="exp-poly" units="Å-Å" ref="Bellemans">
             2.553385e-13 -3.997265e-12 -5.000000e-01 5.783295e+00 </Q22>
     </pair>
-    
+
     <!-- H2+ -->
     <pair s1="H2+" s2="He">
         <Pirani-Data ref="Bruno2010" beta="9.73" phi0="30.664" re="2.574" />
@@ -2405,7 +2402,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <!-- H3+ -->
     <pair s1="H3+" s2="He">
         <Pirani-Data ref="Bruno2010" beta="9.66" phi0="29.471" re="2.606" />
@@ -2422,7 +2419,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <!-- He -->
     <pair s1="He" s2="He">
         <Q11 type="Bruno-Eq(11)" ref="Bruno2010">
@@ -2486,7 +2483,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <pair s1="He" s2="He++">
         <Q11 type="Murphy">
             <Q1 type="Langevin" ref="Bruno2010" />
@@ -2516,7 +2513,7 @@
         <Bst type="from B*"/>
         <Cst type="from C*"/>
     </pair>
-    
+
     <!-- N -->
     <pair s1="N" s2="N">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Wright2005" accuracy="5">
@@ -2528,7 +2525,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N" s2="N+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2548,7 +2545,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N" s2="N2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2568,7 +2565,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N" s2="NO+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2588,7 +2585,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N" s2="O+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2608,7 +2605,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2666,7 +2663,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N2" s2="N2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2686,7 +2683,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N2" s2="NO+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2706,7 +2703,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N2" s2="O+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2726,7 +2723,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="N2" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2775,7 +2772,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="NO" s2="NO+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2795,7 +2792,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="NO" s2="O+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2815,7 +2812,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="NO" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2824,7 +2821,7 @@
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
              30.20 23.40 15.10  9.47  7.57  6.65  6.12  5.77  5.31  5.01  4.79 </Q22>
     </pair>
-    
+
     <!-- NO+ -->
     <pair s1="NO+" s2="O">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
@@ -2855,7 +2852,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="O" s2="O+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2875,7 +2872,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="O" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,
@@ -2906,7 +2903,7 @@
         <Bst type="constant" value="1.15" ref="Wright2005"/>
         <Cst type="constant" value="0.92" ref="Wright2005"/>
     </pair>
-    
+
     <pair s1="O2" s2="O2+">
         <Q11 type="table" units="K,Å-Å" multpi="yes" ref="Levin2004" accuracy="25">
                300   500  1000  2000  3000  4000  5000  6000  8000 10000 12000,

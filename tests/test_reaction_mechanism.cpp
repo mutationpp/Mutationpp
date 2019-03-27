@@ -190,12 +190,15 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_keq(2) = ONEATM / (RU * Tv) * std::exp(-2.0*m_wdot(2) + m_wdot(6));
     m_keq(4) = std::exp(-m_wdot(4) - m_wdot(0) + m_wdot(1) + m_wdot(2));
 
-    m_kb(0) = m_A(0) * Th / m_keq(0);
-    m_kb(1) = m_A(1) * Th / m_keq(1);
-    m_kb(2) = m_A(2) * Tv / m_keq(2);
-    m_kb(3) = m_A(3) * Th / m_keq(3);
-    m_kb(4) = m_A(4) * Tv / m_keq(4);
-
+    m_kb.setZero();
+    if (m_reversible) {
+        m_kb(0) = m_A(0) * Th / m_keq(0);
+        m_kb(1) = m_A(1) * Th / m_keq(1);
+        m_kb(2) = m_A(2) * Tv / m_keq(2);
+        m_kb(3) = m_A(3) * Th / m_keq(3);
+        m_kb(4) = m_A(4) * Tv / m_keq(4);
+    }
+    
     for (int i = 0; i < 7; ++i)
         m_wdot[i] = densities[i] / m_Mw[i];
     double M = m_wdot.tail(6).sum();
@@ -234,16 +237,11 @@ bool stillPermuting(std::vector<double>& x)
     return permuting;
 }
 
-/**
- * Tests if the TestMechanism evaluation matches Kinetics.
- */
-TEST_CASE
-(
-    "Test mechanism is evaluated correctly",
-    "[kinetics]"
-)
+
+
+void testMech(bool isRev)
 {
-    TestMechanism mech;
+    TestMechanism mech(isRev);
     SharedPtr<Mixture> mix = mech.representativeMixture();
 
     // Create a vector of "densities" in sorted order
@@ -286,4 +284,17 @@ TEST_CASE
         }
     } while (stillPermuting(rho));
 
+}
+
+/**
+ * Tests if the TestMechanism evaluation matches Kinetics.
+ */
+TEST_CASE
+(
+    "Test mechanism is evaluated correctly",
+    "[kinetics]"
+)
+{
+    testMech(true);
+    testMech(false);
 }

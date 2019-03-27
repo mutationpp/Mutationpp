@@ -1,0 +1,41 @@
+<!--
+Park air5 reaction mechanism
+Rates taken from:
+    1) Park et al., JTHT 15(1):76-90, 2001.
+    2) Park, JTHT 7(3):385-398, 1993.
+-->
+<mechanism name="air_5_Park">
+
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+M=2N+M">
+        <arrhenius A="3.0E+22" n="-1.6" T="113200.0" />
+        <M>N2:0.2333, NO:0.2333, O2:0.2333</M>
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="1.0E+22" n="-1.5" T="59360.0" />
+        <M>N2:0.2, NO:0.2, O2:0.2</M>
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO+M=N+O+M">
+        <arrhenius A="5.0E15" n="0.0" T="75500.0" />
+        <M>NO:22.0, N:22.0, O:22.0</M>
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="5.7E+12" n="0.42" T="42938.0" />
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="NO+O=O2+N">
+        <arrhenius A="8.4E+12" n="0.0" T="19400.0" />
+    </reaction>
+
+</mechanism>
+
+

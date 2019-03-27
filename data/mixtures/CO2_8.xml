@@ -1,0 +1,12 @@
+<!-- 8-species CO2 mixture -->
+<mixture name="CO2_8">
+
+    <species>
+        e- C+ O+ C O CO CO2 O2
+    </species>
+
+    <element_compositions default="default">
+        <composition name="default"> C:1.0, O:2.0 </composition>
+    </element_compositions>
+
+</mixture>

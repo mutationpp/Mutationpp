@@ -71,9 +71,9 @@ Transport::Transport(
     setDiffusionMatrixAlgo("Ramshaw");
 
     // Allocate work array storage
-    mp_wrk1 = new double [m_thermo.nSpecies()*3];
-    mp_wrk2 = mp_wrk1 + m_thermo.nSpecies();
-    mp_wrk3 = mp_wrk2 + m_thermo.nSpecies();
+    mp_wrk1 = new double [m_thermo.nGas()*3];
+    mp_wrk2 = mp_wrk1 + m_thermo.nGas();
+    mp_wrk3 = mp_wrk2 + m_thermo.nGas();
     if(m_thermo.nEnergyEqns() > 1) {
         mp_tag  = new int [m_thermo.nEnergyEqns()*5];
         m_thermo.getTagModes(mp_tag);
@@ -199,7 +199,7 @@ void Transport::frozenThermalConductivityVector(double* const p_lambda)
 double Transport::internalThermalConductivity(double T)
 {
     m_thermo.thermoDB()->cpint(T, mp_wrk1);
-    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nGas()));
 }
 
 
@@ -211,7 +211,7 @@ double Transport::rotationalThermalConductivity()
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, mp_wrk1, NULL, NULL);
 
-    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nGas()));
 }
 
 //==============================================================================
@@ -222,7 +222,7 @@ double Transport::vibrationalThermalConductivity()
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, NULL, mp_wrk1, NULL);
 
-    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nGas()));
 }
 
 //==============================================================================
@@ -233,7 +233,7 @@ double Transport::electronicThermalConductivity()
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, NULL, NULL, mp_wrk1);
 
-    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nSpecies()));
+    return euken(Map<const ArrayXd>(mp_wrk1, m_thermo.nGas()));
 }
 
 //==============================================================================
@@ -249,7 +249,7 @@ double Transport::reactiveThermalConductivity()
     // @todo Add the electron thermal diffusion ratios
 
     // Combine to get the driving forces
-    for (int i = 0; i < m_thermo.nSpecies(); i++)
+    for (int i = 0; i < m_thermo.nGas(); i++)
         mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
 
     // Compute the diffusion velocities
@@ -263,7 +263,7 @@ double Transport::reactiveThermalConductivity()
     //const double* const X = m_thermo.X();
     const double rho = m_thermo.density();
     const double* const Y = m_thermo.Y();
-    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+    for (int i = 0; i < m_thermo.nGas(); ++i)
         lambda -= mp_wrk1[i] / m_thermo.speciesMw(i) * mp_wrk2[i] * Y[i] * rho;
 
     return (RU * m_thermo.T() * lambda);
@@ -273,7 +273,7 @@ double Transport::reactiveThermalConductivity()
 
 double Transport::butlerBrokawThermalConductivity()
 {
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const int ne = m_thermo.nElements();
     const int nr = ns - ne;
     const int nh = m_thermo.nHeavy();
@@ -347,7 +347,7 @@ double Transport::butlerBrokawThermalConductivity()
 double Transport::soretThermalConductivity()
 {
 	// @todo This is super inefficient, should fix
-	Eigen::VectorXd work(m_thermo.nSpecies());
+	Eigen::VectorXd work(m_thermo.nGas());
 
 	// Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
@@ -358,7 +358,7 @@ double Transport::soretThermalConductivity()
     // @todo Add the electron thermal diffusion ratios
 
     // Combine to get the driving forces
-    for (int i = 0; i < m_thermo.nSpecies(); i++)
+    for (int i = 0; i < m_thermo.nGas(); i++)
         mp_wrk1[i] += mp_wrk2[i] / m_thermo.T();
 
     // Compute the diffusion velocities
@@ -366,7 +366,7 @@ double Transport::soretThermalConductivity()
     stefanMaxwell(mp_wrk1, work.data(), E);
 
     double lambda = 0.0;
-    for (int i = 0; i < m_thermo.nSpecies(); i++)
+    for (int i = 0; i < m_thermo.nGas(); i++)
         lambda -= mp_wrk2[i]*work[i];
 
     return (m_thermo.P()*lambda);
@@ -377,7 +377,7 @@ double Transport::soretThermalConductivity()
 void Transport::equilDiffFluxFacs(double* const p_F)
 {
 	// Get some state data
-	const int ns = m_thermo.nSpecies();
+	const int ns = m_thermo.nGas();
 	const int ne = m_thermo.nElements();
 	const double* const p_Y = m_thermo.Y();
 	const double* const p_X = m_thermo.X();
@@ -412,7 +412,7 @@ void Transport::equilDiffFluxFacs(double* const p_F)
 
 void Transport::equilDiffFluxFacsP(double* const p_F)
 {
-	const int ns = m_thermo.nSpecies();
+	const int ns = m_thermo.nGas();
 	const double p = m_thermo.P();
 	const double* const p_Y = m_thermo.Y();
 	const double* const p_X = m_thermo.X();
@@ -432,7 +432,7 @@ void Transport::equilDiffFluxFacsP(double* const p_F)
 
 void Transport::equilDiffFluxFacsT(double* const p_F)
 {
-	const int ns = m_thermo.nSpecies();
+	const int ns = m_thermo.nGas();
 	const double T  = m_thermo.T();
 
     Eigen::Map<Eigen::ArrayXd> work1(mp_wrk1, ns);
@@ -455,7 +455,7 @@ void Transport::equilDiffFluxFacsT(double* const p_F)
 
 void Transport::equilDiffFluxFacsZ(double* const p_F)
 {
-	const int ns = m_thermo.nSpecies();
+	const int ns = m_thermo.nGas();
 	const int ne = m_thermo.nElements();
 	const double* const p_X = m_thermo.X();
     const double T   = m_thermo.T();
@@ -494,7 +494,7 @@ void Transport::stefanMaxwell(
 void Transport::stefanMaxwell(double Th, double Te,
     const double* const p_dp, double* const p_V, double& E, int order)
 {
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const int k  = ns - m_thermo.nHeavy();
     const double nd = m_thermo.numberDensity();
 
@@ -555,18 +555,15 @@ void Transport::stefanMaxwell(double Th, double Te,
     ArrayXd Y = X * Mi / (Mi*X).sum();
     G.topLeftCorner(ns,ns) += a * Y.matrix() * Y.matrix().transpose();
 
-//    if (Th == 7800.0 && Te == 7800.0) {
-//        std::cout << G << "\n" << std::endl;
-//        exit(1);
-//    }
-
     // Form the right hand side
     VectorXd b = VectorXd::Zero(ns+k);
     b.head(ns) = -Map<const VectorXd>(p_dp, ns);
     if (k == 1) b(0) *= Th/Te;
 
     // Solve the system
+    // Modified solver because old one failing
     VectorXd x = G.colPivHouseholderQr().solve(b);
+   // VectorXd x = G.householderQr().solve(b);
 
     // Retrieve the solution
     Map<VectorXd>(p_V, ns) = x.head(ns);
@@ -578,7 +575,7 @@ void Transport::stefanMaxwell(double Th, double Te,
 
 void Transport::smCorrectionsElectron(int order, Eigen::ArrayXd& phi)
 {
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     phi = ArrayXd::Zero(ns);
 
     if (order == 1)
@@ -605,7 +602,7 @@ void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
         return;
 
     // Use second order corrections
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const int k  = ns - nh;
     ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns) + 1.0e-16;
     X /= X.sum();
@@ -675,7 +672,7 @@ void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
 //void Transport::stefanMaxwell(
 //    const double* const p_dp, double* const p_V, double& E)
 //{
-//	const int ns = m_thermo.nSpecies();
+//	const int ns = m_thermo.nGas();
 //    const double Th = m_thermo.T();
 //    const double Te = m_thermo.Te();
 //    const double nd = m_thermo.numberDensity();
@@ -753,7 +750,7 @@ void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
 double Transport::meanFreePath()
 {
     // Thermo properties
-         const int ns = m_thermo.nSpecies();
+         const int ns = m_thermo.nGas();
          const double Th = m_thermo.T();
            const double Te = m_thermo.Te();
                  const double nd = m_thermo.numberDensity();
@@ -785,7 +782,7 @@ double Transport::electronMeanFreePath()
     if (!m_thermo.hasElectrons())
         return 0.0;
 
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
@@ -819,7 +816,7 @@ double Transport::speciesThermalSpeed(const int& i) const
 //==============================================================================
 double Transport::averageHeavyThermalSpeed()
 {
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const int nh = m_thermo.nHeavy();
     const double Th = m_thermo.T();
     const double* const X = m_thermo.X();
@@ -858,7 +855,7 @@ double Transport::coulombMeanCollisionTime()
     if (!m_thermo.hasElectrons())
         return 0.0;
 
-    const int ns = m_thermo.nSpecies();
+    const int ns = m_thermo.nGas();
     const double Th = m_thermo.T();
     const double Te = m_thermo.Te();
     const double nd = m_thermo.numberDensity();
@@ -895,7 +892,7 @@ double Transport::hallParameter()
 
 // double Transport::parallelDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -928,7 +925,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::perpDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -982,7 +979,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::transverseDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1034,7 +1031,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::parallelThermalDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1079,7 +1076,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::perpThermalDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1130,7 +1127,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::transverseThermalDiffusionCoefficient()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1231,7 +1228,7 @@ double Transport::hallParameter()
 // //
 // double Transport::parallelElectronThermalConductivity()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1277,7 +1274,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::perpElectronThermalConductivity()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1328,7 +1325,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // double Transport::transverseElectronThermalConductivity()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1402,7 +1399,7 @@ double Transport::hallParameter()
 // const double Th = m_thermo.T();
 //  const double me = m_thermo.speciesMw(0)/NA;
 // const double* const X = m_thermo.X();
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 // const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 // const double Q11ee = m_collisions.Q11ee();
 // const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
@@ -1461,7 +1458,7 @@ double Transport::hallParameter()
 // const double Th = m_thermo.T();
 //  const double me = m_thermo.speciesMw(0)/NA;
 // const double* const X = m_thermo.X();
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 // const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 // const double Q11ee = m_collisions.Q11ee();
 // const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
@@ -1563,7 +1560,7 @@ double Transport::hallParameter()
 // const double Th = m_thermo.T();
 //  const double me = m_thermo.speciesMw(0)/NA;
 // const double* const X = m_thermo.X();
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 // const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
 // const Eigen::ArrayXd& Q22 = m_collisions.Q22ij();
 // const double Q11ee = m_collisions.Q11ee();
@@ -1911,7 +1908,7 @@ double Transport::hallParameter()
 // std::vector<double> Transport::parallelThermalDiffusionRatio2()
 // {
 
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -1955,7 +1952,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // std::vector<double> Transport::perpThermalDiffusionRatio2()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();
@@ -2000,7 +1997,7 @@ double Transport::hallParameter()
 // //==============================================================================
 // std::vector<double> Transport::transverseThermalDiffusionRatio2()
 // {
-// const int ns = m_thermo.nSpecies();
+// const int ns = m_thermo.nGas();
 //     const double Th = m_thermo.T();
 //     const double Te = m_thermo.Te();
 //     const double nd = m_thermo.numberDensity();

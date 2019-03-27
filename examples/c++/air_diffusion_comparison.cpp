@@ -12,7 +12,7 @@ using namespace Mutation::Transport;
 int main()
 {
     // Generate the default options for the air11 mixture
-    MixtureOptions opts("air5");
+    MixtureOptions opts("air_5");
     opts.setStateModel("EquilTP");
     
     // Change from default thermodynamic database (RRHO) to NASA 9-coefficient
