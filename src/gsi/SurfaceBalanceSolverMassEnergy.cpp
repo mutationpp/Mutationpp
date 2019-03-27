@@ -389,7 +389,7 @@ private:
 
     inline void applyTolerance(Eigen::VectorXd& v_x) const {
         for (int i = 0; i < m_ns; i++)
-            if (abs(v_x(i)) < m_tol) v_x(i) = 0.;
+            if (std::abs(v_x(i)) < m_tol) v_x(i) = 0.;
     }
 //==============================================================================
 private:
