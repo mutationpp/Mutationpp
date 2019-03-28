@@ -434,7 +434,7 @@ controlled by an Arrhenius rate law.
 
 \# | Formula                                  | A [mol,cm,s,K] | n     | Ea [K]
 ---|------------------------------------------|----------------|-------|--------
-1  | N2 + N_2 <-> 2N + N2    | 1.0e21         | -1.6  | 113200
+1  | N2 + N2 <-> 2N + N2    | 1.0e21         | -1.6  | 113200
 2  | N2 + N <-> 2N + N       | 3.0e21         | -1.6  | 113200
 3  | N2 + N^+ <-> 2N + N+    | 1.0e21         | -1.6  | 113200
 4  | N2 + e- <-> 2N + e-     | 7.0e22         | -1.6  | 113200
@@ -980,7 +980,7 @@ momentum and energy, which are imposed as boundary values for the full Navier-St
 or the porous material.
 
 The general procedure to obtain the surface balances is the following.
-Assuming steady state on the surface, the time derivative term, \f$\partial \mathcal / \partial t\f$,
+Assuming steady state on the surface, the time derivative term
 is equal to zero. By taking the limit that one dimension of the volume goes to zero, the
 three dimensional fluxes reduce to the normal fluxes at the interface while the volume
 source terms, such as chemical reactions, go to zero; only the surface sources remain.
@@ -1073,7 +1073,7 @@ atoms that recombine into AB. This restriction should be explicitly imposed in o
 As a result, in a reaction of this type two gamma recombination coefficients should be defined not
 necessarily equal for the two processes, the one activated when the catalytic reaction is limited by the
 flux of A atoms and the opposite. In practice the two recombination number fluxes,
-&#947;_{AB} F_imp_A and &#947;_{BA} F_imp_B, are compared and the limiting one
+&#947;_AB F_imp_A and &#947;_BA F_imp_B, are compared and the limiting one
 determines which of the two gammas is chosen.
 
 These gamma coefficients cannot take arbitrary values, they should be limited between 0 and 1,
@@ -1301,11 +1301,10 @@ processes also in the bulk, such as in the case of pyrolysis.
 
 Taking these ideas in mind, the surface mass balance accounting only for surface reactions becomes:
 
-&#961;_i (**u**_g - **u**_r) + **j**_i - **F**_b_i ]
-\cdot **n** = &#937;_i,
+&#961;_i (**u**_g - **u**_r) + **j**_i - **F**_b_i ] . **n** = &#937;_i,
 
 with &#937;_i = &#937;_cat_i + &#937;_abl_i and
-term **F**b_i is the flux of species i entering the interface due
+term **F**_b_i is the flux of species i entering the interface due
 to solid process, like pyrolysis and solid-solid chemical reactions.
 Just like before, one mass balance equation should be solved for each distinct species in the flow.
 It is most of the time reasonable to consider that recession velocity is
@@ -1334,7 +1333,7 @@ enthalpy entering the interface due to the movement of the surface with the rece
 **u**_r &#961; h_s and the third one appears only in cases of
 porous material, describing the enthalpy of the solid pyrolysis gases convected in the interface,
 denoted as **u**_p &#961;_p; h_p. The subscript p symbolizes
-the pyrolysis gas properties, with the &#961_p; h_p being actually the
+the pyrolysis gas properties, with the &#961;_p h_p being actually the
 sum &#931; = &#961;_i h_i for the pyrolysis gas densities. The surface
 enthalpy h_s is an input to the code, as an attribute to the surface_properties element.
 
@@ -1386,7 +1385,7 @@ example above is radiation. It is considered by adding a new element with tag
 <surface_radiation/>. The surface is assumed to be in thermodynamic equilibrium
 at a temperature T emitting energy following the Stefan-Boltzmann law,
 
-&#937;_e = &#937;_rad = &#949 ( &#963; T^4 - **q**_rad_g)
+&#937;_e = &#937;_rad = &#949; ( &#963; T^4 - **q**_rad_g)
 
 with &#963; being the Stefan-Boltzmann constant and &#949; the emissivity
 of the surface. T_env is the surrounding environment temperature which can
@@ -1410,11 +1409,7 @@ is the virgin material (subscript v), the steady state heat flux is given by the
 
 By replacing the formula above in the surface energy balance and after simplifications one gets:
 
-[
-&#961; ( **u**_g - **u**_r ) H + **q**_g
-+ **u**_r &#961;_v h_v
-] . **n** =
-&#937;_e,
+(&#961; ( **u**_g - **u**_r ) H + **q**_g + **u**_r &#961;_v h_v) . **n** = &#937;_e,
 
 which is equally valid for both porous and non-porous materials. In order to use the steady state ablation
 approximation, the attribute of surface_feature element solid_conduction should be set to steady state.
