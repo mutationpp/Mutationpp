@@ -22,7 +22,14 @@
 - [Collision Integral Database](#collision-integrals) (work in progress)
 - [Gas-Surface Interaction](#gsi)
   - [Surface Chemical Production Terms](#surf_chem)
-
+    - [Carbon Oxidation Model](#coxid)
+    - [Carbon Nitridation Model](#cnitr)
+    - [Carbon Sublimation Model](#csubl)
+  - [Surface Mass Balance](#smb)
+    - [Surface Mass Balance for Catalytic Surfaces](#smbc)
+    - [Surface Mass Balance for Ablative and Catalytic Surfaces](#smbac)
+  - [Surface Energy Balance](#seb)
+  - [Using the GSI module](#gsi_example)
 
 ## Introduction
 <a id="top"></a>
@@ -979,7 +986,7 @@ three dimensional fluxes reduce to the normal fluxes at the interface while the 
 source terms, such as chemical reactions, go to zero; only the surface sources remain.
 Generally, the set of balance equations can be written as:
 
-(**Fg** - **Fb**) . **n** = &#937;s,
+(**F**_g - **F**_b) . **n** = &#937;_s,
 
 where **F** are the fluxes from the gas (**g**) and the bulk (**b**) phases, while
 &#937; are the source terms associated to the surface (s) processes.
@@ -1031,57 +1038,55 @@ means that all the particles of species A impinging the surface recombine at the
 to a non catalytic, or chemically inert wall. Anything between these two extreme cases is a
 partially catalytic wall, which is the case for most of the surfaces. When the probability
 &#947; is defined, the surface chemical source term is determined as:
-\f[
-\dot{\omega}_{A,\text{cat}} = \gamma_{A} m_{A} F_{A}^\downarrow \quad \text{and} \quad
-\dot{\omega}_{A_2,\text{cat}} = - \gamma_{A} m_{A} F_{A}^\downarrow
-\f]
-with \f$ m_{A} \f$ being the mass of species \f$ A \f$.
+
+&#937;_A = &#947; m F_imp
+
+&#937;_A2 = - &#947; m F_imp
+
+with m being the mass of species A.
 
 The only parameter that still needs to be defined is the impinging flux on the surface.
 When the distribution function of species at the wall is well approximated by a Maxwellian
-and there is no temperature slip, the impinging flux, \f$ F_{A}^\downarrow \f$, is equal to
-\f[
-F_{A}^\downarrow = n_{A} \sqrt{\frac{k_B T_{\text{s}}}{2 \pi m_{A}}}
-\f]
+and there is no temperature slip, the impinging flux, F_imp, is equal to
+
+F_imp = n_A (k_B T / 2 &#960; m_A)^(1/2)
+
 according to the kinetic theory of gases.
 
-Initially, the gamma model was developed to describe homonuclear reactions, such as the one presented in above.
+Initially, the gamma model was developed to describe homonuclear reactions, 
+such as the one presented in above.
 Soon, though, it was observed that heteronuclear reactions were also probable
 to occur at the wall, which can take the form of
-\f[
-A + B \rightarrow AB,
-\f]
-with the chemical rate for the produced molecule \f$ AB \f$ equal to:
-\f[
-\dot{\omega}_{AB,\text{cat}}  = - \gamma_{AB} m_{A} F_{A}^\downarrow - \gamma_{BA} m_{B} F_{B}^\downarrow.
-\f]
-One atom of \f$ A \f$ recombines with one atom of \f$ B \f$ on the surface to produce a molecule \f$ AB \f$.
-In other words the number of atoms of \f$ A \f$ that recombine into \f$ AB \f$ should be equal to the number of \f$ B \f$
-atoms that recombine into \f$ AB \f$. This restriction should be explicitly imposed in order to conserve mass:
-\f[
-\gamma_{AB} F_{A}^\downarrow = \gamma_{BA} F_{B}^\downarrow.
-\f]
+
+A + B -> AB,
+
+with the chemical rate for the produced molecule AB equal to:
+
+&#937;_AB  = - &#947;_AB m_A F_imp_A - &#947;_BA m_B F_imp_B.
+
+One atom of A recombines with one atom of B on the surface to produce a molecule AB.
+In other words the number of atoms of A that recombine into AB should be equal to the number of B
+atoms that recombine into AB. This restriction should be explicitly imposed in order to conserve mass:
+
+&#947;_AB F_imp_A = &#947;_BA F_imp_B.
+
 As a result, in a reaction of this type two gamma recombination coefficients should be defined not
 necessarily equal for the two processes, the one activated when the catalytic reaction is limited by the
-flux of \f$ A \f$ atoms and the opposite. In practice the two recombination number fluxes,
-\f$ \gamma_{AB} F_{A}^\downarrow \f$ and \f$ \gamma_{BA} F_{B}^\downarrow \f$, are compared and the limiting one
+flux of A atoms and the opposite. In practice the two recombination number fluxes,
+&#947;_{AB} F_imp_A and &#947;_{BA} F_imp_B, are compared and the limiting one
 determines which of the two gammas is chosen.
 
 These gamma coefficients cannot take arbitrary values, they should be limited between 0 and 1,
-just like in the homonuclear case. When extra catalytic reactions are added, such as
-\f[
-A + A \rightarrow A_2 \quad \text{and} \quad  B + B \rightarrow B_2
-\f]
-the gammas should be further constrained, as:
-\f[
-0 \le \gamma_{A} + \gamma_{AB} \le 1 \quad \text{and} \quad 0 \le \gamma_{B} + \gamma_{BA} \le 1,
-\f]
+just like in the homonuclear case. When extra catalytic reactions are added, 
+such as A + A -> A2 and B + B -> B2 the gammas should be further constrained 
+as 0 &#60; &#947;_A + &#947;_AB &#60; 1 and 0 &#60; &#947;_B + &#947;_BA &#60; 1
 in order for mass to be conserved. This approach is consistent with similar approaches
-considering the catalytic recombination occurring in Martian atmospheres, where \f$ O \f$ can recombine
-into both  \f$ O_2 \f$ and  \f$ CO_2 \f$ due to catalytic reactions.
+considering the catalytic recombination occurring in Martian atmospheres, where O can recombine
+into both O2 and CO2 due to catalytic reactions.
 
-An example input file of catalytic reactions in air including the formation of \f$ NO \f$ are below.
-\code{.xml}
+An example input file of catalytic reactions in air including the formation of NO can be seen below.
+
+```xml
 <gsi gsi_mechanism = "gamma">
 
     <surface_properties type = "none" >
@@ -1103,7 +1108,7 @@ An example input file of catalytic reactions in air including the formation of \
     </surface_chemistry>
 
 </gsi>
-\endcode
+```
 
 It is still unclear which is the proper boundary conditions for the
 ions and electrons on the surface. One of the most common model is to
@@ -1111,7 +1116,8 @@ assume full ion recombination on the surface can be expressed as
 catalytic reaction with probability 1.
 The following example shows how to impose full ion recombination in
 Mutation.
-\code{.xml}
+
+```xml
 <gsi gsi_mechanism = "gamma">
 
     <surface_properties type = "none" >
@@ -1153,10 +1159,9 @@ Mutation.
     </surface_chemistry>
 
 </gsi>
-\endcode
-
+```
 An example of ablation model can be seen below.
-\code{.xml}
+```xml
 <gsi gsi_mechanism = "gamma">
 
     <surface_properties type = "ablation" >
@@ -1183,7 +1188,7 @@ An example of ablation model can be seen below.
     </surface_chemistry>
 
 </gsi>
-\endcode
+```
 
 #### Carbon Oxidation Model
 <a id="coxid"></a>
@@ -1191,53 +1196,50 @@ An example of ablation model can be seen below.
 The first ablation reaction presented above is the oxidation
 of the solid carbon by atomic oxygen. The reaction reads as:
 
-\f[
-C_{\text{b}} + O \rightarrow CO
-\f]
+C_b + O -> CO
 
-and is exothermic, releasing \f$ 3.74 \f$ eV per molecule produced. Its reaction
+and is exothermic, releasing 3.74 eV per molecule produced. Its reaction
 rate coefficient is given by defining a recombination probability
-\f$ \gamma_{CO} \f$. This probability is an Arrhenius type function of temperature
+&#947;_CO. This probability is an Arrhenius type function of temperature
 and is given by the formula:
-\f[
-\gamma_{CO} = 0.63 \exp(-1160/T_{\text{s}}).
-\f]
+
+&#947;_CO = 0.63 exp(-1160 / T).
+
 Carbon oxidation with molecular oxygen is also possible
-(\f$ C_{\text{b}} + O_2 \rightarrow CO + O \f$), but it is considered a less significant
+C_b + O2 -> CO + O, but it is often considered as a less significant
 process.
 
 #### Carbon Nitridation Model
 <a id="cnitr"></a>
 
 The second shown in the example is carbon nitridation,
-\f[
-C_{\text{b}} + N \rightarrow CN,
-\f]
-an exothermic reaction with \f$ 0.35 \f$ eV of energy released per reacting atom.
+
+C_b + N -> CN,
+
+an exothermic reaction with 0.35 eV of energy released per reacting atom.
 The reaction rate is given using a constant recombination probability
-\f$ \gamma_{CN} \f$ like in the catalytic case.
+&#947;_CN like in the catalytic case.
 
 #### Carbon Sublimation Model
 <a id="csubl"></a>
 
 At high temperatures carbon removal from the surface is dominated by phase
-change processes like sublimation. The production of \f$ C_3 \f$ is considered here.
+change processes like sublimation. The production of C3 is considered here.
 It should be noted that this type of reactions are invertible, with formula:
-\f[
-3C_\text{b} \rightleftharpoons C_3.
-\f]
+
+3C_b -> C3.
+
 The chemical production rate of this reaction is equal to:
-\f[
-\dot{\omega}_{\text{subl},C_3} = \beta_{C_3} ( \rho_{C_3, \text{equil}} - \rho_{C_3})
- \sqrt{ \frac{ k_B T_\text{s}}{2 \pi m_{C_3}}}.
-\f]
-The equilibrium partial density of the \f$ C_3 \f$ species is obtained from the
+
+&#937;_C3 = &#946; (&#961;_eq_C3 - &#961;_C3) (k_B T / 2 &#960; m)^(1/2).
+
+The equilibrium partial density of the C3 species is obtained from the
 saturated vapor pressure of carbon, which is equal to
-\f[
-p_{C_3, \text{sat}} = c \exp (-T_{\text{act}}/T_{\text{w}})
-\f]
-with \f$ \beta_{C_3} \f$ being the evaporation coefficient, \f$ c \f$ the pre-exponential coefficient,
-and \f$  T_{\text{act}}  \f$ the activation temperature.
+
+p_sat_C3 = c \exp (-Ta / T)
+
+with &#946_C3 being the evaporation coefficient, c the pre-exponential coefficient,
+and Ta the activation temperature.
 Even though here only sublimation is presented in the example, evaporation processes
 can be considered with the same model.
 
@@ -1267,16 +1269,16 @@ and diffusion play an important role in determining the overall catalytic rates.
 If all of the phenomena above are modeled with accuracy, the re-entry heat load can be predicted
 and the size of the thermal protection system can be determined.
 The mass balance on a catalytic surface reads:
-\f[
-\mathbf{j}_i \cdot \mathbf{n} = \dot{\omega}_{\text{cat},i},
-\f]
+
+**j**_i . **n** = &#937;_cat_i,
+
 where one mass balance equation should be solved for each distinct species in the flow.
 The equation above states, that the catalytic activity of every species is equal to the diffusion
 flux of these species to the surface. This leads as to two cases. In the first one, the rate
 with which the chemical species are produced or destroyed at the wall is higher than the rate
 they diffuse to the surface while in the second one the opposite happens. The first case is called
 diffusion limited, since diffusion is the mechanism controlling the chemical process, while the
-opposite is called reaction limited. When a species $i$ is inert at the surface, then its chemical
+opposite is called reaction limited. When a species i is inert at the surface, then its chemical
 rate is exactly equal to zero, which at steady state imposes that its net diffusion flux is also zero.
 Even though, in principle, these equations could be omitted, since they impose that the mole fractions
 of the species in question do not change with respect to the ones in the gas phase, the full system was
@@ -1298,48 +1300,46 @@ and occur only the surface of the material. In cases where the material is porou
 processes also in the bulk, such as in the case of pyrolysis.
 
 Taking these ideas in mind, the surface mass balance accounting only for surface reactions becomes:
-\f[
-[ \rho_i (\mathbf{u}_{\text{g}} - \mathbf{u}_{\text{r}} ) + \mathbf{j}_i - \mathbf{F}_{\text{b},i} ]
-\cdot \mathbf{n} = \dot{\omega}_{\text{s},i},
-\f]
-with
-\f$ \dot{\omega}_{\text{s},i} = \dot{\omega}_{\text{cat},i}  + \dot{\omega}_{\text{abl},i} \f$ and
-term \f$ \mathbf{F}_{\text{b},i} \f$ is the flux of species \f$ i \f$ entering the interface due
+
+&#961;_i (**u**_g - **u**_r) + **j**_i - **F**_b_i ]
+\cdot **n** = &#937;_i,
+
+with &#937;_i = &#937;_cat_i + &#937;_abl_i and
+term **F**b_i is the flux of species i entering the interface due
 to solid process, like pyrolysis and solid-solid chemical reactions.
 Just like before, one mass balance equation should be solved for each distinct species in the flow.
 It is most of the time reasonable to consider that recession velocity is
-orders of magnitude lower than the gas velocity \f$ \mathbf{u}_{\text{r}}  \f$.
+orders of magnitude lower than the gas velocity **u**_r.
 
-### Surface Energy Balance Solver
+### Surface Energy Balance
 <a id="seb"></a>
 
 In order to determine the surface temperature a surface energy balance should be solved along
 with the mass balances. It takes the form:
-\f[
-[ \rho ( \mathbf{u}_{\text{g}} - \mathbf{u}_{\text{r}} ) H + \mathbf{q}_{\text{g}}
-    - \mathbf{F}_{\text{b},{e}} ] \cdot \mathbf{n} =
-    \dot{\Omega}_{\text{s},e}
-\f]
-where \f$ \mathbf{q}_{\text{g}} \f$ is the heat flux to the gas phase equal to:
-\f[
-    \mathbf{q}_{\text{g}} = -\lambda \nabla T + \sum_{i = 1}^{n_\text{s}} \mathbf{j}_i h_i.
-\f]
+
+( &#961; ( **u**_g - **u**_r ) H + **q**g
+    - **F**_b_e ) . **n** = &#937;_e;
+
+where **q**_g is the heat flux to the gas phase equal to:
+
+**q**_g = -&#955; &#8711; T + &#931; **j**_i h_i.
+
 The radiative heat flux can be also included and will be discussed along with the surface
 radiation.
 
-Term \f$ \mathbf{F}_{\text{s},{e}} \f$ describes the energy exchanged between the interface
+Term **F**_b_e describes the energy exchanged between the interface
 and the bulk of the solid and is composed of three contributions: the first one is the
-thermal conduction exiting the surface \f$ \mathbf{q}_{\text{b,cond}} \f$, the second one is the
+thermal conduction exiting the surface **q**_cond, the second one is the
 enthalpy entering the interface due to the movement of the surface with the recession velocity,
-\f$ \mathbf{u}_{\text{r}} \rho_{\text{s}} h_{\text{s}} \f$ and the third one appears only in cases of
+**u**_r &#961; h_s and the third one appears only in cases of
 porous material, describing the enthalpy of the solid pyrolysis gases convected in the interface,
-denoted as \f$ \mathbf{u}_{\text{p}} \rho_{\text{p}} h_{\text{p}} \f$. The subscript p symbolizes
-the pyrolysis gas properties, with the \f$ \rho_{\text{p}} h_{\text{p}} \f$ being actually the
-sum \f$ \sum_{i=i}^{n_\text{s}} = \rho_i h_i \f$ for the pyrolysis gas densities. The surface
-enthalpy \f$ h_s \f$ is an input to the code, as an attribute to the surface_properties element.
+denoted as **u**_p &#961;_p; h_p. The subscript p symbolizes
+the pyrolysis gas properties, with the &#961_p; h_p being actually the
+sum &#931; = &#961;_i h_i for the pyrolysis gas densities. The surface
+enthalpy h_s is an input to the code, as an attribute to the surface_properties element.
 
 An example input file for solving both mass and energy balance can be seen below.
-\code{.xml}
+```xml
 <gsi gsi_mechanism = "gamma_energy">
 
     <surface_properties type = "ablation" >
@@ -1379,20 +1379,19 @@ An example input file for solving both mass and energy balance can be seen below
 
     <surface_radiation emissivity="0.86" T_env="0."/>
 </gsi>
-\endcode
+```
 
 The only source term taken into account for the surface energy balance in the
 example above is radiation. It is considered by adding a new element with tag
 <surface_radiation/>. The surface is assumed to be in thermodynamic equilibrium
-at a temperature \f$ T_{\text{s}} \f$  emitting energy following the Stefan-Boltzmann law,
-\f[
-\dot{\Omega}_{\text{s},e} = \dot{\Omega}_{\text{rad}} = \epsilon \left( \sigma T_{\text{s}}^4
-- q_{\text{rad},g} \right)
-\f]
-with \f$ \sigma \f$ being the Stefan-Boltzmann constant and \f$ \epsilon \f$ the emissivity
-of the surface. \f$ T_{\text{env}} \f$ is the surrounding environment temperature which can
+at a temperature T emitting energy following the Stefan-Boltzmann law,
+
+&#937;_e = &#937;_rad = &#949 ( &#963; T^4 - **q**_rad_g)
+
+with &#963; being the Stefan-Boltzmann constant and &#949; the emissivity
+of the surface. T_env is the surrounding environment temperature which can
 be used to simulate the far field radiative heat flux based on the formula
-\f$ \sigma T_{\text{env}}^4 \f$, which replaces the term \f$ q_{\text{rad},g} \f$.
+ &#963; T_env^4, which replaces the term **q**_rad_g.
 This is a relatively bad approximation and, therefore, it is better to be omitted.
 
 In order to obtain the value for the conductive heat flux on the solid,
@@ -1406,23 +1405,23 @@ semi-infinite surface. By writing the steady-state energy equation for the solid
 and integrating over the semi-infinite material, where on one side is the solid
 properties at exactly the interface (subscript s), while on the other, at infinity,
 is the virgin material (subscript v), the steady state heat flux is given by the formula:
-\f[
-q_{\text{cond}}^{\text{SS}} = -\mathbf{u}_{\text{r}}(\rho_\text{v} h_{\text{v}} - \rho_\text{s} h_{\text{s}}).
-\f]
+
+**q**_cond_ss = -**u**_r (&#961;_v h_v - &#961;_s h_s).
+
 By replacing the formula above in the surface energy balance and after simplifications one gets:
-\f[
+
 [
-\rho ( \mathbf{u}_{\text{g}} - \mathbf{u}_{\text{r}} ) H + \mathbf{q}_{\text{g}}
-+ \mathbf{u}_{\text{r}}\rho_\text{v} h_{\text{v}}
-] \cdot \mathbf{n} =
-\dot{\Omega}_{\text{s},e},
-\f]
+&#961; ( **u**_g - **u**_r ) H + **q**_g
++ **u**_r &#961;_v h_v
+] . **n** =
+&#937;_e,
+
 which is equally valid for both porous and non-porous materials. In order to use the steady state ablation
 approximation, the attribute of surface_feature element solid_conduction should be set to steady state.
 Instead of inputing the
 virgin material density, the ratio between the virgin and surface density minus one is often used,
 refered to as
-\f[ \phi = ( \frac{\rho_\text{v}}{\rho_\text{s}} - 1) \f] and is the attribute
+&#966; = (&#961;_v / &#961;_s - 1) and is the attribute
 virgin_to_surf_density_ratio in the solid_properties element defaulting to 1.
 The enthalpy_virgin can also be an input with default
 value equal to 0. Note that these two last options are only necessary when the steady
@@ -1448,7 +1447,8 @@ adiabatic boundary condition for the internal energy modes.
 In order for Mutation++ to take into account the Gas Surface Interaction
 features the gsi_mechanism attribute should be assigned to the gsi
 mechanism file.
-@code{.xml}
+
+```xml
 <!-- Example mixture file for gsi -->
 <mixture gsi_mechanims="name_of_the_gsi_file">
     <!-- Species list -->
@@ -1456,11 +1456,12 @@ mechanism file.
         ...
     </species>
 </mixture>
-@endcode
+```
 
 Below an example code of how to use the gas surface interaction features
 of Mutation is presented.
-@code{.cpp}
+
+```cpp
     const int set_state_with_rhoi_T = 1;
 
     MixtureOptions opts("mixture_name");
@@ -1496,11 +1497,9 @@ of Mutation is presented.
     // Getting number of reactions and surface reaction rates per reaction.
     int m_nr = mix.nSurfaceReactions();
     mix.getSurfaceReactionRatesPerReaction(wdot_reac.data());
-@endcode
+```
 
 Note that this example is not supposed to compile or run, but is there to indicate
 the most important features of the library.
-
-*/
 
 
