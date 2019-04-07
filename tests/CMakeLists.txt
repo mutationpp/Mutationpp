@@ -48,6 +48,7 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
 )
 
 add_executable(run_tests ${test_sources})
