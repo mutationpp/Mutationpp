@@ -1,8 +1,8 @@
 /**
- * @file GSIRateManagerGamma.cpp
+ * @file GSIRateManagerPhenomenological.cpp
  *
  * @brief Class which computes the chemical production rate for each species
- *        based on tha gamma model for catalysis and ablation.
+ *        based on ehenomenological models for catalysis and ablation.
  */
 
 /*
@@ -46,10 +46,10 @@ namespace Mutation {
 
 //=============================================================================
 
-class GSIRateManagerGamma : public GSIRateManager
+class GSIRateManagerPhenomenological : public GSIRateManager
 {
 public:
-    GSIRateManagerGamma(DataGSIRateManager args)
+    GSIRateManagerPhenomenological(DataGSIRateManager args)
         : GSIRateManager(args),
 		  m_ns(args.s_thermo.nSpecies()),
 		  m_nr(args.s_reactions.size()),
@@ -66,7 +66,7 @@ public:
 
 //=============================================================================
 
-    ~GSIRateManagerGamma(){}
+    ~GSIRateManagerPhenomenological(){}
 
 //=============================================================================
 
@@ -123,11 +123,12 @@ private:
     GSIStoichiometryManager m_irr_products;
 };
 
-ObjectProvider<GSIRateManagerGamma, GSIRateManager>
-    gsi_rate_manager_gamma("gamma");
+ObjectProvider<GSIRateManagerPhenomenological, GSIRateManager>
+    gsi_rate_manager_phenomenological_mass("phenomenological_mass");
 
-ObjectProvider<GSIRateManagerGamma, GSIRateManager>
-    gsi_rate_manager_gamma_energy("gamma_energy");
+ObjectProvider<GSIRateManagerPhenomenological, GSIRateManager>
+    gsi_rate_manager_phenomenological_mass_energy(
+        "phenomenological_mass_energy");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

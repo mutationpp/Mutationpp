@@ -1,4 +1,4 @@
-<gsi gsi_mechanism = "gamma">
+<gsi gsi_mechanism = "phenomenological_mass">
 
     <surface_properties type = "none" >
     </surface_properties>

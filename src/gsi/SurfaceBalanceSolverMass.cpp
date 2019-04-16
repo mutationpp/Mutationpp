@@ -332,7 +332,7 @@ private:
 
 ObjectProvider<
     SurfaceBalanceSolverMass, Surface>
-    surface_balance_solver_mass_gamma("gamma");
+    surface_balance_solver_phenomenological_mass("phenomenological_mass");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

@@ -1,4 +1,4 @@
-<gsi gsi_mechanism = "gamma_energy">
+<gsi gsi_mechanism = "phenomenological_mass_energy">
 
     <surface_properties type = "ablation" >
         <surface label="b" species="C"

@@ -30,7 +30,7 @@ add_sources(mutation++
     GSIRateLawGammaConst.cpp
     GSIRateLawGammaT.cpp
     GSIRateLawSublimation.cpp
-    GSIRateManagerGamma.cpp
+    GSIRateManagerPhenomenological.cpp
     GSIStoichiometryManager.cpp
     MassBlowingRateAblation.cpp
     MassBlowingRateNull.cpp
