@@ -1,0 +1,14 @@
+<!-- Mixture of TACOT and air species -->
+<mixture thermo_db="NASA-9" >
+
+    <species>
+       C H O N CH4 CN CO CO2 C2 C2H C2H2,acetylene C3 C4 C4H2,butadiyne C5 HCN
+       H2 H2O N2 CH2OH CNN CNC CNCOCN C6H6 CH CH2 CH3 C2H4 C2H6 C3H3,1-propynl
+       C3H3,2-propynl C6H5O,phenoxy C6H5OH,phenol O2 OH
+    </species>
+
+    <element_compositions default="phenol-air">
+        <composition name="phenol-air">C:6, H:6, O:1.4, N:1.6</composition>
+    </element_compositions>
+
+</mixture>

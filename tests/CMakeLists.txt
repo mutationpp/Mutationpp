@@ -45,6 +45,7 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
 )
 
 add_executable(run_tests ${test_sources})
@@ -53,16 +54,6 @@ target_link_libraries(run_tests mutation++)
 # Add all Catch TEST_CASEs as individual CTest tests
 include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(run_tests)
-
-# Setup the code coverage analysis for tests
-if (${CMAKE_BUILD_TYPE} MATCHES "Coverage")
-    include(CodeCoverage)
-    set(LCOV_REMOVE_EXTRA 
-        '${CMAKE_SOURCE_DIR}/tests/*' 
-        '${CMAKE_SOURCE_DIR}/install/*'
-    )
-    SETUP_TARGET_FOR_COVERAGE(test_coverage run_tests coverage)
-endif()
 
 # Make sure examples compile and run
 function(test_example name subdir)    
@@ -74,6 +65,9 @@ function(test_example name subdir)
         NAME example_${name}_run
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
         COMMAND ${name} )
+    set_property(
+        TEST example_${name}_run 
+        APPEND PROPERTY DEPENDS example_${name}_compile)
 endfunction()
 
 # C++ examples
@@ -88,5 +82,8 @@ endif()
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
+
+# Setup the code coverage analysis for tests
+add_coverage(run_tests)
 
 

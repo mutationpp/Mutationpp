@@ -1,0 +1,12 @@
+<mixture mechanism="Mars_19_Park" thermo_db="RRHO">
+
+    <species>
+        e- C+ N+ O+ N2+ O2+ CN+ CO+ NO+ C N O C2 N2 O2 CN CO NO CO2
+    </species>
+
+    <element_compositions default="default">
+        <composition name="default"> C:0.96, O:1.92, N:0.08</composition>
+    </element_compositions>
+
+</mixture>
+

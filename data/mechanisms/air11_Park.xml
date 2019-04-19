@@ -1,0 +1,124 @@
+<!--
+Park air11 reaction mechanism
+Rates taken from:
+    1) Park et al., JTHT 15(1):76-90, 2001.
+    2) Park, JTHT 7(3):385-398, 1993.
+-->
+<mechanism name="air_11_Park">
+
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+M=2N+M">
+        <arrhenius A="3.0E+22" n="-1.6" T="113200.0" />
+        <M>N2:0.2333, NO:0.2333, O2:0.2333, O2+:0.0</M>
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+e-=2N+e-">
+        <arrhenius A="3.0E+24" n="-1.6" T="113200." />
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="O2+M=2O+M">
+        <arrhenius A="1.0E+22" n="-1.5" T="59360.0" />
+        <M>N2:0.2, NO:0.2, O2:0.2, O2+:0.0</M>
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO+M=N+O+M">
+        <arrhenius A="5.0E15" n="0.0" T="75500.0" />
+        <M>NO:22.0, N:22.0, O:22.0</M>
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+O=NO+N">
+        <arrhenius A="5.7E+12" n="0.42" T="42938.0" />
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="NO+O=O2+N">
+        <arrhenius A="8.4E+12" n="0.0" T="19400.0" />
+    </reaction>
+
+    <!-- Park, 2001-->
+    <reaction formula="N+O=NO++e-">
+        <arrhenius A="5.3E+12" n="0.00" T="31900.0" />
+    </reaction>
+
+    <!-- Park, 1993-->
+    <reaction formula="O+O=O2++e-">
+        <arrhenius A="7.1E+02" n="2.7" T="80600.0" />
+    </reaction>
+
+    <!-- Park, 2001-->
+    <reaction formula="N+N=N2++e-">
+        <arrhenius A="4.4E+07" n="1.50" T="67500.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO++O=N++O2">
+        <arrhenius A="1.0E12" n="0.5" T="77200.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="N++N2=N2++N">
+        <arrhenius A="1.0E12" n="0.5" T="12200.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="O2++N=N++O2">
+        <arrhenius A="8.7E13" n="0.14" T="28600.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="O++NO=N++O2">
+        <arrhenius A="1.4E05" n="1.9" T="26600.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="O2++N2=N2++O2">
+        <arrhenius A="9.9E12" n="0.0" T="40700.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="O2++O=O++O2">
+        <arrhenius A="4.0E12" n="0.09" T="18000.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO++N=O++N2">
+        <arrhenius A="3.4E13" n="-1.08" T="12800.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO++O2=O2++NO">
+        <arrhenius A="2.4E13" n="0.41" T="32600.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO++O=O2++N">
+        <arrhenius A="7.2E13" n="0.29" T="48600.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="O++N2=N2++O">
+        <arrhenius A="9.1E13" n="0.36" T="22800.0" />
+    </reaction>
+
+    <!-- Park, 1993 -->
+    <reaction formula="NO++N=N2++O">
+        <arrhenius A="7.2E13" n="0.0" T="35500.0" />
+    </reaction>
+
+    <!-- Park, 2001 -->
+    <reaction formula="O+e-=O++e-+e-">
+        <arrhenius A="3.9E33" n="-3.78" T="158500." />
+    </reaction>
+
+    <!-- Park, 2001-->
+    <reaction formula="N+e-=N++e-+e-">
+        <arrhenius A="2.5E34" n="-3.82" T="168200." />
+    </reaction>
+
+</mechanism>

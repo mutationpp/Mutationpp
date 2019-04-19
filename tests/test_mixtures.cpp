@@ -23,6 +23,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 
+#include <memory>
+
 using namespace Catch;
 using namespace Mutation;
 
@@ -141,4 +143,58 @@ TEST_CASE("Loading test mixtures", "[loading][mixtures]")
     checkTestMixture("air5_RRHO_ChemNonEqTTv", 5, 2, 4, false);
     checkTestMixture("argon_CR_ChemNonEq1T", 33, 2, 1984, true);
     checkTestMixture("argon_CR_ChemNonEqTTv", 33, 2, 1984, true);
+}
+
+class CoutRedirect
+{
+public:
+    CoutRedirect() :
+        m_buffer(),
+        m_old_buffer(std::cout.rdbuf(m_buffer.rdbuf()))
+    { }
+
+    ~CoutRedirect() { std::cout.rdbuf(m_old_buffer); }
+
+    std::string str() { return m_buffer.str(); }
+private:
+    std::stringstream m_buffer;
+    std::streambuf* m_old_buffer;
+};
+
+void checkLoadMixture(
+    const std::string& mix_name, int ns, int ne, int nr)
+{
+    std::auto_ptr<Mixture> mix;
+    CHECK_NOTHROW(mix.reset(new Mixture(mix_name)));
+
+    CHECK(mix->nSpecies() == ns);
+    CHECK(mix->nElements() == ne);
+    CHECK(mix->nReactions() == nr);
+
+    {
+        CoutRedirect cout;
+        CHECK_NOTHROW(mix->collisionDB().Q11ij());
+        INFO("standard out =\n" << cout.str());
+        CHECK(cout.str().find("Warning") == std::string::npos);
+    }
+}
+
+TEST_CASE("Loading air_5 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("air_5", 5, 2, 5);
+}
+
+TEST_CASE("Loading air_11 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("air_11", 11, 3, 22);
+}
+
+TEST_CASE("Loading Mars_19 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("Mars_19", 19, 4, 27);
+}
+
+TEST_CASE("Loading tacot-air_35 mixture", "[loading][mixtures]")
+{
+    checkLoadMixture("tacot-air_35", 35, 4, 0);
 }

@@ -89,21 +89,24 @@ template <> struct RateSelector<__TYPE__> {\
 
 // Default rate law groups for non (kf(T), kb(T)) reaction types
 SELECT_RATE_LAWS(ASSOCIATIVE_IONIZATION,     ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATION_E,             ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATION_M,             ArrheniusPark, ArrheniusT)
 SELECT_RATE_LAWS(DISSOCIATIVE_RECOMBINATION, ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT,      ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT,      ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(IONIZATION_M,               ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(ION_RECOMBINATION_E,        ArrheniusT,   ArrheniusTe)
-SELECT_RATE_LAWS(ION_RECOMBINATION_M,        ArrheniusT,   ArrheniusT)
+SELECT_RATE_LAWS(ASSOCIATIVE_DETACHMENT,     ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(DISSOCIATIVE_ATTACHMENT,    ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(DISSOCIATION_E,             ArrheniusTe,   ArrheniusTe)
 SELECT_RATE_LAWS(RECOMBINATION_E,            ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(DISSOCIATION_M,             ArrheniusPark, ArrheniusT)
 SELECT_RATE_LAWS(RECOMBINATION_M,            ArrheniusT,    ArrheniusPark)
+SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(ION_RECOMBINATION_E,        ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(IONIZATION_M,               ArrheniusT,    ArrheniusT)
+SELECT_RATE_LAWS(ION_RECOMBINATION_M,        ArrheniusT,    ArrheniusT)
+SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT_M,    ArrheniusTe,   ArrheniusT)
+SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT_M,    ArrheniusT,    ArrheniusTe)
+SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT_E,    ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT_E,    ArrheniusTe,   ArrheniusTe)
+SELECT_RATE_LAWS(EXCHANGE,                   ArrheniusT,    ArrheniusT)
+SELECT_RATE_LAWS(EXCITATION_M,               ArrheniusT,    ArrheniusT)
 SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(EXCITATION_M,               ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(DEEXCITATION_E,             ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(DEEXCITATION_M,             ArrheniusTe,    ArrheniusT)
 
 #undef SELECT_RATE_LAWS
 
@@ -197,16 +200,22 @@ void RateManager::addRate(const size_t rxn, const Reaction& reaction)
 {    
     m_rate_groups.addRateCoefficient<ForwardGroup>(rxn, reaction.rateLaw());
     
-    // Make use of forward computation when possible
-    if (is_same<ForwardGroup, ReverseGroup>::value)
-        m_to_copy.push_back(rxn);
-    else
-        // Evaluate at the reverse temperature
-        // note: mp_lnkff+(rxn+m_nr) = mp_lnkfb+rxn
-        m_rate_groups.addRateCoefficient<ReverseGroup>(
-            rxn+m_nr, reaction.rateLaw());
-    
-    m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
+    if (reaction.isReversible()) {
+        
+        // Make use of forward computation when possible
+        if (is_same<ForwardGroup, ReverseGroup>::value)
+            m_to_copy.push_back(rxn);
+        else
+            // Evaluate at the reverse temperature
+            // note: mp_lnkff+(rxn+m_nr) = mp_lnkfb+rxn
+            m_rate_groups.addRateCoefficient<ReverseGroup>(
+                rxn+m_nr, reaction.rateLaw());
+        
+        m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
+        
+    } else {
+        m_irr.push_back(rxn);
+    }
 }
 
 //==============================================================================

@@ -83,6 +83,7 @@ Arrhenius::Arrhenius(const XmlElement& node, const int order)
     // Load the pre-exponential factor (must be given)
     node.getAttribute("A", m_lnA, 
         "Arrhenius rate law must define coefficient A!");
+    node.parseCheck(m_lnA > 0.0, "Pre-exponential factors must be positive > 0");
     
     // Convert to correct units based on the order of the reaction and
     // store the log value

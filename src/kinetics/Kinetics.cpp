@@ -229,6 +229,9 @@ void Kinetics::backwardRateCoefficients(double* const p_kb)
     mp_rates->update(m_thermo);
     Map<ArrayXd>(p_kb, nReactions()) = 
         Map<const ArrayXd>(mp_rates->lnkb(), nReactions()).exp();
+        
+    for(int i=0; i < mp_rates->irrReactions().size(); ++i)
+        p_kb[mp_rates->irrReactions()[i]] = 0.0;
 }
 
 
@@ -383,6 +386,9 @@ void Kinetics::jacobianRho(double* const p_jac)
     const double* const lnkb = mp_rates->lnkb();
     for (int i = 0; i < nReactions(); ++i)
         mp_ropb[i] = std::exp(lnkb[i]);
+    
+    for(int i=0; i < mp_rates->irrReactions().size(); ++i)
+        mp_ropb[mp_rates->irrReactions()[i]] = 0.0;
     
     // Compute species concentrations (mol/m^3)
     const double mix_conc = m_thermo.numberDensity() / NA;

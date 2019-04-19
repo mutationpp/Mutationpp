@@ -71,6 +71,13 @@ public:
      * forward temperature.
      */
     const double* const lnkb() { return mp_lnkb; }
+    
+    /**
+     * Returns the indices of irreversible reactions.
+     */
+    const std::vector<size_t>& irrReactions() const {
+        return m_irr;
+    }
 
 private:
 
@@ -118,6 +125,9 @@ private:
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal
     std::vector<size_t> m_to_copy;
+    
+    /// Stores the indices of non-reversible reactions
+    std::vector<size_t> m_irr;
 };
 
 
