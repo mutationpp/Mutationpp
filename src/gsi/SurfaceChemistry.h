@@ -1,11 +1,12 @@
 /**
- * @file WallProductionTerms.h
+ * @file SurfaceChemistry.h
  *
- * @brief Declaration of abstract WallProductionTerms class.
+ * @brief Class which computes the chemical source terms for the
+ *        chemical reactions occuring on the surface.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -26,10 +27,11 @@
  */
 
 
-#ifndef WALL_PRODUCTION_TERMS_H
-#define WALL_PRODUCTION_TERMS_H
+#ifndef SURFACE_CHEMISTRY_H
+#define SURFACE_CHEMISTRY_H
 
 #include <eigen3/Eigen/Dense>
+#include <string>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Transport { class Transport; }}
@@ -40,55 +42,66 @@ namespace Mutation {
 
 class GSIReaction;
 class GSIRateManager;
-class WallState;
-class SurfaceProperties;
-class WallProductionTerms;
-
-/**
- * Structure which stores the necessary inputs for the
- * WallProductionTerms class.
- */
-struct DataWallProductionTerms {
-    Mutation::Thermodynamics::Thermodynamics& s_thermo;
-    const Mutation::Transport::Transport& s_transport;
-    const std::string& s_gsi_mechanism;
-    const Mutation::Utilities::IO::XmlElement& s_node_prod_terms;
-    const SurfaceProperties& s_surf_props;
-    const WallState& s_wall_state;
-    std::vector<WallProductionTerms*>* sp_surf_prod;
-    const double* const sp_pres;
-};
+class SurfaceState;
 
 //==============================================================================
-/*
- *  Abstract class
+/**
+ *  Class which ...
  */
-class WallProductionTerms
+class SurfaceChemistry
 {
 public:
-//==============================================================================
-    typedef const DataWallProductionTerms& ARGS;
-
-//==============================================================================
     // Constructor
-    WallProductionTerms(ARGS args){}
+    SurfaceChemistry(
+        Mutation::Thermodynamics::Thermodynamics& thermo,
+        const Mutation::Transport::Transport& transport,
+        const std::string& gsi_mechanism,
+        const Mutation::Utilities::IO::XmlElement& xml_surf_chem,
+        const SurfaceState& surf_state);
 
 //==============================================================================
-	/// Returns name of this type.
-	static std::string typeName() { return "WallProductionTerms"; }
+    /**
+     * Default destructor
+     */
+    ~SurfaceChemistry();
 
 //==============================================================================
-    virtual ~WallProductionTerms(){}
+    /**
+     * Computes the chemical source terms for every species in the gas mixture
+     * in \f$kg/(m^2 s)\f$.
+     */
+    void surfaceReactionRates(Eigen::VectorXd& v_mass_chem_rate) const;
 
 //==============================================================================
-    virtual void productionRate(Eigen::VectorXd& lv_mass_prod_rate) = 0;
+    /**
+     * Computes the chemical source terms per reaction in \f$kg/(m^2 s)\f$.
+     */
+    void surfaceReactionRatesPerReaction(Eigen::VectorXd& v_rate_per_reaction);
 
 //==============================================================================
-    virtual const std::string& getWallProductionTermTag() const = 0;
+    /**
+     * Returns the number of surface reactions considered.
+     */
+    int nSurfaceReactions();
 
+private:
+    /**
+     * Helper class to add reactions.
+     */
+    void addReaction(GSIReaction* gsi_reaction){
+        mv_reaction.push_back(gsi_reaction);
+    }
+
+private:
+    const size_t m_ns;
+
+    std::string m_reaction_type;
+
+    std::vector<GSIReaction*> mv_reaction;
+    GSIRateManager* mp_rate_manager;
 };
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
-#endif // WALL_PRODUCTION_TERMS_H
+#endif // SURFACE_CHEMISTRY_H

@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -51,7 +51,6 @@ struct DataGSIRateLaw
     Mutation::Thermodynamics::Thermodynamics& s_thermo;
     const Mutation::Transport::Transport& s_transport;
     const Mutation::Utilities::IO::XmlElement& s_node_rate_law;
-    const SurfaceProperties& s_surf_props;
     const std::vector<int>& s_reactants;
     const std::vector<int>& s_products;
 };

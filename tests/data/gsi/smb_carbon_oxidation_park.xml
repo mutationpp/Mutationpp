@@ -1,0 +1,13 @@
+<gsi gsi_mechanism = "phenomenological_mass">
+
+    <surface_properties type = "ablation" >
+        <surface label="b" species="C" />
+    </surface_properties>
+
+    <surface_chemistry>
+        <!-- 1 -->
+        <reaction type= "ablation" formula="C-b + O => CO">
+            <gamma_T pre_exp="0.63" T="1160.0" />
+        </reaction>
+    </surface_chemistry>
+</gsi>

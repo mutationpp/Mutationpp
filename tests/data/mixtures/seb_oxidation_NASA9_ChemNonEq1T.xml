@@ -1,0 +1,14 @@
+<mixture mechanism="none"
+         thermo_db="NASA-9"
+         state_model="ChemNonEq1T"
+         gsi_mechanism="seb_carbon_oxidation_park">
+
+    <species>
+        O O2 C CO
+    </species>
+
+    <element_compositions default="default">
+        <composition name="default"> C:.1, O:.9 </composition>
+    </element_compositions>
+
+</mixture>

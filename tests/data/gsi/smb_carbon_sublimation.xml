@@ -1,0 +1,13 @@
+<gsi gsi_mechanism = "phenomenological_mass">
+
+    <surface_properties type = "ablation" >
+        <surface label="b" species="C" />
+    </surface_properties>
+
+    <surface_chemistry>
+        <!-- 1 -->
+        <reaction type= "ablation" formula="3C-b => C3">
+            <sublimation vap_coef="0.1" pre_exp="5.19E15" T="90845." />
+        </reaction>
+    </surface_chemistry>
+</gsi>

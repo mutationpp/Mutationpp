@@ -1,0 +1,27 @@
+<gsi gsi_mechanism = "phenomenological_mass_energy">
+
+    <surface_properties type = "ablation" >
+        <surface label="b" species="C"
+                 enthalpy_surface="0." />
+    </surface_properties>
+
+    <solid_properties 
+        virgin_to_surf_density_ratio = "1."
+        enthalpy_virgin = "0.">
+    </solid_properties>
+
+    <surface_features 
+        solid_conduction = "none"
+        surface_in_thermal_equil = "true"
+        gas_radiation = "false">
+    </surface_features>
+
+    <surface_chemistry>
+        <!-- 1 -->
+        <reaction type= "ablation" formula="C-b + O => CO">
+            <gamma_T pre_exp="0.63" T="1160.0" />
+        </reaction>
+    </surface_chemistry>
+
+    <surface_radiation emissivity="0.86" T_env="0."/>
+</gsi>

@@ -1,11 +1,12 @@
 /**
- * @file WallProductionTermsEmpty.cpp
+ * @file SolidPropertiesNull.cpp
  *
- * @brief Class which should be used when no surface processes occur,
+ * @brief SolidProperties class when no solid properties are required
+ *        to be stored.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -27,47 +28,36 @@
 
 
 #include "AutoRegistration.h"
-#include "Transport.h"
 #include "Utilities.h"
 
-#include "WallProductionTerms.h"
+#include "SolidProperties.h"
 
-using namespace Eigen;
-
-using namespace Mutation::Utilities;
+using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
-
-class WallProductionsTermsEmpty : public WallProductionTerms
-{
+/**
+ * Class invoked when no solid properties are required, like in the case
+ * of a purely catalytic solid modeled with the gamma model or when the solid
+ * conduction is an external input to the code.
+ */
+class SolidPropertiesNull : public SolidProperties {
 public:
-    WallProductionsTermsEmpty(ARGS args)
-                         : WallProductionTerms(args),
-                           m_tag("empty") {}
+/**
+ * Default constructor
+ */
+    SolidPropertiesNull(ARGS args) : SolidProperties(args) {}
 
 //==============================================================================
-
-    ~WallProductionsTermsEmpty(){}
-
-//==============================================================================
-
-    void productionRate(VectorXd& v_mass_prod_rate){
-        v_mass_prod_rate.setZero();
-    }
-
-//==============================================================================
-
-    const std::string& getWallProductionTermTag() const { return m_tag; }
-
-private:
-    const std::string m_tag;
-
+/**
+ * Default destructor
+ */
+    ~SolidPropertiesNull(){}
 };
 
-Config::ObjectProvider<
-    WallProductionsTermsEmpty, WallProductionTerms>
-    wall_productions_terms_empty("empty");
+ObjectProvider<
+    SolidPropertiesNull, SolidProperties>
+    solid_properties_null("none");
 
     } // namespace GasSurfaceInteraction
 } // namespace Mutation

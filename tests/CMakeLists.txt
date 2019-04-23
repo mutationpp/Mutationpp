@@ -33,6 +33,9 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass_energy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_rates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_reactions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_mechanism.cpp
@@ -56,7 +59,7 @@ include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(run_tests)
 
 # Make sure examples compile and run
-function(test_example name subdir)    
+function(test_example name subdir)
     add_test(
         NAME example_${name}_compile
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
@@ -85,5 +88,4 @@ target_link_libraries(update_comparison mutation++)
 
 # Setup the code coverage analysis for tests
 add_coverage(run_tests)
-
 

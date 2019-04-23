@@ -1,11 +1,11 @@
 /**
- * @file WallState.cpp
+ * @file SurfaceState.cpp
  *
  * @brief Class which stores the state of the surface.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -26,85 +26,98 @@
  */
 
 
+#include <string>
+
 #include "Errors.h"
 #include "Thermodynamics.h"
+#include "Utilities.h"
 
+#include "SolidProperties.h"
 #include "SurfaceProperties.h"
-#include "WallState.h"
+#include "SurfaceState.h"
 
 using namespace Mutation::Thermodynamics;
+using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 //==============================================================================
 
-WallState::WallState(
+SurfaceState::SurfaceState(
     const Mutation::Thermodynamics::Thermodynamics& thermo,
-    const SurfaceProperties& surf_props)
+    const Mutation::Utilities::IO::XmlElement& xml_surf_props)
     : m_thermo(thermo),
-      m_surf_props(surf_props),
       m_ns(thermo.nSpecies()),
       m_nT(thermo.nEnergyEqns()),
-      m_ns_surf(surf_props.nWallSpecies()),
-      m_set_state_rhoi_T(1),
       mv_rhoi(m_ns),
       mv_T(m_nT),
-      m_is_wall_state_set(false),
-      mv_surf_props_state(m_ns_surf)
+      m_is_surface_state_set(false),
+      mp_surf_props(NULL),
+      mp_solid_props(NULL)
 {
-	initializeSurfState();
+    DataSurfaceProperties data_surf_props = {
+        m_thermo,
+        xml_surf_props };
+    std::string name_surf_props;
+
+    xml_surf_props.getAttribute(
+        "type", name_surf_props,
+        "Error in surface_properties for the gsi imput file. "
+        "Surface properties should provided. If no properties are needed "
+        "they should set to 'none'.");
+
+    mp_surf_props = Factory<SurfaceProperties>::create(
+        name_surf_props, data_surf_props);
 }
 
 //==============================================================================
 
-WallState::~WallState(){ }
+SurfaceState::~SurfaceState(){
+    if (mp_surf_props != NULL) {delete mp_surf_props;}
+    if (mp_solid_props != NULL) {delete mp_solid_props;}
+}
 
 //==============================================================================
 
-void WallState::setWallState(
+void SurfaceState::setSurfaceState(
     const double* const p_mass,
     const double* const p_energy,
     const int state_var)
 {
   	switch(state_var){
-    case 0:
-        setWallP(*p_mass);
-        setWallT(p_energy);
-        break;
     case 1:
-        setWallRhoi(p_mass);
-        setWallT(p_energy);
+        setSurfaceRhoi(p_mass);
+        setSurfaceT(p_energy);
         break;
     default:
         throw InvalidInputError("variable set", state_var)
-        << "This variable-set is not implemented in setWallState"
+        << "This variable-set is not implemented in setSurfaceState"
         << ". Possible variable-sets are:\n"
-        << "  0: (pressure, temperature)\n"
         << "  1: (species densities, temperature)\n";
     }
-    m_is_wall_state_set = true;
+    m_is_surface_state_set = true;
 }
 
 //==============================================================================
 
-void WallState::getWallState(
+void SurfaceState::getSurfaceState(
     double* const p_rhoi,
     double* const p_rhoie,
-    const int state_var)
+    const int state_var) const
 {
   	switch(state_var){
     case 1:
         for (int i_sp = 0; i_sp < m_ns; ++i_sp){
-            p_rhoi[i_sp] = getWallRhoi()(i_sp);
+            p_rhoi[i_sp] = getSurfaceRhoi()(i_sp);
         }
         for (int i_T = 0; i_T < m_nT ; ++i_T) {
-            p_rhoie[i_T] = getWallT()(i_T);
+            p_rhoie[i_T] = getSurfaceT()(i_T);
         }
         break;
     default:
         throw InvalidInputError("variable get", state_var)
-        << "This variable-get is not implemented in getWallState"
+        << "This variable-get is not implemented in getSurfaceState"
         << ". Possible variable-sets are:\n"
         << "  1: (species densities, temperature)\n";
   	}
@@ -112,60 +125,24 @@ void WallState::getWallState(
 
 //==============================================================================
 
-void WallState::setWallRhoi(const double* const p_rhoi){
+void SurfaceState::setSurfaceRhoi(const double* const p_rhoi){
 	mv_rhoi = Eigen::Map<const Eigen::VectorXd>(p_rhoi, m_ns);
 }
 
 //==============================================================================
 
-void WallState::setWallT(const double* const p_T){
+void SurfaceState::setSurfaceT(const double* const p_T){
     mv_T = Eigen::Map<const Eigen::VectorXd>(p_T, m_nT);
 }
 
 //==============================================================================
 
-void WallState::setWallP(const double& p){
-    m_p = p;
+void SurfaceState::setSolidProperties(
+    const std::string& solid_model,
+    const DataSolidProperties& data_solid_props) {
+        mp_solid_props = Factory<SolidProperties>::create(
+            solid_model, data_solid_props);
 }
-
-//==============================================================================
-
-void WallState::getNdStateGasSurf(Eigen::VectorXd& v_wall_state) const
-{
-	assert(v_wall_state.size() == m_ns+ m_ns_surf);
-
-	m_thermo.convert<RHO_TO_CONC>(
-        mv_rhoi.data(),
-        v_wall_state.data());
-
-	v_wall_state.head(m_ns) *= NA ;
-	v_wall_state.tail(m_ns_surf) = mv_surf_props_state.head(m_ns_surf);
-}
-
-//==============================================================================
-
-void WallState::initializeSurfState()
-{
-	size_t n_sites = m_surf_props.nSiteCategories();
-	double n_total_sites = m_surf_props.nTotalSites();
-
-	int n_sp_in_site = 0;
-	double n_frac_site = 0.0;
-    double n_sites_dens = 0.0;
-    int pos_in_surf_props = 0;
-
-    for (int i_sites = 0; i_sites < n_sites; ++i_sites){
-    	n_frac_site = m_surf_props.fracSite(i_sites);
-    	n_sp_in_site = m_surf_props.nSpeciesinSite(i_sites);
-    	n_sites_dens = n_total_sites * n_frac_site / n_sp_in_site;
-        for (int i_sp_sites = 0; i_sp_sites < n_sp_in_site; i_sp_sites++){
-        	mv_surf_props_state[pos_in_surf_props] = n_sites_dens;
-        	pos_in_surf_props++;
-        }
-	}
-}
-
-//==============================================================================
 
     } // GasSurfaceInteraction
 } // Mutation

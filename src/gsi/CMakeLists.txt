@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -23,32 +23,39 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     DiffusionVelocityCalculator.cpp
+    GasFourierHeatFluxCalculator.cpp
     GasSurfaceInteraction.cpp
     GSIReactionAblation.cpp
     GSIReactionCatalysis.cpp
     GSIRateLawGammaConst.cpp
     GSIRateLawGammaT.cpp
     GSIRateLawSublimation.cpp
-    GSIRateManagerGamma.cpp
+    GSIRateManagerPhenomenological.cpp
     GSIStoichiometryManager.cpp
     MassBlowingRateAblation.cpp
     MassBlowingRateNull.cpp
+    SolidPropertiesNull.cpp
+    SolidPropertiesSteadyState.cpp
+    SurfaceChemistry.cpp
+    SurfaceRadiation.cpp
     SurfaceBalanceSolverMass.cpp
+    SurfaceBalanceSolverMassEnergy.cpp
     SurfacePropertiesNull.cpp
-    WallState.cpp
-    WallProductionTermsEmpty.cpp
-    WallProductionSurfaceChemistry.cpp
-    WallProductionPyrolysis.cpp
+    SurfacePropertiesAblation.cpp
+    SurfaceState.cpp
 )
 
 install(FILES DiffusionVelocityCalculator.h DESTINATION include/mutation++)
+install(FILES GasFourierHeatFluxCalculator.h DESTINATION include/mutation++)
 install(FILES GasSurfaceInteraction.h DESTINATION include/mutation++)
 install(FILES GSIRateLaw.h DESTINATION include/mutation++)
 install(FILES GSIRateManager.h DESTINATION include/mutation++)
 install(FILES GSIReaction.h DESTINATION include/mutation++)
 install(FILES GSIStoichiometryManager.h DESTINATION include/mutation++)
 install(FILES MassBlowingRate.h DESTINATION include/mutation++)
-install(FILES SurfaceBalanceSolver.h DESTINATION include/mutation++)
+install(FILES SolidProperties.h DESTINATION include/mutation++)
+install(FILES Surface.h DESTINATION include/mutation++)
+install(FILES SurfaceChemistry.h DESTINATION include/mutation++)
 install(FILES SurfaceProperties.h DESTINATION include/mutation++)
-install(FILES WallProductionTerms.h DESTINATION include/mutation++)
-install(FILES WallState.h DESTINATION include/mutation++)
+install(FILES SurfaceRadiation.h DESTINATION include/mutation++)
+install(FILES SurfaceState.h DESTINATION include/mutation++)

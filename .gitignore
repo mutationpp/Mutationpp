@@ -12,6 +12,7 @@ docs/html/
 .project
 .pydevproject
 .metadata/
+.vscode/
 
 # Python
 *.pyc
