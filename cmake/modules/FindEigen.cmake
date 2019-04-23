@@ -62,3 +62,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Eigen
   REQUIRED_VARS Eigen_INCLUDE_DIRS)
 
+if(Eigen_FOUND AND NOT TARGET Eigen)
+    add_library(Eigen3::Eigen INTERFACE IMPORTED)
+    set_target_properties(Eigen3::Eigen
+        INTERFACE_INCLUDE_DIRECTORIES "${Eigen_INCLUDE_DIR}"
+    )
+endif()
