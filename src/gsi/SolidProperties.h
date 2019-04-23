@@ -49,10 +49,10 @@ struct DataSolidProperties
 class SolidProperties
 {
 public:
-	/**
-	 * Structure containg the information needed by the SolidProperties
+    /**
+     * Structure containg the information needed by the SolidProperties
      * classes.
-	 */
+     */
     typedef const DataSolidProperties& ARGS;
 
 //==============================================================================
