@@ -56,12 +56,14 @@ public:
     typedef const DataSolidProperties& ARGS;
 
 //==============================================================================
+
     /**
      * Returns name of this type.
 	 */
 	static std::string typeName() { return "SolidProperties"; }
 
 //==============================================================================
+
     /**
      * Default Constructor.
      */
@@ -81,6 +83,7 @@ public:
      * between the virgin material density and the surface density minus 1.
      */
     virtual double getPhiRatio() const { return 1.; }
+
 //==============================================================================
 
     /**

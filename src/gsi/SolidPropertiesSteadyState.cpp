@@ -47,12 +47,12 @@ public:
           m_phi(1.),
           m_h_v(0.)
     {
-            if (args.s_node_solid_props.tag() == "solid_properties") {
-                args.s_node_solid_props.getAttribute(
-                    "virgin_to_surf_density_ratio", m_phi, 1.);
-                args.s_node_solid_props.getAttribute(
-                    "enthalpy_virgin", m_h_v, 0.);
-            }
+        if (args.s_node_solid_props.tag() == "solid_properties") {
+            args.s_node_solid_props.getAttribute(
+                "virgin_to_surf_density_ratio", m_phi, 1.);
+            args.s_node_solid_props.getAttribute(
+                "enthalpy_virgin", m_h_v, 0.);
+        }
     }
 
 //==============================================================================
@@ -62,13 +62,15 @@ public:
      */
     ~SolidPropertiesSteadyState(){}
 
+//==============================================================================
     /**
-     * Return the parameter phi defined as the ration between the virgin
+     * Returns parameter phi defined as the ration between the virgin
      * material density and the surface density minus 1. It is need for the
      * steady state conduction and pyrolysis cases. If it is undefined its
      * value is aytomatically set equal to one.
      */
     double getPhiRatio() const { return 1.; }
+
 //==============================================================================
 
     /**

@@ -59,11 +59,12 @@ public:
         const Mutation::Utilities::IO::XmlElement& node_rate_law =
             *(args.s_iter_reaction->begin());
 
-        DataGSIRateLaw data_gsi_rate_law = { args.s_thermo,
-                                             args.s_transport,
-                                             node_rate_law,
-                                             m_reactants,
-                                             m_products };
+        DataGSIRateLaw data_gsi_rate_law = {
+            args.s_thermo,
+            args.s_transport,
+            node_rate_law,
+            m_reactants,
+            m_products };
 
         mp_rate_law = Factory<GSIRateLaw>::create(
             node_rate_law.tag(), data_gsi_rate_law);

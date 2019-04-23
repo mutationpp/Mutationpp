@@ -69,6 +69,7 @@ public:
 	 */
     typedef const DataGSIReaction& ARGS;
 
+//==============================================================================
     /*
      * Constructor of the abstract base class, taking as input a structure
      * of type DataGSIReaction
@@ -80,28 +81,33 @@ public:
 	/// Returns name of this type.
 	static std::string typeName() { return "GSIReaction"; }
 
+//==============================================================================
     /**
      * Destructor
      */
     virtual ~GSIReaction(){}
 
+//==============================================================================
     /**
      * Returns pointer to the rate law object associated with this reaction.
      */
     GSIRateLaw* getRateLaw() const { return mp_rate_law; }
 
+//==============================================================================
     /**
      * Returns a constant reference to the vector of the reactants in this
      * reactions
      */
     const std::vector<int>& getReactants() const { return m_reactants; }
 
+//==============================================================================
     /**
      * Returns a constant reference to the vector of the products in this
      * reactions
      */
     const std::vector<int>& getProducts() const { return m_products; }
 
+//==============================================================================
 protected:
     std::string m_formula;
     std::vector<int> m_reactants;
@@ -112,12 +118,14 @@ protected:
 
     GSIRateLaw* mp_rate_law;
 
+//==============================================================================
     /**
      * Error function if no reaction formula has been provided.
      */
     inline const char* errorNoFormulainReaction() const {
     	return "No formula specified with reaction!"; }
 
+//==============================================================================
     /**
      * Determines the reactants and products of a heterogeneous reaction
      * given the reaction formula.  The formula should be in the form
@@ -136,11 +144,12 @@ protected:
         splitFormulainReactantsProducts(reactants, products, node_reaction);
 
         parseSpecies(m_reactants, m_reactants_surf,
-                     reactants, node_reaction, thermo, surf_state);
+            reactants, node_reaction, thermo, surf_state);
         parseSpecies(m_products, m_products_surf,
-                     products, node_reaction, thermo, surf_state);
+            products, node_reaction, thermo, surf_state);
     }
 
+//==============================================================================
     /**
      * Splits reaction formula string from the XmlElement in a string of
      * reactants and products in order for them to be parsed into species.
@@ -161,6 +170,7 @@ protected:
                                                    - pos_equal - 1);
     }
 
+//==============================================================================
     /**
      * Purely virtual class which fills a list of strings with the species
      * names of the species in a reaction formula with the format

@@ -2,7 +2,7 @@
  * @file GSIRateManagerPhenomenological.cpp
  *
  * @brief Class which computes the chemical production rate for each species
- *        based on ehenomenological models for catalysis and ablation.
+ *        based on phenomenological models for catalysis and ablation.
  */
 
 /*

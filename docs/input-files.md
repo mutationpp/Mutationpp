@@ -969,7 +969,7 @@ for a chemically reacting gas, the conservation equations on the
 interface have to be written. In general, this idea can be applied for several
 different categories of interfaces with different phases and materials on each
 side. Since this Mutation++ module emphases on gas-surface interaction it is limited
-to having gas on one side (underscore g) and a catalytic or ablative solid or liquid 
+to having gas on one side (underscore g) and a catalytic or ablative solid or liquid
 on the other (underscore b). The surface is not simulated, but approximately modeled.
 In most of the cases it can be considered
 impermeable, or simplistically porous for pyrolysis gases. The interface
@@ -998,11 +998,12 @@ sections.
 ### Surface Chemical Production Terms
 <a id="surf_chem"></a>
 
-Below the input file when a single catalytic reactions is considered
-modeled with the gamma &#947; model with reaction probability equal to 1.
+Below the input file when a single catalytic reaction is presented.
+Only the recombination of atomic into molecular oxygen is considered
+modeled with the gamma &#947; model, with reaction probability equal to 1.
 
 ```xml
-<gsi gsi_mechanism = "gamma">
+<gsi gsi_mechanism = "phenomenological_mass">
 
     <surface_properties type = "none" >
     </surface_properties>
@@ -1053,7 +1054,7 @@ F_imp = n_A (k_B T / 2 &#960; m_A)^(1/2)
 
 according to the kinetic theory of gases.
 
-Initially, the gamma model was developed to describe homonuclear reactions, 
+Initially, the gamma model was developed to describe homonuclear reactions,
 such as the one presented in above.
 Soon, though, it was observed that heteronuclear reactions were also probable
 to occur at the wall, which can take the form of
@@ -1077,8 +1078,8 @@ flux of A atoms and the opposite. In practice the two recombination number fluxe
 determines which of the two gammas is chosen.
 
 These gamma coefficients cannot take arbitrary values, they should be limited between 0 and 1,
-just like in the homonuclear case. When extra catalytic reactions are added, 
-such as A + A -> A2 and B + B -> B2 the gammas should be further constrained 
+just like in the homonuclear case. When extra catalytic reactions are added,
+such as A + A -> A2 and B + B -> B2 the gammas should be further constrained
 as 0 &#60; &#947;_A + &#947;_AB &#60; 1 and 0 &#60; &#947;_B + &#947;_BA &#60; 1
 in order for mass to be conserved. This approach is consistent with similar approaches
 considering the catalytic recombination occurring in Martian atmospheres, where O can recombine
@@ -1087,7 +1088,7 @@ into both O2 and CO2 due to catalytic reactions.
 An example input file of catalytic reactions in air including the formation of NO can be seen below.
 
 ```xml
-<gsi gsi_mechanism = "gamma">
+<gsi gsi_mechanism = "phenomenological_mass">
 
     <surface_properties type = "none" >
     </surface_properties>
@@ -1118,7 +1119,7 @@ The following example shows how to impose full ion recombination in
 Mutation.
 
 ```xml
-<gsi gsi_mechanism = "gamma">
+<gsi gsi_mechanism = "phenomenological_mass">
 
     <surface_properties type = "none" >
     </surface_properties>
@@ -1162,7 +1163,7 @@ Mutation.
 ```
 An example of ablation model can be seen below.
 ```xml
-<gsi gsi_mechanism = "gamma">
+<gsi gsi_mechanism = "phenomenological_mass">
 
     <surface_properties type = "ablation" >
         <surface label="b" species="C" />
@@ -1339,7 +1340,7 @@ enthalpy h_s is an input to the code, as an attribute to the surface_properties 
 
 An example input file for solving both mass and energy balance can be seen below.
 ```xml
-<gsi gsi_mechanism = "gamma_energy">
+<gsi gsi_mechanism = "phenomenological_mass_energy">
 
     <surface_properties type = "ablation" >
         <surface label="b" species="C"
