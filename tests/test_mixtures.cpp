@@ -164,7 +164,7 @@ private:
 void checkLoadMixture(
     const std::string& mix_name, int ns, int ne, int nr)
 {
-    std::auto_ptr<Mixture> mix;
+    std::unique_ptr<Mixture> mix;
     CHECK_NOTHROW(mix.reset(new Mixture(mix_name)));
 
     CHECK(mix->nSpecies() == ns);
