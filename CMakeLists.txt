@@ -27,18 +27,15 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
+cmake_minimum_required(VERSION 3.5)
+cmake_policy(SET CMP0048 NEW)
+set(CMAKE_CXX_STANDARD 11)
 
-cmake_minimum_required(VERSION 2.6)
-project(mutation++)
-
-set(MUTATIONPP_MAJOR_VERSION 0)
-set(MUTATIONPP_MINOR_VERSION 3)
-set(MUTATIONPP_PATCH_VERSION 0)
-set(MUTATIONPP_VERSION 
-    "${MUTATIONPP_MAJOR_VERSION}."
-    "${MUTATIONPP_MINOR_VERSION}."
-    ${MUTATIONPP_PATCH_VERSION}
+project(mutation++
+    VERSION 0.3.0
+    LANGUAGES CXX
 )
+
 
 # Add include path for cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
