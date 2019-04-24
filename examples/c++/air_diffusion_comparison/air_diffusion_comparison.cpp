@@ -14,11 +14,11 @@ int main()
     // Generate the default options for the air11 mixture
     MixtureOptions opts("air_5");
     opts.setStateModel("EquilTP");
-    
+
     // Change from default thermodynamic database (RRHO) to NASA 9-coefficient
     // polynomial database
     opts.setThermodynamicDatabase("RRHO");
-    
+
     // Load the mixture with the new options
     Mixture mix(opts);
     int ns = mix.nSpecies();
@@ -33,7 +33,7 @@ int main()
 
     double E_field = 0.E0;
 
-    // Loop over range of temperatures and compute equilibrium values at 1 atm    
+    // Loop over range of temperatures and compute equilibrium values at 1 atm
     double P = ONEATM;
     double T;
     double rho;
@@ -45,7 +45,7 @@ int main()
     for (int k = 0; k < 250; ++k) {
         // Compute the temperature
         T = 200.0 + static_cast<double>(k) * 200.0;
-        
+
         // Set the mixture state equal to the equilibrium state for the given
         // temperature and pressure
         mix.setState(&T, &P);
@@ -75,6 +75,6 @@ int main()
         std::cout << std::endl;
 
     } // Loop over temperatures
- 
+
     return 0;
 }
