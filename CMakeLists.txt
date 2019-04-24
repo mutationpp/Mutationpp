@@ -185,8 +185,7 @@ endif()
 ###############################################################################
 
 # Eigen
-find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS})
+find_package(Eigen3)
 
 
 ###############################################################################
@@ -257,13 +256,12 @@ install(EXPORT mutation++Targets DESTINATION
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 
 if (ENABLE_TESTING OR ENABLE_COVERAGE)
-    # Look for Catch2
-    find_package(Catch2 REQUIRED)
+    find_package(Catch2)
     enable_testing()
     add_subdirectory(tests)
     add_subdirectory(examples)
+endif()
 
-endif(ENABLE_TESTING OR ${CMAKE_BUILD_TYPE} MATCHES "Coverage")
 
 list(APPEND LCOV_REMOVE_PATTERNS 
     "/usr/*"

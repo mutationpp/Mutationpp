@@ -29,7 +29,7 @@
 #ifndef SOLID_PROPERTIES_H
 #define SOLID_PROPERTIES_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
 

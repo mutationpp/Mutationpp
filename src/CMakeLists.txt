@@ -83,6 +83,10 @@ endif()
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
+target_link_libraries(mutation++ 
+    PUBLIC
+        Eigen3::Eigen
+)
 add_coverage(mutation++)
 
 # Install the library

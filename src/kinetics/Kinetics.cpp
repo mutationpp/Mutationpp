@@ -29,7 +29,7 @@
 #include "Constants.h"
 #include "Utilities.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace std;
 using namespace Eigen;

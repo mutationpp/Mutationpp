@@ -27,7 +27,7 @@
  */
 
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 #include "Thermodynamics.h"
 #include "Utilities.h"

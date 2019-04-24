@@ -39,7 +39,10 @@ add_headers(mutation++
 set(mutation++_exes checkmix mppequil bprime)
 foreach (exe ${mutation++_exes})
     add_executable(${exe} ${exe}.cpp)
-    target_link_libraries(${exe} mutation++)
+    target_link_libraries(${exe} 
+        PRIVATE
+            mutation++
+    )
     install(
         TARGETS ${exe}
         EXPORT mutation++Targets

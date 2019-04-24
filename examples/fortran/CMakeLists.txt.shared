@@ -1,13 +1,19 @@
-cmake_minimum_required(VERSION 2.6)
+# Symlink this CMakeLists.txt.shared to CMakeLists.txt of each example in order
+# to allow the compiling of each example singularly
+cmake_minimum_required(VERSION 3.0)
 
-project(${CMAKE_SOURCE_DIR})
+get_filename_component(example_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-# Let's require mutation++. It should export a suitable config that also
-# exports include directories for Eigen
-find_package(mutation++ REQUIRED)
+project(${example_name})
 
-include(${mutation++_USE_FILE})
+add_executable(${example_name} ${example_name}.cpp)
 
-add_executable(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}.f90)
-target_link_libraries(${PROJECT_NAME} mutation++_fortran)
+# Let's require mutation++
+find_package(mutation++ REQUIRED CONFIG)
+target_link_libraries(${example_name} 
+    PRIVATE
+        mutation++
+        ${SUPPORTED_ADDITIONAL_LIBS}
+)
+target_compile_options(${example_name} PUBLIC ${SUPPORTED_ADDITIONAL_FLAGS})
 

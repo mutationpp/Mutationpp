@@ -20,7 +20,7 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
+#include <catch.hpp>
 
 using namespace Mutation;
 using namespace Mutation::Kinetics;
