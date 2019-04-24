@@ -191,18 +191,10 @@ include_directories(${Eigen_INCLUDE_DIRS})
 
 ###############################################################################
 # Source code
-<<<<<<< HEAD
 ################################################################################
 option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
 find_package(codecov)
 
-=======
-###############################################################################
-<<<<<<< HEAD
->>>>>>> WIP
-=======
-
->>>>>>> Add exporting of Configuration File
 # Descend into the src directory to build all targets and libraries
 include_directories(
     ${CMAKE_SOURCE_DIR}/install/include
