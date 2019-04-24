@@ -55,8 +55,6 @@ if (NOT Eigen3_FOUND)
         PATH_SUFFIXES eigen3 Eigen eigen Eigen3
     )
 
-    message(${Eigen3_INCLUDE_DIR})
-
     if (Eigen3_INCLUDE_DIR)
         # We found the include dir, we add it to the standard variable
         # ${<library>_INCLUDE_DIRS}
