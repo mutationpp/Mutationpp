@@ -12,21 +12,25 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
 
-build_script: &build_script
+build_debug: &build_debug
     script: 
       - cd build-debug
       - make -j2 install
       - ctest -j2
-      - cd ../build-release
+
+build_release: &build_release
+    script: 
+      - cd build-release
       - make -j2 install
       - ctest -j2
 
 build: &build
     stage: build
     before_script:
-      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
-      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
-    <<: *build_script
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+    <<: *build_debug
+    <<: *build_release
 
 install: 
   - export MPP_DIRECTORY=$PWD
@@ -126,8 +130,8 @@ jobs:
       env: COMPILER='g++-7' COVERAGE=1
       stage: coverage
       before_script:
-        - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE-DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
-      <<: *build_script
+          - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE=TRUE -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      <<: *build_debug
       after_script:
         - make coverage
         - bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
