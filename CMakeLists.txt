@@ -194,11 +194,11 @@ find_package(Eigen3)
 ################################################################################
 option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
 list(APPEND LCOV_REMOVE_PATTERNS 
-    "/usr/*"
-    "*/tests/*"
-    "*/install/*"
-    "*/examples/*"
-    "*/thirdparty/*"
+    "'/usr/*'"
+    "'*/tests/*'"
+    "'*/install/*'"
+    "'*/examples/*'"
+    "'*/thirdparty/*'"
 )
 include(CodeCoverage)
 
