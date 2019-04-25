@@ -83,6 +83,18 @@ endif()
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
+target_include_directories(mutation++
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/general>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kinetics>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/numerics>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/thermo>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/transfer>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/transport>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utilities>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gsi>
+        $<INSTALL_INTERFACE:include/mutation++>
+)
 target_link_libraries(mutation++ 
     PUBLIC
         Eigen3::Eigen

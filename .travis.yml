@@ -105,8 +105,7 @@ script:
   - ctest -j2
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
-      make gcov
-      make lcov
+      make coverage
       bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
     fi
   - cd ../build-release

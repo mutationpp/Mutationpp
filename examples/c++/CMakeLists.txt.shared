@@ -13,8 +13,9 @@ if (NOT mutation++_FOUND)
 endif()
 
 add_executable(${example_name} ${example_name}.cpp)
-target_link_libraries(${example_name} 
+target_link_libraries(${example_name}
     PRIVATE
         mutation++
 )
+add_coverage(${example_name})
 

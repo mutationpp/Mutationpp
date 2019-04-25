@@ -193,21 +193,16 @@ find_package(Eigen3)
 # Source code
 ################################################################################
 option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
-find_package(codecov)
+list(APPEND LCOV_REMOVE_PATTERNS 
+    "/usr/*"
+    "*/tests/*"
+    "*/install/*"
+    "*/examples/*"
+    "*/thirdparty/*"
+)
+include(CodeCoverage)
 
 # Descend into the src directory to build all targets and libraries
-include_directories(
-    ${CMAKE_SOURCE_DIR}/install/include
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/general
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/kinetics
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/numerics
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/thermo
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/transfer
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/transport
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/gsi
-)
 add_subdirectory(src)
 
 ###############################################################################
@@ -264,10 +259,3 @@ if (ENABLE_TESTING OR ENABLE_COVERAGE)
 endif()
 
 
-list(APPEND LCOV_REMOVE_PATTERNS 
-    "/usr/*"
-    "'${PROJECT_SOURCE_DIR}/tests/*'"
-    "'${PROJECT_SOURCE_DIR}/install/*'"
-    "'${PROJECT_SOURCE_DIR}/thirdparty/*'"
-)
-coverage_evaluate()
