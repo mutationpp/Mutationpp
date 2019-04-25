@@ -17,5 +17,3 @@ target_link_libraries(${example_name}
     PRIVATE
         mutation++
 )
-add_coverage(${example_name})
-
