@@ -17,7 +17,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-4.0']
+          packages: ['clang-4.0', 'coreutils']
       env: COMPILER='clang++-4.0'
 
     - os: linux
@@ -25,7 +25,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-5.0']
+          packages: ['clang-5.0', 'coreutils']
       env: COMPILER='clang++-5.0'
     
     - os: linux
@@ -33,7 +33,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-6.0']
+          packages: ['clang-6.0', 'coreutils']
       env: COMPILER='clang++-6.0'
     
     # Linux / GCC builds
@@ -42,7 +42,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-4.9']
+          packages: ['g++-4.9', 'coreutils']
       env: COMPILER='g++-4.9'
 
     - os: linux
@@ -50,7 +50,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-5']
+          packages: ['g++-5', 'coreutils']
       env: COMPILER='g++-5'
     
     - os: linux
@@ -58,7 +58,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-6']
+          packages: ['g++-6', 'coreutils']
       env: COMPILER='g++-6'
     
     # OSX / Clang Builds
@@ -83,7 +83,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['lcov', 'g++-7']
+          packages: ['lcov', 'g++-7', 'coreutils']
       env: COMPILER='g++-7' COVERAGE=1
 
 
