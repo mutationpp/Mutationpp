@@ -95,8 +95,8 @@ install:
   - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
 
 before_script:
-  - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE={COVERAGE} -DCMAKE_INSTALL_PREFIX=$(realpath ../install)
-  - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$(realpath ../install)
+  - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE={COVERAGE} -DCMAKE_INSTALL_PREFIX=$(realpath -m ../install)
+  - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$(realpath -m ../install)
 
 
 script: 
