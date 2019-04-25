@@ -65,7 +65,3 @@ ParseAndAddCatchTests(run_tests)
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
-
-# Setup the code coverage analysis for tests
-add_coverage(run_tests)
-
