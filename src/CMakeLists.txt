@@ -99,7 +99,11 @@ target_link_libraries(mutation++
     PUBLIC
         Eigen3::Eigen
 )
-add_coverage(mutation++)
+
+# Evaluate coverage
+if(ENABLE_COVERAGE)
+    add_coverage(mutation++)
+endif()
 
 # Install the library
 install(

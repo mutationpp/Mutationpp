@@ -38,11 +38,9 @@ endif()
 
 function (add_coverage TNAME)
 	# only add coverage for target, if coverage is support and enabled.
-	if (ENABLE_COVERAGE)
-		foreach (TNAME ${ARGV})
-			add_coverage_target(${TNAME})
-		endforeach ()
-	endif ()
+    foreach (TNAME ${ARGV})
+        add_coverage_target(${TNAME})
+    endforeach ()
 endfunction (add_coverage)
 
 

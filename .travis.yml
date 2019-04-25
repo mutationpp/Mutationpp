@@ -1,5 +1,9 @@
 language: cpp
 
+stages:
+  - build
+  - coverage
+
 common_sources: &all_sources
   - ubuntu-toolchain-r-test
   - llvm-toolchain-trusty
@@ -8,9 +12,28 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
 
-matrix:
-  include:
+build: &build
+    stage: build
+    before_script:
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
+    script: &build_script
+      - cd build-debug
+      - make -j2 install
+      - ctest -j2
+      - cd ../build-release
+      - make -j2 install
+      - ctest -j2
 
+install: 
+  - export MPP_DIRECTORY=$PWD
+  - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
+  - export PATH=$MPP_DIRECTORY/install/bin:$PATH
+  - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
+  - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
+
+jobs:
+  include:
     # Linux / Clang builds
     - os: linux
       compiler: clang
@@ -19,6 +42,8 @@ matrix:
           sources: *all_sources
           packages: ['clang-4.0']
       env: COMPILER='clang++-4.0'
+      <<: *build
+
 
     - os: linux
       compiler: clang
@@ -27,6 +52,7 @@ matrix:
           sources: *all_sources
           packages: ['clang-5.0']
       env: COMPILER='clang++-5.0'
+      <<: *build
     
     - os: linux
       compiler: clang
@@ -35,6 +61,9 @@ matrix:
           sources: *all_sources
           packages: ['clang-6.0']
       env: COMPILER='clang++-6.0'
+      <<: *build
+
+
     
     # Linux / GCC builds
     - os: linux
@@ -44,6 +73,8 @@ matrix:
           sources: *all_sources
           packages: ['g++-4.9']
       env: COMPILER='g++-4.9'
+      <<: *build
+
 
     - os: linux
       compiler: gcc
@@ -52,6 +83,7 @@ matrix:
           sources: *all_sources
           packages: ['g++-5']
       env: COMPILER='g++-5'
+      <<: *build
     
     - os: linux
       compiler: gcc
@@ -60,22 +92,26 @@ matrix:
           sources: *all_sources
           packages: ['g++-6']
       env: COMPILER='g++-6'
+      <<: *build
     
     # OSX / Clang Builds
     - os: osx
       osx_image: xcode7.3
       compiler: clang
       env: COMPILER='clang++'
+      <<: *build
     
     - os: osx
       osx_image: xcode8
       compiler: clang
       env: COMPILER='clang++'
+      <<: *build
     
     - os: osx
       osx_image: xcode9.1
       compiler: clang
       env: COMPILER='clang++'
+      <<: *build
     
     # Code coverage
     - os: linux
@@ -85,29 +121,10 @@ matrix:
           sources: *all_sources
           packages: ['lcov', 'g++-7']
       env: COMPILER='g++-7' COVERAGE=1
-
-
-install: 
-  - export MPP_DIRECTORY=$PWD
-  - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
-  - export PATH=$MPP_DIRECTORY/install/bin:$PATH
-  - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
-  - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
-
-before_script:
-  - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE={COVERAGE} -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
-  - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
-
-
-script: 
-  - cd build-debug
-  - make -j2 install
-  - ctest -j2
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
-      make coverage
-      bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
-    fi
-  - cd ../build-release
-  - make -j2 install
-  - ctest -j2
+      stage: coverage
+      before_script:
+        - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE-DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY
+      script:
+          <<: *build_script
+          - make coverage
+          - bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
