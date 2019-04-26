@@ -60,21 +60,21 @@ make -j N install
 ```
 
 where `N` is the number of CPU units to use for the build process (e.g. 4).
-This cmake command will install `mutation++` into a directory named `instal` in
+This cmake command will install `mutation++` into a directory named `install` in
 the root directory of the git repository (i.e. the directory that contains the
 file `README.md`). 
 You're free to choose whatever path works better for you.
 
 ## Test
-A simply way to check that the installation process was successful is to try
+A simple way to check that the installation process was successful is to try
 the [checkmix](checkmix.md#top) command. For a deeper description of the test
 suite check [Testing](testing.md)
 
 ```
-checkmix air11
+checkmix air_11
 ```
 
-This should print information about the species and reactions in the air11
+This should print information about the species and reactions in the air_11
 mixture.  You can also now use the [mppequil](mppequil.md#top) program for
 calculating equilibrium properties of a given mixture.  For more information
 about `mppequil`, simply type
