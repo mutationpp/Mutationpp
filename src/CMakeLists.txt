@@ -83,6 +83,7 @@ endif()
 
 get_property(mutation++_SRCS GLOBAL PROPERTY mutation++_SRCS)
 add_library(mutation++ SHARED ${mutation++_SRCS})
+add_library(mutation++::mutation++ ALIAS mutation++)
 target_include_directories(mutation++
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/general>
@@ -105,16 +106,43 @@ if(ENABLE_COVERAGE)
     add_coverage(mutation++)
 endif()
 
-# Install the library
-install(
-    TARGETS mutation++ 
-    EXPORT mutation++Targets
-    RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-    LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib)
+# Install and export targets
+include(GNUInstallDirs)
+install(TARGETS mutation++ EXPORT mutation++Targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
-# Install the headers
-get_property(mutation++_HDRS GLOBAL PROPERTY mutation++_HDRS)
-install(FILES ${mutation++_HDRS}
-    DESTINATION "${INSTALL_INCLUDE_DIR}"
-    COMPONENT dev
+install(EXPORT mutation++Targets
+    FILE        mutation++Targets.cmake
+    NAMESPACE   mutation++::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mutation++"
+)
+
+# Version configuration file
+include(CMakePackageConfigHelpers)
+
+# This actually does nothing since we do not have anything fancy or 
+# replaceable in `mutation++Config.cmake.in`. But here to comply with 
+# standard practices (and also to copy the config file in the 
+# CMAKE_CURRENT_BINARY_DIR)
+configure_package_config_file(
+    "mutation++Config.cmake.in"
+    "mutation++Config.cmake"
+    INSTALL_DESTINATION 
+        ${CMAKE_INSTALL_LIBDIR}/cmake/mutation++
+)
+
+
+write_basic_package_version_file("mutation++ConfigVersion.cmake"
+    VERSION ${mutation++_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES 
+    "${CMAKE_CURRENT_BINARY_DIR}/mutation++Config.cmake" 
+    "${CMAKE_CURRENT_BINARY_DIR}/mutation++ConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mutation++
 )

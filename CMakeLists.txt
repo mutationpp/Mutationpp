@@ -206,47 +206,6 @@ include(CodeCoverage)
 add_subdirectory(src)
 
 ###############################################################################
-# Exporting configuration files to be used by other projects that need 
-# mutation++
-###############################################################################
-
-# Create the configure file adding the correct paths
-# tutorials/How-to-create-a-ProjectConfig.cmake-file 
-file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
-   "${INSTALL_INCLUDE_DIR}")
-
-# ... for the build tree
-set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
-configure_file(mutation++Config.cmake.in
-  "${PROJECT_BINARY_DIR}/mutation++Config.cmake" @ONLY)
-
-
-# ... for the install tree
-set(CONF_INCLUDE_DIRS "\${MUTATIONPP_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-configure_file(mutation++Config.cmake.in
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mutation++Config.cmake" @ONLY)
-
-# ... for both
-configure_file(mutation++ConfigVersion.cmake.in
-  "${PROJECT_BINARY_DIR}/mutation++ConfigVersion.cmake" @ONLY)
-
-# Install the mutation++Config.cmake and mutation++ConfigVersion.cmake
-install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mutation++Config.cmake"
-  "${PROJECT_BINARY_DIR}/mutation++ConfigVersion.cmake"
-  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
-
-
-# Export targets to be used by projects that will use mutation++
-export(TARGETS mutation++ ${mutation_exes} FILE 
-    "${PROJECT_BINARY_DIR}/mutation++Targets.cmake")
-
-# Install the export set for use with the install-tree
-install(EXPORT mutation++Targets DESTINATION
-  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
-
-
-###############################################################################
 # CTest
 ################################################################################
 option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
