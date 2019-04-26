@@ -35,10 +35,8 @@ using namespace Eigen;
  * This test makes sure that you can go from one to the other and get the same
  * result.
  */
-TEST_CASE
-(
-    "setState() converts rho*Em to Tm and vice a versa",
-    "[thermodynamics]"
+TEST_CASE("setState converts rho*Em to Tm and vice a versa",
+        "[thermodynamics]"
 )
 {
     const int e_var_set = 0;

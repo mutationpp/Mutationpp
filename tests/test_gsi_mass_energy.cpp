@@ -29,11 +29,7 @@ using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Solution of the MassEnergyBalanceSolver is converged.",
-    "[gsi]"
-)
+TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
 {
     const double tol = std::numeric_limits<double>::epsilon();
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);

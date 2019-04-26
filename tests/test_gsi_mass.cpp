@@ -29,9 +29,7 @@ using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Solution of the MassBalanceSolver is converged.",
+TEST_CASE("Solution of the MassBalanceSolver is converged.",
     "[gsi]"
 )
 {

@@ -36,9 +36,7 @@ using namespace Eigen;
  * \f]
  * in and out of thermal equilibrium.
  */
-TEST_CASE
-(
-    "Thermal diffusion ratios sum to zero",
+TEST_CASE("Thermal diffusion ratios sum to zero",
     "[transport]"
 )
 {

@@ -50,24 +50,20 @@ void checkArrheniusRate(
     for (int i = 0; i < 10; ++i) {
         double T = i * 1000.0 + 1000.0;
         double k = A * std::pow(T, n) * std::exp(-theta / T);
-        
+
         CHECK( rate.getLnRate(std::log(T), 1.0/T) == Approx(std::log(k)) );
 
         CHECK(
-            rate.derivative(k, std::log(T), 1.0/T) == 
+            rate.derivative(k, std::log(T), 1.0/T) ==
             Approx(k * (n + theta / T) / T)
         );
-    }    
+    }
 }
 
 /**
  * Tests if the Arrhenius rate law works correctly.
  */
-TEST_CASE
-(
-    "Arrhenius rate laws work correctly",
-    "[kinetics]"
-)
+TEST_CASE("Arrhenius rate laws work correctly", "[kinetics]")
 {
     // Check that the rate is calculated correctly
     for (int order = 1; order < 4; ++order) {

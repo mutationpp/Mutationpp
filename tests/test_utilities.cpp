@@ -54,11 +54,7 @@ void checkUnits(
 /**
  * Tests the basic functionality of the Units type.
  */
-TEST_CASE
-(
-    "Units",
-    "[utilities]"
-)
+TEST_CASE("Units", "[utilities]")
 {
     // Define the expected dimensions for different types of units
     Dimension length      = MatrixXd::Identity(7,7).col(0);

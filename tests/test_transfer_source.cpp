@@ -31,9 +31,7 @@ using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Energy transfer source terms are zero in equilibrium",
+TEST_CASE("Energy transfer source terms are zero in equilibrium",
     "[transfer]"
 )
 {

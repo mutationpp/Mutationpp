@@ -30,9 +30,7 @@ using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Sum of species energies equals mixture energies",
+TEST_CASE("Sum of species energies equals mixture energies",
     "[thermodynamics]"
 )
 {

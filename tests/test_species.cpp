@@ -34,11 +34,7 @@ using namespace Eigen;
 /**
  * Tests the SpeciesNameFSM::parse() method.
  */
-TEST_CASE
-(
-    "Parsing species name with SpeciesNameFSM",
-    "[thermodynamics]"
-)
+TEST_CASE("Parsing species name with SpeciesNameFSM", "[thermodynamics]")
 {
     SpeciesNameFSM sm;
 

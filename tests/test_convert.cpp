@@ -30,10 +30,8 @@ using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Converting thermodynamic properties of species and elements",
-    "[thermodynamic]"
+TEST_CASE("Converting thermodynamic properties of species and elements",
+        "[thermodynamic]"
 )
 {
     const double tol = std::numeric_limits<double>::epsilon();

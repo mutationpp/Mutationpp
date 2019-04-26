@@ -36,9 +36,7 @@ using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Equilibrium mole fractions derivatives sum to zero",
+TEST_CASE("Equilibrium mole fractions derivatives sum to zero",
     "[equilibrium][thermodynamics]"
 )
 {

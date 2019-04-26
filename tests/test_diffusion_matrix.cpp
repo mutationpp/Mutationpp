@@ -59,9 +59,7 @@ public:
  * \f]
  * where \f$\nabla T\f$ is chosen to make the maximum driving force equal to 1.
  */
-TEST_CASE
-(
-    "DiffusionMatrix yields diffusion fluxes which sum to zero",
+TEST_CASE("DiffusionMatrix yields diffusion fluxes which sum to zero",
     "[transport][DiffusionMatrix]"
 )
 {

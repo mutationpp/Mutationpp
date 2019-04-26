@@ -29,11 +29,7 @@ using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Surface chemical rates compared with analytical solution.",
-    "[gsi]"
-)
+TEST_CASE("Surface chemical rates compared with analytical solution.", "[gsi]")
 {
     const double tol = std::numeric_limits<double>::epsilon();
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);

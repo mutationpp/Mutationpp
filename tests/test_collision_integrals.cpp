@@ -57,11 +57,7 @@ void checkHeavyCollisionIntegrals(
 /**
  * Tests the constant collision integral type.
  */
-TEST_CASE
-(
-    "Test constant collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test constant collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     TemporaryFile file;
@@ -82,7 +78,7 @@ TEST_CASE
     CollisionPair pair(N2, N2, &(doc.root()));
 
     // Make sure that the warning would be displayed
-    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11"); 
+    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11");
     REQUIRE(Q11->loaded());
 
     // Check that indeed the value is given
@@ -512,14 +508,14 @@ TEST_CASE
     std::cout.rdbuf(oss.rdbuf());
 
     // Make sure that the warning would be displayed
-    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11"); 
+    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11");
     REQUIRE(Q11->loaded());
 
     // Restore standard output
     std::cout.rdbuf(cout_streambuf);
 
     // Check what was written
-    CHECK(oss.str() == 
+    CHECK(oss.str() ==
         "Warning: missing collision integral Q11_(N2,N2).  "
         "Using a constant value of 10.\n");
 

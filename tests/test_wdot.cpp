@@ -29,11 +29,7 @@ using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Species production rates sum to zero",
-    "[kinetics]"
-)
+TEST_CASE("Species production rates sum to zero", "[kinetics]")
 {
     const double tol = std::numeric_limits<double>::epsilon()*1000;
 

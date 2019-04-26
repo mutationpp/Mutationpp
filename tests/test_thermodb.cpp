@@ -33,11 +33,7 @@ using namespace Eigen;
 /**
  * Checks that species list descriptors are correctly parsed.
  */
-TEST_CASE
-(
-    "SpeciesListDescriptor tests",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("SpeciesListDescriptor tests", "[thermodynamics][loading]")
 {
     // Hard coded list of available species
     std::vector<Species> available;
@@ -238,7 +234,7 @@ TEST_CASE
 }
 
 /**
- * Checks that data is loaded correctly from the new NASA-9 thermodynamic 
+ * Checks that data is loaded correctly from the new NASA-9 thermodynamic
  * database.
  */
 TEST_CASE

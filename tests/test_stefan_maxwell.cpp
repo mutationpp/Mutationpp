@@ -29,9 +29,7 @@ using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "stefanMaxwell() yields diffusion fluxes which sum to zero",
+TEST_CASE("stefanMaxwell yields diffusion fluxes which sum to zero",
     "[transport]"
 )
 {
