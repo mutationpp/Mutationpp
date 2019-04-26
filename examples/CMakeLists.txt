@@ -21,7 +21,7 @@ cmake_minimum_required(VERSION 2.8.2)
 
 # Append the PROJECT_BINARY_DIR to CMAKE_PREFIX_PATH in order to be able to 
 # find the configuration files at build time
-list(APPEND CMAKE_PREFIX_PATH ${PROJECT_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${PROJECT_BINARY_DIR}/src)
 
 # c++ examples
 add_subdirectory(c++)

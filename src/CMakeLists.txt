@@ -19,8 +19,6 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 2.6)
-
 #- Add sources for a target
 #
 #  ADD_SOURCES(<target> <source1> [<source2> ...])
@@ -108,18 +106,6 @@ endif()
 
 # Install and export targets
 include(GNUInstallDirs)
-install(TARGETS mutation++ EXPORT mutation++Targets
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(EXPORT mutation++Targets
-    FILE        mutation++Targets.cmake
-    NAMESPACE   mutation++::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mutation++"
-)
 
 # Version configuration file
 include(CMakePackageConfigHelpers)
@@ -145,4 +131,24 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/mutation++Config.cmake" 
     "${CMAKE_CURRENT_BINARY_DIR}/mutation++ConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mutation++
+)
+
+
+install(TARGETS mutation++ EXPORT mutation++Targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+export(EXPORT mutation++Targets
+    FILE mutation++Targets.cmake
+    NAMESPACE mutation++::
+)
+
+install(EXPORT mutation++Targets
+    FILE        mutation++Targets.cmake
+    NAMESPACE   mutation++::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mutation++"
+    EXPORT_LINK_INTERFACE_LIBRARIES
 )

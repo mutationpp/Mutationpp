@@ -20,6 +20,7 @@
 #
 
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0022 NEW)
 
 add_sources(mutation++
     Mixture.cpp
@@ -43,10 +44,11 @@ foreach (exe ${mutation++_exes})
         PRIVATE
             mutation++
     )
-    install(
-        TARGETS ${exe}
-        EXPORT mutation++Targets
-        RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+#    install(
+#        TARGETS ${exe}
+#        EXPORT mutation++Targets
+#        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+#)
 endforeach(exe ${mutation++_exes})
 
 
