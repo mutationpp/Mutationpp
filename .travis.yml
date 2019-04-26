@@ -12,15 +12,18 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
 
-build_debug: &build_debug
+build_both: &build_both
     script: 
       - cd build-debug
       - make -j2 install
       - ctest -j2
+      - cd ../build-release
+      - make -j2 install
+      - ctest -j2
 
-build_release: &build_release
+build_release: &build_debug
     script: 
-      - cd build-release
+      - cd build-debug
       - make -j2 install
       - ctest -j2
 
@@ -29,8 +32,7 @@ build: &build
     before_script:
       - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
       - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
-    <<: *build_debug
-    <<: *build_release
+    <<: *build_both
 
 before_install:
     - eval "${MATRIX_EVAL}"
@@ -131,4 +133,4 @@ jobs:
       <<: *build_debug
       after_script:
         - make coverage
-        - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+        - bash <(curl -s https://codecov.io/bash) -f mutation++.info || echo "Codecov did not collect coverage reports"
