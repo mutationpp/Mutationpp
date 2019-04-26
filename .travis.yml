@@ -32,6 +32,9 @@ build: &build
     <<: *build_debug
     <<: *build_release
 
+before_install:
+    - eval "${MATRIX_EVAL}"
+
 install: 
   - export MPP_DIRECTORY=$PWD
   - export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
@@ -48,9 +51,8 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-4.0']
-      env: COMPILER='clang++-4.0'
+      env: MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
       <<: *build
-
 
     - os: linux
       compiler: clang
@@ -58,7 +60,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-5.0']
-      env: COMPILER='clang++-5.0'
+      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
       <<: *build
     
     - os: linux
@@ -67,10 +69,8 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-6.0']
-      env: COMPILER='clang++-6.0'
+      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
       <<: *build
-
-
     
     # Linux / GCC builds
     - os: linux
@@ -79,7 +79,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-4.9']
-      env: COMPILER='g++-4.9'
+      env: MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
       <<: *build
 
 
@@ -89,7 +89,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-5']
-      env: COMPILER='g++-5'
+      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       <<: *build
     
     - os: linux
@@ -98,26 +98,23 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-6']
-      env: COMPILER='g++-6'
+      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
       <<: *build
     
     # OSX / Clang Builds
     - os: osx
       osx_image: xcode7.3
       compiler: clang
-      env: COMPILER='clang++'
       <<: *build
     
     - os: osx
       osx_image: xcode8
       compiler: clang
-      env: COMPILER='clang++'
       <<: *build
     
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: COMPILER='clang++'
       <<: *build
     
     # Code coverage
@@ -127,7 +124,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['lcov', 'g++-7']
-      env: COMPILER='g++-7' COVERAGE=1
+      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       stage: coverage
       before_script:
           - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE=TRUE -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
