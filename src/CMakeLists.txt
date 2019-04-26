@@ -134,7 +134,7 @@ install(FILES
 )
 
 
-install(TARGETS mutation++ EXPORT mutation++Targets
+install(TARGETS mutation++ ${mutation_exes} EXPORT mutation++Targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}

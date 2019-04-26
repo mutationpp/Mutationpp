@@ -44,11 +44,11 @@ foreach (exe ${mutation++_exes})
         PRIVATE
             mutation++
     )
-#    install(
-#        TARGETS ${exe}
-#        EXPORT mutation++Targets
-#        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
-#)
+    install(
+        TARGETS ${exe}
+        EXPORT mutation++Targets
+        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+)
 endforeach(exe ${mutation++_exes})
 
 
