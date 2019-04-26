@@ -210,11 +210,7 @@ void checkThermoDBLoad(ThermoDB* db, int flags)
 /**
  * Checks that data is loaded correctly from the NASA-7 thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading NASA-7 thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading NASA-7 thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-7", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5 | MULTIPHASE);
@@ -223,11 +219,7 @@ TEST_CASE
 /**
  * Checks that data is loaded correctly from the NASA-9 thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading NASA-9 thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading NASA-9 thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-9", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5 | MULTIPHASE);
@@ -237,10 +229,8 @@ TEST_CASE
  * Checks that data is loaded correctly from the new NASA-9 thermodynamic
  * database.
  */
-TEST_CASE
-(
-    "Loading NASA-9-New thermodynamic database",
-    "[thermodynamics][loading]"
+TEST_CASE("Loading NASA-9-New thermodynamic database",
+        "[thermodynamics][loading]"
 )
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-9-New", 0);
@@ -250,11 +240,7 @@ TEST_CASE
 /**
  * Checks that data is loaded correctly from the RRHO thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading RRHO thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading RRHO thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("RRHO", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5);

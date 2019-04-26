@@ -63,11 +63,7 @@ TEST_CASE("Species production rates sum to zero", "[kinetics]")
 }
 
 
-TEST_CASE
-(
-    "Species production rates are zero in equilibrium",
-    "[kinetics]"
-)
+TEST_CASE("Species production rates are zero in equilibrium", "[kinetics]")
 {
     const double tol = std::numeric_limits<double>::epsilon()*1000;
 

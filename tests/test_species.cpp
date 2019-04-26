@@ -95,11 +95,7 @@ TEST_CASE("Parsing species name with SpeciesNameFSM", "[thermodynamics]")
  * Tests the initialization of Species objects using different constructors and
  * the assignment operator.
  */
-TEST_CASE
-(
-    "Initialization of Species objects",
-    "[thermodynamics]"
-)
+TEST_CASE("Initialization of Species objects", "[thermodynamics]")
 {
     const double mw_N = 0.0140067;
     const double mw_O = 0.0159994;

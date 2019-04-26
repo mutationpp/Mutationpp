@@ -130,11 +130,7 @@ TEST_CASE("Units", "[utilities]")
 /**
  * Tests for utility functions.
  */
-TEST_CASE
-(
-    "Utility functions",
-    "[utilities]"
-)
+TEST_CASE("Utility functions", "[utilities]")
 {
     SECTION("ordinalSuffix()") {
         CHECK(ordinalSuffix(  0) == "th");
@@ -178,11 +174,7 @@ TEST_CASE
 /**
  * Tests the XML classes
  */
-TEST_CASE
-(
-    "XML classes",
-    "[utilities]"
-)
+TEST_CASE("XML classes", "[utilities]")
 {
     TemporaryFile file;
     file << "<tag att=\"100\">\n"

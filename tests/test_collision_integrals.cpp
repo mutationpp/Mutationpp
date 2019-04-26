@@ -89,11 +89,7 @@ TEST_CASE("Test constant collision integrals", "[transport]")
 /**
  * Tests the exp-poly integral type.
  */
-TEST_CASE
-(
-    "Test exp-poly collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test exp-poly collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -138,11 +134,7 @@ TEST_CASE
 /**
  * Tests the "from A*,B*,C*" integral types.
  */
-TEST_CASE
-(
-    "Test from A*, B*, C* collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test from A*, B*, C* collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -193,11 +185,7 @@ TEST_CASE
 /**
  * Tests the ratio integral type.
  */
-TEST_CASE
-(
-    "Test ratio collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test ratio collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -239,11 +227,7 @@ TEST_CASE
 /**
  * Tests the Murphy integral type.
  */
-TEST_CASE
-(
-    "Test Murphy collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test Murphy collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -294,11 +278,7 @@ TEST_CASE
 /**
  * Tests the Pirani potential.
  */
-TEST_CASE
-(
-    "Test Pirani potential collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test Pirani potential collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     // From Laricchiuta2007
@@ -425,11 +405,7 @@ TEST_CASE
 /**
  * Tests the table collision integral type.
  */
-TEST_CASE
-(
-    "Test table collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test table collision integrals", "[transport]")
 {
     // Generate a fake collision integral database which tests clipping and
     // interpolation
@@ -478,11 +454,7 @@ TEST_CASE
 /**
  * Tests the warning collision integral type.
  */
-TEST_CASE
-(
-    "Test warning collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test warning collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     TemporaryFile file;

@@ -50,7 +50,7 @@ void checkReactionType(const std::string& formula, ReactionType type)
 
 void checkReactionType(
     const std::string& reactants,
-    const std::string& products, 
+    const std::string& products,
     ReactionType forward_type,
     ReactionType reverse_type)
 {
@@ -61,11 +61,7 @@ void checkReactionType(
 /**
  * Tests if supported reaction types are correctly identified.
  */
-TEST_CASE
-(
-    "Reaction types are correctly identified",
-    "[kinetics]"
-)
+TEST_CASE("Reaction types are correctly identified", "[kinetics]")
 {
     // ASSOCIATIVE_IONIZATION and DISSOCIATIVE_RECOMBINATION
     checkReactionType("N + O", "NO+ + e-", ASSOCIATIVE_IONIZATION, DISSOCIATIVE_RECOMBINATION);
@@ -73,7 +69,7 @@ TEST_CASE
 
     // ASSOCIATIVE_DETACHMENT and DISSOCIATIVE_ATTACHMENT
     checkReactionType("O- + O", "O2 + e-", ASSOCIATIVE_DETACHMENT, DISSOCIATIVE_ATTACHMENT);
-    
+
     // DISSOCIATION_E and RECOMBINATION_E
     checkReactionType("NO + e-", "N + O + e-", DISSOCIATION_E, RECOMBINATION_E);
     checkReactionType("N2 + e-", "2N + e-",    DISSOCIATION_E, RECOMBINATION_E);
@@ -87,14 +83,14 @@ TEST_CASE
     checkReactionType("N2 + N2", "4N",          DISSOCIATION_M, RECOMBINATION_M);
     checkReactionType("N2+ + M", "N+ + N + M",  DISSOCIATION_M, RECOMBINATION_M);
     checkReactionType("NO + O+", "N + O + O+",  DISSOCIATION_M, RECOMBINATION_M);
-    
+
     // ELECTRONIC_DETACHMENT_E and ELECTRONIC_ATTACHMENT_E
     checkReactionType("O + 2e-", "O- + e-", ELECTRONIC_ATTACHMENT_E, ELECTRONIC_DETACHMENT_E);
 
     // ELECTRONIC_DETACHMENT_M and ELECTRONIC_ATTACHMENT_M
     checkReactionType("O + e- + N", "O- + N", ELECTRONIC_ATTACHMENT_M, ELECTRONIC_DETACHMENT_M);
     checkReactionType("O + e- + M", "O- + M", ELECTRONIC_ATTACHMENT_M, ELECTRONIC_DETACHMENT_M);
-    
+
     // EXCHANGE
     checkReactionType("N2 + O2 = 2NO",   EXCHANGE);
     checkReactionType("NO + O = O2 + N", EXCHANGE);

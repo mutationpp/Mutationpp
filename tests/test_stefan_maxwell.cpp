@@ -60,9 +60,7 @@ TEST_CASE("stefanMaxwell yields diffusion fluxes which sum to zero",
     )
 }
 
-TEST_CASE
-(
-    "stefanMaxwell() yields zero net conduction current",
+TEST_CASE("stefanMaxwell yields zero net conduction current",
     "[transport]"
 )
 {
