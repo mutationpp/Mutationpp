@@ -7,7 +7,7 @@ version `0.3.0`, `CMake` exports a `mutation++Config.cmake` file together with
 the specific configuration files for the build type (e.g. `Release`, `Debug`)
 etc... that allows you to easily include the library into your own code if you
 also use `CMake` (ref: [`find_package(mutation++ CONFIG)`][1]). Our examples,
-that you can find in the `examples` directory, can be build indipendently from
+that you can find in the `examples` directory, can be built independently from
 `mutation++`. You can take inspiration from the `CMakeLists.txt` that you find
 in each example directory in order to require and use `mutation++` in your
 code. 
