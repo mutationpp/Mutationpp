@@ -33,7 +33,7 @@
 #include "Species.h"
 #include "XMLite.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <string>
 
 using namespace Mutation::Utilities;

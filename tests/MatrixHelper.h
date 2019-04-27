@@ -30,7 +30,7 @@
 
 #include <fstream>
 #include <string>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 /**
  * Reads a matrix in from a file.

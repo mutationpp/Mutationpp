@@ -28,14 +28,15 @@ add_sources(mutation++
     XMLite.cpp
 )
 
-install(FILES AutoRegistration.h DESTINATION include/mutation++)
-install(FILES IteratorWrapper.h DESTINATION include/mutation++)
-install(FILES LookupTable.h DESTINATION include/mutation++)
-install(FILES ReferenceServer.h DESTINATION include/mutation++)
-install(FILES SharedPtr.h DESTINATION include/mutation++)
-install(FILES StringUtils.h DESTINATION include/mutation++)
-install(FILES TemporaryFile.h DESTINATION include/mutation++)
-install(FILES Units.h DESTINATION include/mutation++)
-install(FILES Utilities.h DESTINATION include/mutation++)
-install(FILES XMLite.h DESTINATION include/mutation++)
-
+add_headers(mutation++
+    AutoRegistration.h
+    IteratorWrapper.h
+    LookupTable.h
+    ReferenceServer.h
+    SharedPtr.h
+    StringUtils.h
+    TemporaryFile.h
+    Units.h
+    Utilities.h
+    XMLite.h
+)

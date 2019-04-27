@@ -28,7 +28,7 @@
 #include "ThermoDB.h"
 #include "Utilities.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using namespace Eigen;
 
 #include <algorithm>

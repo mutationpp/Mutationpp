@@ -24,68 +24,44 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
-set(test_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_collision_integrals.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_convert.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_diffusion_matrix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_mass_energy.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_gsi_rates.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reactions.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_mechanism.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_rates.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_set_state.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_species.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_stefan_maxwell.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermal_diff_ratios.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermodb.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
+add_executable(run_tests 
+    run_tests.cpp
+    test_collision_integrals.cpp
+    test_comparisons.cpp
+    test_convert.cpp
+    test_diffusion_matrix.cpp
+    test_dXidT.cpp
+    test_energies.cpp
+    test_errors.cpp
+    test_gsi_mass.cpp
+    test_gsi_mass_energy.cpp
+    test_gsi_rates.cpp
+    test_mixtures.cpp
+    test_reactions.cpp
+    test_reaction_mechanism.cpp
+    test_reaction_rates.cpp
+    test_set_state.cpp
+    test_species.cpp
+    test_stefan_maxwell.cpp
+    test_thermal_diff_ratios.cpp
+    test_thermodb.cpp
+    test_transfer_source.cpp
+    test_utilities.cpp
+    test_wdot.cpp
+    test_levels.cpp
+)
+target_link_libraries(run_tests 
+    PRIVATE
+        mutation++
+    PUBLIC
+        Catch2::Catch2
 )
 
-add_executable(run_tests ${test_sources})
-target_link_libraries(run_tests mutation++)
-
 # Add all Catch TEST_CASEs as individual CTest tests
+include(CTest)
 include(ParseAndAddCatchTests)
+set(PARSE_CATCH_TESTS_VERBOSE ON)
 ParseAndAddCatchTests(run_tests)
-
-# Make sure examples compile and run
-function(test_example name subdir)
-    add_test(
-        NAME example_${name}_compile
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
-        COMMAND make -B ${name} )
-    add_test(
-        NAME example_${name}_run
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
-        COMMAND ${name} )
-    set_property(
-        TEST example_${name}_run 
-        APPEND PROPERTY DEPENDS example_${name}_compile)
-endfunction()
-
-# C++ examples
-test_example(equilibrium_air c++)
-test_example(O2_dissociation c++)
-test_example(air_diffusion_comparison c++)
-
-# Fortran examples
-if (BUILD_FORTRAN_WRAPPER)
-    test_example(wrapper_test fortran)
-endif()
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
-
-# Setup the code coverage analysis for tests
-add_coverage(run_tests)
-

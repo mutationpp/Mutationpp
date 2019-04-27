@@ -30,7 +30,7 @@
 #ifndef SURFACE_CHEMISTRY_H
 #define SURFACE_CHEMISTRY_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <string>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}

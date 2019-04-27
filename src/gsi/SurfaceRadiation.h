@@ -29,7 +29,7 @@
 #ifndef SURFACE_RADIATION_H
 #define SURFACE_RADIATION_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}

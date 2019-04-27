@@ -40,13 +40,15 @@ add_sources(mutation++
     ViscosityWilke.cpp
 )
 
-install(FILES CollisionDB.h DESTINATION include/mutation++)
-install(FILES CollisionGroup.h DESTINATION include/mutation++)
-install(FILES CollisionIntegral.h DESTINATION include/mutation++)
-install(FILES CollisionPair.h DESTINATION include/mutation++)
-install(FILES CoulombIntegrals.h DESTINATION include/mutation++)
-install(FILES DiffusionMatrix.h DESTINATION include/mutation++)
-install(FILES ElectronSubSystem.h DESTINATION include/mutation++)
-install(FILES ThermalConductivityAlgorithm.h DESTINATION include/mutation++)
-install(FILES ViscosityAlgorithm.h DESTINATION include/mutation++)
-install(FILES Transport.h DESTINATION include/mutation++)
+add_headers(mutation++
+    CollisionDB.h
+    CollisionGroup.h
+    CollisionIntegral.h
+    CollisionPair.h
+    CoulombIntegrals.h
+    DiffusionMatrix.h
+    ElectronSubSystem.h
+    ThermalConductivityAlgorithm.h
+    ViscosityAlgorithm.h
+    Transport.h
+)

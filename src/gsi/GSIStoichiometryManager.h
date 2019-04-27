@@ -29,7 +29,7 @@
 #ifndef GSI_STOICHIOMETRY_MANAGER_H
 #define GSI_STOICHIOMETRY_MANAGER_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace GasSurfaceInteraction {

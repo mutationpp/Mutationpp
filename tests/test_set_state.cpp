@@ -22,8 +22,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;
@@ -35,10 +35,8 @@ using namespace Eigen;
  * This test makes sure that you can go from one to the other and get the same
  * result.
  */
-TEST_CASE
-(
-    "setState() converts rho*Em to Tm and vice a versa",
-    "[thermodynamics]"
+TEST_CASE("setState converts rho*Em to Tm and vice a versa",
+        "[thermodynamics]"
 )
 {
     const int e_var_set = 0;
