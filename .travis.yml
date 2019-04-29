@@ -30,8 +30,15 @@ build_release: &build_debug
 build: &build
     stage: build
     before_script:
-      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
-      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DBUILD_FORTRAN_WRAPPER=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DBUILD_FORTRAN_WRAPPER=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+    <<: *build_both
+
+osx_build: &osx_build
+    stage: build
+    before_script:
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
     <<: *build_both
 
 before_install:
@@ -52,8 +59,11 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-4.0']
-      env: MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+          packages: ['clang-4.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-4.0
+        - CXX=clang++=4.0
+        - FC=gfortran
       <<: *build
 
     - os: linux
@@ -61,8 +71,11 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-5.0']
-      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+          packages: ['clang-5.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-5.0
+        - CXX=clang++=5.0
+        - FC=gfortran
       <<: *build
     
     - os: linux
@@ -70,8 +83,11 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['clang-6.0']
-      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
+          packages: ['clang-6.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-6.0
+        - CXX=clang++=6.0
+        - FC=gfortran
       <<: *build
     
     # Linux / GCC builds
@@ -80,8 +96,11 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-4.9']
-      env: MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+          packages: ['g++-4.9', 'gfortran-4.9']
+      env: 
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+        - FC=gfortran-4.9
       <<: *build
 
 
@@ -90,8 +109,11 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-5']
-      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+          packages: ['g++-5', 'gfortran-5']
+      env: 
+        - CC=gcc-5
+        - CXX=g++-5
+        - FC=gfortran-5
       <<: *build
     
     - os: linux
@@ -99,26 +121,34 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['g++-6']
-      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+          packages: ['g++-6', 'gfortran-6']
+      env: 
+        - CC=gcc-6
+        - CXX=g++-6
+        - FC=gfortran-6
       <<: *build
     
     # OSX / Clang Builds
     - os: osx
       osx_image: xcode7.3
-      compiler: clang
-      <<: *build
+      <<: *osx_build
     
     - os: osx
       osx_image: xcode8
-      compiler: clang
-      <<: *build
+      <<: *osx_build
     
     - os: osx
-      osx_image: xcode9.1
-      compiler: clang
-      <<: *build
-    
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode10.2
+      <<: *osx_build
+
     # Code coverage
     - os: linux
       compiler: gcc
