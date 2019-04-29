@@ -17,6 +17,8 @@ osx_packages: &osx_packages
       homebrew:
         packages:
           - gfortran
+        update: true
+
 osx_env: &osx_env
    env: MATRIX_EVAL="FC=gfortran"
 
