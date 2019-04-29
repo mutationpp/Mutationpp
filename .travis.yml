@@ -12,16 +12,6 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
 
-osx_packages: &osx_packages
-    addons:
-      homebrew:
-        packages:
-          - gcc
-        update: true
-
-osx_env: &osx_env
-   env: MATRIX_EVAL="FC=gfortran"
-
 build_both: &build_both
     script: 
       - cd build-debug
@@ -44,6 +34,13 @@ build: &build
       - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DBUILD_FORTRAN_WRAPPER=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
     <<: *build_both
 
+osx_build: &osx_build
+    stage: build
+    before_script:
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+    <<: *build_both
+
 before_install:
     - eval "${MATRIX_EVAL}"
 
@@ -53,7 +50,6 @@ install:
   - export PATH=$MPP_DIRECTORY/install/bin:$PATH
   - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
   - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
-  - ls -al /usr/ 
 
 jobs:
   include:
@@ -64,7 +60,10 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-4.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0 && FC=gfortran-4.8"
+      env: 
+        - CC=gcc-clang-4.0
+        - CXX=clang++=4.0
+        - FC=gfortran
       <<: *build
 
     - os: linux
@@ -73,7 +72,10 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-5.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && FC=gfortran-4.8"
+      env: 
+        - CC=gcc-clang-5.0
+        - CXX=clang++=5.0
+        - FC=gfortran
       <<: *build
     
     - os: linux
@@ -82,7 +84,10 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-6.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0 && FC=gfortran-4.8"
+      env: 
+        - CC=gcc-clang-6.0
+        - CXX=clang++=6.0
+        - FC=gfortran
       <<: *build
     
     # Linux / GCC builds
@@ -92,7 +97,10 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-4.9', 'gfortran-4.9']
-      env: MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9 && FC=gfortran-4.9"
+      env: 
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+        - FC=gfortran-4.9
       <<: *build
 
 
@@ -102,7 +110,10 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-5', 'gfortran-5']
-      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5 && FC=gfortran-5"
+      env: 
+        - CC=gcc-5
+        - CXX=g++-5
+        - FC=gfortran-5
       <<: *build
     
     - os: linux
@@ -111,30 +122,33 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-6', 'gfortran-6']
-      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && FC=gfortran-6"
+      env: 
+        - CC=gcc-6
+        - CXX=g++-6
+        - FC=gfortran-6
       <<: *build
     
     # OSX / Clang Builds
     - os: osx
       osx_image: xcode7.3
-      compiler: clang
-      <<: *osx_packages
-      <<: *osx_env
-      <<: *build
+      <<: *osx_build
     
     - os: osx
       osx_image: xcode8
-      compiler: clang
-      <<: *osx_packages
-      <<: *osx_env
-      <<: *build
+      <<: *osx_build
     
     - os: osx
-      osx_image: xcode9.1
-      <<: *osx_packages
-      <<: *osx_env
-      <<: *build
-    
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode10.2
+      <<: *osx_build
+
     # Code coverage
     - os: linux
       compiler: gcc
@@ -142,7 +156,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['lcov', 'g++-7']
-      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7 && FC=gfortran"
+      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       stage: coverage
       before_script:
           - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE=TRUE -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
