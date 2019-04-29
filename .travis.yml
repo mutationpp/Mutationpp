@@ -17,6 +17,8 @@ osx_packages: &osx_packages
       homebrew:
         packages:
           - gfortran
+osx_env: &osx_env
+   env: MATRIX_EVAL="FC=gfortran"
 
 build_both: &build_both
     script: 
@@ -59,7 +61,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-4.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0 && FC=gfortran"
+      env: MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0 && FC=gfortran-4.8"
       <<: *build
 
     - os: linux
@@ -68,7 +70,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-5.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && FC=gfortran"
+      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && FC=gfortran-4.8"
       <<: *build
     
     - os: linux
@@ -77,7 +79,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['clang-6.0', 'gfortran']
-      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0 && FC=gfortran"
+      env: MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0 && FC=gfortran-4.8"
       <<: *build
     
     # Linux / GCC builds
@@ -87,7 +89,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-4.9', 'gfortran-4.9']
-      env: MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9 && FC=gfortran"
+      env: MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9 && FC=gfortran-4.9"
       <<: *build
 
 
@@ -97,7 +99,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-5', 'gfortran-5']
-      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5 && FC=gfortran"
+      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5 && FC=gfortran-5"
       <<: *build
     
     - os: linux
@@ -106,7 +108,7 @@ jobs:
         apt:
           sources: *all_sources
           packages: ['g++-6', 'gfortran-6']
-      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && FC=gfortran"
+      env: MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && FC=gfortran-6"
       <<: *build
     
     # OSX / Clang Builds
@@ -114,17 +116,20 @@ jobs:
       osx_image: xcode7.3
       compiler: clang
       <<: *osx_packages
+      <<: *osx_env
       <<: *build
     
     - os: osx
       osx_image: xcode8
       compiler: clang
       <<: *osx_packages
+      <<: *osx_env
       <<: *build
     
     - os: osx
       osx_image: xcode9.1
       <<: *osx_packages
+      <<: *osx_env
       <<: *build
     
     # Code coverage
