@@ -30,8 +30,8 @@ build_release: &build_debug
 build: &build
     stage: build
     before_script:
-      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
-      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_FORTRAN_INTERFACE=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DENABLE_FORTRAN_INTERFACE=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
     <<: *build_both
 
 before_install:
