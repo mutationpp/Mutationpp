@@ -46,8 +46,9 @@ install(TARGETS mutation++_fortran EXPORT mutation++Targets
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-#install(
-#    FILES 
-#    ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod 
-#    DESTINATION ${INSTALL_INCLUDE_DIR})
-#
+install(
+    FILES 
+    ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
