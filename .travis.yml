@@ -53,6 +53,7 @@ install:
   - export PATH=$MPP_DIRECTORY/install/bin:$PATH
   - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
   - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
+  - find /usr/local -name "gfortran*"
 
 jobs:
   include:
