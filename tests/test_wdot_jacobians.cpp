@@ -110,11 +110,11 @@ TEST_CASE
 
         // Zeldovich: N2 + O = NO + N
         // F: kf[N2][O]
-        // dfrdrhoi(2,1) = kf(2)*rhoi(3) / (mw(3)*mw(1));
-        // dfrdrhoi(2,3) = kf(2)*rhoi(1) / (mw(3)*mw(1));
+        dfrdrhoi(2,1) = kf(2)*rhoi(3) / (mw(3)*mw(1));
+        dfrdrhoi(2,3) = kf(2)*rhoi(1) / (mw(3)*mw(1));
         // B: kb[NO][N]
-        // dbrdrhoi(2,0) = kb(2)*rhoi(2) / (mw(2)*mw(0))
-        // dbrdrhoi(2,2) = kb(2)*rhoi(0) / (mw(2)*mw(0))
+        dbrdrhoi(2,0) = kb(2)*rhoi(2) / (mw(2)*mw(0))
+        dbrdrhoi(2,2) = kb(2)*rhoi(0) / (mw(2)*mw(0))
         // Zeldovich: O + NO = O2 + N
         // F: kf[O][NO]
         // dfrdrhoi(3,1) = kf(3)*rhoi(2) / (mw(1)*mw(2));
@@ -125,27 +125,39 @@ TEST_CASE
 
         // Building the jacobian
         jac(0,0) = mw(0)*(
-            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))); // R1
-        jac(0,1) = 0.;
-        jac(0,2) = 0.;
+            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0)))  // R1
+            -1*(dbrdrhoi(2,0));
+        jac(0,1) = mw(0)*
+            -1*(dfrdrhoi(0,0));
+        jac(0,2) = mw(0)*(
+            +1*(dbrdrhoi(2,2)));
         jac(0,3) = mw(0)*(
-            +2*(dfrdrhoi(0,3))); // R1
+            +2*(dfrdrhoi(0,3))   // R1
+            +1*(dfrdrhoi(2,3)));
         jac(0,4) = 0.;
         jac(1,0) = mw(1)*(
-            +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0))); // R2
+            +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0)) // R2
+            +1*(dbrdrhoi(2,0)));
         jac(1,1) = mw(1)*(
-            +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))); // R2
+            +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))  // R2
+            -1*(dfrdrhoi(2,1)));
         jac(1,2) = mw(1)*(
-            +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2))); // R2
+            +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2)) // R2
+            +1*(dbrdrhoi(2,2)));
         jac(1,3) = mw(1)*(
-            +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))); // R2
+            +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))) // R2
+            -1*(dfrdrhoi(2,3));
         jac(1,4) = mw(1)*(
             +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4))); // R2
-        jac(2,0) = 0.;
-        jac(2,1) = 0.;
-        jac(2,2) = 0.;
-        jac(2,3) = 0.;
-        jac(2,4) = 0.;
+        jac(2,0) = mw(2)*(
+            -1*(dbrdrhoi(2,0));
+        jac(2,1) = mw(2)*(
+            +1*(dfrdrhoi(2,1));
+        jac(2,2) = mw(2)*(
+            -1*(dbrdrhoi(2,2));
+        jac(2,3) = mw(2)*(
+            +1*(dfrdrhoi(2,3));
+        jac(2,4) = 0;
         jac(3,0) = mw(3)*(
             -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))); // R1
         jac(3,1) = 0.;
@@ -154,13 +166,17 @@ TEST_CASE
             -1*(dfrdrhoi(0,3))); // R1
         jac(3,4) = 0.;
         jac(4,0) = mw(4)*(
-            -1*(dfrdrhoi(1,0) - dbrdrhoi(1,0)));
+            -1*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
+            +1*(dbrdrhoi(2,0)));
         jac(4,1) = mw(4)*(
-            -1*(dfrdrhoi(1,1) - dbrdrhoi(1,1)));
+            -1*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
+            -1*(dfrdrhoi(2,1)));
         jac(4,2) = mw(4)*(
-            -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2)));
+            -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
+            -1*(dfrdrhoi(2,3));
         jac(4,3) = mw(4)*(
-            -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3)));
+            -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
+            -1*(dfrdrhoi(2,3));
         jac(4,4) = mw(4)*(
             -1*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
 
