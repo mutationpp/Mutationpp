@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
-add_executable(run_tests 
+add_executable(run_tests
     run_tests.cpp
     test_collision_integrals.cpp
     test_comparisons.cpp
@@ -47,11 +47,11 @@ add_executable(run_tests
     test_thermodb.cpp
     test_transfer_source.cpp
     test_utilities.cpp
-    test_wdot.cpp
     test_wdot_jacobians.cpp
+    test_wdot.cpp
     test_levels.cpp
 )
-target_link_libraries(run_tests 
+target_link_libraries(run_tests
     PRIVATE
         mutation++
     PUBLIC

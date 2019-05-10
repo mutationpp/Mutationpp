@@ -22,18 +22,14 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Chemical rates jacobians.",
-    "[kinetics]"
-)
+TEST_CASE("Chemical rates jacobians.", "[kinetics]")
 {
     const double tol = 100*std::numeric_limits<double>::epsilon();
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);
@@ -113,8 +109,8 @@ TEST_CASE
         dfrdrhoi(2,1) = kf(2)*rhoi(3) / (mw(3)*mw(1));
         dfrdrhoi(2,3) = kf(2)*rhoi(1) / (mw(3)*mw(1));
         // B: kb[NO][N]
-        dbrdrhoi(2,0) = kb(2)*rhoi(2) / (mw(2)*mw(0))
-        dbrdrhoi(2,2) = kb(2)*rhoi(0) / (mw(2)*mw(0))
+        dbrdrhoi(2,0) = kb(2)*rhoi(2) / (mw(2)*mw(0));
+        dbrdrhoi(2,2) = kb(2)*rhoi(0) / (mw(2)*mw(0));
         // Zeldovich: O + NO = O2 + N
         // F: kf[O][NO]
         // dfrdrhoi(3,1) = kf(3)*rhoi(2) / (mw(1)*mw(2));
@@ -125,10 +121,10 @@ TEST_CASE
 
         // Building the jacobian
         jac(0,0) = mw(0)*(
-            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0)))  // R1
-            -1*(dbrdrhoi(2,0));
-        jac(0,1) = mw(0)*
-            -1*(dfrdrhoi(0,0));
+            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))  // R1
+            -1*(dbrdrhoi(2,0)));
+        jac(0,1) = mw(0)*(
+            -1*(dfrdrhoi(0,0)));
         jac(0,2) = mw(0)*(
             +1*(dbrdrhoi(2,2)));
         jac(0,3) = mw(0)*(
@@ -150,13 +146,13 @@ TEST_CASE
         jac(1,4) = mw(1)*(
             +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4))); // R2
         jac(2,0) = mw(2)*(
-            -1*(dbrdrhoi(2,0));
+            -1*(dbrdrhoi(2,0)));
         jac(2,1) = mw(2)*(
-            +1*(dfrdrhoi(2,1));
+            +1*(dfrdrhoi(2,1)));
         jac(2,2) = mw(2)*(
-            -1*(dbrdrhoi(2,2));
+            -1*(dbrdrhoi(2,2)));
         jac(2,3) = mw(2)*(
-            +1*(dfrdrhoi(2,3));
+            +1*(dfrdrhoi(2,3)));
         jac(2,4) = 0;
         jac(3,0) = mw(3)*(
             -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))); // R1
@@ -173,14 +169,14 @@ TEST_CASE
             -1*(dfrdrhoi(2,1)));
         jac(4,2) = mw(4)*(
             -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
-            -1*(dfrdrhoi(2,3));
+            -1*(dfrdrhoi(2,3)));
         jac(4,3) = mw(4)*(
             -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
-            -1*(dfrdrhoi(2,3));
+            -1*(dfrdrhoi(2,3)));
         jac(4,4) = mw(4)*(
             -1*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
 
-/*        std::cout << "Test" << std::endl;
+        std::cout << "Test" << std::endl;
         std::cout << jac << std::endl << std::endl;
         std::cout << "M++" << std::endl;
         for (int i = 0; i < ns; i++){
@@ -189,7 +185,6 @@ TEST_CASE
             }
             std::cout << std::endl;
         }
-*/
 
         // Making sure everything is correct
         for (int i = 0; i < ns; i++)
