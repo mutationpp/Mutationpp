@@ -32,7 +32,7 @@
  *
  * @section equil_air_example_intro Introduction
  * This example program makes use of the Mutation++ library to compute
- * equilibrium mole fractions, mixture frozen specific heat, enthalpy, and 
+ * equilibrium mole fractions, mixture frozen specific heat, enthalpy, and
  * entropy for an air mixture containing 20% O and 80% N at a pressure of 1 atm
  * and a range of temperatures from 300 to 6,000 K using the NASA 9-coefficient
  * polynomial thermodynamic database.  The output is a property table written to
@@ -129,14 +129,14 @@ int main()
     // Generate the default options for the air11 mixture
     MixtureOptions opts("air_5");
     opts.setStateModel("EquilTP");
-    
+
     // Change from default thermodynamic database (RRHO) to NASA 9-coefficient
     // polynomial database
     opts.setThermodynamicDatabase("RRHO");
-    
+
     // Load the mixture with the new options
     Mixture mix(opts);
-    
+
     // Setup the default composition
     mix.addComposition("N:0.8, O:0.2", true);
 
@@ -148,32 +148,32 @@ int main()
     std::cout << std::setw(13) << "H[J/kg]";
     std::cout << std::setw(13) << "S[J/kg-K]";
     std::cout << std::endl;
-    
-    // Loop over range of temperatures and compute equilibrium values at 1 atm    
+
+    // Loop over range of temperatures and compute equilibrium values at 1 atm
     double P = ONEATM;
     for (int i = 0; i < 58; ++i) {
         // Compute the temperature
         double T = 300.0 + static_cast<double>(i) * 100.0;
-        
+
         // Set the mixture state equal to the equilibrium state for the given
         // temperature and pressure
         mix.setState(&T, &P);
-        
+
         // Temperature
         std::cout << std::setw(7) << mix.T();
-        
+
         // Species mole fractions
         for (int j = 0; j < mix.nSpecies(); ++j)
             std::cout << std::setw(13) << mix.X()[j];
-        
+
         // Other properties
         std::cout << std::setw(13) << mix.mixtureFrozenCpMass(); // Cp [J/kg-K]
         std::cout << std::setw(13) << mix.mixtureHMass();        // H  [J/kg]
         std::cout << std::setw(13) << mix.mixtureSMass();        // S  [J/kg-K]
-        
+
         std::cout << std::endl;
     }
-    
+
     return 0;
 }
 /// [example_code]

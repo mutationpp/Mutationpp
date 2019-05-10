@@ -21,4 +21,4 @@
 
 // Single source file which runs all tests
 #define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#include <catch.hpp>

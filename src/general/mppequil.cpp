@@ -32,7 +32,7 @@
 #include <sstream>
 #include <cstdlib>
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using namespace Eigen;
 
 #ifdef _GNU_SOURCE

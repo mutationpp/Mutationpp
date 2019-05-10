@@ -25,7 +25,9 @@ add_sources(mutation++
     Interpolators.cpp
 )
 
-install(FILES lp.h DESTINATION include/mutation++)
-install(FILES Functors.h DESTINATION include/mutation++)
-install(FILES Interpolators.h DESTINATION include/mutation++)
-install(FILES NewtonSolver.h DESTINATION include/mutation++)
+add_headers(mutation++
+    lp.h
+    Functors.h
+    Interpolators.h
+    NewtonSolver.h
+)

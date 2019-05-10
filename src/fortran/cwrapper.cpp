@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>

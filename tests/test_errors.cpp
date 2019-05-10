@@ -20,7 +20,7 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
+#include <catch.hpp>
 
 using namespace Mutation;
 using namespace Catch;
@@ -29,10 +29,7 @@ using namespace Catch;
  * Runs basic tests on the initialization and use of the Mutation++ exception
  * classes defined in Errors.h.
  */
-TEST_CASE
-(
-    "Test exception classes",
-    "[exceptions]"
+TEST_CASE("Test exception classes", "[exceptions]"
 )
 {
     SECTION("Error (base class)") {

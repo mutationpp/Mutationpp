@@ -30,7 +30,7 @@
 #ifndef SURFACE_STATE_H
 #define SURFACE_STATE_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <string>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}

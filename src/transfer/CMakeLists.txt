@@ -31,5 +31,7 @@ add_sources(mutation++
     OmegaVT.cpp
 )
 
-install(FILES MillikanWhite.h DESTINATION include/mutation++)
-install(FILES TransferModel.h DESTINATION include/mutation++)
+add_headers(mutation++
+    MillikanWhite.h
+    TransferModel.h
+)

@@ -28,7 +28,7 @@
 #ifndef DIFFUSION_MATRIX_H
 #define DIFFUSION_MATRIX_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include "CollisionDB.h"
 
 namespace Mutation {

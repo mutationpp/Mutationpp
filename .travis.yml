@@ -1,5 +1,9 @@
 language: cpp
 
+stages:
+  - build
+  - coverage
+
 common_sources: &all_sources
   - ubuntu-toolchain-r-test
   - llvm-toolchain-trusty
@@ -8,84 +12,37 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
 
-matrix:
-  include:
+build_both: &build_both
+    script: 
+      - cd build-debug
+      - make -j2 install
+      - ctest -j2
+      - cd ../build-release
+      - make -j2 install
+      - ctest -j2
 
-    # Linux / Clang builds
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['clang-4.0']
-      env: COMPILER='clang++-4.0'
+build_release: &build_debug
+    script: 
+      - cd build-debug
+      - make -j2 install
+      - ctest -j2
 
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['clang-5.0']
-      env: COMPILER='clang++-5.0'
-    
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['clang-6.0']
-      env: COMPILER='clang++-6.0'
-    
-    # Linux / GCC builds
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['g++-4.9']
-      env: COMPILER='g++-4.9'
+build: &build
+    stage: build
+    before_script:
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DBUILD_FORTRAN_WRAPPER=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1 -DBUILD_FORTRAN_WRAPPER=ON -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+    <<: *build_both
 
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['g++-5']
-      env: COMPILER='g++-5'
-    
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['g++-6']
-      env: COMPILER='g++-6'
-    
-    # OSX / Clang Builds
-    - os: osx
-      osx_image: xcode7.3
-      compiler: clang
-      env: COMPILER='clang++'
-    
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      env: COMPILER='clang++'
-    
-    - os: osx
-      osx_image: xcode9.1
-      compiler: clang
-      env: COMPILER='clang++'
-    
-    # Code coverage
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['lcov', 'g++-7']
-      env: COMPILER='g++-7' COVERAGE=1
+osx_build: &osx_build
+    stage: build
+    before_script:
+      - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1  -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+    <<: *build_both
 
+before_install:
+    - eval "${MATRIX_EVAL}"
 
 install: 
   - export MPP_DIRECTORY=$PWD
@@ -93,22 +50,117 @@ install:
   - export PATH=$MPP_DIRECTORY/install/bin:$PATH
   - export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH
   - export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
-  - python scripts/install_dependencies.py -j 1
 
-before_script:
-  - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE={COVERAGE}
-  - cmake -H. -Bbuild-release -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=1
+jobs:
+  include:
+    # Linux / Clang builds
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['clang-4.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-4.0
+        - CXX=clang++=4.0
+        - FC=gfortran
+      <<: *build
 
-script: 
-  - cd build-debug
-  - make -j2 install
-  - ctest -j2
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]] && [[ "${COVERAGE}" == "1" ]]; then
-      make gcov
-      make lcov
-      bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
-    fi
-  - cd ../build-release
-  - make -j2 install
-  - ctest -j2
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['clang-5.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-5.0
+        - CXX=clang++=5.0
+        - FC=gfortran
+      <<: *build
+    
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['clang-6.0', 'gfortran']
+      env: 
+        - CC=gcc-clang-6.0
+        - CXX=clang++=6.0
+        - FC=gfortran
+      <<: *build
+    
+    # Linux / GCC builds
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-4.9', 'gfortran-4.9']
+      env: 
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+        - FC=gfortran-4.9
+      <<: *build
+
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-5', 'gfortran-5']
+      env: 
+        - CC=gcc-5
+        - CXX=g++-5
+        - FC=gfortran-5
+      <<: *build
+    
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-6', 'gfortran-6']
+      env: 
+        - CC=gcc-6
+        - CXX=g++-6
+        - FC=gfortran-6
+      <<: *build
+    
+    # OSX / Clang Builds
+    - os: osx
+      osx_image: xcode7.3
+      <<: *osx_build
+    
+    - os: osx
+      osx_image: xcode8
+      <<: *osx_build
+    
+    - os: osx
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode9.2
+      <<: *osx_build
+
+    - os: osx
+      osx_image: xcode10.2
+      <<: *osx_build
+
+    # Code coverage
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['lcov', 'g++-7']
+      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+      stage: coverage
+      before_script:
+          - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE=TRUE -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
+      <<: *build_debug
+      after_script:
+        - make coverage
+        - bash <(curl -s https://codecov.io/bash) -f mutation++.info || echo "Codecov did not collect coverage reports"

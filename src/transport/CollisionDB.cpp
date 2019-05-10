@@ -34,7 +34,7 @@ using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::IO;
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using namespace Eigen;
 
 #include <cassert>

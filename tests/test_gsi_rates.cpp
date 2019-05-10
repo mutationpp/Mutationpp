@@ -22,18 +22,14 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
-TEST_CASE
-(
-    "Surface chemical rates compared with analytical solution.",
-    "[gsi]"
-)
+TEST_CASE("Surface chemical rates compared with analytical solution.", "[gsi]")
 {
     const double tol = std::numeric_limits<double>::epsilon();
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);

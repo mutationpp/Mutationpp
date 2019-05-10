@@ -39,8 +39,8 @@
 #include <vector>
 #include <algorithm>
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 using namespace Eigen;
 
 //#define VERBOSE

@@ -29,7 +29,7 @@
 #include "CollisionDB.h"
 #include "DiffusionMatrix.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {

@@ -33,7 +33,7 @@
 #include "ViscosityAlgorithm.h"
 
 #include <iostream>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;

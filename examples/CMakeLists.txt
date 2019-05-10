@@ -1,5 +1,4 @@
-#
-# Copyright 2014 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2017 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -17,34 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
-#
 
-# Change this path to your Mutation++ install path
-MUTATIONPP_INSTALL = ../../install
+cmake_minimum_required(VERSION 2.8.2)
 
-FC       = gfortran
-FC_FLAGS = -J$(MUTATIONPP_INSTALL)/include/mutation++ -O3 -g -fdefault-real-8
+# Append the PROJECT_BINARY_DIR to CMAKE_PREFIX_PATH in order to be able to 
+# find the configuration files at build time
+list(APPEND CMAKE_PREFIX_PATH ${PROJECT_BINARY_DIR}/src)
 
-# use .dylib for Mac, .so for Unix
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-	FC_LIBS = $(MUTATIONPP_INSTALL)/lib/libmutation++_fortran.so
-endif
-ifeq ($(UNAME_S),Darwin)
-	FC_LIBS = $(MUTATIONPP_INSTALL)/lib/libmutation++_fortran.dylib
-endif
+# c++ examples
+add_subdirectory(c++)
 
-EXAMPLES  = \
-	wrapper_test
-
-all : $(EXAMPLES)
-
-wrapper_test : wrapper_test.o
-	$(FC) -o $@ $(FC_FLAGS) $^ $(FC_LIBS)
-
-%.o : %.f90
-	$(FC) -c $(FC_FLAGS) $<
-
-clean :
-	$(RM) *.o $(EXAMPLES)
-
+# Fortran examples
+if (BUILD_FORTRAN_WRAPPER)
+    add_subdirectory(fortran)
+endif(BUILD_FORTRAN_WRAPPER)

@@ -29,7 +29,7 @@
 #ifndef GSI_RATE_LAW_H
 #define GSI_RATE_LAW_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Transport { class Transport; }}

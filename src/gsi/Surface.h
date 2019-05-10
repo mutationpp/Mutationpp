@@ -29,7 +29,7 @@
 #ifndef SURFACE_H
 #define SURFACE_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Transport { class Transport; }}

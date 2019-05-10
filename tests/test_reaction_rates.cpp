@@ -20,7 +20,7 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
+#include <catch.hpp>
 
 using namespace Mutation;
 using namespace Mutation::Kinetics;
@@ -63,11 +63,7 @@ void checkArrheniusRate(
 /**
  * Tests if the Arrhenius rate law works correctly.
  */
-TEST_CASE
-(
-    "Arrhenius rate laws work correctly",
-    "[kinetics]"
-)
+TEST_CASE("Arrhenius rate laws work correctly", "[kinetics]")
 {
     // Check that the rate is calculated correctly
     for (int order = 1; order < 4; ++order) {
