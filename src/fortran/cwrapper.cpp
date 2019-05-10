@@ -373,9 +373,9 @@ double NAME_MANGLE(electron_thermal_conductivity)()
 }
 
 //==============================================================================
-double NAME_MANGLE(internal_thermal_conductivity)(double T)
+double NAME_MANGLE(internal_thermal_conductivity)(const double* const T)
 {
-    return p_mix->internalThermalConductivity(T);
+    return p_mix->internalThermalConductivity(*T);
 }
 
 //==============================================================================

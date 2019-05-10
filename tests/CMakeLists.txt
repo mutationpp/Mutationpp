@@ -48,6 +48,7 @@ set(test_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot_jacobians.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
 )
 
@@ -69,7 +70,7 @@ function(test_example name subdir)
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
         COMMAND ${name} )
     set_property(
-        TEST example_${name}_run 
+        TEST example_${name}_run
         APPEND PROPERTY DEPENDS example_${name}_compile)
 endfunction()
 

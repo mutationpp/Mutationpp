@@ -190,7 +190,7 @@ private:
 class JacStoich31 : public JacStoichBase
 {
 public:
-    
+
     JacStoich31(const size_t sp)
         : m_sp(sp)
     { }
@@ -198,23 +198,23 @@ public:
     static int nSpecies() {
         return 1;
     }
-    
+
     int operator () (const int& index) const {
         return m_sp;
     }
-    
+
     double operator [] (const int& index) const {
         return 3.0;
     }
-    
+
     inline double rr(double k, const double* const conc) const {
         return k * conc[m_sp] * conc[m_sp] * conc[m_sp];
     }
 
     template <typename Op>
     inline void diffRR(
-        const double k, const double* const conc, double* const drr, 
-        const Op& op) const 
+        const double k, const double* const conc, double* const drr,
+        const Op& op) const
     {
         op(drr[m_sp], 3.0 * k * conc[m_sp] * conc[m_sp]);
     }
@@ -230,7 +230,7 @@ private:
 class JacStoich32 : public JacStoichBase
 {
 public:
-    
+
     JacStoich32(const size_t sp1, const size_t sp2)
         : m_sp1(sp1), m_sp2(sp2)
     { }
@@ -238,23 +238,23 @@ public:
     static int nSpecies() {
         return 2;
     }
-    
+
     int operator () (const int& index) const {
         return (index == 0 ? m_sp1 : m_sp2);
     }
-    
+
     double operator [] (const int& index) const {
         return (index == 0 ? 2.0 : 1.0);
     }
-    
+
     inline double rr(double k, const double* const conc) const {
         return k * conc[m_sp1] * conc[m_sp1] * conc[m_sp2];
     }
 
     template <typename Op>
     inline void diffRR(
-        const double k, const double* const conc, double* const drr, 
-        const Op& op) const 
+        const double k, const double* const conc, double* const drr,
+        const Op& op) const
     {
         op(drr[m_sp1], 2.0 * k * conc[m_sp1] * conc[m_sp2]);
         op(drr[m_sp2], k * conc[m_sp1] * conc[m_sp1]);
@@ -273,7 +273,7 @@ private:
 class JacStoich33 : public JacStoichBase
 {
 public:
-    
+
     JacStoich33(const size_t sp1, const size_t sp2, const size_t sp3)
         : m_sp1(sp1), m_sp2(sp2), m_sp3(sp3)
     { }
@@ -281,23 +281,23 @@ public:
     static int nSpecies() {
         return 3;
     }
-    
+
     int operator () (const int& index) const {
         return (index == 0 ? m_sp1 : (index == 1 ? m_sp2 : m_sp3));
     }
-    
+
     double operator [] (const int& index) const {
         return 1.0;
     }
-    
+
     inline double rr(double k, const double* const conc) const {
         return k * conc[m_sp1] * conc[m_sp2] * conc[m_sp3];
     }
 
     template <typename Op>
     inline void diffRR(
-        const double k, const double* const conc, double* const drr, 
-        const Op& op) const 
+        const double k, const double* const conc, double* const drr,
+        const Op& op) const
     {
         op(drr[m_sp1], k * conc[m_sp2] * conc[m_sp3]);
         op(drr[m_sp2], k * conc[m_sp1] * conc[m_sp3]);
@@ -320,7 +320,7 @@ private:
 class ReactionStoichBase
 {
 public:
-    
+
     /**
      * Destructor.
      */
@@ -339,20 +339,20 @@ template <typename Reactants, typename Products>
 class ReactionStoich : public ReactionStoichBase
 {
 public:
-    
+
     /**
      * Constructor.
      */
     ReactionStoich(JacStoichBase* reacs, JacStoichBase* prods)
-        : m_reacs(*static_cast<Reactants*>(reacs)), 
+        : m_reacs(*static_cast<Reactants*>(reacs)),
           m_prods(*static_cast<Products*>(prods))
     { }
-    
+
     /**
      * Destructor.
      */
     virtual ~ReactionStoich() { }
-    
+
     /**
      * Adds this reaction's contribution to the species Jacobian matrix.  Note
      * that this will affect the rows of each species that particpates in this
@@ -365,10 +365,10 @@ public:
         double* const work, double* const sjac, const size_t ns) const;
 
 protected:
-    
+
     Reactants m_reacs;
     Products  m_prods;
-    
+
 };
 
 
@@ -378,7 +378,7 @@ class ThirdbodyReactionStoich;
 
 /**
  * Allows swapping of ThirdbodyReactionStoich.
- */    
+ */
 template <typename Reactants, typename Products>
 void swap(
     ThirdbodyReactionStoich<Reactants, Products>& left,
@@ -387,7 +387,7 @@ void swap(
 
 /**
  * Connects reactant and product stoichiometry types together for a thirdbody
- * reaction so that Jacobian contributions made by a single reaction can be 
+ * reaction so that Jacobian contributions made by a single reaction can be
  * determined.
  */
 template <typename Reactants, typename Products>
@@ -397,7 +397,7 @@ public:
 
     using ReactionStoich<Reactants, Products>::m_reacs;
     using ReactionStoich<Reactants, Products>::m_prods;
-    
+
     /**
      * Constructor.
      */
@@ -406,21 +406,21 @@ public:
         const size_t ns)
         : ReactionStoich<Reactants, Products>(reacs, prods), m_ns(ns),
           mp_alpha(new double [ns])
-    { 
+    {
         std::copy(alpha, alpha+ns, mp_alpha);
     }
-    
+
     /**
      * Copy constructor.
      */
     ThirdbodyReactionStoich(const ThirdbodyReactionStoich& to_copy)
-        : ReactionStoich<Reactants, Products>(m_reacs, m_prods), 
+        : ReactionStoich<Reactants, Products>(m_reacs, m_prods),
           m_ns(to_copy.m_ns),
           mp_alpha(new double [to_copy.m_ns])
     {
         std::copy(to_copy.mp_alpha, to_copy.mp_alpha+m_ns, mp_alpha);
     }
-    
+
     /**
      * Assignment operator.
      */
@@ -428,7 +428,7 @@ public:
         swap(*this, to_copy);
         return *this;
     }
-    
+
     /**
      * Destructor.
      */
@@ -436,7 +436,7 @@ public:
         delete [] mp_alpha;
         mp_alpha = NULL;
     }
-    
+
     /**
      * Adds this reaction's contribution to the species Jacobian matrix.  Note
      * that this will affect the rows of each species that particpates in this
@@ -447,7 +447,7 @@ public:
     void contributeToJacobian(
         const double kf, const double kb, const double* const conc, 
         double* const work, double* const sjac, const size_t ns) const;
-    
+
     friend void swap<Reactants, Products>(
         ThirdbodyReactionStoich<Reactants, Products>&,
         ThirdbodyReactionStoich<Reactants, Products>&);
@@ -456,7 +456,7 @@ private:
 
     size_t  m_ns;
     double* mp_alpha;
-     
+
 };
 
 
@@ -476,42 +476,42 @@ public:
     {
         mp_work = new double [m_thermo.nSpecies()];
     }
-    
+
     /**
      * Destructor.
      */
-    ~JacobianManager() 
+    ~JacobianManager()
     {
         delete [] mp_work;
-        
+
         std::vector<ReactionStoichBase*>::iterator iter = m_reactions.begin();
         for ( ; iter != m_reactions.end(); ++iter)
             delete *iter;
     }
 
     /**
-     * Adds a reaction to the JacobianManager so that the contributions of the 
+     * Adds a reaction to the JacobianManager so that the contributions of the
      * reaction will be included when computing the species Jacobian.
      */
     void addReaction(const Reaction& reaction);
-    
+
     /**
      * Computes the square species source Jacobian matrix.
      */
     void computeJacobian(
-        const double* const kf, const double* const kb, 
+        const double* const kf, const double* const kb,
         const double* const conc, double* const sjac) const;
-    
+
 private:
-    
+
     /**
-     * Adds a new ReactionStoich object to the reaction list.  The reactant 
-     * JacStoich** type is predetermined and input as a template parameter so 
+     * Adds a new ReactionStoich object to the reaction list.  The reactant
+     * JacStoich** type is predetermined and input as a template parameter so
      * that only the product type needs to be enumerated.
      */
     template <typename Reactants>
     void addReactionStoich(
-        JacStoichBase* p_reacs, JacStoichBase* p_prods, const StoichType type, 
+        JacStoichBase* p_reacs, JacStoichBase* p_prods, const StoichType type,
         const Reaction& reaction);
 
     /**
@@ -523,11 +523,11 @@ private:
     bool getJacStoich(
         const std::vector<int>& stoich_set, JacStoichBase** p_stoich,
         StoichType& type) const;
-    
+
 private:
 
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    double* mp_work;    
+    double* mp_work;
     std::vector<ReactionStoichBase*> m_reactions;
 
 };

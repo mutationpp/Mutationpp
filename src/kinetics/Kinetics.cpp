@@ -58,36 +58,36 @@ Kinetics::Kinetics(
 {
     if (mechanism == "none")
         return;
-    
+
     // Get the path to the mechanism file
     mechanism = databaseFileName(mechanism, "mechanisms");
 
     // Open the mechanism file as an XML document
-    IO::XmlDocument doc(mechanism);        
+    IO::XmlDocument doc(mechanism);
     IO::XmlElement root = doc.root();
-    
+
     if (root.tag() != "mechanism") {
         throw FileParseError(doc.file(), root.line())
             << "Root element in mechanism file " << mechanism
             << " is not of 'mechanism' type!";
     }
-    
+
     // Get the mechanism name
     root.getAttribute("name", m_name, m_name);
 
     // Now loop over all of the reaction nodes and add each reaction to the
     // corresponding data structure pieces
     IO::XmlElement::const_iterator iter = root.begin();
-    for ( ; iter != root.end(); ++iter) {        
+    for ( ; iter != root.end(); ++iter) {
         if (iter->tag() == "reaction")
             addReaction(Reaction(*iter, thermo));
         else if (iter->tag() == "arrhenius_units")
             Arrhenius::setUnits(*iter);
     }
-    
+
     // Setup the rate manager
     mp_rates = new RateManager(thermo.nSpecies(), m_reactions);
-    
+
     // Finally close the reaction mechanism
     closeReactions(true);
 }
@@ -112,30 +112,30 @@ void Kinetics::addReaction(const Reaction& reaction)
 {
     // Add reaction to reaction list
     m_reactions.push_back(reaction);
-    
+
     // Insert the reactants
     m_reactants.addReaction(nReactions()-1, reaction.reactants());
-    
+
     // Insert products
     if (reaction.isReversible())
         m_rev_prods.addReaction(nReactions()-1, reaction.products());
     else
         m_irr_prods.addReaction(nReactions()-1, reaction.products());
-    
+
     // Add thirdbodies if necessary
     if (reaction.isThirdbody())
         m_thirdbodies.addReaction(nReactions()-1, reaction.efficiencies());
-    
+
     // Add the reaction to the jacobian managaer
     m_jacobian.addReaction(reaction);
 }
 
 //==============================================================================
 
-void Kinetics::closeReactions(const bool validate_mechanism) 
+void Kinetics::closeReactions(const bool validate_mechanism)
 {
     const size_t ns = m_thermo.nSpecies();
-    
+
     // Validate the mechanism
     if (validate_mechanism) {
         // Check for duplicate reactions
@@ -156,13 +156,12 @@ void Kinetics::closeReactions(const bool validate_mechanism)
                     << "Reaction " << i+1 << " \"" << m_reactions[i].formula()
                     << "\" does not conserve charge or mass.";
     }
-    
+
     // Allocate work arrays
     mp_ropf  = new double [nReactions()];
     mp_ropb  = new double [nReactions()];
     mp_rop   = new double [nReactions()];
     mp_wdot  = new double [m_thermo.nSpecies()];
-    
 }
 
 //==============================================================================
@@ -182,13 +181,13 @@ void Kinetics::getReactionDelta(
 
 /*vector<size_t> Kinetics::speciesIndices(
     const multiset<string>& set)
-{    
+{
     multiset<string>::const_iterator iter = set.begin();
     vector<size_t> indices;
-    
+
     for ( ; iter != set.end(); ++iter)
         indices.push_back(m_thermo.speciesIndex(*iter));
-    
+
     return indices;
 }*/
 
@@ -199,11 +198,11 @@ void Kinetics::getReactionDelta(
 {
     vector<pair<size_t, double> > effs;
     vector<pair<string, double> >::const_iterator iter;
-    
+
     for (iter = string_effs.begin(); iter != string_effs.end(); ++iter)
         effs.push_back(
             make_pair(m_thermo.speciesIndex(iter->first), iter->second));
-    
+
     return effs;
 }*/
 
@@ -215,7 +214,7 @@ void Kinetics::forwardRateCoefficients(double* const p_kf)
         return;
 
     mp_rates->update(m_thermo);
-    Map<ArrayXd>(p_kf, nReactions()) = 
+    Map<ArrayXd>(p_kf, nReactions()) =
         Map<const ArrayXd>(mp_rates->lnkf(), nReactions()).exp();
 }
 
@@ -227,9 +226,9 @@ void Kinetics::backwardRateCoefficients(double* const p_kb)
         return;
 
     mp_rates->update(m_thermo);
-    Map<ArrayXd>(p_kb, nReactions()) = 
+    Map<ArrayXd>(p_kb, nReactions()) =
         Map<const ArrayXd>(mp_rates->lnkb(), nReactions()).exp();
-        
+
     for(int i=0; i < mp_rates->irrReactions().size(); ++i)
         p_kb[mp_rates->irrReactions()[i]] = 0.0;
 }
@@ -289,10 +288,10 @@ void Kinetics::updateROP(
     m_reactants.multReactions(p_conc, mp_ropf);
     backwardRateCoefficients(T, mp_ropb);
     m_rev_prods.multReactions(p_conc, mp_ropb);
-    
+
     for (int i = 0; i < m_num_rxns; ++i)
         p_rop[i] = (mp_ropf[i] - mp_ropb[i]);
-    
+
     m_thirdbodies.multiplyThirdbodies(p_conc, p_rop);
 }*/
 
@@ -304,7 +303,7 @@ void Kinetics::netRatesOfProgress(double* const p_rop)
     ArrayXd conc =
         (m_thermo.numberDensity() / NA) *
         Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
-    
+
     netRatesOfProgress(conc.data(), p_rop);
 }
 
@@ -316,7 +315,7 @@ void Kinetics::netRatesOfProgress(
     forwardRatesOfProgress(p_conc, mp_ropf);
     backwardRatesOfProgress(p_conc, mp_ropb);
 
-    Map<ArrayXd>(p_rop, nReactions()) = 
+    Map<ArrayXd>(p_rop, nReactions()) =
         Map<ArrayXd>(mp_ropf, nReactions()) - Map<ArrayXd>(mp_ropb, nReactions());
 }
 
@@ -332,7 +331,7 @@ void Kinetics::netProductionRates(
     m_reactants.decrSpecies(mp_rop, p_wdot);
     m_rev_prods.incrSpecies(mp_rop, p_wdot);
     m_irr_prods.incrSpecies(mp_rop, p_wdot);
-    
+
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);
 }*/
@@ -353,7 +352,7 @@ void Kinetics::netProductionRates(double* const p_wdot)
         Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
 
     netRatesOfProgress(p_wdot, mp_rop);
-    
+
     // Sum all contributions from every reaction
     std::fill(p_wdot, p_wdot+m_thermo.nSpecies(), 0.0);
     m_reactants.decrSpecies(mp_rop, p_wdot);
@@ -378,24 +377,24 @@ void Kinetics::jacobianRho(double* const p_jac)
 
     // Update reaction rate coefficients
     mp_rates->update(m_thermo);
-    
+
     const double* const lnkf = mp_rates->lnkf();
     for (int i = 0; i < nReactions(); ++i)
         mp_ropf[i] = std::exp(lnkf[i]);
-    
+
     const double* const lnkb = mp_rates->lnkb();
     for (int i = 0; i < nReactions(); ++i)
         mp_ropb[i] = std::exp(lnkb[i]);
-    
+
     for(int i=0; i < mp_rates->irrReactions().size(); ++i)
         mp_ropb[mp_rates->irrReactions()[i]] = 0.0;
-    
+
     // Compute species concentrations (mol/m^3)
     const double mix_conc = m_thermo.numberDensity() / NA;
     const double* const p_x = m_thermo.X();
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         mp_rop[i] = p_x[i] * mix_conc;
-    
+
     // Compute the Jacobian matrix
     m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);
 }

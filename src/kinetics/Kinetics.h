@@ -58,21 +58,21 @@ public:
      * the full file name path to the mechanism data file.
      */
     Kinetics(
-        const Mutation::Thermodynamics::Thermodynamics& thermo, 
+        const Mutation::Thermodynamics::Thermodynamics& thermo,
         std::string mechanism);
-    
+
     /**
      * Destructor.
      */
     ~Kinetics();
-    
+
     /**
      * Returns the number of reactions in the mechanism.
      */
     size_t nReactions() const {
         return m_reactions.size();
     }
-    
+
     /**
      * Returns the vector of Reaction objects associated with this kinetics
      * manager.
@@ -80,14 +80,14 @@ public:
     const std::vector<Reaction>& reactions() const {
         return m_reactions;
     }
-    
+
     /**
      * Computes the change in any given species quantity across each reaction.
      */
     void getReactionDelta(const double* const p_s, double* const p_r) const;
-    
+
     /**
-     * Fills the vector keq with the equilibrium constant for each reaction 
+     * Fills the vector keq with the equilibrium constant for each reaction
      * \f$ K_{C,j} = \left(\frac{P_{atm}}{R_u T}\right)^{\Delta \nu_j}
      * \exp\left(-\frac{\Delta {G^\circ}_j}{R_u T}\right) \f$.
      *
@@ -95,7 +95,7 @@ public:
      * @param keq  on return, \f$ K_{C,j}(T) \f$
      */
     //void equilibriumConstants(const double T, double* const p_keq);
-    
+
     /**
      * Fills the vector kf with the forward rate coefficients \f$ k_{f,j} \f$
      * for each reaction.  The coefficients are computed based on the rate laws
@@ -104,15 +104,15 @@ public:
      * @param kf  on return, \f$ k_{f,j} \f$
      */
     void forwardRateCoefficients(double* const p_kf);
-    
+
     /**
-     * Fills the vector kb with the backward rate coefficients 
+     * Fills the vector kb with the backward rate coefficients
      * \f$ k_{b,j} = k_{f,j} / K_{C,j} \f$ for each reaction.
      *
      * @param kb  on return, \f$ k_{b,j} \f$
      */
     void backwardRateCoefficients(double* const p_kb);
-    
+
     /**
      * Fills the vector ropf with the forward rate of progress variables for
      * each reaction \f$ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
@@ -130,7 +130,7 @@ public:
      */
     void forwardRatesOfProgress(
         const double* const p_conc, double* const p_ropf);
-    
+
     /**
      * Fills the vector ropb with the backward rates of progress variables for
      * each reaction \f$ k_{b,j} \prod_i C_i^{\nu_{ij}^{"}} \Theta_{TB} \f$.
@@ -148,10 +148,10 @@ public:
      */
     void backwardRatesOfProgress(
         const double* const p_conc, double* const p_ropb);
-    
+
     /**
      * Fills the vector rop with the net rates of progress for each reaction
-     * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
+     * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
      *
      * @param p_rop on return, the net rates of progress in mol/m^3-s
@@ -160,20 +160,20 @@ public:
 
     /**
      * Fills the vector rop with the net rates of progress for each reaction
-     * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
+     * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
      *
      * @param p_conc the species concentration vector in mol/m^3
      * @param p_rop on return, the net rates of progress in mol/m^3-s
      */
     void netRatesOfProgress(const double* const p_conc, double* const p_rop);
-    
+
     /**
      * Fills the vector wdot with the net species production rates due to the
      * chemical reactions.
      * \f[
-     * \dot{\omega}_i = M_{w,i} \sum_j \left( \nu_{ij}^" - \nu_{ij}^{'} \right) 
-     *    \left[ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} - k_{b,j} \prod_i 
+     * \dot{\omega}_i = M_{w,i} \sum_j \left( \nu_{ij}^" - \nu_{ij}^{'} \right)
+     *    \left[ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} - k_{b,j} \prod_i
      *    C_i^{\nu_{ij}^"} \right] \Theta_{TB}
      * \f]
      *
@@ -200,14 +200,13 @@ public:
     //void getReactionDelta(
     //    const double* const p_s, double* const p_r) const;
 
-
 private:
 
     /**
      * Adds a new reaction to the Kinetics object.
      */
     void addReaction(const Reaction &reaction);
-    
+
     /**
      * Lets the Kinetics object know that the user is done adding reactions
      * allowing the object to optimize how it manages its resources.  Note that
@@ -218,21 +217,20 @@ private:
     void closeReactions(const bool validate_mechanism = false);
 
 private:
-
     std::string m_name;
 
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
-    
+
     std::vector<Reaction> m_reactions;
 
     StoichiometryManager m_reactants;
     StoichiometryManager m_rev_prods;
     StoichiometryManager m_irr_prods;
-    
+
     RateManager*     mp_rates;
     ThirdbodyManager m_thirdbodies;
     JacobianManager  m_jacobian;
-    
+
     double* mp_ropf;
     double* mp_ropb;
     double* mp_rop;

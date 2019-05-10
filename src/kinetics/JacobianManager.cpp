@@ -58,37 +58,29 @@ void swap(
 
 template <typename Reactants, typename Products>
 void ReactionStoich<Reactants, Products>::contributeToJacobian(
-    const double kf, const double kb, const double* const conc, 
+    const double kf, const double kb, const double* const conc,
     double* const work, double* const sjac, const size_t ns) const
 {
     // Need to make sure that product species are zeroed out in the work
     // array (don't need to zero out whole array)
-    for (int i = 0; i < Products::nSpecies(); ++i)
-        work[m_prods(i)] = 0.0;
+    for (int i = 0; i < ns; ++i)
+        work[m_prods(i)] = 0.;
 
     // Compute the derivative of reaction rate with respect to the reactants
     // and products (all other terms are zero)
     m_reacs.diffRR(kf, conc, work, Equals());
     m_prods.diffRR(kb, conc, work, MinusEquals());
-    
+
     for (int i = 0; i < Reactants::nSpecies(); ++i) {
         for (int j = 0; j < Reactants::nSpecies(); ++j)
             sjac[m_reacs(i)*ns + m_reacs(j)] -=
                 m_reacs[i] * work[m_reacs(j)];
-        
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_reacs(i)*ns + m_prods(j)] -=
-                m_reacs[i] * work[m_prods(j)];
     }
-    
+
     for (int i = 0; i < Products::nSpecies(); ++i) {
         for (int j = 0; j < Reactants::nSpecies(); ++j)
             sjac[m_prods(i)*ns + m_reacs(j)] +=
                 m_prods[i] * work[m_reacs(j)];
-                
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_prods(i)*ns + m_prods(j)] +=
-                m_prods[i] * work[m_prods(j)];
     }
 }
 
@@ -96,61 +88,49 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
 
 template <typename Reactants, typename Products>
 void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
-    const double kf, const double kb, const double* const conc, 
+    const double kf, const double kb, const double* const conc,
     double* const work, double* const sjac, const size_t ns) const
 {
     const double rrf = m_reacs.rr(kf, conc);
     const double rrb = m_prods.rr(kb, conc);
     const double rr = rrf - rrb;
     double tb = 0.0;
-    
+
     for (int i = 0; i < ns; ++i) {
         work[i] = mp_alpha[i] * rr;
         tb += mp_alpha[i] * conc[i];
     }
-    
-    /*cout << "kf: " << kf << endl;
-    cout << "kb: " << kb << endl;
-    cout << "RRf: " << rrf << endl;
-    cout << "RRb: " << rrb << endl;
-    cout << "RR: " << rr << endl;
-    cout << "TB: " << tb << endl;*/
 
     m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
     m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
-    
-    //cout << "reactants: ";
+
     for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        //cout << setw(3) << m_reacs(i);
         for (int j = 0; j < ns; ++j)
             sjac[m_reacs(i)*ns + j] -= m_reacs[i] * work[j];
     }
-    
-    //cout << endl << "products: ";
+
     for (int i = 0; i < Products::nSpecies(); ++i) {
-        //cout << setw(3) << m_prods(i);
         for (int j = 0; j < ns; ++j)
             sjac[m_prods(i)*ns + j] += m_prods[i] * work[j];
     }
-    //cout << endl;
 }
 
 //==============================================================================
 
 template <typename Reactants>
 void JacobianManager::addReactionStoich(
-    JacStoichBase* p_reacs, JacStoichBase* p_prods, const StoichType type, 
+    JacStoichBase* p_reacs, JacStoichBase* p_prods, const StoichType type,
     const Reaction& reaction)
 {
     if (reaction.isThirdbody()) {
-        // Thirdbody reactions        
+        // Thirdbody reactions
         for (int i = 0; i < m_thermo.nSpecies(); ++i)
             mp_work[i] = 1.0;
-        
+
         for (int i = 0; i < reaction.efficiencies().size(); ++i)
-            mp_work[reaction.efficiencies()[i].first] = 
+            mp_work[reaction.efficiencies()[i].first] =
                 reaction.efficiencies()[i].second;
-        
+
         switch (type) {
             case STOICH_11:
                 m_reactions.push_back(
@@ -225,7 +205,7 @@ void JacobianManager::addReactionStoich(
 bool JacobianManager::getJacStoich(
     const std::vector<int>& stoich_vec, JacStoichBase** p_stoich,
     StoichType& type) const
-{    
+{
     switch (stoich_vec.size()) {
         case 1:
             *p_stoich = new JacStoich11(stoich_vec[0]);
@@ -272,25 +252,25 @@ bool JacobianManager::getJacStoich(
 
 void JacobianManager::addReaction(const Reaction& reaction)
 {
-    // Need to figure out which class of reaction stoichiometries this 
+    // Need to figure out which class of reaction stoichiometries this
     // reaction belongs to
     JacStoichBase* p_reacs;
     JacStoichBase* p_prods;
     StoichType reacsType;
     StoichType prodsType;
-    
+
     if (!getJacStoich(reaction.reactants(), &p_reacs, reacsType)) {
         throw InvalidInputError("reaction", reaction.formula())
             << "Reactants' stoichiometry is not implemented in "
             << "JacobianManager.";
     }
-    
+
     if (!getJacStoich(reaction.products(), &p_prods, prodsType)) {
         throw InvalidInputError("reaction", reaction.formula())
             << "Products' stoichiometry is not implemented in "
             << "JacobianManager.";
     }
-    
+
     switch (reacsType) {
         case STOICH_11:
             addReactionStoich<JacStoich11>(
@@ -317,7 +297,7 @@ void JacobianManager::addReaction(const Reaction& reaction)
                 p_reacs, p_prods, prodsType, reaction);
             break;
     }
-    
+
     delete p_reacs;
     delete p_prods;
 }
@@ -325,12 +305,12 @@ void JacobianManager::addReaction(const Reaction& reaction)
 //==============================================================================
 
 void JacobianManager::computeJacobian(
-    const double* const kf, const double* const kb, const double* const conc, 
+    const double* const kf, const double* const kb, const double* const conc,
     double* const sjac) const
 {
     const size_t ns = m_thermo.nSpecies();
     const size_t nr = m_reactions.size();
-    
+
     // Make sure we are staring with a clean slate
     for (int i = 0; i < ns*ns; ++i)
         sjac[i] = 0.0;
@@ -339,11 +319,11 @@ void JacobianManager::computeJacobian(
     for (int i = 0; i < nr; ++i)
         m_reactions[i]->contributeToJacobian(
             kf[i], kb[i], conc, mp_work, sjac, ns);
-    
+
     // Finally, multiply by the species molecular weight ratios
     for (int i = 0; i < ns; ++i)
         mp_work[i] = m_thermo.speciesMw(i);
-    
+
     for (int i = 0, index = 0; i < ns; ++i) {
         for (int j = 0; j < ns; ++j, ++index)
             sjac[index] *= mp_work[i] / mp_work[j];

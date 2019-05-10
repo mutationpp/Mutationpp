@@ -50,14 +50,14 @@ void checkArrheniusRate(
     for (int i = 0; i < 10; ++i) {
         double T = i * 1000.0 + 1000.0;
         double k = A * std::pow(T, n) * std::exp(-theta / T);
-        
+
         CHECK( rate.getLnRate(std::log(T), 1.0/T) == Approx(std::log(k)) );
 
         CHECK(
-            rate.derivative(k, std::log(T), 1.0/T) == 
+            rate.derivative(k, std::log(T), 1.0/T) ==
             Approx(k * (n + theta / T) / T)
         );
-    }    
+    }
 }
 
 /**
