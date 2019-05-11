@@ -92,7 +92,7 @@ public:
      */
     virtual void lnk(
         const Thermodynamics::StateModel* const p_state, double* const p_lnk) = 0;
-        
+
     /**
      * Computes \Delta G / RT for this rate law group and subtracts these values
      * for each of the reactions in this group.
@@ -235,7 +235,7 @@ public:
     }
 
     /**
-     * Adds a reaction to the manager which allows for the calculation of the 
+     * Adds a reaction to the manager which allows for the calculation of the
      * \Delta G / RT term for reverse rate coefficients.
      */
     template <typename GroupType>

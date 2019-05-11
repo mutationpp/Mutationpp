@@ -239,6 +239,24 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
 
 //==============================================================================
 
+void RateManager::updateDerivatives(const Thermodynamics::Thermodynamics& thermo)
+{
+    // Evaluate all of the different rate coefficients
+    m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
+
+    // Copy rate coefficients which are the same as one of the previously
+    // calculated ones
+    // std::vector<size_t>::const_iterator iter = m_to_copy.begin();
+    // for ( ; iter != m_to_copy.end(); ++iter) {
+    //     const size_t index = *iter;
+    //     mp_lnkb[index] = mp_lnkf[index];
+    // }
+
+    // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
+    // m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
+}
+//==============================================================================
+
     } // namespace Kinetics
 } // namespace Mutation
 

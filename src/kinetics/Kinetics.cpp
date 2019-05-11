@@ -405,7 +405,7 @@ void Kinetics::dwdT(double* const p_dwdT)
 {
     // Special case of no reactions
     if (nReactions() == 0) {
-        std::fill(p_dwdT, p_dwdT + m_thermo.nSpecies(), 0);
+        std::fill(p_dwdT, p_dwdT + m_thermo.nSpecies(), 0.);
         return;
     }
 

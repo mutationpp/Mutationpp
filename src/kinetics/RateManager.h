@@ -37,7 +37,7 @@ namespace Mutation {
 class Reaction;
 
 /**
- * Manages the efficient computation of rate coefficients for the evaluation of 
+ * Manages the efficient computation of rate coefficients for the evaluation of
  * reaction rates.
  */
 class RateManager
@@ -49,29 +49,35 @@ public:
      * for the given reactions.
      */
     RateManager(size_t ns, const std::vector<Reaction>& reactions);
-    
+
     /**
      * Destructor.
      */
     ~RateManager();
-    
+
     /**
      * Updates the current values of the rate coefficients.
      */
     void update(const Thermodynamics::Thermodynamics& thermo);
-    
+
     /**
-     * Returns a pointer to the forward rate coefficients evaluated at the 
+     * Updates the current values of the temperature derivatives of the rate
+     * coefficients.
+     */
+    void updateDerivatives(const Thermodynamics::Thermodynamics& thermo);
+
+    /**
+     * Returns a pointer to the forward rate coefficients evaluated at the
      * forward temperature.
      */
     const double* const lnkf() { return mp_lnkf; }
-    
+
     /**
-     * Returns a pointer to the forward rate coefficients evaluated at the 
+     * Returns a pointer to the forward rate coefficients evaluated at the
      * forward temperature.
      */
     const double* const lnkb() { return mp_lnkb; }
-    
+
     /**
      * Returns the indices of irreversible reactions.
      */
@@ -106,26 +112,28 @@ private:
 
     /// Number of species in the mixture
     const size_t m_ns;
-    
+
     /// Number of reactions in the mechanism
     const size_t m_nr;
 
     /// Collection of different rate law groups (can be forward or reverse)
     RateLawGroupCollection m_rate_groups;
-    
+
     /// Storage for forward rate coefficient at forward temperature
     double* mp_lnkf;
-    
+    ArrayXd v_dkfdT;
+
     /// Storage for forward rate coefficient at backward temperature
     double* mp_lnkb;
-    
+    ArrayXd v_dkbdT;
+
     /// Storage for species Gibbs free energies
     double* mp_gibbs;
-    
+
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal
     std::vector<size_t> m_to_copy;
-    
+
     /// Stores the indices of non-reversible reactions
     std::vector<size_t> m_irr;
 };
