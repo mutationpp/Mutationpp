@@ -71,27 +71,27 @@ std::vector<Units> Arrhenius::sm_eunits = std::vector<Units>();
 Arrhenius::Arrhenius(const XmlElement& node, const int order)
 {
     assert( node.tag() == "arrhenius" );
-    
+
     if (sm_aunits.empty())
         sm_aunits = _default_aunits();
     if (sm_eunits.empty())
         sm_eunits = _default_eunits();
-    
+
     // Load the temperature exponent (defaults to 0)
 	node.getAttribute("n", m_n, 0.0);
-    
+
     // Load the pre-exponential factor (must be given)
-    node.getAttribute("A", m_lnA, 
+    node.getAttribute("A", m_lnA,
         "Arrhenius rate law must define coefficient A!");
     node.parseCheck(m_lnA > 0.0, "Pre-exponential factors must be positive > 0");
-    
+
     // Convert to correct units based on the order of the reaction and
     // store the log value
-    Units A_units = 
+    Units A_units =
         (((sm_aunits[1]^3) / sm_aunits[0])^(order-1)) /
         (sm_aunits[2] * (sm_aunits[3]^m_n));
     m_lnA = std::log(A_units.convertToBase(m_lnA));
-    
+
     // Load the characteristic temperature
     if (node.hasAttribute("Ea")) {
         node.getAttribute("Ea", m_temp);

@@ -12,12 +12,8 @@
         <M>N:5.0, O:5.0</M>
     </reaction>
 
-    <!-- reaction formula="N2+O=NO+N">
+    <reaction formula="N2+O=NO+N">
         <arrhenius A="5.70E+12" n="+0.42" T="42938." />
     </reaction>
-
-    <reaction formula="O+NO=O2+N">
-        <arrhenius A="8.40E+12" n="+0.00" T="19400." />
-    </reaction-->
 
 </mechanism>

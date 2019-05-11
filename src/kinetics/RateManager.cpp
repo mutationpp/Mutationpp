@@ -36,7 +36,7 @@ namespace Mutation {
     namespace Kinetics {
 
 //==============================================================================
-    
+
 // Simple macro to create a temperature selector type
 #define TEMPERATURE_SELECTOR(__NAME__,__T__)\
 class __NAME__\
@@ -66,7 +66,7 @@ typedef RateLawGroup1T<Arrhenius, TSelector> ArrheniusT;
 typedef RateLawGroup1T<Arrhenius, TeSelector> ArrheniusTe;
 
 /// Arrhenius group evaluated at sqrt(T*Tv)
-typedef RateLawGroup1T<Arrhenius, ParkSelector> ArrheniusPark; 
+typedef RateLawGroup1T<Arrhenius, ParkSelector> ArrheniusPark;
 
 //==============================================================================
 
@@ -120,14 +120,14 @@ RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     const size_t nr = reactions.size();
     for (size_t i = 0; i < m_nr; ++i)
         addReaction(i, reactions[i]);
-    
+
     // Allocate storage in one block for both rate coefficient arrays and
-    // species gibbs free energies 
+    // species gibbs free energies
     const size_t block_size = 2*m_nr + ns;
     mp_lnkf  = new double [block_size];
     mp_lnkb  = mp_lnkf + m_nr;
     mp_gibbs = mp_lnkb + m_nr;
-    
+
     // Initialize the arrays to zero
     std::fill(mp_lnkf, mp_lnkf+block_size, 0.0);
 }
@@ -147,7 +147,7 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
 {
     // Get the rate law which is being used in this reaction
     const RateLaw* p_rate = reaction.rateLaw();
-    
+
     // Arrhenius reactions
     if (typeid(*p_rate) == typeid(Arrhenius)) {
         selectRate<MAX_REACTION_TYPES-1>(rxn, reaction);
@@ -197,11 +197,11 @@ struct is_same<T,T> {
 
 template <typename ForwardGroup, typename ReverseGroup>
 void RateManager::addRate(const size_t rxn, const Reaction& reaction)
-{    
+{
     m_rate_groups.addRateCoefficient<ForwardGroup>(rxn, reaction.rateLaw());
-    
+
     if (reaction.isReversible()) {
-        
+
         // Make use of forward computation when possible
         if (is_same<ForwardGroup, ReverseGroup>::value)
             m_to_copy.push_back(rxn);
@@ -210,9 +210,9 @@ void RateManager::addRate(const size_t rxn, const Reaction& reaction)
             // note: mp_lnkff+(rxn+m_nr) = mp_lnkfb+rxn
             m_rate_groups.addRateCoefficient<ReverseGroup>(
                 rxn+m_nr, reaction.rateLaw());
-        
+
         m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
-        
+
     } else {
         m_irr.push_back(rxn);
     }
@@ -224,7 +224,7 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
 {
     // Evaluate all of the different rate coefficients
     m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
-    
+
     // Copy rate coefficients which are the same as one of the previously
     // calculated ones
     std::vector<size_t>::const_iterator iter = m_to_copy.begin();
@@ -232,7 +232,7 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
         const size_t index = *iter;
         mp_lnkb[index] = mp_lnkf[index];
     }
-    
+
     // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
     m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
 }

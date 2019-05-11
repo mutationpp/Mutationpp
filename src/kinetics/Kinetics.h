@@ -200,6 +200,20 @@ public:
     //void getReactionDelta(
     //    const double* const p_s, double* const p_r) const;
 
+    /**
+     * Fills the vector dwdT with the temperature derivative of species production
+     * rate keep the partial and total densities constant.
+     * \f[
+     * \dot{\omega}_i = M_{w,i} \sum_j \left( \nu_{ij}^" - \nu_{ij}^{'} \right)
+     *    \left[ dk_{f,j}/dT \prod_i C_i^{\nu_{ij}^{'}} - dk_{b,j}/dT \prod_i
+     *    C_i^{\nu_{ij}^"} \right] \Theta_{TB}
+     * \f]
+     *
+     * @param p_jac  - on return, the derivative of the production rates with
+     * respect to temperature
+     */
+    void dwdT(double* const p_dwdT);
+
 private:
 
     /**
@@ -217,6 +231,17 @@ private:
     void closeReactions(const bool validate_mechanism = false);
 
 private:
+    /**
+     * Helper functions which compute the temperature derivative forward and
+     * backward rates of progress.
+     */
+    void dropfdT(double* const p_ropf);
+    void dropbdT(double* const p_ropb);
+    /**
+     * 
+     */
+    void dkfdT(double* const p_dkfdT);
+
     std::string m_name;
 
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;

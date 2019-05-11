@@ -282,7 +282,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
     bool m_inert_e         = false;
     int ecount             = 0;
     int chgcount           = 0;
-    
+
     // Check reactants for heavy ions and electrons
     for (int i=0; i < nReactants(); ++i) {
         const Species& species = thermo.species(m_reactants[i]);
@@ -321,57 +321,57 @@ void Reaction::determineType(const class Thermodynamics& thermo)
 
     // ---------------- Logic tree ----------------
     if (ecount > 0) {
-        
+
         if (chgcount > 0) {
            if (m_inert_e)
               m_type = ION_RECOMBINATION_E;
            else if (m_inert)
               m_type = ION_RECOMBINATION_M;
-           else 
+           else
               m_type = DISSOCIATIVE_RECOMBINATION;
-           
+
         } else {
             if (m_inert_e)
                m_type = ELECTRONIC_ATTACHMENT_E;
             else if (m_inert)
                m_type = ELECTRONIC_ATTACHMENT_M;
-            else 
+            else
                m_type = DISSOCIATIVE_ATTACHMENT;
         }
-        
+
     } else if (ecount < 0) {
-        
+
         if (chgcount > 0) {
             if (m_inert_e)
                 m_type = ELECTRONIC_DETACHMENT_E;
             else if (m_inert)
                 m_type = ELECTRONIC_DETACHMENT_M;
-            else 
+            else
                 m_type = ASSOCIATIVE_DETACHMENT;
-            
+
         } else {
             if (m_inert_e)
                 m_type = IONIZATION_E;
             else if (m_inert)
                 m_type = IONIZATION_M;
-            else 
+            else
                 m_type = ASSOCIATIVE_IONIZATION;
         }
-        
+
     } else {
-        
+
         if (nReactants() > nProducts()) {
             if (m_inert_e)
                 m_type = RECOMBINATION_E;
             else
-                m_type = RECOMBINATION_M;   // including double recombination        
-                
+                m_type = RECOMBINATION_M;   // including double recombination
+
         } else if (nReactants() < nProducts()) {
             if (m_inert_e)
                 m_type = DISSOCIATION_E;
             else
-                m_type = DISSOCIATION_M;   // including double dissociation  
-            
+                m_type = DISSOCIATION_M;   // including double dissociation
+
         } else {
             if (m_inert_e)
                 m_type = EXCITATION_E;
@@ -379,7 +379,7 @@ void Reaction::determineType(const class Thermodynamics& thermo)
                 m_type = EXCITATION_M;
             else
                 m_type = EXCHANGE;  // exchange of charge, atom, or both simultaneously
-        } 
+        }
     }
 }
 

@@ -57,39 +57,39 @@ class Arrhenius : public RateLaw
 public:
 
     static void setUnits(const Mutation::Utilities::IO::XmlElement& node);
-    
+
     Arrhenius(const Mutation::Utilities::IO::XmlElement& node, const int order);
-    
+
     Arrhenius(const Arrhenius& to_copy)
         : m_lnA(to_copy.m_lnA), m_n(to_copy.m_n), m_temp(to_copy.m_temp)
     { }
-    
+
     virtual ~Arrhenius() { };
-    
+
     Arrhenius* clone() const {
         return new Arrhenius(*this);
     }
-    
+
     inline double getLnRate(const double lnT, const double invT) const {
         return (m_lnA + m_n * lnT - m_temp * invT);
     }
-    
+
     inline double derivative(const double k, const double lnT, const double invT) const {
         return (k*invT*(m_n + m_temp*invT));
     }
 
-    double A() const { 
+    double A() const {
         return std::exp(m_lnA);
     }
-    
+
     double n() const {
         return m_n;
     }
-    
+
     double T() const {
         return m_temp;
     }
-    
+
 private:
 
     static std::vector<Mutation::Utilities::Units> sm_aunits;    

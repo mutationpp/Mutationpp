@@ -35,30 +35,27 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);
 
     const int set_state_rhoi_T = 1.;
+    Mixture mix("air5_jacobian_NASA-9_ChemNonEq1T");
 
-//    SECTION("Air 5 mechanism jacobian wrt to density.") {
-        // Initializing library
-        Mixture mix("air5_jacobian_NASA-9_ChemNonEq1T");
+    const int ns = mix.nSpecies();
+    const int nr = mix.nReactions();
 
-        // Loop for multiple temperatures
-        const double Tref = 300.;  // K
+    ArrayXd mw(ns); mw = mix.speciesMw();
+    ArrayXd rhoi(ns); rhoi = mw;
 
-        const int ns = 5; //mix.nSpecies();
-        const int nr = mix.nReactions();
+    ArrayXd  jac_mpp(ns*ns);
+    ArrayXXd jac(ns, ns);
+    ArrayXXd dfrdrhoi(3, ns);
+    ArrayXXd dbrdrhoi(3, ns);
 
-        ArrayXd mw(ns); mw = mix.speciesMw();
-        ArrayXd rhoi(ns); rhoi = mw; // One mole of everything.
+    jac_mpp.setZero();
 
-        // ArrayXd jac_mpp(ns*ns);
-        ArrayXd  jac_mpp(ns*ns);
-        ArrayXXd jac(ns, ns);
-        ArrayXXd dfrdrhoi(nr, ns);
-        ArrayXXd dbrdrhoi(nr, ns);
+    // Loop for multiple temperatures
+    const int nT = 4;
+    for (int iT = 0; iT < nT; iT++) {
+        double T = 500*iT + 300.;  // K
 
-        jac_mpp.setZero();
-
-// Maybe loop. (Double loop to perturb everything, eg T, rhoi)
-        mix.setState(rhoi.data(), &Tref, set_state_rhoi_T);
+        mix.setState(rhoi.data(), &T, set_state_rhoi_T);
         mix.jacobianRho(jac_mpp.data());
 
         // Calculating jacobian wrt to rho for comparison
@@ -67,84 +64,78 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
         mix.backwardRateCoefficients(kb.data());
 
         dfrdrhoi.setZero(); dbrdrhoi.setZero();
+
         // Nitrogen dissociation: N2 + N = N + N + N
         // F: kf*[N2][N]
-        dfrdrhoi(0,0) += kf(0)* rhoi(3) / (mw(3)*mw(0));   // wrt to N
-        dfrdrhoi(0,3) += kf(0)* rhoi(0) / (mw(3)*mw(0));   // wrt to N2
+        dfrdrhoi(0,0) += kf(0)* rhoi(3) / (mw(3)*mw(0));
+        dfrdrhoi(0,3) += kf(0)* rhoi(0) / (mw(3)*mw(0));
         // B: kb*[N]*[N]*[N]
         dbrdrhoi(0,0) += kb(0)* 3*rhoi(0)*rhoi(0) / (mw(0)*mw(0)*mw(0));
 
         // Oxygen dissociation: O2 + M = O + O + M
         // F: kf*[O2][N]
-        dfrdrhoi(1,0) += kf(1)* rhoi(4) / (mw(4)*mw(0)) * 5.;   // wrt to N
-        dfrdrhoi(1,4) += kf(1)* rhoi(0) / (mw(4)*mw(0)) * 5.;   // wrt to O2
+        dfrdrhoi(1,0) += kf(1)* rhoi(4) / (mw(4)*mw(0)) * 5.;
+        dfrdrhoi(1,4) += kf(1)* rhoi(0) / (mw(4)*mw(0)) * 5.;
         // F: kf*[O2][O]
-        dfrdrhoi(1,1) += kf(1)* rhoi(4) / (mw(4)*mw(1)) * 5.;   // wrt to O
-        dfrdrhoi(1,4) += kf(1)* rhoi(1) / (mw(4)*mw(1)) * 5.;   // wrt to O2
+        dfrdrhoi(1,1) += kf(1)* rhoi(4) / (mw(4)*mw(1)) * 5.;
+        dfrdrhoi(1,4) += kf(1)* rhoi(1) / (mw(4)*mw(1)) * 5.;
         // F: kf*[O2][NO]
-        dfrdrhoi(1,2) += kf(1)* rhoi(4) / (mw(4)*mw(2)) * 1.;   // wrt to NO
-        dfrdrhoi(1,4) += kf(1)* rhoi(2) / (mw(4)*mw(2)) * 1.;   // wrt to O2
+        dfrdrhoi(1,2) += kf(1)* rhoi(4) / (mw(4)*mw(2)) * 1.;
+        dfrdrhoi(1,4) += kf(1)* rhoi(2) / (mw(4)*mw(2)) * 1.;
         // F: kf*[O2][N2]
-        dfrdrhoi(1,3) += kf(1)* rhoi(4) / (mw(4)*mw(3)) * 1.;;   // wrt to N2
-        dfrdrhoi(1,4) += kf(1)* rhoi(3) / (mw(4)*mw(3)) * 1.;;   // wrt to O2
+        dfrdrhoi(1,3) += kf(1)* rhoi(4) / (mw(4)*mw(3)) * 1.;
+        dfrdrhoi(1,4) += kf(1)* rhoi(3) / (mw(4)*mw(3)) * 1.;
         // F: kf*[O2][O2]
-        dfrdrhoi(1,4) += kf(1)* 2*rhoi(2) / (mw(4)*mw(2)) * 1.;; // wrt to O2
+        dfrdrhoi(1,4) += kf(1)* 2*rhoi(2) / (mw(4)*mw(2)) * 1.;
         // B: kb*[O][O][N]
         dbrdrhoi(1,0) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(0)) * 5.;
         dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(0) / (mw(1)*mw(1)*mw(0)) * 5.;
         // B: kb*[O][O][O]
         dbrdrhoi(1,1) += kb(1)* 3*rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(1)) * 5.;
         // B: kb*[O][O][NO]
-        dbrdrhoi(1,2) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(2)) * 1.;;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(2) / (mw(1)*mw(1)*mw(2)) * 1.;;
+        dbrdrhoi(1,2) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(2)) * 1.;
+        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(2) / (mw(1)*mw(1)*mw(2)) * 1.;
         // B: kb*[O][O][N2]
-        dbrdrhoi(1,3) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(3)) * 1.;;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(3) / (mw(1)*mw(1)*mw(3)) * 1.;;
+        dbrdrhoi(1,3) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(3)) * 1.;
+        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(3) / (mw(1)*mw(1)*mw(3)) * 1.;
         // B: kb*[O][O][O2]
-        dbrdrhoi(1,4) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(4)) * 1.;;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(4) / (mw(1)*mw(1)*mw(4)) * 1.;;
+        dbrdrhoi(1,4) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(4)) * 1.;
+        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(4) / (mw(1)*mw(1)*mw(4)) * 1.;
 
         // Zeldovich: N2 + O = NO + N
         // F: kf[N2][O]
-        dfrdrhoi(2,1) = kf(2)*rhoi(3) / (mw(3)*mw(1));
-        dfrdrhoi(2,3) = kf(2)*rhoi(1) / (mw(3)*mw(1));
+        dfrdrhoi(2,1) += kf(2)*rhoi(3) / (mw(3)*mw(1));
+        dfrdrhoi(2,3) += kf(2)*rhoi(1) / (mw(3)*mw(1));
         // B: kb[NO][N]
-        dbrdrhoi(2,0) = kb(2)*rhoi(2) / (mw(2)*mw(0));
-        dbrdrhoi(2,2) = kb(2)*rhoi(0) / (mw(2)*mw(0));
-        // Zeldovich: O + NO = O2 + N
-        // F: kf[O][NO]
-        // dfrdrhoi(3,1) = kf(3)*rhoi(2) / (mw(1)*mw(2));
-        // dfrdrhoi(3,2) = kf(3)*rhoi(1) / (mw(1)*mw(2));
-        // B: kb[O2][N]
-        // dbrdrhoi(3,0) = kb(3)*rhoi(4) / (mw(4)*mw(0))
-        // dbrdrhoi(3,4) = kb(3)*rhoi(0) / (mw(4)*mw(0))
+        dbrdrhoi(2,0) += kb(2)*rhoi(2) / (mw(2)*mw(0));
+        dbrdrhoi(2,2) += kb(2)*rhoi(0) / (mw(2)*mw(0));
 
         // Building the jacobian
         jac(0,0) = mw(0)*(
-            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))  // R1
+            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
             -1*(dbrdrhoi(2,0)));
         jac(0,1) = mw(0)*(
-            -1*(dfrdrhoi(0,0)));
+            +1*(dfrdrhoi(2,1)));
         jac(0,2) = mw(0)*(
-            +1*(dbrdrhoi(2,2)));
+            -1*(dbrdrhoi(2,2)));
         jac(0,3) = mw(0)*(
-            +2*(dfrdrhoi(0,3))   // R1
+            +2*(dfrdrhoi(0,3))
             +1*(dfrdrhoi(2,3)));
         jac(0,4) = 0.;
         jac(1,0) = mw(1)*(
-            +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0)) // R2
+            +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
             +1*(dbrdrhoi(2,0)));
         jac(1,1) = mw(1)*(
-            +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))  // R2
+            +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
             -1*(dfrdrhoi(2,1)));
         jac(1,2) = mw(1)*(
-            +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2)) // R2
+            +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
             +1*(dbrdrhoi(2,2)));
         jac(1,3) = mw(1)*(
-            +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))) // R2
-            -1*(dfrdrhoi(2,3));
+            +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
+            -1*(dfrdrhoi(2,3)));
         jac(1,4) = mw(1)*(
-            +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4))); // R2
+            +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
         jac(2,0) = mw(2)*(
             -1*(dbrdrhoi(2,0)));
         jac(2,1) = mw(2)*(
@@ -155,39 +146,34 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
             +1*(dfrdrhoi(2,3)));
         jac(2,4) = 0;
         jac(3,0) = mw(3)*(
-            -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))); // R1
-        jac(3,1) = 0.;
-        jac(3,2) = 0.;
+            -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
+            +1*(dbrdrhoi(2,0)));
+        jac(3,1) = mw(3)*(
+            -1*(dfrdrhoi(2,1)));
+        jac(3,2) = mw(3)*(
+            +1*(dbrdrhoi(2,2)));
         jac(3,3) = mw(3)*(
-            -1*(dfrdrhoi(0,3))); // R1
+            -1*(dfrdrhoi(0,3)) // R1
+            -1*(dfrdrhoi(2,3)));
         jac(3,4) = 0.;
         jac(4,0) = mw(4)*(
             -1*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
-            +1*(dbrdrhoi(2,0)));
+            +0);
         jac(4,1) = mw(4)*(
             -1*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
-            -1*(dfrdrhoi(2,1)));
+            -0);
         jac(4,2) = mw(4)*(
             -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
-            -1*(dfrdrhoi(2,3)));
+            -0);
         jac(4,3) = mw(4)*(
             -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
-            -1*(dfrdrhoi(2,3)));
+            -0);
         jac(4,4) = mw(4)*(
-            -1*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
-
-        std::cout << "Test" << std::endl;
-        std::cout << jac << std::endl << std::endl;
-        std::cout << "M++" << std::endl;
-        for (int i = 0; i < ns; i++){
-            for (int j = 0; j < ns; j++){
-                std::cout << std::setw(12) << jac_mpp(i*ns+j) << " ";
-            }
-            std::cout << std::endl;
-        }
+            -1*(dfrdrhoi(1,4)-dbrdrhoi(1,4)));
 
         // Making sure everything is correct
         for (int i = 0; i < ns; i++)
             for (int j = 0; j < ns; j++)
                 CHECK(jac(i,j) == Approx(jac_mpp(i*ns +j)).epsilon(tol));
+    }
 }

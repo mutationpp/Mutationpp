@@ -401,6 +401,40 @@ void Kinetics::jacobianRho(double* const p_jac)
 
 //==============================================================================
 
+void Kinetics::dwdT(double* const p_dwdT)
+{
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        std::fill(p_dwdT, p_dwdT + m_thermo.nSpecies(), 0);
+        return;
+    }
+
+    // Compute species concentrations (mol/m^3)
+    Map<ArrayXd>(p_dwdT, m_thermo.nSpecies()) =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
+
+    // netRatesOfProgress(p_dwdT, mp_rop);
+
+    // Sum all contributions from every reaction
+    std::fill(p_dwdT, p_dwdT+m_thermo.nSpecies(), 0.0);
+    m_reactants.decrSpecies(mp_rop, p_dwdT);
+    m_rev_prods.incrSpecies(mp_rop, p_dwdT);
+    m_irr_prods.incrSpecies(mp_rop, p_dwdT);
+
+    // Multiply by species molecular weights
+    for (int i = 0; i < m_thermo.nSpecies(); ++i)
+        p_dwdT[i] *= m_thermo.speciesMw(i);
+}
+
+//==============================================================================
+
+void Kinetics::dkfdT(double* const p_dkfdT) {
+        //mp_rates->
+}
+
+//==============================================================================
+
     } // namespace Kinetics
 } // namespace Mutation
 

@@ -71,7 +71,7 @@ public:
      */
     virtual void addRateCoefficient(
         const size_t rxn, const RateLaw* const p_rate) = 0;
-    
+
     /**
      * Adds a reaction which uses the backward temperature represented by this
      * group.
@@ -80,13 +80,13 @@ public:
         m_reacs.addReaction(rxn, reaction.reactants());
         m_prods.addReaction(rxn, reaction.products());
     }
-    
+
     /**
      * Returns the temperature used in the last evaluation of the rate
      * coefficients.
      */
     double getT() const { return m_t; }
-    
+
     /**
      * Evaluates all of the rates in the group and stores in the given vector.
      */
@@ -98,17 +98,17 @@ public:
      * for each of the reactions in this group.
      */
     void subtractLnKeq(size_t ns, double* const p_g, double* const p_r) const
-    {        
+    {
         // Compute G_i/RT - ln(Patm/RT)
         const double val = std::log(ONEATM / (RU * m_t));
         for (int i = 0; i < ns; ++i)
             p_g[i] -= val;
-        
+
         // Now subtract \Delta[G_i/RT - ln(Patm/RT)]_j
         m_reacs.decrReactions(p_g, p_r);
         m_prods.incrReactions(p_g, p_r);
     }
-    
+
 
 protected:
 
@@ -116,11 +116,11 @@ protected:
     /// in the lnk() function)
     double m_t;
     double m_last_t;
-    
+
     /// Stores the reactants for reactions that will use this rate law for the
     /// reverse direction
     StoichiometryManager m_reacs;
-    
+
     /// Stores the products for reactions that will use this rate law for the
     /// reverse direction
     StoichiometryManager m_prods;
@@ -212,12 +212,12 @@ public:
             iter->second = NULL;
         }
     }
-    
+
     /**
      * Returns the number of different rate law groups in this collection.
      */
     size_t nGroups() const { return m_group_map.size(); }
-    
+
     /**
      * Returns the GroupMap managed by this RateLawGroupCollection object.
      */
@@ -233,7 +233,7 @@ public:
             m_group_map[&typeid(GroupType)] = new GroupType();
         m_group_map[&typeid(GroupType)]->addRateCoefficient(rxn, p_rate);
     }
-    
+
     /**
      * Adds a reaction to the manager which allows for the calculation of the 
      * \Delta G / RT term for reverse rate coefficients.
@@ -258,7 +258,7 @@ public:
         for ( ; iter != m_group_map.end(); ++iter)
             iter->second->lnk(p_state, p_lnk);
     }
-    
+
     /**
      * Subtracts ln(keq) from the provided rate coefficients.
      */
@@ -276,7 +276,7 @@ public:
     }
 
 private:
-    
+
     /// Collection of RateLawGroup objects
     GroupMap m_group_map;
 };

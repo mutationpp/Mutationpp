@@ -75,12 +75,29 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
         for (int j = 0; j < Reactants::nSpecies(); ++j)
             sjac[m_reacs(i)*ns + m_reacs(j)] -=
                 m_reacs[i] * work[m_reacs(j)];
-    }
 
+        for (int j = 0; j < Products::nSpecies(); ++j) {
+            bool inert = false;
+            for (int k = 0; k < Reactants::nSpecies(); k++)
+                if (m_prods(j) == m_reacs(k)) inert = true;
+            if (!inert)
+                sjac[m_reacs(i)*ns + m_prods(j)] -=
+                    m_reacs[i] * work[m_prods(j)];
+        }
+    }
     for (int i = 0; i < Products::nSpecies(); ++i) {
         for (int j = 0; j < Reactants::nSpecies(); ++j)
             sjac[m_prods(i)*ns + m_reacs(j)] +=
                 m_prods[i] * work[m_reacs(j)];
+
+        for (int j = 0; j < Products::nSpecies(); ++j){
+            bool inert = false;
+            for (int k = 0; k < Reactants::nSpecies(); k++)
+                if (m_prods(j) == m_reacs(k)) inert = true;
+            if (!inert)
+            sjac[m_prods(i)*ns + m_prods(j)] +=
+                m_prods[i] * work[m_prods(j)];
+        }
     }
 }
 
