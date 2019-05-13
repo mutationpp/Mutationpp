@@ -223,7 +223,6 @@ void Kinetics::forwardRateCoefficients(double* const p_kf)
 void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
     if (nReactions() == 0)
-        return;
 
     mp_rates->update(m_thermo);
     Map<ArrayXd>(p_kb, nReactions()) =
@@ -231,6 +230,7 @@ void Kinetics::backwardRateCoefficients(double* const p_kb)
 
     for(int i=0; i < mp_rates->irrReactions().size(); ++i)
         p_kb[mp_rates->irrReactions()[i]] = 0.0;
+    return;
 }
 
 
@@ -414,7 +414,7 @@ void Kinetics::dwdT(double* const p_dwdT)
         (m_thermo.numberDensity() / NA) *
         Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
 
-    // netRatesOfProgress(p_dwdT, mp_rop);
+    netdropdT(p_dwdT, mp_rop);
 
     // Sum all contributions from every reaction
     std::fill(p_dwdT, p_dwdT+m_thermo.nSpecies(), 0.0);
@@ -430,7 +430,58 @@ void Kinetics::dwdT(double* const p_dwdT)
 //==============================================================================
 
 void Kinetics::dkfdT(double* const p_dkfdT) {
-        //mp_rates->
+    if (nReactions() == 0)
+        return;
+
+    mp_rates->updateDerivatives(m_thermo);
+
+    for (int i = 0; i < nReactions(); i++)
+        p_dkfdT[i] =  mp_rates->dkfdT()[i];
+
+}
+
+//==============================================================================
+
+void Kinetics::dkbdT(double* const p_dkbdT) {
+    if (nReactions() == 0)
+        return;
+
+    mp_rates->updateDerivatives(m_thermo);
+
+    for (int i = 0; i < nReactions(); i++)
+        p_dkbdT[i] = mp_rates->dkbdT()[i];
+}
+
+//==============================================================================
+
+void Kinetics::dropfdT(
+    const double* const p_conc, double* const p_ropf)
+{
+    dkfdT(p_ropf);
+    m_reactants.multReactions(p_conc, p_ropf);
+    m_thirdbodies.multiplyThirdbodies(p_conc, p_ropf);
+}
+
+//==============================================================================
+
+void Kinetics::dropbdT(
+    const double* const p_conc, double* const p_ropb)
+{
+    dkbdT(p_ropb);
+    m_rev_prods.multReactions(p_conc, p_ropb);
+    m_thirdbodies.multiplyThirdbodies(p_conc, p_ropb);
+}
+
+//==============================================================================
+
+void Kinetics::netdropdT(
+    const double* const p_conc, double* const p_rop)
+{
+    forwardRatesOfProgress(p_conc, mp_ropf);
+    backwardRatesOfProgress(p_conc, mp_ropb);
+
+    Map<ArrayXd>(p_rop, nReactions()) =
+        Map<ArrayXd>(mp_ropf, nReactions()) - Map<ArrayXd>(mp_ropb, nReactions());
 }
 
 //==============================================================================

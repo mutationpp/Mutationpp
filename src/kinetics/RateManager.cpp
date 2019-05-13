@@ -38,24 +38,60 @@ namespace Mutation {
 //==============================================================================
 
 // Simple macro to create a temperature selector type
-#define TEMPERATURE_SELECTOR(__NAME__,__T__)\
-class __NAME__\
-{\
+#define TEMPERATURE_SELECTOR(__NAME__,__T__,__NT__,__POWER__, __TDER__) \
+class __NAME__ \
+{ \
 public:\
+    __NAME__()\
+    : m_nT(__NT__),\
+      mv_power(m_nT){\
+          __POWER__\
+      }\
     inline double getT(const Thermodynamics::StateModel* const state) const {\
         return ( __T__ );\
+    } \
+    void getTDerivate( \
+    const Thermodynamics::StateModel* const state,\
+    Eigen::ArrayXd& v_power,\
+    Eigen::ArrayXd& v_T) {\
+    v_power = mv_power;\
+    __TDER__\
     }\
+    int nT() { return m_nT; }\
+private:\
+    size_t m_nT;\
+    Eigen::ArrayXd mv_power;\
 };
 
 /// Temperature selector which returns the current translational temperature
-TEMPERATURE_SELECTOR(TSelector, state->T())
+#define POWERT \
+mv_power(0) = 1.;
+
+#define TTR \
+v_T(0) = state->T();
+
+TEMPERATURE_SELECTOR(TSelector, state->T(), 1, POWERT, TTR)
+#undef TTR
+
+#define TE \
+v_T(0) = state->Te();
 
 /// Temperature selector which returns the current electron temperature
 //TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
-TEMPERATURE_SELECTOR(TeSelector, state->Te())
+TEMPERATURE_SELECTOR(TeSelector, state->Te(), 1, POWERT, TE)
+#undef TE
+#undef POWERT
+
+#define POWERTTV \
+mv_power(0) = .5; mv_power(1) = .5;
+#define PARKTTV \
+v_T(0) = state->T(); v_T(1) = state->Tv();
 
 /// Temperature selector which returns the current value of sqrt(T*Tv)
-TEMPERATURE_SELECTOR(ParkSelector, std::sqrt(state->T()*state->Tv()))
+TEMPERATURE_SELECTOR(
+    ParkSelector, std::sqrt(state->T()*state->Tv()), 2, POWERTTV, PARKTTV)
+#undef POWERTTV
+#undef PARKTTV
 
 #undef TEMPERATURE_SELECTOR
 
@@ -114,7 +150,7 @@ SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
 
 RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     : m_ns(ns), m_nr(reactions.size()), mp_lnkf(NULL), mp_lnkb(NULL),
-      mp_gibbs(NULL)
+      mp_gibbs(NULL), v_dkfdT(m_nr), v_dkbdT(m_nr)
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
@@ -244,19 +280,24 @@ void RateManager::updateDerivatives(const Thermodynamics::Thermodynamics& thermo
     // Evaluate all of the different rate coefficients
     m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
 
+    m_rate_groups.lndkfdT(thermo.state(), v_dkfdT);
+    v_dkfdT = v_dkfdT.exp();
+
+    v_dkbdT.setZero();
     // Copy rate coefficients which are the same as one of the previously
     // calculated ones
-    // std::vector<size_t>::const_iterator iter = m_to_copy.begin();
-    // for ( ; iter != m_to_copy.end(); ++iter) {
-    //     const size_t index = *iter;
-    //     mp_lnkb[index] = mp_lnkf[index];
-    // }
+    std::vector<size_t>::const_iterator iter = m_to_copy.begin();
+    for ( ; iter != m_to_copy.end(); ++iter) {
+        const size_t index = *iter;
+        v_dkbdT[index] = v_dkfdT[index];
+    }
 
-    // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
-    // m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
+    // Subtract lndkeqdT(Tb) from the lndkfdT(Tb) and then divide
+    // Keq(Tv) to get lndkbdT(Tb)
+    m_rate_groups.overKeqsubtractLndKeqdT(
+        thermo, v_dkbdT, v_dkfdT, mp_lnkf, m_nr);
 }
 //==============================================================================
 
     } // namespace Kinetics
 } // namespace Mutation
-

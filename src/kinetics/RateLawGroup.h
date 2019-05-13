@@ -93,6 +93,9 @@ public:
     virtual void lnk(
         const Thermodynamics::StateModel* const p_state, double* const p_lnk) = 0;
 
+    virtual void lndkfdT(
+        const Thermodynamics::StateModel* const p_state, Eigen::ArrayXd& v_lndkfdT) = 0;
+
     /**
      * Computes \Delta G / RT for this rate law group and subtracts these values
      * for each of the reactions in this group.
@@ -109,6 +112,20 @@ public:
         m_prods.incrReactions(p_g, p_r);
     }
 
+    /**
+     *
+     */
+    void TdlnKeqdT(size_t ns, double* const p_h, Eigen::ArrayXd& v_TdlnKeqdT) const
+    {
+        // Compute H_i/RT - 1
+        for (int i = 0; i < ns; ++i) {
+            p_h[i] -= 1.;
+        }
+
+        // Now subtract \Delta[1/T*(H_i/RT - 1)]
+        m_reacs.decrReactions(p_h, v_TdlnKeqdT.data());
+        m_prods.incrReactions(p_h, v_TdlnKeqdT.data());
+    }
 
 protected:
 
@@ -129,7 +146,7 @@ protected:
 
 /**
  * Groups reaction rate laws based on a single temperature that are the same
- * kind and evaluated at the same temperature together so that they may be 
+ * kind and evaluated at the same temperature together so that they may be
  * evaluated efficiently.
  */
 template <typename RateLawType, typename TSelectorType>
@@ -170,6 +187,34 @@ public:
 
         // Save this temperature
         m_last_t = m_t;
+    }
+
+    /**
+     *
+     */
+    virtual void lndkfdT(
+        const Thermodynamics::StateModel* const p_state,
+        Eigen::ArrayXd& v_lndkfdT)
+    {
+        lnk(p_state, v_lndkfdT.data());
+
+        const size_t m_nT = TSelectorType().nT();
+
+        Eigen::ArrayXd v_power(m_nT);
+        Eigen::ArrayXd v_T(m_nT);
+
+        // Determine the reaction temperature for this group
+        TSelectorType().getTDerivate(p_state, v_power, v_T);
+
+        for (int i = 0; i < m_rates.size(); ++i) {
+            const std::pair<size_t, RateLawType>& rate = m_rates[i];
+            double lnkf = v_lndkfdT(rate.first);
+            v_lndkfdT(rate.first) = rate.second.lndkdT(
+                lnkf, v_T, v_power);
+        }
+
+        // Save this temperature
+        // m_last_t = m_t;
     }
 
 private:
@@ -260,6 +305,19 @@ public:
     }
 
     /**
+     *
+     */
+    void lndkfdT(
+        const Thermodynamics::StateModel* const p_state, Eigen::ArrayXd& v_lndkfdT)
+    {
+        // Compute the forward rate derivative wrt temperature
+        GroupMap::iterator iter = m_group_map.begin();
+
+        for ( ; iter != m_group_map.end(); ++iter)
+            iter->second->lndkfdT(p_state, v_lndkfdT);
+    }
+
+    /**
      * Subtracts ln(keq) from the provided rate coefficients.
      */
     void subtractLnKeq(
@@ -273,6 +331,37 @@ public:
             thermo.speciesSTGOverRT(p_group->getT(), p_g);
             p_group->subtractLnKeq(ns, p_g, p_lnk);
         }
+    }
+
+    /**
+     * Subtracts ln(dkeqdT) from the provided rate coefficients and then
+     * divides by Keq.
+     */
+    void overKeqsubtractLndKeqdT(
+        const Thermodynamics::Thermodynamics& thermo,
+        Eigen::ArrayXd& v_dkbdT, const Eigen::ArrayXd& v_dkfdT,
+        const double* const p_lnkf, const int& nr)
+    {
+        const size_t ns = thermo.nSpecies();
+
+        Eigen::ArrayXd dlnKeqdT(nr); dlnKeqdT.setZero();
+        Eigen::ArrayXd Keq(nr); Keq.setZero();
+
+        Eigen::ArrayXd hi(ns);
+        Eigen::ArrayXd gi(ns);
+        GroupMap::iterator iter = m_group_map.begin();
+        for ( ; iter != m_group_map.end(); ++iter) {
+            const RateLawGroup* p_group = iter->second;
+            double T = p_group->getT();
+            thermo.speciesHOverRT(T, hi.data()); // This might require MT
+            thermo.speciesSTGOverRT(T, gi.data());
+
+            p_group->TdlnKeqdT(ns, hi.data(), dlnKeqdT);
+            dlnKeqdT = 1./T*Eigen::Map<const Eigen::ArrayXd>(p_lnkf, nr).exp();
+
+            p_group->subtractLnKeq(ns, gi.data(), Keq.data());
+        }
+        v_dkbdT = Keq.exp()*(v_dkfdT - dlnKeqdT);
     }
 
 private:

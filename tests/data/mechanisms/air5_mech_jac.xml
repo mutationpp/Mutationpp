@@ -1,4 +1,4 @@
-<!-- This is not a real mechanism. It is used only for testing-->
+<!-- This is not a real mechanism. It is used only for testing. -->
 <mechanism name="air5_mech_jac">
 
     <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />

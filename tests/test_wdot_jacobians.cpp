@@ -35,145 +35,188 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
     Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);
 
     const int set_state_rhoi_T = 1.;
-    Mixture mix("air5_jacobian_NASA-9_ChemNonEq1T");
 
-    const int ns = mix.nSpecies();
-    const int nr = mix.nReactions();
+    /* SECTION("Air 5 Jacobian rhoi") {
+        Mixture mix("air5_jacobian_NASA-9_ChemNonEq1T");
 
-    ArrayXd mw(ns); mw = mix.speciesMw();
-    ArrayXd rhoi(ns); rhoi = mw;
+        const int ns = mix.nSpecies();
+        const int nr = mix.nReactions();
 
-    ArrayXd  jac_mpp(ns*ns);
-    ArrayXXd jac(ns, ns);
-    ArrayXXd dfrdrhoi(3, ns);
-    ArrayXXd dbrdrhoi(3, ns);
+        ArrayXd mw(ns); mw = mix.speciesMw();
+        ArrayXd rhoi(ns); rhoi = mw;
 
-    jac_mpp.setZero();
+        ArrayXd  jac_mpp(ns*ns);
+        ArrayXXd jac(ns, ns);
+        ArrayXXd dfrdrhoi(3, ns);
+        ArrayXXd dbrdrhoi(3, ns);
 
-    // Loop for multiple temperatures
-    const int nT = 4;
-    for (int iT = 0; iT < nT; iT++) {
-        double T = 500*iT + 300.;  // K
+        jac_mpp.setZero();
+
+        // Loop for multiple temperatures
+        const int nT = 4;
+        for (int iT = 0; iT < nT; iT++) {
+            double T = 500*iT + 300.;  // K
+
+            mix.setState(rhoi.data(), &T, set_state_rhoi_T);
+            mix.jacobianRho(jac_mpp.data());
+
+            // Calculating jacobian wrt to rho for comparison
+            ArrayXd kf(nr); ArrayXd kb(nr);
+            mix.forwardRateCoefficients(kf.data());
+            mix.backwardRateCoefficients(kb.data());
+
+            dfrdrhoi.setZero(); dbrdrhoi.setZero();
+
+            // Nitrogen dissociation: N2 + N = N + N + N
+            // F: kf*[N2][N]
+            dfrdrhoi(0,0) += kf(0)* rhoi(3) / (mw(3)*mw(0));
+            dfrdrhoi(0,3) += kf(0)* rhoi(0) / (mw(3)*mw(0));
+            // B: kb*[N]*[N]*[N]
+            dbrdrhoi(0,0) += kb(0)* 3*rhoi(0)*rhoi(0) / (mw(0)*mw(0)*mw(0));
+
+            // Oxygen dissociation: O2 + M = O + O + M
+            // F: kf*[O2][N]
+            dfrdrhoi(1,0) += kf(1)* rhoi(4) / (mw(4)*mw(0)) * 5.;
+            dfrdrhoi(1,4) += kf(1)* rhoi(0) / (mw(4)*mw(0)) * 5.;
+            // F: kf*[O2][O]
+            dfrdrhoi(1,1) += kf(1)* rhoi(4) / (mw(4)*mw(1)) * 5.;
+            dfrdrhoi(1,4) += kf(1)* rhoi(1) / (mw(4)*mw(1)) * 5.;
+            // F: kf*[O2][NO]
+            dfrdrhoi(1,2) += kf(1)* rhoi(4) / (mw(4)*mw(2)) * 1.;
+            dfrdrhoi(1,4) += kf(1)* rhoi(2) / (mw(4)*mw(2)) * 1.;
+            // F: kf*[O2][N2]
+            dfrdrhoi(1,3) += kf(1)* rhoi(4) / (mw(4)*mw(3)) * 1.;
+            dfrdrhoi(1,4) += kf(1)* rhoi(3) / (mw(4)*mw(3)) * 1.;
+            // F: kf*[O2][O2]
+            dfrdrhoi(1,4) += kf(1)* 2*rhoi(2) / (mw(4)*mw(2)) * 1.;
+            // B: kb*[O][O][N]
+            dbrdrhoi(1,0) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(0)) * 5.;
+            dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(0) / (mw(1)*mw(1)*mw(0)) * 5.;
+            // B: kb*[O][O][O]
+            dbrdrhoi(1,1) += kb(1)* 3*rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(1)) * 5.;
+            // B: kb*[O][O][NO]
+            dbrdrhoi(1,2) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(2)) * 1.;
+            dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(2) / (mw(1)*mw(1)*mw(2)) * 1.;
+            // B: kb*[O][O][N2]
+            dbrdrhoi(1,3) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(3)) * 1.;
+            dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(3) / (mw(1)*mw(1)*mw(3)) * 1.;
+            // B: kb*[O][O][O2]
+            dbrdrhoi(1,4) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(4)) * 1.;
+            dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(4) / (mw(1)*mw(1)*mw(4)) * 1.;
+
+            // Zeldovich: N2 + O = NO + N
+            // F: kf[N2][O]
+            dfrdrhoi(2,1) += kf(2)*rhoi(3) / (mw(3)*mw(1));
+            dfrdrhoi(2,3) += kf(2)*rhoi(1) / (mw(3)*mw(1));
+            // B: kb[NO][N]
+            dbrdrhoi(2,0) += kb(2)*rhoi(2) / (mw(2)*mw(0));
+            dbrdrhoi(2,2) += kb(2)*rhoi(0) / (mw(2)*mw(0));
+
+            // Building the jacobian
+            jac(0,0) = mw(0)*(
+                +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
+                -1*(dbrdrhoi(2,0)));
+            jac(0,1) = mw(0)*(
+                +1*(dfrdrhoi(2,1)));
+            jac(0,2) = mw(0)*(
+                -1*(dbrdrhoi(2,2)));
+            jac(0,3) = mw(0)*(
+                +2*(dfrdrhoi(0,3))
+                +1*(dfrdrhoi(2,3)));
+            jac(0,4) = 0.;
+            jac(1,0) = mw(1)*(
+                +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
+                +1*(dbrdrhoi(2,0)));
+            jac(1,1) = mw(1)*(
+                +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
+                -1*(dfrdrhoi(2,1)));
+            jac(1,2) = mw(1)*(
+                +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
+                +1*(dbrdrhoi(2,2)));
+            jac(1,3) = mw(1)*(
+                +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
+                -1*(dfrdrhoi(2,3)));
+            jac(1,4) = mw(1)*(
+                +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
+            jac(2,0) = mw(2)*(
+                -1*(dbrdrhoi(2,0)));
+            jac(2,1) = mw(2)*(
+                +1*(dfrdrhoi(2,1)));
+            jac(2,2) = mw(2)*(
+                -1*(dbrdrhoi(2,2)));
+            jac(2,3) = mw(2)*(
+                +1*(dfrdrhoi(2,3)));
+            jac(2,4) = 0;
+            jac(3,0) = mw(3)*(
+                -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
+                +1*(dbrdrhoi(2,0)));
+            jac(3,1) = mw(3)*(
+                -1*(dfrdrhoi(2,1)));
+            jac(3,2) = mw(3)*(
+                +1*(dbrdrhoi(2,2)));
+            jac(3,3) = mw(3)*(
+                -1*(dfrdrhoi(0,3)) // R1
+                -1*(dfrdrhoi(2,3)));
+            jac(3,4) = 0.;
+            jac(4,0) = mw(4)*(
+                -1*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
+                +0);
+            jac(4,1) = mw(4)*(
+                -1*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
+                -0);
+            jac(4,2) = mw(4)*(
+                -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
+                -0);
+            jac(4,3) = mw(4)*(
+                -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
+                -0);
+            jac(4,4) = mw(4)*(
+                -1*(dfrdrhoi(1,4)-dbrdrhoi(1,4)));
+
+            // Making sure everything is correct
+            for (int i = 0; i < ns; i++)
+                for (int j = 0; j < ns; j++)
+                    CHECK(jac(i,j) == Approx(jac_mpp(i*ns +j)).epsilon(tol));
+        }
+    } */
+
+    SECTION("Air 5 Jacobian T") {
+        Mixture mix("air5_test");
+
+        const int ns = mix.nSpecies();
+        const int nr = mix.nReactions();
+
+        // Reaction coefficients
+        double A = 7.0E+15;
+        double n = -1.6;
+        double Ta = 113200.;
+
+        double T = 3000.;
+        double invT = 1./T;
+
+        ArrayXd mw(ns); mw = mix.speciesMw();
+        ArrayXd rhoi(ns); rhoi = mw;
 
         mix.setState(rhoi.data(), &T, set_state_rhoi_T);
-        mix.jacobianRho(jac_mpp.data());
 
-        // Calculating jacobian wrt to rho for comparison
-        ArrayXd kf(nr); ArrayXd kb(nr);
-        mix.forwardRateCoefficients(kf.data());
-        mix.backwardRateCoefficients(kb.data());
+        ArrayXd kf(nr);
+        ArrayXd dkfdT(nr);
 
-        dfrdrhoi.setZero(); dbrdrhoi.setZero();
+        kf(0) = A * pow(T, n) * exp(-Ta/T);
+        dkfdT(0) = kf(0)*invT*(n + invT*Ta);
 
-        // Nitrogen dissociation: N2 + N = N + N + N
-        // F: kf*[N2][N]
-        dfrdrhoi(0,0) += kf(0)* rhoi(3) / (mw(3)*mw(0));
-        dfrdrhoi(0,3) += kf(0)* rhoi(0) / (mw(3)*mw(0));
-        // B: kb*[N]*[N]*[N]
-        dbrdrhoi(0,0) += kb(0)* 3*rhoi(0)*rhoi(0) / (mw(0)*mw(0)*mw(0));
+        ArrayXd kfmpp(nr);
+        ArrayXd dkfdTmpp(nr); ArrayXd dkbdTmpp(nr);
 
-        // Oxygen dissociation: O2 + M = O + O + M
-        // F: kf*[O2][N]
-        dfrdrhoi(1,0) += kf(1)* rhoi(4) / (mw(4)*mw(0)) * 5.;
-        dfrdrhoi(1,4) += kf(1)* rhoi(0) / (mw(4)*mw(0)) * 5.;
-        // F: kf*[O2][O]
-        dfrdrhoi(1,1) += kf(1)* rhoi(4) / (mw(4)*mw(1)) * 5.;
-        dfrdrhoi(1,4) += kf(1)* rhoi(1) / (mw(4)*mw(1)) * 5.;
-        // F: kf*[O2][NO]
-        dfrdrhoi(1,2) += kf(1)* rhoi(4) / (mw(4)*mw(2)) * 1.;
-        dfrdrhoi(1,4) += kf(1)* rhoi(2) / (mw(4)*mw(2)) * 1.;
-        // F: kf*[O2][N2]
-        dfrdrhoi(1,3) += kf(1)* rhoi(4) / (mw(4)*mw(3)) * 1.;
-        dfrdrhoi(1,4) += kf(1)* rhoi(3) / (mw(4)*mw(3)) * 1.;
-        // F: kf*[O2][O2]
-        dfrdrhoi(1,4) += kf(1)* 2*rhoi(2) / (mw(4)*mw(2)) * 1.;
-        // B: kb*[O][O][N]
-        dbrdrhoi(1,0) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(0)) * 5.;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(0) / (mw(1)*mw(1)*mw(0)) * 5.;
-        // B: kb*[O][O][O]
-        dbrdrhoi(1,1) += kb(1)* 3*rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(1)) * 5.;
-        // B: kb*[O][O][NO]
-        dbrdrhoi(1,2) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(2)) * 1.;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(2) / (mw(1)*mw(1)*mw(2)) * 1.;
-        // B: kb*[O][O][N2]
-        dbrdrhoi(1,3) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(3)) * 1.;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(3) / (mw(1)*mw(1)*mw(3)) * 1.;
-        // B: kb*[O][O][O2]
-        dbrdrhoi(1,4) += kb(1)* rhoi(1)*rhoi(1) / (mw(1)*mw(1)*mw(4)) * 1.;
-        dbrdrhoi(1,1) += kb(1)* 2*rhoi(1)*rhoi(4) / (mw(1)*mw(1)*mw(4)) * 1.;
+        mix.forwardRateCoefficients(kfmpp.data());
+        mix.dkfdT(dkfdTmpp.data());
+        mix.dkbdT(dkbdTmpp.data());
 
-        // Zeldovich: N2 + O = NO + N
-        // F: kf[N2][O]
-        dfrdrhoi(2,1) += kf(2)*rhoi(3) / (mw(3)*mw(1));
-        dfrdrhoi(2,3) += kf(2)*rhoi(1) / (mw(3)*mw(1));
-        // B: kb[NO][N]
-        dbrdrhoi(2,0) += kb(2)*rhoi(2) / (mw(2)*mw(0));
-        dbrdrhoi(2,2) += kb(2)*rhoi(0) / (mw(2)*mw(0));
+        std::cout << "Kf = "<< kf << " " << kfmpp << std::endl;
+        std::cout << "dkfdT = "<< dkfdT << " " << dkfdTmpp << std::endl;
+        std::cout << "dkbdT = "<< dkbdTmpp << std::endl; // << " " << dkfdTmpp << std::endl;
 
-        // Building the jacobian
-        jac(0,0) = mw(0)*(
-            +2*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
-            -1*(dbrdrhoi(2,0)));
-        jac(0,1) = mw(0)*(
-            +1*(dfrdrhoi(2,1)));
-        jac(0,2) = mw(0)*(
-            -1*(dbrdrhoi(2,2)));
-        jac(0,3) = mw(0)*(
-            +2*(dfrdrhoi(0,3))
-            +1*(dfrdrhoi(2,3)));
-        jac(0,4) = 0.;
-        jac(1,0) = mw(1)*(
-            +2*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
-            +1*(dbrdrhoi(2,0)));
-        jac(1,1) = mw(1)*(
-            +2*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
-            -1*(dfrdrhoi(2,1)));
-        jac(1,2) = mw(1)*(
-            +2*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
-            +1*(dbrdrhoi(2,2)));
-        jac(1,3) = mw(1)*(
-            +2*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
-            -1*(dfrdrhoi(2,3)));
-        jac(1,4) = mw(1)*(
-            +2*(dfrdrhoi(1,4) - dbrdrhoi(1,4)));
-        jac(2,0) = mw(2)*(
-            -1*(dbrdrhoi(2,0)));
-        jac(2,1) = mw(2)*(
-            +1*(dfrdrhoi(2,1)));
-        jac(2,2) = mw(2)*(
-            -1*(dbrdrhoi(2,2)));
-        jac(2,3) = mw(2)*(
-            +1*(dfrdrhoi(2,3)));
-        jac(2,4) = 0;
-        jac(3,0) = mw(3)*(
-            -1*(dfrdrhoi(0,0) - dbrdrhoi(0,0))
-            +1*(dbrdrhoi(2,0)));
-        jac(3,1) = mw(3)*(
-            -1*(dfrdrhoi(2,1)));
-        jac(3,2) = mw(3)*(
-            +1*(dbrdrhoi(2,2)));
-        jac(3,3) = mw(3)*(
-            -1*(dfrdrhoi(0,3)) // R1
-            -1*(dfrdrhoi(2,3)));
-        jac(3,4) = 0.;
-        jac(4,0) = mw(4)*(
-            -1*(dfrdrhoi(1,0) - dbrdrhoi(1,0))
-            +0);
-        jac(4,1) = mw(4)*(
-            -1*(dfrdrhoi(1,1) - dbrdrhoi(1,1))
-            -0);
-        jac(4,2) = mw(4)*(
-            -1*(dfrdrhoi(1,2) - dbrdrhoi(1,2))
-            -0);
-        jac(4,3) = mw(4)*(
-            -1*(dfrdrhoi(1,3) - dbrdrhoi(1,3))
-            -0);
-        jac(4,4) = mw(4)*(
-            -1*(dfrdrhoi(1,4)-dbrdrhoi(1,4)));
-
-        // Making sure everything is correct
-        for (int i = 0; i < ns; i++)
-            for (int j = 0; j < ns; j++)
-                CHECK(jac(i,j) == Approx(jac_mpp(i*ns +j)).epsilon(tol));
+        CHECK(kf(0) == Approx(kfmpp(0)).epsilon(tol));
+        CHECK(dkfdT(0) == Approx(dkfdTmpp(0)).epsilon(tol));
     }
 }

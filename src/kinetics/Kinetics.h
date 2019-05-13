@@ -114,6 +114,22 @@ public:
     void backwardRateCoefficients(double* const p_kb);
 
     /**
+     * Fills the vector dkfdT with the temperature derivative of the forward rate
+     * coefficients \f$ k_{f,j} \f$ for each reaction j.
+     *
+     * @param p_dkfdT  on return, \f$ \frac{dk_{f,j}}{dT} \f$
+     */
+    void dkfdT(double* const p_dkfdT);
+
+    /**
+     * Fills the vector dkbdT with the temperature derivative of the forward rate
+     * coefficients \f$ k_{b,j} \f$ for each reaction j.
+     *
+     * @param p_dkfdT  on return, \f$ \frac{dk_{b,j}}{dT} \f$
+     */
+    void dkbdT(double* const p_dkbdT);
+
+    /**
      * Fills the vector ropf with the forward rate of progress variables for
      * each reaction \f$ k_{f,j} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
      *
@@ -209,7 +225,7 @@ public:
      *    C_i^{\nu_{ij}^"} \right] \Theta_{TB}
      * \f]
      *
-     * @param p_jac  - on return, the derivative of the production rates with
+     * @param p_dwdT - on return, the derivative of the production rates with
      * respect to temperature
      */
     void dwdT(double* const p_dwdT);
@@ -232,15 +248,12 @@ private:
 
 private:
     /**
-     * Helper functions which compute the temperature derivative forward and
-     * backward rates of progress.
+     * Helper functions which compute the temperature derivative forward,
+     * backward and net rates of progress.
      */
-    void dropfdT(double* const p_ropf);
-    void dropbdT(double* const p_ropb);
-    /**
-     * 
-     */
-    void dkfdT(double* const p_dkfdT);
+    void dropfdT(const double* const p_conc, double* const p_ropf);
+    void dropbdT(const double* const p_conc, double* const p_ropb);
+    void netdropdT(const double* const p_conc, double* const p_rop);
 
     std::string m_name;
 

@@ -62,7 +62,7 @@ public:
 
     /**
      * Updates the current values of the temperature derivatives of the rate
-     * coefficients.
+     * coefficients. //GB
      */
     void updateDerivatives(const Thermodynamics::Thermodynamics& thermo);
 
@@ -77,6 +77,9 @@ public:
      * forward temperature.
      */
     const double* const lnkb() { return mp_lnkb; }
+
+    Eigen::VectorXd dkfdT() { return v_dkfdT; }
+    Eigen::VectorXd dkbdT() { return v_dkbdT; }
 
     /**
      * Returns the indices of irreversible reactions.
@@ -121,11 +124,11 @@ private:
 
     /// Storage for forward rate coefficient at forward temperature
     double* mp_lnkf;
-    ArrayXd v_dkfdT;
+    Eigen::ArrayXd v_dkfdT;
 
     /// Storage for forward rate coefficient at backward temperature
     double* mp_lnkb;
-    ArrayXd v_dkbdT;
+    Eigen::ArrayXd v_dkbdT;
 
     /// Storage for species Gibbs free energies
     double* mp_gibbs;

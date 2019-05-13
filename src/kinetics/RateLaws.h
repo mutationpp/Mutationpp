@@ -38,7 +38,7 @@ namespace Mutation {
     namespace Kinetics {
 
 /**
- * Abstract base class for all rate laws which allows owners such as class 
+ * Abstract base class for all rate laws which allows owners such as class
  * Reaction to store any rate law polymorphically.
  */
 class RateLaw
@@ -78,6 +78,10 @@ public:
         return (k*invT*(m_n + m_temp*invT));
     }
 
+    inline double lndkdT(const double& lnkf, Eigen::ArrayXd& T, Eigen::ArrayXd& pow) const {
+        return (lnkf + log(1./T(0)*(m_n + m_temp*1./T(0))));
+    }
+
     double A() const {
         return std::exp(m_lnA);
     }
@@ -92,14 +96,13 @@ public:
 
 private:
 
-    static std::vector<Mutation::Utilities::Units> sm_aunits;    
+    static std::vector<Mutation::Utilities::Units> sm_aunits;
     static std::vector<Mutation::Utilities::Units> sm_eunits;
 
     double m_lnA;
     double m_n;
     double m_temp;
 };
-
 
     } // namespace Kinetics
 } // namespace Mutation
