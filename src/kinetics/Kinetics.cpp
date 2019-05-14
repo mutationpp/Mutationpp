@@ -223,6 +223,7 @@ void Kinetics::forwardRateCoefficients(double* const p_kf)
 void Kinetics::backwardRateCoefficients(double* const p_kb)
 {
     if (nReactions() == 0)
+        return;
 
     mp_rates->update(m_thermo);
     Map<ArrayXd>(p_kb, nReactions()) =
@@ -230,7 +231,6 @@ void Kinetics::backwardRateCoefficients(double* const p_kb)
 
     for(int i=0; i < mp_rates->irrReactions().size(); ++i)
         p_kb[mp_rates->irrReactions()[i]] = 0.0;
-    return;
 }
 
 

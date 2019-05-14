@@ -196,27 +196,39 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
 
         ArrayXd mw(ns); mw = mix.speciesMw();
         ArrayXd rhoi(ns); rhoi = mw;
+        ArrayXd gi(ns); ArrayXd hi(ns);
 
         mix.setState(rhoi.data(), &T, set_state_rhoi_T);
 
-        ArrayXd kf(nr);
-        ArrayXd dkfdT(nr);
+        ArrayXd vkf(nr); ArrayXd vkb(nr); ArrayXd vKeq(nr);
+        ArrayXd vdkfdT(nr); ArrayXd vdkbdT(nr);
 
-        kf(0) = A * pow(T, n) * exp(-Ta/T);
-        dkfdT(0) = kf(0)*invT*(n + invT*Ta);
+        mix.speciesSTGOverRT(T, gi.data());
+        mix.speciesHOverRT(hi.data());
 
-        ArrayXd kfmpp(nr);
+        vkf(0) = A * pow(T, n) * exp(-Ta/T);
+        vdkfdT(0) = vkf(0)*invT*(n + invT*Ta);
+        vKeq(0) = ONEATM/(RU*T)*exp(-(2*gi(0)-gi(3)));
+        vkb(0) = vkf(0)/vKeq(0);
+        double dlnkeqdT = 2*(hi(0) - 1) - (hi(3) - 1);
+        vdkbdT(0) = 1/vKeq(0)*(vdkfdT(0) - vkf(0)/T * dlnkeqdT);
+
+        ArrayXd kfmpp(nr); ArrayXd kbmpp(nr);
         ArrayXd dkfdTmpp(nr); ArrayXd dkbdTmpp(nr);
 
         mix.forwardRateCoefficients(kfmpp.data());
         mix.dkfdT(dkfdTmpp.data());
+        mix.backwardRateCoefficients(kbmpp.data());
         mix.dkbdT(dkbdTmpp.data());
 
-        std::cout << "Kf = "<< kf << " " << kfmpp << std::endl;
-        std::cout << "dkfdT = "<< dkfdT << " " << dkfdTmpp << std::endl;
-        std::cout << "dkbdT = "<< dkbdTmpp << std::endl; // << " " << dkfdTmpp << std::endl;
+        // std::cout << "Kb = "    << vkb    << " " << kbmpp << std::endl;
+        // std::cout << "Kf = "    << vkf    << " " << kfmpp << std::endl;
+        // std::cout << "dkfdT = " << vdkfdT << " " << dkfdTmpp << std::endl;
+        // std::cout << "dkbdT = " << vdkbdT << " " << dkbdTmpp << std::endl;
 
-        CHECK(kf(0) == Approx(kfmpp(0)).epsilon(tol));
-        CHECK(dkfdT(0) == Approx(dkfdTmpp(0)).epsilon(tol));
+        CHECK(vkf(0) == Approx(kfmpp(0)).epsilon(tol));
+        CHECK(vkb(0) == Approx(kbmpp(0)).epsilon(tol));
+        CHECK(vdkfdT(0) == Approx(dkfdTmpp(0)).epsilon(tol));
+        CHECK(vdkbdT(0) == Approx(dkbdTmpp(0)).epsilon(tol));
     }
 }

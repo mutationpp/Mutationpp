@@ -278,7 +278,8 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
 void RateManager::updateDerivatives(const Thermodynamics::Thermodynamics& thermo)
 {
     // Evaluate all of the different rate coefficients
-    m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
+    update(thermo);
+    //m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
 
     m_rate_groups.lndkfdT(thermo.state(), v_dkfdT);
     v_dkfdT = v_dkfdT.exp();

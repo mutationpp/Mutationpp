@@ -115,11 +115,15 @@ public:
     /**
      *
      */
-    void TdlnKeqdT(size_t ns, double* const p_h, Eigen::ArrayXd& v_TdlnKeqdT) const
+    void dlnKeqdT(
+        size_t ns, const double& T, double* const p_h,
+        Eigen::ArrayXd& v_TdlnKeqdT) const
     {
-        // Compute H_i/RT - 1
+        // Compute H_i/RTT - 1/T
+        double invT = 1./T;
         for (int i = 0; i < ns; ++i) {
-            p_h[i] -= 1.;
+            p_h[i] *= invT;
+            p_h[i] -= invT;
         }
 
         // Now subtract \Delta[1/T*(H_i/RT - 1)]
@@ -342,6 +346,7 @@ public:
         Eigen::ArrayXd& v_dkbdT, const Eigen::ArrayXd& v_dkfdT,
         const double* const p_lnkf, const int& nr)
     {
+        v_dkbdT.setZero();
         const size_t ns = thermo.nSpecies();
 
         Eigen::ArrayXd dlnKeqdT(nr); dlnKeqdT.setZero();
@@ -353,14 +358,14 @@ public:
         for ( ; iter != m_group_map.end(); ++iter) {
             const RateLawGroup* p_group = iter->second;
             double T = p_group->getT();
-            thermo.speciesHOverRT(T, hi.data()); // This might require MT
+            thermo.speciesHOverRT(T, hi.data()); // This might require twiking for MT
             thermo.speciesSTGOverRT(T, gi.data());
 
-            p_group->TdlnKeqdT(ns, hi.data(), dlnKeqdT);
-            dlnKeqdT = 1./T*Eigen::Map<const Eigen::ArrayXd>(p_lnkf, nr).exp();
-
+            p_group->dlnKeqdT(ns, T, hi.data(), dlnKeqdT);
             p_group->subtractLnKeq(ns, gi.data(), Keq.data());
         }
+
+        dlnKeqdT *= Eigen::Map<const Eigen::ArrayXd>(p_lnkf, nr).exp();
         v_dkbdT = Keq.exp()*(v_dkfdT - dlnKeqdT);
     }
 
