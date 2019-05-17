@@ -111,7 +111,11 @@ double const OmegaCV::compute_source_Candler()
 
 
 	 // Getting Vibrational Energy
-	 m_mixture.speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+	 //m_mixture.speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+
+	 // LK: work-around to avoid compilation error due to the ambiguous
+	 // signature of the speciesHOverRT function. TODO: do it better!
+	 m_mixture.speciesHOverRT(NULL, NULL, NULL, mp_wrk1, mp_wrk2, NULL);
 
 	 // Getting Production Rate
 	 m_mixture.netProductionRates(mp_wrk2);

@@ -213,6 +213,12 @@ double Thermodynamics::Tv() const {
 }
 
 //==============================================================================
+ 
+double Thermodynamics::Tvs(int i) const {
+    return mp_state->Tvs(i);
+}
+
+//==============================================================================
 
 double Thermodynamics::Te() const {
     return mp_state->Te();
@@ -927,8 +933,21 @@ void Thermodynamics::speciesHOverRT(double T, double* const h) const
 }
 
 //==============================================================================
+
 void Thermodynamics::speciesHOverRT(
     double T, double Te, double Tr, double Tv, double Tel,
+    double* const h, double* const ht, double* const hr, double* const hv,
+    double* const hel, double* const hf) const
+{
+    mp_thermodb->enthalpy(
+        T, Te, Tr, Tv, Tel,
+        h, ht, hr, hv, hel, hf);
+}
+
+//==============================================================================
+
+void Thermodynamics::speciesHOverRT(
+    double T, double Te, double Tr, double* Tv, double Tel,
     double* const h, double* const ht, double* const hr, double* const hv,
     double* const hel, double* const hf) const
 {

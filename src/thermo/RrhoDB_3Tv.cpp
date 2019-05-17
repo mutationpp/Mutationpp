@@ -1,5 +1,5 @@
 /**
- * @file RrhoDB.cpp
+ * @file RrhoDB_3Tv.cpp
  *
  * @brief Provides a Rigid-Rotator Harmonic Oscillator thermodynamic database.
  */
@@ -100,11 +100,11 @@ typedef struct {
  * model for computing species thermodynamic properties.  See the individual 
  * thermodynamic functions for specific descriptions of the model.
  */
-class RrhoDB : public ThermoDB
+class RrhoDB_3Tv : public ThermoDB
 {
 public:
 
-    RrhoDB(int arg)
+    RrhoDB_3Tv(int arg)
         : ThermoDB(298.15, 101325.0), m_ns(0), m_na(0), m_nm(0),
           m_has_electron(false),
           m_use_tables(true),
@@ -114,7 +114,7 @@ public:
     /**
      * Destructor.
      */
-    ~RrhoDB() 
+    ~RrhoDB_3Tv() 
     {
         delete [] mp_lnqtmw;
         delete [] mp_hform;
@@ -252,13 +252,13 @@ public:
      * @param hf  - if not NULL, the array of the species formation enthalpies
      */
     void enthalpy(
-        double Th, double Te, double Tr, double* Tv, double Tel, double* const h,
+        double Th, double Te, double Tr, double Tv, double Tel, double* const h,
         double* const ht, double* const hr, double* const hv, double* const hel,
         double* const hf)
     {}
 
     void enthalpy(
-        double Th, double Te, double Tr, double Tv, double Tel, double* const h,
+        double Th, double Te, double Tr, double* Tv, double Tel, double* const h,
         double* const ht, double* const hr, double* const hv, double* const hel,
         double* const hf)
     {
@@ -440,7 +440,7 @@ public:
         double* const gel)
     {        
         // First compute the non-dimensional enthalpy
-        enthalpy(Th, Te, Tr, Tv, Tel, g, NULL, NULL, NULL, NULL, NULL);
+        //enthalpy(Th, Te, Tr, Tv, Tel, g, NULL, NULL, NULL, NULL, NULL);
 
         // Subtract the entropies
         sT(Th, Te, P, g, MinusEq());
@@ -664,9 +664,14 @@ protected:
         // state temperature to the species enthalpies
         mp_part_sst = new double [m_ns];
         double Tss = standardTemperature();
+	// To take into account for MT models
+        double* Tvss; Tvss = new double [m_nm];
+	Tvss[0] = standardTemperature();
+	Tvss[1] = standardTemperature();
+	Tvss[2] = standardTemperature();
         hT(Tss, Tss, mp_part_sst, Eq());
         hR(Tss, mp_part_sst, PlusEq());
-        hV(Tss, mp_part_sst, PlusEq());
+        hV(Tvss, mp_part_sst, PlusEq());
         hE(Tss, mp_part_sst, PlusEq());
     }
 
@@ -769,8 +774,8 @@ private:
      * Computes the vibrational enthalpy of each species in K.
      */
     template <typename OP>
-    void hV(double T, double* const h, const OP& op) {
-        if (T < 10.0) {
+    void hV(double* T, double* const h, const OP& op) {
+        if (T[0] < 10.0 || T[1] < 10.0 || T[2] < 10.0) {
             LOOP_MOLECULES(op(h[j], 0.0));
         } else {
             int ilevel = 0;
@@ -779,7 +784,7 @@ private:
                 sum = 0.0;
                 for (int k = 0; k < mp_nvib[i]; ++k, ilevel++)
                     sum += mp_vib_temps[ilevel] /
-                        (std::exp(mp_vib_temps[ilevel] / T) - 1.0);
+                        (std::exp(mp_vib_temps[ilevel] / T[i]) - 1.0);
                 op(h[j], sum);
             )
         }
@@ -900,16 +905,14 @@ private:
     //Mutation::Utilities::LookupTable<double, double, SelFunctor>* mp_sel_table;
     //Mutation::Utilities::LookupTable<double, double, CpelFunctor>* mp_cpel_table;
 
-}; // class RrhoDB
+}; // class RrhoDB_3Tv
 
 #undef LOOP
 #undef LOOP_HEAVY
 #undef LOOP_MOLECULES
 
 // Register the RRHO model with the other thermodynamic databases
-Utilities::Config::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
+Utilities::Config::ObjectProvider<RrhoDB_3Tv, ThermoDB> rrhoDB_3Tv("RRHO_3Tv");
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-

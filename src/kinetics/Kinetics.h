@@ -182,6 +182,39 @@ public:
     void netProductionRates(double* const p_wdot);
 
     /**
+     * Fills the vector wdot with the net species production rates due to
+     * dissociation/recombination and exchange reactions.
+     * \f[
+     * R = R_{22} + R_{23} = ..
+     * \f]
+     *
+     * @param p_wdot - on return, the species production rates in kg/m^3-s
+     */
+    void R(double* const p_wdot);
+
+    /**
+     * Fills the vector wdot with the net species production rates due to
+     * exchange reactions, Eq. 3.86.
+     * \f[
+     * R_ci^{22} =
+     * \f]
+     *
+     * @param p_wdot - on return, the species production rates in kg/m^3-s
+     */
+    void R_22(double* const p_wdot);
+
+    /**
+     * Fills the vector wdot with the net species production rates due to
+     * dissociation-recombination processes, Eq. 3.87.
+     * \f[
+     * R_ci^{23} =
+     * \f]
+     *
+     * @param p_wdot - on return, the species production rates in kg/m^3-s
+     */
+    void R_23(double* const p_wdot);
+
+    /**
      * Fills the matrix p_jac with the species production rate jacobian matrix
      * \f[
      * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial \rho_j}
@@ -200,6 +233,69 @@ public:
     //void getReactionDelta(
     //    const double* const p_s, double* const p_r) const;
 
+
+    static double k_diss_RS(double T, double coll_mass, double diameter, 
+        double diss_energy, double electron_vibr_energy, 
+	    bool center_of_mass=true);
+
+    static double k_diss_VSS(double T, double coll_mass, double vss_c_cs, 
+	double vss_omega, double diss_energy, double electron_vibr_energy, 
+	    bool center_of_mass=true);
+
+    static double integral_diss_RS(double T, int degree, double coll_mass, 
+        double diameter, double diss_energy, double vibr_energy, 
+	    bool center_of_mass=true);
+
+    static double integral_diss_VSS(double T, int degree, double coll_mass, 
+	    double vss_c_cs, double vss_omega, double diss_energy, 
+	        double vibr_energy, bool center_of_mass=true);
+
+    // Calculate the elastic cross-section sigma_{tot} using the Rigid Sphere
+    // (RS) interaction potential
+    static double crosssection_elastic_RS(double diameter);
+
+    static double crosssection_elastic_VSS(double rel_vel, double vss_c_cs, 
+	double vss_omega);
+
+    static double crosssection_elastic_VSS(double rel_vel, double coll_mass, 
+        double vss_c, double vss_omega);
+
+    // Calculate the dissociation cross-section (VSS model), 
+    // accounting for vibrational energy
+    static double crosssection_diss_VSS(double rel_vel, double coll_mass, 
+        double vss_c_cs, double vss_omega, double diss_energy, 
+	    double vibr_energy, bool center_of_mass=true);
+
+    // Calculate the minimum velocity for which a dissociation probability is 
+    // non-zero, accounting for vibrational energy
+    static double min_vel_diss(double coll_mass, double diss_energy, 
+        double vibr_energy);
+
+    // Calculate the dissociation cross-section (RS model), 
+    // accounting for vibrational energy
+    static double crosssection_diss_RS(double rel_vel, double coll_mass, 
+        double diameter, double diss_energy, double vibr_energy, 
+	    bool center_of_mass=true);
+
+    // Calculate the probability of dissociation, accounting for vibr. energy
+    static double p_probability_diss(double rel_vel, double coll_mass, 
+        double diss_energy, double vibr_energy, bool center_of_mass=true);
+
+    static double k_Arrhenius(double T, double arrhenius_A, double arrhenius_n, 
+	double energy);
+
+    // SSH model
+    static double k_VT_SSH(double T, int i, double coll_mass, double diameter, 
+        double omega_e, double epsilon, double r_e); // harmonic
+
+    static double k_VT_SSH(double T, int i, double coll_mass, double diameter, 
+        double omega_e, double epsilon, double r_e, double Delta_E_vibr, 
+	    double vibr_energy_1); // anharmonic
+
+    static double p_Z_coll(double T, double n, double coll_mass, double diameter);
+
+    static double P_SSH_VT_10(double T, double coll_mass, double omega_e,
+        double epsilon, double diameter, double r_e);
 
 private:
 
@@ -237,11 +333,13 @@ private:
     double* mp_ropb;
     double* mp_rop;
     double* mp_wdot;
+
+    double* mp_r;
+    double* mp_r_22;
+    double* mp_r_23;
+
 };
-
-
     } // namespace Kinetics
 } // namespace Mutation
-
 
 #endif // KINETICS_H

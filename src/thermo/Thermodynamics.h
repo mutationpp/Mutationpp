@@ -381,6 +381,11 @@ public:
      * Returns the mixture vibrational temperature.
      */
     double Tv() const;
+
+    /**
+     * Returns the mixture vibrational temperatures.
+     */
+    double Tvs(int i) const;
     
     /**
      * Returns the electron temperature.
@@ -737,6 +742,17 @@ public:
     void speciesHOverRT(
         double T, double Te, double Tr, double Tv, double Tel,
         double* const h, double* const ht = NULL, 
+        double* const hr = NULL, double* const hv = NULL,
+        double* const hel = NULL, double* const hf = NULL) const;
+
+     /**
+     * Computes the unitless species enthalpies and can optionally fill vectors
+     * for each energy mode by explicitly passing each individual temperature.
+     * LK: added from MT-STS model.
+     */
+    void speciesHOverRT(
+        double T, double Te, double Tr, double* Tv, double Tel,
+        double* const h, double* const ht = NULL,
         double* const hr = NULL, double* const hv = NULL,
         double* const hel = NULL, double* const hf = NULL) const;
     

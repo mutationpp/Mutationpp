@@ -196,6 +196,11 @@ public:
         double* const ht, double* const hr, double* const hv, double* const hel, 
         double* const hf) = 0;
     
+     virtual void enthalpy(
+        double Th, double Te, double Tr, double* Tv, double Tel, double* const h,
+        double* const ht, double* const hr, double* const hv, double* const hel,
+        double* const hf) = 0;
+
     /**
      * Returns the species vibrational enthalpy at the given temperature
      * nondimensionalized by the universal gas constant times the temperature.
