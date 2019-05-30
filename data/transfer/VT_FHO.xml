@@ -1,0 +1,38 @@
+<!-- 
+Basic data related to the vibration-translation energy transfer.
+
+-->                                                      
+<VT>
+
+    <FHO>
+		
+        <!-- NO data from Ref. [1] -->
+        <vibrator species="NO" omegav="3.0E-21">
+            <partner species="N"  beta="5e10" E_Morse="2.76129704e-21" svt="0.3183" />
+            <partner species="O"  beta="7.9e10" E_Morse="2.20903763e-19" svt="0.06" /> 
+            <partner species="N2" beta="4.4e10" E_Morse="2.76129704e-22" svt="0.9" />
+            <partner species="O2" beta="6.75e10" E_Morse="2.07097278e-20" svt="0.2"/>
+            <partner species="NO" beta="6.25e10" E_Morse="6.21291834e-20" svt="0.03" />
+        </vibrator>
+
+        <!-- N2 data -->
+        <vibrator species="N2" omegav="3.0E-21">
+            <partner species="N" beta="4.6e10" E_Morse="1.38064852e10-23" svt="0.99" />
+            <partner species="O" beta="7.3e10" E_Morse="6.9032426e-21" svt="0.175" /> 
+            <partner species="N2" beta="3.9e10" E_Morse="1.38064852e10-23" svt="0.9"/> 
+            <partner species="O2" beta="3.9e10" E_Morse="8.28389112e-23" svt="0.95"/> 
+            <partner species="NO" beta="4e10" E_Morse="2.76129704e-23" svt="0.75"/> 
+        </vibrator>
+
+        <!-- O2 data from Ref. [1] -->
+        <vibrator species="O2" omegav="3.0E-21">
+            <partner species="N" beta="7.3e10" E_Morse="1.38064852e-22" svt="0.25" />
+            <partner species="O" beta="2.6e10" E_Morse="2.34710248e-19" svt="0.2"/>
+            <partner species="N2" beta="4.1e10" E_Morse="2.07097278e-21" svt="0.333333"/>  
+            <partner species="O2" beta="4.3e10" E_Morse="5.52259408e-22" svt="0.99"/>  
+            <partner species="NO" beta="4.1e10" E_Morse="2.34710248e-19" svt="0.3333330"/>  
+        </vibrator>
+
+    </FHO>
+
+</VT>

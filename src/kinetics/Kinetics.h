@@ -281,8 +281,7 @@ public:
     static double p_probability_diss(double rel_vel, double coll_mass, 
         double diss_energy, double vibr_energy, bool center_of_mass=true);
 
-    static double k_Arrhenius(double T, double arrhenius_A, double arrhenius_n, 
-	double energy);
+    double k_Arrhenius(double T, double A, double n, double Ea);
 
     // SSH model
     static double k_VT_SSH(double T, int i, double coll_mass, double diameter, 
@@ -296,6 +295,9 @@ public:
 
     static double P_SSH_VT_10(double T, double coll_mass, double omega_e,
         double epsilon, double diameter, double r_e);
+
+    double Z_diss(double T, double U, const double *ve, int i);
+    double p_Z_vibr_eq(double T, const double *ve);
 
 private:
 

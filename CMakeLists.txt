@@ -36,7 +36,6 @@ project(mutation++
     LANGUAGES CXX
 )
 
-
 # Add include path for cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
@@ -45,7 +44,6 @@ enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
 endif()
-
 
 ###############################################################################
 # Build types
@@ -72,7 +70,6 @@ mark_as_advanced(
     CMAKE_EXE_LINKER_FLAGS_PROFILE
     CMAKE_SHARED_LINKER_FLAGS_PROFILE)
 
-
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs and set the
 # default build type as Release
 if (NOT CMAKE_BUILD_TYPE)
@@ -80,7 +77,6 @@ if (NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release
         RelWithDebInfo MinSizeRel Profile Coverage." FORCE)
 endif ()
-
 
 ###############################################################################
 # Install prefix settings
@@ -117,7 +113,6 @@ foreach (dir LIB BIN INCLUDE CMAKE)
     endif()
 endforeach()
 
-
 if (CMAKE_COMPILER_IS_GNUCXX)
     #set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wold-style-cast")
     set (CMAKE_CXX_FLAGS "-g")
@@ -128,11 +123,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 ################################################################################
-
 # Fortran wrapper options
 ###############################################################################
 option (BUILD_FORTRAN_WRAPPER
-    "Generate the wrapper library for using mutation++ with Fortran" OFF)
+	"Generate the wrapper library for using mutation++ with Fortran" ON)
 
 if (BUILD_FORTRAN_WRAPPER)
     # FFLAGS depend on the compiler
@@ -152,13 +146,11 @@ if (BUILD_FORTRAN_WRAPPER)
     endif()
 endif()
 
-
-
 ###############################################################################
 # Doxygen documentation generation
 ###############################################################################
 option (BUILD_DOCUMENTATION
-    "Use Doxygen to create the HTML based API documentation" OFF)
+	"Use Doxygen to create the HTML based API documentation" ON)
 
 if (BUILD_DOCUMENTATION)
     FIND_PACKAGE(Doxygen)
@@ -188,11 +180,10 @@ endif()
 # Eigen
 find_package(Eigen3)
 
-
 ###############################################################################
 # Source code
 ################################################################################
-option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
+option(ENABLE_COVERAGE "Generate coverage for codecov.io" ON)
 list(APPEND LCOV_REMOVE_PATTERNS 
     "'/usr/*'"
     "'*/tests/*'"
@@ -208,7 +199,7 @@ add_subdirectory(src)
 ###############################################################################
 # CTest
 ################################################################################
-option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
+option(ENABLE_TESTING "Enable regression testing with CTest" ON)
 
 if (ENABLE_TESTING OR ENABLE_COVERAGE)
     find_package(Catch2)
@@ -216,5 +207,3 @@ if (ENABLE_TESTING OR ENABLE_COVERAGE)
     add_subdirectory(tests)
     add_subdirectory(examples)
 endif()
-
-

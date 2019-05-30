@@ -30,6 +30,11 @@
 #include "Utilities.h"
 #include "Numerics.h"
 
+#include <algorithm>
+#include <functional>
+#include <cmath>
+#include <math.h>
+
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -57,9 +62,6 @@ Kinetics::Kinetics(
       mp_rop(NULL),
       mp_wdot(NULL),
       mp_r(NULL),
-      //mp_r_vt(NULL),
-      //mp_r_vv(NULL),
-      //mp_r_diss_rec(NULL)
       mp_r_22(NULL),
       mp_r_23(NULL)
 {
@@ -119,12 +121,6 @@ Kinetics::~Kinetics()
         delete [] mp_wdot;
     if (mp_r != NULL)
         delete [] mp_r;
-    //if (mp_r_vt != NULL)
-    //    delete [] mp_r_vt;
-    //if (mp_r_vv != NULL)
-    //    delete [] mp_r_vv;
-    //if (mp_r_diss_rec != NULL)
-    //    delete [] mp_r_diss_rec;
     if (mp_r_22 != NULL)
         delete [] mp_r_22;
     if (mp_r_23 != NULL)
@@ -188,11 +184,9 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     mp_rop   = new double [nReactions()];
     mp_wdot  = new double [m_thermo.nSpecies()];
 
-    mp_r          = new double [m_thermo.nSpecies()];
-    //mp_r_vt       = new double [m_thermo.nSpecies()];
-    //mp_r_vv       = new double [m_thermo.nSpecies()];
-    //mp_r_diss_rec = new double [m_thermo.nSpecies()];
-    mp_r_23       = new double [m_thermo.nSpecies()];
+    mp_r     = new double [m_thermo.nMolecules()];
+    mp_r_22  = new double [m_thermo.nMolecules()];
+    mp_r_23  = new double [m_thermo.nMolecules()];
     
 }
 
@@ -397,177 +391,170 @@ void Kinetics::netProductionRates(double* const p_wdot)
 }
 
 //==============================================================================
-// The whole block of functions has been moved in R.h and R.cpp 
 
 void Kinetics::R(double* const p_r)
 {
-    // Sum all contributions from every process
-    std::fill(p_r, p_r+m_thermo.nSpecies(), 0.0);
-    R_22(mp_r_23);
+    // Sum up contributions from two processes:
+    // diss/rec and exchange reactions.
+    std::fill(p_r, p_r+m_thermo.nMolecules(), 0.0);
+    R_22(mp_r_22);
     R_23(mp_r_23);
 
+    for (int i=0; i<m_thermo.nMolecules(); ++i) 
+        std::cout <<  " mp_r_22["<<i<<"] = " << mp_r_22[i] << std::endl;
+
+    for (int i=0; i<m_thermo.nMolecules(); ++i) 
+        std::cout <<  " mp_r_23["<<i<<"] = " << mp_r_23[i] << std::endl;
+
+    // FIXME: dimensions. Should be kg / m^3-s
+    // but the output from R_22 and R_23 is not ...
+    for (int i=0; i<m_thermo.nMolecules(); ++i)
+        p_r[i] = mp_r_22[i] + mp_r_23[i];
+
+    for (int i=0; i<m_thermo.nMolecules(); ++i) 
+        std::cout <<  " p_r["<<i<<"] = " << p_r[i] << std::endl;
+
     // Multiply by species molecular weights
-    for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        p_r[i] *= m_thermo.speciesMw(i);
+    //for (int i = 0; i < m_thermo.nSpecies(); ++i)
+    //    p_r[i] *= m_thermo.speciesMw(i);
 }
 
 //==============================================================================
 
 // Compute the production term R_22 due to exchange reactions
-// The dimensions of the source production term, p_r_diss_rec, are
-// given by the number of species present in the mixture.
-// For the moment, I just do this for air5, MT.
 void Kinetics::R_22(double* const p_r_22)
 {
-    // Retrieve all necessary temperatures
     double T = m_thermo.T();
+    double KBT = KB * T;
     double Tv[3];
     for (int i=0; i<3; ++i)
         Tv[i] = m_thermo.Tvs(i); // NO, N2, O2
-    Tv[0] = 4000;
-    Tv[1] = 4000;
-    Tv[2] = 4000;
-    std::cout << T     << " "
-	      << Tv[0] << " "  /*NO*/
-	      << Tv[1] << " "  /*N2*/
-	      << Tv[2] << std::endl; /*O2*/
 
-    // The following data section is brutally hard-coded 
-    // and should be put somewhere else
-    // as well as being flexible and general TODO
+    const double * p_Y = m_thermo.Y();
+    const double * p_X = m_thermo.X();
+    const double   n   = m_thermo.numberDensity();
+
+    // Partial number densities
+    double nd[m_thermo.nSpecies()] = {};
+    std::cout << " Number densities ... " << std::endl;
+    for (int i=0; i<m_thermo.nSpecies(); ++i) {
+        nd[i] = p_X[i] * n;
+	std::cout << i << " " << nd[i] << std::endl;
+    }
 
     // Number of vibrational levels
-    int lN2 = 48;
-    int lO2 = 36;
-    int lNO = 38;
+    //int lN2 = 48; // Anharmonic
+    //int lO2 = 36;
+    //int lNO = 38;
+    int lN2 = 33; // Harmonic
+    int lO2 = 26;
+    int lNO = 27;
 
     // Vibrational energy arrays
-    static double ve[122];
+    static double ve[87];
+    static double veN2[33];
+    static double veO2[26];
+    static double veNO[28];
+
+    veNO[0] = 0.00000000e+00;
+    veNO[1] = 3.78297694e-20;
+    veNO[2] = 7.56595389e-20;
+    veNO[3] = 1.13489308e-19;
+    veNO[4] = 1.51319078e-19;
+    veNO[5] = 1.89148847e-19;
+    veNO[6] = 2.26978617e-19;
+    veNO[7] = 2.64808386e-19;
+    veNO[8] = 3.02638156e-19;
+    veNO[9] = 3.40467925e-19;
+    veNO[10] = 3.78297694e-19;
+    veNO[11] = 4.16127464e-19;
+    veNO[12] = 4.53957233e-19;
+    veNO[13] = 4.91787003e-19;
+    veNO[14] = 5.29616772e-19;
+    veNO[15] = 5.67446542e-19;
+    veNO[16] = 6.05276311e-19;
+    veNO[17] = 6.43106081e-19;
+    veNO[18] = 6.80935850e-19;
+    veNO[19] = 7.18765620e-19;
+    veNO[20] = 7.56595389e-19;
+    veNO[21] = 7.94425158e-19;
+    veNO[22] = 8.32254928e-19;
+    veNO[23] = 8.70084697e-19;
+    veNO[24] = 9.07914467e-19;
+    veNO[25] = 9.45744236e-19;
+    veNO[26] = 9.83574006e-19;
+    veNO[27] = 1.02140378e-18;
+
+    veN2[0] = 0.00000000e+00;
+    veN2[1] = 4.68454043e-20;
+    veN2[2] = 9.36908086e-20;
+    veN2[3] = 1.40536213e-19;
+    veN2[4] = 1.87381617e-19;
+    veN2[5] = 2.34227021e-19;
+    veN2[6] = 2.81072426e-19;
+    veN2[7] = 3.27917830e-19;
+    veN2[8] = 3.74763234e-19;
+    veN2[9] = 4.21608639e-19;
+    veN2[10] = 4.68454043e-19; 
+    veN2[11] = 5.15299447e-19;
+    veN2[12] = 5.62144851e-19;
+    veN2[13] = 6.08990256e-19;
+    veN2[14] = 6.55835660e-19;
+    veN2[15] = 7.02681064e-19;
+    veN2[16] = 7.49526469e-19;
+    veN2[17] = 7.96371873e-19;
+    veN2[18] = 8.43217277e-19;
+    veN2[19] = 8.90062681e-19;
+    veN2[20] = 9.36908086e-19;
+    veN2[21] = 9.83753490e-19;
+    veN2[22] = 1.03059889e-18;
+    veN2[23] = 1.07744430e-18;
+    veN2[24] = 1.12428970e-18;
+    veN2[25] = 1.17113511e-18;
+    veN2[26] = 1.21798051e-18;
+    veN2[27] = 1.26482592e-18;
+    veN2[28] = 1.31167132e-18;
+    veN2[29] = 1.35851672e-18;
+    veN2[30] = 1.40536213e-18;
+    veN2[31] = 1.45220753e-18;
+    veN2[32] = 1.49905294e-18;
+
+    veO2[0] = 0.00000000e+00;
+    veO2[1] = 3.13821409e-20; 
+    veO2[2] = 6.27642817e-20;
+    veO2[3] = 9.41464226e-20;
+    veO2[4] = 1.25528563e-19;
+    veO2[5] = 1.56910704e-19;
+    veO2[6] = 1.88292845e-19;
+    veO2[7] = 2.19674986e-19;
+    veO2[8] = 2.51057127e-19;
+    veO2[9] = 2.82439268e-19;
+    veO2[10] = 3.13821409e-19; 
+    veO2[11] = 3.45203549e-19;
+    veO2[12] = 3.76585690e-19;
+    veO2[13] = 4.07967831e-19;
+    veO2[14] = 4.39349972e-19;
+    veO2[15] = 4.70732113e-19;
+    veO2[16] = 5.02114254e-19;
+    veO2[17] = 5.33496395e-19;
+    veO2[18] = 5.64878535e-19;
+    veO2[19] = 5.96260676e-19;
+    veO2[20] = 6.27642817e-19;
+    veO2[21] = 6.59024958e-19;
+    veO2[22] = 6.90407099e-19;
+    veO2[23] = 7.21789240e-19;
+    veO2[24] = 7.53171381e-19;
+    veO2[25] = 7.84553521e-19;
+/*
+    // Number of vibrational levels
+    const int lN2 = 48;
+    const int lO2 = 36;
+    const int lNO = 38;
+
+    // Vibrational energy arrays in J
     static double veN2[48];
     static double veO2[36];
     static double veNO[38];
-
-    ve[1] = 6.96372e-20;
-    ve[2] = 1.1535e-19 ;
-    ve[3] = 1.60493e-19;
-    ve[4] = 2.05065e-19;
-    ve[5] = 2.49065e-19;
-    ve[6] = 2.92494e-19;
-    ve[7] = 3.35349e-19;
-    ve[8] = 3.77629e-19;
-    ve[9] = 4.19334e-19;
-    ve[10] = 4.60463e-19;
-    ve[11] = 5.01013e-19;
-    ve[12] = 5.40983e-19;
-    ve[13] = 5.80372e-19;
-    ve[14] = 6.19178e-19;
-    ve[15] = 6.57399e-19;
-    ve[16] = 6.95033e-19;
-    ve[17] = 7.32077e-19;
-    ve[18] = 7.68531e-19;
-    ve[19] = 8.0439e-19;
-    ve[20] = 8.39654e-19;
-    ve[21] = 8.74319e-19;
-    ve[22] = 9.08383e-19;
-    ve[23] = 9.41842e-19;
-    ve[24] = 9.74695e-19;
-    ve[25] = 1.00694e-18;
-    ve[26] = 1.03857e-18;
-    ve[27] = 1.06958e-18;
-    ve[28] = 1.09997e-18;
-    ve[29] = 1.12974e-18;
-    ve[30] = 1.15889e-18;
-    ve[31] = 1.1874e-18;
-    ve[32] = 1.21528e-18;
-    ve[33] = 1.24252e-18;
-    ve[34] = 1.26911e-18;
-    ve[35] = 1.29507e-18;
-    ve[36] = 1.32037e-18;
-    ve[37] = 1.34501e-18;
-    ve[38] = 1.369e-18  ;
-    ve[39] = 1.39232e-18;
-    ve[40] = 1.41497e-18;
-    ve[41] = 1.43695e-18;
-    ve[42] = 1.45825e-18;
-    ve[43] = 1.47887e-18;
-    ve[44] = 1.49879e-18;
-    ve[45] = 1.51803e-18;
-    ve[46] = 1.53656e-18;
-    ve[47] = 1.55439e-18;
-    ve[48] = 1.56354e-20;
-    ve[49] = 4.6552e-20;
-    ve[50] = 7.70004e-20;
-    ve[51] = 1.06985e-19;
-    ve[52] = 1.3651e-19;
-    ve[53] = 1.65578e-19;
-    ve[54] = 1.94192e-19;
-    ve[55] = 2.22354e-19;
-    ve[56] = 2.50065e-19;
-    ve[57] = 2.77327e-19;
-    ve[58] = 3.04138e-19;
-    ve[59] = 3.305e-19  ;
-    ve[60] = 3.56411e-19;
-    ve[61] = 3.81869e-19;
-    ve[62] = 4.06872e-19;
-    ve[63] = 4.31417e-19;
-    ve[64] = 4.55501e-19;
-    ve[65] = 4.7912e-19;
-    ve[66] = 5.02269e-19;
-    ve[67] = 5.24943e-19;
-    ve[68] = 5.47135e-19;
-    ve[69] = 5.6884e-19;
-    ve[70] = 5.90051e-19;
-    ve[71] = 6.10759e-19;
-    ve[72] = 6.30957e-19;
-    ve[73] = 6.50635e-19;
-    ve[74] = 6.69784e-19;
-    ve[75] = 6.88393e-19;
-    ve[76] = 7.06453e-19;
-    ve[77] = 7.23952e-19;
-    ve[78] = 7.40877e-19;
-    ve[79] = 7.57217e-19;
-    ve[80] = 7.72958e-19;
-    ve[81] = 7.88086e-19;
-    ve[82] = 8.02588e-19;
-    ve[83] = 8.16447e-19;
-    ve[84] = 1.88431e-20;
-    ve[85] = 5.61105e-20;
-    ve[86] = 9.28207e-20;
-    ve[87] = 1.28975e-19;
-    ve[88] = 1.64575e-19;
-    ve[89] = 1.99621e-19;
-    ve[90] = 2.34116e-19;
-    ve[91] = 2.68059e-19;
-    ve[92] = 3.01454e-19;
-    ve[93] = 3.343e-19  ;
-    ve[94] = 3.666e-19  ;
-    ve[95] = 3.98354e-19;
-    ve[96] = 4.29564e-19;
-    ve[97] = 4.60232e-19;
-    ve[98] = 4.90357e-19;
-    ve[99] = 5.19943e-19;
-    ve[100] = 5.4899e-19;
-    ve[101] = 5.77499e-19;
-    ve[102] = 6.05472e-19;
-    ve[103] = 6.3291e-19 ;
-    ve[104] = 6.59815e-19;
-    ve[105] = 6.86187e-19;
-    ve[106] = 7.12028e-19;
-    ve[107] = 7.3734e-19 ;
-    ve[108] = 7.62123e-19;
-    ve[109] = 7.86379e-19;
-    ve[110] = 8.10109e-19;
-    ve[111] = 8.33315e-19;
-    ve[112] = 8.55998e-19;
-    ve[113] = 8.78159e-19;
-    ve[114] = 8.99799e-19;
-    ve[115] = 9.2092e-19 ;
-    ve[116] = 9.41523e-19;
-    ve[117] = 9.6161e-19 ;
-    ve[118] = 9.81182e-19;
-    ve[119] = 1.00024e-18;
-    ve[120] = 1.01878e-18;
-    ve[121] = 1.03682e-18;
 
     veN2[0]  = 2.33547e-20;
     veN2[1]  = 6.96372e-20;
@@ -693,87 +680,73 @@ void Kinetics::R_22(double* const p_r_22)
     veNO[35] = 1.00024e-18;
     veNO[36] = 1.01878e-18;
     veNO[37] = 1.03682e-18;
+*/
+    // Dissociation energy (ground level) in J
+    const double de[m_thermo.nMolecules()] = {1.0409017238088574e-18,
+        1.5636156480913654e-18, 8.196091362099268e-19};
 
-    // Dissociation energy (ground level)
-    const double deNO = 1.0409017238088574e-18; //[J]
-    const double deN2 = 1.5636156480913654e-18; //[J]
-    const double deO2 = 8.196091362099268e-19;  //[J]
-
-    // Special case of no reactions
-    if (nReactions() == 0) {
-        std::fill(p_r_22, p_r_22 + m_thermo.nSpecies(), 0);
-        return;
-    }
-
-    // If there are no diss/rec reactions ... TODO
-
-    // Compute species concentrations (mol/m^3)
-    Map<ArrayXd>(p_r_22, m_thermo.nSpecies()) = 0.;
-    //    (m_thermo.numberDensity() / NA) *
-    //    Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
-
-    const double * p_Y = m_thermo.Y();
-    const double * p_X = m_thermo.X();
-    const double   n   = m_thermo.numberDensity();
-    const double   rho = m_thermo.density();
-    std::cout << "Mass and Molar fractions" << std::endl;
-    std::cout << p_Y[0] << " " << p_Y[1] << " " << p_Y[2] << " " << p_Y[3] 
-	      << p_Y[4] << "\n"  
-	      << p_X[0] << " " << p_X[1] << " " << p_X[2] << " " << p_X[3] 
-              << p_X[4] << "\n"	
-	      << n   << " " 
-	      << rho << std::endl;
-
-    // Compute partial number densities,
-    // the order is given by input file, air_5.xml
-    double nd_n  = p_X[0] / n;
-    double nd_o  = p_X[1] / n;
-    double nd_no = p_X[2] / n;
-    double nd_n2 = p_X[3] / n;
-    double nd_o2 = p_X[4] / n;
-    std::cout << "Number densities" << std::endl;
-    std::cout << nd_n  << " " 
-	      << nd_o  << " " 	
-	      << nd_no << " " 
-	      << nd_n2 << " " 
-	      << nd_o2 << std::endl;
-
-    // Calculate the non-equilibrium partition functions
+    // Non-equilibrium partition functions (anharmonic)
     double z_vibr_T_Tv_NO = 0.;
     for (int i=0; i<lNO; ++i) {
-        z_vibr_T_Tv_NO += exp(-(veNO[i]-i*veNO[0])/(KB*T)-
-			                i*veNO[0]/(KB*Tv[0]));
+
+	// anharmonic (treanor-marrone)
+        //z_vibr_T_Tv_NO += exp(-(veNO[i]-i*veNO[0])/KBT-
+	//		                i*veNO[0]/(KB*Tv[0]));
+	// harmonic (boltzmann)
+        z_vibr_T_Tv_NO += exp(-veNO[i]/(KB*Tv[0]));
     }
+
     double z_vibr_T_Tv_N2 = 0.;
     for (int i=0; i<lN2; ++i) {
-        z_vibr_T_Tv_N2 += exp(-(veN2[i]-i*veN2[0])/(KB*T)-
-			                i*veN2[0]/(KB*Tv[1]));
+        //z_vibr_T_Tv_N2 += exp(-(veN2[i]-i*veN2[0])/KBT-
+	//		                i*veN2[0]/(KB*Tv[1]));
+        z_vibr_T_Tv_N2 += exp(-veN2[i]/(KB*Tv[1]));
     }
+
     double z_vibr_T_Tv_O2 = 0.;
     for (int i=0; i<lO2; ++i) {
-        z_vibr_T_Tv_O2 += exp(-(veO2[i]-i*veO2[0])/(KB*T)-
-			                i*veO2[0]/(KB*Tv[2]));
+        //z_vibr_T_Tv_O2 += exp(-(veO2[i]-i*veO2[0])/KBT-
+	//		                i*veO2[0]/(KB*Tv[2]));
+        z_vibr_T_Tv_O2 += exp(-veO2[i]/(KB*Tv[2]));
     }
-    std::cout << "Non-eq. partition functions" << std::endl;
+
+    std::cout << "Non-equilibrium partition functions ... " << std::endl;
     std::cout << z_vibr_T_Tv_NO << " " 
 	      << z_vibr_T_Tv_N2 << " " 	
 	      << z_vibr_T_Tv_O2 << std::endl;
 
-    // Compute state-to-state diss/rec coefficients, k_c,diss^d(0)
-    // according to the simplest Rigid Sphere (RS) model
-    // TODO: add better models!
+    // Compute the vibrational populations according to 
+    // Treanor-Marrone or Boltzmann distributions
+    double nNO[lNO];
+    double nN2[lN2];
+    double nO2[lO2];
+
+    std::cout << " Vibrational populations ... " << std::endl;
+    for (int i=0; i<lNO; i++) {
+        //nNO[i] = nd[2] * exp(-(veNO[i]-i*veNO[0])/(KB*T)+i*veNO[0]/(KB*Tv[0]))
+	//    / z_vibr_T_Tv_NO;
+
+	// Boltzmann distribution
+        nNO[i] = nd[2] * exp(-veNO[i]/(KB*Tv[0])) / z_vibr_T_Tv_NO;
+	std::cout << i << " " << nNO[i] << std::endl;
+    }
+
+    for (int i=0; i<lN2; i++) {
+        //nN2[i] = nd[3] * exp(-(veN2[i]-i*veN2[0])/(KB*T)+i*veN2[0]/(KB*Tv[1]))
+	//    / z_vibr_T_Tv_N2;
+        nN2[i] = nd[3] * exp(-veN2[i]/(KB*Tv[1])) / z_vibr_T_Tv_N2;
+	std::cout << i << " " << nN2[i] << std::endl;
+    }
+
+    for (int i=0; i<lO2; i++) {
+        //nO2[i] = nd[4] * exp(-(veO2[i]-i*veO2[0])/(KB*T)+i*veO2[0]/(KB*Tv[2]))
+	//    / z_vibr_T_Tv_O2;
+        nO2[i] = nd[4] * exp(-veO2[i]/(KB*Tv[2])) / z_vibr_T_Tv_O2;
+	std::cout << i << " " << nO2[i] << std::endl;
+    }
 
     // Mass and diameter
-    double m_NO = 4.9826300488143997e-26; 	// kg
-    double d_NO = 3.4061e-10; 			// m
-    double m_N2 = 4.6517344343135997e-26;
-    double d_N2 = 3.40385035355259e-10; 
-    double m_O2 = 5.3135256633152e-26;
-    double d_O2 = 3.5155e-10; 
-    double m_N  = 2.3258672171567998e-26;
-    double m_O  = 2.6567628316576e-26;
-
-    double m[5], d[5];
+    double m[5], d[5]; // kg, m
     m[0] = 2.3258672171567998e-26; // N
     m[1] = 2.6567628316576e-26;    // O
     m[2] = 4.9826300488143997e-26; // NO
@@ -785,131 +758,334 @@ void Kinetics::R_22(double* const p_r_22)
     d[3] = 3.40385035355259e-10;
     d[4] = 3.5155e-10;
 
-    // TODO: Compute STS forward rates ...
-    // not clear how to do it!
-    double k_N2_NO[lO2][lNO];
-    double k_O2_NO[lO2][lNO];
-    double k_NO_N2[lO2][lNO];
-    double k_NO_O2[lO2][lNO];
+    // Computation of STS rate coefficients for the exchange reactions
+    // with the model of Savelev. We only consider 2 reactions:
+    // N2(i) + O <=> NO(k) + N
+    // O2(i) + N <=> NO(k) + O
+    double k_N2_O[lN2][lNO];
+    double k_O2_N[lO2][lNO];
 
-    // TODO: here is the last and most delicate part:
-    // calculation of STS forward rates according to some model!
-    double k_N2_O[lN2];
-    // TODO: this should be selected in the input file, so it 
-    // should be made polymorphic ...
-    // TODO: here the Arrhenius formula has been hard-coded
-    // but should be called from somewhere else!
-    std::string models_k_exch = "arrh_park";
-    for (int i=0; i<lN2; ++i) { // so it does not depend on i?
-	//k_N2_O[i] = k_exch(T, i, models_k_exch);
-	k_N2_O[i] = 1.0627449094606e-12/*8e-17*/ 
-		    * pow(T, -1/*0.*/) 
-		    * exp(-5.297555584800001e-19/*5.175e-19*/ / (KB * T));
+    // constants for N2,O2
+    double A[2] = {8e-17, 4e-16}; // m^3/sec
+    double b[2] = {0, -0.39};
+    double U = 3.*T; // A/(6.*KB);
+    double KBU = KB * U;
+
+    // N2 vibr. energy, J
+    double en2[lN2]    = {};
+    double en2_eV[lN2] = {};
+    for (int i=0; i<lN2; ++i) {
+        en2[i] = veN2[i] + veN2[0];    // J
+        en2_eV[i] = en2[i] * 6.242e18; // eV
+	std::cout << " en2_eV: " << i << " " << en2_eV[i] << std::endl;
     }
-    double k_O2_N[lO2];
+
+    // O2 vibr. energy, J
+    double eo2[lO2]    = {};
+    double eo2_eV[lO2] = {};
     for (int i=0; i<lO2; ++i) {
-	//k_O2_N[i] = k_exch(T, i, models_k_exch);
-	k_O2_N[i] = 4e-15 
-		    * pow(T, -0.39) 
-		    * exp(-2e-20 / (KB * T));
+        eo2[i] = veO2[i] + veO2[0];
+        eo2_eV[i] = eo2[i] * 6.242e18; 
+	std::cout << " eo2_eV: " << i << " " << eo2_eV[i] << std::endl;
     }
+
+    double eno[lNO]      = {};
+    double eno_eV[lNO]   = {};
+    double Ear_n2[lNO]   = {};
+    double Ear_n2_J[lNO] = {};
+    double Ear_o2[lNO]   = {};
+    double Ear_o2_J[lNO] = {};
+    for (int i=0; i<lNO; ++i) {
+        eno[i] = veNO[i] + veNO[0];
+        eno_eV[i] = eno[i] * 6.242e18; 
+	std::cout << " eno_eV: " << i << " " << eno_eV[i] << std::endl;
+    }
+
+    std::cout << " Ear ... " << std::endl;
+    for (int i=0; i<lNO; ++i) {
+
+	// N2+O reaction
+        Ear_n2[i] = 2.8793 + 1.02227 * eno_eV[i]; // eV
+        Ear_n2_J[i] = Ear_n2[i] / 6.242e18;       // J
+
+	// O2+N reaction
+	if (eno_eV[i] < 1.3706) {
+            Ear_o2[i] = 0.098;
+	}
+	else if ((1.3706 < eno_eV[i]) && (eno_eV[i] < 2.4121)) {
+	    Ear_o2[i] = -0.6521 + 0.54736 * eno_eV[i];
+	}
+	else if (eno_eV[i] > 2.4121) {
+            Ear_o2[i] = -1.8451 + 1.04189 * eno_eV[i]; // eV
+	} else {
+            std::cout << "Something wrong in Ear_o2" << std::endl;
+	}
+        Ear_o2_J[i] = Ear_o2[i] / 6.242e18; // J
+
+	std::cout << i << " " << Ear_n2_J[i] << "  "
+	 	  	      << Ear_o2_J[i] << std::endl;
+    }
+
+    // Vibration partition functions
+    std::cout << "Vibr. partition functions" << std::endl;
+    double Zv_n2;
+    for (int i=0; i<lN2; ++i)
+        Zv_n2 += exp(-en2[i]/KBT);
+
+    double Zv_o2;
+    for (int i=0; i<lO2; ++i) 
+        Zv_o2 += exp(-eo2[i]/KBT);
+
+    std::cout << " Zv_n2: " << Zv_n2 << " " 
+	      << " Zv_o2: " << Zv_o2 << std::endl;
+
+    // Equilibrium coefficients
+    std::cout << " N2 eq. coeffs..." << std::endl;
+    double k_eq_n2[lNO] = {}; // m^3/sec
+    double fac = A[0] * pow(T,b[0]);
+    for (int i=0; i<lNO; ++i) {
+        k_eq_n2[i] = fac * (1. + 0.333333333333333 * eno_eV[i]) 
+	    * exp(-Ear_n2_J[i] / KBT); 
+	std::cout << i << " " << k_eq_n2[i] << std::endl;
+    }
+
+    std::cout << " O2 eq. coeffs..." << std::endl;
+    double k_eq_o2[lNO] = {};
+    fac = A[1] * pow(T,b[1]);
+    for (int i=0; i<lNO; ++i) {
+        k_eq_o2[i] = fac * (Ear_o2[i] + 0.8) * exp(-Ear_o2_J[i] / KBT);
+        std::cout << i << " " << k_eq_o2[i] << std::endl;
+    }
+
+    // Energy threshold, for each k -> e_i*
+    std::cout << "energy threshold" << std::endl;
+    double sum1_n2[lNO] = {}; //zeros(lno,1);
+    double sum2_n2[lNO] = {}; 
+    double sum1_o2[lNO] = {};
+    double sum2_o2[lNO] = {};
+
+    // Identify the thresholds to compute the partial sums
+    int thrsN2[lNO];
+    int thrsO2[lNO];
+    for (int i=0; i<lNO; ++i) {
+
+        for (int j=0; j<lN2; ++j) {
+	    if (en2[j] <= Ear_n2_J[i]) thrsN2[i] = j;
+	}
+
+        for (int j=0; j<lO2; ++j) {
+	    if (eo2[j] <= Ear_o2_J[i]) thrsO2[i] = j;
+	}
+        std::cout << " thrsN2["<<i<<"] = " << thrsN2[i] 
+		  << " thrsO2["<<i<<"] = " << thrsO2[i] << std::endl;
+    }
+
+    std::cout << " Partial sums " << std::endl;
+    for (int i=0; i<lNO; ++i) {
+
+        // N2 + O reaction
+        for (int j=0; j<thrsN2[i]; ++j) {
+	    sum1_n2[i] += exp(-(Ear_n2_J[i]-en2[j])/KBU);    
+	}
+        for (int j=thrsN2[i]; j<lN2; ++j) {
+	    sum2_n2[i] += exp(-(Ear_n2_J[i]-en2[j])/KBT);    
+	}
+
+        // O2 + N reaction
+        for (int j=0; j<thrsO2[i]; ++j) {
+	    sum1_o2[i] += exp(-(Ear_o2_J[i]-eo2[j])/KBU);    
+	}
+        for (int j=thrsN2[i]; j<lO2; ++j) {
+	    sum2_o2[i] += exp(-(Ear_o2_J[i]-eo2[j])/KBT);    
+	}
+        std::cout << i << " " << sum1_n2[i] << " " << sum2_n2[i] << " " 
+        	              << sum1_o2[i] << " " << sum2_o2[i] << std::endl;
+    }
+
+    // Normalizing coefficients
+    std::cout << "Normalizing coeffs" << std::endl;
+    double C_n2[lNO]  = {}, C_o2[lNO] = {};
+    double B1_n2[lNO] = {}, B2_n2[lNO] = {};
+    double B1_o2[lNO] = {}, B2_o2[lNO] = {}; 
+
+    for (int i=0; i<lNO; ++i) {
+        C_n2[i] = Zv_n2 * 1./(sum1_n2[i] + sum2_n2[i]);
+        B1_n2[i] = C_n2[i] * k_eq_n2[i] * exp(-Ear_n2_J[i]/KBU);
+        B2_n2[i] = C_n2[i] * k_eq_n2[i] * exp(Ear_n2_J[i]/KBT);
+        std::cout << " C_n2["<<i<<"] = " << C_n2[i] 
+		  << " B1_n2["<<i<<"] = " << B1_n2[i] 
+		  << " B2_n2["<<i<<"] = " << B2_n2[i] << std::endl;
+    }
+
+    for (int i=0; i<lNO; ++i) {
+        C_o2[i] = Zv_o2 * 1./(sum1_o2[i] + sum2_o2[i]);
+        B1_o2[i] = C_o2[i] * k_eq_o2[i] * exp(-Ear_o2_J[i]/KBU);
+        B2_o2[i] = C_o2[i] * k_eq_o2[i] * exp(Ear_o2_J[i]/KBT);
+        std::cout << " C_o2["<<i<<"] = " << C_o2[i] 
+		  << " B1_o2["<<i<<"] = " << B1_o2[i] 
+		  << " B2_o2["<<i<<"] = " << B2_o2[i] << std::endl;
+    }
+
+    // TODO: fix bug in the exponential
+    std::cout << " k_N2_O " << std::endl;
+    double kbTU =  (1./T + 1./U) / KB;
+    for (int i=0; i<lN2; ++i) { // N2 rows
+        for (int j = 0; j < lNO; ++j) { // NO columns
+	    if (en2[i] < Ear_n2_J[j]) { // Ear_n2_J has size = lNO 
+	        k_N2_O[i][j] = B1_n2[i] * exp(en2[i]/kbTU);
+	    }
+	    else if (en2[i] > Ear_n2_J[j]) {
+		k_N2_O[i][j] = B2_n2[i];
+	    } else {
+                std::cout << " Out-of-bound error ... " << std::endl;
+	    }
+            std::cout << " k_N2_O["<<i<<"]["<<j<<"] = " 
+		      << k_N2_O[i][j] << std::endl;
+	}
+    }
+
+    // TODO: fix bug in the exponential
+    std::cout << " k_O2_N " << std::endl;
+    for (int i=0; i<lO2; ++i) { // O2 rows 
+        for (int j = 0; j < lNO; ++j) { // NO columns
+	    if (eo2[i] < Ear_o2_J[j]) { // Ear_o2_J has size = lNO
+	        k_O2_N[i][j] = B1_o2[i] * exp(eo2[i]/kbTU);
+	    }
+	    else if (eo2[i] > Ear_o2_J[j]) {
+		k_O2_N[i][j] = B2_o2[i];
+	    } else {
+                std::cout << " Out-of-bound error ... " << std::endl;
+	    }
+            std::cout << " k_O2_N["<<i<<"]["<<j<<"] = " 
+		      << k_O2_N[i][j] << std::endl;
+	}
+    }
+
+    /*
+    ////////////////////////////////////////////////////////////////////////////
+    // 1. Rusanov-Friedman model
+    for (int i=0; i<lN2; ++i) {
+        if (Ear_n2_J[i] > 0.51 * en2[i] ) {
+          B2_n2[i] = A[0]*pow(T, b[0])*exp(-(Ear_n2_J[i] - 0.51*en2[i])/(KB*T));
+        } else {
+          B2_n2[i] = A[0] * pow(T, b[0]);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // 2. Polak model
+    for (int i=0; i<lN2; ++i) {
+        if (Ear_n2_J[i] > 0.52 * en2[i] ) {
+          B2_n2[i] = A[0] * pow(T, b[0]) *
+	      exp(-(Ear_n2_J[i] - 0.52 * en2[i]) / (0.9 * KB * T));
+        } else {
+          B2_n2[i] = A[0] * pow(T, b[0]);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // 3. Warnatz model
+    for (int i=0; i<lN2; ++i) {
+        if (Ear_n2_J[i] > en2[i] ) {
+          B2_n2[i] = (4.17e+12 + i) * pow(T, 0) *
+	      exp(-(Ear_n2_J[i] - en2[i]) / (KB * T));
+        } else {
+          B2_n2[i] = (4.17e+12 + i) * pow(T, 0);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    */
 
     // Compute the rotational partition function
     // according to a simplified formula ... TODO: better formula
-    double Be[3] = {1.998, 1.4377, 1.6720}; // *100 // m^-1
-    int sigma[3] = {2, 2, 1};
-    double theta_r[3] = {0, 0, 0};
-    double z_rot[3] = {0, 0, 0};
+    double Be[3] = {167.20, 199.8, 143.77}; // m^-1
+    int sigma[3] = {1, 2, 2};
+    double theta_r[3] = {};
+    double z_rot[3] = {};
     for (int i=0; i<3; ++i) {
-        theta_r[i] = Be[i]*100*HP*C0/KB;
+        theta_r[i] = Be[i]*HP*C0/KB;
         z_rot[i] = T/(sigma[i]*theta_r[i]);
     }
 
-    // Compute the equilibrium factors
-    // TODO: check order of elementy
-    double exp_no_n2[lN2][lNO] = {}; 
+    std::cout << " Kz_n2 ... " << std::endl;
+    double Kz_n2[lN2][lNO] = {}; 
+    double fac0 = pow((m[3]*m[1]/(m[2]*m[0])),1.5) * z_rot[1]/z_rot[0] 
+	            * exp((de[1]-de[0])/KBT);
     for (int i=0; i<lN2; ++i) {
         for (int j=0; j<lNO; ++j) {
-	    exp_no_n2[i][j] = exp(veNO[j] - veN2[i]);
-	}
-    }
-    double exp_no_o2[lO2][lNO] = {}; 
-    for (int i=0; i<lO2; ++i) {
-        for (int j=0; j<lNO; ++j) {
-	    exp_no_o2[i][j] = exp(veNO[j] - veO2[i]);
+            Kz_n2[i][j] = fac0 * exp((-veN2[i] + veNO[j])/KBT);
+	    cout << Kz_n2[i][j] << " \n"[j == lNO-1];
 	}
     }
 
-    double Kz_n2[lN2][lNO] = {}; 
-    for (int i=0; i<lN2; ++i) {
-        for (int j=0; j<lNO; ++j) {
-            Kz_n2[i][j] = pow((m_N2*m_O/(m_NO*m_N)),1.5) * z_rot[1]/z_rot[0] *
-                exp_no_n2[i][j] /(KB*T) * exp((deN2-deNO)/KB*T);
-	}
-    }
+    std::cout << "Kz_o2" << std::endl;
     double Kz_o2[lO2][lNO] = {}; 
+    double fac1 = pow((m[4]*m[0]/(m[2]*m[1])),1.5) * z_rot[2]/z_rot[0] 
+	            * exp((de[2]-de[0])/KBT);
     for (int i=0; i<lO2; ++i) {
         for (int j=0; j<lNO; ++j) {
-            Kz_o2[i][j] = pow((m_O2*m_N/(m_NO*m_O)),1.5) * z_rot[2]/z_rot[0] *
-                exp_no_o2[i][j] /(KB*T) * exp((deO2-deNO)/KB*T);
+            Kz_o2[i][j] = fac1 * exp((-veNO[j] + veO2[i])/KBT);
+	    cout << Kz_o2[i][j] << " \n"[j == lNO-1];
 	}
     }
 
     // Compute MT forward exchange coefficients, eq. 3.93.
     // N2
+    double k_O_N2[lN2][lNO];
     double fac0f, fac0b = 0.;
     for (int i=0; i<lN2; ++i) {
         for (int j=0; j<lNO; ++j) {
+
 	    // MT forward rates
-            fac0f += exp(-((veN2[i]-i*veN2[0])/(KB*T)) -
-	                            i*veN2[0]/(KB*Tv[1])) * k_N2_NO[i][j];
+            fac0f += exp(-((veN2[i]-i*veN2[0])/KBT) -
+	                            i*veN2[0]/(KB*Tv[1])) * k_N2_O[i][j];
 	    // STS backward rates
-	    k_NO_N2[i][j] = Kz_n2[i][j] * k_N2_NO[i][j];
-            fac0b += exp(-((veN2[i]-i*veN2[0])/(KB*T)) -
-	                            i*veN2[0]/(KB*Tv[1])) * k_NO_N2[i][j];
+	    k_O_N2[i][j] = Kz_n2[i][j] * k_N2_O[i][j];
+            fac0b += exp(-((veN2[i]-i*veN2[0])/KBT) -
+	                            i*veN2[0]/(KB*Tv[1])) * k_O_N2[i][j];
 	}
     }
     double k_exch_N2_NO = fac0f / z_vibr_T_Tv_N2;
     double k_exch_NO_N2 = fac0b / z_vibr_T_Tv_N2;
+    std::cout << " k_exch_N2_NO: " << k_exch_N2_NO << std::endl; 
+    std::cout << " k_exch_NO_N2: " << k_exch_NO_N2 << std::endl; 
 
     // O2
+    double k_N_O2[lO2][lNO];
     for (int i=0; i<lO2; ++i) {
 	fac0f = fac0b = 0.;
         for (int j=0; j<lNO; ++j) {
+
 	    // MT forward rates
-            fac0f += exp(-((veO2[i]-i*veO2[0])/(KB*T)) -
-                                   i*veO2[0]/(KB*Tv[2])) * k_O2_NO[i][j];
+            fac0f += exp(-((veO2[i]-i*veO2[0])/KBT) -
+                                    i*veO2[0]/(KB*Tv[2])) * k_O2_N[i][j];
 	    // STS backward rates
-	    k_NO_O2[i][j] = Kz_o2[i][j] * k_NO_O2[i][j];
-            fac0b += exp(-((veO2[i]-i*veO2[0])/(KB*T)) -
-                                    i*veO2[0]/(KB*Tv[2])) * k_NO_O2[i][j];
+	    k_N_O2[i][j] = Kz_o2[i][j] * k_N_O2[i][j];
+            fac0b += exp(-((veO2[i]-i*veO2[0])/KBT) -
+                                    i*veO2[0]/(KB*Tv[2])) * k_N_O2[i][j];
         }
     }
     double k_exch_O2_NO = fac0f / z_vibr_T_Tv_O2;
     double k_exch_NO_O2 = fac0b / z_vibr_T_Tv_O2;
+    std::cout << " k_exch_O2_NO: " << k_exch_O2_NO << std::endl; 
+    std::cout << " k_exch_NO_O2: " << k_exch_NO_O2 << std::endl; 
 
-    // Here, as elsewhere, a certain fixed order of species is assumed.
-    // Such order is given by the list of species in the input file:
-    // N O NO N2 O2
-    double R_exch_22[m_thermo.nSpecies()] = {0.,0.,0.,0.,0.};
-    double nd[m_thermo.nSpecies()] = {nd_n, nd_o, nd_no, nd_n2, nd_o2};
+    double R_exch_22[m_thermo.nMolecules()] = {};
 
-    // N
-    R_exch_22[0] = 0.;
-    // O
-    R_exch_22[1] = 0.;
     // NO
-    R_exch_22[2] = (nd_n2 * nd_o * k_exch_N2_NO - nd_no * nd_n * k_exch_NO_N2) + 
-	           (nd_o2 * nd_n * k_exch_O2_NO - nd_no * nd_o * k_exch_NO_O2);
+    R_exch_22[0] = (nd[3] * nd[1] * k_exch_N2_NO - nd[2] * nd[0] * k_exch_NO_N2) + 
+	           (nd[4] * nd[0] * k_exch_O2_NO - nd[2] * nd[1] * k_exch_NO_O2);
     // N2
-    R_exch_22[3] = nd_no * nd_n * k_exch_NO_N2 - nd_n2 * nd_o * k_exch_N2_NO;
+    R_exch_22[1] = nd[2] * nd[0] * k_exch_NO_N2 - nd[3] * nd[1] * k_exch_N2_NO;
     // O2
-    R_exch_22[4] = nd_no * nd_o * k_exch_NO_O2 - nd_o2 * nd_n * k_exch_O2_NO;
+    R_exch_22[2] = nd[2] * nd[1] * k_exch_NO_O2 - nd[4] * nd[0] * k_exch_O2_NO;
 
-    // TODO: check dimensions!
-    for (int i = 0; i < m_thermo.nSpecies(); ++i) {
+    // Compute species concentrations (mol/m^3)
+    Map<ArrayXd>(p_r_22, m_thermo.nMolecules()) = 0.;
+    
+    // FIXME: dimensions ...
+    std::cout << " R_exch_22[i] " << std::endl;
+    for (int i=0; i<m_thermo.nMolecules(); ++i) {
         p_r_22[i] = R_exch_22[i];
-	std::cout << p_r_22[i] << std::endl;
+	std::cout << i << " " << p_r_22[i] << std::endl;
     }
 }
 
@@ -981,493 +1157,637 @@ void Kinetics::R_22(double* const p_r_22)
       double diameter) 
   {
       // collision frequency, eq. 82a
-      return 4 * PI * n * diameter*diameter * sqrt(KB * T / (2*PI * coll_mass));
+      return 4. * PI * n * diameter * diameter
+                * sqrt(KB * T / (2. * PI * coll_mass));
   }
 
 //==============================================================================
 
 // Compute the production term R_23 due to dissociation/recombination
-// The dimensions of the source production term, p_r_diss_rec, are
-// given by the number of species present in the mixture.
-// For the moment, I just do this for air5, MT.
 void Kinetics::R_23(double* const p_r_23)
 {
-    // Retrieve all necessary temperatures
-    double T = m_thermo.T();
-    double Tv[3];
-    for (int i=0; i<3; ++i)
-        Tv[i] = m_thermo.Tvs(i); // NO, N2, O2
-    Tv[0] = 4000;
-    Tv[1] = 4000;
-    Tv[2] = 4000;
-    std::cout << T     << " "
-	      << Tv[0] << " "  /*NO*/
-	      << Tv[1] << " "  /*N2*/
-	      << Tv[2] << std::endl; /*O2*/
-
-    // The following data section is brutally hardcoded 
-    // and clearly should be retrieved from Particle
-    // as well as being flexible and general TODO
-
-    // Number of vibrational levels
-    int lN2 = 48;
-    int lO2 = 36;
-    int lNO = 38;
-
-    // Vibrational energy arrays
-    static double ve[122];
-    static double veN2[48];
-    static double veO2[36];
-    static double veNO[38];
-
-    ve[1] = 6.96372e-20;
-    ve[2] = 1.1535e-19 ;
-    ve[3] = 1.60493e-19;
-    ve[4] = 2.05065e-19;
-    ve[5] = 2.49065e-19;
-    ve[6] = 2.92494e-19;
-    ve[7] = 3.35349e-19;
-    ve[8] = 3.77629e-19;
-    ve[9] = 4.19334e-19;
-    ve[10] = 4.60463e-19;
-    ve[11] = 5.01013e-19;
-    ve[12] = 5.40983e-19;
-    ve[13] = 5.80372e-19;
-    ve[14] = 6.19178e-19;
-    ve[15] = 6.57399e-19;
-    ve[16] = 6.95033e-19;
-    ve[17] = 7.32077e-19;
-    ve[18] = 7.68531e-19;
-    ve[19] = 8.0439e-19;
-    ve[20] = 8.39654e-19;
-    ve[21] = 8.74319e-19;
-    ve[22] = 9.08383e-19;
-    ve[23] = 9.41842e-19;
-    ve[24] = 9.74695e-19;
-    ve[25] = 1.00694e-18;
-    ve[26] = 1.03857e-18;
-    ve[27] = 1.06958e-18;
-    ve[28] = 1.09997e-18;
-    ve[29] = 1.12974e-18;
-    ve[30] = 1.15889e-18;
-    ve[31] = 1.1874e-18;
-    ve[32] = 1.21528e-18;
-    ve[33] = 1.24252e-18;
-    ve[34] = 1.26911e-18;
-    ve[35] = 1.29507e-18;
-    ve[36] = 1.32037e-18;
-    ve[37] = 1.34501e-18;
-    ve[38] = 1.369e-18  ;
-    ve[39] = 1.39232e-18;
-    ve[40] = 1.41497e-18;
-    ve[41] = 1.43695e-18;
-    ve[42] = 1.45825e-18;
-    ve[43] = 1.47887e-18;
-    ve[44] = 1.49879e-18;
-    ve[45] = 1.51803e-18;
-    ve[46] = 1.53656e-18;
-    ve[47] = 1.55439e-18;
-    ve[48] = 1.56354e-20;
-    ve[49] = 4.6552e-20;
-    ve[50] = 7.70004e-20;
-    ve[51] = 1.06985e-19;
-    ve[52] = 1.3651e-19;
-    ve[53] = 1.65578e-19;
-    ve[54] = 1.94192e-19;
-    ve[55] = 2.22354e-19;
-    ve[56] = 2.50065e-19;
-    ve[57] = 2.77327e-19;
-    ve[58] = 3.04138e-19;
-    ve[59] = 3.305e-19  ;
-    ve[60] = 3.56411e-19;
-    ve[61] = 3.81869e-19;
-    ve[62] = 4.06872e-19;
-    ve[63] = 4.31417e-19;
-    ve[64] = 4.55501e-19;
-    ve[65] = 4.7912e-19;
-    ve[66] = 5.02269e-19;
-    ve[67] = 5.24943e-19;
-    ve[68] = 5.47135e-19;
-    ve[69] = 5.6884e-19;
-    ve[70] = 5.90051e-19;
-    ve[71] = 6.10759e-19;
-    ve[72] = 6.30957e-19;
-    ve[73] = 6.50635e-19;
-    ve[74] = 6.69784e-19;
-    ve[75] = 6.88393e-19;
-    ve[76] = 7.06453e-19;
-    ve[77] = 7.23952e-19;
-    ve[78] = 7.40877e-19;
-    ve[79] = 7.57217e-19;
-    ve[80] = 7.72958e-19;
-    ve[81] = 7.88086e-19;
-    ve[82] = 8.02588e-19;
-    ve[83] = 8.16447e-19;
-    ve[84] = 1.88431e-20;
-    ve[85] = 5.61105e-20;
-    ve[86] = 9.28207e-20;
-    ve[87] = 1.28975e-19;
-    ve[88] = 1.64575e-19;
-    ve[89] = 1.99621e-19;
-    ve[90] = 2.34116e-19;
-    ve[91] = 2.68059e-19;
-    ve[92] = 3.01454e-19;
-    ve[93] = 3.343e-19  ;
-    ve[94] = 3.666e-19  ;
-    ve[95] = 3.98354e-19;
-    ve[96] = 4.29564e-19;
-    ve[97] = 4.60232e-19;
-    ve[98] = 4.90357e-19;
-    ve[99] = 5.19943e-19;
-    ve[100] = 5.4899e-19;
-    ve[101] = 5.77499e-19;
-    ve[102] = 6.05472e-19;
-    ve[103] = 6.3291e-19 ;
-    ve[104] = 6.59815e-19;
-    ve[105] = 6.86187e-19;
-    ve[106] = 7.12028e-19;
-    ve[107] = 7.3734e-19 ;
-    ve[108] = 7.62123e-19;
-    ve[109] = 7.86379e-19;
-    ve[110] = 8.10109e-19;
-    ve[111] = 8.33315e-19;
-    ve[112] = 8.55998e-19;
-    ve[113] = 8.78159e-19;
-    ve[114] = 8.99799e-19;
-    ve[115] = 9.2092e-19 ;
-    ve[116] = 9.41523e-19;
-    ve[117] = 9.6161e-19 ;
-    ve[118] = 9.81182e-19;
-    ve[119] = 1.00024e-18;
-    ve[120] = 1.01878e-18;
-    ve[121] = 1.03682e-18;
-
-    veN2[0]  = 2.33547e-20;
-    veN2[1]  = 6.96372e-20;
-    veN2[2]  = 1.1535e-19 ;
-    veN2[3]  = 1.60493e-19;
-    veN2[4]  = 2.05065e-19;
-    veN2[5]  = 2.49065e-19;
-    veN2[6]  = 2.92494e-19;
-    veN2[7]  = 3.35349e-19;
-    veN2[8]  = 3.77629e-19;
-    veN2[9]  = 4.19334e-19;
-    veN2[10] = 4.60463e-19;
-    veN2[11] = 5.01013e-19;
-    veN2[12] = 5.40983e-19;
-    veN2[13] = 5.80372e-19;
-    veN2[14] = 6.19178e-19;
-    veN2[15] = 6.57399e-19;
-    veN2[16] = 6.95033e-19;
-    veN2[17] = 7.32077e-19;
-    veN2[18] = 7.68531e-19;
-    veN2[19] = 8.0439e-19 ;
-    veN2[20] = 8.39654e-19;
-    veN2[21] = 8.74319e-19;
-    veN2[22] = 9.08383e-19;
-    veN2[23] = 9.41842e-19;
-    veN2[24] = 9.74695e-19;
-    veN2[25] = 1.00694e-18;
-    veN2[26] = 1.03857e-18;
-    veN2[27] = 1.06958e-18;
-    veN2[28] = 1.09997e-18;
-    veN2[29] = 1.12974e-18;
-    veN2[30] = 1.15889e-18;
-    veN2[31] = 1.1874e-18 ;
-    veN2[32] = 1.21528e-18;
-    veN2[33] = 1.24252e-18;
-    veN2[34] = 1.26911e-18;
-    veN2[35] = 1.29507e-18;
-    veN2[36] = 1.32037e-18;
-    veN2[37] = 1.34501e-18;
-    veN2[38] = 1.369e-18  ;
-    veN2[39] = 1.39232e-18;
-    veN2[40] = 1.41497e-18;
-    veN2[41] = 1.43695e-18;
-    veN2[42] = 1.45825e-18;
-    veN2[43] = 1.47887e-18;
-    veN2[44] = 1.49879e-18;
-    veN2[45] = 1.51803e-18;
-    veN2[46] = 1.53656e-18;
-    veN2[47] = 1.55439e-18;
-
-    veO2[0]  = 1.56354e-20;
-    veO2[1]  = 4.6552e-20 ;
-    veO2[2]  = 7.70004e-20;
-    veO2[3]  = 1.06985e-19;
-    veO2[4]  = 1.3651e-19 ;
-    veO2[5]  = 1.65578e-19;
-    veO2[6]  = 1.94192e-19;
-    veO2[7]  = 2.22354e-19;
-    veO2[8]  = 2.50065e-19;
-    veO2[9]  = 2.77327e-19;
-    veO2[10] = 3.04138e-19;
-    veO2[11] = 3.305e-19  ;
-    veO2[12] = 3.56411e-19;
-    veO2[13] = 3.81869e-19;
-    veO2[14] = 4.06872e-19;
-    veO2[15] = 4.31417e-19;
-    veO2[16] = 4.55501e-19;
-    veO2[17] = 4.7912e-19 ;
-    veO2[18] = 5.02269e-19;
-    veO2[19] = 5.24943e-19;
-    veO2[20] = 5.47135e-19;
-    veO2[21] = 5.6884e-19 ;
-    veO2[22] = 5.90051e-19;
-    veO2[23] = 6.10759e-19;
-    veO2[24] = 6.30957e-19;
-    veO2[25] = 6.50635e-19;
-    veO2[26] = 6.69784e-19;
-    veO2[27] = 6.88393e-19;
-    veO2[28] = 7.06453e-19;
-    veO2[29] = 7.23952e-19;
-    veO2[30] = 7.40877e-19;
-    veO2[31] = 7.57217e-19;
-    veO2[32] = 7.72958e-19;
-    veO2[33] = 7.88086e-19;
-    veO2[34] = 8.02588e-19;
-    veO2[35] = 8.16447e-19;
-
-    veNO[0]  = 1.88431e-20;
-    veNO[1]  = 5.61105e-20;
-    veNO[2]  = 9.28207e-20;
-    veNO[3]  = 1.28975e-19;
-    veNO[4]  = 1.64575e-19;
-    veNO[5]  = 1.99621e-19;
-    veNO[6]  = 2.34116e-19;
-    veNO[7]  = 2.68059e-19;
-    veNO[8]  = 3.01454e-19;
-    veNO[9]  = 3.343e-19  ;
-    veNO[10] = 3.666e-19  ;
-    veNO[11] = 3.98354e-19;
-    veNO[12] = 4.29564e-19;
-    veNO[13] = 4.60232e-19;
-    veNO[14] = 4.90357e-19;
-    veNO[15] = 5.19943e-19;
-    veNO[16] = 5.4899e-19 ;
-    veNO[17] = 5.77499e-19;
-    veNO[18] = 6.05472e-19;
-    veNO[19] = 6.3291e-19 ;
-    veNO[20] = 6.59815e-19;
-    veNO[21] = 6.86187e-19;
-    veNO[22] = 7.12028e-19;
-    veNO[23] = 7.3734e-19 ;
-    veNO[24] = 7.62123e-19;
-    veNO[25] = 7.86379e-19;
-    veNO[26] = 8.10109e-19;
-    veNO[27] = 8.33315e-19;
-    veNO[28] = 8.55998e-19;
-    veNO[29] = 8.78159e-19;
-    veNO[30] = 8.99799e-19;
-    veNO[31] = 9.2092e-19 ;
-    veNO[32] = 9.41523e-19;
-    veNO[33] = 9.6161e-19 ;
-    veNO[34] = 9.81182e-19;
-    veNO[35] = 1.00024e-18;
-    veNO[36] = 1.01878e-18;
-    veNO[37] = 1.03682e-18;
-
-    // Dissociation energy
-    const double deNO = 1.0409017238088574e-18; //[J]
-    const double deN2 = 1.5636156480913654e-18; //[J]
-    const double deO2 = 8.196091362099268e-19;  //[J]
-
-    // Special case of no reactions
-    if (nReactions() == 0) {
-        std::fill(p_r_23, p_r_23 + m_thermo.nSpecies(), 0);
-        return;
-    }
-
-    // If there are no diss/rec reactions ... TODO
-
-    // Compute species concentrations (mol/m^3)
-    Map<ArrayXd>(p_r_23, m_thermo.nSpecies()) = 0.;
-    //    (m_thermo.numberDensity() / NA) *
-    //    Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
-
-    const double * p_Y = m_thermo.Y();
+    //const double * p_Y = m_thermo.Y();
     const double * p_X = m_thermo.X();
     const double   n   = m_thermo.numberDensity();
-    const double   rho = m_thermo.density();
-    std::cout << "Mass and Molar fractions" << std::endl;
-    std::cout << p_Y[0] << " " << p_Y[1] << " " << p_Y[2] << " " << p_Y[3] 
-	      << p_Y[4] << "\n"  
-	      << p_X[0] << " " << p_X[1] << " " << p_X[2] << " " << p_X[3] 
-              << p_X[4] << "\n"	
-	      << n   << " " 
-	      << rho << std::endl;
+    std::cout << "number density: " << n << std::endl;
+    double T = m_thermo.T();
+    std::cout << T << std::endl;
+    double Tv[3];
+    for (int i=0; i<3; ++i) {
+        Tv[i] = m_thermo.Tvs(i); // NO, N2, O2
+        std::cout << Tv[i] << std::endl;
+    }
+    double KBT = KB * T;
 
-    // Compute partial number densities,
-    // the order is given by input file, air_5.xml
-    double nd_n  = p_X[0] / n;
-    double nd_o  = p_X[1] / n;
-    double nd_no = p_X[2] / n;
-    double nd_n2 = p_X[3] / n;
-    double nd_o2 = p_X[4] / n;
-    std::cout << "Number densities" << std::endl;
-    std::cout << nd_n  << " " 
-	      << nd_o  << " " 	
-	      << nd_no << " " 
-	      << nd_n2 << " " 
-	      << nd_o2 << std::endl;
+    // Number of vibrational levels
+    //int lN2 = 48; // Anharmonic
+    //int lO2 = 36;
+    //int lNO = 38;
+    int lN2 = 33; // Harmonic
+    int lO2 = 26;
+    int lNO = 27;
+
+    // Vibrational energy arrays
+    //static double ve[122];
+    //static double veN2[48];
+    //static double veO2[36];
+    //static double veNO[38];
+    static double ve[87];
+    static double veN2[33];
+    static double veO2[26];
+    static double veNO[28];
+
+//    ve[1] = 6.96372e-20;
+//    ve[2] = 1.1535e-19 ;
+//    ve[3] = 1.60493e-19;
+//    ve[4] = 2.05065e-19;
+//    ve[5] = 2.49065e-19;
+//    ve[6] = 2.92494e-19;
+//    ve[7] = 3.35349e-19;
+//    ve[8] = 3.77629e-19;
+//    ve[9] = 4.19334e-19;
+//    ve[10] = 4.60463e-19;
+//    ve[11] = 5.01013e-19;
+//    ve[12] = 5.40983e-19;
+//    ve[13] = 5.80372e-19;
+//    ve[14] = 6.19178e-19;
+//    ve[15] = 6.57399e-19;
+//    ve[16] = 6.95033e-19;
+//    ve[17] = 7.32077e-19;
+//    ve[18] = 7.68531e-19;
+//    ve[19] = 8.0439e-19;
+//    ve[20] = 8.39654e-19;
+//    ve[21] = 8.74319e-19;
+//    ve[22] = 9.08383e-19;
+//    ve[23] = 9.41842e-19;
+//    ve[24] = 9.74695e-19;
+//    ve[25] = 1.00694e-18;
+//    ve[26] = 1.03857e-18;
+//    ve[27] = 1.06958e-18;
+//    ve[28] = 1.09997e-18;
+//    ve[29] = 1.12974e-18;
+//    ve[30] = 1.15889e-18;
+//    ve[31] = 1.1874e-18;
+//    ve[32] = 1.21528e-18;
+//    ve[33] = 1.24252e-18;
+//    ve[34] = 1.26911e-18;
+//    ve[35] = 1.29507e-18;
+//    ve[36] = 1.32037e-18;
+//    ve[37] = 1.34501e-18;
+//    ve[38] = 1.369e-18  ;
+//    ve[39] = 1.39232e-18;
+//    ve[40] = 1.41497e-18;
+//    ve[41] = 1.43695e-18;
+//    ve[42] = 1.45825e-18;
+//    ve[43] = 1.47887e-18;
+//    ve[44] = 1.49879e-18;
+//    ve[45] = 1.51803e-18;
+//    ve[46] = 1.53656e-18;
+//    ve[47] = 1.55439e-18;
+//    ve[48] = 1.56354e-20;
+//    ve[49] = 4.6552e-20;
+//    ve[50] = 7.70004e-20;
+//    ve[51] = 1.06985e-19;
+//    ve[52] = 1.3651e-19;
+//    ve[53] = 1.65578e-19;
+//    ve[54] = 1.94192e-19;
+//    ve[55] = 2.22354e-19;
+//    ve[56] = 2.50065e-19;
+//    ve[57] = 2.77327e-19;
+//    ve[58] = 3.04138e-19;
+//    ve[59] = 3.305e-19  ;
+//    ve[60] = 3.56411e-19;
+//    ve[61] = 3.81869e-19;
+//    ve[62] = 4.06872e-19;
+//    ve[63] = 4.31417e-19;
+//    ve[64] = 4.55501e-19;
+//    ve[65] = 4.7912e-19;
+//    ve[66] = 5.02269e-19;
+//    ve[67] = 5.24943e-19;
+//    ve[68] = 5.47135e-19;
+//    ve[69] = 5.6884e-19;
+//    ve[70] = 5.90051e-19;
+//    ve[71] = 6.10759e-19;
+//    ve[72] = 6.30957e-19;
+//    ve[73] = 6.50635e-19;
+//    ve[74] = 6.69784e-19;
+//    ve[75] = 6.88393e-19;
+//    ve[76] = 7.06453e-19;
+//    ve[77] = 7.23952e-19;
+//    ve[78] = 7.40877e-19;
+//    ve[79] = 7.57217e-19;
+//    ve[80] = 7.72958e-19;
+//    ve[81] = 7.88086e-19;
+//    ve[82] = 8.02588e-19;
+//    ve[83] = 8.16447e-19;
+//    ve[84] = 1.88431e-20;
+//    ve[85] = 5.61105e-20;
+//    ve[86] = 9.28207e-20;
+//    ve[87] = 1.28975e-19;
+//    ve[88] = 1.64575e-19;
+//    ve[89] = 1.99621e-19;
+//    ve[90] = 2.34116e-19;
+//    ve[91] = 2.68059e-19;
+//    ve[92] = 3.01454e-19;
+//    ve[93] = 3.343e-19  ;
+//    ve[94] = 3.666e-19  ;
+//    ve[95] = 3.98354e-19;
+//    ve[96] = 4.29564e-19;
+//    ve[97] = 4.60232e-19;
+//    ve[98] = 4.90357e-19;
+//    ve[99] = 5.19943e-19;
+//    ve[100] = 5.4899e-19;
+//    ve[101] = 5.77499e-19;
+//    ve[102] = 6.05472e-19;
+//    ve[103] = 6.3291e-19 ;
+//    ve[104] = 6.59815e-19;
+//    ve[105] = 6.86187e-19;
+//    ve[106] = 7.12028e-19;
+//    ve[107] = 7.3734e-19 ;
+//    ve[108] = 7.62123e-19;
+//    ve[109] = 7.86379e-19;
+//    ve[110] = 8.10109e-19;
+//    ve[111] = 8.33315e-19;
+//    ve[112] = 8.55998e-19;
+//    ve[113] = 8.78159e-19;
+//    ve[114] = 8.99799e-19;
+//    ve[115] = 9.2092e-19 ;
+//    ve[116] = 9.41523e-19;
+//    ve[117] = 9.6161e-19 ;
+//    ve[118] = 9.81182e-19;
+//    ve[119] = 1.00024e-18;
+//    ve[120] = 1.01878e-18;
+//    ve[121] = 1.03682e-18;
+//
+//    veN2[0]  = 2.33547e-20;
+//    veN2[1]  = 6.96372e-20;
+//    veN2[2]  = 1.1535e-19 ;
+//    veN2[3]  = 1.60493e-19;
+//    veN2[4]  = 2.05065e-19;
+//    veN2[5]  = 2.49065e-19;
+//    veN2[6]  = 2.92494e-19;
+//    veN2[7]  = 3.35349e-19;
+//    veN2[8]  = 3.77629e-19;
+//    veN2[9]  = 4.19334e-19;
+//    veN2[10] = 4.60463e-19;
+//    veN2[11] = 5.01013e-19;
+//    veN2[12] = 5.40983e-19;
+//    veN2[13] = 5.80372e-19;
+//    veN2[14] = 6.19178e-19;
+//    veN2[15] = 6.57399e-19;
+//    veN2[16] = 6.95033e-19;
+//    veN2[17] = 7.32077e-19;
+//    veN2[18] = 7.68531e-19;
+//    veN2[19] = 8.0439e-19 ;
+//    veN2[20] = 8.39654e-19;
+//    veN2[21] = 8.74319e-19;
+//    veN2[22] = 9.08383e-19;
+//    veN2[23] = 9.41842e-19;
+//    veN2[24] = 9.74695e-19;
+//    veN2[25] = 1.00694e-18;
+//    veN2[26] = 1.03857e-18;
+//    veN2[27] = 1.06958e-18;
+//    veN2[28] = 1.09997e-18;
+//    veN2[29] = 1.12974e-18;
+//    veN2[30] = 1.15889e-18;
+//    veN2[31] = 1.1874e-18 ;
+//    veN2[32] = 1.21528e-18;
+//    veN2[33] = 1.24252e-18;
+//    veN2[34] = 1.26911e-18;
+//    veN2[35] = 1.29507e-18;
+//    veN2[36] = 1.32037e-18;
+//    veN2[37] = 1.34501e-18;
+//    veN2[38] = 1.369e-18  ;
+//    veN2[39] = 1.39232e-18;
+//    veN2[40] = 1.41497e-18;
+//    veN2[41] = 1.43695e-18;
+//    veN2[42] = 1.45825e-18;
+//    veN2[43] = 1.47887e-18;
+//    veN2[44] = 1.49879e-18;
+//    veN2[45] = 1.51803e-18;
+//    veN2[46] = 1.53656e-18;
+//    veN2[47] = 1.55439e-18;
+//
+//    veO2[0]  = 1.56354e-20;
+//    veO2[1]  = 4.6552e-20 ;
+//    veO2[2]  = 7.70004e-20;
+//    veO2[3]  = 1.06985e-19;
+//    veO2[4]  = 1.3651e-19 ;
+//    veO2[5]  = 1.65578e-19;
+//    veO2[6]  = 1.94192e-19;
+//    veO2[7]  = 2.22354e-19;
+//    veO2[8]  = 2.50065e-19;
+//    veO2[9]  = 2.77327e-19;
+//    veO2[10] = 3.04138e-19;
+//    veO2[11] = 3.305e-19  ;
+//    veO2[12] = 3.56411e-19;
+//    veO2[13] = 3.81869e-19;
+//    veO2[14] = 4.06872e-19;
+//    veO2[15] = 4.31417e-19;
+//    veO2[16] = 4.55501e-19;
+//    veO2[17] = 4.7912e-19 ;
+//    veO2[18] = 5.02269e-19;
+//    veO2[19] = 5.24943e-19;
+//    veO2[20] = 5.47135e-19;
+//    veO2[21] = 5.6884e-19 ;
+//    veO2[22] = 5.90051e-19;
+//    veO2[23] = 6.10759e-19;
+//    veO2[24] = 6.30957e-19;
+//    veO2[25] = 6.50635e-19;
+//    veO2[26] = 6.69784e-19;
+//    veO2[27] = 6.88393e-19;
+//    veO2[28] = 7.06453e-19;
+//    veO2[29] = 7.23952e-19;
+//    veO2[30] = 7.40877e-19;
+//    veO2[31] = 7.57217e-19;
+//    veO2[32] = 7.72958e-19;
+//    veO2[33] = 7.88086e-19;
+//    veO2[34] = 8.02588e-19;
+//    veO2[35] = 8.16447e-19;
+//
+//    veNO[0]  = 1.88431e-20;
+//    veNO[1]  = 5.61105e-20;
+//    veNO[2]  = 9.28207e-20;
+//    veNO[3]  = 1.28975e-19;
+//    veNO[4]  = 1.64575e-19;
+//    veNO[5]  = 1.99621e-19;
+//    veNO[6]  = 2.34116e-19;
+//    veNO[7]  = 2.68059e-19;
+//    veNO[8]  = 3.01454e-19;
+//    veNO[9]  = 3.343e-19  ;
+//    veNO[10] = 3.666e-19  ;
+//    veNO[11] = 3.98354e-19;
+//    veNO[12] = 4.29564e-19;
+//    veNO[13] = 4.60232e-19;
+//    veNO[14] = 4.90357e-19;
+//    veNO[15] = 5.19943e-19;
+//    veNO[16] = 5.4899e-19 ;
+//    veNO[17] = 5.77499e-19;
+//    veNO[18] = 6.05472e-19;
+//    veNO[19] = 6.3291e-19 ;
+//    veNO[20] = 6.59815e-19;
+//    veNO[21] = 6.86187e-19;
+//    veNO[22] = 7.12028e-19;
+//    veNO[23] = 7.3734e-19 ;
+//    veNO[24] = 7.62123e-19;
+//    veNO[25] = 7.86379e-19;
+//    veNO[26] = 8.10109e-19;
+//    veNO[27] = 8.33315e-19;
+//    veNO[28] = 8.55998e-19;
+//    veNO[29] = 8.78159e-19;
+//    veNO[30] = 8.99799e-19;
+//    veNO[31] = 9.2092e-19 ;
+//    veNO[32] = 9.41523e-19;
+//    veNO[33] = 9.6161e-19 ;
+//    veNO[34] = 9.81182e-19;
+//    veNO[35] = 1.00024e-18;
+//    veNO[36] = 1.01878e-18;
+//    veNO[37] = 1.03682e-18;
+
+    veNO[0] = 0.00000000e+00;
+    veNO[1] = 3.78297694e-20;
+    veNO[2] = 7.56595389e-20;
+    veNO[3] = 1.13489308e-19;
+    veNO[4] = 1.51319078e-19;
+    veNO[5] = 1.89148847e-19;
+    veNO[6] = 2.26978617e-19;
+    veNO[7] = 2.64808386e-19;
+    veNO[8] = 3.02638156e-19;
+    veNO[9] = 3.40467925e-19;
+    veNO[10] = 3.78297694e-19;
+    veNO[11] = 4.16127464e-19;
+    veNO[12] = 4.53957233e-19;
+    veNO[13] = 4.91787003e-19;
+    veNO[14] = 5.29616772e-19;
+    veNO[15] = 5.67446542e-19;
+    veNO[16] = 6.05276311e-19;
+    veNO[17] = 6.43106081e-19;
+    veNO[18] = 6.80935850e-19;
+    veNO[19] = 7.18765620e-19;
+    veNO[20] = 7.56595389e-19;
+    veNO[21] = 7.94425158e-19;
+    veNO[22] = 8.32254928e-19;
+    veNO[23] = 8.70084697e-19;
+    veNO[24] = 9.07914467e-19;
+    veNO[25] = 9.45744236e-19;
+    veNO[26] = 9.83574006e-19;
+    veNO[27] = 1.02140378e-18;
+
+    veN2[0] = 0.00000000e+00;
+    veN2[1] = 4.68454043e-20;
+    veN2[2] = 9.36908086e-20;
+    veN2[3] = 1.40536213e-19;
+    veN2[4] = 1.87381617e-19;
+    veN2[5] = 2.34227021e-19;
+    veN2[6] = 2.81072426e-19;
+    veN2[7] = 3.27917830e-19;
+    veN2[8] = 3.74763234e-19;
+    veN2[9] = 4.21608639e-19;
+    veN2[10] = 4.68454043e-19; 
+    veN2[11] = 5.15299447e-19;
+    veN2[12] = 5.62144851e-19;
+    veN2[13] = 6.08990256e-19;
+    veN2[14] = 6.55835660e-19;
+    veN2[15] = 7.02681064e-19;
+    veN2[16] = 7.49526469e-19;
+    veN2[17] = 7.96371873e-19;
+    veN2[18] = 8.43217277e-19;
+    veN2[19] = 8.90062681e-19;
+    veN2[20] = 9.36908086e-19;
+    veN2[21] = 9.83753490e-19;
+    veN2[22] = 1.03059889e-18;
+    veN2[23] = 1.07744430e-18;
+    veN2[24] = 1.12428970e-18;
+    veN2[25] = 1.17113511e-18;
+    veN2[26] = 1.21798051e-18;
+    veN2[27] = 1.26482592e-18;
+    veN2[28] = 1.31167132e-18;
+    veN2[29] = 1.35851672e-18;
+    veN2[30] = 1.40536213e-18;
+    veN2[31] = 1.45220753e-18;
+    veN2[32] = 1.49905294e-18;
+
+    veO2[0] = 0.00000000e+00;
+    veO2[1] = 3.13821409e-20; 
+    veO2[2] = 6.27642817e-20;
+    veO2[3] = 9.41464226e-20;
+    veO2[4] = 1.25528563e-19;
+    veO2[5] = 1.56910704e-19;
+    veO2[6] = 1.88292845e-19;
+    veO2[7] = 2.19674986e-19;
+    veO2[8] = 2.51057127e-19;
+    veO2[9] = 2.82439268e-19;
+    veO2[10] = 3.13821409e-19; 
+    veO2[11] = 3.45203549e-19;
+    veO2[12] = 3.76585690e-19;
+    veO2[13] = 4.07967831e-19;
+    veO2[14] = 4.39349972e-19;
+    veO2[15] = 4.70732113e-19;
+    veO2[16] = 5.02114254e-19;
+    veO2[17] = 5.33496395e-19;
+    veO2[18] = 5.64878535e-19;
+    veO2[19] = 5.96260676e-19;
+    veO2[20] = 6.27642817e-19;
+    veO2[21] = 6.59024958e-19;
+    veO2[22] = 6.90407099e-19;
+    veO2[23] = 7.21789240e-19;
+    veO2[24] = 7.53171381e-19;
+    veO2[25] = 7.84553521e-19;
+
+
+    // Dissociation energy
+    const double de[m_thermo.nMolecules()] = {1.0409017238088574e-18,
+	1.5636156480913654e-18, 8.196091362099268e-19};
+    for (int i=0; i<m_thermo.nMolecules(); ++i) {
+	std::cout << "de: " << de[i] << std::endl;
+    }
+
+    // Partial number densities
+    double nd[m_thermo.nSpecies()] = {};
+    for (int i=0; i<m_thermo.nSpecies(); ++i) {
+        nd[i] = p_X[i] * n;
+	std::cout << "nd: " << nd[i] << std::endl;
+    }
 
     // Calculate the non-equilibrium partition functions
     double z_vibr_T_Tv_NO = 0.;
     for (int i=0; i<lNO; ++i) {
-        z_vibr_T_Tv_NO += exp(-(veNO[i]-i*veNO[0])/(KB*T)-
-			                i*veNO[0]/(KB*Tv[0]));
+
+	// harmonic oscillator
+        z_vibr_T_Tv_NO += exp(-veNO[i]/(KB*Tv[0]));
+
+	// anharmonic oscillator
+        //z_vibr_T_Tv_NO += exp(-(veNO[i]-i*veNO[0])/(KB*T)-
+	//		                i*veNO[0]/(KB*Tv[0]));
     }
     double z_vibr_T_Tv_N2 = 0.;
     for (int i=0; i<lN2; ++i) {
-        z_vibr_T_Tv_N2 += exp(-(veN2[i]-i*veN2[0])/(KB*T)-
-			                i*veN2[0]/(KB*Tv[1]));
+        z_vibr_T_Tv_N2 += exp(-veN2[i]/(KB*Tv[1]));
+        //z_vibr_T_Tv_N2 += exp(-(veN2[i]-i*veN2[0])/(KB*T)-
+	//		                i*veN2[0]/(KB*Tv[1]));
     }
     double z_vibr_T_Tv_O2 = 0.;
     for (int i=0; i<lO2; ++i) {
-        z_vibr_T_Tv_O2 += exp(-(veO2[i]-i*veO2[0])/(KB*T)-
-			                i*veO2[0]/(KB*Tv[2]));
+        z_vibr_T_Tv_O2 += exp(-veO2[i]/(KB*Tv[2]));
+        //z_vibr_T_Tv_O2 += exp(-(veO2[i]-i*veO2[0])/(KB*T)-
+	//		                i*veO2[0]/(KB*Tv[2]));
     }
-    std::cout << "Non-eq. partition functions" << std::endl;
-    std::cout << z_vibr_T_Tv_NO << " " 
-	      << z_vibr_T_Tv_N2 << " " 	
-	      << z_vibr_T_Tv_O2 << std::endl;
+    std::cout << "zNO: " << z_vibr_T_Tv_NO << " " << 
+	         "zN2: " << z_vibr_T_Tv_N2 << " " << 
+		 "zO2: " << z_vibr_T_Tv_O2 << std::endl;
 
-    // Compute state-to-state diss/rec coefficients, k_c,diss^d(0)
-    //double kcd_n2[lN2], kcr_n2[lN2];
-    //double kcd_o2[lO2], kcr_o2[lO2];
-    //double kcd_no[lNO], kcr_no[lNO];
 
-    // Mass and diameter
-    double m_NO = 4.9826300488143997e-26; 	// kg
-    double d_NO = 3.4061e-10; 			// m
-    double m_N2 = 4.6517344343135997e-26;
-    double d_N2 = 3.40385035355259e-10; 
-    double m_O2 = 5.3135256633152e-26;
-    double d_O2 = 3.5155e-10; 
-    double m_N  = 2.3258672171567998e-26;
-    double m_O  = 2.6567628316576e-26;
+    // Compute the vibrational populations
+    // according to Treanor-Marrone or Boltzmann
+    double nNO[lNO];
+    double nN2[lN2];
+    double nO2[lO2];
 
+    std::cout << " Vibrational population ... " << std::endl;
+    for (int i=0; i<lNO; i++) {
+        nNO[i] = nd[2] * exp(-veNO[i] / (KB * Tv[0])) / z_vibr_T_Tv_NO;
+        //nNO[i] = nd[2] * exp(-(veNO[i] - i * veNO[0]) / KBT 
+	//    - i * veNO[0] / (KB * Tv[0])) / z_vibr_T_Tv_NO;
+        std::cout << i << " " << nNO[i] << std::endl;
+    }
+    for (int i=0; i<lN2; i++) {
+        nN2[i] = nd[3] * exp(-veN2[i] / (KB * Tv[1])) / z_vibr_T_Tv_N2;
+        //nN2[i] = nd[3] * exp(-(veN2[i] - i * veNO[0]) / KBT 
+	//    - i * veN2[0] / (KB * Tv[1])) / z_vibr_T_Tv_N2;
+        std::cout << i << " " << nN2[i] << std::endl;
+    }
+    for (int i=0; i<lO2; i++) {
+        nO2[i] = nd[4] * exp(-veO2[i] / (KB * Tv[2])) / z_vibr_T_Tv_O2;
+        //nO2[i] = nd[4] * exp(-(veO2[i] - i * veO2[0]) / KBT 
+	//    - i * veO2[0] / (KB * Tv[2])) / z_vibr_T_Tv_O2;
+        std::cout << i << " " << nO2[i] << std::endl;
+    }
+
+    // Masses 
     double m[5], d[5];
     m[0] = 2.3258672171567998e-26; // N
     m[1] = 2.6567628316576e-26;    // O
     m[2] = 4.9826300488143997e-26; // NO
     m[3] = 4.6517344343135997e-26; // N2
     m[4] = 5.3135256633152e-26;	   // O2
+
+    // Diameters
     d[0] = 3.298e-10;
     d[1] = 2.75e-10;
     d[2] = 3.4061e-10;
     d[3] = 3.40385035355259e-10;
     d[4] = 3.5155e-10;
     
+    // Compute state-to-state diss/rec coefficients, k_c,diss^d(0)
+    // according to the Rigid-Sphere (RS) model.
+    std::cout << " Dissociation STS rates ... " << std::endl;
     double kcd_no[5][lNO]; 
     double coll_mass = 0.;
     double diameter = 0.;
+    double interNO [5][3] = {}; // 1st: interaction, 2nd: property
+    interNO[0][0] = 1.82659281313541e-13; 	// A for N + NO 
+    interNO[0][1] = 0.;			 	// n
+    interNO[0][2] = 1.0423910520000002e-18;	// Ea
+    interNO[1][0] = 1.82659281313541e-13; 	// A for O + NO 
+    interNO[1][1] = 0.;			 	// n
+    interNO[1][2] = 1.0423910520000002e-18;	// Ea
+    interNO[2][0] = 1.82659281313541e-13; 	// A for NO + NO 
+    interNO[2][1] = 0.;			 	// n
+    interNO[2][2] = 1.0423910520000002e-18;	// Ea
+    interNO[3][0] = 1.16237724472253e-08; 	// A for N2 + NO 
+    interNO[3][1] = -1.6;			 	// n
+    interNO[3][2] = 1.5628962528000002e-18;	// Ea
+    interNO[4][0] = 2e-10;		 	// A for O2 + NO 
+    interNO[4][1] = -1.;			 	// n
+    interNO[4][2] = 1.043e-18;			// Ea
+    double A, nn, Ea = 0.;
     for (int i=0; i<5; ++i) { // N O NO N2 O2
 	coll_mass = (m[i] * m[2]) / (m[i] + m[2]);
 	diameter = 0.5 * (d[i] + d[2]);
-        for (int j=0; j<lNO; ++j) 
-            kcd_no[i][j] = k_diss_RS(T, coll_mass, diameter, deNO, 
-	        veNO[j], /*center_of_mass=*/true);
-	//std::cout << i << " " << j << " " << kcd_no[i][j] << std::endl;
+        for (int j=0; j<lNO; ++j) {
+
+            // Treanor-Marrone, 3T model
+	    A = interNO[i][0];
+	    nn = interNO[i][1];
+	    Ea = interNO[i][2];
+	    kcd_no[i][j] = k_Arrhenius(T, A, nn, Ea) 
+	        * Z_diss(T, 3.*T, veNO, j);
+
+            // Treanor-Marrone, D/6K model
+	    kcd_no[i][j] = k_Arrhenius(T, A, nn, Ea) 
+	        * Z_diss(T, de[0]/(6.*KB), veNO, j);
+	    
+ 	    // Rigid-sphere (RS) model	    
+            kcd_no[i][j] = k_diss_RS(T, coll_mass, diameter, de[0], veNO[j],
+	        /*center_of_mass=*/true);
+
+ 	    std::cout << i << " " << j << " " << T << " " << coll_mass 
+		   << " " << diameter << " " << de[2] << " " << veNO[j] 
+		   << " " << kcd_no[i][j] << std::endl;
+	}
     }
 
+    double interN2 [5][3] = {}; 
+    interN2[0][0] = 2.657e-08; 			// A for N + N2
+    interN2[0][1] = -1.6;			 
+    interN2[0][2] = 1.5628962528000002e-18;
+    interN2[1][0] = 4.98161676309657e-08; 	// A for O + N2 
+    interN2[1][1] = -1.6;			 
+    interN2[1][2] = 1.5628962528000002e-18;	
+    interN2[2][0] = 1.16237724472253e-08; 	// A for NO + N2
+    interN2[2][1] = -1.6;			 
+    interN2[2][2] = 1.5628962528000002e-18;
+    interN2[3][0] = 6.144e-09; 			// A for N2 + N2
+    interN2[3][1] = -1.6;		
+    interN2[3][2] = 1.5628962528000002e-18;
+    interN2[4][0] = 1.16237724472253e-08; 	// A for O2 + N2
+    interN2[4][1] = -1.6;		
+    interN2[4][2] = 1.5628962528000002e-18;	
     double kcd_n2[5][lN2]; 
     for (int i=0; i<5; ++i) { // N O NO N2 O2
 	coll_mass = (m[i] * m[3]) / (m[i] + m[3]);
 	diameter = 0.5 * (d[i] + d[3]);
-        for (int j=0; j<lN2; ++j) 
-            kcd_n2[i][j] = k_diss_RS(T, coll_mass, diameter, deN2, 
-	        veN2[j], /*center_of_mass=*/true);
-	//std::cout << i << " " << j << " " << kcd_n2[i][j] << std::endl;
+        for (int j=0; j<lN2; ++j) {
+
+	    A = interN2[i][0];
+	    nn = interN2[i][1];
+	    Ea = interN2[i][2];
+	    kcd_n2[i][j] = k_Arrhenius(T, A, nn, Ea) * Z_diss(T, 3*T, veN2, j);
+
+	    kcd_n2[i][j] = k_Arrhenius(T, A, nn, Ea) 
+	        * Z_diss(T, de[1]/(6.*KB), veN2, j);
+	    
+            kcd_n2[i][j] = k_diss_RS(T, coll_mass, diameter, de[1], veN2[j],
+	        /*center_of_mass=*/true);
+
+ 	    std::cout << i << " " << j << " " << T << " " << coll_mass 
+		   << " " << diameter << " " << de[1] << " " << veN2[j] 
+		   << " " << kcd_n2[i][j] << std::endl;
+	}
     }
 
+    double interO2 [5][3] = {}; 
+    interO2[0][0] = 3.32107784206438e-09;	// A for N + O2
+    interO2[0][1] = -1.5;			 
+    interO2[0][2] = 8.24938614e-19;
+    interO2[1][0] = 1.66053892103219e-08; 	// A for O + O2 
+    interO2[1][1] = -1.5;			 
+    interO2[1][2] = 8.24938614e-19;	
+    interO2[2][0] = 3.32107784206438e-09; 	// A for NO + O2
+    interO2[2][1] = -1.5;			 
+    interO2[2][2] = 8.24938614e-19;
+    interO2[3][0] = 1.16237724472253e-08; 	// A for N2 + O2
+    interO2[3][1] = -1.6;		
+    interO2[3][2] = 1.5628962528000002e-18;
+    interO2[4][0] = 3.32107784206438e-09; 	// A for O2 + O2
+    interO2[4][1] = -1.5;		
+    interO2[4][2] = 8.24938614e-19;	
     double kcd_o2[5][lO2]; 
     for (int i=0; i<5; ++i) { // N O NO N2 O2
 	coll_mass = (m[i] * m[4]) / (m[i] + m[4]);
 	diameter = 0.5 * (d[i] + d[4]);
-        for (int j=0; j<lO2; ++j) 
-            kcd_o2[i][j] = k_diss_RS(T, coll_mass, diameter, deO2, 
-	        veO2[j], /*center_of_mass=*/true);
-	//std::cout << i << " " << j << " " << kcd_o2[i][j] << std::endl;
-    }
+        for (int j=0; j<lO2; ++j) {
 
-//    // Compute dissociation coefficients, k_c,diss^d(0)
-//    // according to the model of Rigid Sphere (RS).
-//    double coll_mass = 0.5 * m_NO; // (m1 * m2)/(m1 + m2)
-//    double diameter = d_NO; // 0.5 * (d1 + d2)
-//
-//    // TODO: instead of calling lNO times the function, pass directly
-//    // the whole array of vibrational energy.
-//    std::cout << "kcd_no" << std::endl;
-//    for (int i=0; i<lNO; ++i) {
-//
-//        kcd_no[i] = k_diss_RS(T, coll_mass, diameter, deNO, 
-//	    veNO[i], /*center_of_mass*/true);
-//	std::cout << i << " " << kcd_no[i] << std::endl;
-//    }
-//
-//    coll_mass = 0.5 * m_N2;
-//    diameter = d_N2; 
-//    std::cout << "kcd_n2" << std::endl;
-//    for (int i=0; i<lN2; ++i) {
-//
-//        kcd_n2[i] = k_diss_RS(T, coll_mass, diameter, deN2, 
-//	    veN2[i], /*center_of_mass*/true);
-//	std::cout << i << " " << kcd_n2[i] << std::endl;
-//    }
-//
-//    coll_mass = 0.5 * m_O2;
-//    diameter = d_O2; 
-//    std::cout << "kcd_o2" << std::endl;
-//    for (int i=0; i<lO2; ++i) {
-//
-//        kcd_o2[i] = k_diss_RS(T, coll_mass, diameter, deO2, 
-//	    veO2[i], /*center_of_mass*/true);
-//	std::cout << i << " " << kcd_o2[i] << std::endl;
-//    }
+	    A = interO2[i][0];
+	    nn = interO2[i][1];
+	    Ea = interO2[i][2];
+	    kcd_o2[i][j] = k_Arrhenius(T, A, nn, Ea) 
+                * Z_diss(T, 3.*T, veO2, j);
+	
+	    kcd_o2[i][j] = k_Arrhenius(T, A, nn, Ea) 
+	        * Z_diss(T, de[2]/(6.*KB), veO2, j);
+
+            kcd_o2[i][j] = k_diss_RS(T, coll_mass, diameter, de[2], veO2[j],
+	        /*center_of_mass=*/true);
+
+ 	    std::cout << i << " " << j << " " << T << " " << coll_mass 
+		   << " " << diameter << " " << de[2] << " " << veO2[j] 
+		   << " " << kcd_o2[i][j] << std::endl;
+	}
+    }
 
     // Compute the rotational partition function
     // according to a simplified formula ... TODO: better formula
-    double Be[3] = {1.998, 1.4377, 1.6720}; // *100 // m^-1
+    double Be[3] = {199.8, 143.77, 167.20}; // m^-1
     int sigma[3] = {2, 2, 1};
-    double theta_r[3] = {0, 0, 0};
-    double z_rot[3] = {0, 0, 0};
+    double theta_r[3] = {};
+    double z_rot[3] = {};
     for (int i=0; i<3; ++i) {
-        theta_r[i] = Be[i]*100*HP*C0/KB;
+        theta_r[i] = Be[i]*HP*C0/KB;
         z_rot[i] = T/(sigma[i]*theta_r[i]);
-	//std::cout << theta_r[i] << " " << z_rot[i] << std::endl;
+	std::cout << "theta & zrot:" 
+	 	  << theta_r[i] << " " << z_rot[i] << std::endl;
     }
 
     // Compute STS recombination coefficients, k_rec,c^d(0)
+    std::cout << " Recombination STS rates ... " << std::endl;
     double fac0 = HP*HP*HP * pow(2*PI*KB*T,-1.5);
-    double fac1 = (m_NO/(m_N*m_O)) * fac0 * z_rot[0];
-    //std::cout << "kcr_no" << std::endl;
+    double fac1 = (m[2]/(m[0]*m[1])) * fac0 * z_rot[0];
 
     double kcr_no[5][lNO]; 
     for (int i=0; i<5; ++i) {
-        for (int j=0; j<lNO; ++j) 
-            kcr_no[i][j] = kcd_no[i][j] * exp(-(veNO[j]-deNO)/(KB*T)) * fac1;
-	//std::cout << i << " " << kcr_no[i][j] << std::endl;
+        for (int j=0; j<lNO; ++j) {
+            kcr_no[i][j] = kcd_no[i][j] * exp(-(veNO[j]-de[0])/KBT) * fac1;
+	    std::cout << i << " " << j << " " << kcr_no[i][j] << std::endl;
+	}
     }
 
-    fac1 = (m_N2/(m_N*m_N)) * fac0 * z_rot[1];
-    //std::cout << "kcr_n2" << std::endl;
-
+    fac1 = (m[3]/(m[0]*m[0])) * fac0 * z_rot[1];
     double kcr_n2[5][lN2]; 
     for (int i=0; i<5; ++i) {
-        for (int j=0; j<lN2; ++j) 
-            kcr_n2[i][j] = kcd_n2[i][j] * exp(-(veN2[j]-deN2)/(KB*T)) * fac1;
-	//std::cout << i << " " << kcr_n2[i][j] << std::endl;
+        for (int j=0; j<lN2; ++j) {
+            kcr_n2[i][j] = kcd_n2[i][j] * exp(-(veN2[j]-de[1])/KBT) * fac1;
+	    std::cout << i << " " << j << " " << kcr_n2[i][j] << std::endl;
+	}
     }
 
-    fac1 = (m_O2/(m_O*m_O)) * fac0 * z_rot[2];
-    //std::cout << "kcr_o2" << std::endl;
-    
+    fac1 = (m[4]/(m[1]*m[1])) * fac0 * z_rot[2];
     double kcr_o2[5][lO2]; 
     for (int i=0; i<5; ++i) {
-        for (int j=0; j<lO2; ++j) 
-            kcr_o2[i][j] = kcd_o2[i][j] * exp(-(veO2[j]-deO2)/(KB*T)) * fac1;
-	//std::cout << i << " " << kcd_o2[i][j] << std::endl;
+        for (int j=0; j<lO2; ++j) {
+            kcr_o2[i][j] = kcd_o2[i][j] * exp(-(veO2[j]-de[2])/KBT) * fac1;
+	    std::cout << i << " " << j << " " << kcr_o2[i][j] << std::endl;
+	}
     }
 
     // Compute MT diss/rec coefficients, k_c^d(0), eq. 3.94.
@@ -1483,127 +1803,87 @@ void Kinetics::R_23(double* const p_r_23)
     for (int i=0; i<m_thermo.nSpecies(); ++i) {
 	fac0 = 0., fac1 = 0.; 
         for (int j=0; j<lNO; ++j) {
-            fac0 += exp(-((veNO[j]-i*veNO[0])/(KB*T)) -
-                                   i*veNO[0]/(KB*Tv[0])) * kcd_no[i][j];
+
+	    // Using the Boltzmann distribution
+	    fac0 += nNO[j] * kcd_no[i][j];
+
+	    // Using the generalized Treanor-Marrone distribution	
+            //fac0 += exp(-((veNO[j]-j*veNO[0])/KBT) -
+            //                       j*veNO[0]/(KB*Tv[0])) * kcd_no[i][j];
 	    fac1 += kcr_no[i][j];
         }
-        kd_no[i] = fac0 / z_vibr_T_Tv_NO;
+	kd_no[i] = fac0 / nd[2];
+        //kd_no[i] = fac0 / z_vibr_T_Tv_NO;
         kr_no[i] = fac1;
+	std::cout << i << " kdNO: " << kd_no[i] 
+		       << " krNO: " << kr_no[i] << std::endl;
     }
 
     // N2
     for (int i=0; i<m_thermo.nSpecies(); ++i) {
 	fac0 = 0., fac1 = 0.; 
         for (int j=0; j<lN2; ++j) {
-            fac0 += exp(-((veN2[j]-i*veN2[0])/(KB*T)) -
-                                   i*veN2[0]/(KB*Tv[1])) * kcd_n2[i][j];
+
+	    fac0 += nN2[j] * kcd_n2[i][j];
+
+            //fac0 += exp(-((veN2[j]-j*veN2[0])/KBT) -
+            //                       j*veN2[0]/(KB*Tv[1])) * kcd_n2[i][j];
 	    fac1 += kcr_n2[i][j];
         }
-        kd_n2[i] = fac0 / z_vibr_T_Tv_N2;
+	kd_n2[i] = fac0 / nd[3];
+        //kd_n2[i] = fac0 / z_vibr_T_Tv_N2;
         kr_n2[i] = fac1;
+	std::cout << i << " kdN2: " << kd_n2[i] 
+		       << " krN2: " << kr_n2[i] << std::endl;
     }
 
     // O2
     for (int i=0; i<m_thermo.nSpecies(); ++i) {
 	fac0 = 0., fac1 = 0.; 
         for (int j=0; j<lO2; ++j) {
-            fac0 += exp(-((veO2[j]-i*veO2[0])/(KB*T)) -
-                                   i*veO2[0]/(KB*Tv[2])) * kcd_o2[i][j];
+
+	    fac0 += nO2[j] * kcd_o2[i][j];
+
+            //fac0 += exp(-((veO2[j]-j*veO2[0])/KBT) -
+            //                       j*veO2[0]/(KB*Tv[2])) * kcd_o2[i][j];
 	    fac1 += kcr_o2[i][j];
         }
-        kd_o2[i] = fac0 / z_vibr_T_Tv_O2;
+	kd_o2[i] = fac0 / nd[4];
+        //kd_o2[i] = fac0 / z_vibr_T_Tv_O2;
         kr_o2[i] = fac1;
+	std::cout << i << " kdO2: " << kd_o2[i] 
+		       << " krO2: " << kr_o2[i] << std::endl;
     }
 
-    //for (int i=0; i<m_thermo.nSpecies(); ++i) {
-    //    fac0 = 0., fac1 = 0.;    
-    //    for (int j=0; j<lNO; ++j) {
-    //        fac0 += exp(-((veNO[i][j]-i*veNO[0])/(KB*T)) - 
-    //    	   	              i*veNO[0]/(KB*Tv[0])) * kcd_no[i][j];
-    //        fac1 += kcr_no[i][j];
-    //    }
-    // 	    kd[i][j] = fac0 * z_vibr_T_Tv_NO ; // TODO: reshape z_vibr_T_Tv_NO
-    //        kr[i][j] += kcr_no[i][j];
-    //}
-    //double kNO = tmp * z_vibr_T_Tv_NO;
-    //kd[2] = kNO;
-
-    //tmp = 0.;
-    //for (int i=0; i<lN2; ++i) {
-    //    tmp += exp(-((veN2[i]-i*veN2[0])/(KB*T)) - 
-    //		              i*veN2[0]/(KB*Tv[1])) * kcd_n2[i];
-    //    kr[3] += kcr_n2[i];
-    //}
-    //double kN2 = tmp * z_vibr_T_Tv_N2 ;
-    //kd[3] = kN2;
-
-    //tmp = 0.;
-    //for (int i=0; i<lO2; ++i) {
-    //    tmp += exp(-((veO2[i]-i*veO2[0])/(KB*T)) - 
-    //    		      i*veO2[0]/(KB*Tv[1])) * kcd_o2[i];
-    //    kr[4] += kcr_o2[i];
-    //}
-    //double kO2 = tmp * z_vibr_T_Tv_O2 ;
-    //kd[4] = kO2;
-
-    //std::cout << "kd and kr" << std::endl;
-    //std::cout << kd[0] << "   " << kr[0] << "\n"
-    //	      << kd[1] << "   " << kr[1] << "\n" 
-    //	      << kd[2] << "   " << kr[2] << "\n"  
-    //	      << kd[3] << "   " << kr[3] << "\n" 
-    //	      << kd[4] << "   " << kr[4] << std::endl;
-
-    // Here, as elsewhere, a certain fixed order of species is assumed.
-    // Such order is given by the list of species in the input file:
     // N O NO N2 O2
-    double R_react_23[m_thermo.nSpecies()] = {0.,0.,0.,0.,0.};
-    double nd[m_thermo.nSpecies()] = {nd_n, nd_o, nd_no, nd_n2, nd_o2};
+    double R_react_23[m_thermo.nMolecules()] = {};
 
-    // N
-    R_react_23[0] = 0.;
-    // O
-    R_react_23[1] = 0.;
     // NO
-    //R_react_23[2] = nd[0] * (nd[0]*nd[1]*kr[0]-nd[2]*kd[0]) +
-    //                nd[1] * (nd[0]*nd[1]*kr[1]-nd[2]*kd[1]) +
-    //                nd[2] * (nd[0]*nd[1]*kr[2]-nd[2]*kd[2]) +
-    //                nd[3] * (nd[0]*nd[1]*kr[3]-nd[2]*kd[3]) +
-    //                nd[4] * (nd[0]*nd[1]*kr[4]-nd[2]*kd[4]) ;
-    
-    R_react_23[2] = nd[0] * (nd[0]*nd[1]*kr_no[0]-nd[2]*kd_no[0]) +
+    R_react_23[0] = nd[0] * (nd[0]*nd[1]*kr_no[0]-nd[2]*kd_no[0]) +
                     nd[1] * (nd[0]*nd[1]*kr_no[1]-nd[2]*kd_no[1]) +
                     nd[2] * (nd[0]*nd[1]*kr_no[2]-nd[2]*kd_no[2]) +
                     nd[3] * (nd[0]*nd[1]*kr_no[3]-nd[2]*kd_no[3]) +
                     nd[4] * (nd[0]*nd[1]*kr_no[4]-nd[2]*kd_no[4]) ;
     // N2
-    //r_react_23[3] = nd[0] * (nd[0]*nd[0]*kr[0]-nd[3]*kd[0]) +
-    //                nd[1] * (nd[0]*nd[0]*kr[1]-nd[3]*kd[1]) +
-    //                nd[2] * (nd[0]*nd[0]*kr[2]-nd[3]*kd[2]) +
-    //                nd[3] * (nd[0]*nd[0]*kr[3]-nd[3]*kd[3]) +
-    //                nd[4] * (nd[0]*nd[0]*kr[4]-nd[3]*kd[4]) ;
-    
-    R_react_23[3] = nd[0] * (nd[0]*nd[0]*kr_n2[0]-nd[3]*kd_n2[0]) +
+    R_react_23[1] = nd[0] * (nd[0]*nd[0]*kr_n2[0]-nd[3]*kd_n2[0]) +
                     nd[1] * (nd[0]*nd[0]*kr_n2[1]-nd[3]*kd_n2[1]) +
                     nd[2] * (nd[0]*nd[0]*kr_n2[2]-nd[3]*kd_n2[2]) +
                     nd[3] * (nd[0]*nd[0]*kr_n2[3]-nd[3]*kd_n2[3]) +
                     nd[4] * (nd[0]*nd[0]*kr_n2[4]-nd[3]*kd_n2[4]) ;
     // O2
-    //R_react_23[4] = nd[0] * (nd[1]*nd[1]*kr[0]-nd[4]*kd[0]) +
-    //                nd[1] * (nd[1]*nd[1]*kr[1]-nd[4]*kd[1]) +
-    //                nd[2] * (nd[1]*nd[1]*kr[2]-nd[4]*kd[2]) +
-    //                nd[3] * (nd[1]*nd[1]*kr[3]-nd[4]*kd[3]) +
-    //                nd[4] * (nd[1]*nd[1]*kr[4]-nd[4]*kd[4]) ;
-
-    R_react_23[4] = nd[0] * (nd[1]*nd[1]*kr_o2[0]-nd[4]*kd_o2[0]) +
+    R_react_23[2] = nd[0] * (nd[1]*nd[1]*kr_o2[0]-nd[4]*kd_o2[0]) +
                     nd[1] * (nd[1]*nd[1]*kr_o2[1]-nd[4]*kd_o2[1]) +
                     nd[2] * (nd[1]*nd[1]*kr_o2[2]-nd[4]*kd_o2[2]) +
                     nd[3] * (nd[1]*nd[1]*kr_o2[3]-nd[4]*kd_o2[3]) +
                     nd[4] * (nd[1]*nd[1]*kr_o2[4]-nd[4]*kd_o2[4]) ;
 
+    // Compute species concentrations (mol/m^3)
+    Map<ArrayXd>(p_r_23, m_thermo.nMolecules()) = 0.;
+
     // TODO: check dimensions!
-    for (int i = 0; i < m_thermo.nSpecies(); ++i) {
+    for (int i=0; i<m_thermo.nMolecules(); ++i) {
         p_r_23[i] = R_react_23[i];
-	std::cout << p_r_23[i] << std::endl;
+	std::cout <<  " R_23["<<i<<"]" << p_r_23[i] << std::endl;
     }
 }
 
@@ -1632,11 +1912,9 @@ void Kinetics::R_23(double* const p_r_23)
         double coll_mass, double diameter, double diss_energy, 
 	    double vibr_energy, bool center_of_mass) 
     {
+        double conversion = sqrt(2. * KB * T / coll_mass);
 
-        double conversion = sqrt(2 * KB * T / coll_mass);
-
-        auto integrand = [T, degree, coll_mass, diameter, diss_energy, 
-	    vibr_energy, center_of_mass, conversion](double g)
+        auto integrand = [=](double g)
         {
 	    return pow(g, 2 * degree + 3) * 
 	        crosssection_diss_RS(conversion * g, coll_mass, diameter, 
@@ -1656,16 +1934,16 @@ void Kinetics::R_23(double* const p_r_23)
     {
 
         double conversion = sqrt(2 * KB * T / coll_mass);
-        auto integrand = [T, degree, coll_mass, vss_c_cs, vss_omega, 
-            diss_energy, vibr_energy, center_of_mass, conversion](double g) 
-	    {
-                return pow(g, 2 * degree + 3) * crosssection_diss_VSS(
-	            conversion * g, coll_mass, vss_c_cs, vss_omega, 
-		        diss_energy, vibr_energy, center_of_mass) * 
-			    exp(-g * g); 
-	    };
 
-        return sqrt(KB * T / (2 * PI * coll_mass)) * 
+        auto integrand = [=](double g)
+	{
+            return pow(g, 2 * degree + 3) * crosssection_diss_VSS(
+	        conversion * g, coll_mass, vss_c_cs, vss_omega, 
+	            diss_energy, vibr_energy, center_of_mass) * 
+		        exp(-g * g); 
+	};
+
+        return sqrt(KB * T / (2. * PI * coll_mass)) * 
 	    integrate_semi_inf(integrand, min_vel_diss(coll_mass, 
 	        diss_energy, vibr_energy) / conversion);
     }
@@ -1680,6 +1958,8 @@ void Kinetics::R_23(double* const p_r_23)
 	    p_probability_diss(rel_vel, coll_mass, diss_energy, vibr_energy, 
 	        center_of_mass);
     }
+
+//==============================================================================
 
     double Kinetics::crosssection_diss_VSS(double rel_vel, double coll_mass, 
         double vss_c_cs, double vss_omega, double diss_energy, 
@@ -1696,7 +1976,7 @@ void Kinetics::R_23(double* const p_r_23)
         double diss_energy, double vibr_energy, bool center_of_mass) 
     {
 
-        double energy = vibr_energy + rel_vel * rel_vel * coll_mass / 2;
+        double energy = vibr_energy + rel_vel * rel_vel * coll_mass / 2.;
 
         if (energy < diss_energy) {
             return 0.0;
@@ -1712,7 +1992,7 @@ void Kinetics::R_23(double* const p_r_23)
     double Kinetics::min_vel_diss(double coll_mass, double diss_energy, 
         double vibr_energy) 
     {
-        return sqrt(2 * (diss_energy - vibr_energy) / coll_mass);
+        return sqrt(2. * (diss_energy - vibr_energy) / coll_mass);
     }
 
 //==============================================================================
@@ -1722,48 +2002,60 @@ void Kinetics::R_23(double* const p_r_23)
         return PI * diameter * diameter;
     }
 
+//==============================================================================
+
     double Kinetics::crosssection_elastic_VSS(double rel_vel, double vss_c_cs, 
 	double vss_omega) 
     {
         return vss_c_cs * pow(rel_vel, 1. - 2. * vss_omega);
     }
 
+//==============================================================================
+
     double Kinetics::crosssection_elastic_VSS(double rel_vel, 
 	double coll_mass, double vss_c, double vss_omega) 
     {
-        return vss_c * pow(coll_mass * rel_vel * rel_vel / (2 * KB), 
+        return vss_c * pow(coll_mass * rel_vel * rel_vel / (2. * KB), 
 	    -vss_omega);
     }
 
 //==============================================================================
 
-    double Kinetics::k_Arrhenius(double T, double arrhenius_A, 
-	double arrhenius_n, double energy) 
+    double Kinetics::k_Arrhenius(double T, double A, double n, double Ea) 
     {
-        return arrhenius_A * pow(T, arrhenius_n) * exp(-energy / (KB * T));
+
+        std::cout << " In k_Arrhenius ... " << std::endl;    
+        std::cout << T << std::endl;    
+        std::cout << A << std::endl;    
+        std::cout << n << std::endl;    
+        std::cout << Ea << std::endl;    
+        return A * pow(T, n) * exp(-Ea / (KB * T));
     }
 
 //==============================================================================
 
-//   double Kinetics::Z_diss(double T, const double * vib_energy, 
-//       int num_vibr_levels, int i) 
-//   {
-//       return p_Z_vibr_eq(T, vibr_energy) * 
-//	   exp(vibr_energy[i] / (KB * T)) / num_vibr_levels;
-//   }
+   // Compute the non-equilibrium factor using the Treanor-Marrone model
+   double Kinetics::Z_diss(double T, double U, const double *ve, int i) 
+   {
+       return p_Z_vibr_eq(T, ve) * exp(ve[i] * (1./T + 1./U) / KB) 
+	       / p_Z_vibr_eq(-U, ve);
+   }
+
+//==============================================================================
+
+  // Computes the equilibrium vibrational partition function
+  double Kinetics::p_Z_vibr_eq(double T, const double *ve) 
+  {
+    double p_Z_vibr_eq = 0.;
+    int size = sizeof(ve)/sizeof(ve[0]);
+    for (int i=0; i<size; ++i) 
+        p_Z_vibr_eq += exp(-ve[i] / (KB * T));
+        
+    return p_Z_vibr_eq;
+  }
 
 //==============================================================================
   
-//   double Kinetics::p_Z_vibr_eq(double T, const double *vibr_energy) 
-//   {
-//       double p_Z_vibr_eq = 0.;
-//       for (int i=0; i<vibr_energy.size(); ++i)
-//           p_Z_vibr_eq += exp(-vibr_energy[i] / (KB * T));	       
-//       return p_Z_vibr_eq;
-//   }
-
-//==============================================================================
-
 void Kinetics::jacobianRho(double* const p_jac)
 {
     // Special case of no reactions
