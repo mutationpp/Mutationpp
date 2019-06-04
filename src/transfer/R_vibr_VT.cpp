@@ -54,7 +54,7 @@ public:
         m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
 
         mp_rVT = new double [m_mixture.nEnergyEqns()-1];
-}
+    }
 
     virtual ~R_vibr_VT()
     {
@@ -75,12 +75,15 @@ public:
      * @cite G. P. Oblapenko 2018.
      *
      */
-    double source() {}
+    double source() {};
+    void R_w_22(double* const p_r_w_22) {};
+    void R_w_23(double* const p_r_w_23) {};
+    void rVV(double* const p_rVv) {};
 
     void rVT(double* mp_rVT)
     {
         const double * p_X = m_mixture.X();
-        const double * p_Y = m_mixture.Y();
+        //const double * p_Y = m_mixture.Y();
         double n = m_mixture.numberDensity();
         double T = m_mixture.T();
         double Tv[m_mixture.nMolecules()] = {};
@@ -99,7 +102,6 @@ public:
 	
 	    // Alternatively, we could compute the source term, by first
 	    // calculating the vibrational relaxation time tauVT ... TODO
-
             //}
         }
     }
@@ -260,7 +262,7 @@ inline double R_vibr_VT::vt_rate_fho(double T, double beta, double dref,
         return vt_prob_g_only_fho(g * sqrt(2. * kT / coll_mass), coll_mass, 
                    beta, osc_mass, ve_before, ve_after, i, delta, ram1, ram2, 
         	       E_Morse, this_svt) * 
-               cs_vss(g * sqrt(2 * kT / coll_mass), dref, gref, omega) * 
+               cs_vss(g * sqrt(2. * kT / coll_mass), dref, gref, omega) * 
                g*g*g * std::exp(-g*g);
     };
 

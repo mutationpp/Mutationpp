@@ -32,10 +32,9 @@ add_sources(mutation++
     OmegaI.cpp
     OmegaVT.cpp
     R_vibr_VT.cpp
-    #R_VT.cpp
-    #R_VV.cpp
-    #R_diss_rec.cpp
-    #R_w_VT.cpp
+    R_vibr_VV.cpp
+    R_w_22.cpp
+    R_w_23.cpp
 )
 
 install(FILES MillikanWhite.h DESTINATION include/mutation++)
