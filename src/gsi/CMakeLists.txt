@@ -45,17 +45,18 @@ add_sources(mutation++
     SurfaceState.cpp
 )
 
-install(FILES DiffusionVelocityCalculator.h DESTINATION include/mutation++)
-install(FILES GasFourierHeatFluxCalculator.h DESTINATION include/mutation++)
-install(FILES GasSurfaceInteraction.h DESTINATION include/mutation++)
-install(FILES GSIRateLaw.h DESTINATION include/mutation++)
-install(FILES GSIRateManager.h DESTINATION include/mutation++)
-install(FILES GSIReaction.h DESTINATION include/mutation++)
-install(FILES GSIStoichiometryManager.h DESTINATION include/mutation++)
-install(FILES MassBlowingRate.h DESTINATION include/mutation++)
-install(FILES SolidProperties.h DESTINATION include/mutation++)
-install(FILES Surface.h DESTINATION include/mutation++)
-install(FILES SurfaceChemistry.h DESTINATION include/mutation++)
-install(FILES SurfaceProperties.h DESTINATION include/mutation++)
-install(FILES SurfaceRadiation.h DESTINATION include/mutation++)
-install(FILES SurfaceState.h DESTINATION include/mutation++)
+add_headers(mutation++
+    DiffusionVelocityCalculator.h
+    GasFourierHeatFluxCalculator.h
+    GasSurfaceInteraction.h
+    GSIRateLaw.h
+    GSIRateManager.h
+    GSIReaction.h
+    GSIStoichiometryManager.h
+    MassBlowingRate.h
+    SolidProperties.h
+    SurfaceChemistry.h
+    SurfaceRadiation.h
+    SurfaceState.h
+)
+
