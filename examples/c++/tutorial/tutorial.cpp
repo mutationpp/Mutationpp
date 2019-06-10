@@ -41,11 +41,7 @@ void printProperties(Mixture& mix)
     std::cout << "\nMixture enthalpy [J/kg]: " << mix.mixtureHMass();
     std::cout << "\nMixture entropy [J/kg-K]: " << mix.mixtureSMass();
 
-    std::vector<double> cp(mix.nEnergyEqns()), lambda(mix.nEnergyEqns());
-    mix.getCpsMass(&cp[0]);
-    std::cout << "\nMixture specific heats (const. pres.) [J/kg-K]: ";
-    for (auto v: cp) std::cout << v << ' ';
-
+    std::vector<double> lambda(mix.nEnergyEqns());
     mix.frozenThermalConductivityVector(&lambda[0]);
     std::cout << "\nMixture thermal conductivities [W/m-K]: ";
     for (auto v: lambda) std::cout << v << ' ';

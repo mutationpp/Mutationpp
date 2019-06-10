@@ -184,23 +184,18 @@ Once we have set the state of the mixture, we can proceed to compute a variety o
 std::cout << "\nMixture enthalpy [J/kg]: " << mix.mixtureHMass();
 std::cout << "\nMixture entropy [J/kg-K]: " << mix.mixtureSMass();
 
-std::vector<double> cp(mix.nEnergyEqns()), lambda(mix.nEnergyEqns());
-mix.getCpsMass(&cp[0]);
-std::cout << "\nMixture specific heats (const. pres.) [J/kg-K]: ";
-for (auto v: cp) std::cout << v << ' ';
-
+std::vector<double> lambda(mix.nEnergyEqns());
 mix.frozenThermalConductivityVector(&lambda[0]);
-std::cout << "\nMixture thermal conductivities [J/m^2-K]: ";
+std::cout << "\nMixture thermal conductivities [W/m-K]: ";
 for (auto v: lambda) std::cout << v << ' ';
 
-std::cout << "\nMixture dynamic viscosity []: " << mix.viscosity();
+std::cout << "\nMixture dynamic viscosity [Pa-s]: " << mix.viscosity();
 ```
 
 **Output**
 ```
 Mixture enthalpy [J/kg]: 9.9924e+06
 Mixture entropy [J/kg-K]: 11335.9
-Mixture specific heats (const. pres.) [J/kg-K]: 1675.12 
 Mixture thermal conductivities [W/m-K]: 0.280127 
 Mixture dynamic viscosity [Pa-s]: 0.000143242
 ```
@@ -248,7 +243,6 @@ O2: 0.00195878
 
 Mixture enthalpy [J/kg]: 9.9924e+06
 Mixture entropy [J/kg-K]: 11335.9
-Mixture specific heats (const. pres.) [J/kg-K]: 1484.02 1299.18 
 Mixture thermal conductivities [W/m-K]: 0.237793 0.0423338 
 Mixture dynamic viscosity [Pa-s]: 0.000143242
 ```
