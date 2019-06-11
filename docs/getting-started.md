@@ -86,14 +86,14 @@ Equilibrating the mixture can be done easily with a call to `equilibrate`.
 mix.equilibrate(300.0, ONEATM);
 ```
 
-The above sets the mixture composition to the equilibrium composition at with a fixed temperature of 300 K and pressure of 101,325 Pa or 1 atm.  Note the use of the defined constant for one atmosphere.
+The above sets the mixture composition to the equilibrium composition at with a fixed temperature of 300 K and pressure of 101,325 Pa or 1 atm.  Default elemental mole fractions are also used, but this could be changed with an additional parameter.  Note the use of the defined constant for one atmosphere.
 
 Let's check the mixture state after this call by printing the temperature, pressure, and species mole fractions.
 
 **Code**
 ```c++
 std::vector<double> T(mix.nEnergyEqns());
-mix.getTemperatures(&T[0]);
+mix.getTemperatures(T.data());
 
 std::cout << "\nTemperature(s) [K]: ";
 for (auto v: T) std::cout << v << ' ';
@@ -144,20 +144,21 @@ As previously mentioned, we can also set the state by explicitly providing the s
 
 1. a "mass" array,
 2. an "energy" array, and
-3. an integer specifying how the state arrays should be interpretted.
+3. an integer specifying how the state arrays should be interpreted.
 
 Let's provide a concrete example.  First, let's get the mixture's current temperatures and mass densities from the previous equilibrate call.
 
 ```c++
 std::vector<double> rho(mix.nSpecies()), T(mix.nEnergyEqns());
-mix.getTemperatures(&T[0]);
-mix.densities(&rho[0]);
+mix.getTemperatures(T.data());
+mix.densities(rho.data());
 ```
 
 Now, we let's explicitly set the state, using species densities and mixture temperatures.  For the default state model used in the `air_5` example, this corresponds to an index of 1.
 
 ```c++
-mix.setState(&rho[0], &T[0], 1);
+const int use_rhoi_and_t = 1;
+mix.setState(rho.data(), T.data(), use_rhoi_and_t);
 ```
 
 Printing the mixture state as before, we see that is unchanged, as expected.
@@ -177,7 +178,7 @@ While we used the current state to demonstrate the `setState` call here, typical
 
 ### Computing physicochemical properties
 
-Once we have set the state of the mixture, we can proceed to compute a variety of thermochemical properties of the gas.  For example, here are few properties computed with the state set in the previous section.
+Once we have set the state of the mixture, we can proceed to compute a variety of thermochemical properties of the gas.  For example, here are a few properties computed with the state set in the previous section.
 
 **Code**
 ```c++
@@ -185,7 +186,7 @@ std::cout << "\nMixture enthalpy [J/kg]: " << mix.mixtureHMass();
 std::cout << "\nMixture entropy [J/kg-K]: " << mix.mixtureSMass();
 
 std::vector<double> lambda(mix.nEnergyEqns());
-mix.frozenThermalConductivityVector(&lambda[0]);
+mix.frozenThermalConductivityVector(lambda.data());
 std::cout << "\nMixture thermal conductivities [W/m-K]: ";
 for (auto v: lambda) std::cout << v << ' ';
 
@@ -214,7 +215,7 @@ opts.setViscosityAlgorithm("Gupta-Yos");
 Mixture mix(opts);
 ```
 
-Note that we can instantiate a mixture options object using the default options in a mixture file.  You can also create a MixtureOptions object with no defaults, but you must specify every option manually in this case.  In the above, we have used the defaults for the `air_5` mixture, but explicitly set the state model, thermodynamic database, and viscosity algorithm.  For example, we have replaced the 1-temperature default model with the 2-temperature nonequilibrium model.  Printing the mixture properties with the new options yields the following output.
+Note that we can instantiate a mixture options object using the [default options](input-files.md#mixture-options) in a mixture file.  You can also create a MixtureOptions object with no defaults, but you must specify every option manually in this case.  In the above, we have used the defaults for the `air_5` mixture, but explicitly set the state model, thermodynamic database, and viscosity algorithm.  For example, we have replaced the 1-temperature default model with the 2-temperature nonequilibrium model.  Printing the mixture properties with the new options yields the following output.
 
 ```
 # of elements: 2
@@ -247,7 +248,7 @@ Mixture thermal conductivities [W/m-K]: 0.237793 0.0423338
 Mixture dynamic viscosity [Pa-s]: 0.000143242
 ```
 
-As we can see, the number of temperatures in the model is now 2.  We can also see that there are now 2 thermal conductivies and specific heat values.  These correspond to the translation-rotation and vibrational-electronic-electron energy modes used in the 2T model.
+As we can see, the number of temperatures in the model is now 2.  We can also see that there are now 2 thermal conductivities.  These correspond to the translation-rotation and vibrational-electronic-electron energy modes used in the 2T model.
 
 ## Building your own mixture models
 

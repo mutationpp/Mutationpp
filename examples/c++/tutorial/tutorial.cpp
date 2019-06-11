@@ -24,7 +24,7 @@ void printModel(Mixture& mix)
 void printState(Mixture& mix)
 {
     std::vector<double> T(mix.nEnergyEqns());
-    mix.getTemperatures(&T[0]);
+    mix.getTemperatures(T.data());
 
     std::cout << "\nTemperature(s) [K]: ";
     for (auto v: T) std::cout << v << ' ';
@@ -42,7 +42,7 @@ void printProperties(Mixture& mix)
     std::cout << "\nMixture entropy [J/kg-K]: " << mix.mixtureSMass();
 
     std::vector<double> lambda(mix.nEnergyEqns());
-    mix.frozenThermalConductivityVector(&lambda[0]);
+    mix.frozenThermalConductivityVector(lambda.data());
     std::cout << "\nMixture thermal conductivities [W/m-K]: ";
     for (auto v: lambda) std::cout << v << ' ';
 
@@ -65,9 +65,11 @@ void partOne()
     printProperties(mix);
 
     std::vector<double> rho(mix.nSpecies()), T(mix.nEnergyEqns());
-    mix.getTemperatures(&T[0]);
-    mix.densities(&rho[0]);
-    mix.setState(&rho[0], &T[0], 1);
+    mix.getTemperatures(T.data());
+    mix.densities(rho.data());
+
+    const int use_rhoi_and_t = 1;
+    mix.setState(rho.data(), T.data(), use_rhoi_and_t);
     printState(mix);
     printProperties(mix);
 }
