@@ -7,12 +7,12 @@
         <arrhenius A="7.0E+21" n="-1.6" T="113200." />
     </reaction>
 
-    <!--reaction formula="O2+M=2O+M">
+    <reaction formula="O2+M=2O+M">
         <arrhenius A="2.0E+21" n="-1.5" T="59360."/>
         <M>N:5.0, O:5.0</M>
     </reaction>
 
-    <reaction formula="N2+O=NO+N">
+    <!--reaction formula="N2+O=NO+N">
         <arrhenius A="5.70E+12" n="+0.42" T="42938." />
     </reaction -->
 

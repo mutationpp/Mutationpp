@@ -186,11 +186,6 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
         const int ns = mix.nSpecies();
         const int nr = mix.nReactions();
 
-        // Reaction coefficients
-        double A = 7.0E+15;
-        double n = -1.6;
-        double Ta = 113200.;
-
         double T = 3000.;
         double invT = 1./T;
 
@@ -202,9 +197,15 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
 
         ArrayXd vkf(nr); ArrayXd vkb(nr); ArrayXd vKeq(nr);
         ArrayXd vdkfdT(nr); ArrayXd vdkbdT(nr);
+        ArrayXd v_A(nr) ArrayXd(nr) v_A ArrayXd(nr) v_A
 
         mix.speciesSTGOverRT(T, gi.data());
         mix.speciesHOverRT(hi.data());
+
+        // N2 Dissociation N2 + N = 3N
+        ArrayXd v_A(0) = 7.0E+15;
+        ArrayXd v_n(0) = -1.6;
+        ArrayXd v_Ta(0) = 113200.;
 
         vkf(0) = A * pow(T, n) * exp(-Ta/T);
         vdkfdT(0) = vkf(0)*invT*(n + invT*Ta);
@@ -212,6 +213,17 @@ TEST_CASE("Chemical rates jacobians.", "[kinetics]")
         vkb(0) = vkf(0)/vKeq(0);
         double dlnkeqdT = 2*(hi(0) - 1) - (hi(3) - 1);
         vdkbdT(0) = 1/vKeq(0)*(vdkfdT(0) - vkf(0)/T * dlnkeqdT);
+
+        // O2 Dissociation
+        ArrayXd v_A(1)  = 2.0E+21;
+        ArrayXd v_n(1)  = -1.5;
+        ArrayXd v_Ta(1) = 59360.;
+        vkf(1) = A * pow(T, n) * exp(-Ta/T);
+        vdkfdT(1) = vkf(1)*invT*(n + invT*Ta);
+        vKeq(1) = ONEATM/(RU*T)*exp(-(2*gi(1)-gi(4)));
+        vkb(1) = vkf(0)/vKeq(0);
+        double dlnkeqdT = 2*(hi(1) - 1) - (hi(4) - 1);
+        vdkbdT(1) = 1/vKeq(1)*(vdkfdT(1) - vkf(1)/T * dlnkeqdT);
 
         ArrayXd kfmpp(nr); ArrayXd kbmpp(nr);
         ArrayXd dkfdTmpp(nr); ArrayXd dkbdTmpp(nr);
