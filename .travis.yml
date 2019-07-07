@@ -11,6 +11,9 @@ common_sources: &all_sources
   - llvm-toolchain-trusty-4.0
   - llvm-toolchain-trusty-5.0
   - llvm-toolchain-trusty-6.0
+  - llvm-toolchain-trusty-7
+  - llvm-toolchain-trusty-8
+
 
 build_both: &build_both
     script: 
@@ -89,6 +92,30 @@ jobs:
         - CXX=clang++-6.0
         - FC=gfortran
       <<: *build
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['clang-7', 'gfortran']
+      env: 
+        - CC=clang-7
+        - CXX=clang++-7
+        - FC=gfortran
+      <<: *build
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['clang-8', 'gfortran']
+      env: 
+        - CC=clang-8
+        - CXX=clang++-8
+        - FC=gfortran
+      <<: *build
     
     # Linux / GCC builds
     - os: linux
@@ -127,6 +154,30 @@ jobs:
         - CXX=g++-6
         - FC=gfortran-6
       <<: *build
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-7', 'gfortran-7']
+      env: 
+        - CC=gcc-7
+        - CXX=g++-7
+        - FC=gfortran-7
+      <<: *build
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['g++-8', 'gfortran-8']
+      env: 
+        - CC=gcc-8
+        - CXX=g++-8
+        - FC=gfortran-8
+      <<: *build
     
     # OSX / Clang Builds
     - os: osx
@@ -155,8 +206,8 @@ jobs:
       addons:
         apt:
           sources: *all_sources
-          packages: ['lcov', 'g++-7']
-      env: MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+          packages: ['lcov', 'g++-9']
+      env: MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
       stage: coverage
       before_script:
           - cmake -H. -Bbuild-debug -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=1 -DENABLE_COVERAGE=TRUE -DCMAKE_INSTALL_PREFIX=$MPP_DIRECTORY/install
