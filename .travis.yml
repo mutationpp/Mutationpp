@@ -61,8 +61,8 @@ jobs:
           sources: *all_sources
           packages: ['clang-4.0', 'gfortran']
       env: 
-        - CC=gcc-clang-4.0
-        - CXX=clang++=4.0
+        - CC=clang-4.0
+        - CXX=clang++-4.0
         - FC=gfortran
       <<: *build
 
@@ -73,8 +73,8 @@ jobs:
           sources: *all_sources
           packages: ['clang-5.0', 'gfortran']
       env: 
-        - CC=gcc-clang-5.0
-        - CXX=clang++=5.0
+        - CC=clang-5.0
+        - CXX=clang++-5.0
         - FC=gfortran
       <<: *build
     
@@ -85,8 +85,8 @@ jobs:
           sources: *all_sources
           packages: ['clang-6.0', 'gfortran']
       env: 
-        - CC=gcc-clang-6.0
-        - CXX=clang++=6.0
+        - CC=clang-6.0
+        - CXX=clang++-6.0
         - FC=gfortran
       <<: *build
     
