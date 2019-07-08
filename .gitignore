@@ -3,7 +3,7 @@ build/
 install/
 
 # Documentation
-docs/manual/tests.h
+docs/tests.h
 docs/html/
 
 # IDE
