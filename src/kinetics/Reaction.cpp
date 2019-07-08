@@ -228,7 +228,9 @@ void Reaction::parseSpecies(
                     state = plus;
                 break;
             case plus:
-                if (str[c] != '+') {
+                if (str[c] == '(')  // Allow ionized STS: ie Ar+(0)
+                    state = name;
+                else if (str[c] != '+') {
                     e = c - 2;
                     c--;
                     add_species = true;

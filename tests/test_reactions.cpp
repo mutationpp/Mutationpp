@@ -31,7 +31,8 @@ void checkReactionType(const std::string& formula, ReactionType type)
 {
     // Setup a shared thermo object for testing reaction types
     static Mutation::Thermodynamics::Thermodynamics thermo(
-        "e- N N+ Ar(1) Ar(2) O O- O+ NO NO+ N2 N2+ O2 O2+ He+ He++", "RRHO", "ChemNonEq1T");
+        "e- N N+ Ar(1) Ar(2) Ar+(0) O O- O+ NO NO+ N2 N2+ O2 O2+ He+ He++", 
+        "RRHO", "ChemNonEq1T");
 
     XmlElement node(
         "<reaction formula=\"" + formula + "\" >"
@@ -101,15 +102,17 @@ TEST_CASE("Reaction types are correctly identified", "[kinetics]")
     checkReactionType("N2 + O+ = NO + N+", EXCHANGE);
 
     // IONIZATION_E and ION_RECOMBINATION_E
-    checkReactionType("N + e-", "N+ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
-    checkReactionType("NO + e-", "NO+ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
-    checkReactionType("He+ + e-", "He++ + 2e-",   IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("N + e-", "N+ + 2e-", IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("NO + e-", "NO+ + 2e-", IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("He+ + e-", "He++ + 2e-", IONIZATION_E, ION_RECOMBINATION_E);
+    checkReactionType("Ar(1) + e-", "Ar+(0) + 2e-", IONIZATION_E, ION_RECOMBINATION_E);
 
     // IONIZATION_M and ION_RECOMBINATION_M
     checkReactionType("N + M", "N+ + M + e-", IONIZATION_M, ION_RECOMBINATION_M);
     checkReactionType("N + N", "N+ + N + e-", IONIZATION_M, ION_RECOMBINATION_M);
     checkReactionType("He+ + M", "He++ + M + e-", IONIZATION_M, ION_RECOMBINATION_M);
     checkReactionType("NO + N2", "NO+ + N2 + e-", IONIZATION_M, ION_RECOMBINATION_M);
+    checkReactionType("Ar(1) + Ar(1)", "Ar+(0) + Ar(1) + e-", IONIZATION_M, ION_RECOMBINATION_M);
 
     // EXCITATION_E
     checkReactionType("Ar(1) + e-", "Ar(2) + e-", EXCITATION_E, EXCITATION_E);
