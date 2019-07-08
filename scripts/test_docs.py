@@ -239,7 +239,7 @@ def main(args):
 if __name__ == "__main__":    
     default_extensions_list = ['.cpp']
     default_paths_list = ['tests']
-    default_output = 'docs/manual/tests.h'
+    default_output = 'docs/tests.h'
 
     parser = argparse.ArgumentParser(
         description="""Parse the Catch TEST_CASESs from all of the testing source files 
