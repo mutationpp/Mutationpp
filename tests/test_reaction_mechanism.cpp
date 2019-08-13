@@ -89,6 +89,8 @@ public:
     Eigen::ArrayXd& netRatesOfProgress() { return m_rr; }
     /// Returns the production rates.
     Eigen::ArrayXd& productionRates() { return m_wdot; }
+    /// Returns the production rate jacobians w.r.t. species densities.
+    Eigen::MatrixXd& densityJacobian() { return m_jac_rho; }
 
 private:
 
@@ -104,6 +106,7 @@ private:
     Eigen::ArrayXd m_rb;
     Eigen::ArrayXd m_rr;
     Eigen::ArrayXd m_wdot;
+    Eigen::MatrixXd m_jac_rho;
     SharedPtr<ThermoDB> m_thermo;
 
 }; // class TestMechanism
@@ -111,7 +114,7 @@ private:
 TestMechanism::TestMechanism(bool reversible) :
     m_reversible(reversible), m_species("e- N O NO NO+ N2 O2"),
     m_A(5), m_Mw(7), m_kf(5), m_kb(5), m_keq(5), m_rf(5), m_rb(5), m_rr(5),
-    m_wdot(7)
+    m_wdot(7), m_jac_rho(7, 7)
 {
     // Reaction formulas
     m_formulas.push_back("N2 + M = 2N + M");
@@ -217,6 +220,53 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_rb(4) = m_kb(4) * m_wdot(4) * m_wdot(0);
     if (m_reversible) m_rr -= m_rb;
 
+    // Compute jacobian terms
+    Eigen::VectorXd drr(7), stoich(7);
+    m_jac_rho.setConstant(0.0);
+
+    // 1) N2 + M = 2N + M
+    drr.setConstant(0.0);
+    drr(1) = -2*m_kb(0)*m_wdot(1); // N
+    drr(5) = m_kf(0); // N2
+    stoich << 0, 2, 0, 0, 0, -1, 0;
+    m_jac_rho += stoich * (M * drr).transpose();
+    for (int j = 1; j < 7; ++j)
+        m_jac_rho.col(j) += stoich * m_rr(0) / M;
+
+    // 2) O2 + N = 2O + N
+    drr.setConstant(0.0);
+    drr(1) = m_kf(1)*m_wdot(6) - m_kb(1)*m_wdot(2)*m_wdot(2); // N
+    drr(2) = -2*m_kb(1)*m_wdot(1)*m_wdot(2); // O
+    drr(6) = m_kf(1)*m_wdot(1); // O2
+    stoich << 0, 0, 2, 0, 0, 0, -1;
+    m_jac_rho += stoich * drr.transpose();
+
+    // 3) O2 + e- = 2O + e-
+    drr.setConstant(0.0);
+    drr(0) = m_kf(2)*m_wdot(6) - m_kb(2)*m_wdot(2)*m_wdot(2);
+    drr(2) = -2*m_kb(2)*m_wdot(2)*m_wdot(0);
+    drr(6) = m_kf(2)*m_wdot(0);
+    stoich << 0, 0, 2, 0, 0, 0, -1;
+    m_jac_rho += stoich * drr.transpose();
+
+    // 4) O2 + N = NO + O
+    drr.setConstant(0.0);
+    drr(1) = m_kf(3)*m_wdot(6);
+    drr(2) = -m_kb(3)*m_wdot(3);
+    drr(3) = -m_kb(3)*m_wdot(2);
+    drr(6) = m_kf(3)*m_wdot(1);
+    stoich << 0, -1, 1, 1, 0, 0, -1;
+    m_jac_rho += stoich * drr.transpose();
+
+    // 5) N + O = NO+ + e-
+    drr.setConstant(0.0);
+    drr(0) = -m_kb(4)*m_wdot(4);
+    drr(1) = m_kf(4)*m_wdot(2);
+    drr(2) = m_kf(4)*m_wdot(1);
+    drr(4) = -m_kb(4)*m_wdot(0);
+    stoich << 1, -1, -1, 0, 1, 0, 0;
+    m_jac_rho += stoich * drr.transpose();
+
     m_wdot(0) = m_rr(4);
     m_wdot(1) = 2*m_rr(0) - m_rr(3) - m_rr(4);
     m_wdot(2) = 2*m_rr(1) + 2*m_rr(2) + m_rr(3) - m_rr(4);
@@ -226,6 +276,10 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_wdot(6) = -m_rr(1) - m_rr(2) - m_rr(3);
 
     m_wdot *= m_Mw;
+    
+    for (int i = 0; i < 7; ++i)
+        for (int j = 0; j < 7; ++j)
+            m_jac_rho(i,j) *= (m_Mw(i)/m_Mw(j));
 }
 
 /// Jumps to another permutation of x.
@@ -236,8 +290,6 @@ bool stillPermuting(std::vector<double>& x)
         permuting &= std::next_permutation(x.begin(), x.end());
     return permuting;
 }
-
-
 
 void testMech(bool isRev)
 {
@@ -252,6 +304,8 @@ void testMech(bool isRev)
     std::vector<double> T(2, 1000.0);
     Eigen::ArrayXd test_nr(mix->nReactions());
     Eigen::ArrayXd test_ns(mix->nSpecies());
+    Eigen::Matrix<double, -1, -1, Eigen::RowMajor> 
+        test_jac(mix->nSpecies(), mix->nSpecies());
 
     // Loop over all permutations of the densities and temperatures
     do {
@@ -280,10 +334,12 @@ void testMech(bool isRev)
 
                 mix->netProductionRates(test_ns.data());
                 REQUIRE(test_ns.isApprox(mech.productionRates()));
+
+                mix->jacobianRho(test_jac.data());
+                REQUIRE(test_jac.isApprox(mech.densityJacobian()));
             }
         }
     } while (stillPermuting(rho));
-
 }
 
 /**
