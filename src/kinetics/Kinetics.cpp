@@ -160,7 +160,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     // Allocate work arrays
     mp_ropf  = new double [nReactions()];
     mp_ropb  = new double [nReactions()];
-    mp_rop   = new double [nReactions()];
+    mp_rop   = new double [std::max(m_thermo.nSpecies(), (int) nReactions())];
     mp_wdot  = new double [m_thermo.nSpecies()];
     
 }
@@ -371,8 +371,7 @@ void Kinetics::jacobianRho(double* const p_jac)
 {
     // Special case of no reactions
     if (nReactions() == 0) {
-        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nSpecies(); ++i)
-            p_jac[i] = 0.0;
+        std::fill(p_jac, p_jac + m_thermo.nSpecies()*m_thermo.nSpecies(), 0.0);
         return;
     }
 
