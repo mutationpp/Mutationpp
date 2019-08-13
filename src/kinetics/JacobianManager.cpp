@@ -70,26 +70,24 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
     // and products (all other terms are zero)
     m_reacs.diffRR(kf, conc, work, Equals());
     m_prods.diffRR(kb, conc, work, MinusEquals());
-    
+
+    // Need to gather the list of species involved in the reaction and their
+    // coefficients
+    std::vector<int> stoic_vec(ns, 0);
+    std::set<int> index_set;
     for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        for (int j = 0; j < Reactants::nSpecies(); ++j)
-            sjac[m_reacs(i)*ns + m_reacs(j)] -=
-                m_reacs[i] * work[m_reacs(j)];
-        
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_reacs(i)*ns + m_prods(j)] -=
-                m_reacs[i] * work[m_prods(j)];
+        stoic_vec[m_reacs(i)] -= m_reacs[i];
+        index_set.insert(m_reacs(i));
     }
-    
     for (int i = 0; i < Products::nSpecies(); ++i) {
-        for (int j = 0; j < Reactants::nSpecies(); ++j)
-            sjac[m_prods(i)*ns + m_reacs(j)] +=
-                m_prods[i] * work[m_reacs(j)];
-                
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_prods(i)*ns + m_prods(j)] +=
-                m_prods[i] * work[m_prods(j)];
+        stoic_vec[m_prods(i)] += m_prods[i];
+        index_set.insert(m_prods(i));
     }
+
+    // Only loop over the necessary species
+    for (int i : index_set)
+        for (int j : index_set)
+            sjac[i*ns+j] += stoic_vec[i] * work[j];
 }
 
 //==============================================================================
@@ -108,31 +106,24 @@ void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
         work[i] = mp_alpha[i] * rr;
         tb += mp_alpha[i] * conc[i];
     }
-    
-    /*cout << "kf: " << kf << endl;
-    cout << "kb: " << kb << endl;
-    cout << "RRf: " << rrf << endl;
-    cout << "RRb: " << rrb << endl;
-    cout << "RR: " << rr << endl;
-    cout << "TB: " << tb << endl;*/
 
     m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
     m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
-    
-    //cout << "reactants: ";
+
+    std::vector<int> stoic_vec(ns, 0);
+    std::set<int> index_set;
     for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        //cout << setw(3) << m_reacs(i);
-        for (int j = 0; j < ns; ++j)
-            sjac[m_reacs(i)*ns + j] -= m_reacs[i] * work[j];
+        stoic_vec[m_reacs(i)] -= m_reacs[i];
+        index_set.insert(m_reacs(i));
     }
-    
-    //cout << endl << "products: ";
     for (int i = 0; i < Products::nSpecies(); ++i) {
-        //cout << setw(3) << m_prods(i);
-        for (int j = 0; j < ns; ++j)
-            sjac[m_prods(i)*ns + j] += m_prods[i] * work[j];
+        stoic_vec[m_prods(i)] += m_prods[i];
+        index_set.insert(m_prods(i));
     }
-    //cout << endl;
+
+    for (int i : index_set)
+        for (int j = 0; j < ns; ++j)
+            sjac[i*ns+j] += stoic_vec[i] * work[j];
 }
 
 //==============================================================================
@@ -146,6 +137,8 @@ void JacobianManager::addReactionStoich(
         // Thirdbody reactions        
         for (int i = 0; i < m_thermo.nSpecies(); ++i)
             mp_work[i] = 1.0;
+        if (m_thermo.hasElectrons())
+            mp_work[0] = 0.0;
         
         for (int i = 0; i < reaction.efficiencies().size(); ++i)
             mp_work[reaction.efficiencies()[i].first] = 
@@ -332,8 +325,7 @@ void JacobianManager::computeJacobian(
     const size_t nr = m_reactions.size();
     
     // Make sure we are staring with a clean slate
-    for (int i = 0; i < ns*ns; ++i)
-        sjac[i] = 0.0;
+    std::fill(sjac, sjac+ns*ns, 0.0);
 
     // Loop over each reaction and compute the dRR/dconc_k
     for (int i = 0; i < nr; ++i)
