@@ -71,23 +71,10 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
     m_reacs.diffRR(kf, conc, work, Equals());
     m_prods.diffRR(kb, conc, work, MinusEquals());
 
-    // Need to gather the list of species involved in the reaction and their
-    // coefficients
-    std::vector<int> stoic_vec(ns, 0);
-    std::set<int> index_set;
-    for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        stoic_vec[m_reacs(i)] -= m_reacs[i];
-        index_set.insert(m_reacs(i));
-    }
-    for (int i = 0; i < Products::nSpecies(); ++i) {
-        stoic_vec[m_prods(i)] += m_prods[i];
-        index_set.insert(m_prods(i));
-    }
-
     // Only loop over the necessary species
-    for (int i : index_set)
-        for (int j : index_set)
-            sjac[i*ns+j] += stoic_vec[i] * work[j];
+    for (auto& pi : m_index_stoich)
+        for (auto& pj : m_index_stoich)
+            sjac[pi.first*ns+pj.first] += pi.second * work[pj.first];
 }
 
 //==============================================================================
@@ -110,20 +97,9 @@ void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
     m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
     m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
 
-    std::vector<int> stoic_vec(ns, 0);
-    std::set<int> index_set;
-    for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        stoic_vec[m_reacs(i)] -= m_reacs[i];
-        index_set.insert(m_reacs(i));
-    }
-    for (int i = 0; i < Products::nSpecies(); ++i) {
-        stoic_vec[m_prods(i)] += m_prods[i];
-        index_set.insert(m_prods(i));
-    }
-
-    for (int i : index_set)
+    for (auto& p : m_index_stoich)
         for (int j = 0; j < ns; ++j)
-            sjac[i*ns+j] += stoic_vec[i] * work[j];
+            sjac[p.first*ns+j] += p.second * work[j];
 }
 
 //==============================================================================
@@ -333,12 +309,9 @@ void JacobianManager::computeJacobian(
             kf[i], kb[i], conc, mp_work, sjac, ns);
     
     // Finally, multiply by the species molecular weight ratios
-    for (int i = 0; i < ns; ++i)
-        mp_work[i] = m_thermo.speciesMw(i);
-    
     for (int i = 0, index = 0; i < ns; ++i) {
         for (int j = 0; j < ns; ++j, ++index)
-            sjac[index] *= mp_work[i] / mp_work[j];
+            sjac[index] *= m_thermo.speciesMw(i) / m_thermo.speciesMw(j);
     }
 }
 
