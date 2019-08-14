@@ -193,10 +193,6 @@ jobs:
       <<: *osx_build
 
     - os: osx
-      osx_image: xcode9.2
-      <<: *osx_build
-
-    - os: osx
       osx_image: xcode10.2
       <<: *osx_build
 
