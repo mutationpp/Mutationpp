@@ -87,7 +87,7 @@ public:
                 assert(p_energy[0] > 0.0);
 
                 const int ns = m_thermo.nSpecies();
-                const int max_iters = 100;
+                const int max_iters = 50;
                 const double tol = 1.0e-12;
                 const double tolAbs = 1.0e-10;
                 const double rho  = p_mass[0];
@@ -108,7 +108,7 @@ public:
                 f2 = rho - m_P*mw/(RU*m_T);
 
                 int iter = 0;
-                while ((std::max(std::abs(f1/(rhoe+tolAbs)),std::abs(f2/(rho+tolAbs))) > tol)
+                while ((std::max(std::abs(f1/(std::abs(rhoe)+tolAbs)),std::abs(f2/(rho+tolAbs))) > tol)
                         && (std::max(std::abs(f1),std::abs(f2)) > tolAbs)) {
                     // Print warning if this is taking too long
                     if (++iter % max_iters == 0) {
