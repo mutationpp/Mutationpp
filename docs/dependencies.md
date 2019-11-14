@@ -1,4 +1,10 @@
 <a id="top"></a>
+
+`Mutationpp` depends on `Eigen` and on `Catch2` for testing. Generally speaking the suggested approach is to use these dependencies installing them using the system package manager (or contact your system administrator to make them available to you, for instance as environment module). If they're available in the system in standard locations (or their module is loaded in the current shell), they should be retrieved automatically by CMake (if it does not, it's probably a bug, so open an issue on Github).
+
+If you don't have admin rights on your machine and you cannot get a module, we provide versions in the `thirdparty` directory. You can also upload them using the following procedure:
+
+
 # Updating Dependencies
 
 The source code of third-party dependencies is located in the `thirdparty` directory. The code for the following dependencies is taken directly from a git repository using the [subrepo](https://github.com/ingydotnet/git-subrepo) utility:
