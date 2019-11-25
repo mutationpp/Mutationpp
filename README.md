@@ -2,7 +2,7 @@
 
 <img src="docs/artwork/mpp-logo.png" alt="Mutation++" width="600"/>
 
-[![Build Status](https://travis-ci.org/mutationpp/Mutationpp.svg?branch=master)](https://travis-ci.org/mutationpp/Mutationpp)
+[![Build Status](https://github.com/mutationpp/Mutationpp/workflows/Build/badge.svg)](https://github.com/mutationpp/Mutationpp/actions)
 [![codecov](https://codecov.io/gh/mutationpp/Mutationpp/branch/master/graph/badge.svg)](https://codecov.io/gh/mutationpp/Mutationpp)
 [![license: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
