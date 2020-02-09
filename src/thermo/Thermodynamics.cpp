@@ -524,7 +524,6 @@ double Thermodynamics::mixtureEquilibriumCpMole()
         sum3 += mp_work2[j];               // sum_j N_j
         sum4 += mp_work2[j]*mp_work1[j];   // sum_j N_j*H_j/RT
     }
-    std::cout << sum3 << ' ' << sum4 << std::endl;
 
     // Compute the Cp vector
     speciesCpOverR(mp_work1);
