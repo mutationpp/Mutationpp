@@ -495,6 +495,9 @@ double Thermodynamics::mixtureFrozenCpMass() const
 
 double Thermodynamics::mixtureEquilibriumCpMole()
 {
+    if (nSpecies() == 1)
+        return mixtureFrozenCpMole();
+    
     const double T = this->T();
     
     // Compute species enthalpies and dg/dT
@@ -521,6 +524,7 @@ double Thermodynamics::mixtureEquilibriumCpMole()
         sum3 += mp_work2[j];               // sum_j N_j
         sum4 += mp_work2[j]*mp_work1[j];   // sum_j N_j*H_j/RT
     }
+    std::cout << sum3 << ' ' << sum4 << std::endl;
 
     // Compute the Cp vector
     speciesCpOverR(mp_work1);
@@ -536,6 +540,9 @@ double Thermodynamics::mixtureEquilibriumCpMole()
 
 double Thermodynamics::mixtureEquilibriumCpMass()
 {
+    if (nSpecies() == 1)
+        return mixtureFrozenCpMass();
+
     const double T = this->T();
 
     // Compute species enthalpies and dg/dT
