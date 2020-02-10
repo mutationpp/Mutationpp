@@ -19,6 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
+
 #include "mutation++.h"
 #include "TestMacros.h"
 #include <catch.hpp>
@@ -42,10 +44,10 @@ TEST_CASE(
     mix.setState(&P, &P, 1);
 
     double cp_mole = mix.mixtureEquilibriumCpMole();
-    CHECK(!isnan(cp_mole));
+    CHECK(!std::isnan(cp_mole));
     
     double cp_mass = mix.mixtureEquilibriumCpMass();
-    CHECK(!isnan(cp_mass));
+    CHECK(!std::isnan(cp_mass));
 
     double cp_NH3;
     mix.speciesCpOverR(&cp_NH3);
