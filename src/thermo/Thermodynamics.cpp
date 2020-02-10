@@ -495,6 +495,9 @@ double Thermodynamics::mixtureFrozenCpMass() const
 
 double Thermodynamics::mixtureEquilibriumCpMole()
 {
+    if (nSpecies() == 1)
+        return mixtureFrozenCpMole();
+    
     const double T = this->T();
     
     // Compute species enthalpies and dg/dT
@@ -536,6 +539,9 @@ double Thermodynamics::mixtureEquilibriumCpMole()
 
 double Thermodynamics::mixtureEquilibriumCpMass()
 {
+    if (nSpecies() == 1)
+        return mixtureFrozenCpMass();
+
     const double T = this->T();
 
     // Compute species enthalpies and dg/dT

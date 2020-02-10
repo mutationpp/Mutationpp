@@ -26,6 +26,7 @@ configure_file(Configuration.h.in Configuration.h)
 
 add_executable(run_tests 
     run_tests.cpp
+    test_bug_94.cpp
     test_collision_integrals.cpp
     test_comparisons.cpp
     test_convert.cpp
