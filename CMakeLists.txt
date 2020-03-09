@@ -89,7 +89,7 @@ set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH
     "Install path prefix, prepended onto install directories.")
 
 if(NOT IS_ABSOLUTE ${CMAKE_INSTALL_PREFIX})
-    message(FATAL_ERROR 
+    message(FATAL_ERROR
         "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}"
         "You must provide an absolute install prefix...
         Try to use `readlink -f` or `realpath` commands")
@@ -193,7 +193,7 @@ find_package(Eigen3)
 # Source code
 ################################################################################
 option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
-list(APPEND LCOV_REMOVE_PATTERNS 
+list(APPEND LCOV_REMOVE_PATTERNS
     "'/usr/*'"
     "'*/tests/*'"
     "'*/install/*'"

@@ -28,19 +28,19 @@ add_sources(mutation++
 )
 
 add_headers(mutation++
-    GlobalOptions.h 
-    mutation++.h 
-    Mixture.h 
-    MixtureOptions.h 
-    Constants.h 
+    GlobalOptions.h
+    mutation++.h
+    Mixture.h
+    MixtureOptions.h
+    Constants.h
     Errors.h
 )
 
 # Build and install executables
-set(mutation++_exes checkmix mppequil bprime)
+set(mutation++_exes checkmix mppequil bprime mppshock)
 foreach (exe ${mutation++_exes})
     add_executable(${exe} ${exe}.cpp)
-    target_link_libraries(${exe} 
+    target_link_libraries(${exe}
         PRIVATE
             mutation++
     )
