@@ -417,6 +417,21 @@ void NAME_MANGLE(surface_mass_balance)
      double* const hw, double *const p_Xs);
 
 /**
+ * Gets the composition for components of the mixture
+ */
+void NAME_MANGLE(get_composition)
+    (F_STRING mixture, double* const p_Yk, F_STRLEN mixture_length);
+
+/**
+ * Solves the surface mass balance at an ablating surface provided gas mixture names.
+ */
+void NAME_MANGLE(gasmixture_surface_mass_balance)
+    (F_STRING edge, F_STRING pyro,
+     const double* const T, const double* const P, const double* const Bg,
+     double* const Bc, double* const hw, double *const p_Xs,
+     F_STRLEN edge_length, F_STRLEN pyro_length);
+
+/**
  * Returns the pointer to the energy transfer between the internal
  * energy modes.
  */
