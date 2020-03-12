@@ -282,7 +282,7 @@ double Transport::butlerBrokawThermalConductivity()
     const Eigen::MatrixXd& E = m_thermo.elementMatrix();
 
     // Find the elements
-    Eigen::VectorXd ei(ne);
+    Eigen::VectorXi ei(ne);
     for (int i = 0; i < ne; ++i)
         ei(i) = m_thermo.speciesIndex(m_thermo.elementName(i));
 
