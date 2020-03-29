@@ -118,187 +118,6 @@ private:
     double m_T_post = 1.;
 };
 
-void computePostShockConditions()
-{
-    // Having the pre-shock conditions the post shock should be computed
-    // under two assumptions; the Rankine Hugoniot keeping composition frozen
-    // Equilibrium post state. The velocity is known, the rest adapt in order
-    // to conserve mass, momentum and energy.
-
-    // Setting up:
-    const string mixture = "air_5";
-    const string state_model = "Equil";
-    MixtureOptions opts(mixture);
-    opts.setStateModel(state_model);
-    Mixture mix(opts);
-
-    const double p_pre = 1.;
-    const double u_pre = 10000.;
-    const double T_pre = 3000.;
-
-    // Compute Rankine Hugoniot (discontinuity)
-    // rh.setState();
-    RankineHugoniot rh(mix);
-
-    rh.setPreShockState(p_pre, u_pre, T_pre);
-    const double p_post = rh.postShockP();
-    const double u_post = rh.postShockV();
-    const double T_post = rh.postShockT();
-
-    // Printing output
-    cout << "Post Shock Conditions:\n";
-    cout << "p = " << p_post << "\n";
-    cout << "u = " << u_post << "\n";
-    cout << "T = " << T_post << "\n";
-};
-
-void computeEquilibriumPostShockConditions() {
-    const string mixture = "air_5";
-    const string state_model = "Equil";
-    MixtureOptions opts(mixture);
-    opts.setStateModel(state_model);
-    Mixture mix(opts);
-
-    const double p_pre = 1.;
-    const double u_pre = 10000.;
-    const double T_pre = 3000.;
-
-    const int set_state_PT = 1;
-    mix.setState(&p_pre, &T_pre, set_state_PT);
-    const double rho_pre = mix.density();
-    const double h_pre = mix.mixtureHMass();
-
-    const double mdot = rho_pre*u_pre;
-
-    // Setting up solver
-    const double tol = 1.e-12;
-    double r = 0.1; // Initial density ratio
-    double p_eq, T_eq;
-
-    // Solving LTE based on bisection method
-    double err_r = 1.;
-    while (err_r > tol) {
-        p_eq = p_pre + mdot*u_pre*(1. - r);
-        double h_eq = h_pre + 0.5*u_pre*u_pre*(1 - r*r);
-
-        double Tl = T_pre;
-        double Tu = 50000.; // Tpost
-
-        T_eq = 0.5*(Tl + Tu);
-
-        double err_T = 1.;
-        while (err_T > tol){
-            // Lower
-            mix.setState(&p_eq, &Tl, set_state_PT);
-            const double fl = -h_eq + mix.mixtureHMass();
-
-            // Upper
-            mix.setState(&p_eq, &Tu, set_state_PT);
-            const double fu = -h_eq + mix.mixtureHMass();
-
-            // Solution
-            mix.setState(&p_eq, &T_eq, set_state_PT);
-            const double f  = -h_eq + mix.mixtureHMass();
-
-            double T_ref = T_eq;
-            if ((f*fu) < 0.){
-                 Tl = T_eq;
-                 T_eq  = .5*(Tl + Tu);
-            } else if ((f*fl) < 0.) {
-                 Tu = T_eq;
-                 T_eq  = .5*(Tl + Tu);
-            }
-            err_T = abs(T_eq-T_ref)/T_ref;
-        }
-
-        // Density update
-        const double rho_eq = mix.density();
-
-        double r_old = r;
-        r = rho_pre / rho_eq;
-        err_r = abs(r - r_old)/r_old;
-    }
-
-    mix.setState(&p_eq, &T_eq, set_state_PT);
-    p_eq = p_pre + mdot*u_pre*(1. - r);
-    const double rho_eq = mix.density();
-    const double u_eq = mdot / rho_eq;
-
-    // Printing output
-    cout << "Post Shock Equilibrium Conditions:\n";
-    cout << "p = " << p_eq << "\n";
-    cout << "u = " << u_eq << "\n";
-    cout << "T = " << T_eq << "\n";
-
-}
-
-void computeEquilibratedPostShockConditions() {
-    const string mixture = "air_5";
-    const string state_model = "Equil";
-    MixtureOptions opts(mixture);
-    opts.setStateModel(state_model);
-    Mixture mix(opts);
-
-    const double p_pre = 1.;
-    const double u_pre = 10000.;
-    const double T_pre = 3000.;
-
-    const int set_state_PT = 1;
-    mix.setState(&p_pre, &T_pre, set_state_PT);
-    const double rho_pre = mix.density();
-    const double h_pre = mix.mixtureHMass();
-
-    // Conserved quanities
-    const double mdot = rho_pre*u_pre;
-    const double momentum = mdot*u_pre+p_pre;
-    const double E = h_pre + .5*u_pre*u_pre;
-
-    // Initial Guess
-    double ratio = 0.1;
-    double T_post = T_pre;
-    double p_post = p_pre;
-    double u_post = u_pre;
-
-    // Outer loop for Mass/Momentum
-    double dR = 1.;
-    const double tol = 1.e-10; // Member variable
-    while (dR > tol)
-    {
-        p_post = p_pre + mdot*u_pre*(1.-ratio);
-        double rho_post = rho_pre/ratio;
-        double RHS  = h_pre + .5*u_pre*u_pre*(1. - ratio*ratio);
-
-        // Inner loop for Energy
-        double dT = 1.;
-        while (abs(dT) > tol) {
-            mix.setState(&p_post, &T_post, set_state_PT);
-
-            const double h_post = mix.mixtureHMass();
-            const double cp_post = mix.mixtureFrozenCpMass();
-
-            dT = (h_post-RHS)/cp_post;
-            T_post = T_post - dT;
-        }
-
-        mix.setState(&p_post, &T_post, set_state_PT);
-
-        rho_post = mix.density();
-
-        // Density ratio update and residual
-        const double old_ratio = ratio;
-        ratio = rho_pre/rho_post;
-        dR = abs(ratio - old_ratio)/ratio;
-    }
-    u_post = u_pre*ratio;
-
-    // Printing output
-    cout << "Post Shock Equilibrate Conditions:\n";
-    cout << "p = " << p_post << "\n";
-    cout << "u = " << u_post << "\n";
-    cout << "T = " << T_post << "\n";
-
-}
-
 class ShockOptions {
 public:
     explicit ShockOptions(const vector<string>& args)
@@ -342,13 +161,10 @@ private:
 
     void printHelpMessage()
     {
-        // mppshock -T 300 -P 1000 -V 10000 -Xe [] air_5
         cout << "mppshock is work in progress.\n";
         cout << "Algorithms (Bisection/Newton) are implemented.\n";
         cout << "Parser and refactoring will be finalized soon.\n";
         cout << "mppshock -T 300 -P 1000 -V 10000 -m 0 air_5\n";
-
-        // exit(1);
     }
 
 private:
@@ -374,9 +190,9 @@ public:
 
     State computePostShockEquilibrium(const State& pre_shock)
     {
-        const double p_pre = 1.;
-        const double u_pre = 10000.;
-        const double T_pre = 3000.;
+        const double p_pre = pre_shock.getP();
+        const double u_pre = pre_shock.getV();
+        const double T_pre = pre_shock.getT();
 
         m_mix.setState(&p_pre, &T_pre, set_state_PT);
         const double rho_pre = m_mix.density();
@@ -394,7 +210,7 @@ public:
             double h_eq = h_pre + 0.5*u_pre*u_pre*(1 - r*r);
 
             double Tl = T_pre;
-            double Tu = m_T_high;
+            double Tu = 60000.;
 
             T_eq = 0.5*(Tl + Tu);
 
@@ -444,7 +260,7 @@ private:
 
     const int set_state_PT = 1;
     const double m_tol = 1.e-12;
-    const double m_T_high = 60000.;
+    const double m_T_high = 90000.;
 };
 
 class PostShockEquilibriumNewton : public PostShockEquilibrium {
@@ -467,7 +283,7 @@ public:
         const double E = h_pre + .5*u_pre*u_pre;
 
         // Initial Guess
-        double ratio = 0.1;
+        double ratio = .99;
         double T_eq = T_pre;
         double p_eq = p_pre;
         double u_eq = u_pre;
@@ -501,7 +317,7 @@ public:
         }
         u_eq = u_pre*ratio;
 
-        return move(State(p_eq,u_eq,T_eq));
+        return move(State(p_eq, u_eq, T_eq));
     }
 
 private:
@@ -509,6 +325,51 @@ private:
 
     const int set_state_PT = 1;
     const double m_tol = 1.e-10;
+};
+
+class PrintResults {
+public:
+    PrintResults(
+        const State& free_stream,
+        const State& RH,
+        const State& equil) :
+            m_fs(free_stream), m_RH(RH), m_eq(equil){ }
+
+    void output() noexcept {
+        cout.precision(m_precision);
+
+        cout << endl;
+        cout
+            << tab << setw(width) << " "
+            << setw(width) << "Pressure (Pa)"
+            << setw(width) << "Velocity (m/s)"
+            << setw(width) << "Temperature (K)" << endl;;
+        cout
+            << tab << setw(width) << left << "Free Stream:" << fixed
+            << setw(width) << right << m_fs.getP()
+            << setw(width) << right << m_fs.getV()
+            << setw(width) << right << m_fs.getT() << endl;
+        cout
+            << tab << setw(width) << left << "Rankine Hugoniot:" << fixed
+            << setw(width) << right << m_RH.getP()
+            << setw(width) << right << m_RH.getV()
+            << setw(width) << right << m_RH.getT() << endl;
+        cout
+            << tab << setw(width) << left << "Equilibrated:" << fixed
+            << setw(width) << right << m_eq.getP()
+            << setw(width) << right << m_eq.getV()
+            << setw(width) << right << m_eq.getT() << endl;
+        cout << endl;
+        }
+
+private:
+    const State& m_fs;
+    const State& m_RH;
+    const State& m_eq;
+
+    const int m_precision = 1;
+    const string tab = "    ";
+    const int width = 20;
 };
 
 int main(int argc, char** argv)
@@ -530,7 +391,7 @@ int main(int argc, char** argv)
     RankineHugoniot rh(mix);
     State post_shock_RH = rh.computeRH(pre_shock);
 
-    const int method = 0;
+    const int method = newton;
     unique_ptr<PostShockEquilibrium> p_method = nullptr;
     if (method == bisection) {
         p_method = unique_ptr<PostShockEquilibrium> {
@@ -541,7 +402,11 @@ int main(int argc, char** argv)
     }
 
     State post_shock_equil = p_method->computePostShockEquilibrium(pre_shock);
-    // return 0;
+
+    PrintResults print_results(pre_shock, post_shock_RH, post_shock_equil);
+    print_results.output();
+
+    return 0;
 }
 
 
