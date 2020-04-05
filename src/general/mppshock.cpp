@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -60,8 +60,7 @@ class RankineHugoniot
 public:
     explicit RankineHugoniot(Mixture& mix) : m_mix(mix) {}
 
-    // void setPreShockState(const State& pre_shock)
-    State computeRH(const State& pre_shock)
+    State computeRH(const State& pre_shock) noexcept
     {
         const double P_pre = pre_shock.getP();
         const double V_pre = pre_shock.getV();
@@ -85,26 +84,6 @@ public:
         return move(State(P_post, V_post, T_post));
     }
 
-    void setPreShockState(
-        const double& P_pre, const double& V_pre, const double T_pre)
-        // const ArrayXd& v_ye) // Add me in the state
-    {
-        m_mix.setState(&P_pre, &T_pre, set_state_PT);
-
-        // Thermodynamic state based on the pre-shock conditions
-        const double gamma = m_mix.mixtureEquilibriumGamma();
-        const double gp1 = gamma + 1.;
-        const double gm1 = gamma - 1.;
-        const double a_speed = m_mix.equilibriumSoundSpeed();
-        const double Ms = V_pre/a_speed;
-        const double Ms2 = Ms*Ms;
-
-        //  Rankine-Hugoniot relations
-        m_P_post = P_pre*(1. + 2.*gamma/gp1*(Ms2 - 1.));
-        m_V_post = V_pre - a_speed*(2./gp1*(Ms - 1./Ms));
-        m_T_post = T_pre*(1. + (2.*gm1/(gp1*gp1)*((gamma*Ms2 + 1.)/Ms2)*(Ms2 - 1.)));
-    }
-
     double postShockP() const { return m_P_post; }
     double postShockV() const { return m_V_post; }
     double postShockT() const { return m_T_post; }
@@ -122,30 +101,53 @@ class ShockOptions {
 public:
     explicit ShockOptions(const vector<string>& args)
     {
-        // Error Checking
-        // for ( int i = 1; i < n_args; i++) v_args.push_back(args[i]);
+        if ( args.size() < n_args_min ) printHelpMessage();
 
-        // if (v_args.size() == 0)
-    // if (optionExists(argc, argv, "-h") || optionExists(argc, argv, "--help"))
-    //     printHelpMessage(argv[0]);
-        printHelpMessage();
+        // Printing help
+        if (find(args.begin(), args.end(), "-h") != args.end()) printHelpMessage();
+        if (find(args.begin(), args.end(), "--help") != args.end()) printHelpMessage();
 
-    // Get the temperature
-    // if (optionExists(argc, argv, "-T")) {
-    //     if (!parseRange(
-    //         getOption(argc, argv, "-T"), opts.T1, opts.T2, opts.dT)) {
-    //         cout << "Bad format for temperature range!" << endl;
-    //         printHelpMessage(argv[0]);
-    //     }
+        // Parsing options
+        const auto p_begin = args.begin();
+        const auto p_end = args.end();
 
-        m_P_pre = 1000.;
-        m_V_pre = 10000.;
-        m_T_pre = 300.;
+        const auto opts_p = find(p_begin, p_end, "-P");
+        if (opts_p != p_end && opts_p+1 != p_end)
+            try { m_P_pre  = stod(args[opts_p-p_begin+1]);
+            } catch(exception& error) {
+                cerr << "Error in option -P. The input value is not a double!\n";
+            }
 
-        m_mix_name = "air_5";
+        const auto opts_V = find(p_begin, p_end, "-V");
+        if (opts_V != p_end && opts_V+1 != p_end)
+            try { m_V_pre  = stod(args[opts_V-p_begin+1]);
+            } catch(exception& error) {
+                cerr << "Error in option -V. The input value is not a double!\n";
+            }
 
+        const auto opts_T = find(args.begin(), args.end(), "-T");
+        if (opts_T != p_end && opts_T+1 != p_end)
+            try { m_T_pre  = stod(args[opts_T-p_begin+1]);
+            } catch(exception& error) {
+                cerr << "Error in option -T. The input value is not a double!\n";
+            }
+
+        const auto opts_m = find(args.begin(), args.end(), "-m");
+        if (opts_m != p_end && opts_m+1 != p_end)
+            try { m_equil_method  = stoi(args[opts_m-p_begin+1]);
+            } catch(exception& error) {
+                cerr << "Error in option -m. The input value is not an int!\n";
+            }
+
+        if (m_equil_method > 1) {
+            cerr << "Unknown option " << m_equil_method
+                 << " for equilibrium method.\n";
+            printHelpMessage();
+        }
+
+        // Parsing mixture
+        m_mix_name = args.back();
     }
-
 
     double preShockP() const { return m_P_pre; }
     double preShockV() const { return m_V_pre; }
@@ -154,26 +156,29 @@ public:
     int postShockEquilMethod() const { return m_equil_method; }
 
 private:
-//     bool optionExists(int argc, char** argv, const std::string& option)
-// {
-//     return (std::find(argv, argv+argc, option) != argv+argc);
-// }
-
-    void printHelpMessage()
-    {
-        cout << "mppshock is work in progress.\n";
-        cout << "Algorithms (Bisection/Newton) are implemented.\n";
-        cout << "Parser and refactoring will be finalized soon.\n";
-        cout << "mppshock -T 300 -P 1000 -V 10000 -m 0 air_5\n";
+    void printHelpMessage() {
+        cout << "Computes the Rankine-Hugoniot and post-shock equilibrium \n"
+             << "given the pre-shock state for a give mixture.\n";
+        cout << "Usage:   mppshock [OPTIONS] mixture\n";
+        cout << tab << "-h, --help          prints this help message\n";
+        cout << tab << "-P                  Free stream pressure range in Pa (default: 1 atm)\n";
+        cout << tab << "-T                  Free stream temperature range in K (default: 300 K)\n";
+        cout << tab << "-V                  Free stream velocity range in m/s (default: 10000 m/s)\n";
+        cout << tab << "-m                  Solution algorithm; 0: Bisection - 1: Newton-Raphson" << endl;
+        cout << "Example: mppshock -P 1000 -V 10000 -T 300 -m 0 air_5\n";
+        exit(0);
     }
 
 private:
-    double m_P_pre;
-    double m_V_pre;
-    double m_T_pre;
+    double m_P_pre = ONEATM;
+    double m_V_pre = 10000.;
+    double m_T_pre = 300.;
+    int m_equil_method = 0;
 
     string m_mix_name;
-    const int m_equil_method = 0;
+
+    const string tab = "    ";
+    const size_t n_args_min = 2;
 };
 
 enum EquilibriumMethod { bisection = 0, newton = 1 };
@@ -210,7 +215,7 @@ public:
             double h_eq = h_pre + 0.5*u_pre*u_pre*(1 - r*r);
 
             double Tl = T_pre;
-            double Tu = 60000.;
+            double Tu = m_T_high;
 
             T_eq = 0.5*(Tl + Tu);
 
@@ -260,7 +265,7 @@ private:
 
     const int set_state_PT = 1;
     const double m_tol = 1.e-12;
-    const double m_T_high = 90000.;
+    const double m_T_high = 100000.;
 };
 
 class PostShockEquilibriumNewton : public PostShockEquilibrium {
@@ -329,11 +334,11 @@ private:
 
 class PrintResults {
 public:
-    PrintResults(
+    explicit PrintResults(
         const State& free_stream,
         const State& RH,
         const State& equil) :
-            m_fs(free_stream), m_RH(RH), m_eq(equil){ }
+            m_fs(free_stream), m_RH(RH), m_eq(equil) {}
 
     void output() noexcept {
         cout.precision(m_precision);
