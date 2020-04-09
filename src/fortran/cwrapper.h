@@ -349,7 +349,6 @@ double NAME_MANGLE(viscosity)();
 void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
- * Chiara Amato modification
  * Returns the heavy thermal diffusion ratios for each species.
  */
 void NAME_MANGLE(heavy_thermal_diffusion_ratios)(double* const pk);
