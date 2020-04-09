@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -125,6 +125,11 @@ int NAME_MANGLE(species_index)(
  */
 void NAME_MANGLE(species_name)(
     int* index, F_STRING species, F_STRLEN species_length);
+
+/**
+ * Returns true if the gas has electrons.
+ */
+bool NAME_MANGLE(has_electrons)();
 
 /**
  * Returns the mixture molecular weight in kg/mol.
@@ -349,6 +354,12 @@ double NAME_MANGLE(viscosity)();
 void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
+ * Chiara Amato modification
+ * Returns the heavy thermal diffusion ratios for each species.
+ */
+void NAME_MANGLE(heavy_thermal_diffusion_ratios)(double* const pk);
+
+/**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
  * equilibrium.
  */
@@ -361,6 +372,24 @@ double NAME_MANGLE(equilibrium_thermal_conductivity)();
 double NAME_MANGLE(heavy_thermal_conductivity)();
 
 /**
+ * Returns the  rotational thermal conductivity using the 
+ * set algorithm.
+ */
+double NAME_MANGLE(rotational_thermal_conductivity)();
+
+/**
+ * Returns the vibrational thermal conductivity using the 
+ * set algorithm.
+ */
+double NAME_MANGLE(vibrational_thermal_conductivity)();
+
+/**
+ * Returns the electronic thermal conductivity using the 
+ * set algorithm.
+ */
+double NAME_MANGLE(electronic_thermal_conductivity)();
+
+/**
  * Returns the electron translational thermal conductivity.
  */
 double NAME_MANGLE(electron_thermal_conductivity)();
@@ -368,7 +397,9 @@ double NAME_MANGLE(electron_thermal_conductivity)();
 /**
  * Returns the internal energy thermal conductivity using Euken's formulas.
  */
-double NAME_MANGLE(internal_thermal_conductivity)(double T);
+// mod internalThermalConductivity
+//double NAME_MANGLE(internal_thermal_conductivity)(double T);
+double NAME_MANGLE(internal_thermal_conductivity)();
 
 /**
  * Returns the reactive thermal conductivity which accounts for reactions

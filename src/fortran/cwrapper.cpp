@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -139,6 +139,12 @@ int NAME_MANGLE(species_index)(F_STRING species, F_STRLEN species_length)
 void NAME_MANGLE(species_name)(int* index, F_STRING species, F_STRLEN species_length)
 {
     string_to_char(p_mix->speciesName(*index-1), species, species_length);
+}
+
+//==============================================================================
+bool NAME_MANGLE(has_electrons)()
+{
+    return p_mix->hasElectrons();
 }
 
 //==============================================================================
@@ -354,6 +360,16 @@ void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
     p_mix->frozenThermalConductivityVector(lambda);
 }
 
+//======================Chiara Amato modification===============================
+//==============================================================================
+//==============================================================================
+void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
+{
+    p_mix->heavyThermalDiffusionRatios(pk);
+}
+
+//==============================================================================
+//==============================================================================
 //==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()
 {
@@ -367,15 +383,36 @@ double NAME_MANGLE(heavy_thermal_conductivity)()
 }
 
 //==============================================================================
+double NAME_MANGLE(rotational_thermal_conductivity)()
+{
+    return p_mix->rotationalThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(vibrational_thermal_conductivity)()
+{
+    return p_mix->vibrationalThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(electronic_thermal_conductivity)()
+{
+    return p_mix->electronicThermalConductivity();
+}
+
+//==============================================================================
 double NAME_MANGLE(electron_thermal_conductivity)()
 {
     return p_mix->electronThermalConductivity();
 }
 
 //==============================================================================
-double NAME_MANGLE(internal_thermal_conductivity)(double T)
+// mod internalThermalConductivity
+//double NAME_MANGLE(internal_thermal_conductivity)(double T)
+double NAME_MANGLE(internal_thermal_conductivity)()
 {
-    return p_mix->internalThermalConductivity(T);
+    return p_mix->internalThermalConductivity();
+    //return p_mix->internalThermalConductivity(T);
 }
 
 //==============================================================================
