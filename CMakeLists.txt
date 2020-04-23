@@ -32,7 +32,7 @@ cmake_policy(SET CMP0048 NEW)
 set(CMAKE_CXX_STANDARD 11)
 
 project(mutation++
-    VERSION 0.3.2
+    VERSION 1.0.1
     LANGUAGES CXX
 )
 
