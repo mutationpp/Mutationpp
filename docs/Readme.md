@@ -12,6 +12,7 @@ Quick reference for all the documentation.
 **Command line tools:**
 - [checkmix](checkmix.md#top) - check that data files are loaded correctly
 - [mppequil](mppequil.md#top) - compute equilibrium properties
+- [mppshock](mppshock.md#top) - compute the Rankine-Hugoniot and equilibrated post shock conditions.
 
 ## Using Mutation++ in your own code
 
