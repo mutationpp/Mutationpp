@@ -10,7 +10,7 @@ Compiling and installing Mutation++ and its dependencies requires:
 
 On macOS, make sure that CMake is installed with command line support
 activated. You can use [homebrew](http://brew.sh) or
-[macports](http://macports.org) as package managers on macOS. 
+[macports](http://macports.org) as package managers on macOS.
 
 ## Download
 

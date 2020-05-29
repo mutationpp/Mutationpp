@@ -1,7 +1,7 @@
 <a id="top"></a>
 
 # Mutation++ Equilibrium (mppequil)
-This tool essentially wraps the Mutation++ library to provide equilibrium properties for mixtures over a range of temperatures and/or pressures.  This is similar to tools like [NASA's CEA](https://www.grc.nasa.gov/www/CEAWeb/).  
+This tool essentially wraps the Mutation++ library to provide equilibrium properties for mixtures over a range of temperatures and/or pressures.  This is similar to tools like [NASA's CEA](https://www.grc.nasa.gov/www/CEAWeb/).
 
 ## Usage
 ```bash

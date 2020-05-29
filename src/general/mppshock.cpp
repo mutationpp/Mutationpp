@@ -30,10 +30,7 @@
 
 #include <string>
 
-using namespace std;
-using namespace Eigen;
-using namespace Mutation;
-
+// Class storing the current gas state in pressure, temperature and velocity.
 class State
 {
 public:
@@ -58,7 +55,7 @@ private:
 class RankineHugoniot
 {
 public:
-    explicit RankineHugoniot(Mixture& mix) : m_mix(mix) {}
+    explicit RankineHugoniot(Mutation::Mixture& mix) : m_mix(mix) {}
 
     State computeRH(const State& pre_shock) noexcept
     {
@@ -81,7 +78,7 @@ public:
         const double V_post = V_pre - a_speed*(2./gp1*(Ms - 1./Ms));
         const double T_post = T_pre*(1. + (2.*gm1/(gp1*gp1)*((gamma*Ms2 + 1.)/Ms2)*(Ms2 - 1.)));
 
-        return move(State(P_post, V_post, T_post));
+        return std::move(State(P_post, V_post, T_post));
     }
 
     double postShockP() const { return m_P_post; }
@@ -89,7 +86,7 @@ public:
     double postShockT() const { return m_T_post; }
 
 private:
-    Mixture& m_mix;
+    Mutation::Mixture& m_mix;
     const int set_state_PT = 1;
 
     double m_P_post = 1.;
@@ -97,15 +94,18 @@ private:
     double m_T_post = 1.;
 };
 
+enum EquilibriumMethod { bisection = 0, newton = 1 };
+
+// Class responsible for parsing and storing the input options.
 class ShockOptions {
 public:
-    explicit ShockOptions(const vector<string>& args)
+    explicit ShockOptions(const std::vector<std::string>& args)
     {
         if ( args.size() < n_args_min ) printHelpMessage();
 
         // Printing help
-        if (find(args.begin(), args.end(), "-h") != args.end()) printHelpMessage();
-        if (find(args.begin(), args.end(), "--help") != args.end()) printHelpMessage();
+        if (std::find(args.begin(), args.end(), "-h") != args.end()) printHelpMessage();
+        if (std::find(args.begin(), args.end(), "--help") != args.end()) printHelpMessage();
 
         // Parsing options
         const auto p_begin = args.begin();
@@ -114,33 +114,33 @@ public:
         const auto opts_p = find(p_begin, p_end, "-P");
         if (opts_p != p_end && opts_p+1 != p_end)
             try { m_P_pre  = stod(args[opts_p-p_begin+1]);
-            } catch(exception& error) {
-                cerr << "Error in option -P. The input value is not a double!\n";
+            } catch(std::exception& error) {
+                std::cerr << "Error in option -P. The input value is not a double!\n";
             }
 
         const auto opts_V = find(p_begin, p_end, "-V");
         if (opts_V != p_end && opts_V+1 != p_end)
             try { m_V_pre  = stod(args[opts_V-p_begin+1]);
-            } catch(exception& error) {
-                cerr << "Error in option -V. The input value is not a double!\n";
+            } catch(std::exception& error) {
+                std::cerr << "Error in option -V. The input value is not a double!\n";
             }
 
         const auto opts_T = find(args.begin(), args.end(), "-T");
         if (opts_T != p_end && opts_T+1 != p_end)
             try { m_T_pre  = stod(args[opts_T-p_begin+1]);
-            } catch(exception& error) {
-                cerr << "Error in option -T. The input value is not a double!\n";
+            } catch(std::exception& error) {
+                std::cerr << "Error in option -T. The input value is not a double!\n";
             }
 
         const auto opts_m = find(args.begin(), args.end(), "-m");
         if (opts_m != p_end && opts_m+1 != p_end)
             try { m_equil_method  = stoi(args[opts_m-p_begin+1]);
-            } catch(exception& error) {
-                cerr << "Error in option -m. The input value is not an int!\n";
+            } catch(std::exception& error) {
+                std::cerr << "Error in option -m. The input value is not an int!\n";
             }
 
         if (m_equil_method > 1) {
-            cerr << "Unknown option " << m_equil_method
+            std::cerr << "Unknown option " << m_equil_method
                  << " for equilibrium method.\n";
             printHelpMessage();
         }
@@ -152,46 +152,53 @@ public:
     double preShockP() const { return m_P_pre; }
     double preShockV() const { return m_V_pre; }
     double preShockT() const { return m_T_pre; }
-    const string& mixtureName() const { return m_mix_name; }
+    const std::string& mixtureName() const { return m_mix_name; }
     int postShockEquilMethod() const { return m_equil_method; }
 
 private:
     void printHelpMessage() {
-        cout << "Computes the Rankine-Hugoniot and post-shock equilibrium \n"
+        std::cout << "Computes the Rankine-Hugoniot and post-shock equilibrium \n"
              << "given the pre-shock state for a give mixture.\n";
-        cout << "Usage:   mppshock [OPTIONS] mixture\n";
-        cout << tab << "-h, --help          prints this help message\n";
-        cout << tab << "-P                  Free stream pressure range in Pa (default: 1 atm)\n";
-        cout << tab << "-T                  Free stream temperature range in K (default: 300 K)\n";
-        cout << tab << "-V                  Free stream velocity range in m/s (default: 10000 m/s)\n";
-        cout << tab << "-m                  Solution algorithm; 0: Bisection - 1: Newton-Raphson" << endl;
-        cout << "Example: mppshock -P 1000 -V 10000 -T 300 -m 0 air_5\n";
+        std::cout << "Usage:   mppshock [OPTIONS] mixture\n";
+        std::cout << tab << "-h, --help          prints this help message\n";
+        std::cout << tab << "-P                  Free stream pressure range in Pa (default: 1 atm)\n";
+        std::cout << tab << "-T                  Free stream temperature range in K (default: 300 K)\n";
+        std::cout << tab << "-V                  Free stream velocity range in m/s (default: 10000 m/s)\n";
+        std::cout << tab << "-m                  Solution algorithm; 0: Bisection - 1: Newton-Raphson (default)\n";
+        std::cout << "Example: mppshock -P 1000 -V 10000 -T 300 -m 0 air_5\n";
         exit(0);
     }
 
 private:
-    double m_P_pre = ONEATM;
+    double m_P_pre = Mutation::ONEATM;
     double m_V_pre = 10000.;
     double m_T_pre = 300.;
-    int m_equil_method = 0;
+    int m_equil_method = newton;
 
-    string m_mix_name;
+    std::string m_mix_name;
 
-    const string tab = "    ";
+    const std::string tab = "    ";
     const size_t n_args_min = 2;
 };
 
-enum EquilibriumMethod { bisection = 0, newton = 1 };
-
+// Abstract class responsible for the computation of the post shock equilibrium.
+// The solid classes implement different algorithms for the equilibrium calculation.
 class PostShockEquilibrium {
 public:
+    // Virtual destructor
     virtual ~PostShockEquilibrium() = default;
+
+    // This function is the core of the class. It takes as input the pre-shock state
+    // and returns the relaxed equilibrated post-shock state.
     virtual State computePostShockEquilibrium(const State& pre_shock) = 0;
 };
 
+// Computes the post shock equilibrium based on a bisection algorithm. This
+// method should be used only for validation and in stiff cases where the Newton
+// solver fails to converge.
 class PostShockEquilibriumBisection : public PostShockEquilibrium {
 public:
-    explicit PostShockEquilibriumBisection(Mixture& mix) : m_mix(mix) {}
+    explicit PostShockEquilibriumBisection(Mutation::Mixture& mix) : m_mix(mix) {}
 
     State computePostShockEquilibrium(const State& pre_shock)
     {
@@ -261,16 +268,18 @@ public:
     }
 
 private:
-    Mixture& m_mix;
+    Mutation::Mixture& m_mix;
 
     const int set_state_PT = 1;
     const double m_tol = 1.e-12;
     const double m_T_high = 100000.;
 };
 
+// Computing the post shock equilibrium based on a Newton-Raphson loop. Even
+// though this methodology is less robust, it is very efficient.
 class PostShockEquilibriumNewton : public PostShockEquilibrium {
 public:
-    explicit PostShockEquilibriumNewton(Mixture& mix) : m_mix(mix) {}
+    explicit PostShockEquilibriumNewton(Mutation::Mixture& mix) : m_mix(mix) {}
 
     State computePostShockEquilibrium(const State& pre_shock)
     {
@@ -322,16 +331,17 @@ public:
         }
         u_eq = u_pre*ratio;
 
-        return move(State(p_eq, u_eq, T_eq));
+        return std::move(State(p_eq, u_eq, T_eq));
     }
 
 private:
-    Mixture& m_mix;
+    Mutation::Mixture& m_mix;
 
     const int set_state_PT = 1;
     const double m_tol = 1.e-10;
 };
 
+// Helper class that prints
 class PrintResults {
 public:
     explicit PrintResults(
@@ -341,31 +351,34 @@ public:
             m_fs(free_stream), m_RH(RH), m_eq(equil) {}
 
     void output() noexcept {
-        cout.precision(m_precision);
+        std::cout.precision(m_precision);
 
-        cout << endl;
-        cout
-            << tab << setw(width) << " "
-            << setw(width) << "Pressure (Pa)"
-            << setw(width) << "Velocity (m/s)"
-            << setw(width) << "Temperature (K)" << endl;;
-        cout
-            << tab << setw(width) << left << "Free Stream:" << fixed
-            << setw(width) << right << m_fs.getP()
-            << setw(width) << right << m_fs.getV()
-            << setw(width) << right << m_fs.getT() << endl;
-        cout
-            << tab << setw(width) << left << "Rankine Hugoniot:" << fixed
-            << setw(width) << right << m_RH.getP()
-            << setw(width) << right << m_RH.getV()
-            << setw(width) << right << m_RH.getT() << endl;
-        cout
-            << tab << setw(width) << left << "Equilibrated:" << fixed
-            << setw(width) << right << m_eq.getP()
-            << setw(width) << right << m_eq.getV()
-            << setw(width) << right << m_eq.getT() << endl;
-        cout << endl;
-        }
+        std::cout << std::endl;
+        std::cout
+            << tab << std::setw(width) << " "
+            << std::setw(width) << "Pressure (Pa)"
+            << std::setw(width) << "Velocity (m/s)"
+            << std::setw(width) << "Temperature (K)" << std::endl;;
+        std::cout
+            << tab << std::setw(width) << std::left
+            << "Free Stream:" << std::fixed
+            << std::setw(width) << std::right << m_fs.getP()
+            << std::setw(width) << std::right << m_fs.getV()
+            << std::setw(width) << std::right << m_fs.getT() << std::endl;
+        std::cout
+            << tab << std::setw(width) << std::left
+            << "Rankine-Hugoniot:" << std::fixed
+            << std::setw(width) << std::right << m_RH.getP()
+            << std::setw(width) << std::right << m_RH.getV()
+            << std::setw(width) << std::right << m_RH.getT() << std::endl;
+        std::cout
+            << tab << std::setw(width) << std::left
+            << "Equilibrated:" << std::fixed
+            << std::setw(width) << std::right << m_eq.getP()
+            << std::setw(width) << std::right << m_eq.getV()
+            << std::setw(width) << std::right << m_eq.getT() << std::endl;
+        std::cout << std::endl;
+    }
 
 private:
     const State& m_fs;
@@ -373,20 +386,35 @@ private:
     const State& m_eq;
 
     const int m_precision = 1;
-    const string tab = "    ";
+    const std::string tab = "    ";
     const int width = 20;
 };
 
+/**
+ * @page mppshock Mutation++ Post Shock Equilibrium Solver (mppshock)
+ *
+ * __Usage:__
+ *
+ * mppshock [OPTIONS] mixture
+ *
+ * Compute equilibrium properties for mixture over a set of temperatures and
+ * pressures using the Mutation++ library.  Use
+ *
+ *     mppshock -h
+ *
+ * for a full list of options.
+ */
+
 int main(int argc, char** argv)
 {
-    vector<string> args(argv, argv + argc);
+    std::vector<std::string> args(argv, argv + argc);
     ShockOptions mppshock_opts(args);
 
-    MixtureOptions mix_opts(mppshock_opts.mixtureName());
+    Mutation::MixtureOptions mix_opts(mppshock_opts.mixtureName());
 
-    const string state_model = "Equil";
+    const std::string state_model = "Equil";
     mix_opts.setStateModel(state_model);
-    Mixture mix(mix_opts);
+    Mutation::Mixture mix(mix_opts);
 
     State pre_shock(
         mppshock_opts.preShockP(),
@@ -396,13 +424,13 @@ int main(int argc, char** argv)
     RankineHugoniot rh(mix);
     State post_shock_RH = rh.computeRH(pre_shock);
 
-    const int method = newton;
-    unique_ptr<PostShockEquilibrium> p_method = nullptr;
+    const int method = mppshock_opts.postShockEquilMethod();
+    std::unique_ptr<PostShockEquilibrium> p_method = nullptr;
     if (method == bisection) {
-        p_method = unique_ptr<PostShockEquilibrium> {
+        p_method = std::unique_ptr<PostShockEquilibrium> {
             new PostShockEquilibriumBisection(mix) };
     } else if (method == newton) {
-        p_method = unique_ptr<PostShockEquilibrium> {
+        p_method = std::unique_ptr<PostShockEquilibrium> {
             new PostShockEquilibriumNewton(mix) };
     }
 
