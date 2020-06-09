@@ -355,6 +355,12 @@ void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 }
 
 //==============================================================================
+void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
+{
+    p_mix->heavyThermalDiffusionRatios(pk);
+}
+
+//==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()
 {
     return p_mix->equilibriumThermalConductivity();

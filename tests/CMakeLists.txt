@@ -66,3 +66,8 @@ ParseAndAddCatchTests(run_tests)
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
+
+add_test(
+    NAME bugfix_120
+    COMMAND mppequil -T 300 -P 101325 -s 15,16 --species-list "O O2"
+)

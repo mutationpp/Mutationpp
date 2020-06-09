@@ -912,11 +912,17 @@ int main(int argc, char** argv)
                 } else if (name == "omega") {
                     mix.netProductionRates(species_values);
                 } else if (name == "Omega11") {
-                    Map<ArrayXd>(species_values,mix.nSpecies()) =
-                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q11ee(),mix.collisionDB().Q11ii()).finished();
+                    int k = mix.hasElectrons() ? 1 : 0;
+                    if (k == 1)
+                        species_values[0] = mix.collisionDB().Q11ee();
+                    Map<ArrayXd>(species_values+k, mix.nHeavy()) =
+                        mix.collisionDB().Q11ii();
                 } else if (name == "Omega22") {
-                    Map<ArrayXd>(species_values,mix.nSpecies()) =
-                        (ArrayXd(mix.nSpecies()) << mix.collisionDB().Q22ee(),mix.collisionDB().Q22ii()).finished();
+                    int k = mix.hasElectrons() ? 1 : 0;
+                    if (k == 1)
+                        species_values[0] = mix.collisionDB().Q22ee();
+                    Map<ArrayXd>(species_values+k, mix.nHeavy()) =
+                        mix.collisionDB().Q22ii();
                 } else if (name == "Chi^h") {
                     mix.heavyThermalDiffusionRatios(species_values);
                 } else if (name == "Dm") {
