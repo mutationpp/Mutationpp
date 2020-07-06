@@ -99,7 +99,6 @@ appropriate file.  Mixture files may also be placed in the local directory in
 which you are calling any Mutation++ tool.
 
 
-<a id="docs"></a>
 ## Build API Docs
 If you are interested in building the API documentation for Mutation++ locally, then be sure to have [Doxygen](https://www.doxygen.nl/index.html) installed on your computer and run
 
