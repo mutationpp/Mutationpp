@@ -97,3 +97,13 @@ which will display a help message.  To modify or create new mixtures, go to the
 `data/mixtures` folder in your mutation++ directory and open or create the
 appropriate file.  Mixture files may also be placed in the local directory in
 which you are calling any Mutation++ tool.
+
+
+## Build API Docs
+If you are interested in building the API documentation for Mutation++ locally, then be sure to have [Doxygen](https://www.doxygen.nl/index.html) installed on your computer and run
+
+```
+make docs
+```
+
+from the `build` directory.  Once done, open the `docs/html/index.html` file using your favorite web browser to see a full listing of all the classes and methods available in the library.
