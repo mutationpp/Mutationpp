@@ -31,7 +31,7 @@ version or a version installed in the system. Check
 
 ### Build
 In order to build the library, create a `build` directory, than run the `cmake`
-command inside of it (Note: The command listed below installs `Mutationpp` 
+command inside of it (Note: The commands listed below installs `Mutationpp` 
 inside the parent directory containing the code using the `CMAKE_INSTALL_PREFIX`
 variable. If you don't specify it, the code will be installed in the default
 prefix `/usr/local`. 
@@ -44,16 +44,15 @@ make -j N install
 ```
 
 where `N` is the number of CPU units to use for the build process (e.g. 4).
-This cmake command will install `mutation++` into a directory named `install` in
-the root directory of the git repository (i.e. the directory that contains the
-file `README.md`). 
+This cmake command will install `mutation++` into the directory specified by `CMAKE_INSTALL_PREFIX`.
 You're free to choose whatever path works better for you.
 
 ### Configuration
-**Linux**
+**Linux**<br>
 Some Linux distributions install libraries in `${CMAKE_INSTALL_PREFIX}/lib64` 
 instead of `${CMAKE_INSTALL_PREFIX}/lib`. For this reason, after you compiled
-    and installed the code, check if you have a `lib` or `lib64` `LIBDIR`. Then:
+and installed the code, check if you have a `lib` or `lib64` `LIBDIR`. Next, add the following lines
+to your `.bashrc` file in your home directory.
 
 ```
 export MPP_DIRECTORY=path_to_mutation++_directory
@@ -62,7 +61,8 @@ export PATH=$MPP_DIRECTORY/install/bin:$PATH
 export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/<LIBDIR>:$LD_LIBRARY_PATH  # Change <LIBDIR> with `lib` or `lib64`
 ```
 
-**macOS**
+**MacOS**<br>
+Add the following lines to your `.bash_profile` file in your home directory.
 ```
 export MPP_DIRECTORY=path_to_mutation++_directory
 export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
@@ -70,9 +70,8 @@ export PATH=$MPP_DIRECTORY/install/bin:$PATH
 export DYLD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$DYLD_LIBRARY_PATH
 ```
 
-Note that you must change the `path_to_mutation++_directory` to the correct
-path on your machine where you cloned the Git repository and, on Linux, also
-`<LIBDIR>` can be `lib` or `lib64`.
+*Note that you must change the `path_to_mutation++_directory` to the correct
+path on your machine where you cloned the Git repository* **for both Linux and MacOS installs**.
 
 
 ## Test
