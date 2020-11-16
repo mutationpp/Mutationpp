@@ -18,3 +18,21 @@ Mutation++ is an open-source library originally developed at the [von Karman Ins
 * Check out [who we are](docs/contributors.md#top)
 * Thank [our sponsors](docs/funding.md#top)
 * Find [other projects using Mutation++](docs/users.md#top)
+
+## Citing Mutation++
+Please cite the following article when mentioning Mutation++ in your own papers.
+
+* Scoggins et al. [Mutation++: MUlticomponent Thermodynamic And Transport properties for IONized gases in C++.](https://www.sciencedirect.com/science/article/pii/S2352711020302880)
+<br>SoftwareX 12, 2020.
+
+**Bibtex**
+```bibtex
+@article{Scoggins2020,
+  title   = {Mutation++: MUlticomponent Thermodynamic And Transport properties for IONized gases in C++},
+  author = {James B. Scoggins and Vincent Leroy and Georgios Bellas-Chatzigeorgis and Bruno Dias and Thierry E. Magin},
+  journal = {SoftwareX},
+  volume = {12},
+  year = {2020},
+  doi = {10.1016/j.softx.2020.100575}
+}
+```
