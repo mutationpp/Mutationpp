@@ -367,14 +367,10 @@ void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
 }
 
 //==============================================================================
-//void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
-//{
-double NAME_MANGLE(electron_thermal_diffusionratios)()
+double NAME_MANGLE(electron_thermal_diffusion_ratios)()
 { 
    return p_mix->electronThermalDiffusionRatio();
 }
-//    p_mix->heavyThermalDiffusionRatios(pk);
-//}
 
 //==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()

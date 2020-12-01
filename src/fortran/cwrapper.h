@@ -361,7 +361,7 @@ void NAME_MANGLE(heavy_thermal_diffusion_ratios)(double* const pk);
 /**
  * Returns the Isotropic electron thermal diffusion ratio. 
  */
-double NAME_MANGLE(electron_thermal_diffusionratios)();
+double NAME_MANGLE(electron_thermal_diffusion_ratios)();
 
 /**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
@@ -401,7 +401,7 @@ double NAME_MANGLE(electron_thermal_conductivity)();
 /**
  * Returns the internal energy thermal conductivity using Euken's formulas.
  */
-double NAME_MANGLE(internal_thermal_conductivity)(double* T);
+double NAME_MANGLE(internal_thermal_conductivity)(double *const T);
 
 /**
  * Returns the reactive thermal conductivity which accounts for reactions
