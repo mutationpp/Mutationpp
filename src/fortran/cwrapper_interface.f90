@@ -127,7 +127,7 @@ module mutationpp
         real(kind=8) function mpp_electronic_thermal_conductivity()
         end function
         
-        real(kind=8) function mpp_electron_thermal_diffusionratios()
+        real(kind=8) function mpp_electron_thermal_diffusion_ratios()
         end function
     end interface
 
