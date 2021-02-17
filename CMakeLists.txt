@@ -44,6 +44,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
+    add_subdirectory(interface/fortran)
 endif()
 
 
