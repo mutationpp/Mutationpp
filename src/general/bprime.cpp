@@ -43,13 +43,8 @@ using namespace Mutation::Utilities;
  * @page bprime B' Solver (bprime)
  * __Usage__:
  *
-<<<<<<< HEAD
- *    bprime \f$-T\f$ \f$T_1\f$:\f$\Delta T\f$:\f$T_2\f$ \f$-p\f
- *    \f$p\f$ \f$-b\f \f$B'_g\f$ \f$-m\f mixture \f$-bl\f BL \f$-py \f Pyrolysis
-=======
  *    bprime -T \f$T_1:\Delta T:T_2\f$ -p
  *    \f$p\f$ -b \f$B'_g\f$ -m mixture -bl BL -py Pyrolysis
->>>>>>> upstream/master
  *
  * This program generates a so-called "B-prime" table for a given temperature
  * range and stepsize in K, a fixed pressure in Pa, a value of \f$B'_g\f$
@@ -278,10 +273,6 @@ int main(int argc, char* argv[])
 
     if(opts.pyrolysis_exist)
         mix.getComposition(opts.pyrolysis_composition, Ykg.data(), Composition::MASS);
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/master
 
     cout << setw(10) << "\"Tw[K]\""
          << setw(15) << "\"B'c\""
