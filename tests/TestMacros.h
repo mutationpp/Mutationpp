@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -47,6 +47,27 @@ for (int i = 0; i < 10; ++i) {\
     }\
 }
 
+
+/**
+ * Loops over mixtures for Gas-Surface Interaction Mass Balance,
+ * loads each mixture and runs __CODE__ in Catch SECTION
+ * which is the name of the mixture.
+ */
+#define MIXTURE_GSI_MASS_LOOP(__CODE__)\
+std::string _names_[5] = {\
+    "smb_air5_RRHO_ChemNonEq1T",\
+    "smb_oxidation_NASA9_ChemNonEq1T",\
+    "smb_sublimation_NASA9_ChemNonEq1T",\
+    "smb_aircarbon11_RRHO_ChemNonEq1T",\
+    "smb_o2_RRHO_ChemNonEq1T"\
+};\
+Mutation::GlobalOptions::workingDirectory(TEST_DATA_FOLDER);\
+for (int i = 0; i < 5; ++i) {\
+    SECTION(_names_[i]) {\
+        Mixture mix(_names_[i]);\
+        __CODE__ ;\
+    }\
+}
 
 /**
  * Loops over 10 temperatures and 10 pressures between 1000-10000 K (linear) and

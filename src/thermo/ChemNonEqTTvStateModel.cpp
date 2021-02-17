@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -27,9 +27,10 @@
 
 #include "StateModel.h"
 #include "AutoRegistration.h"
-#include <eigen3/Eigen/Dense>
 #include "Thermodynamics.h"
 #include "Transport.h"
+
+#include <Eigen/Dense>
 
 using namespace Eigen;
 
@@ -48,7 +49,7 @@ using namespace Mutation::Utilities::Config;
 class ChemNonEqTTvStateModel : public StateModel
 {
 public:
-  
+
      //Mutation::Transfer::TransferModel* p_transfer_model;
 
     ChemNonEqTTvStateModel(const Thermodynamics& thermo)
@@ -81,7 +82,7 @@ public:
         const int ns = m_thermo.nSpecies();
 
         // Compute the species concentrations which are used through out this
-        // method regardless of variable set 
+        // method regardless of variable set
         double conc = 0.0;
         for (int i = 0; i < ns; ++i){
             // Check that species densities are at least positive
@@ -121,7 +122,7 @@ public:
         m_Tel = m_Te = m_Tv;
 
         // Compute the pressure and species mole fractions from T and rho_i
-        for (int i = 0; i < ns; ++i)        
+        for (int i = 0; i < ns; ++i)
             mp_X[i] /= conc;
         m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
@@ -151,14 +152,14 @@ public:
             throw;
         }
     }
-    
+
     void getTemperatures(double* const p_T) const {
         p_T[0] = T();
         p_T[1] = Tv();
     }
-    
+
     void getEnergiesMass(double* const p_e)
-    {    
+    {
         int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(
             m_T, m_Tv, m_T, m_Tv, m_Tv, mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
@@ -177,10 +178,10 @@ public:
     }
 
     void getEnthalpiesMass(double* const p_h)
-    {    
+    {
         int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work1, mp_work2, NULL, mp_work3, mp_work4, NULL);
-        
+
         for(int i = 0; i < ns; ++i)
             p_h[i] = mp_work1[i]*m_T*RU/m_thermo.speciesMw(i);
         for(int i = 0; i < ns; ++i)
@@ -188,9 +189,9 @@ public:
         if(m_thermo.hasElectrons())
             p_h[ns] = mp_work2[0]*m_T*RU/m_thermo.speciesMw(0);
     }
-    
+
     void getCpsMass(double* const p_Cp)
-    {       
+    {
         int ns = m_thermo.nSpecies();
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
         m_thermo.speciesCpOverR(
@@ -207,7 +208,7 @@ public:
     }
 
     void getCvsMass(double* const p_Cv)
-    {       
+    {
         int ns = m_thermo.nSpecies();
         int offset = (m_thermo.hasElectrons() ? 1 : 0);
         m_thermo.speciesCpOverR(
@@ -289,7 +290,7 @@ private:
     double* mp_work2;
     double* mp_work3;
     double* mp_work4;
-    
+
 }; // class ChemNonEqStateModel
 
 // Register the state model

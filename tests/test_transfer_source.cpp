@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -22,8 +22,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Transfer;
@@ -31,9 +31,7 @@ using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Energy transfer source terms are zero in equilibrium",
+TEST_CASE("Energy transfer source terms are zero in equilibrium",
     "[transfer]"
 )
 {
@@ -41,7 +39,7 @@ TEST_CASE
         "OmegaCE", "OmegaCElec", "OmegaCV", "OmegaET", "OmegaI", "OmegaVT"
     };
 
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (

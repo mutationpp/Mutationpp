@@ -1,11 +1,11 @@
 /**
  * @file SurfaceProperties.h
  *
- * @brief Declaration of SurfaceProperties class.
+ * @brief  Purely virtual class SurfaceProperties.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -29,7 +29,7 @@
 #ifndef SURFACE_PROPERTIES_H
 #define SURFACE_PROPERTIES_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
 namespace Mutation { namespace Utilities { namespace IO { class XmlElement; }}}
@@ -42,7 +42,7 @@ namespace Mutation {
  */
 struct DataSurfaceProperties
 {
-    Mutation::Thermodynamics::Thermodynamics& s_thermo;
+    const Mutation::Thermodynamics::Thermodynamics& s_thermo;
     const Mutation::Utilities::IO::XmlElement& s_node_surf_props;
 };
 
@@ -52,84 +52,59 @@ class SurfaceProperties
 {
 public:
 	/**
-	 *
+	 * Structure containg the information needed by the SurfaceProperties
+     * classes.
 	 */
     typedef const DataSurfaceProperties& ARGS;
 
-	/// Returns name of this type.
+//==============================================================================
+    /**
+     * Returns name of this type.
+	 */
 	static std::string typeName() { return "SurfaceProperties"; }
+
 //==============================================================================
 
     /**
-     *
+     * Default Constructor.
      */
     SurfaceProperties(ARGS args){ }
 
 //==============================================================================
 
     /**
-     *
+     * Default Destructor.
      */
     virtual ~SurfaceProperties(){ }
 
 //==============================================================================
-
-    virtual int globalSpeciesIndex(const std::string& str_sp) const {
-        return -1;
-    };
-
-//==============================================================================
-
-    virtual size_t nWallSpecies() const { return 0; }
-
-//==============================================================================
-
-    virtual size_t nSiteCategories() const { return 0; }
-
-//==============================================================================
-
-    virtual double nTotalSites() const { return 0.; }
-
-//==============================================================================
-    virtual int globalIdxtoGasIdx(const size_t& id_sp_global) const {
+    /**
+     * Returns the index associated with the surface species. It is always
+     * number of gas species plus the surface phase index.
+     */
+    virtual int surfaceSpeciesIndex(const std::string& str_sp) const {
         return -1;
     }
 
 //==============================================================================
-
-    virtual int globalSurfaceCompositionSpeciesIndex(
-        const std::string& str_sp) const { return -1; };
-
-//==============================================================================
-
-    virtual double fracSite(const int& i_site) const { return 0.; }
-
-//==============================================================================
-
-    virtual int nSpeciesinSite(const int& i_site) const { return 0; };
+    /**
+     * Returns the gas phase species associated with the surface species.
+     */
+    virtual int surfaceToGasIndex(const int& i_surf_species) const {
+        return -1;
+    }
 
 //==============================================================================
-
-    // Functions important for surfaces in equilibrium and Bprime
-    virtual bool surfaceConstraint() const {return false;}
-
-//==============================================================================
-
-    virtual std::string surfaceSpecies() const {return "";}
+    /**
+     * Returns the number of surface species.
+     */
+    virtual size_t nSurfaceSpecies() const { return 0; }
 
 //==============================================================================
-
-    virtual double BprimePyro() const {return 0;}
-
-//==============================================================================
-
-    virtual void getSurfaceCompositions(
-        Eigen::VectorXd & lv_pyrolisysComposition,
-        Eigen::VectorXd & lv_charComposition) const {}
 
 };
 
-    } // namespace GasSurfaceInteraction 
+    } // namespace GasSurfaceInteraction
 } // namespace Mutation
 
 #endif // SURFACE_PROPERTIES_H

@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -45,7 +45,7 @@ DiffusionVelocityCalculator::DiffusionVelocityCalculator(
           mv_mole_frac_edge(thermo.nSpecies()),
           m_transport(transport),
           m_dx(0.),
-          m_is_diff_set(0)
+          m_is_diff_set(false)
 { }
 
 //==============================================================================
@@ -59,11 +59,11 @@ void DiffusionVelocityCalculator::setDiffusionModel(
 {
     mv_mole_frac_edge = v_mole_frac_edge;
 
-    if (m_dx <= 0.) {
+    if (dx <= 0.) {
     	throw LogicError()
         << "Calling DiffusionVelocityCalculator::setDiffusionModel() with a "
         << "distance less or equal to zero. The distance dx should always be "
-           "positive";
+           "positive.";
     }
     m_dx = dx;
 
@@ -79,9 +79,8 @@ void DiffusionVelocityCalculator::computeDiffusionVelocities(
     if (!m_is_diff_set) {
     	throw LogicError()
         << "Calling DiffusionVelocityCalculator::computeDrivingForces() before "
-        << "calling DiffusionVelocityCalculator::setDiffusionCalculator()";
+        << "calling DiffusionVelocityCalculator::setDiffusionCalculator().";
     }
-
     mv_dxidx = (v_mole_frac - mv_mole_frac_edge)/m_dx;
 
     double electric_field = 0.E0;

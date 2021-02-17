@@ -1,0 +1,12 @@
+<mixture mechanism="none"
+         thermo_db="RRHO"
+         state_model="ChemNonEq1T"
+         gsi_mechanism="smb_o2_catalysis_gamma_fc">
+    <species>
+        O O2
+    </species>
+
+    <element_compositions default="o2">
+        <composition name="o2"> O:1. </composition>
+    </element_compositions>
+</mixture>

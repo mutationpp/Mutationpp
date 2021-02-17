@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -33,7 +33,7 @@
 #include "ViscosityAlgorithm.h"
 
 #include <iostream>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Mutation::Thermodynamics;
 using namespace Mutation::Utilities;
@@ -282,7 +282,7 @@ double Transport::butlerBrokawThermalConductivity()
     const Eigen::MatrixXd& E = m_thermo.elementMatrix();
 
     // Find the elements
-    Eigen::VectorXd ei(ne);
+    Eigen::VectorXi ei(ne);
     for (int i = 0; i < ne; ++i)
         ei(i) = m_thermo.speciesIndex(m_thermo.elementName(i));
 

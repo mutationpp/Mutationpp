@@ -108,6 +108,7 @@
         <species name="C3H3,2-propynl" alias="2-C3H3" />
         <species name="C6H5O,phenoxy" alias="C6H5O" />
         <species name="C6H5OH,phenol" alias="C6H5OH" />
+        <species name="HCHO,formaldehy" alias="CH2O" />
     </aliases>
 
     <!-- Dipole Polarizabilities -->
@@ -157,6 +158,7 @@
         <species name="He"     value="0.205"  ref="Bruno2010"/>
         <species name="He+"    value="0.03"   ref="Bruno2010"/>
         <species name="N"      value="1.10"   ref="Wright2007"/>
+        <species name="NH3"    value="2.1042" ref="Lim2004"/>
         <species name="N2"     value="1.74"   ref="Wright2007"/>
         <species name="N2O"    value="3.03"   ref="Andre2010"/>
         <species name="NO"     value="1.70"   ref="Wright2007"/>
@@ -191,6 +193,7 @@
         <species name="C9H8" value="44.0" />
         <species name="CH" value="3.80" />
         <species name="CH2" value="4.67" />
+        <species name="CH2O" value="12.0" />
         <species name="CH2OH" value="9.92" />
         <species name="CH3" value="6.14" />
         <species name="CH4" value="8.00" />
@@ -208,6 +211,7 @@
         <species name="HCN" value="8.40" />
         <species name="HNC" value="8.4" />
         <species name="N" value="3.8" />
+        <species name="NH3" value="6.5" />
         <species name="N2" value="7.60" />
         <species name="NO" value="8.3" />
         <species name="O" value="4.7" />

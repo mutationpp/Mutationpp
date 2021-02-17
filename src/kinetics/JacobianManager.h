@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -346,7 +346,22 @@ public:
     ReactionStoich(JacStoichBase* reacs, JacStoichBase* prods)
         : m_reacs(*static_cast<Reactants*>(reacs)), 
           m_prods(*static_cast<Products*>(prods))
-    { }
+    { 
+        // Save indices and reaction stoichiometry of the involved species
+        for (int i = 0; i < Reactants::nSpecies(); ++i)
+            m_index_stoich.emplace_back(m_reacs(i), -m_reacs[i]);
+        
+        for (int i = 0; i < Products::nSpecies(); ++i) {
+            int k = -1;
+            for (int j = 0; j < Reactants::nSpecies(); ++j)
+                if (m_index_stoich[j].first == m_prods(i)) k = j;
+            
+            if (k == -1)
+                m_index_stoich.emplace_back(m_prods(i), m_prods[i]);
+            else
+                m_index_stoich[k].second += m_prods[i];
+        }
+    }
     
     /**
      * Destructor.
@@ -368,7 +383,7 @@ protected:
     
     Reactants m_reacs;
     Products  m_prods;
-    
+    std::vector< std::pair<int, int> > m_index_stoich;
 };
 
 
@@ -397,7 +412,8 @@ public:
 
     using ReactionStoich<Reactants, Products>::m_reacs;
     using ReactionStoich<Reactants, Products>::m_prods;
-    
+    using ReactionStoich<Reactants, Products>::m_index_stoich;
+
     /**
      * Constructor.
      */

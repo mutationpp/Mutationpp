@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -74,10 +74,10 @@ public:
     {
     	double Twall = v_Twall(pos_T_trans);
 
-        double sat_vap_p = m_pre_exp*std::exp(-m_activ_en/Twall) ;
+        double sat_vap_p = m_pre_exp*std::exp(-m_activ_en/Twall);
         double sat_vap_rho = sat_vap_p * m_thermo.speciesMw(
                                  mv_prod[idx_gas_prod])/(RU*Twall);
-                
+
         m_thermo.setState(
             v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
 
@@ -85,7 +85,7 @@ public:
                                       mv_prod[idx_gas_prod]);
 
         return (sat_vap_rho - v_rhoi(mv_prod[idx_gas_prod]))*m_vap_coef*
-                   sp_thermal_speed / 4.
+                   sp_thermal_speed/4.
                    / m_thermo.speciesMw(mv_prod[idx_gas_prod]);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <catch/catch.hpp>
+#include <catch.hpp>
 #include "mutation++.h"
 #include "Configuration.h"
 
@@ -164,7 +164,7 @@ private:
 void checkLoadMixture(
     const std::string& mix_name, int ns, int ne, int nr)
 {
-    std::auto_ptr<Mixture> mix;
+    std::unique_ptr<Mixture> mix;
     CHECK_NOTHROW(mix.reset(new Mixture(mix_name)));
 
     CHECK(mix->nSpecies() == ns);

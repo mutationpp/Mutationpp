@@ -8,7 +8,7 @@
  */
 
 /*
- * Copyright 2016-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2016-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -31,7 +31,7 @@
 #ifndef TRANSPORT_COULOMB_INTEGRAL_H
 #define TRANSPORT_COULOMB_INTEGRAL_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace Mutation {
     namespace Transport {

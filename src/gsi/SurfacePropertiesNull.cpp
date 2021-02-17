@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -38,43 +38,28 @@ using namespace Mutation::Utilities::Config;
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
+/**
+ * Class invoked when no surface properties are required, like in the case
+ * of a purely catalytic surface modeled with the gamma model.
+ */
 class SurfacePropertiesNull : public SurfaceProperties
 {
 public:
+/**
+ * Default constructor
+ */
 	SurfacePropertiesNull(ARGS args) : SurfaceProperties(args) { }
 
-	//==============================================================================
-
+//==============================================================================
+/*
+ * Default destructor
+ */
     ~SurfacePropertiesNull(){ }
-
-	//==============================================================================
-
-    int speciesIndexWall(const std::string& str_sp) const { return -1; }
-
-    //==============================================================================
-
-    int nSpeciesWall() const { return 0; }
-
-	//==============================================================================
-
-    int nSites() const { return 0; }
-
-    //==============================================================================
-
-    double nTotalSites() const { return 0.0; }
-
-	//==============================================================================
-
-    double fracSite(const int& i_site) const { return 0.0; }
-
-    //==============================================================================
-
-    int nSpeciesSite(const int& i_site) const { return 0; }
 };
 
 ObjectProvider<
     SurfacePropertiesNull, SurfaceProperties>
-    surface_properties_gamma_null("gamma");
+    surface_properties_null("none");
 
     } // namespace GasSurfaceInteraction
-} // namespace Mutation 
+} // namespace Mutation

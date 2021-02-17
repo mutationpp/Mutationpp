@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -31,13 +31,14 @@ add_sources(mutation++
     StoichiometryManager.cpp
 )
 
-install(FILES JacobianManager.h DESTINATION include/mutation++)
-install(FILES Kinetics.h DESTINATION include/mutation++)
-install(FILES RateLaws.h DESTINATION include/mutation++)
-install(FILES RateLawGroup.h DESTINATION include/mutation++)
-install(FILES RateManager.h DESTINATION include/mutation++)
-install(FILES Reaction.h DESTINATION include/mutation++)
-install(FILES ReactionType.h DESTINATION include/mutation++)
-install(FILES StoichiometryManager.h DESTINATION include/mutation++)
-install(FILES ThirdBodyManager.h DESTINATION include/mutation++)
-
+add_headers(mutation++
+    JacobianManager.h
+    Kinetics.h
+    RateLaws.h
+    RateLawGroup.h
+    RateManager.h
+    Reaction.h
+    ReactionType.h
+    StoichiometryManager.h
+    ThirdBodyManager.h
+)

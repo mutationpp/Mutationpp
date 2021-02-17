@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2016-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2016-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -28,7 +28,7 @@
 #ifndef INTERPOLATORS_H
 #define INTERPOLATORS_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <vector>
 

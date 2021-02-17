@@ -3,7 +3,7 @@ build/
 install/
 
 # Documentation
-docs/manual/tests.h
+docs/tests.h
 docs/html/
 
 # IDE
@@ -12,17 +12,10 @@ docs/html/
 .project
 .pydevproject
 .metadata/
+.vscode/
 
 # Python
 *.pyc
 
 # OS specifics
 .DS_Store
-
-# Others
-examples/c++/O2_dissociation
-examples/c++/air_diffusion_comparison
-examples/c++/equilibrium_air
-examples/c++/*.o
-examples/fortran/wrapper_test
-examples/fortran/*.o

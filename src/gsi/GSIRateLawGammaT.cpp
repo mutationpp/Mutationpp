@@ -1,13 +1,13 @@
 /**
  * @file GSIRateLawGammaT.cpp
  *
- * @brief  Class which computes the reaction rate constant for a surface 
- *        reaction constant according to a gamma type model with gamma 
+ * @brief  Class which computes the reaction rate constant for a surface
+ *        reaction constant according to a gamma type model with gamma
  *        as an exponential function of temperature.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.

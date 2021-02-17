@@ -1,0 +1,24 @@
+<gsi gsi_mechanism = "phenomenological_mass_energy">
+
+    <surface_properties type = "none" >
+    </surface_properties>
+
+    <surface_features 
+        solid_conduction = "none"
+        surface_in_thermal_equil = "true"
+        gas_radiation = "false">
+    </surface_features>
+
+    <surface_chemistry>
+        <!-- 1 -->
+        <reaction type= "catalysis" formula="N + N => N2">
+            <gamma_const> N:1. </gamma_const>
+        </reaction>
+        <!-- 2 -->
+        <reaction type= "catalysis" formula="O + O => O2">
+            <gamma_const> O:1. </gamma_const>
+        </reaction>
+    </surface_chemistry>
+
+    <surface_radiation emissivity="0.86"/>
+</gsi>

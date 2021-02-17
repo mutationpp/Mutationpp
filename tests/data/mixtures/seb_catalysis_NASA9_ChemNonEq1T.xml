@@ -1,0 +1,14 @@
+<mixture mechanism="none"
+         thermo_db="NASA-9"
+         state_model="ChemNonEq1T"
+         gsi_mechanism="seb_air_catalysis_gamma_rad_eq">
+
+    <species>
+        N O NO N2 O2
+    </species>
+
+    <element_compositions default="air">
+        <composition name="air"> N:0.79, O:0.21 </composition>
+    </element_compositions>
+
+</mixture>

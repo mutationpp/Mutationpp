@@ -1,0 +1,15 @@
+<mixture mechanism="none"
+         thermo_db="RRHO"
+         state_model="ChemNonEq1T"
+         gsi_mechanism="smb_carbon_ablation_park">
+
+    <species>
+        N O NO N2 O2 C C2 C3 CN CO CO2
+    </species>
+
+    <element_compositions default="default">
+        <composition name="default"> C:0.05,  N:0.75, O:0.2 </composition>
+    </element_compositions>
+
+</mixture>
+

@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -27,14 +27,13 @@
  */
 
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
-#include "AutoRegistration.h"
 #include "Thermodynamics.h"
-#include "Transport.h"
+#include "Utilities.h"
 
+#include "SurfaceChemistry.h"
 #include "MassBlowingRate.h"
-#include "WallProductionTerms.h"
 
 using namespace Eigen;
 
@@ -46,29 +45,14 @@ namespace Mutation {
 class MassBlowingRateAblation : public MassBlowingRate
 {
 public:
+//==============================================================================
+    /**
+     * Constructor
+     */
     MassBlowingRateAblation(ARGS args)
-        : m_ns(args.s_thermo.nSpecies()),
-          mv_wall_prod_rates(m_ns),
-          mv_wrk(m_ns+args.s_thermo.nEnergyEqns())
-    {
-    	std::string prod_term_tag;
-        for (size_t i_term = 0;
-             i_term < args.vs_wall_productions_terms.size();
-             ++i_term) {
-            prod_term_tag = args.vs_wall_productions_terms[i_term]->
-                                getWallProductionTermTag();
-
-            if (prod_term_tag.compare("surface_chemistry") == 0) {
-                mv_wall_prod_terms.push_back(
-                    args.vs_wall_productions_terms[i_term]);
-            }
-            if(prod_term_tag.compare("pyrolysis") == 0) {
-                mv_wall_prod_terms.push_back(
-                    args.vs_wall_productions_terms[i_term]);
-            }
-        }
-
-    }
+        : mv_wrk(args.s_thermo.nSpecies()),
+          m_surf_chem(args.s_surf_chem)
+    {}
 
 //==============================================================================
     /**
@@ -79,27 +63,26 @@ public:
 //==============================================================================
     /**
      * This function returns the mass blowing flux in kg/m^2-s as the sum of
-     * the heterogeneous reactions.
+     * the heterogeneous reactions production rates on the surface.
      */
     double computeBlowingFlux(){
+        m_surf_chem.surfaceReactionRates(mv_wrk);
+        return mv_wrk.sum();
+    }
 
-        mv_wall_prod_rates.setZero();
-        mv_wrk.setZero();
-
-        for(size_t i_term = 0; i_term < mv_wall_prod_terms.size(); ++i_term)
-        {
-        	mv_wall_prod_terms[i_term]->productionRate(mv_wrk);
-            mv_wall_prod_rates += mv_wrk.head(m_ns);
-        }
-
-        return mv_wall_prod_rates.sum();
+//==============================================================================
+    /**
+     * This function returns the mass blowing flux in kg/m^2-s as the sum of
+     * the heterogeneous reactions production rates on the surface
+     * given the chemical production rates for all species.
+     */
+    double computeBlowingFlux(const Eigen::VectorXd& v_chem_rates){
+        return v_chem_rates.sum();
     }
 
 private:
-    const size_t m_ns;
+    const SurfaceChemistry& m_surf_chem;
 
-    std::vector<WallProductionTerms*> mv_wall_prod_terms;
-    VectorXd mv_wall_prod_rates;
     VectorXd mv_wrk;
 };
 

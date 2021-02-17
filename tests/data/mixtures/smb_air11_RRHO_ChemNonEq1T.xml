@@ -1,0 +1,15 @@
+<mixture mechanism="air11_mech"
+         thermo_db="RRHO"
+         state_model="ChemNonEq1T"
+         gsi_mechanism="smb_air_catalysis_gamma_ions">
+
+    <species>
+        e- N O NO N2 O2 N+ O+ NO+ N2+ O2+
+    </species>
+
+    <element_compositions default="air">
+        <composition name="air"> N:0.79, O:0.21 </composition>
+    </element_compositions>
+
+</mixture>
+

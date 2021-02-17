@@ -1,0 +1,77 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+    build_linux:
+        strategy:
+          matrix:
+            os: [ubuntu-16.04, ubuntu-18.04]
+            build_type: [Debug, Release]
+            compiler: [gcc g++, clang clang++]
+        runs-on: ${{ matrix.os }}
+        steps:
+          - uses: actions/checkout@v1
+          - name: Make build dir
+            run: mkdir build 
+          - name: Make install dir
+            run: mkdir install
+          - name: configure
+            run: > 
+                export CC=$(echo "${{ matrix.compiler }}"| cut -d' ' -f1)  && 
+                export CXX=$(echo "${{ matrix.compiler }}" | cut -d' ' -f2) && 
+                cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install ..
+          - name: build
+            run: cd build && make -j $(nproc) && make install
+          - name: test
+            run: >
+                export MPP_DIRECTORY=$(pwd) &&
+                export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+                export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH &&
+                cd build && ctest -j $(nproc)
+
+    build_mac:
+        runs-on: macos-latest
+        steps:
+          - uses: actions/checkout@v1
+          - name: Make build dir
+            run: mkdir build 
+          - name: Make install dir
+            run: mkdir install
+          - name: configure
+            run: cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install ..
+          - name: build
+            run: cd build && make -j $(nproc) && make install
+          - name: test
+            run: >
+                export MPP_DIRECTORY=$(pwd) &&
+                export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+                export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH &&
+                cd build && ctest -j $(nproc)
+
+    coverage:
+        runs-on: ubuntu-18.04
+        steps:
+          - uses: actions/checkout@v1
+          - name: Install Lcov, Gcov
+            run: sudo apt install lcov
+          - name: Make build dir
+            run: mkdir build 
+          - name: Make install dir
+            run: mkdir install
+          - name: configure
+            run: cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DENABLE_COVERAGE:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install ..
+          - name: build
+            run: cd build && make -j $(nproc) && make install
+          - name: test
+            run: >
+                export MPP_DIRECTORY=$(pwd) &&
+                export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+                export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/lib:$LD_LIBRARY_PATH &&
+                cd build && ctest -j $(nproc)
+          - name: coverage
+            run: cd build && make coverage
+          - name: Codecov
+            run: > 
+                cd build && 
+                bash <(curl -s https://codecov.io/bash) -f mutation++.info || echo "Codecov did not collect coverage reports"
+

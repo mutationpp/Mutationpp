@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -24,66 +24,25 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
-set(test_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_collision_integrals.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_comparisons.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_convert.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_diffusion_matrix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_dXidT.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_energies.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_errors.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_mixtures.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reactions.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_mechanism.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_reaction_rates.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_set_state.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_species.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_stefan_maxwell.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermal_diff_ratios.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_thermodb.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_transfer_source.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_wdot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_levels.cpp
+file(GLOB test_sources "test_*.cpp")
+add_executable(run_tests run_tests.cpp ${test_sources})
+target_link_libraries(run_tests 
+    PRIVATE
+        mutation++
+    PUBLIC
+        Catch2::Catch2
 )
 
-add_executable(run_tests ${test_sources})
-target_link_libraries(run_tests mutation++)
-
 # Add all Catch TEST_CASEs as individual CTest tests
+include(CTest)
 include(ParseAndAddCatchTests)
+set(PARSE_CATCH_TESTS_VERBOSE ON)
 ParseAndAddCatchTests(run_tests)
-
-# Make sure examples compile and run
-function(test_example name subdir)    
-    add_test(
-        NAME example_${name}_compile
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
-        COMMAND make -B ${name} )
-    add_test(
-        NAME example_${name}_run
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/${subdir}
-        COMMAND ${name} )
-    set_property(
-        TEST example_${name}_run 
-        APPEND PROPERTY DEPENDS example_${name}_compile)
-endfunction()
-
-# C++ examples
-test_example(equilibrium_air c++)
-test_example(O2_dissociation c++)
-test_example(air_diffusion_comparison c++)
-
-# Fortran examples
-if (BUILD_FORTRAN_WRAPPER)
-    test_example(wrapper_test fortran)
-endif()
 
 add_executable(update_comparison update_comparison.cpp)
 target_link_libraries(update_comparison mutation++)
 
-# Setup the code coverage analysis for tests
-add_coverage(run_tests)
-
-
+add_test(
+    NAME bugfix_120
+    COMMAND mppequil -T 300 -P 101325 -s 15,16 --species-list "O O2"
+)

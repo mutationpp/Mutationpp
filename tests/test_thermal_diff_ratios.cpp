@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -22,8 +22,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;
@@ -36,13 +36,11 @@ using namespace Eigen;
  * \f]
  * in and out of thermal equilibrium.
  */
-TEST_CASE
-(
-    "Thermal diffusion ratios sum to zero",
+TEST_CASE("Thermal diffusion ratios sum to zero",
     "[transport]"
 )
 {
-    const double tol = std::numeric_limits<double>::epsilon();
+    const double tol = std::numeric_limits<double>::epsilon()*1000;
 
     MIXTURE_LOOP
     (

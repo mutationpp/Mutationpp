@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -31,9 +31,11 @@
 #include "Utilities.h"
 
 #include "GasSurfaceInteraction.h"
-#include "SurfaceBalanceSolver.h"
-#include "SurfaceProperties.h"
-#include "WallState.h"
+#include "SolidProperties.h"
+#include "Surface.h"
+#include "SurfaceState.h"
+
+using namespace Eigen;
 
 using namespace Mutation::Utilities;
 using namespace Mutation::Utilities::Config;
@@ -50,9 +52,8 @@ GasSurfaceInteraction::GasSurfaceInteraction(
 	std::string gsi_input_file)
     : m_thermo(thermo),
       m_transport(transport),
-      mp_surf_solver(NULL),
-      mp_surf_props(NULL),
-      mp_wall_state(NULL)
+      mp_surf(NULL),
+      mp_surf_state(NULL)
 {
     if (gsi_input_file == "none"){return;}
 
@@ -63,70 +64,110 @@ GasSurfaceInteraction::GasSurfaceInteraction(
 
     errorWrongTypeofGSIFile(root_element.tag());
 
-    root_element.getAttribute("gsi_mechanism", m_gsi_mechanism, "none");
+    // Improve the error
+    root_element.getAttribute("gsi_mechanism", m_gsi_mechanism,
+        "For gas-surface interaction a gsi_mechanism should be provided.");
 
     // Finding the position of the XmlElements
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_surf_props =
+    XmlElement::const_iterator xml_pos_surf_props =
         root_element.findTag("surface_properties");
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_diff_model =
-        root_element.findTag("diffusion_model");
-    Mutation::Utilities::IO::XmlElement::const_iterator xml_pos_prod_terms =
-        root_element.findTag("production_terms");
+    XmlElement::const_iterator xml_pos_surf_feats =
+        root_element.findTag("surface_features");
 
-    // Creating Surface Properties class
-    DataSurfaceProperties data_surface_properties =
-        {m_thermo, *xml_pos_surf_props};
-    mp_surf_props = Factory<SurfaceProperties>::create(
-        m_gsi_mechanism, data_surface_properties);
+    // Creating Surface State class
+    mp_surf_state = new SurfaceState(
+        m_thermo, *xml_pos_surf_props);
 
-    // Creating Wall State class
-    mp_wall_state = new WallState(m_thermo, *mp_surf_props);
+    // Finding the position of the XmlElements
+    XmlElement::const_iterator xml_pos_surf_chem =
+        root_element.findTag("surface_chemistry");
+    XmlElement::const_iterator xml_pos_surf_rad =
+        root_element.findTag("surface_radiation");
 
-    // Creating the SurfaceBalanceSolver class
-    DataSurfaceBalanceSolver data_surface_balance_solver =
-        {m_thermo, m_transport, m_gsi_mechanism, *xml_pos_diff_model,
-         *xml_pos_prod_terms, *mp_surf_props, *mp_wall_state };
-    mp_surf_solver = Factory<SurfaceBalanceSolver>::create(
-        m_gsi_mechanism, data_surface_balance_solver );
+    // Setting up solid properties
+    std::string solid_model;
+    if (xml_pos_surf_feats != root_element.end())
+        xml_pos_surf_feats->getAttribute("solid_conduction", solid_model);
 
+    XmlElement::const_iterator xml_pos_solid_props;
+    if (solid_model == "steady_state") {
+        xml_pos_solid_props = root_element.findTag("solid_properties");
+        if (xml_pos_solid_props == root_element.end())
+            errorSolidPropertiesNotProvided(solid_model);
+    } else {
+        solid_model = "none";
+    }
+    DataSolidProperties data_solid_props = { *xml_pos_solid_props };
+    mp_surf_state->setSolidProperties(solid_model, data_solid_props);
+
+    // Creating the Surface class
+    DataSurface data_surface = {
+        m_thermo,
+        m_transport,
+        m_gsi_mechanism,
+        *xml_pos_surf_feats,
+        *xml_pos_surf_chem,
+        *xml_pos_surf_rad,
+        *mp_surf_state };
+    mp_surf = Factory<Surface>::create(
+        m_gsi_mechanism, data_surface);
 }
 
 //==============================================================================
 
 GasSurfaceInteraction::~GasSurfaceInteraction()
 {
-    if (mp_surf_props != NULL) {delete mp_surf_props;}
-    if (mp_wall_state != NULL) {delete mp_wall_state;}
-    if (mp_surf_solver != NULL) {delete mp_surf_solver;}
+    if (mp_surf_state != NULL) {delete mp_surf_state;}
+    if (mp_surf != NULL) {delete mp_surf;}
 }
 
 //==============================================================================
 
-void GasSurfaceInteraction::setWallState(
+void GasSurfaceInteraction::setSurfaceState(
     const double* const p_mass, const double* const p_energy,
 	const int state_variable)
 {
-    mp_wall_state->setWallState(p_mass, p_energy, state_variable);
+    mp_surf_state->setSurfaceState(p_mass, p_energy, state_variable);
 }
 
 //==============================================================================
 
-void GasSurfaceInteraction::getWallState(
+void GasSurfaceInteraction::getSurfaceState(
     double* const p_mass, double* const p_energy,
     const int state_variable)
 {
-    mp_wall_state->getWallState(p_mass, p_energy, state_variable);
+    mp_surf_state->getSurfaceState(p_mass, p_energy, state_variable);
 }
 
 //==============================================================================
 
-void GasSurfaceInteraction::surfaceProductionRates(
-    double* const p_wall_prod_rates)
+void GasSurfaceInteraction::surfaceReactionRates(
+    double* const p_surf_reac_rates)
 {
-    Eigen::VectorXd v_wall_rates = mp_surf_solver->computeGSIProductionRates();
-	for (int i_sp = 0; i_sp < m_thermo.nSpecies(); i_sp++){
-	    p_wall_prod_rates[i_sp] = v_wall_rates(i_sp);
+    VectorXd v_wrk = Map<VectorXd>(p_surf_reac_rates, m_thermo.nSpecies());
+    mp_surf->computeSurfaceReactionRates(v_wrk);
+
+    for (int i = 0; i < m_thermo.nSpecies(); i++)
+	    p_surf_reac_rates[i] = v_wrk(i);
+}
+
+//==============================================================================
+
+void GasSurfaceInteraction::surfaceReactionRatesPerReaction(
+    double* const p_surf_rates_per_reac)
+{
+    Eigen::VectorXd v_surf_rates_per_reac =
+        mp_surf->computeSurfaceReactionRatesPerReaction();
+	for (int i_r = 0; i_r < mp_surf->nSurfaceReactions(); i_r++){
+	    p_surf_rates_per_reac[i_r] = v_surf_rates_per_reac(i_r);
 	}
+}
+
+//==============================================================================
+
+int GasSurfaceInteraction::nSurfaceReactions()
+{
+    return mp_surf->nSurfaceReactions();
 }
 
 //==============================================================================
@@ -134,46 +175,43 @@ void GasSurfaceInteraction::surfaceProductionRates(
 void GasSurfaceInteraction::setDiffusionModel(
     const double* const p_mole_frac_edge, const double& dx)
 {
-    mp_surf_solver->setDiffusionModel(Eigen::Map<const Eigen::VectorXd>(
+    mp_surf->setDiffusionModel(Map<const VectorXd>(
         p_mole_frac_edge, m_thermo.nSpecies()), dx);
 }
 
 //==============================================================================
 
-void GasSurfaceInteraction::setConductiveHeatFluxModel(
-    const double* const p_T_edge, const double& dx_T)
-{
-    throw NotImplementedError(
-        "GasSurfaceInteraction::setConductiveHeatFluxModel");
+void GasSurfaceInteraction::setGasFourierHeatFluxModel(
+    const double* const p_T_edge, const double& dx) {
+    mp_surf->setGasFourierHeatFluxModel(Map<const VectorXd>(
+        p_T_edge, m_thermo.nEnergyEqns()), dx);
+}
+
+//==============================================================================
+
+void GasSurfaceInteraction::setGasRadHeatFlux(
+    const double* const m_gas_rad_heat_flux) {
+    mp_surf->setGasRadHeatFlux(*m_gas_rad_heat_flux);
 }
 
 //==============================================================================
 
 void GasSurfaceInteraction::solveSurfaceBalance()
 {
-    mp_surf_solver->solveSurfaceBalance();
+    mp_surf->solveSurfaceBalance();
+}
+
+//==============================================================================
+
+void GasSurfaceInteraction::setIterationsSurfaceBalance(const int& iter)
+{
+    mp_surf->setIterationsSurfaceBalance(iter);
 }
 
 //==============================================================================
 
 void GasSurfaceInteraction::getMassBlowingRate(double& mdot){
-    mdot = mp_surf_solver->massBlowingRate();
-}
-
-//==============================================================================
-
-void GasSurfaceInteraction::getBprimeCharSpecies(
-		std::vector<std::string>& v_species_char_names)
-{
-    mp_surf_solver->getBprimeCondensedSpecies(v_species_char_names);
-}
-
-//==============================================================================
-
-void GasSurfaceInteraction::getBprimeSolution(
-    double& bprime_char, std::vector<double>& v_species_char_mass_frac)
-{
-    mp_surf_solver->getBprimeParameters(bprime_char, v_species_char_mass_frac);
+    mdot = mp_surf->massBlowingRate();
 }
 
 //==============================================================================
@@ -181,7 +219,8 @@ void GasSurfaceInteraction::getBprimeSolution(
 inline void GasSurfaceInteraction::errorWrongTypeofGSIFile(
     const std::string& gsi_root_tag)
 {
-    if (gsi_root_tag != "gsi"){
+    if (gsi_root_tag != "gsi")
+    {
         throw InvalidInputError("GasSurfaceInteraction", gsi_root_tag)
         << "Root element in Gas Surface Interaction input file "
         << gsi_root_tag << " is not of 'gsi' type!";
@@ -197,5 +236,14 @@ inline void GasSurfaceInteraction::errorInvalidGSIFileProperties(
     << gsi_option << " is not a valid gas surface interaction file option!";
 }
 
-    } // namespace GasSurfaceInteraction 
+//==============================================================================
+inline void GasSurfaceInteraction::errorSolidPropertiesNotProvided(
+    const std::string& error_steady_state)
+{
+    throw InvalidInputError("GasSurfaceInteraction", error_steady_state)
+    << "Solid properties should be provided when steady state assumption "
+    << "is assumed for conduction or pyrolysis gases.";
+}
+
+    } // namespace GasSurfaceInteraction
 } // namespace Mutation

@@ -1,0 +1,41 @@
+<gsi gsi_mechanism = "phenomenological_mass">
+
+    <surface_properties type = "none" >
+    </surface_properties>
+
+    <surface_chemistry>
+        <!-- 1 -->
+        <reaction type= "catalysis" formula="N + N => N2">
+            <gamma_const> N:.001 </gamma_const>
+        </reaction>
+        <!-- 2 -->
+        <reaction type= "catalysis" formula="O + O => O2">
+            <gamma_const> O:.001 </gamma_const>
+        </reaction>
+        <!-- 3 -->
+        <reaction type= "catalysis" formula="N + O => NO">
+            <gamma_const> N:.002 O:.003 </gamma_const>
+        </reaction>
+        <!-- 4 -->
+        <reaction type= "catalysis" formula="N+ + e- => N">
+            <gamma_const> N+:1. e-:1. </gamma_const>
+        </reaction>
+        <!-- 5 -->
+        <reaction type= "catalysis" formula="O+ + e- => O">
+            <gamma_const> O+:1. e-:1. </gamma_const>
+        </reaction>
+        <!-- 6 -->
+        <reaction type= "catalysis" formula="NO+ + e- => NO">
+            <gamma_const> NO+:1. e-:1. </gamma_const>
+        </reaction>
+        <!-- 7 -->
+        <reaction type= "catalysis" formula="N2+ + e- => N2">
+            <gamma_const> N2+:1. e-:1. </gamma_const>
+        </reaction>
+        <!-- 8 -->
+        <reaction type= "catalysis" formula="O2+ + e- => O2">
+            <gamma_const> O2+:1. e-:1. </gamma_const>
+        </reaction>
+    </surface_chemistry>
+
+</gsi>

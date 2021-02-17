@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -22,18 +22,16 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Catch;
 using namespace Eigen;
 
 
-TEST_CASE
-(
-    "Converting thermodynamic properties of species and elements",
-    "[thermodynamic]"
+TEST_CASE("Converting thermodynamic properties of species and elements",
+        "[thermodynamic]"
 )
 {
     const double tol = std::numeric_limits<double>::epsilon();

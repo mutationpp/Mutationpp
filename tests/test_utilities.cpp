@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -20,8 +20,8 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Utilities;
@@ -54,11 +54,7 @@ void checkUnits(
 /**
  * Tests the basic functionality of the Units type.
  */
-TEST_CASE
-(
-    "Units",
-    "[utilities]"
-)
+TEST_CASE("Units", "[utilities]")
 {
     // Define the expected dimensions for different types of units
     Dimension length      = MatrixXd::Identity(7,7).col(0);
@@ -134,11 +130,7 @@ TEST_CASE
 /**
  * Tests for utility functions.
  */
-TEST_CASE
-(
-    "Utility functions",
-    "[utilities]"
-)
+TEST_CASE("Utility functions", "[utilities]")
 {
     SECTION("ordinalSuffix()") {
         CHECK(ordinalSuffix(  0) == "th");
@@ -182,11 +174,7 @@ TEST_CASE
 /**
  * Tests the XML classes
  */
-TEST_CASE
-(
-    "XML classes",
-    "[utilities]"
-)
+TEST_CASE("XML classes", "[utilities]")
 {
     TemporaryFile file;
     file << "<tag att=\"100\">\n"

@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -20,33 +20,37 @@
 #
 
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0022 NEW)
 
 add_sources(mutation++
     Mixture.cpp
     MixtureOptions.cpp
 )
 
-# Build the checkmix code
-add_executable(checkmix checkmix.cpp)
-target_link_libraries(checkmix mutation++)
-install(TARGETS checkmix DESTINATION bin)
+add_headers(mutation++
+    GlobalOptions.h 
+    mutation++.h 
+    Mixture.h 
+    MixtureOptions.h 
+    Constants.h 
+    Errors.h
+)
 
-# Build the mppequil code
-add_executable(mppequil mppequil.cpp)
-target_link_libraries(mppequil mutation++)
-install(TARGETS mppequil DESTINATION bin)
+# Build and install executables
+set(mutation++_exes checkmix mppequil bprime)
+foreach (exe ${mutation++_exes})
+    add_executable(${exe} ${exe}.cpp)
+    target_link_libraries(${exe} 
+        PRIVATE
+            mutation++
+    )
+    install(
+        TARGETS ${exe}
+        EXPORT mutation++Targets
+        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+)
+endforeach(exe ${mutation++_exes})
 
-add_executable(bprime bprime.cpp)
-target_link_libraries(bprime mutation++)
-install(TARGETS bprime DESTINATION bin)
-
-# Install the header files
-install(FILES GlobalOptions.h DESTINATION include/mutation++)
-install(FILES mutation++.h DESTINATION include/mutation++)
-install(FILES Mixture.h DESTINATION include/mutation++)
-install(FILES MixtureOptions.h DESTINATION include/mutation++)
-install(FILES Constants.h DESTINATION include/mutation++)
-install(FILES Errors.h DESTINATION include/mutation++)
 
 
 

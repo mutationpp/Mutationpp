@@ -1,12 +1,12 @@
 /**
  * @file MassBlowingRateNull.cpp
  *
- * @brief Class which set the mass blowing flux equal to zero when 
+ * @brief Class which set the mass blowing flux equal to zero when
  *        no ablation reactions are present.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -40,15 +40,31 @@ namespace Mutation {
 class MassBlowingRateNull : public MassBlowingRate
 {
 public:
+//==============================================================================
+	/**
+	 * Constructor.
+	 */
 	MassBlowingRateNull(ARGS args){ }
+
+//==============================================================================
+	/**
+	 * Destructor.
+	 */
 	~MassBlowingRateNull(){ }
 
-private:
+//==============================================================================
 	/**
 	 * Returns mass blowing flux equal to zero.
 	 */
 	double computeBlowingFlux(){ return 0.0; }
 
+//==============================================================================
+	/**
+	 * Returns mass blowing flux equal to zero.
+	 */
+    double computeBlowingFlux(const Eigen::VectorXd& v_chem_rates){
+		return 0.;
+	}
 };
 
 ObjectProvider<

@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -70,26 +70,11 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
     // and products (all other terms are zero)
     m_reacs.diffRR(kf, conc, work, Equals());
     m_prods.diffRR(kb, conc, work, MinusEquals());
-    
-    for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        for (int j = 0; j < Reactants::nSpecies(); ++j)
-            sjac[m_reacs(i)*ns + m_reacs(j)] -=
-                m_reacs[i] * work[m_reacs(j)];
-        
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_reacs(i)*ns + m_prods(j)] -=
-                m_reacs[i] * work[m_prods(j)];
-    }
-    
-    for (int i = 0; i < Products::nSpecies(); ++i) {
-        for (int j = 0; j < Reactants::nSpecies(); ++j)
-            sjac[m_prods(i)*ns + m_reacs(j)] +=
-                m_prods[i] * work[m_reacs(j)];
-                
-        for (int j = 0; j < Products::nSpecies(); ++j)
-            sjac[m_prods(i)*ns + m_prods(j)] +=
-                m_prods[i] * work[m_prods(j)];
-    }
+
+    // Only loop over the necessary species
+    for (auto& pi : m_index_stoich)
+        for (auto& pj : m_index_stoich)
+            sjac[pi.first*ns+pj.first] += pi.second * work[pj.first];
 }
 
 //==============================================================================
@@ -108,31 +93,13 @@ void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
         work[i] = mp_alpha[i] * rr;
         tb += mp_alpha[i] * conc[i];
     }
-    
-    /*cout << "kf: " << kf << endl;
-    cout << "kb: " << kb << endl;
-    cout << "RRf: " << rrf << endl;
-    cout << "RRb: " << rrb << endl;
-    cout << "RR: " << rr << endl;
-    cout << "TB: " << tb << endl;*/
 
     m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
     m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
-    
-    //cout << "reactants: ";
-    for (int i = 0; i < Reactants::nSpecies(); ++i) {
-        //cout << setw(3) << m_reacs(i);
+
+    for (auto& p : m_index_stoich)
         for (int j = 0; j < ns; ++j)
-            sjac[m_reacs(i)*ns + j] -= m_reacs[i] * work[j];
-    }
-    
-    //cout << endl << "products: ";
-    for (int i = 0; i < Products::nSpecies(); ++i) {
-        //cout << setw(3) << m_prods(i);
-        for (int j = 0; j < ns; ++j)
-            sjac[m_prods(i)*ns + j] += m_prods[i] * work[j];
-    }
-    //cout << endl;
+            sjac[p.first*ns+j] += p.second * work[j];
 }
 
 //==============================================================================
@@ -146,6 +113,8 @@ void JacobianManager::addReactionStoich(
         // Thirdbody reactions        
         for (int i = 0; i < m_thermo.nSpecies(); ++i)
             mp_work[i] = 1.0;
+        if (m_thermo.hasElectrons())
+            mp_work[0] = 0.0;
         
         for (int i = 0; i < reaction.efficiencies().size(); ++i)
             mp_work[reaction.efficiencies()[i].first] = 
@@ -332,8 +301,7 @@ void JacobianManager::computeJacobian(
     const size_t nr = m_reactions.size();
     
     // Make sure we are staring with a clean slate
-    for (int i = 0; i < ns*ns; ++i)
-        sjac[i] = 0.0;
+    std::fill(sjac, sjac+ns*ns, 0.0);
 
     // Loop over each reaction and compute the dRR/dconc_k
     for (int i = 0; i < nr; ++i)
@@ -341,12 +309,9 @@ void JacobianManager::computeJacobian(
             kf[i], kb[i], conc, mp_work, sjac, ns);
     
     // Finally, multiply by the species molecular weight ratios
-    for (int i = 0; i < ns; ++i)
-        mp_work[i] = m_thermo.speciesMw(i);
-    
     for (int i = 0, index = 0; i < ns; ++i) {
         for (int j = 0; j < ns; ++j, ++index)
-            sjac[index] *= mp_work[i] / mp_work[j];
+            sjac[index] *= m_thermo.speciesMw(i) / m_thermo.speciesMw(j);
     }
 }
 

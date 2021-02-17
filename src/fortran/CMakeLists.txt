@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -20,9 +20,35 @@
 #
 
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0022 NEW)
 
-add_library(mutation++_fortran SHARED cwrapper.cpp cwrapper_interface.f90)
-target_link_libraries(mutation++_fortran mutation++)
-install(TARGETS mutation++_fortran DESTINATION lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod DESTINATION include/mutation++)
+include(GNUInstallDirs)
+
+add_library(mutation++_fortran
+    SHARED 
+        cwrapper.cpp 
+        cwrapper_interface.f90
+)
+add_library(mutation++::fortran_interface ALIAS mutation++_fortran)
+
+set_target_properties(mutation++_fortran 
+    PROPERTIES
+        Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_link_libraries(mutation++_fortran
+    PRIVATE
+        mutation++
+)
+install(TARGETS mutation++_fortran EXPORT mutation++Targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    FILES 
+    ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 

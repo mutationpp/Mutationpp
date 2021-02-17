@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -47,22 +47,22 @@ template <typename T, typename Solver>
 class NewtonSolver
 {
 public:
-    
+
     /**
      * Constructor.
      */
     NewtonSolver();
-    
+
     /**
      * Destructor.
      */
     virtual ~NewtonSolver() {}
-    
+
     /**
      * Uses Newton's method to compute the zero of f(x) given an initial guess.
      */
     T& solve(T& x);
-    
+
     /**
      * Set the residual norm tolerance.
      */
@@ -71,14 +71,14 @@ public:
         assert(eps < 1.0);
         m_epsilon = eps;
     }
-    
+
     /**
      * Set the maximum number of iterations to use.
      */
     void setMaxIterations(const unsigned int iters) {
         m_max_iter = iters;
     }
-    
+
     /**
      * Set the number of iterations to lag the Jacobian update.
      */
@@ -86,7 +86,7 @@ public:
         assert(lag > 0);
         m_jacobian_lag = lag;
     }
-    
+
     /**
      * Sets whether or not to write convergence history to the standard out.
      */
@@ -100,7 +100,7 @@ private:
     unsigned int m_jacobian_lag;
     double       m_epsilon;
     bool         m_conv_hist;
-    
+
 };
 
 //==============================================================================
@@ -120,26 +120,26 @@ T& NewtonSolver<T, Solver>::solve(T& x)
 {
     using std::cout;
     using std::endl;
-    
+
     // Make sure jacobian is updated on first iteration
     unsigned int jac = m_jacobian_lag;
-    
+
     // Compute the initial function value and its norm
     static_cast<Solver&>(*this).updateFunction(x);
-    double f0_norm = 1.0; // = static_cast<Solver&>(*this).norm();
+    double f0_norm = 1.;// f0_norm = static_cast<Solver&>(*this).norm(); // 1.
     double resnorm = 1.0;
-    
+
     // Let user know Newton's method is being called and print initial residual
     if (m_conv_hist) {
         cout << "Newton (" << typeid(Solver).name() << "): norm(f0) = "
              << f0_norm << endl;
     }
-    
+
     // Iterate until converged
     for (int i = 0; resnorm > m_epsilon && i < m_max_iter; ++i) {
         if (m_conv_hist)
             cout << "  iter = " << i + 1;
-        
+
         // Update jacobian if needed
         if (jac++ == m_jacobian_lag) {
             if (m_conv_hist)
@@ -147,18 +147,18 @@ T& NewtonSolver<T, Solver>::solve(T& x)
             static_cast<Solver&>(*this).updateJacobian(x);
             jac = 1;
         }
-        
+
         // x -= inv(J)*f
         x -= static_cast<Solver&>(*this).systemSolution();
-        
+
         // Recompute f and norm(f)
         static_cast<Solver&>(*this).updateFunction(x);
         resnorm = static_cast<Solver&>(*this).norm() / f0_norm;
-        
+
         if (m_conv_hist)
             cout << ", relative residual = " << resnorm << endl;
     }
-    
+
     if (resnorm > m_epsilon && m_conv_hist) {
         cout << "Newton failed to converge after " << m_max_iter
              << " iterations with a relative residual of " << resnorm << endl;

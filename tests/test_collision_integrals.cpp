@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -20,8 +20,8 @@
  */
 
 #include "mutation++.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
@@ -57,11 +57,7 @@ void checkHeavyCollisionIntegrals(
 /**
  * Tests the constant collision integral type.
  */
-TEST_CASE
-(
-    "Test constant collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test constant collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     TemporaryFile file;
@@ -82,7 +78,7 @@ TEST_CASE
     CollisionPair pair(N2, N2, &(doc.root()));
 
     // Make sure that the warning would be displayed
-    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11"); 
+    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11");
     REQUIRE(Q11->loaded());
 
     // Check that indeed the value is given
@@ -93,11 +89,7 @@ TEST_CASE
 /**
  * Tests the exp-poly integral type.
  */
-TEST_CASE
-(
-    "Test exp-poly collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test exp-poly collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -142,11 +134,7 @@ TEST_CASE
 /**
  * Tests the "from A*,B*,C*" integral types.
  */
-TEST_CASE
-(
-    "Test from A*, B*, C* collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test from A*, B*, C* collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -197,11 +185,7 @@ TEST_CASE
 /**
  * Tests the ratio integral type.
  */
-TEST_CASE
-(
-    "Test ratio collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test ratio collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -243,11 +227,7 @@ TEST_CASE
 /**
  * Tests the Murphy integral type.
  */
-TEST_CASE
-(
-    "Test Murphy collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test Murphy collision integrals", "[transport]")
 {
     // Generate a fake collision integral database (all the same)
     TemporaryFile file;
@@ -298,11 +278,7 @@ TEST_CASE
 /**
  * Tests the Pirani potential.
  */
-TEST_CASE
-(
-    "Test Pirani potential collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test Pirani potential collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     // From Laricchiuta2007
@@ -429,11 +405,7 @@ TEST_CASE
 /**
  * Tests the table collision integral type.
  */
-TEST_CASE
-(
-    "Test table collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test table collision integrals", "[transport]")
 {
     // Generate a fake collision integral database which tests clipping and
     // interpolation
@@ -482,11 +454,7 @@ TEST_CASE
 /**
  * Tests the warning collision integral type.
  */
-TEST_CASE
-(
-    "Test warning collision integrals",
-    "[transport]"
-)
+TEST_CASE("Test warning collision integrals", "[transport]")
 {
     // Generate a fake collision integral database
     TemporaryFile file;
@@ -512,14 +480,14 @@ TEST_CASE
     std::cout.rdbuf(oss.rdbuf());
 
     // Make sure that the warning would be displayed
-    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11"); 
+    SharedPtr<CollisionIntegral> Q11 = pair.get("Q11");
     REQUIRE(Q11->loaded());
 
     // Restore standard output
     std::cout.rdbuf(cout_streambuf);
 
     // Check what was written
-    CHECK(oss.str() == 
+    CHECK(oss.str() ==
         "Warning: missing collision integral Q11_(N2,N2).  "
         "Using a constant value of 10.\n");
 

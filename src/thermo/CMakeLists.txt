@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -40,12 +40,15 @@ add_sources(mutation++
     ThermoDB.cpp
 )
 
-install(FILES Composition.h DESTINATION include/mutation++)
-install(FILES MultiPhaseEquilSolver.h DESTINATION include/mutation++)
-install(FILES ParticleRRHO.h DESTINATION include/mutation++)
-install(FILES Species.h DESTINATION include/mutation++)
-install(FILES SpeciesListDescriptor.h DESTINATION include/mutation++)
-install(FILES SpeciesNameFSM.h DESTINATION include/mutation++)
-install(FILES StateModel.h DESTINATION include/mutation++)
-install(FILES ThermoDB.h DESTINATION include/mutation++)
-install(FILES Thermodynamics.h DESTINATION include/mutation++)
+
+add_headers(mutation++
+    Composition.h
+    MultiPhaseEquilSolver.h
+    ParticleRRHO.h
+    Species.h
+    SpeciesListDescriptor.h
+    SpeciesNameFSM.h
+    StateModel.h
+    ThermoDB.h
+    Thermodynamics.h
+)

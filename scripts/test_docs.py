@@ -1,5 +1,5 @@
 from __future__ import print_function
-# Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -239,7 +239,7 @@ def main(args):
 if __name__ == "__main__":    
     default_extensions_list = ['.cpp']
     default_paths_list = ['tests']
-    default_output = 'docs/manual/tests.h'
+    default_output = 'docs/tests.h'
 
     parser = argparse.ArgumentParser(
         description="""Parse the Catch TEST_CASESs from all of the testing source files 

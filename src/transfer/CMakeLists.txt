@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+# Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
 #
 # This file is part of MUlticomponent Thermodynamic And Transport
 # properties for IONized gases in C++ (Mutation++) software package.
@@ -31,5 +31,7 @@ add_sources(mutation++
     OmegaVT.cpp
 )
 
-install(FILES MillikanWhite.h DESTINATION include/mutation++)
-install(FILES TransferModel.h DESTINATION include/mutation++)
+add_headers(mutation++
+    MillikanWhite.h
+    TransferModel.h
+)

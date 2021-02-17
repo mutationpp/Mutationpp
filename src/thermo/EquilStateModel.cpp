@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -63,7 +63,7 @@ public:
     virtual ~EquilStateModel()
     {
         delete [] mp_h; // other arrays allocated by this one
-        delete [] mp_work; 
+        delete [] mp_work;
     }
 
     /**
@@ -89,6 +89,7 @@ public:
                 const int ns = m_thermo.nSpecies();
                 const int max_iters = 50;
                 const double tol = 1.0e-12;
+                const double tolAbs = 1.0e-10;
                 const double rho  = p_mass[0];
                 const double rhoe = p_energy[0];
 
@@ -107,7 +108,8 @@ public:
                 f2 = rho - m_P*mw/(RU*m_T);
 
                 int iter = 0;
-                while (std::max(std::abs(f1/rhoe),std::abs(f2/rho)) > tol) {
+                while ((std::max(std::abs(f1/(std::abs(rhoe)+tolAbs)),std::abs(f2/(rho+tolAbs))) > tol)
+                        && (std::max(std::abs(f1),std::abs(f2)) > tolAbs)) {
                     // Print warning if this is taking too long
                     if (++iter % max_iters == 0) {
                         std::cout << "setState() taking too many iterations for Equil StateModel!"
@@ -210,7 +212,7 @@ public:
             p_e[i] = (mp_work[i]  - 1.0)*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getEnthalpiesMass(double* const p_h) 
+    void getEnthalpiesMass(double* const p_h)
     {
 		const int ns = m_thermo.nSpecies();
         m_thermo.speciesHOverRT(mp_work);
@@ -219,7 +221,7 @@ public:
             p_h[i] = mp_work[i]*m_T*RU/m_thermo.speciesMw(i);
     }
 
-    void getCpsMass(double* const p_Cp) 
+    void getCpsMass(double* const p_Cp)
     {
         const int ns = m_thermo.nSpecies();
         m_thermo.speciesCpOverR(m_T, mp_work);

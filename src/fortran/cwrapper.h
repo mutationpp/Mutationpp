@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -24,7 +24,7 @@
  * License along with Mutation++.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 #ifndef FORTRAN_CWRAPPER_H
 #define FORTRAN_CWRAPPER_H
 
@@ -41,7 +41,7 @@ extern "C" {
 
 /**
  * @defgroup FortranWrapper Fortran Wrapper
- * 
+ *
  * This wrapper provides a set of C functions which wrap the Mutation++ library
  * and can be called inside of a Fortran code by simply linking the 
  * libmutation_fortran.a library with the fortran code.  There are two things to
@@ -58,7 +58,7 @@ extern "C" {
  * when calling the function in a Fortran code.
  *
  * See \ref wrapper_test.f90 for an example of a code which uses this wrapper.
- * 
+ *
  * @{
  */
 
@@ -349,6 +349,11 @@ double NAME_MANGLE(viscosity)();
 void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda);
 
 /**
+ * Returns the heavy thermal diffusion ratios for each species.
+ */
+void NAME_MANGLE(heavy_thermal_diffusion_ratios)(double* const pk);
+
+/**
  * Returns the mixture thermal conductivity for a mixture in thermochemical
  * equilibrium.
  */
@@ -379,15 +384,15 @@ double NAME_MANGLE(reactive_thermal_conductivity)();
 
 /**
  * Returns mixture averaged species diffusion coefficients which are defined
- * as \f[ D_i = \frac{1 - X_i}{\sum_j X_j / \mathcal{D}_{ij}} \f] where 
+ * as \f[ D_i = \frac{1 - X_i}{\sum_j X_j / \mathcal{D}_{ij}} \f] where
  * \f$\mathcal{D}_{ij}\f$ are the binary diffusion coefficients for each
  * species pair.
  */
 void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di);
 
 /**
- * Computes the species diffusion velocities and ambipolar electric field 
- * using the Ramshaw approximation of the generalized Stefan-Maxwell 
+ * Computes the species diffusion velocities and ambipolar electric field
+ * using the Ramshaw approximation of the generalized Stefan-Maxwell
  * equations and the supplied modified driving forces
  *
  * \f[ d^{'}_i = \frac{\nabla p_i}{n k_B T_h} - \frac{y_i p}{n k_B T_h}
@@ -400,7 +405,7 @@ void NAME_MANGLE(average_diffusion_coeffs)(double *const p_Di);
  */
 void NAME_MANGLE(stefan_maxwell)
     (const double* const p_dp, double* const p_V, double* const p_E);
-    
+
 void NAME_MANGLE(diffusion_matrix)(double* const p_Dij);
 
 /**
@@ -417,44 +422,50 @@ void NAME_MANGLE(surface_mass_balance)
      double* const hw, double *const p_Xs);
 
 /**
- * Returns the pointer to the energy transfer between the internal energy modes 
+ * Returns the pointer to the energy transfer between the internal
+ * energy modes.
  */
 
 void NAME_MANGLE(source_energy_transfer)
     (double* const p_source_transfer);
-    
-/**
- * Sets the wall using partial densities and temperatures
- */
-void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars);
 
 /**
- * 
+ * Sets the surface state using appropriate variable set.
  */
-void NAME_MANGLE(wall_production_rates)(double* v1);
+void NAME_MANGLE(set_surface_state)(double* v1, double* v2, int* vars);
 
 /**
- * 
+ * Returns the chemical production rates due to gas-surface interaction
+ * reactions.
+ */
+void NAME_MANGLE(surface_production_rates)(double* v1);
+
+/**
+ * Sets the mole fractions at a distance dx from the surface needed for
+ * the surface mass balance.
  */
 void NAME_MANGLE(set_diffusion_model)( double* xi_edge, double* dx );
 
 /**
- * 
+ * Sets the temperature at a distance dx from the surface needed for
+ * the surface energy balance.
  */
 void NAME_MANGLE(set_cond_heat_flux)(double* T_edge, double* dx);
 
 /**
- * 
+ * Requests the solution of the surface balances at a surface using the
+ * gas-surface interaction module of mutation++.
  */
 void NAME_MANGLE(solve_surface_balance)();
 
 /**
- * 
+ * Returns the current surface state with respect to partial densities and
+ * surface temperatures.
  */
-void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars);
+void NAME_MANGLE(get_surface_state)(double* v1, double* v2, int* vars);
 
 /**
- * 
+ * Returns the mass blowing rate due to gas-surface interaction phenomena.
  */
 void NAME_MANGLE(mass_blowing_rate)(double* mdot);
 
@@ -466,8 +477,6 @@ void NAME_MANGLE(mass_blowing_rate)(double* mdot);
  */
 void NAME_MANGLE(convert_ye_to_xe)(
         const double* element_y, double* element_x);
-
-
 
 /**
  * Converts the species mass fractions to element mass fractions.

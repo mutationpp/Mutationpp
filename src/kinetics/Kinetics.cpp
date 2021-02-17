@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -29,7 +29,7 @@
 #include "Constants.h"
 #include "Utilities.h"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace std;
 using namespace Eigen;
@@ -160,7 +160,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     // Allocate work arrays
     mp_ropf  = new double [nReactions()];
     mp_ropb  = new double [nReactions()];
-    mp_rop   = new double [nReactions()];
+    mp_rop   = new double [std::max(m_thermo.nSpecies(), (int) nReactions())];
     mp_wdot  = new double [m_thermo.nSpecies()];
     
 }
@@ -371,30 +371,17 @@ void Kinetics::jacobianRho(double* const p_jac)
 {
     // Special case of no reactions
     if (nReactions() == 0) {
-        for (int i = 0; i < m_thermo.nSpecies()*m_thermo.nSpecies(); ++i)
-            p_jac[i] = 0.0;
+        std::fill(p_jac, p_jac + m_thermo.nSpecies()*m_thermo.nSpecies(), 0);
         return;
     }
 
-    // Update reaction rate coefficients
-    mp_rates->update(m_thermo);
-    
-    const double* const lnkf = mp_rates->lnkf();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropf[i] = std::exp(lnkf[i]);
-    
-    const double* const lnkb = mp_rates->lnkb();
-    for (int i = 0; i < nReactions(); ++i)
-        mp_ropb[i] = std::exp(lnkb[i]);
-    
-    for(int i=0; i < mp_rates->irrReactions().size(); ++i)
-        mp_ropb[mp_rates->irrReactions()[i]] = 0.0;
-    
+    forwardRateCoefficients(mp_ropf);
+    backwardRateCoefficients(mp_ropb);
+
     // Compute species concentrations (mol/m^3)
-    const double mix_conc = m_thermo.numberDensity() / NA;
-    const double* const p_x = m_thermo.X();
-    for (int i = 0; i < m_thermo.nSpecies(); ++i)
-        mp_rop[i] = p_x[i] * mix_conc;
+    Map<ArrayXd>(mp_rop, m_thermo.nSpecies()) =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
     
     // Compute the Jacobian matrix
     m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);

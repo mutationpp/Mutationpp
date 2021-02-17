@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <catch/catch.hpp>
+#include <catch.hpp>
 #include "mutation++.h"
 #include "Configuration.h"
 #include "CompareFunc.h"
 #include "MatrixHelper.h"
 
 #include <string>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using namespace Catch;
 using namespace Mutation;

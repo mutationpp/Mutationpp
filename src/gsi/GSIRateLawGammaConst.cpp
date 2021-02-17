@@ -1,13 +1,13 @@
 /**
  * @file GSIRateLawGammaConst.cpp
  *
- * @brief Class which computes the reaction rate constant for a surface 
- *        reaction constant according to a gamma type model with gamma 
+ * @brief Class which computes the reaction rate constant for a surface
+ *        reaction constant according to a gamma type model with gamma
  *        constant.
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -56,7 +56,7 @@ public:
         for (int i_reac = 0; i_reac < mv_react.size() - 1; ++i_reac) {
             if (mv_react[i_reac] != mv_react[i_reac + 1]) l_diff_reac++;
         }
-    
+
         std::vector<std::string> tokens;
         String::tokenize(
             args.s_node_rate_law.text(), tokens, ":, ");
@@ -71,7 +71,7 @@ public:
             }
             index_ref = index;
         }
-    
+
         if (l_diff_reac != mv_gamma.size()) {
             throw LogicError()
             << "Number of gammas should be equal to the number of "
@@ -100,17 +100,17 @@ public:
         for(int i_g = 0; i_g < mv_gamma.size(); i_g++) {
             getSpeciesIndexandStoichiometricCoefficient(
                 m_idx_react, m_idx_sp, m_stoich_coef);
-            mv_imp_flux_out[i_g] = computeWallImpingingMassFlux(
+            mv_imp_flux_out[i_g] = computeSurfaceImpingingMassFlux(
                 m_idx_sp, v_rhoi, v_Twall);
-    
+
             mv_imp_flux_per_stoich_coef[i_g] =
                 mv_imp_flux_out[i_g]/m_stoich_coef;
             mv_imp_flux_out[i_g] =
                 mv_imp_flux_per_stoich_coef[i_g]*mv_gamma[i_g];
-    
+
             m_idx_react += m_stoich_coef;
         }
-    
+
         return getLimitingImpingingMassFlux();
     }
 
@@ -127,26 +127,31 @@ private:
     const std::vector<int>& mv_react;
 
 //==============================================================================
-
+private:
+/**
+ * Function which provides the species indexes and stoichiometric coefficients.
+ */
     inline void getSpeciesIndexandStoichiometricCoefficient(
         int idx_react, int& idx_sp, int& stoich_coef) const
     {
         idx_sp = mv_react[idx_react];
         stoich_coef = 1;
         idx_react++;
-        
+
         while(idx_react < mv_react.size()) {
             if (idx_sp != mv_react[idx_react]) {
                 break;
-            } 
+            }
             stoich_coef++;
             idx_react++;
         }
     }
 
 //==============================================================================
-
-    inline double computeWallImpingingMassFlux(
+/**
+ * Function that returns the impinging mass flux of a species on a surface.
+ */
+    inline double computeSurfaceImpingingMassFlux(
         const int& idx_sp,
         const VectorXd& v_rhoi,
         const VectorXd& v_Twall) const
@@ -156,18 +161,21 @@ private:
     	    v_rhoi.data(), v_Twall.data(), set_state_with_rhoi_T);
     	double m_sp_thermal_speed = m_transport.speciesThermalSpeed(idx_sp);
 
-        return m_sp_thermal_speed/4.
-        		* v_rhoi(idx_sp) / m_thermo.speciesMw(idx_sp);
+        return m_sp_thermal_speed / 4.
+        	* v_rhoi(idx_sp) / m_thermo.speciesMw(idx_sp);
     }
 
 //==============================================================================
-
+/**
+ * Function that returns the limiting impinging mass flux of the different
+ * species reacting on the surface. Essential for heteronuclear reactions.
+ */
     inline double getLimitingImpingingMassFlux() const
     {
         return mv_imp_flux_out[min_element(
-                   mv_imp_flux_per_stoich_coef.begin(),
-                   mv_imp_flux_per_stoich_coef.end()) -
-                   mv_imp_flux_per_stoich_coef.begin()];
+            mv_imp_flux_per_stoich_coef.begin(),
+            mv_imp_flux_per_stoich_coef.end()) -
+            mv_imp_flux_per_stoich_coef.begin()];
     }
 };
 

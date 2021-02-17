@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -22,8 +22,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
@@ -33,11 +33,7 @@ using namespace Eigen;
 /**
  * Checks that species list descriptors are correctly parsed.
  */
-TEST_CASE
-(
-    "SpeciesListDescriptor tests",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("SpeciesListDescriptor tests", "[thermodynamics][loading]")
 {
     // Hard coded list of available species
     std::vector<Species> available;
@@ -214,11 +210,7 @@ void checkThermoDBLoad(ThermoDB* db, int flags)
 /**
  * Checks that data is loaded correctly from the NASA-7 thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading NASA-7 thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading NASA-7 thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-7", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5 | MULTIPHASE);
@@ -227,24 +219,18 @@ TEST_CASE
 /**
  * Checks that data is loaded correctly from the NASA-9 thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading NASA-9 thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading NASA-9 thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-9", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5 | MULTIPHASE);
 }
 
 /**
- * Checks that data is loaded correctly from the new NASA-9 thermodynamic 
+ * Checks that data is loaded correctly from the new NASA-9 thermodynamic
  * database.
  */
-TEST_CASE
-(
-    "Loading NASA-9-New thermodynamic database",
-    "[thermodynamics][loading]"
+TEST_CASE("Loading NASA-9-New thermodynamic database",
+        "[thermodynamics][loading]"
 )
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("NASA-9-New", 0);
@@ -254,11 +240,7 @@ TEST_CASE
 /**
  * Checks that data is loaded correctly from the RRHO thermodynamic database.
  */
-TEST_CASE
-(
-    "Loading RRHO thermodynamic database",
-    "[thermodynamics][loading]"
-)
+TEST_CASE("Loading RRHO thermodynamic database", "[thermodynamics][loading]")
 {
     ThermoDB* db = Utilities::Config::Factory<ThermoDB>::create("RRHO", 0);
     checkThermoDBLoad(db, DEFAULTS | AIR5);

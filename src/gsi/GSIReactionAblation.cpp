@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -32,8 +32,11 @@
 
 #include "GSIRateLaw.h"
 #include "GSIReaction.h"
+#include "SurfaceState.h"
 #include "SurfaceProperties.h"
 
+
+using namespace std;
 using namespace Mutation::Utilities::Config;
 
 namespace Mutation {
@@ -53,18 +56,18 @@ public:
 
         parseFormula(
             args.s_thermo,
-            *(args.s_iter_reaction),
-            args.s_surf_props);
+            args.s_surf_state,
+            *(args.s_iter_reaction));
 
         const Mutation::Utilities::IO::XmlElement& node_rate_law =
             *(args.s_iter_reaction->begin());
 
-        DataGSIRateLaw data_gsi_rate_law = { args.s_thermo,
-                                             args.s_transport,
-                                             node_rate_law,
-                                             args.s_surf_props,
-                                             m_reactants,
-                                             m_products };
+        DataGSIRateLaw data_gsi_rate_law = {
+            args.s_thermo,
+            args.s_transport,
+            node_rate_law,
+            m_reactants,
+            m_products };
 
         mp_rate_law = Factory<GSIRateLaw>::create(
             node_rate_law.tag(), data_gsi_rate_law);
@@ -73,6 +76,46 @@ public:
             args.s_iter_reaction->parseError(
                 "A rate law must be provided for this reaction!");
         }
+
+        // Check for charge and mass conservation
+        const size_t ne = args.s_thermo.nElements();
+        vector<int> v_sums(ne);
+        std::fill(v_sums.begin(), v_sums.end(), 0);
+        // Reactants
+        for (int ir = 0; ir < m_reactants.size(); ++ir) {
+            for (int kr = 0; kr < ne; ++kr)
+                v_sums[kr] +=
+                    args.s_thermo.elementMatrix()(m_reactants[ir], kr);
+        }
+        // Reactants in the surface phase
+        for (int ir = 0; ir < m_reactants_surf.size(); ++ir){
+            for (int kr = 0; kr < ne; ++kr) {
+                v_sums[kr] += args.s_thermo.elementMatrix()(
+                    args.s_surf_state.surfaceProps().surfaceToGasIndex(
+                        m_reactants_surf[ir]), kr);
+            }
+        }
+        // Products
+        for (int ip = 0; ip < m_products.size(); ++ip)
+            for (int kp = 0; kp < ne; ++kp)
+                v_sums[kp] -=
+                    args.s_thermo.elementMatrix()(m_products[ip], kp);
+        // Products in the surface phase
+        for (int ip = 0; ip < m_products_surf.size(); ++ip){
+            for (int kp = 0; kp < ne; ++kp) {
+                v_sums[kp] -= args.s_thermo.elementMatrix()(
+                    args.s_surf_state.surfaceProps().surfaceToGasIndex(
+                        m_products_surf[ip]), kp);
+            }
+        }
+
+        for (int i = 0; i < ne; ++i)
+            m_conserves &= (v_sums[i] == 0);
+
+         if (m_conserves == false)
+                throw InvalidInputError("formula", m_formula)
+                    << "Reaction " << m_formula
+                    << " does not conserve charge or mass.";
     }
 
 //==============================================================================
@@ -84,10 +127,11 @@ public:
 //==============================================================================
 
     void parseSpecies(
-        std::vector<int>& species, std::string& str_chem_species,
+        std::vector<int>& species, std::vector<int>& species_surf,
+        std::string& str_chem_species,
         const Mutation::Utilities::IO::XmlElement& node_reaction,
         const Mutation::Thermodynamics::Thermodynamics& thermo,
-        const SurfaceProperties& surf_props){
+        const SurfaceState& surf_state){
 
         // State-Machine states for parsing a species formula
         enum ParseState {
@@ -101,9 +145,9 @@ public:
         size_t e = 0;
         int nu   = 1;
         bool add_species = false;
-        
+
         Mutation::Utilities::String::eraseAll(str_chem_species, " ");
-        
+
         // Loop over every character
         while (c != str_chem_species.size()) {
             switch(state) {
@@ -114,7 +158,7 @@ public:
                     } else {
                         nu = 1;
                         s = c;
-                    }                    
+                    }
                     state = name;
                     break;
                 case name:
@@ -123,12 +167,12 @@ public:
                     break;
                 case plus:
                     if (str_chem_species[c] != '+') {
-                        e = c - 2;                        
+                        e = c - 2;
                         c--;
                         add_species = true;
                         state = coefficient;
                     }
-                    break;                     
+                    break;
             }
             if (c == str_chem_species.size() - 1) {
                 add_species = true;
@@ -139,23 +183,26 @@ public:
             if (add_species) {
                 index = thermo.speciesIndex(
                             str_chem_species.substr(s, e-s+1));
-            // Check if the parsed input species are solid carbon.
-            // To be FIXED. The surface species should exist in the surface
-            // properties!
 
-                if(str_chem_species.substr( s, e-s+1 ) == "C-s"){
-                	index = -2;
+                if (index == -1) {
+                    index =
+                        surf_state.surfaceProps().surfaceSpeciesIndex(
+                            str_chem_species.substr(s, e-s+1));
                 }
 
-                if(index == -1){
+                if(index == -1) {
                     node_reaction.parseError((
                         "Species " + str_chem_species.substr(s, e-s+1)
-                        + " is not in the mixture list or a species in the "
-                          "wall phase!" ).c_str());
+                        + " is not in the mixture list or a species of the "
+                          "surface!" ).c_str());
                 }
 
-                if (index != -2){
-                    species.push_back(index);
+                if (index < thermo.nSpecies()) {
+                    for (int i_nu = 0; i_nu < nu; i_nu++)
+                        species.push_back(index);
+                } else {
+                    for (int i_nu = 0; i_nu < nu; i_nu++)
+                        species_surf.push_back(index);
                 }
 
                 add_species = false;

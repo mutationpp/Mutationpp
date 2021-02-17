@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2017-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -22,8 +22,8 @@
 #include "mutation++.h"
 #include "Configuration.h"
 #include "TestMacros.h"
-#include <catch/catch.hpp>
-#include <eigen3/Eigen/Dense>
+#include <catch.hpp>
+#include <Eigen/Dense>
 
 using namespace Mutation;
 using namespace Mutation::Thermodynamics;
@@ -34,11 +34,7 @@ using namespace Eigen;
 /**
  * Tests the SpeciesNameFSM::parse() method.
  */
-TEST_CASE
-(
-    "Parsing species name with SpeciesNameFSM",
-    "[thermodynamics]"
-)
+TEST_CASE("Parsing species name with SpeciesNameFSM", "[thermodynamics]")
 {
     SpeciesNameFSM sm;
 
@@ -99,11 +95,7 @@ TEST_CASE
  * Tests the initialization of Species objects using different constructors and
  * the assignment operator.
  */
-TEST_CASE
-(
-    "Initialization of Species objects",
-    "[thermodynamics]"
-)
+TEST_CASE("Initialization of Species objects", "[thermodynamics]")
 {
     const double mw_N = 0.0140067;
     const double mw_O = 0.0159994;

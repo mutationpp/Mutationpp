@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2014-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 #ifdef _GNU_SOURCE
 #include <fenv.h>
@@ -355,6 +355,12 @@ void NAME_MANGLE(frozen_thermal_conductivity)(double* const lambda)
 }
 
 //==============================================================================
+void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
+{
+    p_mix->heavyThermalDiffusionRatios(pk);
+}
+
+//==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()
 {
     return p_mix->equilibriumThermalConductivity();
@@ -427,15 +433,15 @@ void NAME_MANGLE(source_energy_transfer)
 }
 
 //==============================================================================
-void NAME_MANGLE(set_wall_state)(double* v1, double* v2, int* vars)
+void NAME_MANGLE(set_surface_state)(double* v1, double* v2, int* vars)
 {
-     p_mix->setWallState(v1, v2, *vars);
+     p_mix->setSurfaceState(v1, v2, *vars);
 }
 
 //==============================================================================
-void NAME_MANGLE(wall_production_rates)(double* const v1)
+void NAME_MANGLE(surface_production_rates)(double* const v1)
 {
-     p_mix->surfaceProductionRates(v1);
+     p_mix->surfaceReactionRates(v1);
 }
 
 //==============================================================================
@@ -447,8 +453,9 @@ void NAME_MANGLE(set_diffusion_model)(double* xi_edge, double* dx)
 //==============================================================================
 void NAME_MANGLE(set_cond_heat_flux)(double* T_edge, double* dx)
 {
-     p_mix->setConductiveHeatFluxModel(T_edge, *dx);
+     p_mix->setGasFourierHeatFluxModel(T_edge, *dx);
 }
+
 //==============================================================================
 void NAME_MANGLE(solve_surface_balance)()
 {
@@ -456,21 +463,24 @@ void NAME_MANGLE(solve_surface_balance)()
 }
 
 //==============================================================================
-void NAME_MANGLE(get_wall_state)(double* v1, double* v2, int* vars)
+void NAME_MANGLE(get_surface_state)(double* v1, double* v2, int* vars)
 {
-     p_mix->getWallState(v1, v2, *vars);
+     p_mix->getSurfaceState(v1, v2, *vars);
 }
+
 //==============================================================================
 void NAME_MANGLE(mass_blowing_rate)(double* mdot)
 {
     p_mix->getMassBlowingRate(*mdot);
 }
+
 //==============================================================================
 void NAME_MANGLE(convert_ye_to_xe)(
         const double* const element_y, double* const element_x)
 {
     p_mix->convert<YE_TO_XE>(element_y, element_x);
 }
+
 //==============================================================================
 void NAME_MANGLE(convert_ys_to_ye)(
         const double* species_y, double* elements_y)

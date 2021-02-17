@@ -1,0 +1,16 @@
+<gsi gsi_mechanism = "phenomenological_mass_energy">
+
+    <surface_properties type = "none" >
+    </surface_properties>
+
+    <surface_features 
+        solid_conduction = "none"
+        surface_in_thermal_equil = "true"
+        gas_radiation = "false">
+    </surface_features>
+
+    <surface_chemistry>
+    </surface_chemistry>
+
+    <surface_radiation emissivity="1."/>
+</gsi>

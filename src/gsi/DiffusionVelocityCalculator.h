@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2014-2018 von Karman Institute for Fluid Dynamics (VKI)
+ * Copyright 2018-2020 von Karman Institute for Fluid Dynamics (VKI)
  *
  * This file is part of MUlticomponent Thermodynamic And Transport
  * properties for IONized gases in C++ (Mutation++) software package.
@@ -29,16 +29,16 @@
 #ifndef DIFFUSION_VELOCITY_CALCULATOR_H
 #define DIFFUSION_VELOCITY_CALCULATOR_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
-namespace Mutation { namespace Thermodynamics {class Thermodynamics; }}
-namespace Mutation { namespace Transport {class Transport; }}
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; }}
+namespace Mutation { namespace Transport { class Transport; }}
 
 namespace Mutation {
     namespace GasSurfaceInteraction {
 
 /*
- * Class responsible for computing the
+ * Class responsible for computing the diffusion velocity in the gas.
  */
 class DiffusionVelocityCalculator
 {
@@ -60,7 +60,8 @@ public:
 
 //==============================================================================
     /*
-     * Function used to set up the mole fractions at a distance from the wall.
+     * Function used to set up the mole fractions at a distance from the
+     * surface.
      *
      * @para mole_frac_edge mole fractions of the species at a distance
      * @para dx distance in m
@@ -71,11 +72,11 @@ public:
 //==============================================================================
     /*
      * Function used to compute the diffusion velocities with the given
-     * mole fraction at the wall the ones imposed at a given distance from the
-     * wall after the diffusion model has been set. The mole fraction gradients
-     * are computed with simple first order differentiation.
+     * mole fraction at the surface the ones imposed at a given distance from
+     * the surface after the diffusion model has been set. The mole fraction
+     * gradients are computed with simple first order differentiation.
      *
-     * @param mole_frac mole fractions of the species at the wall
+     * @param mole_frac mole fractions of the species on the surface
      * @param on return diffusion velocities in m/s
      *
      */
