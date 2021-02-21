@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import mutationpp_python as mpp
+import mutationpp as mpp
 import numpy as np
 import matplotlib.pyplot as plt
 

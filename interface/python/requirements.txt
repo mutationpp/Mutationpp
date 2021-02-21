@@ -4,3 +4,4 @@ cycler~=0.10.0
 pytest~=5.4.3
 setuptools~=49.2.0
 matplotlib-label-lines
+pybind11

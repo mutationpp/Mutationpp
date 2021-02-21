@@ -1,225 +1,258 @@
 #!/usr/bin/env python
 
-import mutationpp_python as mpp
-import unittest
+import mutationpp as mpp
+import pytest
+
+mixture = mpp.Mixture("air_11")
+mixture.equilibrate(300., 1000.)
 
 
-class TestMixture(unittest.TestCase):
-    # Todo: change the test suite to avoid some errors (see with JB)
+# def test_averageDiffusionCoeffs():
+# Todo: write proper test
 
-    def setUp(self):
-        self.mixture = mpp.Mixture("air_11")
-        self.mixture.equilibrate(300., 1000.)
+def test_averageHeavyCollisionFreq():
+    assert mixture.averageHeavyCollisionFreq() == pytest.approx(0.0)
 
-    # def test_averageDiffusionCoeffs(self):
+
+#
+# def test_averageHeavyThermalSpeed():
+# Todo: write proper test
+
+# def test_backwardRateCoefficients():
+# Todo: write proper test
+
+def test_density():
+    assert mixture.density() == pytest.approx(0.0115663, abs=1e-7)
+
+
+def test_dRhodP():
+    assert mixture.dRhodP() == pytest.approx(1.15663e-05, abs=1e-7)
+
+
+# def test_diffusionMatrix():
+# Todo: write proper test
+
+# def test_dXidT():
+# Todo: write proper test
+#   a = np.array([1.])
+#   mixture.dXidT(a)
+
+def test_electronHeavyCollisionFreq():
+    assert mixture.electronHeavyCollisionFreq() == pytest.approx(0.)
+
+
+# def test_electronMeanFreePath():
+# Todo: write proper test
+
+def test_electronThermalConductivity():
+    assert mixture.electronThermalConductivity() == pytest.approx(0.)
+
+
+# def test_electronThermalSpeed():
+# Todo: write proper test
+
+# def test_elementPotentialsWrapper():
+# Todo: write proper test
+
+# def test_equilDiffFluxFacsP():
+# Todo: write proper test
+
+def test_equilibriumSoundSpeed():
+    assert mixture.equilibriumSoundSpeed() == pytest.approx(347.765, abs=1e-3)
+
+
+def test_equilibriumThermalConductivity():
+    assert mixture.equilibriumThermalConductivity() == pytest.approx(0.0284695, abs=1e-7)
+
+
+# def test_forwardRateCoefficients():
+# Todo: write proper test
+
+def test_frozenSoundSpeed():
+    assert mixture.frozenSoundSpeed() == pytest.approx(347.765, abs=1e-3)
+
+
+def test_getBField():
+    mixture.setBField(1.)
+    assert mixture.getBField() == 1.
+
+
+def test_hasElectrons():
+    assert mixture.hasElectrons()
+
+
+def test_heavyThermalConductivity():
+    assert mixture.heavyThermalConductivity() == pytest.approx(0.0209103, abs=1e-7)
+
+
+def test_internalThermalConductivity():
+    assert mixture.internalThermalConductivity(mixture.T()) == pytest.approx(0.00755904, abs=1e-7)
+
+
+def test_mixtureEnergyMass():
+    assert mixture.mixtureEnergyMass() == pytest.approx(-84588.1, abs=1e-3)
+
+
+def test_mixtureEnergyMole():
+    assert mixture.mixtureEnergyMole() == pytest.approx(-2440.39, abs=1e-2)
+
+
+def test_mixtureEquilibriumCvMass():
+    assert mixture.mixtureEquilibriumCvMass() == pytest.approx(722.589, abs=1e-3)
+
+
+def test_mixtureEquilibriumCpMass():
+    assert mixture.mixtureEquilibriumCpMass() == pytest.approx(1010.78, abs=1e-2)
+
+
+def test_mixtureEquilibriumCpMole():
+    assert mixture.mixtureEquilibriumCpMole() == pytest.approx(29.1614, abs=1e-4)
+
+
+def test_mixtureEquilibriumGamma():
+    assert mixture.mixtureEquilibriumGamma() == pytest.approx(1.39883, abs=1e-5)
+
+
+def test_mixtureFrozenCpMass():
+    assert mixture.mixtureFrozenCpMass() == pytest.approx(1010.78, abs=1e-2)
+
+
+def test_mixtureFrozenCpMole():
+    assert mixture.mixtureFrozenCpMole() == pytest.approx(29.1614, abs=1e-4)
+
+
+def test_mixtureFrozenCvMole():
+    assert mixture.mixtureFrozenCvMole() == pytest.approx(20.8469, abs=1e-4)
+
+
+def test_mixtureFrozenCvMass():
+    assert mixture.mixtureFrozenCvMass() == pytest.approx(722.589, abs=1e-3)
+
+
+def test_mixtureFrozenGamma():
+    assert mixture.mixtureFrozenGamma() == pytest.approx(1.39883, abs=1e-5)
+
+
+def test_mixtureHMass():
+    assert mixture.mixtureHMass() == pytest.approx(1869.87, abs=1e-2)
+
+
+def test_mixtureHMole():
+    assert mixture.mixtureHMole() == pytest.approx(53.9465, abs=1e-4)
+
+
+def test_mixtureMw():
+    assert mixture.mixtureMw() == pytest.approx(0.0288503, abs=1e-7)
+
+
+# def test_meanFreePath():
+#     Todo: write proper test
+
+def test_nAtoms():
+    assert mixture.nAtoms() == 4
+
+
+def test_nCondensed():
+    assert mixture.nCondensed() == 0
+
+
+def test_nElements():
+    assert mixture.nElements() == 3
+
+
+def test_nEnergyEqns():
+    assert mixture.nEnergyEqns() == 1
+
+
+# def test_nEquilibriumSteps():
+# Todo: write proper test
+
+# def test_nEquilibriumNewtons():
+# Todo: write proper test
+
+def test_nGas():
+    assert mixture.nGas() == 11
+
+
+def test_nHeavy():
+    assert mixture.nHeavy() == 10
+
+
+def test_nMassEqns():
+    assert mixture.nMassEqns() == 11
+
+
+def test_nMolecules():
+    assert mixture.nMolecules() == 6
+
+
+def test_nPhases():
+    assert mixture.nPhases() == 1
+
+
+def test_nSpecies():
+    assert mixture.nSpecies() == 11
+
+
+def test_numberDensity():
+    assert mixture.numberDensity() == pytest.approx(2.414321232055165e+23)
+
+
+# def test_omega11ii():
+# Todo: write proper test
+
+# def test_omega22ii():
+# Todo: write proper test
+
+# def test_phaseMoles():
+# Todo: write proper test
+
+def test_P():
+    assert mixture.P() == 1000.
+
+
+def test_reactiveThermalConductivity():
+    assert mixture.reactiveThermalConductivity() == pytest.approx(-5.74754e-08)
+
+
+def test_soretThermalConductivity():
+    assert mixture.soretThermalConductivity() == pytest.approx(3.01407e-07)
+
+
+# def test_stefanMaxwell():
+# Todo: write proper test
+
+# def test_speciesCpOverR():
+# Todo: write proper test
+
+# def test_speciesHOverRT():
+# Todo: write proper test
+
+# def test_speciesMw():
+# Todo: write proper test
+
+# def test_speciesSOverR():
+# Todo: write proper test
+
+# def test_speciesGOverRT():
+# Todo: write proper test
+
+def test_T():
+    assert mixture.T() == 300.
+
+
+# def test_thermalDiffusionRatios():
+# Todo: write proper test
+
+def test_viscosity():
+    assert mixture.viscosity() == pytest.approx(1.9426e-5, abs=1e-8)
+
+
+def test_X():
     # Todo: write proper test
+    assert sum(mixture.X()) == 1.
 
-    def test_averageHeavyCollisionFreq(self):
-        self.assertAlmostEqual(self.mixture.averageHeavyCollisionFreq(), 0.)
 
-    # def test_averageHeavyThermalSpeed(self):
+def test_Y():
     # Todo: write proper test
-
-    # def test_backwardRateCoefficients(self):
-    # Todo: write proper test
-
-    def test_density(self):
-        self.assertAlmostEqual(self.mixture.density(), 0.0115663)
-
-    def test_dRhodP(self):
-        self.assertAlmostEqual(self.mixture.dRhodP(), 1.15663e-05)
-
-    # def test_diffusionMatrix(self):
-    # Todo: write proper test
-
-    # def test_dXidT(self):
-    # Todo: write proper test
-    #   a = np.array([1.])
-    #   mixture.dXidT(a)
-
-    def test_electronHeavyCollisionFreq(self):
-        self.assertAlmostEqual(self.mixture.electronHeavyCollisionFreq(), 0.)
-
-    # def test_electronMeanFreePath(self):
-    # Todo: write proper test
-
-    def test_electronThermalConductivity(self):
-        self.assertAlmostEqual(self.mixture.electronThermalConductivity(), 0.)
-
-    # def test_electronThermalSpeed(self):
-    # Todo: write proper test
-
-    # def test_elementPotentialsWrapper(self):
-    # Todo: write proper test
-
-    # def test_equilDiffFluxFacsP(self):
-    # Todo: write proper test
-
-    def test_equilibriumSoundSpeed(self):
-        self.assertAlmostEqual(self.mixture.equilibriumSoundSpeed(), 347.765, 3)
-
-    def test_equilibriumThermalConductivity(self):
-        self.assertAlmostEqual(
-            self.mixture.equilibriumThermalConductivity(), 0.0284695, 7)
-
-    # def test_forwardRateCoefficients(self):
-    # Todo: write proper test
-
-    def test_frozenSoundSpeed(self):
-        self.assertAlmostEqual(self.mixture.frozenSoundSpeed(), 347.765, 3)
-
-    def test_getBField(self):
-        self.mixture.setBField(1.)
-        self.assertAlmostEqual(self.mixture.getBField(), 1.)
-
-    def test_hasElectrons(self):
-        self.assertTrue(self.mixture.hasElectrons())
-
-    def test_heavyThermalConductivity(self):
-        self.assertAlmostEqual(self.mixture.heavyThermalConductivity(), 0.0209103, 7)
-
-    def test_internalThermalConductivity(self):
-        self.assertAlmostEqual(self.mixture.internalThermalConductivity(self.mixture.T()), 0.00755904, 8)
-
-    def test_mixtureEnergyMass(self):
-        self.assertAlmostEqual(self.mixture.mixtureEnergyMass(), -84588.1, 2)
-
-    def test_mixtureEnergyMole(self):
-        self.assertAlmostEqual(self.mixture.mixtureEnergyMole(), -2440.39, 2)
-
-    def test_mixtureEquilibriumCvMass(self):
-        self.assertAlmostEqual(self.mixture.mixtureEquilibriumCvMass(), 722.589, 3)
-
-    def test_mixtureEquilibriumCpMass(self):
-        self.assertAlmostEqual(
-            self.mixture.mixtureEquilibriumCpMass(), 1010.78, 2)
-
-    def test_mixtureEquilibriumCpMole(self):
-        self.assertAlmostEqual(
-            self.mixture.mixtureEquilibriumCpMole(), 29.1614, 4)
-
-    def test_mixtureEquilibriumGamma(self):
-        self.assertAlmostEqual(self.mixture.mixtureEquilibriumGamma(), 1.39883, 4)
-
-    def test_mixtureFrozenCpMass(self):
-        self.assertAlmostEqual(self.mixture.mixtureFrozenCpMass(), 1010.78, 2)
-
-    def test_mixtureFrozenCpMole(self):
-        self.assertAlmostEqual(self.mixture.mixtureFrozenCpMole(), 29.1614, 4)
-
-    def test_mixtureFrozenCvMole(self):
-        self.assertAlmostEqual(self.mixture.mixtureFrozenCvMole(), 20.8469, 4)
-
-    def test_mixtureFrozenCvMass(self):
-        self.assertAlmostEqual(self.mixture.mixtureFrozenCvMass(), 722.589, 3)
-
-    def test_mixtureFrozenGamma(self):
-        self.assertAlmostEqual(self.mixture.mixtureFrozenGamma(), 1.39883, 4)
-
-    def test_mixtureHMass(self):
-        self.assertAlmostEqual(self.mixture.mixtureHMass(), 1869.87, 2)
-
-    def test_mixtureHMole(self):
-        self.assertAlmostEqual(self.mixture.mixtureHMole(), 53.9465, 4)
-
-    def test_mixtureMw(self):
-        self.assertAlmostEqual(self.mixture.mixtureMw(), 0.0288503)
-
-    # def test_meanFreePath(self):
-    #     Todo: write proper test
-
-    def test_nAtoms(self):
-        self.assertEqual(self.mixture.nAtoms(), 4)
-
-    def test_nCondensed(self):
-        self.assertEqual(self.mixture.nCondensed(), 0)
-
-    def test_nElements(self):
-        self.assertEqual(self.mixture.nElements(), 3)
-
-    def test_nEnergyEqns(self):
-        self.assertEqual(self.mixture.nEnergyEqns(), 1)
-
-    # def test_nEquilibriumSteps(self):
-    # Todo: write proper test
-
-    # def test_nEquilibriumNewtons(self):
-    # Todo: write proper test
-
-    def test_nGas(self):
-        self.assertEqual(self.mixture.nGas(), 11)
-
-    def test_nHeavy(self):
-        self.assertEqual(self.mixture.nHeavy(), 10)
-
-    def test_nMassEqns(self):
-        self.assertEqual(self.mixture.nMassEqns(), 11)
-
-    def test_nMolecules(self):
-        self.assertEqual(self.mixture.nMolecules(), 6)
-
-    def test_nPhases(self):
-        self.assertEqual(self.mixture.nPhases(), 1)
-
-    def test_nSpecies(self):
-        self.assertEqual(self.mixture.nSpecies(), 11)
-
-    def test_numberDensity(self):
-        self.assertAlmostEqual(self.mixture.numberDensity(), 2.414321232055165e+23)
-
-    # def test_omega11ii(self):
-    # Todo: write proper test
-
-    # def test_omega22ii(self):
-    # Todo: write proper test
-
-    # def test_phaseMoles(self):
-    # Todo: write proper test
-
-    def test_P(self):
-        self.assertAlmostEqual(self.mixture.P(), 1000.)
-
-    def test_reactiveThermalConductivity(self):
-        self.assertAlmostEqual(self.mixture.reactiveThermalConductivity(), -5.74754e-08)
-
-    def test_soretThermalConductivity(self):
-        self.assertAlmostEqual(self.mixture.soretThermalConductivity(), 3.01407e-07)
-
-    # def test_stefanMaxwell(self):
-    # Todo: write proper test
-
-    # def test_speciesCpOverR(self):
-    # Todo: write proper test
-
-    # def test_speciesHOverRT(self):
-    # Todo: write proper test
-
-    # def test_speciesMw(self):
-    # Todo: write proper test
-
-    # def test_speciesSOverR(self):
-    # Todo: write proper test
-
-    # def test_speciesGOverRT(self):
-    # Todo: write proper test
-
-    def test_T(self):
-        self.assertAlmostEqual(self.mixture.T(), 300.)
-
-    # def test_thermalDiffusionRatios(self):
-    # Todo: write proper test
-
-    def test_viscosity(self):
-        self.assertAlmostEqual(self.mixture.viscosity(), 1.9426e-5)
-
-    def test_X(self):
-        # Todo: write proper test
-        self.assertAlmostEqual(sum(self.mixture.X()), 1.)
-
-    def test_Y(self):
-        # Todo: write proper test
-        self.assertAlmostEqual(sum(self.mixture.Y()), 1.)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    assert sum(mixture.Y()) == 1.

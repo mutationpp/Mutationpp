@@ -57,13 +57,13 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
 setup(
-    name='mutationpp_python',
+    name='mutationpp',
     version='0.0.1',
     author='von Karman Institute for Fluid Dynamics',
     author_email='mutationpp@vki.ac.be',
     description='Python bindings for Mutation++',
     long_description='',
-    ext_modules=[CMakeExtension('mutationpp_python')],
+    ext_modules=[CMakeExtension('mutationpp')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
 )
