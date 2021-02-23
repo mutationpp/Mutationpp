@@ -9,10 +9,10 @@ from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
 
-# class CMakeExtension(Extension):
-#     def __init__(self, name, sourcedir=''):
-#         Extension.__init__(self, name, sources=[])
-#         self.sourcedir = os.path.abspath(sourcedir)
+class CMakeExtension(Extension):
+    def __init__(self, name, sourcedir=''):
+        Extension.__init__(self, name, sources=[])
+        self.sourcedir = os.path.abspath(sourcedir)
 
 
 # class CMakeBuild(build_ext):
@@ -63,8 +63,8 @@ setup(
     package_dir={'': '${CMAKE_CURRENT_SOURCE_DIR}'},
     author_email='mutationpp@vki.ac.be',
     description='Python bindings for Mutation++',
-    #packages=['mutationpp'],
-    #ext_modules=[CMakeExtension('mutationpp')],
+    # packages=['mutationpp'],
+    # ext_modules=[CMakeExtension('mutationpp')],
     #cmdclass=dict(build_ext=CMakeBuild),
     #zip_safe=False,
 )
