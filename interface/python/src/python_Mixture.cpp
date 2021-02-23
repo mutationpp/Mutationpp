@@ -1,61 +1,19 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
+#include <Mixture.h>
+#include <MixtureOptions.h>
 #include <pybind11/eigen.h>
-#include <mutation++/MixtureOptions.h>
-#include <mutation++/Mixture.h>
-#include<iostream>
-#include <typeinfo>
-
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
 /**
- * Python wrapper definition for the MixtureOptions class. All member
+ * Python wrapper definition for the Mixture class. All member
  * functions using base data types, strings or classes already exposed
  * to Python as arguments or return values are exposed. The
  * ones which do not are kept unexposed.
  */
 
-void python_export_MixtureOptions(py::module &m) {
-  /**
-   * Overloaded member functions wrappers
-   */
-
-  /**
-   * Python class definition
-   */
-  py::class_<Mutation::MixtureOptions>(m, "MixtureOptions")
-      .def(py::init<std::string &>())
-      .def("loadFromFile", &Mutation::MixtureOptions::loadFromFile)
-      .def("loadFromXmlElement", &Mutation::MixtureOptions::loadFromXmlElement)
-      .def("getSource", &Mutation::MixtureOptions::getSource)
-      .def("setDefaultOptions", &Mutation::MixtureOptions::setDefaultOptions)
-      .def("getSpeciesDescriptor",
-           &Mutation::MixtureOptions::getSpeciesDescriptor)
-      .def("setSpeciesDescriptor",
-           &Mutation::MixtureOptions::setSpeciesDescriptor)
-      .def("getStateModel", &Mutation::MixtureOptions::getStateModel)
-      .def("setStateModel", &Mutation::MixtureOptions::setStateModel)
-      .def("getThermodynamicDatabase",
-           &Mutation::MixtureOptions::getThermodynamicDatabase)
-      .def("setThermodynamicDatabase",
-           &Mutation::MixtureOptions::setThermodynamicDatabase)
-      .def("getMechanism", &Mutation::MixtureOptions::getMechanism)
-      .def("setMechanism", &Mutation::MixtureOptions::setMechanism)
-      .def("getViscosityAlgorithm",
-           &Mutation::MixtureOptions::getViscosityAlgorithm)
-      .def("setViscosityAlgorithm",
-           &Mutation::MixtureOptions::setViscosityAlgorithm)
-      .def("getThermalConductivityAlgorithm",
-           &Mutation::MixtureOptions::getThermalConductivityAlgorithm)
-      .def("setThermalConductivityAlgorithm",
-           &Mutation::MixtureOptions::setThermalConductivityAlgorithm)
-      .def("setDefaultComposition",
-           &Mutation::MixtureOptions::setDefaultComposition)
-      .def("hasDefaultComposition",
-           &Mutation::MixtureOptions::hasDefaultComposition);
-}
 void python_export_Mixture(py::module &m) {
   py::class_<Mutation::Mixture>(m, "Mixture")
       .def(py::init<Mutation::MixtureOptions>())
