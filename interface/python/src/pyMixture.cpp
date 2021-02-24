@@ -14,7 +14,7 @@ namespace py = pybind11;
  * ones which do not are kept unexposed.
  */
 
-void python_export_Mixture(py::module &m) {
+void py_export_Mixture(py::module &m) {
   py::class_<Mutation::Mixture>(m, "Mixture")
       .def(py::init<Mutation::MixtureOptions>())
       .def(py::init<std::string &>())

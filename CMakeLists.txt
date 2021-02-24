@@ -230,7 +230,7 @@ if (ENABLE_TESTING OR ENABLE_COVERAGE)
 
     find_package(Python COMPONENTS Interpreter)
     if(Python_Interpreter_FOUND)
-        add_test(NAME Mutation_Python COMMAND Python::Interpreter -m pytest /interface/python/tests/Mutation.py)
+        add_test(NAME Mutation_Python COMMAND Python::Interpreter -m pytest ${CMAKE_CURRENT_SOURCE_DIR}/interface/python/tests/Mutation.py)
     endif()
 endif()
 

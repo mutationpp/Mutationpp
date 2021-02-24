@@ -10,7 +10,7 @@ namespace py = pybind11;
  * ones which do not are kept unexposed.
  */
 
-void python_export_MixtureOptions(py::module &m) {
+void py_export_MixtureOptions(py::module &m) {
   /**
    * Overloaded member functions wrappers
    */
@@ -20,6 +20,7 @@ void python_export_MixtureOptions(py::module &m) {
    */
   py::class_<Mutation::MixtureOptions>(m, "MixtureOptions")
       .def(py::init<std::string &>())
+      .def(py::init<>())
       .def("loadFromFile", &Mutation::MixtureOptions::loadFromFile)
       .def("loadFromXmlElement", &Mutation::MixtureOptions::loadFromXmlElement)
       .def("getSource", &Mutation::MixtureOptions::getSource)

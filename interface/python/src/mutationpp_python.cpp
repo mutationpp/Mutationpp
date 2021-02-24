@@ -8,11 +8,11 @@
 
 namespace py = pybind11;
 
-void python_export_MixtureOptions(py::module &);
-void python_export_Mixture(py::module &);
+void py_export_MixtureOptions(py::module &);
+void py_export_Mixture(py::module &);
 
 PYBIND11_MODULE(mutationpp, m) {
   m.doc() = "Mutation++ Python bindings";
-  python_export_MixtureOptions(m);
-  python_export_Mixture(m);
+  py_export_MixtureOptions(m);
+  py_export_Mixture(m);
 }
