@@ -840,7 +840,7 @@ double Transport::electronThermalSpeed()
 //==============================================================================
 double Transport::averageHeavyCollisionFreq()
 {
-  return meanFreePath()/averageHeavyThermalSpeed();
+  return averageHeavyThermalSpeed()/meanFreePath();
 }
 //==============================================================================
 double Transport::electronHeavyCollisionFreq()
