@@ -142,6 +142,12 @@ void NAME_MANGLE(species_name)(int* index, F_STRING species, F_STRLEN species_le
 }
 
 //==============================================================================
+bool NAME_MANGLE(has_electrons)()
+{
+    return p_mix->hasElectrons();
+}
+
+//==============================================================================
 double NAME_MANGLE(mixture_mw)()
 {
     return p_mix->mixtureMw();
@@ -361,6 +367,12 @@ void NAME_MANGLE(heavy_thermal_diffusion_ratios) (double* const pk)
 }
 
 //==============================================================================
+double NAME_MANGLE(electron_thermal_diffusion_ratios)()
+{ 
+   return p_mix->electronThermalDiffusionRatio();
+}
+
+//==============================================================================
 double NAME_MANGLE(equilibrium_thermal_conductivity)()
 {
     return p_mix->equilibriumThermalConductivity();
@@ -373,15 +385,33 @@ double NAME_MANGLE(heavy_thermal_conductivity)()
 }
 
 //==============================================================================
+double NAME_MANGLE(rotational_thermal_conductivity)()
+{
+    return p_mix->rotationalThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(vibrational_thermal_conductivity)()
+{
+    return p_mix->vibrationalThermalConductivity();
+}
+
+//==============================================================================
+double NAME_MANGLE(electronic_thermal_conductivity)()
+{
+    return p_mix->electronicThermalConductivity();
+}
+
+//==============================================================================
 double NAME_MANGLE(electron_thermal_conductivity)()
 {
     return p_mix->electronThermalConductivity();
 }
 
 //==============================================================================
-double NAME_MANGLE(internal_thermal_conductivity)(double T)
+double NAME_MANGLE(internal_thermal_conductivity)(const double* const T)
 {
-    return p_mix->internalThermalConductivity(T);
+    return p_mix->internalThermalConductivity(*T);
 }
 
 //==============================================================================
