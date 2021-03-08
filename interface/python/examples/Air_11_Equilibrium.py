@@ -62,8 +62,7 @@ if __name__ == "__main__":
     ax.spines['top'].set_visible(False)
     xvals = [13000, 13000, 13000, 2500, 400, 5500, 6000, 7000, 8000, 400, 400]
     labelLines(plt.gca().get_lines(), align=True, fontsize=10, ha='left', xvals=xvals)
-    # plt.savefig('composition.eps', transparent=True)
-    # plt.savefig('composition.jpg', transparent=True)
+    plt.savefig('composition.eps', transparent=True)
 
     mix.addComposition("N2:1.0, O2:0.0", True)
 
@@ -83,5 +82,6 @@ if __name__ == "__main__":
     ax.spines['top'].set_visible(False)
     xvals = [13000, 13000, 13000, 2500, 400, 5500, 6000, 7000, 8000, 400, 400]
     labelLines(plt.gca().get_lines(), align=True, fontsize=10, ha='left', xvals=xvals)
+    plt.savefig('composition_n2.eps', transparent=True)
 
     plt.show()
