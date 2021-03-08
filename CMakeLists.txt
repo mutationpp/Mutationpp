@@ -44,6 +44,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
+    add_subdirectory(interface/fortran)
+endif()
+
+if (BUILD_PYTHON_WRAPPER)
+    add_subdirectory(thirdparty/pybind11)
+    add_subdirectory(interface/python)
 endif()
 
 
@@ -152,7 +158,13 @@ if (BUILD_FORTRAN_WRAPPER)
     endif()
 endif()
 
+################################################################################
 
+# Python wrapper options
+###############################################################################
+
+option (BUILD_PYTHON_WRAPPER
+    "Generate a Python package for using mutation++" OFF)
 
 ###############################################################################
 # Doxygen documentation generation
@@ -215,6 +227,11 @@ if (ENABLE_TESTING OR ENABLE_COVERAGE)
     enable_testing()
     add_subdirectory(tests)
     add_subdirectory(examples)
+
+    find_package(Python COMPONENTS Interpreter)
+    if(Python_Interpreter_FOUND)
+        add_test(NAME Mutation_Python COMMAND Python::Interpreter -m pytest ${CMAKE_CURRENT_SOURCE_DIR}/interface/python/tests/Mutation.py)
+    endif()
 endif()
 
 
