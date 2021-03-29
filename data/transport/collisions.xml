@@ -109,6 +109,8 @@
         <species name="C6H5O,phenoxy" alias="C6H5O" />
         <species name="C6H5OH,phenol" alias="C6H5OH" />
         <species name="HCHO,formaldehy" alias="CH2O" />
+        <species name="CL" alias="Cl" />
+        <species name="CL2" alias="Cl2" />
     </aliases>
 
     <!-- Dipole Polarizabilities -->
@@ -146,6 +148,8 @@
         <species name="CNN"    value="3.95"   ref="Jaffe" />
         <species name="CO"     value="1.95"   ref="Wright2007"/>
         <species name="CO2"    value="2.91"   ref="Wright2007"/>
+        <species name="Cl"     value="2.18"   ref="CRC Handbook of Chemistry and Physics"/>
+        <species name="Cl2"    value="4.63"   ref="CRC Handbook of Chemistry and Physics"/>
         <species name="H"      value="0.6668" ref="Bruno2010"/>
         <species name="H-"     value="27.0"   ref="Bruno2010"/>
         <species name="H2"     value="0.81"   ref="Bruno2010"/>
@@ -204,6 +208,8 @@
         <species name="CNN" value="10.50" />
         <species name="CO" value="7.60" />
         <species name="CO2" value="12.00" />
+        <species name="Cl" value="7.727"/>
+        <species name="Cl2" value="12.29"/>
         <species name="H" value="1.0" />
         <species name="H2" value="2.00" />
         <species name="H2O" value="6.00" />
