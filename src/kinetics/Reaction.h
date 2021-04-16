@@ -167,10 +167,9 @@ public:
      * Returns the reactant stoichiometric coefficient for the given species.
      */
     int reactant(int species) const {
-        int count = 0;
-        for (int i = 0; i < nReactants(); ++i)
-            count += (m_reactants[i] == species ? 1 : 0);
-        return count;
+        return std::accumulate(m_reactants.begin(), m_reactants.end(), 0, 
+            [species](int sum, int index) { return sum + (index == species); }
+        );
     }
     
     /**
@@ -184,10 +183,9 @@ public:
      * Returns the product stoichiometric coefficient for the given species.
      */
     int product(int species) const {
-        int count = 0;
-        for (int i = 0; i < nReactants(); ++i)
-            count += (m_products[i] == species ? 1 : 0);
-        return count;
+        return std::accumulate(m_products.begin(), m_products.end(), 0, 
+            [species](int sum, int index) { return sum + (index == species); }
+        );
     }
     
     /**

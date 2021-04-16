@@ -27,20 +27,34 @@ using namespace Mutation::Kinetics;
 using namespace Mutation::Utilities::IO;
 using namespace Catch;
 
-void checkReactionType(const std::string& formula, ReactionType type)
+
+const Mutation::Thermodynamics::Thermodynamics& thermo()
 {
     // Setup a shared thermo object for testing reaction types
     static Mutation::Thermodynamics::Thermodynamics thermo(
         "e- N N+ Ar(1) Ar(2) Ar+(0) O O- O+ NO NO+ N2 N2+ O2 O2+ He+ He++", 
-        "RRHO", "ChemNonEq1T");
+        "RRHO", "ChemNonEq1T"
+    );
 
+    return thermo;
+}
+
+/// This is a helper function to get around the bad design of Reaction's API
+/// TODO: Decouple Thermodynamics and XmlElement from Reaction (JBS).
+Reaction createReaction(const std::string& formula)
+{
     XmlElement node(
         "<reaction formula=\"" + formula + "\" >"
         "    <arrhenius A=\"5.0E15\" n=\"+0.0\" T=\"75500.0\" />"
         "</reaction>"
     );
 
-    Reaction reaction(node, thermo);
+    return { node, thermo() };
+}
+
+void checkReactionType(const std::string& formula, ReactionType type)
+{
+    const auto reaction = createReaction(formula);
 
     INFO("Reaction: " << formula)
     INFO("Should be type: " << reactionTypeString(type))
@@ -119,4 +133,28 @@ TEST_CASE("Reaction types are correctly identified", "[kinetics]")
 
     // EXCITATION_M
     checkReactionType("Ar(1) + M", "Ar(2) + M", EXCITATION_M, EXCITATION_M);
+}
+
+
+TEST_CASE("Reaction stoichiometry is correctly identified", "[kinetics]")
+{
+    auto reaction = createReaction("N2 + M = 2N + M");
+    
+    CHECK( reaction.reactant(thermo().speciesIndex("N2")) == 1 );
+    CHECK( reaction.reactant(thermo().speciesIndex("N")) == 0 );
+    
+    CHECK( reaction.product(thermo().speciesIndex("N2")) == 0 );
+    CHECK( reaction.product(thermo().speciesIndex("N")) == 2 );
+
+    reaction = createReaction("N2 + O = NO + N");
+    
+    CHECK( reaction.reactant(thermo().speciesIndex("N2")) == 1 );
+    CHECK( reaction.reactant(thermo().speciesIndex("O")) == 1 );
+    CHECK( reaction.reactant(thermo().speciesIndex("NO")) == 0 );
+    CHECK( reaction.reactant(thermo().speciesIndex("N")) == 0 );
+    
+    CHECK( reaction.product(thermo().speciesIndex("N2")) == 0 );
+    CHECK( reaction.product(thermo().speciesIndex("O")) == 0 );
+    CHECK( reaction.product(thermo().speciesIndex("NO")) == 1 );
+    CHECK( reaction.product(thermo().speciesIndex("N")) == 1 );
 }
