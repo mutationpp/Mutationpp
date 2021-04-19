@@ -24,6 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 add_sources(mutation++
     ChemNonEqStateModel.cpp
     ChemNonEqTTvStateModel.cpp
+    ChemNonEqT3TvStateModel.cpp
     Composition.cpp
     EquilStateModel.cpp
     MultiPhaseEquilSolver.cpp
@@ -33,13 +34,13 @@ add_sources(mutation++
     Nasa9DB.cpp
     ParticleRRHO.cpp
     RrhoDB.cpp
+    RrhoDB_3Tv.cpp
     Species.cpp
     SpeciesListDescriptor.cpp
     SpeciesNameFSM.cpp
     Thermodynamics.cpp
     ThermoDB.cpp
 )
-
 
 add_headers(mutation++
     Composition.h

@@ -66,6 +66,11 @@ public:
         double Th, double Te, double Tr, double Tv, double Tel, 
         double* const h, double* const ht, double* const hr, double* const hv, 
         double* const hel, double* const hf);
+
+    void enthalpy(
+        double Th, double Te, double Tr, double* Tv, double Tel,
+        double* const h, double* const ht, double* const hr, double* const hv,
+        double* const hel, double* const hf);
     
     void entropy(
         double Th, double Te, double Tr, double Tv, double Tel, double P,
@@ -135,6 +140,25 @@ void NasaDB<PolynomialType>::enthalpy(
     if (hv != NULL) std::fill(hv, hv+m_ns, 0.0);
     if (hel != NULL) std::fill(hel, hel+m_ns, 0.0);
     if (hf != NULL) std::fill(hf, hf+m_ns, 0.0);      
+}
+
+template <typename PolynomialType>
+void NasaDB<PolynomialType>::enthalpy(
+    double Th, double Te, double Tr, double* Tv, double Tel,
+    double* const h, double* const ht, double* const hr, double* const hv,
+    double* const hel, double* const hf)
+{
+    if (h != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTHALPY);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].enthalpy(mp_params, h[i]);
+    }
+
+    if (ht != NULL) std::fill(ht, ht+m_ns, 0.0);
+    if (hr != NULL) std::fill(hr, hr+m_ns, 0.0);
+    if (hv != NULL) std::fill(hv, hv+m_ns, 0.0);
+    if (hel != NULL) std::fill(hel, hel+m_ns, 0.0);
+    if (hf != NULL) std::fill(hf, hf+m_ns, 0.0);
 }
 
 template <typename PolynomialType>
@@ -227,6 +251,3 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-
-    

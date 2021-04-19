@@ -84,6 +84,8 @@ public:
         mp_X = new double [m_thermo.nSpecies()];
         for (int i = 0; i < thermo.nSpecies(); ++i)
             mp_X[i] = 0.0;
+	for (int i = 0; i < nenergy; ++i)
+            mp_Tv[i] = 0.0;
     }
     
     /**
@@ -93,6 +95,7 @@ public:
     {
         // Delete data pointers
         delete [] mp_X;
+        delete [] mp_Tv;
 
         // Delete transfer models
         for (int i = 0; i < m_transfer_models.size(); ++i)
@@ -148,6 +151,14 @@ public:
      */
     inline double Tv() const {
         return m_Tv;
+    }
+
+    /**
+     * Returns the mixture vibrational temperatures
+     * in multi-temperature (MT) models (T>2)
+     */
+    inline double Tvs(int i) const {
+        return mp_Tv[i];
     }
     
     /**
@@ -402,7 +413,7 @@ protected:
     double m_B;
     
     double* mp_X;
-    
+    double* mp_Tv;
 
     std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
         m_transfer_models;

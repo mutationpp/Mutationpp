@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     Interpolators.cpp
+    Numerics.cpp
 )
 
 add_headers(mutation++
@@ -30,4 +31,5 @@ add_headers(mutation++
     Functors.h
     Interpolators.h
     NewtonSolver.h
+    Numerics.h
 )

@@ -23,15 +23,21 @@ cmake_minimum_required(VERSION 2.6)
 
 add_sources(mutation++
     MillikanWhite.cpp
+    VSS.cpp
+    FHO.cpp
     OmegaCE.cpp
     OmegaCElec.cpp
     OmegaCV.cpp
     OmegaET.cpp
     OmegaI.cpp
     OmegaVT.cpp
+    R_vibr_VT.cpp
+    R_vibr_VV.cpp
+    R_w_22.cpp
+    R_w_23.cpp
 )
 
-add_headers(mutation++
-    MillikanWhite.h
-    TransferModel.h
-)
+install(FILES MillikanWhite.h DESTINATION include/mutation++)
+install(FILES VSS.h DESTINATION include/mutation++)
+install(FILES FHO.h DESTINATION include/mutation++)
+install(FILES TransferModel.h DESTINATION include/mutation++)
