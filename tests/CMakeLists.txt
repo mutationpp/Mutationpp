@@ -24,33 +24,8 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 configure_file(Configuration.h.in Configuration.h)
 
-add_executable(run_tests 
-    run_tests.cpp
-    test_bug_94.cpp
-    test_collision_integrals.cpp
-    test_comparisons.cpp
-    test_convert.cpp
-    test_diffusion_matrix.cpp
-    test_dXidT.cpp
-    test_energies.cpp
-    test_errors.cpp
-    test_gsi_mass.cpp
-    test_gsi_mass_energy.cpp
-    test_gsi_rates.cpp
-    test_mixtures.cpp
-    test_reactions.cpp
-    test_reaction_mechanism.cpp
-    test_reaction_rates.cpp
-    test_set_state.cpp
-    test_species.cpp
-    test_stefan_maxwell.cpp
-    test_thermal_diff_ratios.cpp
-    test_thermodb.cpp
-    test_transfer_source.cpp
-    test_utilities.cpp
-    test_wdot.cpp
-    test_levels.cpp
-)
+file(GLOB test_sources "test_*.cpp")
+add_executable(run_tests run_tests.cpp ${test_sources})
 target_link_libraries(run_tests 
     PRIVATE
         mutation++
