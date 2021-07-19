@@ -1,0 +1,170 @@
+name: Python wheels
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+    test_linux:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            submodules: recursive
+
+        - uses: actions/setup-python@v2
+          with:
+            python-version: "3.x"
+
+        - name: Upgrade pip
+          run: pip install -U setuptools wheel pip
+
+        - name: Install package for testing
+          run: pip install ".[test]"
+
+        - name: Run tests
+          run: >
+            export MPP_DIRECTORY=$(pwd) &&
+            export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+            pytest
+
+    test_mac:
+      runs-on: macos-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            submodules: recursive
+
+        - uses: actions/setup-python@v2
+          with:
+            python-version: "3.x"
+
+        - name: Upgrade pip
+          run: pip install -U setuptools wheel pip
+
+        - name: Install package for testing
+          run: pip install ".[test]"
+
+        - name: Run tests
+          run: >
+            export MPP_DIRECTORY=$(pwd) &&
+            export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+            pytest
+
+    linux_wheels:
+        strategy:
+          matrix:
+            python-version: 
+              - cp36-cp36m
+              - cp37-cp37m
+              - cp38-cp38
+              - cp39-cp39
+
+        needs: test_linux
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+            with:
+              submodules: recursive
+
+          - uses: actions/setup-python@v2
+            with:
+              python-version: 3.9
+
+          - name: Upgrade pip
+            run: pip install -U setuptools wheel pip
+
+          - name: Build manylinux Python wheels
+            uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2010_x86_64
+            with:
+              python-versions: "${{ matrix.python-version }}"
+
+          - uses: actions/upload-artifact@v2
+            with:
+              name: linux_wheels
+              path: "dist/*-manylinux*.whl"
+              retention-days: 1
+
+    mac_wheels:
+        strategy:
+          matrix:
+            python-version: 
+              - 3.6
+              - 3.7
+              - 3.8
+              - 3.9
+        needs: test_mac
+        runs-on: macos-latest
+        steps:
+          - uses: actions/checkout@v2
+            with:
+              submodules: recursive
+
+          - uses: actions/setup-python@v2
+            with:
+              python-version: "${{ matrix.python-version }}"
+
+          - name: Upgrade pip
+            run: pip install -U setuptools wheel pip
+
+          - name: Build wheels
+            run: pip wheel . -w dist/
+
+          - uses: actions/upload-artifact@v2
+            with:
+              name: mac_wheels
+              path: "dist/*.whl"
+              retention-days: 1
+
+    sdist:
+      needs: test_linux
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            submodules: recursive
+
+        - uses: actions/setup-python@v2
+          with:
+            python-version: 3.9
+
+        - name: Upgrade pip
+          run: pip install -U setuptools wheel pip scikit-build
+
+        - name: Build sdist
+          run: python setup.py sdist
+
+        - uses: actions/upload-artifact@v2
+          with:
+            name: sdist
+            path: "dist/*.tar.gz"
+            retention-days: 1
+
+    upload_wheels:
+      runs-on: ubuntu-latest
+      needs: [linux_wheels, mac_wheels]
+      steps:
+          - uses: actions/download-artifact@v2
+            with:
+              name: linux_wheels
+              path: dist
+
+          - uses: actions/download-artifact@v2
+            with:
+              name: mac_wheels
+              path: dist
+
+          - uses: actions/download-artifact@v2
+            with:
+              name: sdist
+              path: dist
+
+          - name: Upgrade pip
+            run: pip install -U setuptools wheel pip
+
+          - name: Install twine
+            run: pip install twine
+
+          - name: Upload wheels
+            run: twine upload -u __token__ -p "${{ secrets.TESTPYPI_TOKEN }}" --repository testpypi dist/*
+

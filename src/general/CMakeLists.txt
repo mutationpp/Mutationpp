@@ -19,9 +19,6 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0022 NEW)
-
 add_sources(mutation++
     Mixture.cpp
     MixtureOptions.cpp
@@ -35,22 +32,4 @@ add_headers(mutation++
     Constants.h
     Errors.h
 )
-
-# Build and install executables
-set(mutation++_exes checkmix mppequil bprime mppshock)
-foreach (exe ${mutation++_exes})
-    add_executable(${exe} ${exe}.cpp)
-    target_link_libraries(${exe}
-        PRIVATE
-            mutation++
-    )
-    install(
-        TARGETS ${exe}
-        EXPORT mutation++Targets
-        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
-)
-endforeach(exe ${mutation++_exes})
-
-
-
 

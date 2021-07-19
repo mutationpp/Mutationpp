@@ -6,7 +6,8 @@
 # Find Eigen header-only library
 #
 # This module tries before to search for cmake-exported configuration files
-# using the standard 
+# using the standard CMake utilties and it defaults to thirdparty/eigen if it 
+# does not find anything
 #
 # This module sets the following variables:
 #

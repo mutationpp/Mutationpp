@@ -32,7 +32,7 @@ cmake_policy(SET CMP0048 NEW)
 set(CMAKE_CXX_STANDARD 11)
 
 project(mutation++
-    VERSION 1.0.1
+    VERSION 1.0.5
     LANGUAGES CXX
 )
 
@@ -44,6 +44,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
+    add_subdirectory(interface/fortran)
+endif()
+
+#######################################################################
+#            Python bindings built with pip + scikit-build            #
+#######################################################################
+
+if (SKBUILD)
+    add_subdirectory(thirdparty/pybind11)
+    add_subdirectory(interface/python)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 
@@ -152,7 +163,13 @@ if (BUILD_FORTRAN_WRAPPER)
     endif()
 endif()
 
+################################################################################
 
+# Python wrapper options
+###############################################################################
+
+option (BUILD_PYTHON_WRAPPER
+    "Generate a Python package for using mutation++" OFF)
 
 ###############################################################################
 # Doxygen documentation generation
@@ -213,7 +230,7 @@ option(ENABLE_TESTING "Enable regression testing with CTest" OFF)
 if (ENABLE_TESTING OR ENABLE_COVERAGE)
     find_package(Catch2)
     enable_testing()
-    add_subdirectory(tests)
+    add_subdirectory(tests/c++)
     add_subdirectory(examples)
 endif()
 

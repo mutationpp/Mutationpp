@@ -5,7 +5,7 @@ jobs:
     build_linux:
         strategy:
           matrix:
-            os: [ubuntu-16.04, ubuntu-18.04]
+            os: [ubuntu-16.04, ubuntu-18.04, ubuntu-latest]
             build_type: [Debug, Release]
             compiler: [gcc g++, clang clang++]
         runs-on: ${{ matrix.os }}
@@ -49,7 +49,7 @@ jobs:
                 cd build && ctest -j $(nproc)
 
     coverage:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v1
           - name: Install Lcov, Gcov

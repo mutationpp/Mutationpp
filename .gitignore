@@ -16,6 +16,8 @@ docs/html/
 
 # Python
 *.pyc
+_skbuild/
+*.whl
 
 # OS specifics
 .DS_Store
