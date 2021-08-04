@@ -51,30 +51,19 @@ public:
     // Allows self-registration of TransferModel objects
     typedef Mutation::Mixture& ARGS;
 
-/**
- *@brief Returns name of this type.
- */
-
+    /// Name of this type.
     static std::string typeName() { return "TransferModel"; }
 
-    TransferModel(ARGS mix)
-        : m_mixture(mix)
-    { }
+    TransferModel(ARGS mix) : m_mixture(mix) { }
 
-/**
- *@brief Transfer Model destructor
- */
-    virtual ~TransferModel() { }
+    virtual ~TransferModel() = default;
 
-/**
- *@brief Purely virtual function to be called to
- * to solve the source term
- *
- * @return energy source term
- */
+    /// Value of source term in J/m^3-s.
     virtual double source() = 0;
 
 protected:
+    Mixture& mixture() { return m_mixture; }
+private:
     Mutation::Mixture& m_mixture;
 };
 
