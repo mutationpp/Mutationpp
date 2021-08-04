@@ -29,10 +29,10 @@
 #
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0048 NEW)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 project(mutation++
-    VERSION 1.0.5
+    VERSION 1.0.6
     LANGUAGES CXX
 )
 

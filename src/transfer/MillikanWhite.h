@@ -29,12 +29,14 @@
 #ifndef MILLIKAN_WHITE_H
 #define MILLIKAN_WHITE_H
 
-#include "Thermodynamics.h"
+#include <Eigen/Dense>
 
 #include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
+
+namespace Mutation { namespace Thermodynamics { class Thermodynamics; } }
 
 namespace Mutation {
     namespace Transfer {
@@ -66,41 +68,48 @@ public:
     MillikanWhiteModelData(
         const class Thermodynamics::Thermodynamics&, size_t, double);
 
+    /// Copy constructor.
+    MillikanWhiteModelData(const MillikanWhiteModelData& data);
+
+    /// Copy assignment operator.
+    MillikanWhiteModelData& operator=(MillikanWhiteModelData data);
+
+    /// Move constructor.
+    MillikanWhiteModelData(MillikanWhiteModelData&& data) noexcept;
+
+    /// Move assignment operator.
+    MillikanWhiteModelData& operator=(MillikanWhiteModelData&& data) noexcept;
+
+    /// Destructor.
+    ~MillikanWhiteModelData();
+
     /// Index of species in mixture.
-    size_t speciesIndex() const { return m_index; }
+    size_t speciesIndex() const;
 
     /// Molecular weight of the vibrator in kg/mol
-    double molecularWeight() const { return m_mw; }
+    double molecularWeight() const;
 
     /// Returns the array of A model parameters.
-    Eigen::ArrayXd& a() { return m_a; }
+    Eigen::ArrayXd& a();
 
     /// Returns the array of A model parameters.
-    const Eigen::ArrayXd& a() const { return m_a; }
+    const Eigen::ArrayXd& a() const;
 
     /// Returns the array of B model parameters.
-    Eigen::ArrayXd& b() { return m_b; }
+    Eigen::ArrayXd& b();
 
     /// Returns the array of B model parameters.
-    const Eigen::ArrayXd& b() const { return m_b; }
+    const Eigen::ArrayXd& b() const;
 
     /// Returns the limiting cross section for Park's correction.
-    double limitingCrossSection() const { return m_omegav; }
+    double limitingCrossSection() const;
 
     /// Sets the limiting cross section in m^2.
-    MillikanWhiteModelData& setLimitingCrossSection(double omegav)
-    {
-        assert(omegav >= 0.0);
-        m_omegav = omegav;
-        return *this;
-    }
+    MillikanWhiteModelData& setLimitingCrossSection(double omegav);
 
 private:
-    size_t m_index = 0;
-    double m_mw = 0.0;
-    double m_omegav = 1.0E-20; // m^2
-    Eigen::ArrayXd m_a;
-    Eigen::ArrayXd m_b;
+    struct Impl;
+    std::unique_ptr<Impl> m_impl;
 };
 
 

@@ -27,8 +27,8 @@
 
 
 #include "MillikanWhite.h"
+#include "Thermodynamics.h"
 #include "Utilities.h"
-#include "ParticleRRHO.h"
 
 #include <iostream>
 #include <fstream>
@@ -43,14 +43,26 @@ namespace Mutation {
     namespace Transfer {
 
 
+struct MillikanWhiteModelData::Impl
+{
+    size_t index = 0;
+    double mw = 0.0;
+    double omegav = 1.0E-20; // m^2
+    Eigen::ArrayXd a;
+    Eigen::ArrayXd b;
+
+    Impl(size_t size) : a(size), b(size) { }
+};
+
+
 MillikanWhiteModelData::MillikanWhiteModelData(
     const class Thermodynamics& thermo, size_t index, double thetav
 ) :
-    m_index(index),
-    m_mw(thermo.speciesMw(index)),
-    m_a(thermo.nHeavy()),
-    m_b(thermo.nHeavy())
+    m_impl(std::make_unique<Impl>(thermo.nHeavy()))
 {
+    m_impl->index = index;
+    m_impl->mw = thermo.speciesMw(index);
+
     // Fill in default values
     double theta_power = std::pow(thetav, 4.0/3.0);
     size_t offset = (thermo.hasElectrons() ? 1 : 0);
@@ -58,10 +70,56 @@ MillikanWhiteModelData::MillikanWhiteModelData(
     for (size_t i = 0; i < thermo.nHeavy(); ++i)
     {
         double mwi = thermo.speciesMw(i+offset);
-        double mu = 1000.0*m_mw*mwi/(m_mw + mwi); // reduced mass in g/mol
-        m_a[i] = 1.16E-3*std::sqrt(mu)*theta_power;
-        m_b[i] = 0.015*std::pow(mu, 0.25);
+        double mu = 1000.0*m_impl->mw*mwi/(m_impl->mw + mwi); // reduced mass in g/mol
+        m_impl->a[i] = 1.16E-3*std::sqrt(mu)*theta_power;
+        m_impl->b[i] = 0.015*std::pow(mu, 0.25);
     }
+}
+
+MillikanWhiteModelData::MillikanWhiteModelData(const MillikanWhiteModelData& rhs)
+    : m_impl(nullptr)
+{
+    if (rhs.m_impl)
+        m_impl = std::make_unique<Impl>(*rhs.m_impl);
+}
+
+MillikanWhiteModelData& MillikanWhiteModelData::operator=(MillikanWhiteModelData rhs)
+{
+    if (!rhs.m_impl)
+        m_impl.reset();
+    else if (!m_impl)
+        m_impl = std::make_unique<Impl>(*rhs.m_impl);
+    else
+        *m_impl = *rhs.m_impl;
+    
+    return *this;
+}
+
+MillikanWhiteModelData::MillikanWhiteModelData(MillikanWhiteModelData&& rhs) noexcept = default;
+
+MillikanWhiteModelData& MillikanWhiteModelData::operator=(MillikanWhiteModelData&& rhs) noexcept = default;
+
+MillikanWhiteModelData::~MillikanWhiteModelData() = default;
+
+size_t MillikanWhiteModelData::speciesIndex() const { return m_impl->index; }
+
+double MillikanWhiteModelData::molecularWeight() const { return m_impl->mw; }
+
+Eigen::ArrayXd& MillikanWhiteModelData::a() { return m_impl->a; }
+
+const Eigen::ArrayXd& MillikanWhiteModelData::a() const { return m_impl->a; }
+
+Eigen::ArrayXd& MillikanWhiteModelData::b() { return m_impl->b; }
+
+const Eigen::ArrayXd& MillikanWhiteModelData::b() const { return m_impl->b; }
+
+double MillikanWhiteModelData::limitingCrossSection() const { return m_impl->omegav; }
+
+MillikanWhiteModelData& MillikanWhiteModelData::setLimitingCrossSection(double omegav)
+{
+    assert(omegav >= 0.0);
+    m_impl->omegav = omegav;
+    return *this;
 }
 
 
