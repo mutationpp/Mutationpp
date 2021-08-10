@@ -53,9 +53,9 @@ public:
 
 	double source()
 	{
-		static const double cv = 1.5*RU/m_mixture.speciesMw(0);
-		m_mixture.netProductionRates(mp_wrk1);
-		return mp_wrk1[0]*cv*m_mixture.Te();
+		static const double cv = 1.5*RU/mixture().speciesMw(0);
+		mixture().netProductionRates(mp_wrk1);
+		return mp_wrk1[0]*cv*mixture().Te();
 	}
 
 private:

@@ -180,7 +180,18 @@ public:
      * with the given name.
      */
     template <typename T>
-    T getAttribute(const std::string& name, T& value = T()) const;
+    T getAttribute(const std::string& name, T& value) const;
+
+    /**
+     * Returns the value of the corresponding attribute with the given name.  If
+     * the attribute is not given, then T() is returned.
+     */
+    template <typename T>
+    T getAttribute(const std::string& name) const
+    {
+        T value;
+        return getAttribute(name, value);
+    }
     
     /**
      * Returns an iterator pointing to the first child element in this

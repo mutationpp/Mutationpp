@@ -113,9 +113,8 @@ void testMixture(
 }
 
 
-// Check the three cases associated with issue 139
 TEST_CASE(
-    "Bug #139 fix: vibronic energies unchanged after setState()",
+    "Bug #139 fix: vibronic energies unchanged after setState",
     "[bugs][thermodynamics]"
 )
 {

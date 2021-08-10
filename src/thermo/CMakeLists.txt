@@ -24,6 +24,7 @@ add_sources(mutation++
     ChemNonEqTTvStateModel.cpp
     Composition.cpp
     EquilStateModel.cpp
+    HarmonicOscillator.cpp
     MultiPhaseEquilSolver.cpp
     Nasa7Polynomial.cpp
     Nasa9Polynomial.cpp
@@ -41,6 +42,7 @@ add_sources(mutation++
 
 add_headers(mutation++
     Composition.h
+    HarmonicOscillator.h
     MultiPhaseEquilSolver.h
     ParticleRRHO.h
     Species.h

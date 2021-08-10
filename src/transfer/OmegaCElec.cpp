@@ -58,15 +58,15 @@ public:
 
 	double source()
 	{
-		m_mixture.speciesHOverRT(NULL, NULL, NULL, NULL, mp_wrk1, NULL);
-		m_mixture.netProductionRates(mp_wrk2);
+		mixture().speciesHOverRT(NULL, NULL, NULL, NULL, mp_wrk1, NULL);
+		mixture().netProductionRates(mp_wrk2);
 
 		double sum = 0.0;
 
-		for(int i = 0 ; i < m_mixture.nSpecies(); ++i)
-			sum += mp_wrk1[i]*mp_wrk2[i]/m_mixture.speciesMw(i);
+		for(int i = 0 ; i < mixture().nSpecies(); ++i)
+			sum += mp_wrk1[i]*mp_wrk2[i]/mixture().speciesMw(i);
 
-		return (sum*m_mixture.T()*RU);
+		return (sum*mixture().T()*RU);
 	}
 
 private:

@@ -59,7 +59,7 @@ public:
 	OmegaCV(Mutation::Mixture& mix)
 		: TransferModel(mix)
 	{
-		m_ns = m_mixture.nSpecies();
+		m_ns = mixture().nSpecies();
 		mp_wrk1 = new double [m_ns];
 		mp_wrk2 = new double [m_ns];
 	};
@@ -111,19 +111,19 @@ double const OmegaCV::compute_source_Candler()
 
 
 	 // Getting Vibrational Energy
-	 m_mixture.speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+	 mixture().speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
 
 	 // Getting Production Rate
-	 m_mixture.netProductionRates(mp_wrk2);
+	 mixture().netProductionRates(mp_wrk2);
 
 	 // Inner Product
 	 double c1 = 1.0E0;
 	 double sum = 0.E0;
 
 	 for(int i = 0 ; i < m_ns; ++i)
-		 sum += mp_wrk1[i]*mp_wrk2[i]/m_mixture.speciesMw(i);
+		 sum += mp_wrk1[i]*mp_wrk2[i]/mixture().speciesMw(i);
 
-	 return(c1*sum*m_mixture.T()*RU);
+	 return(c1*sum*mixture().T()*RU);
  }
 
 // Register the transfer model
