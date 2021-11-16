@@ -243,7 +243,7 @@ public:
 
     void updateFunction(Eigen::VectorXd& v_X)
     {
-        applyTolerance(mv_X);
+        applyTolerance(v_X);
         // Comment: (+) If flux enters the volume.
         // Assuming the normal vector of the surface to be pointing from the
         // solid to the gas phase.
