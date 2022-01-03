@@ -44,7 +44,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
-    add_subdirectory(interface/fortran)
 endif()
 
 #######################################################################
@@ -63,20 +62,11 @@ endif()
 ###############################################################################
 
 # Profile
-set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
-    "Flags used by the C++ compiler during Profile builds."
-    FORCE )
-set (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG" CACHE STRING
-    "Flags used by the C compiler during Profile builds."
-    FORCE )
-set (CMAKE_EXE_LINKER_FLAGS_PROFILE
-    "" CACHE STRING
-    "Flags used for linking binaries during Profile builds."
-    FORCE )
-set (CMAKE_SHARED_LINKER_FLAGS_PROFILE
-    "" CACHE STRING
-    "Flags used by the shared libraries linker during Profile builds."
-    FORCE )
+set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG")
+set (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG")
+set (CMAKE_EXE_LINKER_FLAGS_PROFILE)
+set (CMAKE_SHARED_LINKER_FLAGS_PROFILE)
+
 mark_as_advanced(
     CMAKE_CXX_FLAGS_PROFILE
     CMAKE_C_FLAGS_PROFILE
@@ -161,6 +151,7 @@ if (BUILD_FORTRAN_WRAPPER)
         set (CMAKE_Fortran_FLAGS_RELEASE "-O3")
         set (CMAKE_Fortran_FLAGS_DEBUG   "-g -traceback -fpe0 -check all")
     endif()
+    add_subdirectory(interface/fortran)
 endif()
 
 ################################################################################
