@@ -62,11 +62,20 @@ endif()
 ###############################################################################
 
 # Profile
-set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG")
-set (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG")
-set (CMAKE_EXE_LINKER_FLAGS_PROFILE)
-set (CMAKE_SHARED_LINKER_FLAGS_PROFILE)
-
+set (CMAKE_CXX_FLAGS_PROFILE "-g3 -Wall -O3 -DNDEBUG" CACHE STRING
+    "Flags used by the C++ compiler during Profile builds."
+    FORCE )
+set (CMAKE_C_FLAGS_PROFILE "-g3 -Wall -pedantic -O3 -DNDEBUG" CACHE STRING
+    "Flags used by the C compiler during Profile builds."
+    FORCE )
+set (CMAKE_EXE_LINKER_FLAGS_PROFILE
+    "" CACHE STRING
+    "Flags used for linking binaries during Profile builds."
+    FORCE )
+set (CMAKE_SHARED_LINKER_FLAGS_PROFILE
+    "" CACHE STRING
+    "Flags used by the shared libraries linker during Profile builds."
+    FORCE )
 mark_as_advanced(
     CMAKE_CXX_FLAGS_PROFILE
     CMAKE_C_FLAGS_PROFILE
@@ -142,14 +151,26 @@ if (BUILD_FORTRAN_WRAPPER)
 
     if (Fortran_COMPILER_NAME STREQUAL "gfortran")
         # gfortran
-        set (CMAKE_Fortran_FLAGS         "-fdefault-real-8")
-        set (CMAKE_Fortran_FLAGS_RELEASE "-O3")
-        set (CMAKE_Fortran_FLAGS_DEBUG   "-g")
+        set (CMAKE_Fortran_FLAGS "-fdefault-real-8" CACHE STRING
+             "Flags used by the Fortran compiler during all builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_RELEASE "-O3" CACHE STRING
+             "Flags used by the Fortran compiler during Release builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_DEBUG "-g" CACHE STRING
+             "Flags used by the Fortran compiler during Debug builds."
+             FORCE )
     elseif (Fortran_COMPILER_NAME STREQUAL "ifort")
         # ifort (untested)
-        set (CMAKE_Fortran_FLAGS         "-r8")
-        set (CMAKE_Fortran_FLAGS_RELEASE "-O3")
-        set (CMAKE_Fortran_FLAGS_DEBUG   "-g -traceback -fpe0 -check all")
+        set (CMAKE_Fortran_FLAGS "-r8" CACHE STRING
+             "Flags used by the Fortran compiler during all builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_RELEASE "-O3" CACHE STRING
+             "Flags used by the Fortran compiler during Release builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_DEBUG "-g -traceback -fpe0 -check all" CACHE STRING
+             "Flags used by the Fortran compiler during Debug builds."
+             FORCE )
     endif()
     add_subdirectory(interface/fortran)
 endif()
