@@ -113,15 +113,20 @@ Eigen::ArrayXd& MillikanWhiteModelData::b() { return m_impl->b; }
 
 const Eigen::ArrayXd& MillikanWhiteModelData::b() const { return m_impl->b; }
 
-double MillikanWhiteModelData::limitingCrossSection() const { return m_impl->omegav; }
-
-MillikanWhiteModelData& MillikanWhiteModelData::setLimitingCrossSection(double omegav)
+MillikanWhiteModelData& MillikanWhiteModelData::setReferenceCrossSection(double omegav)
 {
     assert(omegav >= 0.0);
     m_impl->omegav = omegav;
     return *this;
 }
 
+double MillikanWhiteModelData::referenceCrossSection() const { return m_impl->omegav; }
+
+double MillikanWhiteModelData::limitingCrossSection(const double& T) const
+{
+    // Park high temperature correction
+    return m_impl->omegav * (2.5E9/(T*T)); // 2.5E9 = 50,000^2
+}
 
 MillikanWhiteModel::MillikanWhiteModel(const MillikanWhiteModelData& data) :
     m_data(data) 
@@ -143,7 +148,7 @@ double MillikanWhiteModel::relaxationTime(
     // Park correction
     const double ni = thermo.numberDensity() * thermo.X()[m_data.speciesIndex()];
     const double ci = std::sqrt(8*RU*thermo.T()/(PI*m_data.molecularWeight()));
-    const double tau_park = 1.0/(ni * ci * m_data.limitingCrossSection());
+    const double tau_park = 1.0/(ni * ci * m_data.limitingCrossSection(thermo.T()));
 
     return tau_mw + tau_park;
 }
@@ -196,9 +201,9 @@ MillikanWhiteModel MillikanWhiteModelDB::create(
     if (species_iter == m_data->millikan_white_xml->end())
         return { data };
     
-    // Use limiting cross section if provided
+    // Use reference cross section if provided
     if (species_iter->hasAttribute("omegav"))
-        data.setLimitingCrossSection(species_iter->getAttribute<double>("omegav"));
+        data.setReferenceCrossSection(species_iter->getAttribute<double>("omegav"));
     
     // Loop over each heavy species in thermo
     size_t offset = (m_data->thermo.hasElectrons() ? 1 : 0);
