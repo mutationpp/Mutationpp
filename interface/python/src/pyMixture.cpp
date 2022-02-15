@@ -73,13 +73,25 @@ void py_export_Mixture(py::module &m) {
            "the mixture."
            "The input variables depend on the type of StateModel being used.")
 
+     .def("setState",
+           [](Mutation::Mixture &self,
+                   std::vector<double> rho_i,
+                   std::vector<double> T,
+                   const int vars)
+          {
+               self.setState(rho_i.data(),T.data(),vars);
+           },
+           "Sets the state of the mixture using the StateModel belonging to "
+           "the mixture."
+           "The input variables depend on the type of StateModel being used.")
+
       .def("T", &Mutation::Mixture::T,
            "Returns the mixture translational temperature.")
 
       .def("Tr", &Mutation::Mixture::Tr,
            "Returns the mixture rotational temperature.")
 
-      .def("Tv", &Mutation::Mixture::Tr,
+      .def("Tv", &Mutation::Mixture::Tv,
            "Returns the mixture vibrational temperature.")
 
       .def("Te", &Mutation::Mixture::Te,
