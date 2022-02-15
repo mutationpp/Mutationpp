@@ -21,7 +21,8 @@ void checkDefaultModelData(bool with_electrons)
     
     CHECK(data.speciesIndex() == offset);
     CHECK(data.molecularWeight() == mix.speciesMw(offset));
-    CHECK(data.limitingCrossSection() == 1.0e-20);
+    CHECK(data.referenceCrossSection() == 1.0e-20);
+    CHECK(data.limitingCrossSection(mix.T()) == 1.0e-20 * (2.5e9/(mix.T()*mix.T())));
     REQUIRE(data.a().size() == 3);
     REQUIRE(data.b().size() == 3);
 
@@ -77,7 +78,8 @@ void checkDefaultRelaxationRate(bool with_electrons)
     
     const double ni = mix.numberDensity();
     const double ci = std::sqrt(8*RU*300.0/(PI*mix.speciesMw(offset)));
-    const double tau_park = 1.0/(ni * ci * 1.0e-20);
+    const double sigma = 1e-20 * (2.5E9/(300.0*300.0));
+    const double tau_park = 1.0/(ni * ci * sigma);
     
     CHECK(model.relaxationTime(mix) == tau_mw + tau_park);
 }
