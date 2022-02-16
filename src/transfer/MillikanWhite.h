@@ -61,9 +61,10 @@ public:
      * 
      * where \f$\mu_{ij}\f$ is the reduced mass of the vibrator and colliding
      * partner in g/mol, and \f$\theta_{i}\f$ is the characteristic vibrational
-     * temperature of the vibrator.  The default value for Park's limiting 
+     * temperature of the vibrator.  The default value for Park's reference 
      * cross section is taken as 10^-16 cm^2, based on recommendation in
-     * @cite Gnoffo1989.
+     * @cite Gnoffo1989. The high-temperature limiting cross section is based
+     * on @cite Park1993.
      */
     MillikanWhiteModelData(
         const class Thermodynamics::Thermodynamics&, size_t, double);
@@ -101,11 +102,14 @@ public:
     /// Returns the array of B model parameters.
     const Eigen::ArrayXd& b() const;
 
-    /// Returns the limiting cross section for Park's correction.
-    double limitingCrossSection() const;
+    /// Sets the reference cross section in m^2.
+    MillikanWhiteModelData& setReferenceCrossSection(double omegav);
 
-    /// Sets the limiting cross section in m^2.
-    MillikanWhiteModelData& setLimitingCrossSection(double omegav);
+    /// Returns the reference cross section for Park's correction in m^2.
+    double referenceCrossSection() const;
+
+    /// Returns the limiting cross section for Park's correction in m^2.
+    double limitingCrossSection(const double& T) const;
 
 private:
     struct Impl;
