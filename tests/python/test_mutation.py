@@ -3,9 +3,17 @@
 import mutationpp as mpp
 import pytest
 
+#Equilibrium Mixture
 mixture = mpp.Mixture("air_11")
 mixture.equilibrate(300., 1000.)
 
+# MultiTemperature Mixture
+myMixtureOptions = mpp.MixtureOptions("air_5")
+myMixtureOptions.setStateModel("ChemNonEqTTv")
+mixtureNonEq = mpp.Mixture(myMixtureOptions)
+rhoi = [1.0]*5
+T = [10000., 300.]
+mixtureNonEq.setState(rhoi, T, 1)
 
 # def test_averageDiffusionCoeffs():
 # Todo: write proper test
@@ -239,7 +247,16 @@ def test_soretThermalConductivity():
 
 def test_T():
     assert mixture.T() == 300.
+    assert mixtureNonEq.T() == 10000.
 
+def test_Tr():
+    assert mixtureNonEq.Tr() == 10000.
+
+def test_Tv():
+    assert mixtureNonEq.Tv() == 300.
+
+def test_Te():
+    assert mixtureNonEq.Te() == 300.
 
 # def test_thermalDiffusionRatios():
 # Todo: write proper test
