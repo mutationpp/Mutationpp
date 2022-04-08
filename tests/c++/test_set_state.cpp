@@ -83,7 +83,7 @@ TEST_CASE("setState converts rho*Em to Tm and vice a versa",
             // Check that implicitly set properties still match
             mix.getTemperatures(T2.data());
             for (int i = 0; i < nt; ++i)
-                CHECK(T2[i] ==  Approx(T2[i]));
+                CHECK(T1[i] ==  Approx(T2[i]));
             
             CHECK(rho == Approx(mix.density()));
 
