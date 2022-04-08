@@ -74,6 +74,7 @@ public:
      * following:
      *   0: {species densities}, {total energy density, vib. energy density}
      *   1: {species densities} and {T, Tv}
+     *   2: {species mass fractions} and {P, T, Tv} array
      */
     void setState(
         const double* const p_mass, const double* const p_energy,
@@ -82,11 +83,13 @@ public:
         const int ns = m_thermo.nSpecies();
 
         // Compute the species concentrations which are used through out this
-        // method regardless of variable set
+        // method regardless of variable set.  Note that in the case where
+        // the p_mass vector is mass fractions, this is just dividing by the
+        // molecular weights as the first step in converting to mole fractions.
         double conc = 0.0;
         for (int i = 0; i < ns; ++i){
             // Check that species densities are at least positive
-            assert(p_mass[i] >= 0.0);
+            assert(p_mass[i] >= 0.0 && "Species is negative!");
             mp_X[i] = std::max(p_mass[i] / m_thermo.speciesMw(i), 0.0);
             conc += mp_X[i];
         }
@@ -104,32 +107,44 @@ public:
         }
         case 1:
             // Check that temperature is at least positive
-            assert(p_energy[0] > 0.0);
-            assert(p_energy[1] > 0.0);
+            assert(p_energy[0] > 0.0 && "T is negative!");
+            assert(p_energy[1] > 0.0 && "Tv is negative!");
             m_T = p_energy[0];
             m_Tv = p_energy[1];
             break;
+        case 2:
+            // Check temperature and pressure are positive
+            assert(p_energy[0] > 0.0 && "P is negative!");
+            assert(p_energy[1] > 0.0 && "T is negative!");
+            assert(p_energy[2] > 0.0 && "Tv is negative!");
+            m_P = p_energy[0];
+            m_T = p_energy[1];
+            m_Tv = p_energy[2];
+            break;
         default:
             throw InvalidInputError("variable set", vars)
-                << "This variable-set is not implemented in ChemNonEqStateModel"
+                << "This variable-set is not implemented in ChemNonEqTTv"
                 << ". Possible variable-sets are:\n"
                 << "  0: (species densities, static energy density)\n"
-                << "  1: (species densities, T and Tv)";
+                << "  1: (species densities, T and Tv)\n"
+                << "  2: (species mass fractions, P, T and Tv)";
         }
 
         // Set Tr, Tel, and Te
         m_Tr = m_T;
         m_Tel = m_Te = m_Tv;
 
-        // Compute the pressure and species mole fractions from T and rho_i
+        // Compute the species mole fractions
         for (int i = 0; i < ns; ++i)
             mp_X[i] /= conc;
-        m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
+
+        // Compute the pressure from T and rho_i
+        if (vars != 2)
+            m_P = conc * RU * (m_T + (m_Tv - m_T) * elec / conc);
     }
+
     /**
-     *  Add proper
-     *   0: {species densities}, {total energy density, vib. energy density}
-     *   1: {species densities} and {T, Tv}
+     *  Initialize transfer models
      */
     void initializeTransferModel(Mutation::Mixture& mix)
     {
