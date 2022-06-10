@@ -295,7 +295,7 @@ public:
     template <typename T>
     bool getChildElementObject(const std::string& tag, T& object) const
     {
-        getChildElementObject(tag, object, begin());
+        return getChildElementObject(tag, object, begin());
     }
 
     template <typename T>
