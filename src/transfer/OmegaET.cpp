@@ -67,13 +67,13 @@ public:
 	    if (!m_has_electrons)
 		    return 0.0;
 
-	    const double * p_X = m_mixture.X();
-        double nd = m_mixture.numberDensity();
-        double T = m_mixture.T();
-        double Te = m_mixture.Te();
+	    const double * p_X = mixture().X();
+        double nd = mixture().numberDensity();
+        double T = mixture().T();
+        double Te = mixture().Te();
 
-        const double ns = m_mixture.nSpecies();
-        Map<const ArrayXd> X(m_mixture.X(),ns);
+        const double ns = mixture().nSpecies();
+        Map<const ArrayXd> X(mixture().X(),ns);
 
         // CollisionDB data
         const ArrayXd& Q11ei = m_collisions.Q11ei();

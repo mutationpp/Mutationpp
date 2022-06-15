@@ -29,10 +29,10 @@
 #
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0048 NEW)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 project(mutation++
-    VERSION 1.0.5
+    VERSION 1.1.2
     LANGUAGES CXX
 )
 
@@ -44,7 +44,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 enable_language(CXX)
 if (BUILD_FORTRAN_WRAPPER)
     enable_language(Fortran)
-    add_subdirectory(interface/fortran)
 endif()
 
 #######################################################################
@@ -152,15 +151,28 @@ if (BUILD_FORTRAN_WRAPPER)
 
     if (Fortran_COMPILER_NAME STREQUAL "gfortran")
         # gfortran
-        set (CMAKE_Fortran_FLAGS         "-fdefault-real-8")
-        set (CMAKE_Fortran_FLAGS_RELEASE "-O3")
-        set (CMAKE_Fortran_FLAGS_DEBUG   "-g")
+        set (CMAKE_Fortran_FLAGS "-fdefault-real-8" CACHE STRING
+             "Flags used by the Fortran compiler during all builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_RELEASE "-O3" CACHE STRING
+             "Flags used by the Fortran compiler during Release builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_DEBUG "-g" CACHE STRING
+             "Flags used by the Fortran compiler during Debug builds."
+             FORCE )
     elseif (Fortran_COMPILER_NAME STREQUAL "ifort")
         # ifort (untested)
-        set (CMAKE_Fortran_FLAGS         "-r8")
-        set (CMAKE_Fortran_FLAGS_RELEASE "-O3")
-        set (CMAKE_Fortran_FLAGS_DEBUG   "-g -traceback -fpe0 -check all")
+        set (CMAKE_Fortran_FLAGS "-r8" CACHE STRING
+             "Flags used by the Fortran compiler during all builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_RELEASE "-O3" CACHE STRING
+             "Flags used by the Fortran compiler during Release builds."
+             FORCE )
+        set (CMAKE_Fortran_FLAGS_DEBUG "-g -traceback -fpe0 -check all" CACHE STRING
+             "Flags used by the Fortran compiler during Debug builds."
+             FORCE )
     endif()
+    add_subdirectory(interface/fortran)
 endif()
 
 ################################################################################

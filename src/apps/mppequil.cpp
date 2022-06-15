@@ -280,7 +280,7 @@ void printHelpMessage(const char* const name)
 
     cout << endl;
     cout << "Example:" << endl;
-    cout << tab << name << " -T 300:100:15000 -P 101325 -m 1-3,8 air11" << endl;
+    cout << tab << name << " -T 300:100:15000 -P 101325 -m 1-3,8 air_11" << endl;
     cout << endl;
 
     exit(0);

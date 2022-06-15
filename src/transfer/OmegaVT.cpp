@@ -26,9 +26,12 @@
  */
 
 #include "MillikanWhite.h"
+#include "HarmonicOscillator.h"
 #include "Mixture.h"
 #include "TransferModel.h"
 #include <cmath>
+
+#include <Eigen/Dense>
 
 using namespace Mutation;
 
@@ -36,168 +39,273 @@ namespace Mutation {
     namespace Transfer {
 
 /**
- * Represents a coupling between vibrational and translational energy modes.
+ * Combines vibrator energy model with relaxation time model to form a 
+ * vibration-translation energy relaxation model for a single vibrator.
+ */
+class Vibrator
+{
+public:
+    Vibrator(const Thermodynamics::HarmonicOscillator&, const MillikanWhiteModel&);
+
+    /// Index of species in mixture.
+    size_t speciesIndex() const { 
+        return m_relaxation_model.speciesIndex(); 
+    }
+
+    /// Molecular weight of the vibrator in kg/mol
+    double molecularWeight() const { 
+        return m_relaxation_model.molecularWeight(); 
+    }
+    
+    /// Energy in K of the vibrator at the given temperature.
+    double energy(double T) const { 
+        return m_energy_model.energy(T); 
+    }
+
+    /// Relaxation time of the vibrator.
+    /// @todo Find better solution to limit dependency to just thermodynamic
+    /// state information, not whole mixture.
+    double relaxationTime(const class Thermodynamics::Thermodynamics& thermo) const { 
+        return m_relaxation_model.relaxationTime(thermo);
+    }
+
+private:
+    Thermodynamics::HarmonicOscillator m_energy_model;
+    MillikanWhiteModel m_relaxation_model;
+};
+
+
+Vibrator::Vibrator(
+    const Thermodynamics::HarmonicOscillator& ho, const MillikanWhiteModel& mw
+) : m_energy_model(ho), m_relaxation_model(mw) { }
+
+
+/**
+ * @brief Vibration-translation energy relaxation model.
+ * 
+ * Implements the Millikan-White model with the Park correction based on
+ * Eqs. (55-58) in NASA-TP-2867, Gnoffo et al. (1989).
  */
 class OmegaVT : public TransferModel
 {
 public:
-
-    OmegaVT(Mixture& mix)
-        : TransferModel(mix), m_mw(mix)
-    {
-        m_const_Park_correction = std::sqrt(PI*KB/(8.E0*NA));
-        m_ns              = m_mixture.nSpecies();
-        m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
-
-        mp_Mw = new double [m_ns];
-        for(int i = 0; i < m_ns; ++i)
-            mp_Mw[i] = m_mixture.speciesMw(i);
-        mp_hv = new double [m_ns];
-        mp_hveq = new double [m_ns];
-    }
-
-    virtual ~OmegaVT()
-    {
-        delete [] mp_Mw;
-        delete [] mp_hv;
-        delete [] mp_hveq;
-    }
-
-    /**
-     * Computes the source terms of the Vibration-Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
-     * using a Landau-Teller formula taking into account Park's correction (default; can be disabled by making zero the appropriate flag, see below):
-     * \f[ \Omega^{VT}_m = \rho_m \frac{e^V_m\left(T\right)-e^V_m\left(T_{vm}\right)} {\tau^{VT}_m} \f]
-     *
-     * The average relaxation time \f$ \tau^{VT}_m \f$ is given by the expression:
-     *
-     * \f[ \tau^{VT}_m = \frac{ \sum_{j \in \mathcal{H}} \rho_j / M_j}{ \sum_{j \in \mathcal{H}} \rho_j / (M_j \tau^{VT}_{mj}) } \f]
-     *
-     * More information about the above model can be found in @cite Panesi 2008
-     *
-     * @todo compare the average relaxation time with the one suggested by Park93
-     *
-     */
-
-    double source()
-    {
-        const double * p_Y = m_mixture.Y();
-        double rho = m_mixture.density();
-        double T = m_mixture.T();
-        double Tv = m_mixture.Tv();
-
-        m_mixture.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, mp_hveq, NULL, NULL);
-        m_mixture.speciesHOverRT(T, Tv, T, Tv, Tv, NULL, NULL, NULL, mp_hv, NULL, NULL);
-
-        int inv = 0;
-        double src = 0.0;
-        for (int iv = 0; iv-inv < m_mw.nVibrators(); ++iv){
-            if(m_mixture.species(iv).type() != Mutation::Thermodynamics::MOLECULE){
-                inv++;
-            } else {
-                src += p_Y[iv]*rho*RU*T/mp_Mw[iv]*(mp_hveq[iv] - mp_hv[iv])/compute_tau_VT_m(iv-inv);
-            }
-        }
-        return src;
-    }
-
+    OmegaVT(Mixture&);
+    virtual ~OmegaVT() = default;
+    virtual double source() override;
 private:
-
-    MillikanWhite m_mw;
-
-   /**
-    * @brief This function computes the Millikan and White relaxation time
-    * for each diatomic collision
-    *
-    * @param vibrator index
-    * @param partner index
-    *
-    * @return Millikan and White relaxation time \tau_{m,j}^{MW}
-    */
-
-   inline double const compute_tau_VT_mj(int const, int const);
-
-    /**
-     * @brief Computes the frequency average over heavy particles.
-     * @param vibrator index
-     *
-     * @return
-     */
-    double compute_tau_VT_m(int const);
-
-    /**
-     * @brief This function computes the Park correction
-     * for vibrational-translational energy transfer
-     * for each collision pair.
-     *
-     * @param vibrator index
-     * @param partner index
-     *
-     * @return Park correction \tau_{m,j}^P
-     */
-
-    inline double const compute_Park_correction_VT(int const, int const);
-
-    /**
-     * Necessary variables
-     */
-    int m_ns;
-    int m_transfer_offset;
-    double* mp_Mw;
-    double* mp_hv;
-    double* mp_hveq;
-
-    double m_const_Park_correction;
+    std::vector<Vibrator> m_vibrators;
 };
-      
-// Implementation of the Vibrational-Translational Energy Transfer.
-      
-inline double const OmegaVT::compute_Park_correction_VT(int const i_vibrator, int const i_partner)
-{
-    // Limiting cross section for Park's Correction
-    double P = m_mixture.P();
-    double T = m_mixture.T();
-
-    double sigma;
-    if (T > 20000.0) {
-      sigma = m_mw[i_vibrator].omega() * 6.25 ; // 6.25 = (50000/20000)^2
-    } else {
-      sigma = m_mw[i_vibrator].omega() *(2.5E9/(T*T));
-    }
-    
-    return(m_const_Park_correction * sqrt(m_mw[i_vibrator][i_partner].mu()*T)/(sigma*P));
-}
-
- 
-inline double const OmegaVT::compute_tau_VT_mj(int const i_vibrator, int const i_partner)
-{
-//    Enable in the future for multiple vibrational temperatures
-      double P = m_mixture.P();
-      double T = m_mixture.T();
-
-      return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,-1.0/3.0) - m_mw[i_vibrator][i_partner].b()) -18.421) * ONEATM / P );
-}
-      
-double OmegaVT::compute_tau_VT_m(int const i_vibrator)
-{
-    const double * p_Y = m_mixture.Y();
-    
-    double sum1 = 0.0;
-    double sum2 = 0.0;
-    
-    // Partner offset
-    for (int i_partner = m_transfer_offset; i_partner < m_ns; ++i_partner){
-        double tau_j = compute_tau_VT_mj(i_vibrator, i_partner-m_transfer_offset) + compute_Park_correction_VT(i_vibrator, i_partner-m_transfer_offset);
-        sum1 += p_Y[i_partner]/(mp_Mw[i_partner]);
-        sum2 += p_Y[i_partner]/(mp_Mw[i_partner]*tau_j);
-    }
-  
-    return(sum1/sum2);
-}
 
 
 // Register the transfer model
-Utilities::Config::ObjectProvider<
-    OmegaVT, TransferModel> omegaVT("OmegaVT");
+Utilities::Config::ObjectProvider<OmegaVT, TransferModel> omegaVT("OmegaVT");
+
+
+OmegaVT::OmegaVT(Mixture& mix) : 
+    TransferModel(mix)
+{
+    Thermodynamics::HarmonicOscillatorDB hodb;
+    MillikanWhiteModelDB mwdb(mix);
+
+    for (const auto& species: mix.species())
+    {
+        if (species.type() == Thermodynamics::MOLECULE)
+        {
+            auto ho = hodb.create(species.name());
+            auto mw = mwdb.create(species.name(), ho.characteristicTemperatures()[0]);
+            m_vibrators.emplace_back(ho, mw);
+        }   
+    }
+}
+
+
+double OmegaVT::source()
+{
+    auto Y = mixture().Y();
+    auto T = mixture().T();
+    auto Tv = mixture().Tv();
+
+    double src = 0.0;
+
+    for (auto& vibrator: m_vibrators)
+    {
+        const auto iv = vibrator.speciesIndex();
+        const auto tau = vibrator.relaxationTime(mixture());
+        const auto mw = vibrator.molecularWeight();
+        src += Y[iv]*(vibrator.energy(T) - vibrator.energy(Tv))/(mw*tau);
+    }
+
+    return src * mixture().density() * RU;
+}
+
+
+
+
+
+/**
+ * Represents a coupling between vibrational and translational energy modes.
+ */
+// class OldOmegaVT : public TransferModel
+// {
+// public:
+
+//     OldOmegaVT(Mixture& mix)
+//         : TransferModel(mix), m_mw(mix)
+//     {
+//         m_const_Park_correction = std::sqrt(PI*KB/(8.E0*NA));
+//         m_ns              = m_mixture.nSpecies();
+//         m_transfer_offset = m_mixture.hasElectrons() ? 1 : 0;
+
+//         mp_Mw = new double [m_ns];
+//         for(int i = 0; i < m_ns; ++i)
+//             mp_Mw[i] = m_mixture.speciesMw(i);
+//         mp_hv = new double [m_ns];
+//         mp_hveq = new double [m_ns];
+//     }
+
+//     virtual ~OldOmegaVT()
+//     {
+//         delete [] mp_Mw;
+//         delete [] mp_hv;
+//         delete [] mp_hveq;
+//     }
+
+//     /**
+//      * Computes the source terms of the Vibration-Translational energy transfer in \f$ [J/(m^3\cdot s)] \f$
+//      * using a Landau-Teller formula taking into account Park's correction (default; can be disabled by making zero the appropriate flag, see below):
+//      * \f[ \Omega^{VT}_m = \rho_m \frac{e^V_m\left(T\right)-e^V_m\left(T_{vm}\right)} {\tau^{VT}_m} \f]
+//      *
+//      * The average relaxation time \f$ \tau^{VT}_m \f$ is given by the expression:
+//      *
+//      * \f[ \tau^{VT}_m = \frac{ \sum_{j \in \mathcal{H}} \rho_j / M_j}{ \sum_{j \in \mathcal{H}} \rho_j / (M_j \tau^{VT}_{mj}) } \f]
+//      *
+//      * More information about the above model can be found in @cite Panesi 2008
+//      *
+//      * @todo compare the average relaxation time with the one suggested by Park93
+//      *
+//      */
+
+//     double source()
+//     {
+//         const double * p_Y = m_mixture.Y();
+//         double rho = m_mixture.density();
+//         double T = m_mixture.T();
+//         double Tv = m_mixture.Tv();
+
+//         m_mixture.speciesHOverRT(T, T, T, T, T, NULL, NULL, NULL, mp_hveq, NULL, NULL);
+//         m_mixture.speciesHOverRT(T, Tv, T, Tv, Tv, NULL, NULL, NULL, mp_hv, NULL, NULL);
+
+//         int inv = 0;
+//         double src = 0.0;
+//         for (int iv = 0; iv-inv < m_mw.nVibrators(); ++iv){
+//             if(m_mixture.species(iv).type() != Mutation::Thermodynamics::MOLECULE){
+//                 inv++;
+//             } else {
+//                 src += p_Y[iv]*rho*RU*T/mp_Mw[iv]*(mp_hveq[iv] - mp_hv[iv])/compute_tau_VT_m(iv-inv);
+//             }
+//         }
+//         return src;
+//     }
+
+// private:
+
+//     MillikanWhite m_mw;
+
+//    /**
+//     * @brief This function computes the Millikan and White relaxation time
+//     * for each diatomic collision
+//     *
+//     * @param vibrator index
+//     * @param partner index
+//     *
+//     * @return Millikan and White relaxation time \tau_{m,j}^{MW}
+//     */
+
+//    inline double const compute_tau_VT_mj(int const, int const);
+
+//     /**
+//      * @brief Computes the frequency average over heavy particles.
+//      * @param vibrator index
+//      *
+//      * @return
+//      */
+//     double compute_tau_VT_m(int const);
+
+//     /**
+//      * @brief This function computes the Park correction
+//      * for vibrational-translational energy transfer
+//      * for each collision pair.
+//      *
+//      * @param vibrator index
+//      * @param partner index
+//      *
+//      * @return Park correction \tau_{m,j}^P
+//      */
+
+//     inline double const compute_Park_correction_VT(int const, int const);
+
+//     /**
+//      * Necessary variables
+//      */
+//     int m_ns;
+//     int m_transfer_offset;
+
+//     double* mp_Mw;
+//     double* mp_hv;
+//     double* mp_hveq;
+
+//     double m_const_Park_correction;
+// };
+      
+// // Implementation of the Vibrational-Translational Energy Transfer.
+      
+// inline double const OmegaVT::compute_Park_correction_VT(int const i_vibrator, int const i_partner)
+// {
+//     // Limiting cross section for Park's Correction
+//     double P = m_mixture.P();
+//     double T = m_mixture.T();
+
+//     double sigma;
+//     if (T > 20000.0) {
+//       sigma = m_mw[i_vibrator].omega() * 6.25 ; // 6.25 = (50000/20000)^2
+//     } else {
+//       sigma = m_mw[i_vibrator].omega() *(2.5E9/(T*T));
+//     }
+    
+//     return(m_const_Park_correction * sqrt(m_mw[i_vibrator][i_partner].mu()*T)/(sigma*P));
+// }
+
+ 
+// inline double const OmegaVT::compute_tau_VT_mj(int const i_vibrator, int const i_partner)
+// {
+// //    Enable in the future for multiple vibrational temperatures
+//       double P = m_mixture.P();
+//       double T = m_mixture.T();
+
+//       return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,-1.0/3.0) - m_mw[i_vibrator][i_partner].b()) -18.421) * ONEATM / P );
+// }
+      
+// double OmegaVT::compute_tau_VT_m(int const i_vibrator)
+// {
+//     const double * p_Y = m_mixture.Y();
+    
+//     double sum1 = 0.0;
+//     double sum2 = 0.0;
+    
+//     // Partner offset
+//     for (int i_partner = m_transfer_offset; i_partner < m_ns; ++i_partner){
+//         double tau_j = compute_tau_VT_mj(i_vibrator, i_partner-m_transfer_offset) + compute_Park_correction_VT(i_vibrator, i_partner-m_transfer_offset);
+//         sum1 += p_Y[i_partner]/(mp_Mw[i_partner]);
+//         sum2 += p_Y[i_partner]/(mp_Mw[i_partner]*tau_j);
+//     }
+  
+//     return(sum1/sum2);
+// }
+
+
+// // Register the transfer model
+// Utilities::Config::ObjectProvider<
+//     OmegaVT, TransferModel> omegaVT("OmegaVT");
 
     } // namespace Transfer
 } // namespace Mutation 

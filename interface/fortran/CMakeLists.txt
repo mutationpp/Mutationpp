@@ -22,8 +22,6 @@
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0022 NEW)
 
-include(GNUInstallDirs)
-
 add_library(mutation++_fortran
     SHARED 
         cwrapper.cpp 
@@ -34,6 +32,7 @@ add_library(mutation++::fortran_interface ALIAS mutation++_fortran)
 set_target_properties(mutation++_fortran 
     PROPERTIES
         Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        EXPORT_NAME fortran_interface
 )
 
 target_link_libraries(mutation++_fortran
@@ -41,14 +40,14 @@ target_link_libraries(mutation++_fortran
         mutation++
 )
 install(TARGETS mutation++_fortran EXPORT mutation++Targets
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY  DESTINATION ${INSTALL_LIB_DIR}
+    ARCHIVE  DESTINATION ${INSTALL_LIB_DIR}
+    INCLUDES DESTINATION ${INSTALL_INCLUDE_DIR}
 )
 
 install(
     FILES 
     ${CMAKE_CURRENT_BINARY_DIR}/mutationpp.mod 
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION ${INSTALL_INCLUDE_DIR}
 )
 

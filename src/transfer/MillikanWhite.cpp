@@ -27,8 +27,8 @@
 
 
 #include "MillikanWhite.h"
+#include "Thermodynamics.h"
 #include "Utilities.h"
-#include "ParticleRRHO.h"
 
 #include <iostream>
 #include <fstream>
@@ -42,160 +42,186 @@ using namespace Mutation::Thermodynamics;
 namespace Mutation {
     namespace Transfer {
 
-//==============================================================================
 
-MillikanWhiteVibrator::MillikanWhiteVibrator(
-    const XmlElement& node, const class Thermodynamics& thermo)
+struct MillikanWhiteModelData::Impl
 {
-    assert(node.tag() == "vibrator");
-        
-    // Get the name of this species
-    std::string name;
-    node.getAttribute("species", name, "must provide species name!");
-    m_index  = thermo.speciesIndex(name);
-    m_thetav = loadThetaV(name);
+    size_t index = 0;
+    double mw = 0.0;
+    double omegav = 1.0E-20; // m^2
+    Eigen::ArrayXd a;
+    Eigen::ArrayXd b;
+
+    Impl(size_t size) : a(size), b(size) { }
+};
+
+
+MillikanWhiteModelData::MillikanWhiteModelData(
+    const class Thermodynamics& thermo, size_t index, double thetav
+) :
+    m_impl(std::make_unique<Impl>(thermo.nHeavy()))
+{
+    m_impl->index = index;
+    m_impl->mw = thermo.speciesMw(index);
+
+    // Fill in default values
+    double theta_power = std::pow(thetav, 4.0/3.0);
+    size_t offset = (thermo.hasElectrons() ? 1 : 0);
+
+    for (size_t i = 0; i < thermo.nHeavy(); ++i)
+    {
+        double mwi = thermo.speciesMw(i+offset);
+        double mu = 1000.0*m_impl->mw*mwi/(m_impl->mw + mwi); // reduced mass in g/mol
+        m_impl->a[i] = 1.16E-3*std::sqrt(mu)*theta_power;
+        m_impl->b[i] = 0.015*std::pow(mu, 0.25);
+    }
+}
+
+MillikanWhiteModelData::MillikanWhiteModelData(const MillikanWhiteModelData& rhs)
+    : m_impl(nullptr)
+{
+    if (rhs.m_impl)
+        m_impl = std::make_unique<Impl>(*rhs.m_impl);
+}
+
+MillikanWhiteModelData& MillikanWhiteModelData::operator=(MillikanWhiteModelData rhs)
+{
+    if (!rhs.m_impl)
+        m_impl.reset();
+    else if (!m_impl)
+        m_impl = std::make_unique<Impl>(*rhs.m_impl);
+    else
+        *m_impl = *rhs.m_impl;
     
-    // Get the limiting cross-section if available
-    node.getAttribute("omegav", m_omegav, 3.0E-21);
+    return *this;
+}
+
+MillikanWhiteModelData::MillikanWhiteModelData(MillikanWhiteModelData&& rhs) noexcept = default;
+
+MillikanWhiteModelData& MillikanWhiteModelData::operator=(MillikanWhiteModelData&& rhs) noexcept = default;
+
+MillikanWhiteModelData::~MillikanWhiteModelData() = default;
+
+size_t MillikanWhiteModelData::speciesIndex() const { return m_impl->index; }
+
+double MillikanWhiteModelData::molecularWeight() const { return m_impl->mw; }
+
+Eigen::ArrayXd& MillikanWhiteModelData::a() { return m_impl->a; }
+
+const Eigen::ArrayXd& MillikanWhiteModelData::a() const { return m_impl->a; }
+
+Eigen::ArrayXd& MillikanWhiteModelData::b() { return m_impl->b; }
+
+const Eigen::ArrayXd& MillikanWhiteModelData::b() const { return m_impl->b; }
+
+MillikanWhiteModelData& MillikanWhiteModelData::setReferenceCrossSection(double omegav)
+{
+    assert(omegav >= 0.0);
+    m_impl->omegav = omegav;
+    return *this;
+}
+
+double MillikanWhiteModelData::referenceCrossSection() const { return m_impl->omegav; }
+
+double MillikanWhiteModelData::limitingCrossSection(const double& T) const
+{
+    // Park high temperature correction
+    return m_impl->omegav * (2.5E9/(T*T)); // 2.5E9 = 50,000^2
+}
+
+MillikanWhiteModel::MillikanWhiteModel(const MillikanWhiteModelData& data) :
+    m_data(data) 
+{ }
+
+
+double MillikanWhiteModel::relaxationTime(
+    const Mutation::Thermodynamics::Thermodynamics& thermo) const
+{
+    // Millikan-White model for average relaxation time
+    const Eigen::Map<const Eigen::ArrayXd> Xh(
+        thermo.X()+(thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
+    const double T_fac = std::pow(thermo.T(), -1.0/3.0);
+    const double p_atm = thermo.P() / ONEATM;
+    const double tau_mw = 
+        (Xh*(m_data.a()*(T_fac - m_data.b()) - 18.42).exp()).sum() / 
+        (Xh.sum()*p_atm);
+
+    // Park correction
+    const double ni = thermo.numberDensity() * thermo.X()[m_data.speciesIndex()];
+    const double ci = std::sqrt(8*RU*thermo.T()/(PI*m_data.molecularWeight()));
+    const double tau_park = 1.0/(ni * ci * m_data.limitingCrossSection(thermo.T()));
+
+    return tau_mw + tau_park;
+}
+
+
+struct MillikanWhiteModelDB::Data
+{
+    const class Thermodynamics& thermo;
+    XmlDocument database;
+    XmlElement::const_iterator millikan_white_xml;
+
+    Data(const class Thermodynamics& thermo, std::string file_path) :
+        thermo(thermo), database(file_path)
+    {
+        auto& root = database.root();
+        millikan_white_xml = root.findTag("Millikan-White");
+
+        if (millikan_white_xml == root.end())
+            root.parseError("Could not find Millikan-White element.");
+    }
+};
+
+
+MillikanWhiteModelDB::MillikanWhiteModelDB(
+    const class Thermodynamics& thermo
+) :
+    MillikanWhiteModelDB(thermo, databaseFileName("VT.xml", "transfer"))
+{ }
+
+
+MillikanWhiteModelDB::MillikanWhiteModelDB(
+    const class Thermodynamics& thermo, std::string file_path
+) :
+    m_data(std::make_shared<Data>(thermo, file_path))
+{ }
+
+
+MillikanWhiteModel MillikanWhiteModelDB::create(
+    std::string species_name, double theta)
+{
+    // Create default data
+    MillikanWhiteModelData data(
+        m_data->thermo, m_data->thermo.speciesIndex(species_name), theta);
+
+    // Find species in database
+    auto species_iter = m_data->millikan_white_xml->findTagWithAttribute(
+        "vibrator", "species", species_name);
     
-    const Species& vibrator = thermo.species(name);
+    // If species not in database, return default model
+    if (species_iter == m_data->millikan_white_xml->end())
+        return { data };
+    
+    // Use reference cross section if provided
+    if (species_iter->hasAttribute("omegav"))
+        data.setReferenceCrossSection(species_iter->getAttribute<double>("omegav"));
     
     // Loop over each heavy species in thermo
-    int offset = (thermo.hasElectrons() ? 1 : 0);
-    XmlElement::const_iterator partner_iter;
-    
-    double a, b, mu;
-    for (int i = 0; i < thermo.nHeavy(); ++i) {
-        // Get collision partner
-        const Species& partner = thermo.species(i+offset);
-        
-        // Compute reduced mass of this pair
-        mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight());
-            
-        // Use a and b data from data file or use the defaults if the pair
-        // is not present in the file
-        if ((partner_iter = node.findTagWithAttribute(
-            "partner", "species", partner.name())) != node.end()) {
-            // Get a, b from parnter node
-            partner_iter->getAttribute("a", a, "must provide constant a!");
-            partner_iter->getAttribute("b", b, "must provide constant b!");
-            
-            // Add Millikan-White data for collision pair
-            m_partners.push_back(MillikanWhitePartner(a, b, mu));
-        } else {
-            if (m_thetav < 0.0) {
-                std::cout << "Error: Did not find vibrational temperature for "
-                          << name << "." << std::endl;
-                std::exit(1);
-            }
+    size_t offset = (m_data->thermo.hasElectrons() ? 1 : 0);
 
-            // Add Millikan-White data using defaults
-            m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
+    for (size_t i = 0; i < m_data->thermo.nHeavy(); ++i)
+    {
+        auto partner_iter = species_iter->findTagWithAttribute(
+            "partner", "species", m_data->thermo.speciesName(i+offset));
+        
+        if (partner_iter != species_iter->end())
+        {
+            partner_iter->getAttribute("a", data.a()[i], "must provide constant a!");
+            partner_iter->getAttribute("b", data.b()[i], "must provide constant b!");
         }
     }
+
+    return { data };
 }
-
-//==============================================================================
-
-MillikanWhiteVibrator::MillikanWhiteVibrator(
-    const std::string& name, const class Thermodynamics& thermo)
-    : m_omegav(3.0E-21),
-      m_index(thermo.speciesIndex(name)),
-      m_thetav(loadThetaV(name))
-{
-    // Rely on thetav for all partners so make sure it was found
-    if (m_thetav < 0.0) {
-        std::cout << "Error: Did not find vibrational temperature for "
-                  << name << "." << std::endl;
-        std::exit(1);
-    }
-
-    const Species& vibrator = thermo.species(name);
-    
-    // Loop over each heavy species in thermo
-    int offset = (thermo.hasElectrons() ? 1 : 0);
-    double mu;
-    
-    for (int i = 0; i < thermo.nHeavy(); ++i) {
-        // Get collision partner
-        const Species& partner = thermo.species(i+offset);
-        
-        // Compute reduced mass of this pair
-        mu = (vibrator.molecularWeight() * partner.molecularWeight()) /
-             (vibrator.molecularWeight() + partner.molecularWeight());
-        
-        // Add Millikan-White data using defaults
-        m_partners.push_back(MillikanWhitePartner(mu, m_thetav));
-    }
-}
-
-//==============================================================================
-
-double MillikanWhiteVibrator::loadThetaV(const std::string& name)
-{
-    // Get the species.xml path on this computer.
-    std::string filename = databaseFileName("species.xml", "thermo");
-
-    // Now look for the species
-    XmlDocument doc(filename);
-    XmlElement::const_iterator iter = doc.root().findTagWithAttribute(
-        "species", "name", name);
-    if (iter == doc.root().end()) return -1.0;
-
-    // Look for the thermodynamic data
-    XmlElement::const_iterator thermo_iter = iter->findTagWithAttribute(
-        "thermodynamics", "type", "RRHO");
-    if (thermo_iter == iter->end()) return -1.0;
-
-    // Look for the vibrational temperature data
-    iter = thermo_iter->findTag("vibrational_temperatures");
-    if (iter == thermo_iter->end()) return -1.0;
-
-    std::stringstream ss(iter->text());
-    double thetav; ss >> thetav;
-
-    return thetav;
-}
-
-//==============================================================================
-
-MillikanWhite::MillikanWhite(const class Thermodynamics& thermo)
-{
-    // Get the VT.xml file location.
-    std::string filename = databaseFileName("VT.xml", "transfer");
-    
-    // Open the VT file as an XML document
-    XmlDocument doc(filename);
-    
-    // Find the Millikan-White data
-    XmlElement::const_iterator iter = doc.root().findTag("Millikan-White");
-    if (iter == doc.root().end())
-        doc.root().parseError("Could not find Millikan-White element.");
-    const XmlElement& root = *iter;
-
-    // Loop over all molecules and load the Millikan-White data associated with
-    // them
-    int offset = (thermo.hasElectrons() ? 1 : 0);
-    for (int i = 0; i < thermo.nHeavy(); ++i) {
-        const Species& species = thermo.species(i+offset);
-        
-        // If this molecule can vibrate, add it to the list
-        if (species.type() == MOLECULE) {
-            // If vibrator is not in in VT.xml take the characteristic vibrational
-            // temperature from species.xml
-            if ((iter = root.findTagWithAttribute(
-                "vibrator", "species", species.name())) != root.end())
-                m_vibrators.push_back(
-                    MillikanWhiteVibrator(*iter, thermo));
-            else
-                m_vibrators.push_back(
-                    MillikanWhiteVibrator(species.name(), thermo));
-        }
-    }
-}
-
-//==============================================================================
 
     } // namespace Transfer
 } // namespace Mutation

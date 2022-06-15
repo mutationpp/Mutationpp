@@ -218,6 +218,13 @@ public:
     const std::string& getGSIMechanism() const {
         return m_gsi_mechanism;
     }
+    
+    /**
+     * Sets the Gas-Surface Interaction mechanism to use.
+     */
+    void setGSIMechanism(const std::string& gsi_mechanism) {
+        m_gsi_mechanism = gsi_mechanism;
+    }
 
 //    /**
 //     * Sets the default mixture composition in elemental mole fractions.

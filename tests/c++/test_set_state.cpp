@@ -41,6 +41,7 @@ TEST_CASE("setState converts rho*Em to Tm and vice a versa",
 {
     const int e_var_set = 0;
     const int t_var_set = 1;
+    const int p_var_set = 2;
 
     MIXTURE_LOOP
     (
@@ -52,6 +53,7 @@ TEST_CASE("setState converts rho*Em to Tm and vice a versa",
         VectorXd T2(nt);
         VectorXd e1(nt);
         VectorXd e2(nt);
+        VectorXd P_T(nt+1);
 
         EQUILIBRATE_LOOP
         (
@@ -70,7 +72,7 @@ TEST_CASE("setState converts rho*Em to Tm and vice a versa",
             mix.getTemperatures(T2.data());
             for (int i = 0; i < nt; ++i)
                 CHECK(T1[i] == Approx(T2[i]));
-            
+
             CHECK(rho == Approx(mix.density()));
 
             // Get the energy vector
@@ -84,13 +86,37 @@ TEST_CASE("setState converts rho*Em to Tm and vice a versa",
             mix.getTemperatures(T2.data());
             for (int i = 0; i < nt; ++i)
                 CHECK(T2[i] ==  Approx(T2[i]));
-            
+
             CHECK(rho == Approx(mix.density()));
 
             mix.mixtureEnergies(e2.data());
             e2 *= rho;
             for (int i = 0; i < nt; ++i)
                 CHECK(e1[i] ==  Approx(e2[i]));
+
+            // Get the pressure
+            P_T[0] = mix.P();
+            for (int i = 0; i < nt; ++i)
+                P_T[1+i] = T1[i];
+
+            // Set the state of the mixture based on the primitives
+            mix.setState(mix.Y(), P_T.data(), p_var_set);
+
+            // Check that explicitly set properties still match
+            CHECK(P_T[0] == Approx(mix.P()));
+
+            mix.getTemperatures(T2.data());
+            for (int i = 0; i < nt; ++i)
+                CHECK(T1[i] == Approx(T2[i]));
+
+            // Check that implicitly set properties still match
+            CHECK(rho == Approx(mix.density()));
+
+            mix.mixtureEnergies(e2.data());
+            e2 *= rho;
+            for (int i = 0; i < nt; ++i)
+                CHECK(e1[i] ==  Approx(e2[i]));
+
         )
     )
 }

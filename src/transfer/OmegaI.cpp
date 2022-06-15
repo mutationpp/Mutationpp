@@ -42,8 +42,8 @@ public:
     OmegaI(Mutation::Mixture& mix)
         : TransferModel(mix)
     {
-        m_ns = m_mixture.nSpecies();
-        m_nr = m_mixture.nReactions();
+        m_ns = mixture().nSpecies();
+        m_nr = mixture().nReactions();
         mp_hf = new double [m_ns];
         mp_h = new double [m_ns];
         mp_rate = new double [m_nr];
@@ -84,14 +84,14 @@ public:
     double source()
     {
         // Get Formation enthalpy
-        m_mixture.speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
+        mixture().speciesHOverRT(mp_h, NULL, NULL, NULL, NULL, mp_hf);
 
         // Get reaction enthalpies
         std::fill(mp_delta, mp_delta+m_nr, 0.0);
-        m_mixture.getReactionDelta(mp_hf,mp_delta);
+        mixture().getReactionDelta(mp_hf,mp_delta);
 
         // Get molar rates of progress
-        m_mixture.netRatesOfProgress(mp_rate);
+        mixture().netRatesOfProgress(mp_rate);
 
         double src = 0.0;
         int j;
@@ -100,7 +100,7 @@ public:
             src += mp_delta[j]*mp_rate[j];
         }
 
-        return (-src*RU*m_mixture.T());
+        return (-src*RU*mixture().T());
 
     }
 
