@@ -273,6 +273,8 @@ int main(int argc, char* argv[]) {
     double Bg = opts.Bg;
     double Bc, hw;
 
+    mix.getComposition(opts.boundary_layer_comp, Yke.data(), Composition::MASS);
+
     if (opts.pyrolysis_exist)
         mix.getComposition(opts.pyrolysis_composition, Ykg.data(),
                            Composition::MASS);
