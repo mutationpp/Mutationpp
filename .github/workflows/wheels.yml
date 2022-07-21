@@ -58,7 +58,7 @@ jobs:
             dist/*.tar.gz
 
   release:
-    needs: [build_wheels, build_sdist]
+    needs: build_wheels
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
