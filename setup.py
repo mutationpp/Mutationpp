@@ -1,6 +1,4 @@
-import re
 import sys
-from pathlib import Path
 
 from setuptools_scm import get_version
 
@@ -14,7 +12,6 @@ except ImportError:
     )
     raise
 
-ROOT_CMAKELISTS = "./CMakeLists.txt"
 
 DESCRIPTION = """An open-source library providing thermodynamic, transport,\
 chemistry, and energy transfer properties associated with subsonic to\
