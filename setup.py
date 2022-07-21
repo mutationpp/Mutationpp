@@ -1,7 +1,8 @@
 import re
 import sys
-
 from pathlib import Path
+
+from setuptools_scm import get_version
 
 try:
     from skbuild import setup
@@ -19,38 +20,20 @@ DESCRIPTION = """An open-source library providing thermodynamic, transport,\
 chemistry, and energy transfer properties associated with subsonic to\
 hypersonic flows."""
 
-
-def get_version_from_cmake(root_cmakelists):
-    """A helper function to parse the root CMakeLists.txt and retrieve the
-    version from there in order to have a single point holding the version
-    info, easier to update"""
-
-    pattern = re.compile(r" *VERSION *(\d+\.\d+\.\d+)")
-
-    root_file = Path(root_cmakelists)
-
-    with open(root_file, "r") as f:
-        for line in f:
-            match = pattern.search(line)
-            if match is not None:
-                return match.group(1)
-
-    raise RuntimeError(
-        "Couldn't parse CMakeLists.txt file to find a version statement"
-    )
+version_python = get_version()
+version_cmake = ".".join(version_python.split(".")[:3])
 
 
 setup(
     name="mutationpp",
-    version=get_version_from_cmake(ROOT_CMAKELISTS),
+    version=version_python,
     description=DESCRIPTION,
     long_description=DESCRIPTION,
     author="James B. Scoggins",
     license="LGPL3",
     package_dir={"": "interface/python"},
     packages=["mutationpp"],
-    extras_require={
-        "test": ["numpy", "pytest"],
-    },
+    extras_require={"test": ["numpy", "pytest"], "release": ["autopub"]},
     cmake_install_dir="interface/python/mutationpp",
+    cmake_args=[f"-DMUTATIONPP_VERSION_FROM_PYTHON={version_cmake}"],
 )

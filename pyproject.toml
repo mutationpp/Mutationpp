@@ -1,8 +1,16 @@
 [build-system]
-requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja"]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "scikit-build", "cmake", "ninja"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = [
     "tests/python",
 ]
+
+[tool.autopub]
+project-name = "Mutationpp"
+git-username = "MutationBot++"
+git-email = "mutationpp@vki.ac.be"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"

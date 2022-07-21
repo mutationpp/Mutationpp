@@ -18,6 +18,10 @@ docs/html/
 *.pyc
 _skbuild/
 *.whl
+dist/
+MANIFEST.in
 
 # OS specifics
 .DS_Store
+
+

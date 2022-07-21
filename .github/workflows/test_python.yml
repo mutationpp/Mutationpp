@@ -1,26 +1,30 @@
-name: Test Python 
+name: Test Python
 on: [push, pull_request]
 
 jobs:
-    test_linux:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            submodules: recursive
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
-        - uses: actions/setup-python@v2
-          with:
-            python-version: "3.x"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
 
-        - name: Upgrade pip
-          run: pip install -U setuptools wheel pip
+      - name: Upgrade pip
+        run: pip install -U setuptools wheel pip
 
-        - name: Install package for testing
-          run: pip install ".[test]"
+      - name: Install package for testing
+        run: pip install ".[test]"
 
-        - name: Run tests
-          run: >
-            export MPP_DIRECTORY=$(pwd) &&
-            export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
-            pytest
+      - name: Run tests
+        run: >
+          export MPP_DIRECTORY=$(pwd) &&
+          export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
+          pytest

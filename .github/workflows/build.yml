@@ -10,7 +10,9 @@ jobs:
         compiler: [gcc g++, clang clang++]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Make build dir
         run: mkdir build
       - name: Make install dir
@@ -22,9 +24,9 @@ jobs:
           export CXX=$(echo "${{ matrix.compiler }}" | cut -d' ' -f2) && 
           cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install -DBUILD_FORTRAN_WRAPPER:BOOL=TRUE ..
       - name: configure
-        if: "!runner.os == 'Linux'"
+        if: runner.os != 'Linux'
         run: >
-          cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install -DBUILD_FORTRAN_WRAPPER:BOOL=TRUE ..
+          cd build && cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_TESTING:BOOL=TRUE -DCMAKE_INSTALL_PREFIX=../install ..
       - name: build
         run: cd build && make -j $(nproc) && make install
       - name: test
@@ -37,7 +39,9 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Install Lcov, Gcov
         run: sudo apt install lcov
       - name: Make build dir
