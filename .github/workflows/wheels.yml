@@ -17,6 +17,8 @@ jobs:
           fetch-depth: 0
 
       - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
 
       - name: Upgrade pip
         run: pip install -U setuptools wheel pip
@@ -40,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          submodules: recursive
           fetch-depth: 0
 
       - name: Build wheels
@@ -48,6 +51,7 @@ jobs:
           CIBW_SKIP: pp*
 
       - name: Build sdist
+        if: matrix.os == 'ubuntu-latest'
         run: pipx run build --sdist
 
       - name: Store wheel artifacts
