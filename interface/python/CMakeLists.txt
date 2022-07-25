@@ -1,26 +1,9 @@
-cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0022 NEW)
-
-pybind11_add_module(mutationpp
+pybind11_add_module(_mutationpp
         src/mutationpp_python.cpp
         src/pyMixtureOptions.cpp
         src/pyMixture.cpp
 )
 
-target_link_libraries(mutationpp PRIVATE mutation++)
+target_link_libraries(_mutationpp PRIVATE mutation++)
 
-find_program(PYTHON "python")
-
-if (PYTHON)
-    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py")
-    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-    set(INIT_PY_IN  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py")
-    set(INIT_PY     "${CMAKE_CURRENT_BINARY_DIR}/__init__.py")
-
-
-    configure_file(${INIT_PY_IN} ${INIT_PY})
-
-    configure_file(${SETUP_PY_IN} ${SETUP_PY})
-
-    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install)")
-endif()
+install(TARGETS _mutationpp DESTINATION .)
