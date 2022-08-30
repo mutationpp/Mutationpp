@@ -106,3 +106,48 @@ make docs
 ```
 
 from the `build` directory.  Once done, open the `docs/html/index.html` file using your favorite web browser to see a full listing of all the classes and methods available in the library.
+
+## Build Python package locally 
+If you are interested in building the Python package locally make sure you followed the procedure to correctly install the library (see top of the page) with the Python wrapper options flag in the `CMakeLists.txt` changed to "ON":
+
+```
+option (BUILD_PYTHON_WRAPPER
+    "Generate a Python package for using mutation++" ON)
+```
+
+To compile the wrapper we need [pybind11](https://github.com/pybind/pybind11) in `thirdparty/pybind11`:
+
+```
+git submodule add -b stable ../../pybind/pybind11 thirdparty/pybind11
+git submodule update --init
+```
+
+and  [scikit-build](https://scikit-build.readthedocs.io/en/latest/installation.html#install-package-with-pip):
+
+```
+pip install scikit-build
+```
+
+We will use the file `setup.py` automathically provided by the library in order to generate the package:
+
+```
+python3 setup.py build
+```
+
+The procedure might take some minutes to complete. The built package is in `_skbuild/[your_distribution]/cmake-install/interface/python/mutationpp` (NOTE:  `your_distribution` varies with the OS you are using, e.g. `macosx-12.0-arm64-3.9`, `linux-x86_64-3.7` and the architecture used e.g. `macosx-12.0-x86_64-3.9`: be sure you check the name of the folder automatically generated in  `_skbuild/`); now you only need to [import](https://fortierq.github.io/python-import/) the package in your Python script. 
+A (tested) suggestion for it:
+* Define a system variable 
+```
+export MPP_LOCALPY=$MPP_DIRECTORY/_skbuild/[your_distribution]/cmake-install/interface/python/mutationpp
+```
+* Close the terminal or `source` the right file (`.bashrc`, `.zprofile`, `.bash_profile`)
+* Import the package
+```
+import sys 
+import os
+mppPyDir=os.environ.get('MPP_LOCALPY')
+sys.path.append(mppPyDir)
+import _mutationpp as mpp
+```
+
+
