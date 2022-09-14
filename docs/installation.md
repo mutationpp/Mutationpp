@@ -127,9 +127,10 @@ pip install scikit-build
 pip install .
 ```
 in the main folder of `mutation++`; if you get an error related to PEP517 update essential packages:
+
 ```
 pip install --upgrade pip setuptools wheel 
-```.
+```
  
 The package will be installed in `lib/site-packages/` of your python version.
 You can test the newly installed package.
