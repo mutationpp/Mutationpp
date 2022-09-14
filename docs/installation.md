@@ -62,7 +62,7 @@ export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/<LIBDIR>:$LD_LIBRARY_PATH  # Chang
 ```
 
 **MacOS**<br>
-Add the following lines to your `.bash_profile` file in your home directory.
+Add the following lines to your `.bash_profile` (since macOS Catalina the default shell is `zsh`, so you have to modify your `.zprofile`) file in your home directory.
 ```
 export MPP_DIRECTORY=path_to_mutation++_directory
 export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
@@ -114,40 +114,30 @@ If you are interested in building the Python package locally make sure you follo
 option (BUILD_PYTHON_WRAPPER
     "Generate a Python package for using mutation++" ON)
 ```
-
-To compile the wrapper we need [pybind11](https://github.com/pybind/pybind11) in `thirdparty/pybind11`:
-
-```
-git submodule add -b stable ../../pybind/pybind11 thirdparty/pybind11
-git submodule update --init
-```
-
-and  [scikit-build](https://scikit-build.readthedocs.io/en/latest/installation.html#install-package-with-pip):
+Create your [virtualenv](https://docs.python.org/3/library/venv.html) and activate it.
+To compile the wrapper we need [scikit-build](https://scikit-build.readthedocs.io/en/latest/installation.html#install-package-with-pip):
 
 ```
 pip install scikit-build
 ```
 
-We will use the file `setup.py` automathically provided by the library in order to generate the package:
+(or pip3 for python3!). Now simply 
 
 ```
-python3 setup.py build
+pip install .
 ```
+in the main folder of `mutation++`; if you get an error related to PEP517 update essential packages:
+```
+pip install --upgrade pip setuptools wheel 
+```.
+ 
+The package will be installed in `lib/site-packages/` of your python version.
+You can test the newly installed package.
 
-The procedure might take some minutes to complete. The built package is in `_skbuild/[your_distribution]/cmake-install/interface/python/mutationpp` (NOTE:  `your_distribution` varies with the OS you are using, e.g. `macosx-12.0-arm64-3.9`, `linux-x86_64-3.7` and the architecture used e.g. `macosx-12.0-x86_64-3.9`: be sure you check the name of the folder automatically generated in  `_skbuild/`); now you only need to [import](https://fortierq.github.io/python-import/) the package in your Python script. 
-A (tested) suggestion for it:
-* Define a system variable 
 ```
-export MPP_LOCALPY=$MPP_DIRECTORY/_skbuild/[your_distribution]/cmake-install/interface/python/mutationpp
-```
-* Close the terminal or `source` the right file (`.bashrc`, `.zprofile`, `.bash_profile`)
-* Import the package
-```
-import sys 
-import os
-mppPyDir=os.environ.get('MPP_LOCALPY')
-sys.path.append(mppPyDir)
-import _mutationpp as mpp
+python
+>>> import mutationpp
+>>> mutationpp.Mixture
 ```
 
 
