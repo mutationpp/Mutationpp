@@ -153,7 +153,6 @@ def test_mixtureMw():
     assert mixture.mixtureMw() == pytest.approx(0.0288503, abs=1e-7)
 
 def test_mixtureSMass():
-    print(mixture.mixtureSMass())
     assert mixture.mixtureSMass() == pytest.approx(8218.83, abs=1e-2)
 
 
