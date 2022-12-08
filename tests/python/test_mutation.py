@@ -19,7 +19,7 @@ mixtureNonEq.setState(rhoi, T, 1)
 # Todo: write proper test
 
 def test_averageHeavyCollisionFreq():
-    assert mixture.averageHeavyCollisionFreq() == pytest.approx(0.0)
+    assert mixture.averageHeavyCollisionFreq() == pytest.approx(4.0906953e7)
 
 
 #
