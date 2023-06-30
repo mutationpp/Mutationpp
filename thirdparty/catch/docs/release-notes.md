@@ -1,3 +1,114 @@
+# 1.12.2
+### Fixes
+* Fixed missing <cassert> include
+
+# 1.12.1
+
+### Fixes
+* Fixed deprecation warning in `ScopedMessage::~ScopedMessage`
+* All uses of `min` or `max` identifiers are now wrapped in parentheses
+  * This avoids problems when Windows headers define `min` and `max` macros
+
+
+
+# 1.12.0
+
+### Fixes
+* Fixed compilation for strict C++98 mode (ie not gnu++98) and older compilers (#1103)
+* `INFO` messages are included in the `xml` reporter output even without `-s` specified.
+
+
+
+# 1.11.0
+
+### Fixes
+* The original expression in `REQUIRE_FALSE( expr )` is now reporter properly as `!( expr )` (#1051)
+  * Previously the parentheses were missing and `x != y` would be expanded as `!x != x`
+* `Approx::Margin` is now inclusive (#952)
+  * Previously it was meant and documented as inclusive, but the check itself wasn't
+  * This means that `REQUIRE( 0.25f == Approx( 0.0f ).margin( 0.25f ) )` passes, instead of fails
+* `RandomNumberGenerator::result_type` is now unsigned (#1050)
+
+### Improvements
+* `__JETBRAINS_IDE__` macro handling is now CLion version specific (#1017)
+  * When CLion 2017.3 or newer is detected, `__COUNTER__` is used instead of
+* TeamCity reporter now explicitly flushes output stream after each report (#1057)
+  * On some platforms, output from redirected streams would show up only after the tests finished running
+* `ParseAndAddCatchTests` now can add test files as dependency to CMake configuration
+  * This means you do not have to manually rerun CMake configuration step to detect new tests
+
+
+# 1.10.0
+
+### Fixes
+* Evaluation layer has been rewritten (backported from Catch 2)
+  * The new layer is much simpler and fixes some issues (#981)
+* Implemented workaround for VS 2017 raw string literal stringification bug (#995)
+* Fixed interaction between `[!shouldfail]` and `[!mayfail]` tags and sections
+  * Previously sections with failing assertions would be marked as failed, not failed-but-ok
+
+### Improvements
+* Added [libidentify](https://github.com/janwilmans/LibIdentify) support
+* Added "wait-for-keypress" option
+
+
+# 1.9.7
+
+### Fixes
+* Various warnings from clang-tidy, Resharper-C++ and PVS Studio have been addressed (#957)
+* Dynamically generated sections are now properly reported (#963)
+* Writes to `std::clog` are redirected for reporters (#989)
+  * Previously only `std::cerr` writes were redirected
+  * Interleaved writes to `std::cerr` and `std::clog` are combined properly
+* Assertions failed before signals/structured exceptions fails test case are properly reported as failed (#990)
+
+### Improvements
+* Catch's runtime overhead has been decreased further (#940)
+* Added support for IBM i ILE c++ compiler (#976)
+  * This means that AS/400 is now supported.
+* The default reporter can be configured at compile time (#978)
+  * That is, the reporter used if no reporter is explicitly specified
+
+### Other
+* `ParseAndAddCatchTests` cmake script has couple new customization options
+
+
+
+# 1.9.6
+
+### Improvements
+* Catch's runtime overhead has been significantly decreased (#937, #939)
+* Added `--list-extra-info` cli option (#934).
+  * It lists all tests together with extra information, ie filename, line number and description.
+
+
+
+# 1.9.5
+
+### Fixes
+* Truthy expressions are now reconstructed properly, not as booleans (#914)
+* Various warnings are no longer erroneously suppressed in test files (files that include `catch.hpp`, but do not define `CATCH_CONFIG_MAIN` or `CATCH_CONFIG_RUNNER`) (#871)
+* Catch no longer fails to link when main is compiled as C++, but linked against Objective-C (#855)
+* Fixed incorrect gcc version detection when deciding to use `__COUNTER__` (#928)
+  * Previously any GCC with minor version less than 3 would be incorrectly classified as not supporting `__COUNTER__`.
+* Suppressed C4996 warning caused by upcoming updated to MSVC 2017, marking `std::uncaught_exception` as deprecated. (#927)
+
+### Improvements
+* CMake integration script now incorporates debug messages and registers tests in an improved way (#911)
+* Various documentation improvements
+
+
+
+# 1.9.4
+
+### Fixes
+* `CATCH_FAIL` macro no longer causes compilation error without variadic macro support
+* `INFO` messages are no longer cleared after being reported once
+
+### Improvements and minor changes
+* Catch now uses `wmain` when compiled under Windows and `UNICODE` is defined.
+  * Note that Catch still officially supports only ASCII
+
 # 1.9.3
 
 ### Fixes
