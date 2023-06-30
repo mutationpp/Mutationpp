@@ -58,6 +58,8 @@ with expansion:
 
 ConditionTests.cpp:<line number>: FAILED:
   CHECK_FALSE( true )
+with expansion:
+  !true
 
 ConditionTests.cpp:<line number>: FAILED:
   CHECK( !trueValue )
@@ -76,8 +78,6 @@ with expansion:
 
 ConditionTests.cpp:<line number>: FAILED:
   CHECK_FALSE( 1 == 1 )
-with expansion:
-  !(1 == 1)
 
 -------------------------------------------------------------------------------
 A METHOD_AS_TEST_CASE based test run that fails
@@ -368,7 +368,9 @@ MessageTests.cpp:<line number>: FAILED:
   CHECK( a == 0 )
 with expansion:
   2 == 0
-with message:
+with messages:
+  this message may be logged later
+  this message should be logged
   and this, but later
 
 -------------------------------------------------------------------------------
@@ -594,6 +596,17 @@ warning:
   toString(p): 0x<hex digits>
 
 -------------------------------------------------------------------------------
+Reconstruction should be based on stringification: #914
+-------------------------------------------------------------------------------
+DecompositionTests.cpp:<line number>
+...............................................................................
+
+DecompositionTests.cpp:<line number>: FAILED:
+  CHECK( truthy(false) )
+with expansion:
+  Hey, its truthy!
+
+-------------------------------------------------------------------------------
 SCOPED_INFO is reset for each loop
 -------------------------------------------------------------------------------
 MessageTests.cpp:<line number>
@@ -609,6 +622,9 @@ with messages:
 
 A string sent directly to stdout
 A string sent directly to stderr
+Write to std::cerr
+Write to std::clog
+Interleaved writes to error streams
 Message from section one
 Message from section two
 -------------------------------------------------------------------------------
@@ -940,6 +956,6 @@ with expansion:
   "first" == "second"
 
 ===============================================================================
-test cases: 167 | 119 passed | 44 failed |  4 failed as expected
-assertions: 967 | 859 passed | 87 failed | 21 failed as expected
+test cases: 171 | 122 passed | 45 failed |  4 failed as expected
+assertions: 980 | 871 passed | 88 failed | 21 failed as expected
 

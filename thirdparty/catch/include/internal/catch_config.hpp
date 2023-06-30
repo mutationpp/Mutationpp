@@ -31,25 +31,29 @@ namespace Catch {
             listTags( false ),
             listReporters( false ),
             listTestNamesOnly( false ),
+            listExtraInfo( false ),
             showSuccessfulTests( false ),
             shouldDebugBreak( false ),
             noThrow( false ),
             showHelp( false ),
             showInvisibles( false ),
             filenamesAsTags( false ),
+            libIdentify( false ),
             abortAfter( -1 ),
             rngSeed( 0 ),
             verbosity( Verbosity::Normal ),
             warnings( WarnAbout::Nothing ),
             showDurations( ShowDurations::DefaultForReporter ),
             runOrder( RunTests::InDeclarationOrder ),
-            useColour( UseColour::Auto )
+            useColour( UseColour::Auto ),
+            waitForKeypress( WaitForKeypress::Never )
         {}
 
         bool listTests;
         bool listTags;
         bool listReporters;
         bool listTestNamesOnly;
+        bool listExtraInfo;
 
         bool showSuccessfulTests;
         bool shouldDebugBreak;
@@ -57,6 +61,7 @@ namespace Catch {
         bool showHelp;
         bool showInvisibles;
         bool filenamesAsTags;
+        bool libIdentify;
 
         int abortAfter;
         unsigned int rngSeed;
@@ -66,6 +71,7 @@ namespace Catch {
         ShowDurations::OrNot showDurations;
         RunTests::InWhatOrder runOrder;
         UseColour::YesOrNo useColour;
+        WaitForKeypress::When waitForKeypress;
 
         std::string outputFilename;
         std::string name;
@@ -109,6 +115,7 @@ namespace Catch {
         bool listTestNamesOnly() const { return m_data.listTestNamesOnly; }
         bool listTags() const { return m_data.listTags; }
         bool listReporters() const { return m_data.listReporters; }
+        bool listExtraInfo() const { return m_data.listExtraInfo; }
 
         std::string getProcessName() const { return m_data.processName; }
 
