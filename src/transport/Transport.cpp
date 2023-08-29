@@ -751,25 +751,33 @@ double Transport::meanFreePath()
 {
     // Thermo properties
     const int ns = m_thermo.nGas();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
     const double* const X = m_thermo.X();
     const double me = m_thermo.speciesMw(0)/NA;
     const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-    const double Q11ee = m_collisions.Q11ee();
-    const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
+    const int k = m_thermo.nSpecies() - m_thermo.nHeavy();
 
     double sum = 0.0;
-    sum +=X[0]*X[0]*Q11ee;
-    for (int i = 1; i < ns; ++i)
-        sum +=X[i]*X[0]*Q11ei(i);
 
-    for (int i = 1; i < ns; ++i)
-        for (int j = 1; j < ns; ++j)
-            sum += X[i]*X[j]*Q11(i,j);
+    // Electron
+    if (m_thermo.hasElectrons()) {
+        sum += X[0]*X[0]*m_collisions.Q11ee();
+        const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
+        for (int i = 1; i < ns; ++i) {
+            // Factor of 2 to account for symmetric matrix
+            sum += 2.0*X[i]*X[0]*Q11ei(i);
+        }
+    }
 
-    return 1.0/(nd*sum);
+    // Heavies
+    for (int i = k, index = 0; i < ns; ++i) {
+        sum += X[i]*X[i]*Q11(index++);
+        for (int j = i+1; j < ns; ++j, index++) {
+            // Factor of 2 to account for symmetric matrix
+            sum += 2.0*X[i]*X[j]*Q11(index);
+        }
+    }
+
+    return 1.0/(m_thermo.numberDensity()*sum);
 }
 //==============================================================================
 
