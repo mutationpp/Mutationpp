@@ -134,7 +134,7 @@ TestMechanism::TestMechanism(bool reversible) :
         m_A(i) = (i+1) * 1000.0;
 
     // Species molecular weights
-    double mwe = 0.00055;
+    double mwe = 0.000548579903;
     double mwn = 14.0067;
     double mwo = 15.9994;
     m_Mw << mwe, mwn, mwo, mwn + mwo, mwn + mwo - mwe, 2*mwn, 2*mwo;

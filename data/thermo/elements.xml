@@ -2,7 +2,7 @@
 
     <!-- Electron (treated as element in mutation++) -->
     <element name="e-" charge="-1">
-        <mw units="g/mol">0.00055</mw>
+        <mw units="g/mol">0.000548579903</mw>
     </element>
     
     <!-- Aluminium -->
