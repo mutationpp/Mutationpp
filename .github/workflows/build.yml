@@ -5,7 +5,7 @@ jobs:
   build_linux:
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest]
+        os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [gcc g++, clang clang++]
     runs-on: ${{ matrix.os }}
