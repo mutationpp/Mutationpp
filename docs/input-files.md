@@ -1029,12 +1029,14 @@ three dimensional fluxes reduce to the normal fluxes at the interface while the 
 source terms, such as chemical reactions, go to zero; only the surface sources remain.
 Generally, the set of balance equations can be written as:
 
-(**F**_g - **F**_b) . **n** = &#937;_s,
+$$
+(\vec{F}_g - \vec{F}_b) \cdot \hat{n} = \Omega_s,
+$$
 
-where **F** are the fluxes from the gas (**g**) and the bulk (**b**) phases, while
-&#937; are the source terms associated to the surface (s) processes.
+where $\vec{F}$ are the fluxes from the gas ($g$) and the bulk ($b$) phases, while
+$\Omega$ are the source terms associated to the surface ($s$) processes.
 Only the normal to surface flux component should be considered, denoted by
-the inner product of the flux with the surface unit vector, (**n**).
+the inner product of the flux with the surface unit vector, ($\hat{n}$).
 The specific form of the balance equations for mass and energy will be seen in the following
 sections.
 
@@ -1043,7 +1045,7 @@ sections.
 
 Below the input file when a single catalytic reaction is presented.
 Only the recombination of atomic into molecular oxygen is considered
-modeled with the gamma &#947; model, with reaction probability equal to 1.
+modeled with the $\gamma$ (gamma) model, with reaction probability equal to 1.
 
 ```xml
 <gsi gsi_mechanism = "phenomenological_mass">
@@ -1061,39 +1063,46 @@ modeled with the gamma &#947; model, with reaction probability equal to 1.
 </gsi>
 ```
 
-The &#947; model, introduced by Goulard in the late 50s, is arguably the most popular
+The $\gamma$ model, introduced by Goulard in the late 1950s, is arguably the most popular
 way to treat catalysis in the aero-thermodynamics community. It describes catalytic
 reactions as macroscopic, non-elementary processes of the form:
 
-A + A -> A2
+$$
+\mathrm{A} + \mathrm{A} \to \mathrm{A_2}
+$$
 
 In order to determine the chemical production term for this kind of catalytic reactions a
-probability for recombination &#947; is defined for each recombining species A as:
+probability for recombination $\gamma$ is defined for each recombining species A as:
 
+$$
+\gamma = F_{rec} / F_{imp},
+$$
 
-&#947; = F_rec / F_imp,
-
-
-where F_imp is the flux of species A impinging the surface and
-F_rec is the flux of species recombining at the surface. This probability is
-the input parameter for the model. A fully catalytic wall has &#947; equal to 1, which
+where $F_{imp}$ is the flux of species A impinging the surface and
+$F_{rec}$ is the flux of species recombining at the surface. This probability is
+the input parameter for the model. A fully catalytic wall has $\gamma$ equal to 1, which
 means that all the particles of species A impinging the surface recombine at the wall.
-&#947; equal to 0 means that no reaction takes place and corresponds
+$\gamma$ equal to 0 means that no reaction takes place and corresponds
 to a non catalytic, or chemically inert wall. Anything between these two extreme cases is a
 partially catalytic wall, which is the case for most of the surfaces. When the probability
-&#947; is defined, the surface chemical source term is determined as:
+$\gamma$ is defined, the surface chemical source term is determined as:
 
-&#937;_A = &#947; m F_imp
+$$
+\begin{align}
+\Omega_A &= \gamma m_A F_{imp} \\
+\Omega_{A2} &= - \gamma m_A F_{imp}
+\end{align}
+$$
 
-&#937;_A2 = - &#947; m F_imp
-
-with m being the mass of species A.
+with $m_A$ being the mass of species A.
 
 The only parameter that still needs to be defined is the impinging flux on the surface.
 When the distribution function of species at the wall is well approximated by a Maxwellian
-and there is no temperature slip, the impinging flux, F_imp, is equal to
+and there is no temperature slip, the impinging flux, $F_{imp}$, is equal to
 
-F_imp = n_A (k_B T / 2 &#960; m_A)^(1/2)
+$$
+F_{imp} = n_A \sqrt{\frac{k_B T}{2 \pi m_A}}
+$$
 
 according to the kinetic theory of gases.
 
@@ -1102,28 +1111,35 @@ such as the one presented in above.
 Soon, though, it was observed that heteronuclear reactions were also probable
 to occur at the wall, which can take the form of
 
-A + B -> AB,
+$$
+\mathrm{A} + \mathrm{B} \to \mathrm{AB},
+$$
 
 with the chemical rate for the produced molecule AB equal to:
 
-&#937;_AB  = - &#947;_AB m_A F_imp_A - &#947;_BA m_B F_imp_B.
+$$
+\Omega_{AB}  = - \gamma_{AB} m_A F_{imp,A} - \gamma_{BA} m_B F_{imp,B}.
+$$
 
 One atom of A recombines with one atom of B on the surface to produce a molecule AB.
 In other words the number of atoms of A that recombine into AB should be equal to the number of B
 atoms that recombine into AB. This restriction should be explicitly imposed in order to conserve mass:
 
-&#947;_AB F_imp_A = &#947;_BA F_imp_B.
+$$
+\gamma_{AB} F_{imp,A} = \gamma_{BA} F_{imp,B}.
+$$
 
 As a result, in a reaction of this type two gamma recombination coefficients should be defined not
 necessarily equal for the two processes, the one activated when the catalytic reaction is limited by the
 flux of A atoms and the opposite. In practice the two recombination number fluxes,
-&#947;_AB F_imp_A and &#947;_BA F_imp_B, are compared and the limiting one
+$\gamma_{AB} F_{imp,A}$ and $\gamma_{BA} F_{imp,B}$, are compared and the limiting one
 determines which of the two gammas is chosen.
 
 These gamma coefficients cannot take arbitrary values, they should be limited between 0 and 1,
 just like in the homonuclear case. When extra catalytic reactions are added,
-such as A + A -> A2 and B + B -> B2 the gammas should be further constrained
-as 0 &#60; &#947;_A + &#947;_AB &#60; 1 and 0 &#60; &#947;_B + &#947;_BA &#60; 1
+such as $\mathrm{A} + \mathrm{A} \to \mathrm{A_2}$ and $\mathrm{B} + \mathrm{B} \to \mathrm{B_2}$,
+the gammas should be further constrained
+as $0 \lt \gamma_A + \gamma_{AB} \lt 1$ and $0 \lt \gamma_B + \gamma_{BA} \lt 1$
 in order for mass to be conserved. This approach is consistent with similar approaches
 considering the catalytic recombination occurring in Martian atmospheres, where O can recombine
 into both O2 and CO2 due to catalytic reactions.
@@ -1240,29 +1256,35 @@ An example of ablation model can be seen below.
 The first ablation reaction presented above is the oxidation
 of the solid carbon by atomic oxygen. The reaction reads as:
 
-C_b + O -> CO
+$$
+\mathrm{C}_b + \mathrm{O} \to \mathrm{CO}
+$$
 
 and is exothermic, releasing 3.74 eV per molecule produced. Its reaction
 rate coefficient is given by defining a recombination probability
-&#947;_CO. This probability is an Arrhenius type function of temperature
+$\gamma_{CO}$. This probability is an Arrhenius type function of temperature
 and is given by the formula:
 
-&#947;_CO = 0.63 exp(-1160 / T).
+$$
+\gamma_{CO} = 0.63 \exp \left(\frac{-1160~\mathrm{K}}{T} \right).
+$$
 
 Carbon oxidation with molecular oxygen is also possible
-C_b + O2 -> CO + O, but it is often considered as a less significant
-process.
+($\mathrm{C}_b + \mathrm{O_2} \to \mathrm{CO} + \mathrm{O}$),
+but it is often considered as a less significant process.
 
 #### Carbon Nitridation Model
 <a id="cnitr"></a>
 
 The second shown in the example is carbon nitridation,
 
-C_b + N -> CN,
+$$
+\mathrm{C}_b + \mathrm{N} \to \mathrm{CN}
+$$
 
 an exothermic reaction with 0.35 eV of energy released per reacting atom.
 The reaction rate is given using a constant recombination probability
-&#947;_CN like in the catalytic case.
+$\gamma_{CN}$ like in the catalytic case.
 
 #### Carbon Sublimation Model
 <a id="csubl"></a>
@@ -1271,16 +1293,22 @@ At high temperatures carbon removal from the surface is dominated by phase
 change processes like sublimation. The production of C3 is considered here.
 It should be noted that this type of reactions are invertible, with formula:
 
-3C_b -> C3.
+$$
+3\mathrm{C}_b \to \mathrm{C_3}
+$$
 
 The chemical production rate of this reaction is equal to:
 
-&#937;_C3 = &#946; (&#961;_eq_C3 - &#961;_C3) (k_B T / 2 &#960; m)^(1/2).
+$$
+\Omega_{C_3} = \beta (\rho_{eq,C_3} - \rho_{C_3}) \sqrt{\frac{k_B T}{2 \pi m}}.
+$$
 
 The equilibrium partial density of the C3 species is obtained from the
 saturated vapor pressure of carbon, which is equal to
 
-p_sat_C3 = c \exp (-Ta / T)
+$$
+p_{sat,C_3} = c \exp \left( \frac{-Ta}{T} \right)
+$$
 
 with &#946_C3 being the evaporation coefficient, c the pre-exponential coefficient,
 and Ta the activation temperature.
@@ -1314,7 +1342,9 @@ If all of the phenomena above are modeled with accuracy, the re-entry heat load 
 and the size of the thermal protection system can be determined.
 The mass balance on a catalytic surface reads:
 
-**j**_i . **n** = &#937;_cat_i,
+$$
+\vec{j}_i \cdot \hat{n} = \Omega_{cat,i},
+$$
 
 where one mass balance equation should be solved for each distinct species in the flow.
 The equation above states, that the catalytic activity of every species is equal to the diffusion
@@ -1345,14 +1375,16 @@ processes also in the bulk, such as in the case of pyrolysis.
 
 Taking these ideas in mind, the surface mass balance accounting only for surface reactions becomes:
 
-&#961;_i (**u**_g - **u**_r) + **j**_i - **F**_b_i ] . **n** = &#937;_i,
+$$
+[\rho_i (\vec{u}_g - \vec{u}_r) + \vec{j}_i - \vec{F}_{b,i} ] \cdot \hat{n} = \Omega_i,
+$$
 
-with &#937;_i = &#937;_cat_i + &#937;_abl_i and
-term **F**_b_i is the flux of species i entering the interface due
+with $\Omega_i = \Omega_{cat,i} + \Omega_{abl,i}$ and
+term $\vec{F}_{b,i}$ is the flux of species $i$ entering the interface due
 to solid process, like pyrolysis and solid-solid chemical reactions.
 Just like before, one mass balance equation should be solved for each distinct species in the flow.
 It is most of the time reasonable to consider that recession velocity is
-orders of magnitude lower than the gas velocity **u**_r.
+orders of magnitude lower than the gas velocity $\vec{u}_r$.
 
 ### Surface Energy Balance
 <a id="seb"></a>
@@ -1360,26 +1392,29 @@ orders of magnitude lower than the gas velocity **u**_r.
 In order to determine the surface temperature a surface energy balance should be solved along
 with the mass balances. It takes the form:
 
-( &#961; ( **u**_g - **u**_r ) H + **q**g
-    - **F**_b_e ) . **n** = &#937;_e;
+$$
+[ \rho ( \vec{u}_g - \vec{u}_r ) H + \vec{q}_g - \vec{F}_{b,e} ] \cdot \hat{n} = \Omega_e
+$$
 
-where **q**_g is the heat flux to the gas phase equal to:
+where $\vec{q}_g$ is the heat flux to the gas phase equal to:
 
-**q**_g = -&#955; &#8711; T + &#931; **j**_i h_i.
+$$
+\vec{q}_g = -\lambda \nabla T + \sum_i \vec{j}_i h_i.
+$$
 
 The radiative heat flux can be also included and will be discussed along with the surface
 radiation.
 
-Term **F**_b_e describes the energy exchanged between the interface
+Term $\vec{F}_{b,e}$ describes the energy exchanged between the interface
 and the bulk of the solid and is composed of three contributions: the first one is the
-thermal conduction exiting the surface **q**_cond, the second one is the
+thermal conduction exiting the surface $\vec{q}_{cond}$, the second one is the
 enthalpy entering the interface due to the movement of the surface with the recession velocity,
-**u**_r &#961; h_s and the third one appears only in cases of
+$\vec{u}_r \rho h_s$ and the third one appears only in cases of
 porous material, describing the enthalpy of the solid pyrolysis gases convected in the interface,
-denoted as **u**_p &#961;_p; h_p. The subscript p symbolizes
-the pyrolysis gas properties, with the &#961;_p h_p being actually the
-sum &#931; = &#961;_i h_i for the pyrolysis gas densities. The surface
-enthalpy h_s is an input to the code, as an attribute to the surface_properties element.
+denoted as $\vec{u}_p \rho_p h_p$. The subscript $p$ symbolizes
+the pyrolysis gas properties, with the $\rho_p h_p$ being actually the
+sum $\sum_i = \rho_i h_i$ for the pyrolysis gas densities. The surface
+enthalpy $h_s$ is an input to the code, as an attribute to the surface_properties element.
 
 An example input file for solving both mass and energy balance can be seen below.
 ```xml
@@ -1426,15 +1461,17 @@ An example input file for solving both mass and energy balance can be seen below
 
 The only source term taken into account for the surface energy balance in the
 example above is radiation. It is considered by adding a new element with tag
-<surface_radiation/>. The surface is assumed to be in thermodynamic equilibrium
+`<surface_radiation/>`. The surface is assumed to be in thermodynamic equilibrium
 at a temperature T emitting energy following the Stefan-Boltzmann law,
 
-&#937;_e = &#937;_rad = &#949; ( &#963; T^4 - **q**_rad_g)
+$$
+\Omega_e = \Omega_{rad} = \epsilon ( \sigma T^4 - \vec{q}_{rad,g})
+$$
 
-with &#963; being the Stefan-Boltzmann constant and &#949; the emissivity
-of the surface. T_env is the surrounding environment temperature which can
+with $\sigma$ being the Stefan-Boltzmann constant and $\epsilon$ the emissivity
+of the surface. $T_{env}$ is the surrounding environment temperature which can
 be used to simulate the far field radiative heat flux based on the formula
- &#963; T_env^4, which replaces the term **q**_rad_g.
+ $\sigma T_{env}^4$, which replaces the term $\vec{q}_{rad,g}$.
 This is a relatively bad approximation and, therefore, it is better to be omitted.
 
 In order to obtain the value for the conductive heat flux on the solid,
@@ -1446,21 +1483,25 @@ the simulations. Such an approximation was adopted here for the modeling of the
 conductive heat flux inside the material, the steady-state ablation approach for a
 semi-infinite surface. By writing the steady-state energy equation for the solid phase
 and integrating over the semi-infinite material, where on one side is the solid
-properties at exactly the interface (subscript s), while on the other, at infinity,
-is the virgin material (subscript v), the steady state heat flux is given by the formula:
+properties at exactly the interface (subscript $s$), while on the other, at infinity,
+is the virgin material (subscript $v$), the steady state heat flux is given by the formula:
 
-**q**_cond_ss = -**u**_r (&#961;_v h_v - &#961;_s h_s).
+$$
+\vec{q}_{cond,ss} = -\vec{u}_r (\rho_v h_v - \rho_s h_s).
+$$
 
 By replacing the formula above in the surface energy balance and after simplifications one gets:
 
-(&#961; ( **u**_g - **u**_r ) H + **q**_g + **u**_r &#961;_v h_v) . **n** = &#937;_e,
+$$
+[ \rho ( \vec{u}_g - \vec{u}_r ) H + \vec{q}_g + \vec{u}_r \rho_v h_v ] \cdot \hat{n} = \Omega_e,
+$$
 
 which is equally valid for both porous and non-porous materials. In order to use the steady state ablation
 approximation, the attribute of surface_feature element solid_conduction should be set to steady state.
-Instead of inputing the
+Instead of inputting the
 virgin material density, the ratio between the virgin and surface density minus one is often used,
 refered to as
-&#966; = (&#961;_v / &#961;_s - 1) and is the attribute
+$\varphi = (\frac{\rho_v}{\rho_s} - 1)$ and is the attribute
 virgin_to_surf_density_ratio in the solid_properties element defaulting to 1.
 The enthalpy_virgin can also be an input with default
 value equal to 0. Note that these two last options are only necessary when the steady
@@ -1468,15 +1509,15 @@ state assumption for the solid conduction is considered.
 
 When a material solver is available the conductive heat flux should be an input to the
 library for increased accuracy. This can be achieved by setting the solid_conduction
-surface feature to "input" and the setSolidCondHeatFlux function can be invoked.
+surface feature to `input` and the `setSolidCondHeatFlux` function can be invoked.
 The option enthalpy_surface should be set in this case, otherwise it is automatically set
 to zero.
 
 Note that only one surface balance equation is solved regardless of the thermodynamic
-state model. When multitemperature models are considered for the thermodynamics additional
+state model. When multi-temperature models are considered for the thermodynamics additional
 temperatures should be imposed on the surface. It is often a reasonable assumption to
 impose thermal equilibrium at the wall. This is achieved by setting the surface_feature
-option surface_in_thermal_equil "true". If it is "false", then any additional temperature
+option surface_in_thermal_equil `true`. If it is `false`, then any additional temperature
 beyond translations will be left unchanged, an assumption which can be used to impose an
 adiabatic boundary condition for the internal energy modes.
 
@@ -1498,7 +1539,7 @@ mechanism file.
 ```
 
 Below an example code of how to use the gas surface interaction features
-of Mutation is presented.
+of Mutation++ is presented.
 
 ```cpp
     const int set_state_with_rhoi_T = 1;
