@@ -271,7 +271,7 @@ Constants                                               | Format       | Columns
 Species name                                            | `A24`        | `1-24`
 Comments (data source)                                  | `A56`        | `25-80`
 <b>Line 2</b>                                           | -            | -
-Number of T intervals                             | `I2`         | `2`
+Number of T intervals                                   | `I2`         | `2`
 Optional identification code                            | `A6`         | `4-9`
 Chemical formulas, symbols, and numbers                 | `5(A2,F6.2)` | `11-50`
 Zero for gas, nonzero for condensed phases              | `I1`         | `52`
@@ -279,14 +279,14 @@ Molecular weight                                        | `F13.5`      | `53-65`
 Heat of formation at 298.15 K, J/mol                    | `F13.5`      | `66-80`
 <b>Line 3</b>                                           | -            | -
 Temperature range                                       | `2F10.3`     | `2-21`
-Number of coefficients for C_p^\circ/R_u          | `I1`         | `23`
-T exponents in polynomial for C_p^\circ/R_u | `8F5.1`      | `24-63`
-H^\circ (298.15)-H^\circ (0), J/mol               | `F15.3`      | `66-80`
+Number of coefficients for $`C_p^\circ/R_u`$            | `I1`         | `23`
+T exponents in polynomial for $`C_p^\circ/R_u`$         | `8F5.1`      | `24-63`
+$`H^\circ (298.15)-H^\circ (0)`$, J/mol                 | `F15.3`      | `66-80`
 <b>Line 4</b>                                           | -            | -
-First five coefficients for C_p^\circ/R_u         | `5F16.8`     | `1-80`
+First five coefficients for $`C_p^\circ/R_u`$           | `5F16.8`     | `1-80`
 <b>Line 5</b>                                           | -            | -
-Last three coefficients for C_p^\circ/R_u         | `3F16.8`     | `1-48`
-Integration constants  b_1  and  b_2        | `2F16.8`     | `49-80`
+Last three coefficients for $`C_p^\circ/R_u`$           | `3F16.8`     | `1-48`
+Integration constants  b_1  and  b_2                    | `2F16.8`     | `49-80`
 <i>Repeat 3, 4, and 5 for each interval...</i>          | -            | -
 
 
@@ -401,14 +401,14 @@ when evaluating the forward rate coefficient.  The rate law node is specified by
 and its corresponding attributes correspond to the parameters for that given rate law.  The
 following rate rate laws are currently supported.
 
-- `arrhenius`  k(T) = A T<sup>n</sup> exp[-Ea / (Ru T)]
+- `arrhenius`  $`k(T) = A\, T^n\, \exp \left( \frac{-E_a}{R_u T} \right)`$
 
 Att. | Value
 -----|--------
 `A`  | pre-exponential factor
 `n`  | temperature exponent
 `Ea` | activation energy
-`T`  | characteristic temperature Ea / Ru
+`T`  | characteristic temperature $`E_a / R_u`$
 
 _note: only one of `Ea` or `T` may be used, not both_
 
@@ -439,7 +439,7 @@ controlled by an Arrhenius rate law.
 
 \# | Formula                                  | A [mol,cm,s,K] | n     | Ea [K]
 ---|------------------------------------------|----------------|-------|--------
-1  | N2 + N2 <-> 2N + N2    | 1.0e21         | -1.6  | 113200
+1  | N2 + N2 <-> 2N + N2     | 1.0e21         | -1.6  | 113200
 2  | N2 + N <-> 2N + N       | 3.0e21         | -1.6  | 113200
 3  | N2 + N^+ <-> 2N + N+    | 1.0e21         | -1.6  | 113200
 4  | N2 + e- <-> 2N + e-     | 7.0e22         | -1.6  | 113200
@@ -528,7 +528,7 @@ of the collision integral nodes is described next.
 <a id="collisions_types"></a>
 
 Specific collision integral data are provided as XML nodes with the node tag as the
-name of the collision integral kind.  For example, to specify the $\overline{Q}^{(1,1)}$ integral for the N-O interaction pair, use
+name of the collision integral kind.  For example, to specify the $`\overline{Q}^{(1,1)}``$integral for the N-O interaction pair, use
 ```xml
 <pair s1="N" s2="O">
     <Q11 type="model" />
@@ -565,7 +565,7 @@ attributes.
 Attribute  | Description
 -----------|------------
 `accuracy` | The estimated accuracy of the integral in percent off true value
-`multpi`   | (`yes` or `no`) Should the integral be multiplied by $\pi$?
+`multpi`   | (`yes` or `no`) Should the integral be multiplied by $`\pi`$?
 `ref`      | A reference for the data
 `units`    | The units of the integral provided by the data
 
@@ -594,12 +594,12 @@ are not shown because they are specified through [default behaviour](#collisions
 <a id="collision_types_bruno_11"></a>
 
 Implements the curve-fit found in Eq. (11) of [Bruno et al. (2010)](bibliography.md#Bruno2010),
-$$
+```math
 \sigma^2\Omega^{(l,s)*} =
     [a_1 + a_2 x] \frac{\exp[(x-a_3)/a_4]}{\exp[(x-a_3)/a_4] + \exp[(a_3-x)/a_4]} +
     a_5 \frac{\exp[(x-a_6)/a_7]}{\exp[(x-a_6)/a_7] + \exp[(a_6-x)/a_7]},
-$$
-where $a_i$ are given coefficients and $x = \ln(T)$.  The following code
+```
+where $`a_i`$ are given coefficients and $`x = \ln(T)`$.  The following code
 snippet details how the 7 coefficients are provided in XML format.
 ```xml
 <Q11 type="Bruno-Eq(11)">
@@ -613,10 +613,10 @@ snippet details how the 7 coefficients are provided in XML format.
 
 Implements the curve-fit found in Eq. (17) of [Bruno et al. (2010)](bibliography.md#Bruno2010) for
 modeling charge exchange interactions,
-$$
+```math
 \sigma^2\Omega^{(l,s)*} = d_1 + d_2 x + d_3 x^2,
-$$
-where $d_i$ are given coefficients and $x = \ln(T)$.  The following code
+```
+where $`d_i`$ are given coefficients and $`x = \ln(T)`$.  The following code
 snippet details how the 3 coefficients are provided in XML format.
 ```xml
 <Q11 type="Bruno-Eq(17)"> 6.3544e+01 -5.0093e+00  9.8797e-02 </Q11>
@@ -627,12 +627,12 @@ snippet details how the 3 coefficients are provided in XML format.
 
 Implements the curve-fit found in Eq. (19) of [Bruno et al. (2010)](bibliography.md#Bruno2010)
 for modeling electron-neutral interactions,
-$$
+```math
 \sigma^2\Omega^{(l,s)*} =
     g_3 x^{g_5} \frac{\exp[(x-g_1)/a_2]}{\exp[(x-g_1)/g_2] + \exp[(g_1-x)/g_2]} +
     g_6 \exp\big[-\big(\frac{x-g_7}{g_8}\big)^2\big] + g_4,
-$$
-where $g_i$ are given coefficients and $x = \ln(T)$. The following code
+```
+where $`g_i`$ are given coefficients and $`x = \ln(T)`$. The following code
 snippet details how the 8 coefficients are provided in XML format.
 ```xml
 <Q11 type="Bruno-Eq(19)">
@@ -668,10 +668,10 @@ or attractive.
 <a id="collision_types_exp_poly"></a>
 
 Implements an exponential polynomial curve-fit expression of the form
-$$
+```math
 \overline{Q}^{(l,s)}_{i,j}(T) = \exp\big(\sum_{i=0}^{n-1} a_i x^i \big),
-$$
-where $a_i$ are given coefficients and $x = \ln(T)$.  The following XML
+```
+where $`a_i`$ are given coefficients and $`x = \ln(T)`$.  The following XML
 snippet shows how to format the coefficients in the database.
 ```xml
 <Q11 type="exp-poly">
@@ -684,9 +684,9 @@ coefficients can be used.
 #### from A*
 <a id="collision_types_from_A"></a>
 
-Uses relationship $ A^{*}_{ij} = \overline{Q}^{(2,2)}_{i,j} / \overline{Q}^{(1,1)}_{i,j}$
-to compute either $A^{*}_{ij}$,
-$\overline{Q}^{(1,1)}_{i,j}$, or $\overline{Q}^{(2,2)}_{i,j}$, given
+Uses relationship $`A^{*}_{ij} = \overline{Q}^{(2,2)}_{i,j} / \overline{Q}^{(1,1)}_{i,j}`$
+to compute either $`A^{*}_{ij}`$,
+$`\overline{Q}^{(1,1)}_{i,j}`$, or $`\overline{Q}^{(2,2)}_{i,j}`$, given
 the other two.  Simply use the `from A*` type for the missing integral, as in
 ```xml
 <Q11 type="from A*"/>
@@ -696,9 +696,9 @@ and provide concrete types for the other two.
 #### from B*
 <a id="collision_types_from_B"></a>
 
-Uses relationship $ B^{*}_{ij} = (5\overline{Q}^{(1,2)}_{i,j} - 4 \overline{Q}^{(1,3)}_{i,j})/\overline{Q}^{(1,1)}_{i,j}$
-to compute either $B^{*}_{ij}$, $\overline{Q}^{(1,1)}_{i,j}$, $\overline{Q}^{(1,2)}_{i,j}$,
-or $\overline{Q}^{(1,3)}_{i,j}$, given the other three.  Simply use the `from B*`
+Uses relationship $`B^{*}_{ij} = (5\overline{Q}^{(1,2)}_{i,j} - 4 \overline{Q}^{(1,3)}_{i,j})/\overline{Q}^{(1,1)}_{i,j}`$
+to compute either $`B^{*}_{ij}`$, $`\overline{Q}^{(1,1)}_{i,j}`$, $`\overline{Q}^{(1,2)}_{i,j}`$,
+or $`\overline{Q}^{(1,3)}_{i,j}`$, given the other three.  Simply use the `from B*`
 type for the missing integral, as in
 ```xml
 <Q11 type="from B*"/>
@@ -708,8 +708,8 @@ and provide concrete types for the other three.
 #### from C*
 <a id="collision_types_from_C"></a>
 
-Uses relationship $ C^{*}_{ij} = \overline{Q}^{(1,2)}_{i,j} / \overline{Q}^{(1,1)}_{i,j}$
-to compute either $C^{*}_{ij}$, $\overline{Q}^{(1,1)}_{i,j}$, or $\overline{Q}^{(1,2)}_{i,j}$, given
+Uses relationship $`C^{*}_{ij} = \overline{Q}^{(1,2)}_{i,j} / \overline{Q}^{(1,1)}_{i,j}`$
+to compute either $`C^{*}_{ij}`$, $`\overline{Q}^{(1,1)}_{i,j}`$, or $`\overline{Q}^{(1,2)}_{i,j}`$, given
 the other two.  Simply use the `from C*` type for the missing integral, as in
 ```xml
 <Q11 type="from C*"/>
@@ -723,18 +723,18 @@ The Langevin (polarization) potential has been used extensively for modeling
 ion-neutral interactions and represents a special case of the inverse power
 potential.  A closed form analytical solution of the collision integral using
 this potential is given as
-$$
+```math
 \overline{Q}^{(l,s)}_{i,j} = C^{(l,s)} z \pi \sqrt{\frac{\alpha}{T}},
-$$
-where $C^{(l,s)}$ is a constant depending on $l$ and $s$, $z$ is
-the elementary charge of the ion, and $\alpha$ is the dipole polarizability
-of the neutral.  An example is given in the following code snippet.
+```
+where $`C^{(l,s)}`$ is a constant depending on $`l`$ and $`s`$, $`z`$ is
+the elementary charge of the ion, and $`\alpha`$ is the dipole polarizability
+of the neutral. An example is given in the following code snippet.
 ```xml
 <Q11 type="Langevin">
 ```
-Note that the values of $l$ and $s$ are automatically determined from the
-kind of integral (in this case `Q11`) and $z$ is determined from the interaction
-pair that the integral is assigned to.  The dipole polarizability of the netural
+Note that the values of $`l`$ and $`s`$ are automatically determined from the
+kind of integral (in this case `Q11`) and $`z`$ is determined from the interaction
+pair that the integral is assigned to.  The dipole polarizability of the neutral
 must be provided in a [polarizability table](#collisions_polarizabilities)
 somewhere in the database.
 
@@ -743,10 +743,10 @@ somewhere in the database.
 
 Implements Eq. (5) of [Murphy (1995)](bibliography.md#Murphy1995) for combining elastic and inelastic
 interactions, where
-$$
+```math
 \overline{Q}_{ij}^{(l,s)}(T) = \sqrt{Q_1(T)^2 + Q_2(T)^2}
-$$
-where $Q_1$ and $Q_2$ are the elastic and
+```
+where $`Q_1`$ and $`Q_2`$ are the elastic and
 inelastic parts.  This combination rule is often used for ion-parent
 interactions where charge exchange interactions become important.  The XML format is
 as follows.
@@ -766,20 +766,20 @@ Note that the types of `Q1` and `Q2` can be any valid collision integral type.
 
 The phenomenological Pirani potential has been introduced in [Pirani et al. (2004)](bibliography.md#Murphy1995),
 taking the form
-$$
+```math
 \phi = \epsilon_0 \big[ \frac{m}{n(x)-m} \big(\frac{1}{x}\big)^{n(x)} -
 \frac{n(x)}{n(x)-m} \big(\frac{1}{x}\big)^{m} \big],
-$$
-where $ x = r/r_e$ and $n(x) = \beta + 4x^2$.  For netural-neutral and
+```
+where $`x = r/r_e`$ and $`n(x) = \beta + 4x^2`$. For neutral-neutral and
 ion-neutral interactions, m has the value of 6 and 4, respectively.  The value
-of $\beta$ ranges from 6 to 10 depending on the "hardness" of the the
+of $`\beta`$ ranges from 6 to 10 depending on the "hardness" of the the
 interacting electronic distribution densities and can be estimated as
-$$
+```math
 \beta = 6 + \frac{5}{s_1 + s_2},
-$$
-where $s_1$ and $s_2$ are the softness values of the colliding partners
+```
+where $`s_1`$ and $`s_2`$ are the softness values of the colliding partners
 1 and 2.  This is defined as the cubic root of the dipole polarizabilities of
-the two species.  The remaining parameters, $r_e$ and $\epsilon_0$ must
+the two species.  The remaining parameters, $`r_e`$ and $`\epsilon_0`$ must
 be either fit to match experimental observations or estimated based on correlations.
 Both options are available:
 ```xml
@@ -1029,14 +1029,14 @@ three dimensional fluxes reduce to the normal fluxes at the interface while the 
 source terms, such as chemical reactions, go to zero; only the surface sources remain.
 Generally, the set of balance equations can be written as:
 
-$$
+```math
 (\vec{F}_g - \vec{F}_b) \cdot \hat{n} = \Omega_s,
-$$
+```
 
-where $\vec{F}$ are the fluxes from the gas ($g$) and the bulk ($b$) phases, while
-$\Omega$ are the source terms associated to the surface ($s$) processes.
+where $`\vec{F}`$ are the fluxes from the gas ($`g`$) and the bulk ($`b`$) phases, while
+$`\Omega`$ are the source terms associated to the surface ($`s`$) processes.
 Only the normal to surface flux component should be considered, denoted by
-the inner product of the flux with the surface unit vector, ($\hat{n}$).
+the inner product of the flux with the surface unit vector, ($`\hat{n}`$).
 The specific form of the balance equations for mass and energy will be seen in the following
 sections.
 
@@ -1063,46 +1063,46 @@ modeled with the $\gamma$ (gamma) model, with reaction probability equal to 1.
 </gsi>
 ```
 
-The $\gamma$ model, introduced by Goulard in the late 1950s, is arguably the most popular
+The $`\gamma`$ model, introduced by Goulard in the late 1950s, is arguably the most popular
 way to treat catalysis in the aero-thermodynamics community. It describes catalytic
 reactions as macroscopic, non-elementary processes of the form:
 
-$$
+```math
 \mathrm{A} + \mathrm{A} \to \mathrm{A_2}
-$$
+```
 
 In order to determine the chemical production term for this kind of catalytic reactions a
-probability for recombination $\gamma$ is defined for each recombining species A as:
+probability for recombination $`\gamma`$ is defined for each recombining species A as:
 
-$$
+```math
 \gamma = F_{rec} / F_{imp},
-$$
+```
 
-where $F_{imp}$ is the flux of species A impinging the surface and
-$F_{rec}$ is the flux of species recombining at the surface. This probability is
-the input parameter for the model. A fully catalytic wall has $\gamma$ equal to 1, which
+where $`F_{imp}`$ is the flux of species A impinging the surface and
+$`F_{rec}`$ is the flux of species recombining at the surface. This probability is
+the input parameter for the model. A fully catalytic wall has $`\gamma`$ equal to 1, which
 means that all the particles of species A impinging the surface recombine at the wall.
-$\gamma$ equal to 0 means that no reaction takes place and corresponds
+$`\gamma`$ equal to 0 means that no reaction takes place and corresponds
 to a non catalytic, or chemically inert wall. Anything between these two extreme cases is a
 partially catalytic wall, which is the case for most of the surfaces. When the probability
-$\gamma$ is defined, the surface chemical source term is determined as:
+$`\gamma`$ is defined, the surface chemical source term is determined as:
 
-$$
+```math
 \begin{align}
 \Omega_A &= \gamma m_A F_{imp} \\
 \Omega_{A2} &= - \gamma m_A F_{imp}
 \end{align}
-$$
+```
 
-with $m_A$ being the mass of species A.
+with $`m_A`$ being the mass of species A.
 
 The only parameter that still needs to be defined is the impinging flux on the surface.
 When the distribution function of species at the wall is well approximated by a Maxwellian
-and there is no temperature slip, the impinging flux, $F_{imp}$, is equal to
+and there is no temperature slip, the impinging flux, $`F_{imp}`$, is equal to
 
-$$
+```math
 F_{imp} = n_A \sqrt{\frac{k_B T}{2 \pi m_A}}
-$$
+```
 
 according to the kinetic theory of gases.
 
@@ -1111,35 +1111,35 @@ such as the one presented in above.
 Soon, though, it was observed that heteronuclear reactions were also probable
 to occur at the wall, which can take the form of
 
-$$
+```math
 \mathrm{A} + \mathrm{B} \to \mathrm{AB},
-$$
+```
 
 with the chemical rate for the produced molecule AB equal to:
 
-$$
+```math
 \Omega_{AB}  = - \gamma_{AB} m_A F_{imp,A} - \gamma_{BA} m_B F_{imp,B}.
-$$
+```
 
 One atom of A recombines with one atom of B on the surface to produce a molecule AB.
 In other words the number of atoms of A that recombine into AB should be equal to the number of B
 atoms that recombine into AB. This restriction should be explicitly imposed in order to conserve mass:
 
-$$
+```math
 \gamma_{AB} F_{imp,A} = \gamma_{BA} F_{imp,B}.
-$$
+```
 
 As a result, in a reaction of this type two gamma recombination coefficients should be defined not
 necessarily equal for the two processes, the one activated when the catalytic reaction is limited by the
 flux of A atoms and the opposite. In practice the two recombination number fluxes,
-$\gamma_{AB} F_{imp,A}$ and $\gamma_{BA} F_{imp,B}$, are compared and the limiting one
+$`\gamma_{AB} F_{imp,A}`$ and $`\gamma_{BA} F_{imp,B}`$, are compared and the limiting one
 determines which of the two gammas is chosen.
 
 These gamma coefficients cannot take arbitrary values, they should be limited between 0 and 1,
 just like in the homonuclear case. When extra catalytic reactions are added,
-such as $\mathrm{A} + \mathrm{A} \to \mathrm{A_2}$ and $\mathrm{B} + \mathrm{B} \to \mathrm{B_2}$,
+such as $`\mathrm{A} + \mathrm{A} \to \mathrm{A_2}`$ and $`\mathrm{B} + \mathrm{B} \to \mathrm{B_2}`$,
 the gammas should be further constrained
-as $0 \lt \gamma_A + \gamma_{AB} \lt 1$ and $0 \lt \gamma_B + \gamma_{BA} \lt 1$
+as $`0 \lt \gamma_A + \gamma_{AB} \lt 1`$ and $`0 \lt \gamma_B + \gamma_{BA} \lt 1`$
 in order for mass to be conserved. This approach is consistent with similar approaches
 considering the catalytic recombination occurring in Martian atmospheres, where O can recombine
 into both O2 and CO2 due to catalytic reactions.
@@ -1256,21 +1256,21 @@ An example of ablation model can be seen below.
 The first ablation reaction presented above is the oxidation
 of the solid carbon by atomic oxygen. The reaction reads as:
 
-$$
+```math
 \mathrm{C}_b + \mathrm{O} \to \mathrm{CO}
-$$
+```
 
 and is exothermic, releasing 3.74 eV per molecule produced. Its reaction
 rate coefficient is given by defining a recombination probability
-$\gamma_{CO}$. This probability is an Arrhenius type function of temperature
+$`\gamma_{CO}`$. This probability is an Arrhenius type function of temperature
 and is given by the formula:
 
-$$
+```math
 \gamma_{CO} = 0.63 \exp \left(\frac{-1160~\mathrm{K}}{T} \right).
-$$
+```
 
 Carbon oxidation with molecular oxygen is also possible
-($\mathrm{C}_b + \mathrm{O_2} \to \mathrm{CO} + \mathrm{O}$),
+($`\mathrm{C}_b + \mathrm{O_2} \to \mathrm{CO} + \mathrm{O}`$),
 but it is often considered as a less significant process.
 
 #### Carbon Nitridation Model
@@ -1278,13 +1278,13 @@ but it is often considered as a less significant process.
 
 The second shown in the example is carbon nitridation,
 
-$$
+```math
 \mathrm{C}_b + \mathrm{N} \to \mathrm{CN}
-$$
+```
 
 an exothermic reaction with 0.35 eV of energy released per reacting atom.
 The reaction rate is given using a constant recombination probability
-$\gamma_{CN}$ like in the catalytic case.
+$`\gamma_{CN}`$ like in the catalytic case.
 
 #### Carbon Sublimation Model
 <a id="csubl"></a>
@@ -1293,25 +1293,25 @@ At high temperatures carbon removal from the surface is dominated by phase
 change processes like sublimation. The production of C3 is considered here.
 It should be noted that this type of reactions are invertible, with formula:
 
-$$
+```math
 3\mathrm{C}_b \to \mathrm{C_3}
-$$
+```
 
 The chemical production rate of this reaction is equal to:
 
-$$
+```math
 \Omega_{C_3} = \beta (\rho_{eq,C_3} - \rho_{C_3}) \sqrt{\frac{k_B T}{2 \pi m}}.
-$$
+```
 
 The equilibrium partial density of the C3 species is obtained from the
 saturated vapor pressure of carbon, which is equal to
 
-$$
-p_{sat,C_3} = c \exp \left( \frac{-Ta}{T} \right)
-$$
+```math
+p_{sat,C_3} = c \exp \left( \frac{-T_a}{T} \right)
+```
 
-with &#946_C3 being the evaporation coefficient, c the pre-exponential coefficient,
-and Ta the activation temperature.
+with $`\beta`$ being the evaporation coefficient, $`c`$ the pre-exponential coefficient,
+and $`T_a`$ the activation temperature.
 Even though here only sublimation is presented in the example, evaporation processes
 can be considered with the same model.
 
@@ -1342,9 +1342,9 @@ If all of the phenomena above are modeled with accuracy, the re-entry heat load 
 and the size of the thermal protection system can be determined.
 The mass balance on a catalytic surface reads:
 
-$$
+```math
 \vec{j}_i \cdot \hat{n} = \Omega_{cat,i},
-$$
+```
 
 where one mass balance equation should be solved for each distinct species in the flow.
 The equation above states, that the catalytic activity of every species is equal to the diffusion
@@ -1375,16 +1375,16 @@ processes also in the bulk, such as in the case of pyrolysis.
 
 Taking these ideas in mind, the surface mass balance accounting only for surface reactions becomes:
 
-$$
+```math
 [\rho_i (\vec{u}_g - \vec{u}_r) + \vec{j}_i - \vec{F}_{b,i} ] \cdot \hat{n} = \Omega_i,
-$$
+```
 
-with $\Omega_i = \Omega_{cat,i} + \Omega_{abl,i}$ and
-term $\vec{F}_{b,i}$ is the flux of species $i$ entering the interface due
+with $`\Omega_i = \Omega_{cat,i} + \Omega_{abl,i}`$ and
+term $`\vec{F}_{b,i}`$ is the flux of species $`i`$ entering the interface due
 to solid process, like pyrolysis and solid-solid chemical reactions.
 Just like before, one mass balance equation should be solved for each distinct species in the flow.
 It is most of the time reasonable to consider that recession velocity is
-orders of magnitude lower than the gas velocity $\vec{u}_r$.
+orders of magnitude lower than the gas velocity $`\vec{u}_r`$.
 
 ### Surface Energy Balance
 <a id="seb"></a>
@@ -1392,29 +1392,29 @@ orders of magnitude lower than the gas velocity $\vec{u}_r$.
 In order to determine the surface temperature a surface energy balance should be solved along
 with the mass balances. It takes the form:
 
-$$
+```math
 [ \rho ( \vec{u}_g - \vec{u}_r ) H + \vec{q}_g - \vec{F}_{b,e} ] \cdot \hat{n} = \Omega_e
-$$
+```
 
-where $\vec{q}_g$ is the heat flux to the gas phase equal to:
+where $`\vec{q}_g`$ is the heat flux to the gas phase equal to:
 
-$$
+```math
 \vec{q}_g = -\lambda \nabla T + \sum_i \vec{j}_i h_i.
-$$
+```
 
 The radiative heat flux can be also included and will be discussed along with the surface
 radiation.
 
-Term $\vec{F}_{b,e}$ describes the energy exchanged between the interface
+Term $`\vec{F}_{b,e}`$ describes the energy exchanged between the interface
 and the bulk of the solid and is composed of three contributions: the first one is the
-thermal conduction exiting the surface $\vec{q}_{cond}$, the second one is the
+thermal conduction exiting the surface $`\vec{q}_{cond}`$, the second one is the
 enthalpy entering the interface due to the movement of the surface with the recession velocity,
-$\vec{u}_r \rho h_s$ and the third one appears only in cases of
+$`\vec{u}_r \rho h_s`$ and the third one appears only in cases of
 porous material, describing the enthalpy of the solid pyrolysis gases convected in the interface,
-denoted as $\vec{u}_p \rho_p h_p$. The subscript $p$ symbolizes
-the pyrolysis gas properties, with the $\rho_p h_p$ being actually the
-sum $\sum_i = \rho_i h_i$ for the pyrolysis gas densities. The surface
-enthalpy $h_s$ is an input to the code, as an attribute to the surface_properties element.
+denoted as $`\vec{u}_p \rho_p h_p`$. The subscript $`p`$ symbolizes
+the pyrolysis gas properties, with the $`\rho_p h_p`$ being actually the
+sum $`\sum_i = \rho_i h_i`$ for the pyrolysis gas densities. The surface
+enthalpy $`h_s`$ is an input to the code, as an attribute to the surface_properties element.
 
 An example input file for solving both mass and energy balance can be seen below.
 ```xml
@@ -1464,14 +1464,14 @@ example above is radiation. It is considered by adding a new element with tag
 `<surface_radiation/>`. The surface is assumed to be in thermodynamic equilibrium
 at a temperature T emitting energy following the Stefan-Boltzmann law,
 
-$$
+```math
 \Omega_e = \Omega_{rad} = \epsilon ( \sigma T^4 - \vec{q}_{rad,g})
-$$
+```
 
-with $\sigma$ being the Stefan-Boltzmann constant and $\epsilon$ the emissivity
-of the surface. $T_{env}$ is the surrounding environment temperature which can
+with $`\sigma`$ being the Stefan-Boltzmann constant and $`\epsilon`$ the emissivity
+of the surface. $`T_{env}`$ is the surrounding environment temperature which can
 be used to simulate the far field radiative heat flux based on the formula
- $\sigma T_{env}^4$, which replaces the term $\vec{q}_{rad,g}$.
+$`\sigma T_{env}^4`$, which replaces the term $`\vec{q}_{rad,g}`$.
 This is a relatively bad approximation and, therefore, it is better to be omitted.
 
 In order to obtain the value for the conductive heat flux on the solid,
@@ -1483,25 +1483,25 @@ the simulations. Such an approximation was adopted here for the modeling of the
 conductive heat flux inside the material, the steady-state ablation approach for a
 semi-infinite surface. By writing the steady-state energy equation for the solid phase
 and integrating over the semi-infinite material, where on one side is the solid
-properties at exactly the interface (subscript $s$), while on the other, at infinity,
-is the virgin material (subscript $v$), the steady state heat flux is given by the formula:
+properties at exactly the interface (subscript $`s`$), while on the other, at infinity,
+is the virgin material (subscript $`v`$), the steady state heat flux is given by the formula:
 
-$$
+```math
 \vec{q}_{cond,ss} = -\vec{u}_r (\rho_v h_v - \rho_s h_s).
-$$
+```
 
 By replacing the formula above in the surface energy balance and after simplifications one gets:
 
-$$
+```math
 [ \rho ( \vec{u}_g - \vec{u}_r ) H + \vec{q}_g + \vec{u}_r \rho_v h_v ] \cdot \hat{n} = \Omega_e,
-$$
+```
 
 which is equally valid for both porous and non-porous materials. In order to use the steady state ablation
 approximation, the attribute of surface_feature element solid_conduction should be set to steady state.
 Instead of inputting the
 virgin material density, the ratio between the virgin and surface density minus one is often used,
 refered to as
-$\varphi = (\frac{\rho_v}{\rho_s} - 1)$ and is the attribute
+$`\varphi = (\frac{\rho_v}{\rho_s} - 1)`$ and is the attribute
 virgin_to_surf_density_ratio in the solid_properties element defaulting to 1.
 The enthalpy_virgin can also be an input with default
 value equal to 0. Note that these two last options are only necessary when the steady
