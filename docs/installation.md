@@ -108,25 +108,14 @@ make docs
 from the `build` directory.  Once done, open the `docs/html/index.html` file using your favorite web browser to see a full listing of all the classes and methods available in the library.
 
 ## Build Python package locally 
-If you are interested in building the Python package locally make sure you followed the procedure to correctly install the library (see top of the page) with the Python wrapper options flag in the `CMakeLists.txt` changed to "ON":
-
-```
-option (BUILD_PYTHON_WRAPPER
-    "Generate a Python package for using mutation++" ON)
-```
-Create your [virtualenv](https://docs.python.org/3/library/venv.html) and activate it.
-To compile the wrapper we need [scikit-build](https://scikit-build.readthedocs.io/en/latest/installation.html#install-package-with-pip):
-
-```
-pip install scikit-build
-```
-
-(or pip3 for python3!). Now simply 
+If you are interested in building the Python package locally make simply 
 
 ```
 pip install .
 ```
+
 in the main folder of `mutation++`; if you get an error related to PEP517 update essential packages:
+
 ```
 pip install --upgrade pip setuptools wheel 
 ```.
