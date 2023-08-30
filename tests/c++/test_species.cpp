@@ -99,7 +99,7 @@ TEST_CASE("Initialization of Species objects", "[thermodynamics]")
 {
     const double mw_N = 0.0140067;
     const double mw_O = 0.0159994;
-    const double mw_e = 0.00000055;
+    const double mw_e = 0.000000548579903;
 
     // Initialize from species name
     CHECK_NOTHROW(Species("NO2+"));

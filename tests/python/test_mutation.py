@@ -152,6 +152,9 @@ def test_mixtureHMole():
 def test_mixtureMw():
     assert mixture.mixtureMw() == pytest.approx(0.0288503, abs=1e-7)
 
+def test_mixtureSMass():
+    assert mixture.mixtureSMass() == pytest.approx(8218.83, abs=1e-2)
+
 
 # def test_meanFreePath():
 #     Todo: write proper test

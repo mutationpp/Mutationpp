@@ -53,6 +53,11 @@ void py_export_Mixture(py::module &m) {
            "Returns the number of mass equations associated with the mixture "
            "StateModel.")
 
+      .def("mixtureSMass",
+           static_cast<double (Mutation::Mixture::*)(void) const>(
+               &Mutation::Mixture::mixtureSMass),
+           "Returns the mixture averaged entropy in J/kg-K.")
+
       .def("hasElectrons", &Mutation::Mixture::hasElectrons,
            "Returns true if this mixture includes electrons, false otherwise.")
 
