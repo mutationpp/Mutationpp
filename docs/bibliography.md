@@ -27,8 +27,8 @@ E. A. Mason, R. J. Munn, and Francis J. Smith.
 _Physics of Fluids_, 10(8):1827, 1967.
 
 <a id="McBride1996"></a>
-McBride and Sanford.
-[Computer Program for Calculation of Complex Chemical Equilibrium Compositions and Applications: II. Users Manual and Program Description](https://www.grc.nasa.gov/www/CEAWeb/RP-1311-P2.pdf).
+McBride, B. J. and Sanford, G.
+[Computer Program for Calculation of Complex Chemical Equilibrium Compositions and Applications: II. Users Manual and Program Description](https://ntrs.nasa.gov/citations/19960044559).
 _NASA RP 1311_, 1996.
 
 <a id="Murphy1995"></a>
