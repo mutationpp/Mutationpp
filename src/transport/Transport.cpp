@@ -787,20 +787,14 @@ double Transport::electronMeanFreePath()
     if (!m_thermo.hasElectrons())
         return 0.0;
 
-    const int ns = m_thermo.nGas();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
     const double* const X = m_thermo.X();
-
-    const double Q11ee = m_collisions.Q11ee();
     const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
-    double sum = 0.0;
-    sum +=X[0]*X[0]*Q11ee;
-    for (int i = 1; i < ns; ++i)
-        sum +=X[i]*X[0]*Q11ei(i);
 
-    return 1.0/(nd*sum);
+    double sum = X[0]*X[0]*m_collisions.Q11ee();
+    for (int i = 1; i < m_thermo.nGas(); ++i)
+        sum += 2.0*X[i]*X[0]*Q11ei(i);
+
+    return 1.0/(m_thermo.numberDensity()*sum);
 }
 
 //==============================================================================
