@@ -61,7 +61,7 @@ struct OutputQuantity {
 };
 
 // List of all mixture output quantities
-#define NMIXTURE 45
+#define NMIXTURE 46
 OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("Th", "K", "heavy particle temperature"),
     OutputQuantity("P", "Pa", "pressure"),
@@ -110,8 +110,8 @@ OutputQuantity mixture_quantities[NMIXTURE] = {
     OutputQuantity("a_f", "m/s", "frozen speed of sound"),
     OutputQuantity("a_eq", "m/s", "equilibrium speed of sound"),
     OutputQuantity("Eam", "V/K", "ambipolar electric field (SM Ramshaw)"),
-    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure")
-//    OutputQuantity("l", "m", "mean free path"),
+    OutputQuantity("drho/dP", "kg/J", "equilibrium density derivative w.r.t pressure"),
+    OutputQuantity("l", "m", "mean free path")
 //    OutputQuantity("le", "m", "mean free path of electrons"),
 //    OutputQuantity("Vh", "m/s", "average heavy particle thermal speed"),
 //    OutputQuantity("Ve", "m/s", "electron thermal speed"),
@@ -834,8 +834,8 @@ int main(int argc, char** argv)
                     mix.stefanMaxwell(temp, temp2, value);
                 } else if (name == "drho/dP")
                     value = mix.dRhodP();
-//                else if (name == "l")
-//                    value = mix.meanFreePath();
+                else if (name == "l")
+                    value = mix.meanFreePath();
 //                else if (name == "le")
 //                    value = mix.electronMeanFreePath();
 //                else if (name == "Vh")
