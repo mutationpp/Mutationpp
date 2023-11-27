@@ -700,7 +700,7 @@ void py_export_Mixture(py::module &m) {
            "Electron-heavy collision frequency in 1/s.")
 
       .def("averageHeavyCollisionFreq",
-           &Mutation::Mixture::electronHeavyCollisionFreq,
+           &Mutation::Mixture::averageHeavyCollisionFreq,
            "Average collision frequency of heavy particles in mixture in 1/s.")
 
       .def("electricConductivity", &Mutation::Mixture::electricConductivity,

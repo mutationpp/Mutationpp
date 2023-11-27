@@ -171,7 +171,7 @@ void Transport::heavyThermalDiffusionRatios(double* const p_k)
 
 void Transport::frozenThermalConductivityVector(double* const p_lambda)
 {
-	const int neq = m_thermo.nEnergyEqns();
+    const int neq = m_thermo.nEnergyEqns();
     double lambda_th, lambda_te, lambda_rot, lambda_vib, lambda_elec;
 
     if(neq > 1) {
@@ -207,7 +207,7 @@ double Transport::internalThermalConductivity(double T)
 
 double Transport::rotationalThermalConductivity()
 {
-	m_thermo.speciesCpOverR(
+    m_thermo.speciesCpOverR(
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, mp_wrk1, NULL, NULL);
 
@@ -218,7 +218,7 @@ double Transport::rotationalThermalConductivity()
 
 double Transport::vibrationalThermalConductivity()
 {
-	m_thermo.speciesCpOverR(
+    m_thermo.speciesCpOverR(
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, NULL, mp_wrk1, NULL);
 
@@ -229,7 +229,7 @@ double Transport::vibrationalThermalConductivity()
 
 double Transport::electronicThermalConductivity()
 {
-	m_thermo.speciesCpOverR(
+    m_thermo.speciesCpOverR(
         m_thermo.T(), m_thermo.Te(), m_thermo.Tr(), m_thermo.Tv(), m_thermo.Tel(),
         NULL, NULL, NULL, NULL, mp_wrk1);
 
@@ -240,7 +240,7 @@ double Transport::electronicThermalConductivity()
 
 double Transport::reactiveThermalConductivity()
 {
-	// Compute dX_i/dT
+    // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
 
     // Compute the thermal diffusion ratios
@@ -346,10 +346,10 @@ double Transport::butlerBrokawThermalConductivity()
 
 double Transport::soretThermalConductivity()
 {
-	// @todo This is super inefficient, should fix
-	Eigen::VectorXd work(m_thermo.nGas());
+    // @todo This is super inefficient, should fix
+    Eigen::VectorXd work(m_thermo.nGas());
 
-	// Compute dX_i/dT
+    // Compute dX_i/dT
     m_thermo.dXidT(mp_wrk1);
 
     // Compute the thermal diffusion ratios
@@ -376,64 +376,64 @@ double Transport::soretThermalConductivity()
 
 void Transport::equilDiffFluxFacs(double* const p_F)
 {
-	// Get some state data
-	const int ns = m_thermo.nGas();
-	const int ne = m_thermo.nElements();
-	const double* const p_Y = m_thermo.Y();
-	const double* const p_X = m_thermo.X();
-	const double rho = m_thermo.density();
-	const double p   = m_thermo.P();
+    // Get some state data
+    const int ns = m_thermo.nGas();
+    const int ne = m_thermo.nElements();
+    const double* const p_Y = m_thermo.Y();
+    const double* const p_X = m_thermo.X();
+    const double rho = m_thermo.density();
+    const double p   = m_thermo.P();
 
-	const MatrixXd& Dij = diffusionMatrix();
-	const Eigen::MatrixXd& nu  = m_thermo.elementMatrix();
+    const MatrixXd& Dij = diffusionMatrix();
+    const Eigen::MatrixXd& nu  = m_thermo.elementMatrix();
 
-	for (int i = 0; i < ns; ++i) {
-		mp_wrk2[i] = 0.0;
-		for (int j = 0; j < ns; ++j)
-			mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
-		mp_wrk2[i] *= -rho*p_Y[i]/m_thermo.speciesMw(i);
-	}
+    for (int i = 0; i < ns; ++i) {
+        mp_wrk2[i] = 0.0;
+        for (int j = 0; j < ns; ++j)
+            mp_wrk2[i] += Dij(i,j)*mp_wrk1[j];
+        mp_wrk2[i] *= -rho*p_Y[i]/m_thermo.speciesMw(i);
+    }
 
-	for (int k = 0; k < ne; ++k) {
-		p_F[k] = 0.0;
-		double mwk = m_thermo.atomicMass(k);
-		for (int i = 0; i < ns; ++i)
-			p_F[k] += nu(i,k)*mwk*mp_wrk2[i];
-	}
+    for (int k = 0; k < ne; ++k) {
+        p_F[k] = 0.0;
+        double mwk = m_thermo.atomicMass(k);
+        for (int i = 0; i < ns; ++i)
+            p_F[k] += nu(i,k)*mwk*mp_wrk2[i];
+    }
 
-	m_thermo.speciesHOverRT(mp_wrk1);
-	p_F[ne] = 0.0;
-	for (int i = 0; i < ns; ++i)
-		p_F[ne] += mp_wrk1[i]*mp_wrk2[i];
-	p_F[ne] *= RU * m_thermo.T();
+    m_thermo.speciesHOverRT(mp_wrk1);
+    p_F[ne] = 0.0;
+    for (int i = 0; i < ns; ++i)
+        p_F[ne] += mp_wrk1[i]*mp_wrk2[i];
+    p_F[ne] *= RU * m_thermo.T();
 }
 
 //==============================================================================
 
 void Transport::equilDiffFluxFacsP(double* const p_F)
 {
-	const int ns = m_thermo.nGas();
-	const double p = m_thermo.P();
-	const double* const p_Y = m_thermo.Y();
-	const double* const p_X = m_thermo.X();
+    const int ns = m_thermo.nGas();
+    const double p = m_thermo.P();
+    const double* const p_Y = m_thermo.Y();
+    const double* const p_X = m_thermo.X();
 
     // Compute the dXj/dP term
     m_thermo.dXidP(mp_wrk1);
 
-	// Add the (x_j - y_j)/p term
-	for (int i = 0; i < ns; ++i)
-		mp_wrk1[i] += (p_X[i] - p_Y[i])/p;
+    // Add the (x_j - y_j)/p term
+    for (int i = 0; i < ns; ++i)
+        mp_wrk1[i] += (p_X[i] - p_Y[i])/p;
 
     // Compute the element averaged diffusion coefficients
-	equilDiffFluxFacs(p_F);
+    equilDiffFluxFacs(p_F);
 }
 
 //==============================================================================
 
 void Transport::equilDiffFluxFacsT(double* const p_F)
 {
-	const int ns = m_thermo.nGas();
-	const double T  = m_thermo.T();
+    const int ns = m_thermo.nGas();
+    const double T  = m_thermo.T();
 
     Eigen::Map<Eigen::ArrayXd> work1(mp_wrk1, ns);
     Eigen::Map<Eigen::ArrayXd> work2(mp_wrk2, ns);
@@ -441,45 +441,45 @@ void Transport::equilDiffFluxFacsT(double* const p_F)
     // Compute the dXj/dT term
     m_thermo.dXidT(work1.data());
 
-	// Add thermal diffusion ratio term
-	heavyThermalDiffusionRatios(work2.data());
+    // Add thermal diffusion ratio term
+    heavyThermalDiffusionRatios(work2.data());
     work1 += work2 / T;
 
     // @todo Add electron thermal diffusion ratios
 
     // Compute the element averaged diffusion coefficients
-	equilDiffFluxFacs(p_F);
+    equilDiffFluxFacs(p_F);
 }
 
 //==============================================================================
 
 void Transport::equilDiffFluxFacsZ(double* const p_F)
 {
-	const int ns = m_thermo.nGas();
-	const int ne = m_thermo.nElements();
-	const double* const p_X = m_thermo.X();
+    const int ns = m_thermo.nGas();
+    const int ne = m_thermo.nElements();
+    const double* const p_X = m_thermo.X();
     const double T   = m_thermo.T();
     const double p   = m_thermo.P();
 
-	// Loop over each element
-	for (int l = 0; l < ne; ++l) {
-	   // Compute the dXj/dZl term using a finite difference
-	   m_thermo.elementFractions(p_X, mp_wrk1);
-	   double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-10);
-	   mp_wrk1[l] += h;
-	   m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+    // Loop over each element
+    for (int l = 0; l < ne; ++l) {
+       // Compute the dXj/dZl term using a finite difference
+       m_thermo.elementFractions(p_X, mp_wrk1);
+       double h = std::max(mp_wrk1[l]*1.0e-6, 1.0e-10);
+       mp_wrk1[l] += h;
+       m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
 
-	   for (int i = 0; i < ns; ++i)
-		   mp_wrk1[i] = (mp_wrk2[i]-p_X[i])/h;
+       for (int i = 0; i < ns; ++i)
+           mp_wrk1[i] = (mp_wrk2[i]-p_X[i])/h;
 
-	   // Compute the element averaged diffusion coefficients
-	   equilDiffFluxFacs(p_F + l*(ne+1));
-	}
+       // Compute the element averaged diffusion coefficients
+       equilDiffFluxFacs(p_F + l*(ne+1));
+    }
 
-	// Be sure to set the state back in the equilibrium solver in case other
-	// calculations rely on the correct element potential values
-	m_thermo.elementFractions(p_X, mp_wrk1);
-	m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
+    // Be sure to set the state back in the equilibrium solver in case other
+    // calculations rely on the correct element potential values
+    m_thermo.elementFractions(p_X, mp_wrk1);
+    m_thermo.equilibriumComposition(T, p, mp_wrk1, mp_wrk2);
 }
 
 //==============================================================================
@@ -750,30 +750,35 @@ void Transport::smCorrectionsHeavy(int order, Eigen::ArrayXd& phi)
 double Transport::meanFreePath()
 {
     // Thermo properties
-         const int ns = m_thermo.nGas();
-         const double Th = m_thermo.T();
-           const double Te = m_thermo.Te();
-                 const double nd = m_thermo.numberDensity();
-                    const double* const X = m_thermo.X();
-                    const double me = m_thermo.speciesMw(0)/NA;
-                   const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-        const double Q11ee = m_collisions.Q11ee();
+    const int ns = m_thermo.nGas();
+    const double* const X = m_thermo.X();
+    const double me = m_thermo.speciesMw(0)/NA;
+    const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
+    const int k = m_thermo.nSpecies() - m_thermo.nHeavy();
+
+    double sum = 0.0;
+
+    // Electron
+    if (m_thermo.hasElectrons()) {
+        sum += X[0]*X[0]*m_collisions.Q11ee();
         const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
+        for (int i = 1; i < ns; ++i) {
+            // Factor of 2 to account for symmetric matrix
+            sum += 2.0*X[i]*X[0]*Q11ei(i);
+        }
+    }
 
+    // Heavies
+    for (int i = k, index = 0; i < ns; ++i) {
+        sum += X[i]*X[i]*Q11(index++);
+        for (int j = i+1; j < ns; ++j, index++) {
+            // Factor of 2 to account for symmetric matrix
+            sum += 2.0*X[i]*X[j]*Q11(index);
+        }
+    }
 
-                                         double sum = 0.0;
-            sum +=X[0]*X[0]*Q11ee;
-                for (int i = 1; i < ns; ++i)
-            {
-            sum +=X[i]*X[0]*Q11ei(i);
-            ;}
-
-                                           for (int i = 1; i < ns; ++i)
-                                                for (int j = 1; j < ns; ++j)
-                                                               sum += X[i]*X[j]*Q11(i,j);
-
-                                                                   return 1.0/(nd*sum);
-                                                                 }
+    return 1.0/(m_thermo.numberDensity()*sum);
+}
 //==============================================================================
 
 
@@ -782,32 +787,23 @@ double Transport::electronMeanFreePath()
     if (!m_thermo.hasElectrons())
         return 0.0;
 
-    const int ns = m_thermo.nGas();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
     const double* const X = m_thermo.X();
-
-    const double Q11ee = m_collisions.Q11ee();
     const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
-    double sum = 0.0;
-            sum +=X[0]*X[0]*Q11ee;
-                        for (int i = 1; i < ns; ++i)
-                        {
-                        sum +=X[i]*X[0]*Q11ei(i);
-                        ;}
 
+    double sum = X[0]*X[0]*m_collisions.Q11ee();
+    for (int i = 1; i < m_thermo.nGas(); ++i)
+        sum += 2.0*X[i]*X[0]*Q11ei(i);
 
-    return 1.0/(nd*sum);
+    return 1.0/(m_thermo.numberDensity()*sum);
 }
 
 //==============================================================================
 double Transport::speciesThermalSpeed(const int& i) const
 {
-	if (i < m_thermo.hasElectrons()){
-	    const double T = m_thermo.Te();
+    if (i < m_thermo.hasElectrons()){
+        const double T = m_thermo.Te();
         return sqrt(8.0*RU*T/(PI*m_thermo.speciesMw(i)));
-	}
+    }
 
     const double T = m_thermo.T();
     return sqrt(8.0*RU*T/(PI*m_thermo.speciesMw(i)));
@@ -854,28 +850,8 @@ double Transport::coulombMeanCollisionTime()
 {
     if (!m_thermo.hasElectrons())
         return 0.0;
-
-    const int ns = m_thermo.nGas();
-    const double Th = m_thermo.T();
-    const double Te = m_thermo.Te();
-    const double nd = m_thermo.numberDensity();
-    const double* const X = m_thermo.X();
-    double sum = 0.0;
-    const Eigen::ArrayXd& Q11 = m_collisions.Q11ij();
-    const double Q11ee = m_collisions.Q11ee();
-    const Eigen::ArrayXd& Q11ei = m_collisions.Q11ei();
-                        sum +=X[0]*X[0]*Q11ee;
-                        for (int i = 1; i < ns; ++i)
-                        {
-                        sum +=X[i]*X[0]*Q11ei(i);
-                        ;}
-
-                                           for (int i = 1; i < ns; ++i)
-                                                for (int j = 1; j < ns; ++j)
-                                                               sum += X[i]*X[j]*Q11(i,j);
-
-     return (3.0/16.0)*1.0/(nd*sum)/averageHeavyThermalSpeed();//electronThermalSpeed();
-     }
+    return (3.0/16.0)*meanFreePath()/averageHeavyThermalSpeed();//electronThermalSpeed();
+}
 
 //==============================================================================
 double Transport::hallParameter()

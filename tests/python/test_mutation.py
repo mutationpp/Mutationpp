@@ -19,7 +19,7 @@ mixtureNonEq.setState(rhoi, T, 1)
 # Todo: write proper test
 
 def test_averageHeavyCollisionFreq():
-    assert mixture.averageHeavyCollisionFreq() == pytest.approx(0.0)
+    assert mixture.averageHeavyCollisionFreq() == pytest.approx(4.0906953e7)
 
 
 #
@@ -156,8 +156,8 @@ def test_mixtureSMass():
     assert mixture.mixtureSMass() == pytest.approx(8218.83, abs=1e-2)
 
 
-# def test_meanFreePath():
-#     Todo: write proper test
+def test_meanFreePath():
+    assert mixture.meanFreePath() == pytest.approx(1.1470317911509538e-05)
 
 def test_nAtoms():
     assert mixture.nAtoms() == 4
