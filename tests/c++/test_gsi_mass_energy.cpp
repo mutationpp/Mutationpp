@@ -101,10 +101,9 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         mix.surfaceReactionRates(wdot.data());
 
         // Surface radiation
-        const double sigma = 2.*pow(PI, 5)*pow(KB, 4)/(15*pow(C0, 2)*pow(HP, 3));
         const double eps = 1.;
         VectorXd q_srad = VectorXd::Zero(nT) ;
-        q_srad(pos_T_trans) = sigma * eps * pow(T_s(pos_T_trans), 4);
+        q_srad(pos_T_trans) = Mutation::SB * eps * pow(T_s(pos_T_trans), 4);
 
         // Building balance functions
         VectorXd F(neq);
@@ -190,10 +189,9 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         v_h(pos_T_trans) = rhoi_s.dot(v_hi.head(ns));
 
         // Surface radiation
-        const double sigma = 2.*pow(PI, 5)*pow(KB, 4)/(15*pow(C0, 2)*pow(HP, 3));
         const double eps = .86;
         VectorXd q_srad = VectorXd::Zero(nT);
-        q_srad(pos_T_trans) = sigma*eps*pow(T_s(pos_T_trans), 4);
+        q_srad(pos_T_trans) = Mutation::SB*eps*pow(T_s(pos_T_trans), 4);
 
         // Chemical Energy Contribution
         VectorXd v_hi_rhoi_vi= VectorXd::Zero(nT);
@@ -288,10 +286,9 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         v_h(pos_T_trans) = (rhoi_s/rho).dot(v_hi.head(ns));
 
         // Surface radiation
-        const double sigma = 2.*pow(PI, 5)*pow(KB, 4)/(15*pow(C0, 2)*pow(HP, 3));
         const double eps = .86;
         VectorXd q_srad = VectorXd::Zero(nT);
-        q_srad(pos_T_trans) = sigma*eps*pow(T_s(pos_T_trans), 4);
+        q_srad(pos_T_trans) = Mutation::SB*eps*pow(T_s(pos_T_trans), 4);
 
         // Chemical Energy Contribution
         VectorXd v_hi_rhoi_vi= VectorXd::Zero(nT);
@@ -388,9 +385,8 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         double h = (rhoi_s/rho).dot(v_hi.head(ns));
 
         // Surface radiation
-        const double sigma = 2.*pow(PI, 5)*pow(KB, 4)/(15*pow(C0, 2)*pow(HP, 3));
         const double eps = .86;
-        double q_srad = sigma*eps*pow(T_s(pos_T_trans), 4);
+        double q_srad = Mutation::SB*eps*pow(T_s(pos_T_trans), 4);
 
         // Chemical Energy Contribution
         double v_hi_rhoi_vi = -v_hi.head(ns).dot(rhoi_s.cwiseProduct(vdi));
