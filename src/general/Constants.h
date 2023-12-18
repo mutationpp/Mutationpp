@@ -54,6 +54,8 @@ constexpr double C0     = 299792458.0;     //!< Speed of light in vacuum (m/s)
 constexpr double EPS0   = 1.0/(MU0*C0*C0); //!< Vacuum permittivity (F/m)
 constexpr double QE     = 1.602176565E-19; //!< Elementary positive charge (C)
 constexpr double ONEATM = 101325.0;        //!< 1 atm in Pa
+constexpr double SB     = (2.0*PI*PI*PI*PI*PI*KB*KB*KB*KB)
+                        / (15.0*HP*HP*HP*C0*C0); //!< Stefan-Boltzmann constant (W/m^2-K^4)
 /// @}
 
 /// @}

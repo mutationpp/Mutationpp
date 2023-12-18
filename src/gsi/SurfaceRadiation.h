@@ -93,8 +93,6 @@ private:
     double m_T_env;
     double m_gas_rad_heat_flux;
 
-    const double m_stef_bolt_const;
-
     const SurfaceState& m_surf_state;
 };
 
