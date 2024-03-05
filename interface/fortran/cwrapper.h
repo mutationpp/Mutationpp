@@ -28,6 +28,8 @@
 #ifndef FORTRAN_CWRAPPER_H
 #define FORTRAN_CWRAPPER_H
 
+#include <stdbool.h>
+
 // Converts the base function name in mpp_function(_) where the (_) represents
 // the name mangling that is performed in order to use the function in Fortran
 #define NAME_MANGLE(__name__) mpp_##__name__##_
