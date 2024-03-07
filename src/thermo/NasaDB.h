@@ -49,51 +49,51 @@ public:
     NasaDB()
         : ThermoDB(298.15, 101325.0), m_ns(0)
     { }
-    
+
     virtual ~NasaDB() {};
-    
+
     virtual bool speciesThermoValidAtT(const size_t i, const double T) const {
         assert(i < m_ns);
         return (T > m_polynomials[i].minT() && T <= m_polynomials[i].maxT());
     }
-    
+
     void cp(
-        double Th, double Te, double Tr, double Tv, double Tel, 
-        double* const cp, double* const cpt, double* const cpr, 
+        double Th, double Te, double Tr, double Tv, double Tel,
+        double* const cp, double* const cpt, double* const cpr,
         double* const cpv, double* const cpel);
-    
+
     void enthalpy(
-        double Th, double Te, double Tr, double Tv, double Tel, 
-        double* const h, double* const ht, double* const hr, double* const hv, 
+        double Th, double Te, double Tr, double Tv, double Tel,
+        double* const h, double* const ht, double* const hr, double* const hv,
         double* const hel, double* const hf);
-    
+
     void entropy(
         double Th, double Te, double Tr, double Tv, double Tel, double P,
-        double* const s, double* const st, double* const sr, double* const sv, 
+        double* const s, double* const st, double* const sr, double* const sv,
         double* const sel);
-    
+
     void gibbs(
         double Th, double Te, double Tr, double Tv, double Tel, double P,
-        double* const g, double* const gt, double* const gr, double* const gv, 
+        double* const g, double* const gt, double* const gr, double* const gv,
         double* const gel);
 
 protected:
-    
+
     void loadAvailableSpecies(std::list<Species>& species_list);
-    
+
     void loadThermodynamicData();
-    
+
     virtual std::string filename() const = 0;
-    
+
     virtual void skipHeader(std::ifstream& is) const = 0;
-    
+
     virtual Species loadSpecies(std::ifstream& is) const = 0;
-    
+
     virtual void loadPolynomials(
         std::ifstream& is, std::vector<PolynomialType>& polynomials) = 0;
 
 private:
-    
+
     size_t m_ns;
     std::vector<PolynomialType> m_polynomials;
     double mp_params[8];
@@ -102,53 +102,97 @@ private:
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::cp(
     double Th, double Te, double Tr, double Tv, double Tel,
-    double* const cp, double* const cpt, double* const cpr, 
+    double* const cp, double* const cpt, double* const cpr,
     double* const cpv, double* const cpel)
 {
-    
+
     if (cp != NULL) {
-        PolynomialType::computeParams(Th, mp_params, PolynomialType::CP);
-        for (size_t i = 0; i < m_ns; ++i)
+        for (size_t i = 0; i < m_ns; ++i) {
+            // Limit temperature of fit to min and max of polynomial data
+            double Tfit = std::min(std::max(Th, m_polynomials[i].minT()), m_polynomials[i].maxT());
+            PolynomialType::computeParams(Tfit, mp_params, PolynomialType::CP);
             m_polynomials[i].cp(mp_params, cp[i]);
+        }
     }
-    
+
     if (cpt != NULL) std::fill(cpt, cpt+m_ns, 0.0);
     if (cpr != NULL) std::fill(cpr, cpr+m_ns, 0.0);
     if (cpv != NULL) std::fill(cpv, cpv+m_ns, 0.0);
     if (cpel != NULL) std::fill(cpel, cpel+m_ns, 0.0);
 }
-    
+
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::enthalpy(
     double Th, double Te, double Tr, double Tv, double Tel,
-    double* const h, double* const ht, double* const hr, double* const hv, 
+    double* const h, double* const ht, double* const hr, double* const hv,
     double* const hel, double* const hf)
 {
     if (h != NULL) {
-        PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTHALPY);
-        for (size_t i = 0; i < m_ns; ++i)
+        for (size_t i = 0; i < m_ns; ++i) {
+            // Limit temperature of fit to min and max of polynomial data
+            double const Tmin = m_polynomials[i].minT();
+            double const Tmax = m_polynomials[i].maxT();
+            double Tfit = Th;
+            bool out_of_range = false;
+            if (Th < Tmin) {
+                Tfit = Tmin;
+                out_of_range = true;
+            } else if (Th > Tmax) {
+                Tfit = Tmax;
+                out_of_range = true;
+            }
+            PolynomialType::computeParams(Tfit, mp_params, PolynomialType::ENTHALPY);
             m_polynomials[i].enthalpy(mp_params, h[i]);
+            // If outside of range, correct using constant Cp
+            if (out_of_range) {
+                h[i] *= Tfit/Th; // Non-dimensionalize by Th
+                PolynomialType::computeParams(Tfit, mp_params, PolynomialType::CP);
+                double cp;
+                m_polynomials[i].cp(mp_params, cp);
+                h[i] += cp*(Th-Tfit)/Th;
+            }
+        }
     }
-    
+
     if (ht != NULL) std::fill(ht, ht+m_ns, 0.0);
     if (hr != NULL) std::fill(hr, hr+m_ns, 0.0);
     if (hv != NULL) std::fill(hv, hv+m_ns, 0.0);
     if (hel != NULL) std::fill(hel, hel+m_ns, 0.0);
-    if (hf != NULL) std::fill(hf, hf+m_ns, 0.0);      
+    if (hf != NULL) std::fill(hf, hf+m_ns, 0.0);
 }
 
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::entropy(
     double Th, double Te, double Tr, double Tv, double Tel, double P,
-    double* const s, double* const st, double* const sr, double* const sv, 
+    double* const s, double* const st, double* const sr, double* const sv,
     double* const sel)
 {
     if (s != NULL) {
-        PolynomialType::computeParams(Th, mp_params, PolynomialType::ENTROPY);
-        for (size_t i = 0; i < m_ns; ++i)
+        for (size_t i = 0; i < m_ns; ++i) {
+            // Limit temperature of fit to min and max of polynomial data
+            double const Tmin = m_polynomials[i].minT();
+            double const Tmax = m_polynomials[i].maxT();
+            double Tfit = Th;
+            bool out_of_range = false;
+            if (Th < Tmin) {
+                Tfit = Tmin;
+                out_of_range = true;
+            } else if (Th > Tmax) {
+                Tfit = Tmax;
+                out_of_range = true;
+            }
+            PolynomialType::computeParams(Tfit, mp_params, PolynomialType::ENTROPY);
             m_polynomials[i].entropy(mp_params, s[i]);
+            // If outside of range, correct using constant Cp
+            if (out_of_range) {
+                PolynomialType::computeParams(Tfit, mp_params, PolynomialType::CP);
+                double cp;
+                m_polynomials[i].cp(mp_params, cp);
+                s[i] += cp*(log(Th)-log(Tfit));
+            }
+        }
     }
-    
+
     if (st != NULL) std::fill(st, st+m_ns, 0.0);
     if (sr != NULL) std::fill(sr, sr+m_ns, 0.0);
     if (sv != NULL) std::fill(sv, sv+m_ns, 0.0);
@@ -158,15 +202,46 @@ void NasaDB<PolynomialType>::entropy(
 template <typename PolynomialType>
 void NasaDB<PolynomialType>::gibbs(
     double Th, double Te, double Tr, double Tv, double Tel, double P,
-    double* const g, double* const gt, double* const gr, double* const gv, 
+    double* const g, double* const gt, double* const gr, double* const gv,
     double* const gel)
 {
     if (g != NULL) {
-        PolynomialType::computeParams(Th, mp_params, PolynomialType::GIBBS);
-        for (size_t i = 0; i < m_ns; ++i)
-            m_polynomials[i].gibbs(mp_params, g[i]);
+        for (size_t i = 0; i < m_ns; ++i) {
+            // Limit temperature of fit to min and max of polynomial data
+            double const Tmin = m_polynomials[i].minT();
+            double const Tmax = m_polynomials[i].maxT();
+            double Tfit = Th;
+            bool out_of_range = false;
+            if (Th < Tmin) {
+                Tfit = Tmin;
+                out_of_range = true;
+            } else if (Th > Tmax) {
+                Tfit = Tmax;
+                out_of_range = true;
+            }
+            if (out_of_range) {
+                // Compute G from corrected H and S using constant Cp
+                PolynomialType::computeParams(Tfit, mp_params, PolynomialType::ENTHALPY);
+                double h;
+                m_polynomials[i].enthalpy(mp_params, h);
+                h *= Tfit/Th; // Non-dimensionalize by Th
+                double s;
+                PolynomialType::computeParams(Tfit, mp_params, PolynomialType::ENTROPY);
+                m_polynomials[i].entropy(mp_params, s);
+                PolynomialType::computeParams(Tfit, mp_params, PolynomialType::CP);
+                double cp;
+                m_polynomials[i].cp(mp_params, cp);
+                h += cp*(Th-Tfit)/Th;
+                s += cp*(log(Th)-log(Tfit));
+                g[i] = h - s;
+            } else {
+                // Directly compute G from combined H and S polynomial
+                PolynomialType::computeParams(Th, mp_params, PolynomialType::GIBBS);
+                m_polynomials[i].gibbs(mp_params, g[i]);
+            }
+        }
     }
-    
+
     if (gt != NULL) std::fill(gt, gt+m_ns, 0.0);
     if (gr != NULL) std::fill(gr, gr+m_ns, 0.0);
     if (gv != NULL) std::fill(gv, gv+m_ns, 0.0);
@@ -186,16 +261,16 @@ void NasaDB<PolynomialType>::loadAvailableSpecies(
         throw FileNotFoundError(db_path)
             << "Could not find thermodynamic database.";
     }
-    
+
     // Move to the beginning of the first species
     skipHeader(file);
-    
+
     // Load all of the available species until we reach the end of the file
     species_list.push_back(loadSpecies(file));
     while (species_list.back().name() != "")
         species_list.push_back(loadSpecies(file));
     species_list.pop_back();
-    
+
     // Close the database file
     file.close();
 }
@@ -207,20 +282,20 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
     std::string db_path =
         Utilities::databaseFileName(filename(), "thermo", ".dat");
     std::ifstream file(db_path.c_str());
-    
+
     if (!file.is_open()) {
         throw FileNotFoundError(db_path)
             << "Could not find thermodynamic database.";
     }
-    
+
     // Move to the beginning of the first species
     skipHeader(file);
-    
+
     // Ask the concrete class to fill the polynomials
     m_ns = species().size();
     m_polynomials.resize(m_ns);
     loadPolynomials(file, m_polynomials);
-    
+
     // Close the database file
     file.close();
 }
@@ -229,4 +304,4 @@ void NasaDB<PolynomialType>::loadThermodynamicData()
 } // namespace Mutation
 
 
-    
+
