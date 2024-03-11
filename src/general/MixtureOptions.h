@@ -51,7 +51,7 @@ public:
      * species list.
      */
     MixtureOptions();
-    
+
     /**
      * Copy constructor.
      */
@@ -59,7 +59,6 @@ public:
         : m_species_descriptor(options.m_species_descriptor),
           m_compositions(options.m_compositions),
           m_default_composition(options.m_default_composition),
-          m_load_transport(options.m_load_transport),
           m_source(options.m_source),
           m_state_model(options.m_state_model),
           m_thermo_db(options.m_thermo_db),
@@ -68,32 +67,32 @@ public:
           m_thermal_conductivity(options.m_thermal_conductivity),
           m_gsi_mechanism(options.m_gsi_mechanism)
     { }
-    
+
     /**
-	 * Constructs a new MixtureOptions object from a mixture file (without the
-	 * .xml extension).  The file is first assumed to reside in the relative
-	 * path from the local directory.  If it does not exist there, then
-	 * MPP_DATA_DIRECTORY/mixtures is checked.
-	 */
-	MixtureOptions(const std::string& mixture);
+     * Constructs a new MixtureOptions object from a mixture file (without the
+     * .xml extension).  The file is first assumed to reside in the relative
+     * path from the local directory.  If it does not exist there, then
+     * MPP_DATA_DIRECTORY/mixtures is checked.
+     */
+    MixtureOptions(const std::string& mixture);
 
-	/**
-	 * Constructs a new MixtureOptions object from a mixture file (without the
-	 * .xml extension).  The file is first assumed to reside in the relative
-	 * path from the local directory.  If it does not exist there, then
-	 * MPP_DATA_DIRECTORY/mixtures is checked.
-	 */
-	MixtureOptions(const char* mixture);
+    /**
+     * Constructs a new MixtureOptions object from a mixture file (without the
+     * .xml extension).  The file is first assumed to reside in the relative
+     * path from the local directory.  If it does not exist there, then
+     * MPP_DATA_DIRECTORY/mixtures is checked.
+     */
+    MixtureOptions(const char* mixture);
 
-	/**
-	 * Constructs a new MixtureOptions from an XmlElement.
-	 */
-	MixtureOptions(Utilities::IO::XmlElement& element);
+    /**
+     * Constructs a new MixtureOptions from an XmlElement.
+     */
+    MixtureOptions(Utilities::IO::XmlElement& element);
 
-	/**
-	 * Destructor.
-	 */
-	~MixtureOptions() {}
+    /**
+     * Destructor.
+     */
+    ~MixtureOptions() {}
 
     /**
      * Assignment operator.
@@ -103,7 +102,7 @@ public:
         swap(*this, options);
         return *this;
     }
-    
+
     /**
      * Loads the mixture options from a mixture input file.
      */
@@ -118,63 +117,63 @@ public:
      * Gets the source of this mixture options (mixture file name).
      */
     const std::string& getSource() const {
-		return m_source;
+        return m_source;
     }
 
     /**
      * Sets the options back to a default state.
      */
     void setDefaultOptions();
-    
+
     /**
      * Gets the list of species names.
      */
     const std::string& getSpeciesDescriptor() const {
         return m_species_descriptor;
     }
-    
+
     /**
      * Sets the list of species names.
      */
     void setSpeciesDescriptor(const std::string& descriptor) {
         m_species_descriptor = descriptor;
     }
-    
+
     /**
      * Gets the mixture state model to be used.
      */
     const std::string& getStateModel() const {
         return m_state_model;
     }
-    
+
     /**
      * Sets the mixture state model to be used.
      */
     void setStateModel(const std::string& state_model) {
         m_state_model.assign(state_model);
     }
-    
+
     /**
      * Gets the thermodynamic database type to use.
      */
     const std::string& getThermodynamicDatabase() const {
         return m_thermo_db;
     }
-    
+
     /**
      * Sets which thermodynamic database is to be used.
      */
     void setThermodynamicDatabase(const std::string& thermo_db) {
         m_thermo_db = thermo_db;
     }
-    
+
     /**
      * Gets the name of the reaction mechanism to use.
      */
     const std::string& getMechanism() const {
         return m_mechanism;
     }
-    
+
     /**
      * Sets the name of the reaction mechanism.
      */
@@ -188,37 +187,37 @@ public:
     const std::string& getViscosityAlgorithm() const {
         return m_viscosity;
     }
-    
+
     /**
      * Sets which viscosity algorithm to use.
      */
     void setViscosityAlgorithm(const std::string& viscosity) {
         m_viscosity = viscosity;
     }
-    
+
     /**
      * Gets the thermal conductivity algorithm to use.
      */
     const std::string& getThermalConductivityAlgorithm() const {
         return m_thermal_conductivity;
     }
-    
+
     /**
      * Sets the thermal conductivity algorithm to use.
      */
     void setThermalConductivityAlgorithm(
-        const std::string& thermal_conductivity) 
+        const std::string& thermal_conductivity)
     {
         m_thermal_conductivity = thermal_conductivity;
     }
-    
+
     /**
      * Gets the Gas-Surface Interaction mechanism to use.
      */
     const std::string& getGSIMechanism() const {
         return m_gsi_mechanism;
     }
-    
+
     /**
      * Sets the Gas-Surface Interaction mechanism to use.
      */
@@ -327,7 +326,7 @@ public:
 
     bool addComposition(
         const Thermodynamics::Composition& c, bool make_default = false);
-    
+
     const std::vector<Thermodynamics::Composition>& compositions() const {
         return m_compositions;
     }
@@ -341,15 +340,13 @@ private:
 private:
 
     std::string m_species_descriptor;
-    
+
     std::vector<Thermodynamics::Composition> m_compositions;
     int m_default_composition;
     //std::vector<std::pair<std::string, double> > m_default_composition;
     //bool m_has_default_composition;
 
-    bool m_load_transport;
-
-	std::string m_source;
+    std::string m_source;
     std::string m_state_model;
     std::string m_thermo_db;
     std::string m_mechanism;
