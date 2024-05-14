@@ -1,22 +1,24 @@
 #!/usr/bin/env python
 
+import numpy as np
 import mutationpp as mpp
 import pytest
 
-#Equilibrium Mixture
+# Equilibrium Mixture
 mixture = mpp.Mixture("air_11")
-mixture.equilibrate(300., 1000.)
+mixture.equilibrate(300.0, 1000.0)
 
 # MultiTemperature Mixture
 myMixtureOptions = mpp.MixtureOptions("air_5")
 myMixtureOptions.setStateModel("ChemNonEqTTv")
 mixtureNonEq = mpp.Mixture(myMixtureOptions)
-rhoi = [1.0]*5
-T = [10000., 300.]
+rhoi = [1.0] * 5
+T = [10000.0, 300.0]
 mixtureNonEq.setState(rhoi, T, 1)
 
 # def test_averageDiffusionCoeffs():
 # Todo: write proper test
+
 
 def test_averageHeavyCollisionFreq():
     assert mixture.averageHeavyCollisionFreq() == pytest.approx(4.0906953e7)
@@ -28,6 +30,7 @@ def test_averageHeavyCollisionFreq():
 
 # def test_backwardRateCoefficients():
 # Todo: write proper test
+
 
 def test_density():
     assert mixture.density() == pytest.approx(0.0115663, abs=1e-7)
@@ -45,15 +48,29 @@ def test_dRhodP():
 #   a = np.array([1.])
 #   mixture.dXidT(a)
 
+
 def test_electronHeavyCollisionFreq():
-    assert mixture.electronHeavyCollisionFreq() == pytest.approx(0.)
+    assert mixture.electronHeavyCollisionFreq() == pytest.approx(0.0)
 
 
 # def test_electronMeanFreePath():
 # Todo: write proper test
 
+
+def test_convert_xe_to_ye():
+    np.testing.assert_array_equal(
+        mixture.convert_xe_to_ye([0, 0, 1]), np.array([0, 0, 1])
+    )
+
+
+def test_convert_ye_to_xe():
+    np.testing.assert_array_equal(
+        mixture.convert_ye_to_xe([0, 0, 1]), np.array([0, 0, 1])
+    )
+
+
 def test_electronThermalConductivity():
-    assert mixture.electronThermalConductivity() == pytest.approx(0.)
+    assert mixture.electronThermalConductivity() == pytest.approx(0.0)
 
 
 # def test_electronThermalSpeed():
@@ -65,24 +82,28 @@ def test_electronThermalConductivity():
 # def test_equilDiffFluxFacsP():
 # Todo: write proper test
 
+
 def test_equilibriumSoundSpeed():
     assert mixture.equilibriumSoundSpeed() == pytest.approx(347.765, abs=1e-3)
 
 
 def test_equilibriumThermalConductivity():
-    assert mixture.equilibriumThermalConductivity() == pytest.approx(0.0284695, abs=1e-7)
+    assert mixture.equilibriumThermalConductivity() == pytest.approx(
+        0.0284695, abs=1e-7
+    )
 
 
 # def test_forwardRateCoefficients():
 # Todo: write proper test
+
 
 def test_frozenSoundSpeed():
     assert mixture.frozenSoundSpeed() == pytest.approx(347.765, abs=1e-3)
 
 
 def test_getBField():
-    mixture.setBField(1.)
-    assert mixture.getBField() == 1.
+    mixture.setBField(1.0)
+    assert mixture.getBField() == 1.0
 
 
 def test_hasElectrons():
@@ -94,7 +115,9 @@ def test_heavyThermalConductivity():
 
 
 def test_internalThermalConductivity():
-    assert mixture.internalThermalConductivity(mixture.T()) == pytest.approx(0.00755904, abs=1e-7)
+    assert mixture.internalThermalConductivity(mixture.T()) == pytest.approx(
+        0.00755904, abs=1e-7
+    )
 
 
 def test_mixtureEnergyMass():
@@ -152,12 +175,14 @@ def test_mixtureHMole():
 def test_mixtureMw():
     assert mixture.mixtureMw() == pytest.approx(0.0288503, abs=1e-7)
 
+
 def test_mixtureSMass():
     assert mixture.mixtureSMass() == pytest.approx(8218.83, abs=1e-2)
 
 
 def test_meanFreePath():
     assert mixture.meanFreePath() == pytest.approx(1.1470317911509538e-05)
+
 
 def test_nAtoms():
     assert mixture.nAtoms() == 4
@@ -180,6 +205,7 @@ def test_nEnergyEqns():
 
 # def test_nEquilibriumNewtons():
 # Todo: write proper test
+
 
 def test_nGas():
     assert mixture.nGas() == 11
@@ -206,7 +232,7 @@ def test_nSpecies():
 
 
 def test_numberDensity():
-    assert mixture.numberDensity() == pytest.approx(2.414321232055165e+23)
+    assert mixture.numberDensity() == pytest.approx(2.414321232055165e23)
 
 
 # def test_omega11ii():
@@ -218,8 +244,9 @@ def test_numberDensity():
 # def test_phaseMoles():
 # Todo: write proper test
 
+
 def test_P():
-    assert mixture.P() == 1000.
+    assert mixture.P() == 1000.0
 
 
 def test_reactiveThermalConductivity():
@@ -236,8 +263,23 @@ def test_soretThermalConductivity():
 # def test_speciesCpOverR():
 # Todo: write proper test
 
-# def test_speciesHOverRT():
-# Todo: write proper test
+
+def test_speciesHOverRT():
+    expected = [
+        1.54166667e-02,
+        7.54484667e02,
+        6.28975420e02,
+        3.97181733e02,
+        6.05194961e02,
+        4.69649788e02,
+        1.89420120e02,
+        9.99331729e01,
+        3.65398913e01,
+        2.15923313e-02,
+        2.17600146e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(), expected)
+
 
 # def test_speciesMw():
 # Todo: write proper test
@@ -248,21 +290,27 @@ def test_soretThermalConductivity():
 # def test_speciesGOverRT():
 # Todo: write proper test
 
+
 def test_T():
-    assert mixture.T() == 300.
-    assert mixtureNonEq.T() == 10000.
+    assert mixture.T() == 300.0
+    assert mixtureNonEq.T() == 10000.0
+
 
 def test_Tr():
-    assert mixtureNonEq.Tr() == 10000.
+    assert mixtureNonEq.Tr() == 10000.0
+
 
 def test_Tv():
-    assert mixtureNonEq.Tv() == 300.
+    assert mixtureNonEq.Tv() == 300.0
+
 
 def test_Te():
-    assert mixtureNonEq.Te() == 300.
+    assert mixtureNonEq.Te() == 300.0
+
 
 # def test_thermalDiffusionRatios():
 # Todo: write proper test
+
 
 def test_viscosity():
     assert mixture.viscosity() == pytest.approx(1.9426e-5, abs=1e-8)
@@ -270,9 +318,9 @@ def test_viscosity():
 
 def test_X():
     # Todo: write proper test
-    assert sum(mixture.X()) == 1.
+    assert sum(mixture.X()) == 1.0
 
 
 def test_Y():
     # Todo: write proper test
-    assert sum(mixture.Y()) == 1.
+    assert sum(mixture.Y()) == 1.0

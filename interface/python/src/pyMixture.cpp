@@ -385,7 +385,7 @@ void py_export_Mixture(py::module &m) {
           "speciesHOverRT",
           [](const Mutation::Mixture &self) {
             std::vector<double> h_i(self.nSpecies());
-            self.speciesCpOverR(h_i.data());
+            self.speciesHOverRT(h_i.data());
             return py::array(py::cast(h_i));
           },
           "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
@@ -478,6 +478,25 @@ void py_export_Mixture(py::module &m) {
             return py::array(py::cast(y));
           },
           "Converts species mole to elemental mole fraction.")
+      .def(
+          "convert_xe_to_ye",
+          [](const Mutation::Mixture &self, std::vector<double> x) {
+            std::vector<double> y(self.nElements());
+            self.Mutation::Mixture::Thermodynamics::convert<
+                Mutation::Thermodynamics::XE_TO_YE>(x.data(), y.data());
+            return py::array(py::cast(y));
+          },
+          "Converts elemental mole fraction to elemental mass fractions.")
+
+      .def(
+          "convert_ye_to_xe",
+          [](const Mutation::Mixture &self, std::vector<double> x) {
+            std::vector<double> y(self.nElements());
+            self.Mutation::Mixture::Thermodynamics::convert<
+                Mutation::Thermodynamics::YE_TO_XE>(x.data(), y.data());
+            return py::array(py::cast(y));
+          },
+          "Converts elemental mass fraction to elemental mole fractions.")
 
       .def(
           "convert_y_to_ye",
