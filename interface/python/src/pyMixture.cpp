@@ -391,6 +391,16 @@ void py_export_Mixture(py::module &m) {
           "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
           "\f$.")
 
+      .def(
+          "speciesHOverRT",
+          [](const Mutation::Mixture &self, double T) {
+            std::vector<double> h_i(self.nSpecies());
+            self.speciesHOverRT(T, h_i.data());
+            return py::array(py::cast(h_i));
+          },
+          "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
+          "\f$ at a given temperature.")
+
       .def("mixtureHMole",
            static_cast<double (Mutation::Mixture::*)(void) const>(
                &Mutation::Mixture::mixtureHMole),

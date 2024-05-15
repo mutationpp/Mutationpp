@@ -281,6 +281,23 @@ def test_speciesHOverRT():
     assert np.allclose(mixture.speciesHOverRT(), expected)
 
 
+def test_speciesHOverRT():
+    expected = [
+        2.36710963e-02,
+        7.51986575e02,
+        6.26894106e02,
+        3.95873824e02,
+        6.03195982e02,
+        4.68101138e02,
+        1.88799123e02,
+        9.96094746e01,
+        3.64301530e01,
+        3.31535710e-02,
+        3.34133823e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(301), expected)
+
+
 # def test_speciesMw():
 # Todo: write proper test
 
