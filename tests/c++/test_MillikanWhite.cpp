@@ -81,7 +81,7 @@ void checkDefaultRelaxationRate(bool with_electrons)
     const double sigma = 1e-20 * (2.5E9/(300.0*300.0));
     const double tau_park = 1.0/(ni * ci * sigma);
     
-    CHECK(model.relaxationTime(mix) == tau_mw + tau_park);
+    CHECK(model.relaxationTime(mix) == Approx(tau_mw + tau_park));
 }
 
 TEST_CASE("MillikanWhiteModel provides correct default relaxation time", "[transfer]")
