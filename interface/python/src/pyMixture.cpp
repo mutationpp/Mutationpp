@@ -380,15 +380,34 @@ void py_export_Mixture(py::module &m) {
           "elemental mole fractions. "
           "If the mole fractions are not given, then the default fractions are "
           "used.")
+           .def(
+          "speciesHOverRT",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> h_i(self.nSpecies());
+            self.speciesHOverRT(h_i.data());
+            return py::array(py::cast(h_i));
+          },
+          "Computes the unitless species enthalpies and can optionally fill vectors"
+          "for each energy mode.")
 
       .def(
           "speciesHOverRT",
+          [](const Mutation::Mixture &self, double T) {
+            std::vector<double> h_i(self.nSpecies());
+            self.speciesHOverRT(T, h_i.data());
+            return py::array(py::cast(h_i));
+          },
+          "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
+          "\f$.")
+
+      .def(
+          "speciesCpOverR",
           [](const Mutation::Mixture &self) {
             std::vector<double> h_i(self.nSpecies());
             self.speciesCpOverR(h_i.data());
             return py::array(py::cast(h_i));
           },
-          "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
+          "Returns the unitless vector of species specific heat at constant pressure \f$ Cp_i / R_u "
           "\f$.")
 
       .def("mixtureHMole",
@@ -741,5 +760,55 @@ void py_export_Mixture(py::module &m) {
             self.averageDiffusionCoeffs(array.data());
             return py::array(py::cast(array));
           },
-          "Returns the average diffusion coefficients.");
+          "Returns the average diffusion coefficients.")
+
+          .def(
+          "getTemperatures",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> T_i(self.nEnergyEqns());
+            self.getTemperatures(T_i.data());
+            return py::array(py::cast(T_i));
+          },
+          "Fills temperature array with tempertures according to the used "
+          "StateModel.")
+     
+     .def(
+          "getEnergiesMass",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> e_i(self.nSpecies());
+            self.Mutation::Mixture::getEnergiesMass(e_i.data());
+            return py::array(py::cast(e_i));
+          },
+          "Fills energy per mass array with energies according to the used "
+          "StateModel (total + internal for each species).")
+
+     .def(
+          "getEnthalpiesMass",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> h_i(self.nSpecies());
+            self.Mutation::Mixture::getEnthalpiesMass(h_i.data());
+            return py::array(py::cast(h_i));
+          },
+          "Fills enthalpy per mass array with enthalpy according to the used "
+          "StateModel (total + internal for each species).")
+
+     .def(
+          "getCpsMass",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> cp_i(self.nSpecies());
+            self.Mutation::Mixture::getCpsMass(cp_i.data());
+            return py::array(py::cast(cp_i));
+          },
+          "Fills the constant pressure specific heat according to the used "
+          "StateModel")
+
+     .def(
+          "getCvsMass",
+          [](const Mutation::Mixture &self) {
+            std::vector<double> cv_i(self.nSpecies());
+            self.Mutation::Mixture::getCvsMass(cv_i.data());
+            return py::array(py::cast(cv_i));
+          },
+          "Fills the constant volume specific heat according to the used "
+          "StateModel");
 }

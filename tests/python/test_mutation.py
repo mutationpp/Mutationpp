@@ -276,3 +276,46 @@ def test_X():
 def test_Y():
     # Todo: write proper test
     assert sum(mixture.Y()) == 1.
+    
+def test_convert_xe_to_ye():
+    np.testing.assert_array_equal(
+        mixture.convert_xe_to_ye([0, 0, 1]), np.array([0, 0, 1])
+    )
+
+def test_convert_ye_to_xe():
+    np.testing.assert_array_equal(
+        mixture.convert_ye_to_xe([0, 0, 1]), np.array([0, 0, 1])
+    )   
+    
+def test_speciesHOverRT():
+    expected = [
+        1.54166667e-02,
+        7.54484667e02,
+        6.28975420e02,
+        3.97181733e02,
+        6.05194961e02,
+        4.69649788e02,
+        1.89420120e02,
+        9.99331729e01,
+        3.65398913e01,
+        2.15923313e-02,
+        2.17600146e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(), expected)
+
+
+def test_speciesHOverRT():
+    expected = [
+        2.36710963e-02,
+        7.51986575e02,
+        6.26894106e02,
+        3.95873824e02,
+        6.03195982e02,
+        4.68101138e02,
+        1.88799123e02,
+        9.96094746e01,
+        3.64301530e01,
+        3.31535710e-02,
+        3.34133823e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(301), expected)    
