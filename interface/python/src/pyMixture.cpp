@@ -20,6 +20,50 @@ void py_export_Mixture(py::module &m) {
   py::class_<Mutation::Mixture>(m, "Mixture")
       .def(py::init<Mutation::MixtureOptions>())
       .def(py::init<std::string &>())
+
+     .def("NA", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::NA;
+          },
+           "Returns the Avogadro's number (molecule/mol)."
+           )
+
+     .def("KB", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::KB;
+          },    
+           "Returns the Boltzmann's constant (J/molecule-K)")
+
+     .def("RU", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::RU;
+          },
+           "Returns the Universal Gas constant (J/mole-K)")            
+
+     .def("HP", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::HP;
+          },
+           "Returns the Planck's constant (J-s)")
+     
+     .def("C0", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::C0;
+          },
+           "Returns the Speed of light in vacuum (m/s)")
+
+     .def("ONEATM", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::ONEATM;
+          },
+           "Returns the 1 atm in Pa")   
+
+     .def("SB", 
+          [](const Mutation::Mixture &self) {
+               return Mutation::SB;
+          },
+           "Returns the Stefan-Boltzmann constant (W/m^2-K^4)")  
+
       .def("nElements", &Mutation::Mixture::nElements,
            "Returns the number of elements considered in the mixture.")
 
@@ -380,7 +424,7 @@ void py_export_Mixture(py::module &m) {
           "elemental mole fractions. "
           "If the mole fractions are not given, then the default fractions are "
           "used.")
-           .def(
+     .def(
           "speciesHOverRT",
           [](const Mutation::Mixture &self) {
             std::vector<double> h_i(self.nSpecies());
@@ -398,16 +442,6 @@ void py_export_Mixture(py::module &m) {
             return py::array(py::cast(h_i));
           },
           "Returns the unitless vector of species enthalpies \f$ H_i / R_u T "
-          "\f$.")
-
-      .def(
-          "speciesCpOverR",
-          [](const Mutation::Mixture &self) {
-            std::vector<double> h_i(self.nSpecies());
-            self.speciesCpOverR(h_i.data());
-            return py::array(py::cast(h_i));
-          },
-          "Returns the unitless vector of species specific heat at constant pressure \f$ Cp_i / R_u "
           "\f$.")
 
       .def("mixtureHMole",
@@ -507,6 +541,26 @@ void py_export_Mixture(py::module &m) {
             return py::array(py::cast(y));
           },
           "Converts species mass to elemental mass fraction.")
+
+           .def(
+          "convert_xe_to_ye",
+          [](const Mutation::Mixture &self, std::vector<double> x) {
+            std::vector<double> y(self.nElements());
+            self.Mutation::Mixture::Thermodynamics::convert<
+                Mutation::Thermodynamics::XE_TO_YE>(x.data(), y.data());
+            return py::array(py::cast(y));
+          },
+          "Converts elemental mole fraction to elemental mass fractions.")
+
+      .def(
+          "convert_ye_to_xe",
+          [](const Mutation::Mixture &self, std::vector<double> x) {
+            std::vector<double> y(self.nElements());
+            self.Mutation::Mixture::Thermodynamics::convert<
+                Mutation::Thermodynamics::YE_TO_XE>(x.data(), y.data());
+            return py::array(py::cast(y));
+          },
+          "Converts elemental mass fraction to elemental mole fractions.")     
 
       .def("dRhodP", &Mutation::Mixture::dRhodP,
            "Returns the density derivative with respect to pressure for the "
@@ -810,5 +864,38 @@ void py_export_Mixture(py::module &m) {
             return py::array(py::cast(cv_i));
           },
           "Fills the constant volume specific heat according to the used "
-          "StateModel");
+          "StateModel") 
+
+     
+     .def(
+          "getGibbsMass",
+          [](const Mutation::Mixture &self) {
+            Eigen::ArrayXd gibbs_i(self.nSpecies());
+            self.Mutation::Mixture::speciesGOverRT(gibbs_i.data());
+            gibbs_i*=self.T()* Mutation::RU/self.speciesMw();
+            return py::array(py::cast(gibbs_i));;
+          },
+          "Return an array of gibbs free energy for each species per unit mass")       
+
+     .def(
+          "getGibbsMass",
+          [](const Mutation::Mixture &self, double T, double P) {
+            Eigen::ArrayXd gibbs_i(self.nSpecies());
+            self.Mutation::Mixture::speciesGOverRT(T, P, gibbs_i.data());
+            gibbs_i*=T* Mutation::RU/self.speciesMw();
+            return py::array(py::cast(gibbs_i));;
+          },
+          "Return an array of gibbs free energy for each species per unit mass")      
+
+     .def(
+          "getSTGibbsMass",
+          [](const Mutation::Mixture &self, double T) {
+            Eigen::ArrayXd gibbs_i(self.nSpecies());
+            self.Mutation::Mixture::speciesSTGOverRT(T, gibbs_i.data());
+            gibbs_i*=T* Mutation::RU/self.speciesMw();
+            return py::array(py::cast(gibbs_i));;
+          },
+          "Return an array of gibbs free energy for each species per unit mass at standard pressure")     
+          
+          ;
 }
