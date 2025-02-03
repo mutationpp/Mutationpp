@@ -76,7 +76,7 @@ public:
      */
     virtual void setState(
         const double* const p_mass, const double* const p_energy,
-        const int vars = 0, const double Tv_old = 0, const double T_old = 0)
+        const int vars = 0)
     {
         // Determine temperature, pressure, and mole fractions depending on
         // variable set
