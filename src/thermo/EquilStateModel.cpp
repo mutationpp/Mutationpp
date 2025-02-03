@@ -272,7 +272,7 @@ public:
       * Sets the state of the equilibrium mixture given temperature and pressure.
       */
      virtual void setState(
-         const double* const p_T, const double* const p_P, const int vars = 1, const double Tv_old = 0, const double T_old = 0)
+         const double* const p_T, const double* const p_P, const int vars = 1)
      {
           //assert(vars == 1);
           EquilStateModel::setState(p_P, p_T, 1);
