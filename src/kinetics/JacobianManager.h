@@ -31,6 +31,7 @@
 
 #include "Thermodynamics.h"
 #include <iostream>
+#include "RateLaws.h" // Added by RSCD
 
 namespace Mutation {
     namespace Kinetics {
@@ -517,7 +518,23 @@ public:
     void computeJacobian(
         const double* const kf, const double* const kb, 
         const double* const conc, double* const sjac) const;
+
+    /**
+     * Computes the temperature-dependent source Jacobian elements.
+     * Work under progress - RSCD
+     */
+     void computeJacobianT(
+         const double* const p_ropf, const double* const p_ropb,
+         double* const Tjac) const;
     
+    /**
+     * Computes the reaction temperature derivatives.
+     * Work under progress - RSCD
+     */
+/*     void computeTReactionDerivative(
+         const size_t nr, const size_t nt, const double* const p_t,
+         double* const p_dTfdT, double* const p_dTbdT) const;
+*/    
 private:
     
     /**

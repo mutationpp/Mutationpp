@@ -195,6 +195,17 @@ public:
     void jacobianRho(double* const p_jac);
 
     /**
+     * Fills the matrix p_jacT with the temperature jacobians for chemistry source term
+     * \f[
+     * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial T_j}
+     * \f]
+     * Work in progress and more details will be added soon - RSCD
+     */
+    void jacobianT(double* const p_jacT, double* const p_jacTv);
+
+    void forwardRateOfProgressDerivatives(double* const p_dropf);
+    void backwardRateOfProgressDerivatives(double* const p_dropb);
+    /**
      * Returns the change in some species quantity across each reaction.
      */
     //void getReactionDelta(
@@ -237,6 +248,8 @@ private:
     double* mp_ropb;
     double* mp_rop;
     double* mp_wdot;
+    double* mp_dropf;
+    double* mp_dropb;
 };
 
 

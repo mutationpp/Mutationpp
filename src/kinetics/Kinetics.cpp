@@ -54,7 +54,9 @@ Kinetics::Kinetics(
       mp_ropf(NULL),
       mp_ropb(NULL),
       mp_rop(NULL),
-      mp_wdot(NULL)
+      mp_wdot(NULL),
+      mp_dropf(NULL),
+      mp_dropb(NULL)
 {
     if (mechanism == "none")
         return;
@@ -104,6 +106,10 @@ Kinetics::~Kinetics()
         delete [] mp_rop;
     if (mp_wdot != NULL)
         delete [] mp_wdot;
+    if (mp_dropf != NULL)
+        delete [] mp_dropf;
+    if (mp_dropb != NULL)
+        delete [] mp_dropb;
 }
 
 //==============================================================================
@@ -162,7 +168,8 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     mp_ropb  = new double [nReactions()];
     mp_rop   = new double [std::max(m_thermo.nSpecies(), (int) nReactions())];
     mp_wdot  = new double [m_thermo.nSpecies()];
-    
+    mp_dropf = new double [nReactions()];
+    mp_dropb = new double [nReactions()];
 }
 
 //==============================================================================
@@ -279,6 +286,45 @@ void Kinetics::backwardRatesOfProgress(
     m_thirdbodies.multiplyThirdbodies(p_conc, p_ropb);
 }
 
+//==============================================================================
+
+void Kinetics::forwardRateOfProgressDerivatives(double* const mp_dropf)
+{
+    if(nReactions() == 0)
+       return;
+
+    mp_rates->update(m_thermo);
+    ArrayXd dkfdT =
+        Map<const ArrayXd>(mp_rates->dkfdT(), nReactions());
+
+   forwardRatesOfProgress(mp_ropf);
+
+   for (int i = 0; i < nReactions(); ++i) 
+       mp_dropf[i] = mp_ropf[i]*dkfdT[i];
+   
+}
+
+
+//==============================================================================
+
+void Kinetics::backwardRateOfProgressDerivatives(double* const mp_dropb)
+{
+    if (nReactions() == 0)
+        return;
+
+    mp_rates->update(m_thermo);
+    ArrayXd dkbdT  = 
+        Map<const ArrayXd>(mp_rates->dkbdT(), nReactions());
+
+    backwardRatesOfProgress(mp_ropb);
+        
+    for(int i=0; i < nReactions(); ++i) 
+       mp_dropb[i] = mp_ropb[i]*dkbdT[i];
+    
+
+}
+
+
 /*
 //==============================================================================
 
@@ -385,6 +431,25 @@ void Kinetics::jacobianRho(double* const p_jac)
     
     // Compute the Jacobian matrix
     m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);
+}
+
+//==============================================================================
+
+void Kinetics::jacobianT(double* const p_jacT, double* const p_jacTv)
+{
+   // Special case of no reactions
+   if (nReactions() == 0) {
+       std::fill(p_jacT, p_jacT + m_thermo.nSpecies(), 0);
+       std::fill(p_jacTv, p_jacTv + m_thermo.nSpecies(), 0);
+       return;
+   }	
+
+   // Compute forward and backward rates of progress
+   forwardRateOfProgressDerivatives(mp_dropf);
+   backwardRateOfProgressDerivatives(mp_dropb);
+
+   // Compute the Jacobian matrix
+   //m_jacobian.computeJacobianT(mp_dropf, mp_dropb, p_jacT);   
 }
 
 //==============================================================================

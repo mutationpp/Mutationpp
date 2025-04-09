@@ -317,6 +317,40 @@ void JacobianManager::computeJacobian(
 
 //==============================================================================
 
+void JacobianManager::computeJacobianT(
+    const double* const p_dropf, const double* const p_dropb, 
+    double* const Tjac) const
+{
+    const size_t ns = m_thermo.nSpecies();
+    const size_t nr = m_reactions.size();
+    const size_t nt = m_thermo.nEnergyEqns();
+
+    double* m_t;
+    double* p_t = new double[nt];
+
+    std::fill(p_t, p_t + nt, 0.);
+
+    m_thermo.getTemperatures(p_t);
+
+    // Make sure we are starting with a clean slate
+    std::fill(Tjac, Tjac+ns*nt, 0.0);
+
+
+}
+/*
+//==============================================================================
+
+void JacobianManager::computeTReactionDerivative(
+     const size_t nr, const size_t nt, const double* const p_t,
+     double* const p_dTfdT, double*const p_dTbdT) const
+{
+     //for(size_t i = 0; i < nr; ++i) {
+         
+
+}
+*/
+//==============================================================================
+
     } // namespace Kinetics
 } // namespace Mutation
 

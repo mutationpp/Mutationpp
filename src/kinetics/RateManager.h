@@ -79,6 +79,12 @@ public:
         return m_irr;
     }
 
+    /* need to add once it works - RSCD
+    */
+  
+    const double* const dkfdT() {return mp_dkfdT; }
+    const double* const dkbdT() {return mp_dkbdT; }
+
 private:
 
     /**
@@ -122,6 +128,21 @@ private:
     /// Storage for species Gibbs free energies
     double* mp_gibbs;
     
+    /// Storage for forward rate coefficient derivative at forward temperature
+    double* mp_dkfdT;
+
+    /// Storage for forward rate coefficient derivative at backward temperature
+    double* mp_dkbdT;
+
+    /// Storage for equilibrium constant temperature derivatives
+    double* mp_dKeqdT;
+
+    /// Storage for reaction temperature derivatives
+    double* mp_dTfdT;
+    double* mp_dTfdTv;
+    double* mp_dTbdT;
+    double* mp_dTbdTv;
+
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal
     std::vector<size_t> m_to_copy;
