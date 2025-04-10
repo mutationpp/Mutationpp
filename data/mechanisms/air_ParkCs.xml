@@ -1,0 +1,239 @@
+<!--
+Park air11 reaction mechanism
+-->
+<mechanism name="air_ParkCs">
+
+  <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+  <!--1 -->
+  <reaction formula="N2+N=N+N+N">
+    <arrhenius A="3E+22" n="-1.6" T="113200" />
+  </reaction>
+  <!--2 -->
+  <reaction formula="N2+O=N+N+O">
+    <arrhenius A="3E+22" n="-1.6" T="113200" />
+  </reaction>
+  <!--3 -->
+  <reaction formula="N2+N+=N+N+N+">
+    <arrhenius A="3E+22" n="-1.6" T="113200" />
+  </reaction>
+  <!--4 -->
+  <reaction formula="N2+O+=N+N+O+">
+    <arrhenius A="3E+22" n="-1.6" T="113200" />
+  </reaction>
+  <!--5 -->
+  <reaction formula="N2+N2=N+N+N2">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--6 -->
+  <reaction formula="N2+O2=N+N+O2">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--7 -->
+  <reaction formula="N2+NO=N+N+NO">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--8 -->
+  <reaction formula="N2+N2+=N+N+N2+">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--9 -->
+  <reaction formula="N2+O2+=N+N+O2+">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--10 -->
+  <reaction formula="N2+NO+=N+N+NO+">
+    <arrhenius A="7E+21" n="-1.6" T="113200" />
+  </reaction>
+  <!--11 -->
+  <reaction formula="N2+e-=N+N+e-">
+    <arrhenius A="3E+24" n="-1.6" T="113200" />
+  </reaction>
+  <!--12 -->
+  <reaction formula="O2+N=O+O+N">
+    <arrhenius A="1E+22" n="-1.5" T="59500" />
+  </reaction>
+  <!--13 -->
+  <reaction formula="O2+O=O+O+O">
+    <arrhenius A="1E+22" n="-1.5" T="59500" />
+  </reaction>
+  <!--14 -->
+  <reaction formula="O2+N+=O+O+N+">
+    <arrhenius A="1E+22" n="-1.5" T="59500" />
+  </reaction>
+  <!--15 -->
+  <reaction formula="O2+O+=O+O+O+">
+    <arrhenius A="1E+22" n="-1.5" T="59500" />
+  </reaction>
+  <!--16 -->
+  <reaction formula="O2+N2=O+O+N2">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--17 -->
+  <reaction formula="O2+O2=O+O+O2">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--18 -->
+  <reaction formula="O2+NO=O+O+NO">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--19 -->
+  <reaction formula="O2+N2+=O+O+N2+">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--20 -->
+  <reaction formula="O2+O2+=O+O+O2+">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--21 -->
+  <reaction formula="O2+NO+=O+O+NO+">
+    <arrhenius A="2E+21" n="-1.5" T="59500" />
+  </reaction>
+  <!--22 -->
+  <reaction formula="NO+N=N+O+N">
+    <arrhenius A="1.1E+17" n="0.0" T="75500" />
+  </reaction>
+  <!--23 -->
+  <reaction formula="NO+O=N+O+O">
+    <arrhenius A="1.1E+17" n="0.0" T="75500" />
+  </reaction>
+  <!--24 -->
+  <reaction formula="NO+NO=N+O+NO">
+    <arrhenius A="1.1E+17" n="0.0" T="75500" />
+  </reaction>
+  <!--25 -->
+  <reaction formula="NO+N+=N+O+N+">
+    <arrhenius A="1.1E+17" n="0.0" T="75500" />
+  </reaction>
+  <!--26 -->
+  <reaction formula="NO+O+=N+O+O+">
+    <arrhenius A="1.1E+17" n="0.0" T="75500" />
+  </reaction>
+  <!--27 -->
+  <reaction formula="NO+N2=N+O+N2">
+    <arrhenius A="5E+15" n="0.0" T="75500" />
+  </reaction>
+  <!--28 -->
+  <reaction formula="NO+O2=N+O+O2">
+    <arrhenius A="5E+15" n="0.0" T="75500" />
+  </reaction>
+  <!--29 -->
+  <reaction formula="NO+N2+=N+O+N2+">
+    <arrhenius A="5E+15" n="0.0" T="75500" />
+  </reaction>
+  <!--30 -->
+  <reaction formula="NO+O2+=N+O+O2+">
+    <arrhenius A="5E+15" n="0.0" T="75500" />
+  </reaction>
+  <!--31 -->
+  <reaction formula="NO+NO+=N+O+NO+">
+    <arrhenius A="5E+15" n="0.0" T="75500" />
+  </reaction>
+  <!--32 -->
+  <reaction formula="N2+O=NO+N">
+    <arrhenius A="5.7E+12" n="0.42" T="42938" />
+  </reaction>
+  <!--33 -->
+  <reaction formula="NO+O=N+O2">
+    <arrhenius A="8.4E+12" n="0.0" T="19400" />
+  </reaction>
+  <!--34 -->
+  <reaction formula="N+O=NO++e-">
+    <arrhenius A="5.3E+12" n="0.0" T="32000" />
+  </reaction>
+  <!--35 -->
+  <reaction formula="O+O=O2++e-">
+    <arrhenius A="1.1E+13" n="0.0" T="81200" />
+  </reaction>
+  <!--36 -->
+  <reaction formula="N+N=N2++e-">
+    <arrhenius A="2E+13" n="0.0" T="67700" />
+  </reaction>
+  <!--37 -->
+  <reaction formula="NO++O=N++O2">
+    <arrhenius A="1E+12" n="0.5" T="77200" />
+  </reaction>
+  <!--38 -->
+  <reaction formula="N++N2=N2++N">
+    <arrhenius A="1E+12" n="0.5" T="12200" />
+  </reaction>
+  <!--39 -->
+  <reaction formula="O2++N=N++O2">
+    <arrhenius A="8.7E+13" n="0.14" T="28600" />
+  </reaction>
+  <!--40 -->
+  <reaction formula="O++NO=N++O2">
+    <arrhenius A="1.4E+5" n="1.9" T="26600" />
+  </reaction>
+  <!--41 -->
+  <reaction formula="O2++N2=N2++O2">
+    <arrhenius A="9.9E+12" n="0.0" T="40700" />
+  </reaction>
+  <!--42 -->
+  <reaction formula="O2++O=O++O2">
+    <arrhenius A="4E+12" n="-0.09" T="18000" />
+  </reaction>
+  <!--43 -->
+  <reaction formula="NO++N=O++N2">
+    <arrhenius A="3.4E+13" n="-1.08" T="12800" />
+  </reaction>
+  <!--44 -->
+  <reaction formula="NO++O2=O2++NO">
+    <arrhenius A="2.4E+13" n="0.41" T="32600" />
+  </reaction>
+  <!--45 -->
+  <reaction formula="NO++O=O2++N">
+    <arrhenius A="7.2E+12" n="0.29" T="48600" />
+  </reaction>
+  <!--46 -->
+  <reaction formula="O++N2=N2++O">
+    <arrhenius A="9.1E+11" n="0.36" T="22800" />
+  </reaction>
+  <!--47 -->
+  <reaction formula="NO++N=N2++O">
+    <arrhenius A="7.2E+13" n="0.0" T="35500" />
+  </reaction>
+  <!--48 -->
+  <reaction formula="Cs++NO=Cs+NO+">
+    <arrhenius A="8.07E+11" n="0.0" T="61800" />
+  </reaction>
+  <!--49 -->
+  <reaction formula="Cs+O2=Cs++O2-">
+    <arrhenius A="1E+17" n="0.07" T="39836" />
+  </reaction>
+  <!--50 -->
+  <reaction formula="Cs+O=Cs++O-">
+    <arrhenius A="8.7E+16" n="-0.15" T="28177" />
+  </reaction>
+  <!--51 -->
+  <reaction formula="O+e-=O++e-+e-">
+    <arrhenius A="3.9E+33" n="-3.78" T="158500" />
+  </reaction>
+  <!--52 -->
+  <reaction formula="N+e-=N++e-+e-">
+    <arrhenius A="2.5E+34" n="-3.82" T="168600" />
+  </reaction>
+  <!--53 -->
+  <reaction formula="Cs+e-=Cs++e-+e-">
+    <arrhenius A="1.6E+32" n="-3.3" T="45172" />
+  </reaction>
+  <!--54 -->
+  <reaction formula="Cs+N=Cs++N+e-">
+    <arrhenius A="1.2E+12" n="1.18" T="45172" />
+  </reaction>
+  <!--55 -->
+  <reaction formula="Cs+O=Cs++O+e-">
+    <arrhenius A="1.2E+12" n="1.18" T="45172" />
+  </reaction>
+  <!--56 -->
+  <reaction formula="Cs+N2=Cs++N2+e-">
+    <arrhenius A="1.2E+12" n="1.18" T="45172" />
+  </reaction>
+  <!--57 -->
+  <reaction formula="Cs+O2=Cs++O2+e-">
+    <arrhenius A="1.2E+12" n="1.18" T="45172" />
+  </reaction>
+  <!--58 -->
+  <reaction formula="Cs+NO=Cs++NO+e-">
+    <arrhenius A="1.2E+12" n="1.18" T="45172" />
+  </reaction>
+</mechanism>

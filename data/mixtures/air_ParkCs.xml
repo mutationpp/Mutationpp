@@ -1,0 +1,13 @@
+<!-- Ionized 11 species air mixture -->
+<mixture mechanism="air_ParkCs">
+
+    <species>
+        e- O- O2- N+ O+ NO+ N2+ O2+ Cs+ N O NO N2 O2 Cs
+
+    </species>
+
+    <element_compositions default="air">
+        <composition name="air"> N:0.79995, O: 0.20995, Cs: 0.0001 </composition>
+    </element_compositions>
+
+</mixture>

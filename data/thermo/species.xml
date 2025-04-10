@@ -2445,4 +2445,400 @@
 		</thermodynamics>
 	</species>
  
+  <!-- Cesium -->
+        <species name="Cs">
+                <stoichiometry>
+                        Cs: 1
+                </stoichiometry>
+                 <electronic_levels units="1/cm">
+                                <level degeneracy="2" energy="0.0" />
+                                <level degeneracy="2" energy="11178.2" />
+                                <level degeneracy="4" energy="11732.3" />
+                                <level degeneracy="2" energy="18535.5" />
+                                <level degeneracy="2" energy="21765.35" />
+                                <level degeneracy="4" energy="21946.3" />
+                                <level degeneracy="4" energy="14499.2" />
+                                <level degeneracy="6" energy="14596.8" />
+                                <level degeneracy="4" energy="22588.8" />
+                                <level degeneracy="6" energy="22631.6" />
+                 </electronic_levels>
+                <thermodynamics type="RRHO">
+                </thermodynamics>
+        </species>
+
+
+    <!-- Cesium cation -->
+        <species name="Cs+">
+                <stoichiometry>
+                        e-: -1,
+                        Cs: 1
+                </stoichiometry>
+                <electronic_levels units="1/cm">
+                                <level degeneracy="1" energy="0.0" />
+                </electronic_levels>
+                <thermodynamics type="RRHO">
+                </thermodynamics>
+        </species>
+        
+    <!-- Potassium Species -->
+    
+    <!-- Potassium (K) -->
+  <species name="K">
+    <stoichiometry>
+      K: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <!-- For a monatomic species, only electronic levels contribute.
+           Data from NIST–JANAF/ATcT suggest the ground state (4s 2S1/2) 
+           has a twofold degeneracy with excited 4p levels near 12985 and 13042 cm⁻¹,
+           with an additional higher level (e.g. 5s) included as an example. -->
+      <electronic_levels units="1/cm">
+        <level degeneracy="2" energy="0.0" />
+        <level degeneracy="2" energy="12985.31" />
+        <level degeneracy="4" energy="13042.58" />
+        <level degeneracy="2" energy="27211.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        0
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- Ozone (O3) -->
+  <species name="O3">
+    <stoichiometry>
+      O: 3
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <!-- Ozone is a bent, nonlinear molecule so we include rotational and vibrational data.
+           A rotational temperature around 2.5 K is typical (derived from its low rotational constants).
+           Vibrational modes (approximated via characteristic frequencies):
+             • Bending mode ~700 cm⁻¹  → ~1000 K,
+             • Asymmetric stretch ~1040 cm⁻¹  → ~1500 K,
+             • Symmetric stretch ~1100 cm⁻¹  → ~1580 K.
+           One low-lying electronic excitation is added as an example. -->
+      <linear>no</linear>
+      <rotational_temperature units="K">2.5</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        1000
+        1500
+        1580
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="1" energy="60000.0" />
+      </electronic_levels>
+      <!-- The formation enthalpy for O3 at 298 K is about +142 kJ/mol -->
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        142000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- K⁺: Monatomic ion, only an electronic ground state -->
+  <species name="K+">
+    <stoichiometry>
+      e-: -1,
+      K: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        418000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- KO: Diatomic molecule -->
+  <species name="KO">
+    <stoichiometry>
+      K: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        1079
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="3" energy="12000.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        75000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- KO₂: Potassium superoxide -->
+  <species name="KO2">
+    <stoichiometry>
+      K: 1,
+      O: 2
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">1.2</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        720
+        1640
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="2" energy="8000.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        90000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- K⁺*N₂: Ion–molecule complex with N₂ -->
+  <species name="Kplus_N2">
+    <stoichiometry>
+      e-: -1,
+      K: 1,
+      N: 2
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">1.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        300
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        -7000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- K⁺*O₂: Ion–molecule complex with O₂ -->
+  <species name="Kplus_O2">
+    <stoichiometry>
+      e-: -1,
+      K: 1,
+      O: 2
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">1.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        350
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        -10000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- K⁺*O⁺: Dication complex (one extra positive charge) -->
+  <species name="Kplus_O+">
+    <stoichiometry>
+      e-: -2,
+      K: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        500
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        200000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- K⁺*O: Adduct of K⁺ with neutral O -->
+  <species name="Kplus_O">
+    <stoichiometry>
+      e-: -1,
+      K: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        450
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        50000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- Sodium Species -->
+
+  <!-- Na: Neutral atomic sodium -->
+  <species name="Na">
+    <stoichiometry>
+      Na: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <electronic_levels units="1/cm">
+        <level degeneracy="2" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        0
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- Na⁺: Ionized sodium -->
+  <species name="Na+">
+    <stoichiometry>
+      e-: -1,
+      Na: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        496000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- NaO: Sodium monoxide -->
+  <species name="NaO">
+    <stoichiometry>
+      Na: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.5</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        1150
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="2" energy="10000.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        150000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- NaO⁺: Ionized sodium monoxide -->
+  <species name="NaO+">
+    <stoichiometry>
+      e-: -1,
+      Na: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.5</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        1150
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="2" energy="10000.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        646000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- NaO₂: Sodium superoxide -->
+  <species name="NaO2">
+    <stoichiometry>
+      Na: 1,
+      O: 2
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">1.5</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        600
+        1400
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+        <level degeneracy="2" energy="9000.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        100000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- Na⁺*N₂⁺: Ion–molecule complex with N₂ -->
+  <species name="Naplus_N2+">
+    <stoichiometry>
+      e-: -2,
+      Na: 1,
+      N: 2
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">1.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        280
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        -5000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
+  <!-- Na⁺*O⁺: Dication complex -->
+  <species name="Naplus_O+">
+    <stoichiometry>
+      e-: -2,
+      Na: 1,
+      O: 1
+    </stoichiometry>
+    <thermodynamics type="RRHO">
+      <linear>yes</linear>
+      <rotational_temperature units="K">2.0</rotational_temperature>
+      <steric_factor>1</steric_factor>
+      <vibrational_temperatures units="K">
+        500
+      </vibrational_temperatures>
+      <electronic_levels units="1/cm">
+        <level degeneracy="1" energy="0.0" />
+      </electronic_levels>
+      <formation_enthalpy T="298 K" P="1 atm" units="J/mol">
+        200000
+      </formation_enthalpy>
+    </thermodynamics>
+  </species>
+
 </specieslist>
