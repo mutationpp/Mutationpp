@@ -110,7 +110,7 @@ public:
      */
     inline void decrReaction(const double* const p_s, double* const p_r) const 
     {
-        for (int i = 0; i < N; ++i)
+        for (int i = 0; i < N; ++i) 
             p_r[m_rxn] -= p_s[m_sps[i]];
     }
     

@@ -67,8 +67,8 @@ public:
     const double* const lnkf() { return mp_lnkf; }
     
     /**
-     * Returns a pointer to the forward rate coefficients evaluated at the 
-     * forward temperature.
+     * Returns a pointer to the backward rate coefficients evaluated at the 
+     * backward temperature.
      */
     const double* const lnkb() { return mp_lnkb; }
     
@@ -79,11 +79,17 @@ public:
         return m_irr;
     }
 
-    /* need to add once it works - RSCD
-    */
-  
-    const double* const dkfdT() {return mp_dkfdT; }
-    const double* const dkbdT() {return mp_dkbdT; }
+    /**
+     * Returns a pointer to the derivatives of forward rate coefficients  
+     * with respect to forward temperature. 
+     */
+   const double* const dkfdT() {return mp_dkfdT; }
+
+   /**
+     * Returns a pointer to the derivatives of backward rate coefficients 
+     * with respect to backward temperature. 
+     */
+   const double* const dkbdT() {return mp_dkbdT; }
 
 private:
 
@@ -136,12 +142,6 @@ private:
 
     /// Storage for equilibrium constant temperature derivatives
     double* mp_dKeqdT;
-
-    /// Storage for reaction temperature derivatives
-    double* mp_dTfdT;
-    double* mp_dTfdTv;
-    double* mp_dTbdT;
-    double* mp_dTbdTv;
 
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal

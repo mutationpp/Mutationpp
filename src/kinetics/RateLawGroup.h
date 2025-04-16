@@ -99,12 +99,6 @@ public:
     virtual void invkdkdT(
         const Thermodynamics::StateModel* const p_state, double* const p_dkdT) = 0;
   
-    virtual void dTreacdTtr(
-        const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdT) = 0;
-
-    virtual void dTreacdTve(
-        const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdTv) = 0;
-
     /**
      * Computes \Delta G / RT for this rate law group and subtracts these values
      * for each of the reactions in this group.
@@ -113,7 +107,7 @@ public:
     {        
         // Compute G_i/RT - ln(Patm/RT)
         const double val = std::log(ONEATM / (RU * m_t));
-        for (int i = 0; i < ns; ++i)
+        for (size_t i = 0; i < ns; ++i)
             p_g[i] -= val;
             
         // Now subtract \Delta[G_i/RT - ln(Patm/RT)]_j
@@ -125,7 +119,7 @@ public:
      * Computes 1 / Keq \frac{\partial Keq}{\partial T} for this rate law group 
      * and subtracts these values for each of the reactions in this group.
      */
-    void derivativeKeq(size_t ns, double* const p_dKeqdT, double* const p_dkdT) const
+    void derivativeKeq(double* const p_dKeqdT, double* const p_dkdT) const
     {        
         m_reacs.decrReactions(p_dKeqdT, p_dkdT);
         m_prods.incrReactions(p_dKeqdT, p_dkdT);
@@ -137,7 +131,6 @@ protected:
     /// in the lnk() function)
     double m_t;
     double m_last_t;
-    const char* m_name;
     
     /// Stores the reactants for reactions that will use this rate law for the
     /// reverse direction
@@ -205,7 +198,6 @@ public:
 
         // Update only if the temperature has changed
         //if (std::abs(m_t - m_last_t) > 1.0e-10) {
-            const double lnT  = std::log(m_t);
             const double invT = 1.0 / m_t;
 
             for (size_t i = 0; i < m_rates.size(); ++i) {
@@ -216,59 +208,6 @@ public:
 
         // Save this temperature
         m_last_t = m_t;
-    }
-
-    /**
-     * Evaluates all of the reaction temperature derivatives in the group
-     */
-    virtual void dTreacdTtr(
-        const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdT)
-    {
-        // Determine the reaction temperature for this group
-        m_t = TSelectorType().getT(thermo.state());
-
-        // Determine the TSelector type for this group
-        m_name = TSelectorType().getName(thermo.state());
-
-/*        //Number of energy equations
-        const size_t nt = thermo.nEnergyEqns();
-
-        //Temperatures of the state
-        double* p_t = new double[nt]();
-        //std::fill(p_t, p_t + nt, 0.);
-        thermo.getTemperatures(p_t); 
-*/
-        for (size_t i = 0; i < m_rates.size(); ++i) {
-            const std::pair<size_t, RateLawType>& rate = m_rates[i];
-            p_dTfdT[rate.first] = rate.second.dTrxndTtr(m_name, m_t, nt, p_t);
-        }
-
-    }
-
-    /**
-     * Evaluates all of the reaction temperature derivatives in the group
-     */
-    virtual void dTreacdTve(
-        const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdTv)
-    {
-        // Determine the reaction temperature for this group
-        m_t = TSelectorType().getT(thermo.state());
-
-        // Determine the TSelector type for this group
-        m_name = TSelectorType().getName(thermo.state());
-
-/*        //Number of energy equations
-        const size_t nt = thermo.nEnergyEqns();
-
-        //Temperatures of the state
-        double* p_t = new double[nt]();
-        //std::fill(p_t, p_t + nt, 0.);
-        thermo.getTemperatures(p_t); 
-*/
-        for (size_t i = 0; i < m_rates.size(); ++i) {
-            const std::pair<size_t, RateLawType>& rate = m_rates[i];
-            p_dTfdTv[rate.first] = rate.second.dTrxndTve(m_name, m_t, nt, p_t);            
-        }
     }
 
 private:
@@ -359,8 +298,10 @@ public:
     }
     
     /**
-     * Computes the rate coefficients in this collection and stores them in
-     * the vector at the index corresponding to their respective reaction.
+     * Computes the derivative of rate coefficients 
+     * \f$ \frac{1}{k_{f,j}} \frac{dk_{f,j}}{dT_{reac}} \f$
+     * in this collection and stores them in the vector at the index corresponding 
+     * to their respective reaction.
      */
     void derivativeOfRateCoefficients(
         const Thermodynamics::StateModel* const p_state, double* const p_dkdT)
@@ -389,11 +330,9 @@ public:
 
     /**
      * Computes the temperature derivative of keq as follows:
-     * \f[
-     *     \frac{1}{keq} \frac{\partial keq}{\partial T} =
-     *     \frac{1}{T} \sum_{i=1}^{ns} {\delta\nu_{ij}} \left(\frac{h_i}{Ru T}-1\right)
-     * \f]
-     * More details will be added soon - RSCD
+     * \f$ \frac{1}{keq} \frac{\partial keq}{\partial T} =
+     *    \frac{1}{T} \sum_{i=1}^{ns} {\delta\nu_{ij}} \left(\frac{h_i}{Ru T}-1\right)
+     * \f$
      */
     void derivativeKeq(
         const Thermodynamics::Thermodynamics& thermo, double* const p_dKeqdT, double* const p_dkdT)
@@ -407,35 +346,9 @@ public:
  		p_dKeqdT[i] = 1. - p_dKeqdT[i]; 
                 p_dKeqdT[i] /= (p_group->getT());
             }
-            p_group->derivativeKeq(ns, p_dKeqdT, p_dkdT);
+            p_group->derivativeKeq(p_dKeqdT, p_dkdT);
         }
     }
-
-   /**
-    * Computes the reaction temperature derivatives with respect Ttr and Tve
-    * More details will be added soon - RSCD
-    */
-   void derivativeTrxnTtr(
-       const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdT)
-   {
-       GroupMap::iterator iter = m_group_map.begin();
-       for ( ; iter != m_group_map.end(); ++iter) 
-           iter->second->dTreacdTtr(thermo, nt, p_t, p_dTfdT); 
-   
-   }
-  
-   /**
-    * Computes the reaction temperature derivatives with respect Ttr and Tve
-    * More details will be added soon - RSCD
-    */
-   void derivativeTrxnTve(
-       const Thermodynamics::Thermodynamics& thermo, const size_t nt, const double* const p_t, double* const p_dTfdTv)
-   {
-       GroupMap::iterator iter = m_group_map.begin();
-       for ( ; iter != m_group_map.end(); ++iter) 
-           iter->second->dTreacdTve(thermo, nt, p_t, p_dTfdTv); 
-   
-   }
   
 private:
     

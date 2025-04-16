@@ -94,52 +94,6 @@ public:
         return m_temp;
     }
 
-    inline double dTrxndTtr(const char* m_name, const double m_t, const size_t nt, const double* const p_t) const {
-/*        std::string selector(m_name);
-        if (selector == "TSelector") {
-             return (m_t/p_t[0]);
-        }
-        else if (selector == "TeSelector") {
-             return 0.;
-        }
-        else if (selector == "ParkSelector") {
-             return (0.5*m_t/p_t[0]);
-        }
-        else {
-          throw InvalidInputError("TSelector type", selector)
-            << "TSelector type mentioned is not implemented.";
-        }
-*/
-        std::string selector(m_name);
-        if (m_t == p_t[0]) return 1.;
-        else if (m_t == p_t[1]) return 0.;
-        else return (0.5*m_t/p_t[0]);
-    }
-    
-    inline double dTrxndTve(const char* m_name, const double m_t, const size_t nt, const double* const p_t) const {
-        switch (nt) {
-            case 1:
-                return 0.0;
-            case 2:
-                if (std::string(m_name) == "ParkSelector") {
-                   return (0.5*m_t/p_t[1]);
-                } 
-                else if (std::string(m_name) == "TSelector") {
-                   return 0.0;
-                }
-                else if (std::string(m_name) == "TeSelector") {
-                   return 1.0;
-                }
-                else {
-                  throw InvalidInputError("TSelector type", m_name)
-                    << "TSelector type mentioned is not implemented.";
-                }
-                break;
-            default:
-                return 0.0;
-        }
-    }
-    
 private:
 
     static std::vector<Mutation::Utilities::Units> sm_aunits;    

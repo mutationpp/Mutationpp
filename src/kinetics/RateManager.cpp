@@ -117,14 +117,12 @@ SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
 
 RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     : m_ns(ns), m_nr(reactions.size()), mp_lnkf(NULL), mp_lnkb(NULL),
-      mp_gibbs(NULL), mp_dkfdT(NULL), mp_dkbdT(NULL), mp_dKeqdT(NULL),
-      mp_dTfdT(NULL), mp_dTfdTv(NULL), mp_dTbdT(NULL), mp_dTbdTv(NULL)
+      mp_gibbs(NULL), mp_dkfdT(NULL), mp_dkbdT(NULL), mp_dKeqdT(NULL)
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
     for (size_t i = 0; i < m_nr; ++i) {
         addReaction(i, reactions[i]);
-        //std::cout<<"reaction:"<<'\t'<<i<<'\t'<<"type:"<< '\t'<<reactionTypeString(reactions[i].type())<<'\t'<<reactions[i].type()<<std::endl;
     }
 
     // Allocate storage in one block for both rate coefficient arrays and
@@ -136,10 +134,6 @@ RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     mp_dkfdT = mp_gibbs + block_size;
     mp_dkbdT = mp_dkfdT + m_nr;
     mp_dKeqdT = mp_dkbdT + m_nr;
-    mp_dTfdT = mp_dKeqdT + block_size;
-    mp_dTfdTv = mp_dTfdT + block_size;
-    mp_dTbdT = mp_dTfdTv + m_nr;
-    mp_dTbdTv = mp_dTbdT + m_nr;
     
     // Initialize the arrays to zero
     std::fill(mp_lnkf, mp_lnkf+block_size, 0.0);
@@ -238,7 +232,8 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
     // Evaluate all of the different rate coefficients
     m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
     
-    // Evaluate all of the rate coefficients temperature derivatives
+    // Evaluate all of the reaction temperature derivatives of 
+    // rate coefficients
     m_rate_groups.derivativeOfRateCoefficients(thermo.state(), mp_dkfdT);
     
     // Copy rate coefficients which are the same as one of the previously
@@ -253,19 +248,9 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
     // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
     m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
 
-    // Evaluate the temperature derivatives of equilibrium constants
+    // Evaluate the reaction temperature derivatives of equilibrium constants
     m_rate_groups.derivativeKeq(thermo, mp_dKeqdT, mp_dkbdT);
-        //Number of energy equations
-        const size_t nt = thermo.nEnergyEqns();
 
-        //Temperatures of the state
-        double* p_t = new double[nt];
-        std::fill(p_t, p_t + nt, 0.);
-        thermo.getTemperatures(p_t);
-
-    // Evaluate the reaction temperature derivatives
-    m_rate_groups.derivativeTrxnTtr(thermo, nt, p_t, mp_dTfdT);
-    m_rate_groups.derivativeTrxnTve(thermo, nt, p_t, mp_dTfdTv);
 }
 
 //==============================================================================

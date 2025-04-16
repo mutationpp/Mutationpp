@@ -31,7 +31,6 @@
 
 #include "Thermodynamics.h"
 #include <iostream>
-#include "RateLaws.h" // Added by RSCD
 
 namespace Mutation {
     namespace Kinetics {
@@ -520,21 +519,37 @@ public:
         const double* const conc, double* const sjac) const;
 
     /**
-     * Computes the temperature-dependent source Jacobian elements.
-     * Work under progress - RSCD
+     * Computes the translational-temperature-dependent 
+     * chemistry Jacobian elements.
      */
      void computeJacobianT(
          const double* const p_ropf, const double* const p_ropb,
-         double* const Tjac) const;
+         const std::vector<Reaction>& reactions, double* const p_dropT) const;
     
     /**
-     * Computes the reaction temperature derivatives.
-     * Work under progress - RSCD
+     * Computes the vibrational-temperature-dependent 
+     * chemistry Jacobian elements.
      */
-/*     void computeTReactionDerivative(
-         const size_t nr, const size_t nt, const double* const p_t,
-         double* const p_dTfdT, double* const p_dTbdT) const;
-*/    
+     void computeJacobianTv(
+         const double* const p_ropf, const double* const p_ropb,
+         const std::vector<Reaction>& reactions, double* const p_dropTv) const;
+    
+    /**
+     * Computes the reaction temperature derivatives 
+     * with respect to translational temperature.
+     */
+     void computeTReactionTDerivatives(
+	const std::vector<Reaction>& reactions, const double* const p_t,
+	std::vector<std::pair<double, double> >& dTrxndT) const;
+    
+    /**
+     * Computes the reaction temperature derivatives 
+     * with respect to vibrational temperature.
+     */
+     void computeTReactionTvDerivatives(
+	const std::vector<Reaction>& reactions, const double* const p_t,
+	std::vector<std::pair<double, double> >& dTrxndTv) const;
+    
 private:
     
     /**

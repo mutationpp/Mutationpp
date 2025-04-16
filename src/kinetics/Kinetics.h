@@ -150,6 +150,26 @@ public:
         const double* const p_conc, double* const p_ropb);
     
     /**
+     * Fills the vector dropf with the reaction temperature derivatives of 
+     * forward rates of progress variables for each reaction 
+     * \f$ \frac{dk_{f,j}}{dT_{reac}} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
+     * 
+     * @param p_dropf on return, the reaction temperature derivatives of the
+     * forward rates of progress in mol/m^3-s-K
+     */ 
+    void forwardRateOfProgressDerivatives(double* const p_dropf);
+
+    /**
+     * Fills the vector dropb with the reaction temperature derivatives of 
+     * backward rates of progress variables for each reaction 
+     * \f$ \frac{dk_{b,j}}{dT_{reac}} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
+     * 
+     * @param p_dropb on return, the reaction temperature derivatives of the
+     * backward rates of progress in mol/m^3-s-K
+     */ 
+    void backwardRateOfProgressDerivatives(double* const p_dropb);
+
+    /**
      * Fills the vector rop with the net rates of progress for each reaction
      * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
@@ -197,14 +217,25 @@ public:
     /**
      * Fills the matrix p_jacT with the temperature jacobians for chemistry source term
      * \f[
-     * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial T_j}
+     * J_{i} = \frac{\partial \dot{\omega}_i}{\partial T_{tr}}
      * \f]
-     * Work in progress and more details will be added soon - RSCD
+     * The Jacobian matrix size should be equal to number of species.
+     * 
+     * @param p_jacT - on return, the jacobian matrix \f$J_{i}\f$ 
      */
-    void jacobianT(double* const p_jacT, double* const p_jacTv);
+    void jacobianT(double* const p_jacT);
 
-    void forwardRateOfProgressDerivatives(double* const p_dropf);
-    void backwardRateOfProgressDerivatives(double* const p_dropb);
+    /**
+     * Fills the matrix p_jacTv with the temperature jacobians for chemistry source term
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_i}{\partial T_{ve}}
+     * \f]
+     * The Jacobian matrix size should be equal to number of species.
+     *
+     * @param p_jacTv - on return, the jacobian matrix \f$J_{i}\f$
+     */
+    void jacobianTv(double* const p_jacTv);
+
     /**
      * Returns the change in some species quantity across each reaction.
      */
@@ -250,6 +281,8 @@ private:
     double* mp_wdot;
     double* mp_dropf;
     double* mp_dropb;
+    double* mp_dropT;
+    double* mp_dropTv;
 };
 
 
