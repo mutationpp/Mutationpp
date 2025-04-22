@@ -1,5 +1,6 @@
 pybind11_add_module(_mutationpp
         src/mutationpp_python.cpp
+	src/pyReaction.cpp
         src/pyMixtureOptions.cpp
         src/pyMixture.cpp
 )
