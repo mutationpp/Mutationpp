@@ -64,36 +64,36 @@ void py_export_Mixture(py::module &m) {
           },
            "Returns the Stefan-Boltzmann constant (W/m^2-K^4)")  
 
-      .def("nElements", &Mutation::Mixture::nElements,
+      .def_property_readonly("num_elements", &Mutation::Mixture::nElements,
            "Returns the number of elements considered in the mixture.")
 
-      .def("nAtoms", &Mutation::Mixture::nAtoms,
+      .def_property_readonly("num_atoms", &Mutation::Mixture::nAtoms,
            "Returns the number of atomic species in the mixture.")
 
-      .def("nMolecules", &Mutation::Mixture::nMolecules,
+      .def_property_readonly("num_molecules", &Mutation::Mixture::nMolecules,
            "Returns the number of molecules in the mixture.")
 
-      .def("nHeavy", &Mutation::Mixture::nHeavy,
+      .def_property_readonly("num_heavy", &Mutation::Mixture::nHeavy,
            "Returns the number of heavy particles (non electrons) in the "
            "mixture.")
 
-      .def("nSpecies", &Mutation::Mixture::nSpecies,
+      .def_property_readonly("num_species", &Mutation::Mixture::nSpecies,
            "Returns the number of species considered in the mixture.")
 
-      .def("nPhases", &Mutation::Mixture::nPhases,
+      .def_property_readonly("num_phases", &Mutation::Mixture::nPhases,
            "Returns the number of phases belonging to this mixture.")
 
-      .def("nGas", &Mutation::Mixture::nGas,
+      .def_property_readonly("num_gas", &Mutation::Mixture::nGas,
            "Returns number of gas species in the mixture.")
 
-      .def("nCondensed", &Mutation::Mixture::nCondensed,
+      .def_property_readonly("numcondensed", &Mutation::Mixture::nCondensed,
            "Returns the number of condensed phase species in the mixture.")
 
-      .def("nEnergyEqns", &Mutation::Mixture::nEnergyEqns,
+      .def_property_readonly("num_energy_eqns", &Mutation::Mixture::nEnergyEqns,
            "Returns the number of energy equations associated with the mixture "
            "StateModel.")
 
-      .def("nMassEqns", &Mutation::Mixture::nMassEqns,
+      .def_property_readonly("num_mass_eqns", &Mutation::Mixture::nMassEqns,
            "Returns the number of mass equations associated with the mixture "
            "StateModel.")
 
@@ -105,6 +105,28 @@ void py_export_Mixture(py::module &m) {
       .def("hasElectrons", &Mutation::Mixture::hasElectrons,
            "Returns true if this mixture includes electrons, false otherwise.")
 
+      .def_property_readonly("reactions",
+			     &Mutation::Mixture::reactions,
+			     "Returns all reactions in this mixture.")
+    
+      .def("reaction",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     return self.reactions()[idx];
+	   },
+	   "Returns reaction with index idx.")
+	   
+      .def_property_readonly("reactants",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     return self.reactions()[idx].reactants();
+	   },
+	   "Returns the reactants for reaction index idx.")
+
+      .def_property_readonly("products",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     return self.reactions()[idx].products();
+	   },
+	   "Returns the reactants for reaction index idx.")
+    
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
            "the mixture."
@@ -590,7 +612,7 @@ void py_export_Mixture(py::module &m) {
           "model is an"
           " equilibrium one.")
 
-      .def("nReactions", &Mutation::Mixture::nReactions,
+      .def_property_readonly("num_reactions", &Mutation::Mixture::nReactions,
            "Returns the number of reactions in the mechanism.")
 
       .def(
