@@ -1,6 +1,6 @@
 import re
 import sys
-
+import pybind11
 from pathlib import Path
 
 try:
@@ -52,5 +52,6 @@ setup(
     extras_require={
         "test": ["numpy", "pytest"],
     },
+    cmake_args=[f"-DCMAKE_PREFIX_PATH={pybind11.get_cmake_dir()}"],
     cmake_install_dir="interface/python/mutationpp",
 )
