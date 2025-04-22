@@ -203,7 +203,15 @@ public:
     const std::vector<std::pair<int, double> >& efficiencies() const {
         return m_thirdbodies;
     }
-    
+
+    const std::string fwdRateTemperature() {
+      return rateLawTemperatureString(getRateLawT(m_type).first);
+    }
+
+    const std::string revRateTemperature() {
+      return rateLawTemperatureString(getRateLawT(m_type).second);
+    }
+  
     friend void swap(Reaction& left, Reaction& right);
     
 private:
@@ -254,6 +262,8 @@ private:
      */
     void determineType(const Mutation::Thermodynamics::Thermodynamics& thermo);
 
+  
+  
 private:
 
     std::string m_formula;

@@ -51,7 +51,7 @@ endif()
 #######################################################################
 
 if (SKBUILD)
-    add_subdirectory(thirdparty/pybind11)
+    find_package(pybind11 REQUIRED CONFIG)
     add_subdirectory(interface/python)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
