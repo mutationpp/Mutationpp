@@ -32,7 +32,7 @@ cmake_policy(SET CMP0048 NEW)
 set(CMAKE_CXX_STANDARD 14)
 
 project(mutation++
-    VERSION 1.1.2
+    VERSION 1.1.3
     LANGUAGES CXX
 )
 
@@ -119,7 +119,7 @@ foreach (dir LIB BIN INCLUDE CMAKE)
     mark_as_advanced(${inst_dir})
 
     # Make the paths absolute (the ${${var}} notation is evaluating the
-    # evaluated variable. :: I.e. ${inst_dir} first evaluates, for example, 
+    # evaluated variable. :: I.e. ${inst_dir} first evaluates, for example,
     # to INSTALL_LIB_DIR. Then ${${inst_dir}} evaluates to ${INSTALL_LIB_DIR}
     # that respectively evaluates to the directory path containing libraries
     if(NOT IS_ABSOLUTE "${${inst_dir}}")
@@ -174,14 +174,6 @@ if (BUILD_FORTRAN_WRAPPER)
     endif()
     add_subdirectory(interface/fortran)
 endif()
-
-################################################################################
-
-# Python wrapper options
-###############################################################################
-
-option (BUILD_PYTHON_WRAPPER
-    "Generate a Python package for using mutation++" OFF)
 
 ###############################################################################
 # Doxygen documentation generation

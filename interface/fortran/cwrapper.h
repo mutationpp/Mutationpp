@@ -28,6 +28,8 @@
 #ifndef FORTRAN_CWRAPPER_H
 #define FORTRAN_CWRAPPER_H
 
+#include <stdbool.h>
+
 // Converts the base function name in mpp_function(_) where the (_) represents
 // the name mangling that is performed in order to use the function in Fortran
 #define NAME_MANGLE(__name__) mpp_##__name__##_
@@ -448,6 +450,21 @@ void NAME_MANGLE(surface_mass_balance)
     (const double *const p_Yke, const double *const p_Ykg, const double* const T,
      const double* const P, const double* const Bg, double* const Bc,
      double* const hw, double *const p_Xs);
+
+/**
+ * Gets the composition for components of the mixture
+ */
+void NAME_MANGLE(get_composition)
+    (F_STRING mixture, double* const p_Yk, F_STRLEN mixture_length);
+
+/**
+ * Solves the surface mass balance at an ablating surface provided gas mixture names.
+ */
+void NAME_MANGLE(gasmixture_surface_mass_balance)
+    (F_STRING edge, F_STRING pyro,
+     const double* const T, const double* const P, const double* const Bg,
+     double* const Bc, double* const hw, double *const p_Xs,
+     F_STRLEN edge_length, F_STRLEN pyro_length);
 
 /**
  * Returns the pointer to the energy transfer between the internal

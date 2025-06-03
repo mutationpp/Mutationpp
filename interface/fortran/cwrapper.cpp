@@ -456,6 +456,32 @@ void NAME_MANGLE(surface_mass_balance)
 }
 
 //==============================================================================
+void NAME_MANGLE(get_composition)
+    (F_STRING mixture, double* const p_Yk, F_STRLEN mixture_length)
+{
+    std::string gasmixture = char_to_string(mixture, mixture_length);
+    p_mix->getComposition(char_to_string(mixture, mixture_length), p_Yk, Composition::MASS);
+}
+
+//==============================================================================
+void NAME_MANGLE(gasmixture_surface_mass_balance)
+    (F_STRING edge, F_STRING pyro,
+     const double* const T, const double* const P, const double* const Bg,
+     double* const Bc, double* const hw, double *const p_Xs,
+     F_STRLEN edge_length, F_STRLEN pyro_length)
+{
+    const int ne = p_mix->nElements();
+
+    std::vector<double> Yke (ne,0);
+    std::vector<double> Ykg (ne,0);
+
+    p_mix->getComposition(char_to_string(edge, edge_length), Yke.data(), Composition::MASS);
+    p_mix->getComposition(char_to_string(pyro, pyro_length), Ykg.data(), Composition::MASS);
+
+    p_mix->surfaceMassBalance(Yke.data(), Ykg.data(), *T, *P, *Bg, *Bc, *hw, p_Xs);
+}
+
+//==============================================================================
 void NAME_MANGLE(source_energy_transfer)
      (double *const p_source_transfer)
 {

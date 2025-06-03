@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import numpy as np
 import mutationpp as mpp
 import pytest
 
@@ -19,7 +20,7 @@ mixtureNonEq.setState(rhoi, T, 1)
 # Todo: write proper test
 
 def test_averageHeavyCollisionFreq():
-    assert mixture.averageHeavyCollisionFreq() == pytest.approx(0.0)
+    assert mixture.averageHeavyCollisionFreq() == pytest.approx(4.0906953e7)
 
 
 #
@@ -152,9 +153,12 @@ def test_mixtureHMole():
 def test_mixtureMw():
     assert mixture.mixtureMw() == pytest.approx(0.0288503, abs=1e-7)
 
+def test_mixtureSMass():
+    assert mixture.mixtureSMass() == pytest.approx(8218.83, abs=1e-2)
 
-# def test_meanFreePath():
-#     Todo: write proper test
+
+def test_meanFreePath():
+    assert mixture.meanFreePath() == pytest.approx(1.1470317911509538e-05)
 
 def test_nAtoms():
     assert mixture.nAtoms() == 4
@@ -273,3 +277,134 @@ def test_X():
 def test_Y():
     # Todo: write proper test
     assert sum(mixture.Y()) == 1.
+    
+def test_convert_xe_to_ye():
+    np.testing.assert_array_equal(
+        mixture.convert_xe_to_ye([0, 0, 1]), np.array([0, 0, 1])
+    )
+
+def test_convert_ye_to_xe():
+    np.testing.assert_array_equal(
+        mixture.convert_ye_to_xe([0, 0, 1]), np.array([0, 0, 1])
+    )   
+    
+def test_speciesHOverRT():
+    expected = [
+        1.54166667e-02,
+        7.54484667e02,
+        6.28975420e02,
+        3.97181733e02,
+        6.05194961e02,
+        4.69649788e02,
+        1.89420120e02,
+        9.99331729e01,
+        3.65398913e01,
+        2.15923313e-02,
+        2.17600146e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(), expected)
+
+
+def test_speciesHOverRT():
+    expected = [
+        2.36710963e-02,
+        7.51986575e02,
+        6.26894106e02,
+        3.95873824e02,
+        6.03195982e02,
+        4.68101138e02,
+        1.88799123e02,
+        9.96094746e01,
+        3.64301530e01,
+        3.31535710e-02,
+        3.34133823e-02,
+    ]
+    assert np.allclose(mixture.speciesHOverRT(301), expected)    
+    
+def test_getEnergiesMass():
+    
+    expected = mixture.getEnthalpiesMass() -  mixture.T()*mixture.RU()/mixture.speciesMw()
+    
+    assert mixture.getEnergiesMass() == pytest.approx(expected)    
+    
+    
+def test_getEnthalpiesMass():
+    
+    expected = [
+        7.0098139454e+07,
+        1.3436541662e+08,
+        9.8062005405e+07,
+        3.3017452040e+07,
+        5.3888226083e+07,
+        3.6610342011e+07,
+        3.3732317707e+07,
+        1.5579800144e+07,
+        3.0374812162e+06,
+        1.9226029990e+03,
+        1.6962169231e+03
+    ]
+    
+    assert mixture.getEnthalpiesMass() == pytest.approx(expected)  
+     
+def test_getCpsMass():
+    
+    expected = [
+        3.7890886192e+07,
+        1.5192147894e+03,
+        1.2992294338e+03,
+        9.7019017139e+02,
+        1.0395135823e+03,
+        9.1103684272e+02,
+        1.4840168399e+03,
+        1.2991848864e+03,
+        9.7219901895e+02,
+        1.0392575435e+03,
+        9.1700386827e+02
+    ]
+    
+    assert mixture.getCpsMass() == pytest.approx(expected)  
+    
+    
+def test_getGibbsMass():
+    
+    expected = [
+        -3.2412103851e+10,
+        1.3011972425e+08,
+        9.4435909312e+07,
+        3.0651845001e+07,
+        5.1361201327e+07,
+        3.4318319525e+07,
+        2.9626009866e+07,
+        1.1827394569e+07,
+        5.4328552314e+05,
+        -2.4612058750e+06,
+        -2.2814767433e+06
+    ]
+    
+    assert mixture.getGibbsMass() == pytest.approx(expected)      
+        
+def test_getCvsMass():
+    
+    expected = mixture.getCpsMass()- mixture.RU()/mixture.speciesMw()
+    assert mixture.getCvsMass() == pytest.approx(expected)              
+
+def test_mixtureSMass():
+    assert mixture.mixtureSMass() == pytest.approx(8218.83)  
+    
+def test_NA():
+    assert mixture.NA() == pytest.approx(6.0221415E23)       
+    
+def test_KB():
+    assert mixture.KB() == pytest.approx(1.3806503E-23)  
+    
+def test_RU():
+    assert mixture.RU() == pytest.approx(mixture.KB()* mixture.NA()) 
+    
+def test_HP():
+    assert mixture.HP() == pytest.approx(6.626068E-34)      
+    
+def test_C0():
+    assert mixture.C0() == pytest.approx(299792458.0)     
+    
+def test_ONEATM():
+    assert mixture.ONEATM() == pytest.approx(101325.0)                               

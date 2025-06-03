@@ -25,7 +25,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
+#include "Constants.h"
 #include "Thermodynamics.h"
 #include "Utilities.h"
 
@@ -49,9 +49,7 @@ SurfaceRadiation::SurfaceRadiation(
            m_gas_rad_heat_flux(0.),
            is_gas_rad_on(gas_rad_on),
            pos_E(thermo.nSpecies()),
-           pos_T_trans(0),
-           m_stef_bolt_const(2. * pow(PI, 5.0) * pow(KB, 4.0) /
-                (15. * pow(HP, 3.0) * pow(C0, 2.0)))
+           pos_T_trans(0)
 {
     xml_surf_rad.getAttribute("emissivity", m_eps,
         "Error in the surface radiation input. Surface emissivity "
@@ -59,7 +57,7 @@ SurfaceRadiation::SurfaceRadiation(
     xml_surf_rad.getAttribute("T_env", m_T_env, 0.);
 
     if (!is_gas_rad_on)
-        m_gas_rad_heat_flux = m_stef_bolt_const * std::pow(m_T_env, 4.0);
+        m_gas_rad_heat_flux = Mutation::SB * std::pow(m_T_env, 4.0);
 }
 
 //==============================================================================
@@ -71,8 +69,7 @@ SurfaceRadiation::~SurfaceRadiation(){}
 double SurfaceRadiation::surfaceNetRadiativeHeatFlux()
 {
     double T_surf = (m_surf_state.getSurfaceT())(pos_T_trans);
-    return m_eps * (m_stef_bolt_const * std::pow(T_surf, 4.0)
-        - m_gas_rad_heat_flux);
+    return m_eps * (Mutation::SB * std::pow(T_surf, 4.0) - m_gas_rad_heat_flux);
 }
 
     } // namespace GasSurfaceInteraction

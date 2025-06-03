@@ -38,22 +38,24 @@ namespace Mutation {
 
 /// \defgroup math Mathematical constants
 /// @{
-const double PI    = 4.0 * std::atan(1.0); //!< \f$\pi\f$
-const double TWOPI = 2.0 * PI;             //!< \f$2\pi\f$
-const double SQRT2  = std::sqrt(2.0);      //!< \f$\sqrt{2}\f$
+constexpr double PI    = 3.14159265358979323846; //!< \f$\pi\f$
+constexpr double TWOPI = 2.0 * PI;               //!< \f$2\pi\f$
+constexpr double SQRT2 = 1.41421356237309504880; //!< \f$\sqrt{2}\f$
 /// @}
 
 /// \defgroup physical Physical constants (all units in SI)
 /// @{
-const double NA     = 6.0221415E23;    //!< Avagadro's number (molecule/mol)
-const double KB     = 1.3806503E-23;   //!< Boltzmann's constant (J/molecule-K)
-const double RU     = NA * KB;         //!< Universal Gas constant (J/mole-K)
-const double HP     = 6.626068E-34;    //!< Planck's constant (J-s)
-const double MU0    = PI * 4.0E-7;     //!< Magnetic constant (H/m)
-const double C0     = 299792458.0;     //!< Speed of light in vacuum (m/s)
-const double EPS0   = 1.0/(MU0*C0*C0); //!< Vacuum permittivity (F/m)
-const double QE     = 1.602176565E-19; //!< Elementary positive charge (C)
-const double ONEATM = 101325.0;        //!< 1 atm in Pa
+constexpr double NA     = 6.0221415E23;    //!< Avogadro's number (molecule/mol)
+constexpr double KB     = 1.3806503E-23;   //!< Boltzmann's constant (J/molecule-K)
+constexpr double RU     = NA * KB;         //!< Universal Gas constant (J/mole-K)
+constexpr double HP     = 6.626068E-34;    //!< Planck's constant (J-s)
+constexpr double MU0    = PI * 4.0E-7;     //!< Magnetic constant (H/m)
+constexpr double C0     = 299792458.0;     //!< Speed of light in vacuum (m/s)
+constexpr double EPS0   = 1.0/(MU0*C0*C0); //!< Vacuum permittivity (F/m)
+constexpr double QE     = 1.602176565E-19; //!< Elementary positive charge (C)
+constexpr double ONEATM = 101325.0;        //!< 1 atm in Pa
+constexpr double SB     = (2.0*PI*PI*PI*PI*PI*KB*KB*KB*KB)
+                        / (15.0*HP*HP*HP*C0*C0); //!< Stefan-Boltzmann constant (W/m^2-K^4)
 /// @}
 
 /// @}

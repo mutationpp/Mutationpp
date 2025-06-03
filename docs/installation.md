@@ -62,7 +62,7 @@ export LD_LIBRARY_PATH=$MPP_DIRECTORY/install/<LIBDIR>:$LD_LIBRARY_PATH  # Chang
 ```
 
 **MacOS**<br>
-Add the following lines to your `.bash_profile` file in your home directory.
+Add the following lines to your `.bash_profile` (since macOS Catalina the default shell is `zsh`, so you have to modify your `.zprofile`) file in your home directory.
 ```
 export MPP_DIRECTORY=path_to_mutation++_directory
 export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data
@@ -106,3 +106,27 @@ make docs
 ```
 
 from the `build` directory.  Once done, open the `docs/html/index.html` file using your favorite web browser to see a full listing of all the classes and methods available in the library.
+
+## Build Python package locally 
+If you are interested in building the Python package locally make simply 
+
+```
+pip install .
+```
+
+in the main folder of `mutation++`; if you get an error related to PEP517 update essential packages:
+
+```
+pip install --upgrade pip setuptools wheel 
+```
+ 
+The package will be installed in `lib/site-packages/` of your python version.
+You can test the newly installed package.
+
+```
+python
+>>> import mutationpp
+>>> mutationpp.Mixture
+```
+
+
