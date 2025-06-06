@@ -33,13 +33,20 @@ namespace Mutation {
 double HarmonicOscillator::energy(double T) const
 {
     assert(T > 0.0);
-    
     double energy = 0.0;
     for (auto theta: m_characteristic_temps)
         energy += theta / (std::exp(theta/T) - 1.0);
     return energy;
 }
 
+double HarmonicOscillator::energyTderivative(double T) const
+{
+    assert(T > 0.0);
+    double energyTderivative = 0.0;
+    for (auto theta: m_characteristic_temps)
+        energyTderivative += std::pow(theta/T, 2)*std::exp(theta/T)/std::pow(std::exp(theta/T) - 1.0, 2);
+    return energyTderivative;
+}
 
 struct HarmonicOscillatorDB::Data
 {

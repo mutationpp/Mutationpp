@@ -57,6 +57,7 @@ Kinetics::Kinetics(
       mp_wdot(NULL),
       mp_dropf(NULL),
       mp_dropb(NULL),
+      mp_dropRho(NULL),
       mp_dropT(NULL),
       mp_dropTv(NULL)
 {
@@ -112,6 +113,8 @@ Kinetics::~Kinetics()
         delete [] mp_dropf;
     if (mp_dropb != NULL)
         delete [] mp_dropb;
+    if (mp_dropRho != NULL)
+        delete [] mp_dropRho;
     if (mp_dropT != NULL)
         delete [] mp_dropT;
     if (mp_dropTv != NULL)
@@ -176,6 +179,7 @@ void Kinetics::closeReactions(const bool validate_mechanism)
     mp_wdot  = new double [m_thermo.nSpecies()];
     mp_dropf = new double [nReactions()];
     mp_dropb = new double [nReactions()];
+    mp_dropRho = new double [nReactions()*m_thermo.nSpecies()];
     mp_dropT = new double [nReactions()];
     mp_dropTv = new double [nReactions()];
 }
@@ -296,7 +300,7 @@ void Kinetics::backwardRatesOfProgress(
 
 //==============================================================================
 
-void Kinetics::forwardRateOfProgressDerivatives(double* const mp_dropf)
+void Kinetics::forwardRateOfProgressDerivatives(double* const p_dropf)
 {
     if(nReactions() == 0)
        return;
@@ -308,12 +312,12 @@ void Kinetics::forwardRateOfProgressDerivatives(double* const mp_dropf)
    forwardRatesOfProgress(mp_ropf);
 
    for (int i = 0; i < nReactions(); ++i)  
-       mp_dropf[i] = mp_ropf[i]*dkfdT[i];
+       p_dropf[i] = mp_ropf[i]*dkfdT[i];
 }
 
 //==============================================================================
 
-void Kinetics::backwardRateOfProgressDerivatives(double* const mp_dropb)
+void Kinetics::backwardRateOfProgressDerivatives(double* const p_dropb)
 {
     if (nReactions() == 0)
         return;
@@ -325,7 +329,7 @@ void Kinetics::backwardRateOfProgressDerivatives(double* const mp_dropb)
     backwardRatesOfProgress(mp_ropb);
         
     for(int i=0; i < nReactions(); ++i) 
-       mp_dropb[i] = mp_ropb[i]*dkbdT[i];
+       p_dropb[i] = mp_ropb[i]*dkbdT[i];
 }
 
 
@@ -413,6 +417,65 @@ void Kinetics::netProductionRates(double* const p_wdot)
     // Multiply by species molecular weights
     for (int i = 0; i < m_thermo.nSpecies(); ++i)
         p_wdot[i] *= m_thermo.speciesMw(i);
+}
+
+//==============================================================================
+
+void Kinetics::netRateProgressRhoJacobian(double* const p_dropRho)
+{
+    // Special case of no reactions
+    if (nReactions() == 0) {
+        std::fill(p_dropRho, p_dropRho + m_thermo.nSpecies()*nReactions(), 0);
+        return;
+    }
+
+    forwardRateCoefficients(mp_ropf);
+    backwardRateCoefficients(mp_ropb);
+
+    // Compute species concentrations (mol/m^3)
+    Map<ArrayXd>(mp_rop, m_thermo.nSpecies()) =
+        (m_thermo.numberDensity() / NA) *
+        Map<const ArrayXd>(m_thermo.X(), m_thermo.nSpecies());
+    
+    // Compute the Jacobian matrix
+    m_jacobian.computeNetRateProgressJacobian(mp_ropf, mp_ropb, mp_rop, p_dropRho);
+}
+
+//==============================================================================
+
+void Kinetics::netRateProgressTJacobian(double* const p_dropT)
+{
+   std::fill(p_dropT, p_dropT + nReactions(), 0);
+
+   // Special case of no reactions
+   if (nReactions() == 0) return;
+   
+
+   // Compute forward and backward rates of progress
+   forwardRateOfProgressDerivatives(mp_dropf);
+   backwardRateOfProgressDerivatives(mp_dropb);
+
+   // Compute the Jacobian matrix
+    m_jacobian.computeJacobianT(mp_dropf, mp_dropb, m_reactions, p_dropT);   
+
+}
+
+//==============================================================================
+
+void Kinetics::netRateProgressTvJacobian(double* const p_dropTv)
+{
+   std::fill(p_dropTv, p_dropTv + nReactions(), 0);
+
+   // Special case of no reactions
+   if (nReactions() == 0) return;
+
+   // Compute forward and backward rates of progress
+   forwardRateOfProgressDerivatives(mp_dropf);
+   backwardRateOfProgressDerivatives(mp_dropb);
+
+   // Compute the Jacobian matrix
+    m_jacobian.computeJacobianTv(mp_dropf, mp_dropb, m_reactions, p_dropTv);   
+
 }
 
 //==============================================================================

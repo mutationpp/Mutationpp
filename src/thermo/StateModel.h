@@ -84,6 +84,8 @@ public:
         mp_X = new double [m_thermo.nSpecies()];
         for (int i = 0; i < thermo.nSpecies(); ++i)
             mp_X[i] = 0.0;
+        mp_omegaRho = new double [m_thermo.nSpecies()];
+        mp_omegaTTv = new double [nenergy];
     }
     
     /**
@@ -93,6 +95,8 @@ public:
     {
         // Delete data pointers
         delete [] mp_X;
+        delete [] mp_omegaRho;
+        delete [] mp_omegaTTv;
 
         // Delete transfer models
         for (int i = 0; i < m_transfer_models.size(); ++i)
@@ -280,7 +284,44 @@ public:
             p_omega[m_transfer_models[i].first] +=
                 m_transfer_models[i].second->source();
     }
-    
+
+    /**
+     * This function provides the density-based jacobians for energy 
+     * transfer source terms
+     */
+    virtual void energyTransferJacobiansRho(double* const p_omegaJRho)
+    {
+        const int ns = m_thermo.nSpecies();
+	std::fill(mp_omegaRho, mp_omegaRho + ns, 0.);
+	for (int i = 0; i < ns; ++i)
+	    p_omegaJRho[i] = 0.0;
+
+        for (int i = 0; i < m_transfer_models.size(); ++i) {
+            m_transfer_models[i].second->jacobianRho(mp_omegaRho);
+            for (int j = 0; j < ns; ++j)
+		p_omegaJRho[j] += mp_omegaRho[j];
+        }
+                	
+    }
+      
+    /**
+     * This function provides the temperature-based jacobians for energy 
+     * transfer source terms
+     */
+    virtual void energyTransferJacobiansTTv(double* const p_omegaJTTv)
+    {
+	std::fill(mp_omegaTTv, mp_omegaTTv + m_nenergy, 0.);
+	for (int i = 0; i < m_nenergy; ++i)
+	    p_omegaJTTv[i] = 0.0;
+
+        for (int i = 0; i < m_transfer_models.size(); ++i) {
+            m_transfer_models[i].second->jacobianTTv(mp_omegaTTv);
+            for (int j = 0; j < m_nenergy; ++j)
+		p_omegaJTTv[j] += mp_omegaTTv[j];
+        }
+                	
+    }
+      
 protected:
     /**
     * @todo add a removeTransferTerm for the case wehen the
@@ -402,7 +443,8 @@ protected:
     double m_B;
     
     double* mp_X;
-    
+    double* mp_omegaRho;
+    double* mp_omegaTTv;
 
     std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
         m_transfer_models;

@@ -330,9 +330,7 @@ public:
 
     /**
      * Computes the temperature derivative of keq as follows:
-     * \f$ \frac{1}{keq} \frac{\partial keq}{\partial T} =
-     *    \frac{1}{T} \sum_{i=1}^{ns} {\delta\nu_{ij}} \left(\frac{h_i}{Ru T}-1\right)
-     * \f$
+     * \f$ \frac{1}{keq} \frac{\partial keq}{\partial T} \f$
      */
     void derivativeKeq(
         const Thermodynamics::Thermodynamics& thermo, double* const p_dKeqdT, double* const p_dkdT)
@@ -341,11 +339,9 @@ public:
         GroupMap::iterator iter = m_group_map.begin();
         for ( ; iter != m_group_map.end(); ++iter) {
             const RateLawGroup* p_group = iter->second;
-            thermo.speciesHOverRT(p_group->getT(), p_dKeqdT);
-	    for(size_t i = 0; i < ns; ++i) {
- 		p_dKeqdT[i] = 1. - p_dKeqdT[i]; 
-                p_dKeqdT[i] /= (p_group->getT());
-            }
+            thermo.speciesSTdGOverRT(p_group->getT(), p_dKeqdT);
+	    for(size_t i = 0; i < ns; ++i)
+                p_dKeqdT[i] += 1./p_group->getT();
             p_group->derivativeKeq(p_dKeqdT, p_dkdT);
         }
     }

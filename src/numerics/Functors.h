@@ -150,6 +150,19 @@ private:
     const T m_a;
 };
 
+/// Equality functor x -= y / a
+template <typename T>
+class MinusEqualsYDivAlpha
+{
+public:
+    MinusEqualsYDivAlpha(const T& a)
+        : m_a(a)
+    {}
+    inline void operator()(T& x, const T& y) const { x -= y / m_a; }
+private:
+    const T m_a;
+};
+
 
     } // namespace Numerics
 } // namespace Mutation

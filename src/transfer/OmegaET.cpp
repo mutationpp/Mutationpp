@@ -67,7 +67,7 @@ public:
 	    if (!m_has_electrons)
 		    return 0.0;
 
-	    const double * p_X = mixture().X();
+	const double * p_X = mixture().X();
         double nd = mixture().numberDensity();
         double T = mixture().T();
         double Te = mixture().Te();
@@ -86,6 +86,66 @@ public:
         return 1.5*KB*nd*p_X[0]*(T-Te)/tau;
 	}
 
+        void jacobianRho(double* const p_jacRho)
+        {
+
+        std::fill(p_jacRho, p_jacRho + mixture().nSpecies(), 0.);
+	if (!m_has_electrons) return;
+
+	const double * p_X = mixture().X();
+        double nd = mixture().numberDensity();
+        double T = mixture().T();
+        double Te = mixture().Te();
+
+        const double ns = mixture().nSpecies();
+        Map<const ArrayXd> X(mixture().X(),ns);
+
+        // CollisionDB data
+        const ArrayXd& Q11ei = m_collisions.Q11ei();
+        const ArrayXd& mass  = m_collisions.mass();
+
+        // Electron velocity
+        double ve = sqrt(KB*8.*Te/(PI*mass(0)));
+        double tau = 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
+
+	p_jacRho[0] = 1.5*KB*(NA/mixture().speciesMw(0))*(T-Te)/tau;
+
+        double dtaudRho;
+        for(int i = 1; i < ns; ++i) {
+            dtaudRho = 1.0/(mass(0)*8./3.*ve*(NA/mixture().speciesMw(i))*Q11ei(i)/mass(i));
+            p_jacRho[i] = 1.5*KB*nd*p_X[0]*(T-Te)/dtaudRho;
+        }
+
+        }
+
+        void jacobianTTv(double* const p_jacTTv)
+        {
+
+        std::fill(p_jacTTv, p_jacTTv + mixture().nEnergyEqns(), 0.);
+
+	if (!m_has_electrons) return;
+
+	const double* p_X = mixture().X();
+        double nd = mixture().numberDensity();
+        double T = mixture().T();
+        double Te = mixture().Te();
+
+        const double ns = mixture().nSpecies();
+        Map<const ArrayXd> X(mixture().X(),ns);
+
+        // CollisionDB data
+        const ArrayXd& Q11ei = m_collisions.Q11ei();
+        const ArrayXd& mass  = m_collisions.mass();
+
+        // Electron velocity
+        double ve = sqrt(KB*8.*Te/(PI*mass(0)));
+        double tau = 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
+
+        p_jacTTv[0] = 1.5*KB*nd*p_X[0]/tau;
+        p_jacTTv[1] = -1.5*KB*nd*p_X[0]/tau;
+        p_jacTTv[1] += (1.5*KB*nd*p_X[0]*(T-Te)/tau)*0.5/Te;
+        }
+ 
 private:
 	Transport::CollisionDB& m_collisions;
 	bool m_has_electrons;

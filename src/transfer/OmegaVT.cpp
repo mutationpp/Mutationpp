@@ -62,6 +62,11 @@ public:
         return m_energy_model.energy(T); 
     }
 
+    /// Temperature-derivative of energy of the vibrator at the given temperature.
+    double energyTderivative(double T) const {
+        return m_energy_model.energyTderivative(T);
+    }
+
     /// Relaxation time of the vibrator.
     /// @todo Find better solution to limit dependency to just thermodynamic
     /// state information, not whole mixture.
@@ -92,6 +97,8 @@ public:
     OmegaVT(Mixture&);
     virtual ~OmegaVT() = default;
     virtual double source() override;
+    virtual void jacobianRho(double* const p_jacRho) override;
+    virtual void jacobianTTv(double* const p_jacTTv) override;
 private:
     std::vector<Vibrator> m_vibrators;
 };
@@ -138,9 +145,49 @@ double OmegaVT::source()
     return src * mixture().density() * RU;
 }
 
+void OmegaVT::jacobianRho(double* const p_jacRho)
+{
+    const size_t ns=mixture().nSpecies();
+    std::fill(p_jacRho, p_jacRho + ns, 0.);
 
+    auto Y = mixture().Y();
+    auto T = mixture().T();
+    auto Tv = mixture().Tv();
 
+    for (auto& vibrator: m_vibrators)
+    {
+        const auto iv = vibrator.speciesIndex();
+        const auto tau = vibrator.relaxationTime(mixture());
+        const auto mw = vibrator.molecularWeight();
+        p_jacRho[iv] = RU*(vibrator.energy(T) - vibrator.energy(Tv))/(mw*tau);
+    }
 
+}
+
+void OmegaVT::jacobianTTv(double* const p_jacTTv)
+{
+    const size_t nt=mixture().nEnergyEqns();
+    std::fill(p_jacTTv, p_jacTTv + nt, 0.);
+
+    auto Y = mixture().Y();
+    auto T = mixture().T();
+    auto Tv = mixture().Tv();
+
+    double auxT = 0.0;
+    double auxTv = 0.0;
+
+    for (auto& vibrator: m_vibrators)
+    {
+        const auto iv = vibrator.speciesIndex();
+        const auto tau = vibrator.relaxationTime(mixture());
+        const auto mw = vibrator.molecularWeight();
+        auxT += Y[iv]*vibrator.energyTderivative(T)/(mw*tau);
+        auxTv += -Y[iv]*vibrator.energyTderivative(Tv)/(mw*tau);
+    }
+
+        p_jacTTv[0] = auxT * mixture().density() * RU;
+        p_jacTTv[1] = auxTv * mixture().density() * RU;     
+}
 
 /**
  * Represents a coupling between vibrational and translational energy modes.

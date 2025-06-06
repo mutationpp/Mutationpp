@@ -104,6 +104,18 @@ void Nasa7Polynomial::gibbs(const double *const p_params, double &g) const
         mp_coefficients[index][6];
 }
 
+void Nasa7Polynomial::derivativeTgibbs(const double *const p_params, double &dg) const
+{
+    int index = tRange(p_params[0]);
+    
+    dg = mp_coefficients[index][0] * p_params[1] +
+        mp_coefficients[index][1] * p_params[2] +
+        mp_coefficients[index][2] * p_params[3] +
+        mp_coefficients[index][3] * p_params[4] +
+        mp_coefficients[index][4] * p_params[5] +
+        mp_coefficients[index][5] * p_params[6];
+}
+
 void Nasa7Polynomial::computeParams(const double &T, double *const params, 
     const ThermoFunction func)
 {
@@ -146,6 +158,17 @@ void Nasa7Polynomial::computeParams(const double &T, double *const params,
         params[5] = -T4/20.0;
         params[6] = 1.0/T;
     }
+
+    if (func == GIBBSPRIME) {
+        params[0] = T;
+        params[1] = -1.0/T;
+        params[2] = -0.5;
+        params[3] = -T/3.0;
+        params[4] = -T2*0.25;
+        params[5] = -T3*0.20;
+        params[6] = -1.0/T2;
+    }
+    
 }
 
 std::istream &operator>>(istream &in, Nasa7Polynomial &n7)

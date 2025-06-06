@@ -46,14 +46,24 @@ public:
 	OmegaCElec(Mutation::Mixture& mix)
 		: TransferModel(mix)
 	{
+                m_ns = mix.nSpecies();
+                m_nt = mix.nEnergyEqns();
 		mp_wrk1 = new double [mix.nSpecies()];
 		mp_wrk2 = new double [mix.nSpecies()];
+		mp_wrk3 = new double [mix.nSpecies()*mix.nSpecies()];
+		mp_wrk4 = new double [mix.nSpecies()];
+		mp_wrk5 = new double [mix.nSpecies()];
+		mp_wrk6 = new double [mix.nSpecies()];
 	};
 
 	~OmegaCElec()
 	{
 		delete [] mp_wrk1;
 		delete [] mp_wrk2;
+		delete [] mp_wrk3;
+		delete [] mp_wrk4;
+		delete [] mp_wrk5;
+		delete [] mp_wrk6;
 	};
 
 	double source()
@@ -69,9 +79,53 @@ public:
 		return (sum*mixture().T()*RU);
 	}
 
+        void jacobianRho(double* const p_jacRho)
+        {
+                std::fill(p_jacRho, p_jacRho + m_ns, 0.);
+
+		mixture().speciesHOverRT(NULL, NULL, NULL, NULL, mp_wrk1, NULL);
+                mixture().jacobianRho(mp_wrk3);
+
+                double aux = mixture().T()*RU;
+
+                for(int i = 0; i < m_ns; ++i)
+                        for(int j = 0; j < m_ns; ++j)
+                                p_jacRho[i] += aux*mp_wrk1[i]*mp_wrk3[i+j*m_ns]/mixture().speciesMw(i);
+
+        }
+
+        void jacobianTTv(double* const p_jacTTv)
+        {
+		std::fill(p_jacTTv, p_jacTTv + m_nt, 0.);
+
+        	double T=mixture().T();
+        	double Tv=mixture().Tv();
+
+		mixture().speciesHOverRT(NULL, NULL, NULL, NULL, mp_wrk1, NULL);
+		mixture().netProductionRates(mp_wrk2);
+                mixture().speciesCpOverR(T, Tv, T, Tv, Tv, NULL, NULL, NULL, NULL, mp_wrk4);
+                mixture().jacobianT(mp_wrk5);
+                mixture().jacobianTv(mp_wrk6);
+
+                double aux = T*RU;
+                
+                for(int i = 0; i < m_ns; ++i) {
+                        p_jacTTv[0] += aux*mp_wrk1[i]*mp_wrk5[i]/mixture().speciesMw(i);
+                        p_jacTTv[1] += aux*mp_wrk1[i]*mp_wrk6[i]/mixture().speciesMw(i);
+                        p_jacTTv[1] += RU*mp_wrk4[i]*mp_wrk2[i]/mixture().speciesMw(i);
+                }
+
+        }
+
 private:
+        int m_ns;
+        int m_nt;
 	double* mp_wrk1;
 	double* mp_wrk2;
+	double* mp_wrk3;
+	double* mp_wrk4;
+	double* mp_wrk5;
+	double* mp_wrk6;
 };
 
 // Register the transfer model

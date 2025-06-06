@@ -329,6 +329,10 @@ public:
     virtual void contributeToJacobian(
         const double kf, const double kb, const double* const conc, 
         double* const work, double* const sjac, const size_t ns) const = 0;
+
+    virtual void contributeToNetProgressJacobian(
+        const double kf, const double kb, const double* const conc, 
+        double* const work, double* const p_dropRho, const size_t ns, const size_t r) const = 0;
 };
 
 /**
@@ -378,6 +382,17 @@ public:
     void contributeToJacobian(
         const double kf, const double kb, const double* const conc, 
         double* const work, double* const sjac, const size_t ns) const;
+
+    /**
+     * Adds the net rate of progress Jacobian elements.  Note
+     * that this will affect the rows of each species that particpates in this
+     * reaction.  The compiler should be able to unroll each loop since the
+     * sizes are known at compile time given the Reactants and Products 
+     * stoichiometry types.
+     */
+    void contributeToNetProgressJacobian(
+        const double kf, const double kb, const double* const conc, 
+        double* const work, double* const p_dropRho, const size_t ns, const size_t r) const;
 
 protected:
     
@@ -464,6 +479,16 @@ public:
         const double kf, const double kb, const double* const conc, 
         double* const work, double* const sjac, const size_t ns) const;
     
+    /**
+     * Computes the jacobians for net rates of progress. It is used to compute
+     * the jacobians for energy exchange due to ionization impact reactions. The 
+     * size of the jacobians is nr*ns, where nr is number of reactions and
+     * ns is number of species.
+     */
+    void contributeToNetProgressJacobian(
+        const double kf, const double kb, const double* const conc, 
+        double* const work, double* const p_dropRho, const size_t ns, const size_t r) const;
+    
     friend void swap<Reactants, Products>(
         ThirdbodyReactionStoich<Reactants, Products>&,
         ThirdbodyReactionStoich<Reactants, Products>&);
@@ -491,6 +516,8 @@ public:
         : m_thermo(thermo)
     {
         mp_work = new double [m_thermo.nSpecies()];
+        mp_work1 = new double [m_thermo.nSpecies()];
+        mp_T = new double [m_thermo.nEnergyEqns()];
     }
     
     /**
@@ -499,6 +526,8 @@ public:
     ~JacobianManager() 
     {
         delete [] mp_work;
+        delete [] mp_work1;
+        delete [] mp_T;
         
         std::vector<ReactionStoichBase*>::iterator iter = m_reactions.begin();
         for ( ; iter != m_reactions.end(); ++iter)
@@ -517,6 +546,13 @@ public:
     void computeJacobian(
         const double* const kf, const double* const kb, 
         const double* const conc, double* const sjac) const;
+
+    /**
+     * Computes the net rate of progress Jacobian matrix.
+     */
+    void computeNetRateProgressJacobian(
+        const double* const kf, const double* const kb, 
+        const double* const conc, double* const npjac) const;
 
     /**
      * Computes the translational-temperature-dependent 
@@ -576,6 +612,8 @@ private:
 
     const Mutation::Thermodynamics::Thermodynamics& m_thermo;
     double* mp_work;    
+    double* mp_work1;
+    double* mp_T;
     std::vector<ReactionStoichBase*> m_reactions;
 
 };

@@ -127,11 +127,11 @@ RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
 
     // Allocate storage in one block for both rate coefficient arrays and
     // species gibbs free energies 
-    const size_t block_size = 2*m_nr + ns;
+    const size_t block_size = 4*m_nr + 2*ns;
     mp_lnkf  = new double [block_size];
     mp_lnkb  = mp_lnkf + m_nr;
     mp_gibbs = mp_lnkb + m_nr;
-    mp_dkfdT = mp_gibbs + block_size;
+    mp_dkfdT = mp_gibbs + ns;
     mp_dkbdT = mp_dkfdT + m_nr;
     mp_dKeqdT = mp_dkbdT + m_nr;
     
