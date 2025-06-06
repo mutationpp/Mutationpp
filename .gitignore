@@ -21,3 +21,7 @@ _skbuild/
 
 # OS specifics
 .DS_Store
+
+#Files to ignore
+echo "compile.sh" >> .gitignore
+echo "data/mechanisms/air5p_Park.xml" >> .gitignore
