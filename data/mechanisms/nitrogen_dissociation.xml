@@ -1,0 +1,11 @@
+<mechanism name="nitrogen_dissociation">
+
+    <arrhenius_units A="mol,cm,s,K" E="kcal,mol,K" />
+
+    <!-- Park, 2001 -->
+    <reaction formula="N2+M=>2N+M">
+        <arrhenius A="3.0E+22" n="-1.6" T="113200.0" />
+        <M>N2:0.2333</M>
+    </reaction>
+
+</mechanism>
