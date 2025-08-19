@@ -44,7 +44,7 @@ public:
 		: TransferModel(mix)
 	{
 		mp_wrk1 = new double [mix.nSpecies()];
-                mp_wrk2 = new double [mix.nSpecies()*mix.nSpecies()];
+		mp_wrk2 = new double [mix.nSpecies()*mix.nSpecies()];
 		mp_wrk3 = new double [mix.nSpecies()];
 		mp_wrk4 = new double [mix.nSpecies()];
 	}
@@ -52,9 +52,9 @@ public:
 	~OmegaCE()
 	{
 		delete [] mp_wrk1;
-                delete [] mp_wrk2;
+		delete [] mp_wrk2;
 		delete [] mp_wrk3;
-                delete [] mp_wrk4;
+		delete [] mp_wrk4;
 	}
 
 	double source()
