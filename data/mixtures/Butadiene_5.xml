@@ -1,0 +1,12 @@
+<!-- Two-step global mechanism for oxidation of C4H6 -->
+<mixture mechanism="Butadiene">
+
+    <species>
+        CO H2O O2 CO2 C4H6
+    </species>
+
+    <element_compositions default="def">
+        <composition name="def"> C4H6:0.1, O2: 0.9 </composition>
+    </element_compositions>
+
+</mixture>

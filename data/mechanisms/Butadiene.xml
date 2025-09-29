@@ -1,0 +1,21 @@
+<!-- Two-step global mechanism for butadine oxidation
+     Rates taken from Kessler et al. 2022 -->
+<mechanism name="Butadiene">
+
+    <arrhenius_units A="kmol,m,s,K" E="cal,kmol,K" />
+
+    <reaction formula="2C4H6+7O2=8CO+6H2O">
+        <arrhenius A="2.0925E10" n="0.0" T="30000.0" />
+    </reaction>
+
+    <reaction formula="2CO+O2=2CO2">
+        <arrhenius A="2.24E12" n="0.0" T="12000.0" />
+    </reaction>
+
+    <reaction formula="2CO2=CO+2O2">
+        <arrhenius A="5.0E8" n="0.0" T="77200.0" />
+    </reaction>
+
+</mechanism>
+
+
