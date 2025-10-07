@@ -55,7 +55,9 @@ bool SpeciesNameFSM::parse(const std::string& s)
     }
 
     // Run each character through the FSM
-    for_each(s.begin(), s.end(), std::bind1st(std::mem_fun(&SpeciesNameFSM::next), this));
+    using namespace std::placeholders;  // for _1,
+    for_each(s.begin(), s.end(),
+             std::bind(std::mem_fn(&SpeciesNameFSM::next), this, _1));
     next('\0');
 
     if (m_state == BadFormat) {
