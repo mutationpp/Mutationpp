@@ -18,7 +18,7 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10...4.0)
 
 include(ListSubDirs)
 ListSubDirs(example_subdirs ${CMAKE_CURRENT_LIST_DIR})

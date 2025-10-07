@@ -19,7 +19,7 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10...4.0)
 cmake_policy(SET CMP0022 NEW)
 
 add_library(mutation++_fortran

@@ -27,7 +27,7 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10...4.0)
 cmake_policy(SET CMP0048 NEW)
 set(CMAKE_CXX_STANDARD 14)
 
