@@ -121,9 +121,8 @@ RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
-    for (size_t i = 0; i < m_nr; ++i) {
+    for (size_t i = 0; i < m_nr; ++i)
         addReaction(i, reactions[i]);
-    }
 
     // Allocate storage in one block for both rate coefficient arrays and
     // species gibbs free energies 
