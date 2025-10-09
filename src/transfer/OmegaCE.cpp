@@ -40,57 +40,58 @@ namespace Mutation {
 class OmegaCE : public TransferModel
 {
 public:
-	OmegaCE(Mutation::Mixture& mix)
-		: TransferModel(mix)
-	{
-		mp_wrk1 = new double [mix.nSpecies()];
-		mp_wrk2 = new double [mix.nSpecies()*mix.nSpecies()];
-		mp_wrk3 = new double [mix.nSpecies()];
-		mp_wrk4 = new double [mix.nSpecies()];
-	}
+    OmegaCE(Mutation::Mixture& mix)
+        : TransferModel(mix)
+    {
+        mp_wrk1 = new double [mix.nSpecies()];
+        mp_wrk2 = new double [mix.nSpecies()*mix.nSpecies()];
+        mp_wrk3 = new double [mix.nSpecies()];
+        mp_wrk4 = new double [mix.nSpecies()];
+    }
 
-	~OmegaCE()
-	{
-		delete [] mp_wrk1;
-		delete [] mp_wrk2;
-		delete [] mp_wrk3;
-		delete [] mp_wrk4;
-	}
+    ~OmegaCE()
+    {
+        delete [] mp_wrk1;
+        delete [] mp_wrk2;
+        delete [] mp_wrk3;
+        delete [] mp_wrk4;
+    }
 
-	double source()
-	{
-		static const double cv = 1.5*RU/mixture().speciesMw(0);
-		mixture().netProductionRates(mp_wrk1);
-		return mp_wrk1[0]*cv*mixture().Te();
-	}
+    double source()
+    {
+        static const double cv = 1.5*RU/mixture().speciesMw(0);
+        mixture().netProductionRates(mp_wrk1);
+        return mp_wrk1[0]*cv*mixture().Te();
+    }
      
-        void jacobianRho(double* const p_jacRho)
-        {
-                const size_t ns=mixture().nSpecies();
-                std::fill(p_jacRho, p_jacRho + ns, 0.);
-                static const double cv = 1.5*RU/mixture().speciesMw(0);
-                mixture().jacobianRho(mp_wrk2);
-                for(int i = 0; i < ns; ++i)
-                    p_jacRho[i] = mp_wrk2[i]*cv*mixture().Te(); //Since only omega[0] is taken as source term, jacRho only considers elements of omega[0] - RSCD             
-        }
-        void jacobianTTv(double* const p_jacTTv)
-        {
-                const size_t nt=mixture().nEnergyEqns();
-                std::fill(p_jacTTv, p_jacTTv + nt, 0.);
-                static const double cv = 1.5*RU/mixture().speciesMw(0);
-                mixture().netProductionRates(mp_wrk1);
-                mixture().jacobianT(mp_wrk3);
-                mixture().jacobianTv(mp_wrk4);
-                p_jacTTv[0] = cv*mixture().Te()*mp_wrk3[0];
-                p_jacTTv[1] = mp_wrk1[0]*cv; 
-                p_jacTTv[1] += cv*mixture().Te()*mp_wrk4[0];
-        }
+    void jacobianRho(double* const p_jacRho)
+    {
+        const size_t ns=mixture().nSpecies();
+        std::fill(p_jacRho, p_jacRho + ns, 0.);
+        static const double cv = 1.5*RU/mixture().speciesMw(0);
+        mixture().jacobianRho(mp_wrk2);
+        for(int i = 0; i < ns; ++i)
+            p_jacRho[i] = mp_wrk2[i]*cv*mixture().Te();
+    }
+        
+    void jacobianTTv(double* const p_jacTTv)
+    {
+        const size_t nt=mixture().nEnergyEqns();
+        std::fill(p_jacTTv, p_jacTTv + nt, 0.);
+        static const double cv = 1.5*RU/mixture().speciesMw(0);
+        mixture().netProductionRates(mp_wrk1);
+        mixture().jacobianT(mp_wrk3);
+        mixture().jacobianTv(mp_wrk4);
+        p_jacTTv[0] = cv*mixture().Te()*mp_wrk3[0];
+        p_jacTTv[1] = mp_wrk1[0]*cv;
+        p_jacTTv[1] += cv*mixture().Te()*mp_wrk4[0];
+    }
 
 private:
-	double* mp_wrk1;
-	double* mp_wrk2;
-	double* mp_wrk3;
-	double* mp_wrk4;
+    double* mp_wrk1;
+    double* mp_wrk2;
+    double* mp_wrk3;
+    double* mp_wrk4;
 };
 
 // Register the transfer model
