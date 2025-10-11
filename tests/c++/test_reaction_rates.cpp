@@ -67,12 +67,12 @@ TEST_CASE("Arrhenius rate laws work correctly", "[kinetics]")
 {
     // Check that the rate is calculated correctly
     for (int order = 1; order < 4; ++order) {
-        checkArrheniusRate(5.0e15,  0.0, order, 75500.0);
-        checkArrheniusRate(5.0e15,  0.0, order, 75500.0, true);
-        checkArrheniusRate(5.0e15,  1.0, order, 75500.0);
-        checkArrheniusRate(5.0e15,  1.0, order, 75500.0, true);
-        checkArrheniusRate(5.0e15, -1.0, order, 75500.0);
-        checkArrheniusRate(5.0e15, -1.0, order, 75500.0, true);
+        checkArrheniusRate(5.0e15,  0.0, 75500.0, order);
+        checkArrheniusRate(5.0e15,  0.0, 75500.0, order, true);
+        checkArrheniusRate(5.0e15,  1.0, 75500.0, order);
+        checkArrheniusRate(5.0e15,  1.0, 75500.0, order, true);
+        checkArrheniusRate(5.0e15, -1.0, 75500.0, order);
+        checkArrheniusRate(5.0e15, -1.0, 75500.0, order, true);
     }
 
     // Check that loading fails properly
