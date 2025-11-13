@@ -59,7 +59,7 @@ using namespace Mutation::Utilities;
  * mole fractions at the wall versus temperature.
  */
 // Simply stores the command line options
-typedef struct {
+typedef struct Options {
     double T1;
     double T2;
     double dT;
