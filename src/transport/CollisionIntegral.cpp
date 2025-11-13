@@ -372,6 +372,7 @@ private:
         case Q22: return // A* Q11
             (m_ci1->compute(T)*m_ci2->compute(T));
         }
+        return 0; // LCOV_EXCL_LINE
     }
 
     /**
@@ -476,6 +477,7 @@ private:
         case Q13: return // (5*Q12 - B*Q11)/4
             (5.*m_ci3->compute(T)-m_ci1->compute(T)*m_ci2->compute(T))/4.;
         }
+        return 0; // LCOV_EXCL_LINE
     }
 
     /**
@@ -567,6 +569,7 @@ private:
         case Q12: return // C* Q11
             (m_ci1->compute(T)*m_ci2->compute(T));
         }
+        return 0; // LCOV_EXCL_LINE
     }
 
     /**
