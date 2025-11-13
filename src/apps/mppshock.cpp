@@ -38,7 +38,7 @@ public:
         m_P(p), m_V(u), m_T(T) {}
     State (const State&) = delete;
     State (State&&) = default;
-    State& operator=( const State &) = default;
+    State& operator=( const State &) = delete;
 
     double getP() const { return m_P; }
     double getV() const { return m_V; }
