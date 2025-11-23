@@ -217,7 +217,6 @@ option(ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
 list(APPEND LCOV_REMOVE_PATTERNS
     "'/usr/*'"
     "'*/tests/*'"
-    "'*/install/*'"
     "'*/examples/*'"
     "'*/thirdparty/*'"
 )
