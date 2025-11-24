@@ -1,7 +1,7 @@
 ###Build###
 build/
 dist/
-mutationpp_python.egg-info/
+mutationpp.egg-info/
 *.so
 
 ###IDE###
