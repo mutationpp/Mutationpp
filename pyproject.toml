@@ -1,6 +1,49 @@
+[project]
+name = "mutationpp"
+dynamic = ["version"]
+description = "MUlticomponent Thermodynamic And Transport properties for IONized gases in C++"
+readme = "interface/python/DESCRIPTION.md"
+license = "LGPL-3.0-only"
+license-files = ["COPYING", "COPYING.LESSER"]
+authors = [
+  {name = "James B. Scoggins", email = "james.scoggins@vki.ac.be"},
+]
+maintainers = [
+  {name = "Ruben Di Battista", email = "rubendibattista@gmail.com"},
+]
+classifiers = [
+  "Development Status :: 6 - Mature",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = ["numpy"]
+[project.urls]
+Homepage = "https://github.com/mutationpp/Mutationpp"
+Source = "https://github.com/mutationpp/Mutationpp.git"
+Issues = "https://github.com/mutationpp/Mutationpp/issues"
+Discussions = "https://github.com/mutationpp/Mutationpp/discussions"
+Downloads = "https://github.com/mutationpp/Mutationpp/releases"
+[project.optional-dependencies]
+test = ["pytest"]
+
 [build-system]
-requires = ["setuptools", "wheel", "pybind11", "scikit-build", "cmake", "ninja"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core>=0.11", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+experimental = true
+sdist.cmake = false
+sdist.exclude = [".*"]
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+regex = '^project\(mutation\+\+\s*\n^\s*VERSION\s*(?P<value>\d+\.\d+\.\d+)\s*$'
+input = "CMakeLists.txt"
 
 [tool.pytest.ini_options]
 testpaths = [
