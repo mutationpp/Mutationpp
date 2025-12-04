@@ -15,8 +15,9 @@ docs/html/
 .vscode/
 
 # Python
+dist/
+**/__pycache__/
 *.pyc
-_skbuild/
 *.whl
 
 # OS specifics

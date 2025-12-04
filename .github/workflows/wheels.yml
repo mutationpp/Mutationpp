@@ -8,19 +8,16 @@ jobs:
     test_linux:
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v6
           with:
             submodules: recursive
 
-        - uses: actions/setup-python@v2
+        - uses: actions/setup-python@v6
           with:
             python-version: "3.x"
 
-        - name: Upgrade pip
-          run: pip install -U setuptools wheel pip
-
         - name: Install package for testing
-          run: pip install ".[test]"
+          run: python -m pip install ".[test]"
 
         - name: Run tests
           run: >
@@ -31,19 +28,16 @@ jobs:
     test_mac:
       runs-on: macos-latest
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v6
           with:
             submodules: recursive
 
-        - uses: actions/setup-python@v2
+        - uses: actions/setup-python@v6
           with:
             python-version: "3.x"
 
-        - name: Upgrade pip
-          run: pip install -U setuptools wheel pip
-
         - name: Install package for testing
-          run: pip install ".[test]"
+          run: python -m pip install ".[test]"
 
         - name: Run tests
           run: >
@@ -54,30 +48,28 @@ jobs:
     linux_wheels:
         strategy:
           matrix:
-            python-version: 
-              - cp36-cp36m
-              - cp37-cp37m
-              - cp38-cp38
-              - cp39-cp39
+            python-version:
+              - cp310-cp310
+              - cp311-cp311
+              - cp312-cp312
+              - cp313-cp313
+              - cp314-cp314
 
         needs: test_linux
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v2
+          - uses: actions/checkout@v6
             with:
               submodules: recursive
 
-          - uses: actions/setup-python@v2
+          - uses: actions/setup-python@v6
             with:
-              python-version: 3.9
-
-          - name: Upgrade pip
-            run: pip install -U setuptools wheel pip
+              python-version: 3.14
 
           - name: Build manylinux Python wheels
             uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2010_x86_64
             with:
-              python-versions: "${{ matrix.python-version }}"
+              python-versions: ${{ matrix.python-version }}
 
           - uses: actions/upload-artifact@v2
             with:
@@ -88,27 +80,28 @@ jobs:
     mac_wheels:
         strategy:
           matrix:
-            python-version: 
-              - 3.6
-              - 3.7
-              - 3.8
-              - 3.9
+            python-version:
+              - "3.10"
+              - "3.11"
+              - "3.12"
+              - "3.13"
+              - "3.14"
         needs: test_mac
         runs-on: macos-latest
         steps:
-          - uses: actions/checkout@v2
+          - uses: actions/checkout@v6
             with:
               submodules: recursive
 
-          - uses: actions/setup-python@v2
+          - uses: actions/setup-python@v6
             with:
-              python-version: "${{ matrix.python-version }}"
+              python-version: ${{ matrix.python-version }}
 
-          - name: Upgrade pip
-            run: pip install -U setuptools wheel pip
+          - name: Install build
+            run: python -m pip install build
 
-          - name: Build wheels
-            run: pip wheel . -w dist/
+          - name: Build wheel
+            run: python -m build --whell
 
           - uses: actions/upload-artifact@v2
             with:
@@ -120,19 +113,19 @@ jobs:
       needs: test_linux
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v6
           with:
             submodules: recursive
 
-        - uses: actions/setup-python@v2
+        - uses: actions/setup-python@v6
           with:
-            python-version: 3.9
+            python-version: "3.x"
 
-        - name: Upgrade pip
-          run: pip install -U setuptools wheel pip scikit-build
+        - name: Install build
+          run: python -m pip install build
 
         - name: Build sdist
-          run: python setup.py sdist
+          run: python -m build --sdist
 
         - uses: actions/upload-artifact@v2
           with:
@@ -159,12 +152,12 @@ jobs:
               name: sdist
               path: dist
 
-          - name: Upgrade pip
-            run: pip install -U setuptools wheel pip
+          - uses: actions/setup-python@v6
+            with:
+              python-version: "3.x"
 
           - name: Install twine
-            run: pip install twine
+            run: python -m pip install twine
 
           - name: Upload wheels
             run: twine upload -u __token__ -p "${{ secrets.TESTPYPI_TOKEN }}" --repository testpypi dist/*
-

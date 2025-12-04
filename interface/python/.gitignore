@@ -1,6 +1,7 @@
 ###Build###
 build/
 dist/
+**/__pycache__/
 mutationpp.egg-info/
 *.so
 
