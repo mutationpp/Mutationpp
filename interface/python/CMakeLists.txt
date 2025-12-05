@@ -4,6 +4,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(_mutationpp
     src/mutationpp_python.cpp
+    src/pyGlobalOptions.cpp
     src/pyMixtureOptions.cpp
     src/pyMixture.cpp
 )

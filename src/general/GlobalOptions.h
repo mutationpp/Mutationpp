@@ -22,6 +22,9 @@
 #ifndef GLOBAL_OPTIONS_H
 #define GLOBAL_OPTIONS_H
 
+#include <cstdlib>
+#include <string>
+
 namespace Mutation {
 
 /// Singleton class providing access to global options.
