@@ -4,7 +4,8 @@ import pytest
 import unittest.mock as mock
 import mutationpp as mpp
 
-INITIAL_DATADIR = os.environ.get("MPP_DATA_DIRECTORY", "")
+PACKAGE_DATADIR = os.fspath(importlib.resources.files(mpp) / "data")
+INITIAL_DATADIR = os.environ.get("MPP_DATA_DIRECTORY", PACKAGE_DATADIR)
 
 
 def test_options_datadir_initial():
@@ -62,6 +63,6 @@ def test_options_reset(datadir):
     with mock.patch.dict(os.environ, clear=True):
         mpp.GlobalOptions.reset()
         set_datadir = mpp.GlobalOptions.dataDirectory()
-        assert set_datadir == ""
+        assert set_datadir == PACKAGE_DATADIR
         set_workdir = mpp.GlobalOptions.workingDirectory()
         assert set_workdir == ""
