@@ -27,7 +27,4 @@ jobs:
           run: python -m pip install ".[test]"
 
         - name: Run tests
-          run: >
-            export MPP_DIRECTORY=$(pwd) &&
-            export MPP_DATA_DIRECTORY=$MPP_DIRECTORY/data &&
-            pytest
+          run: pytest

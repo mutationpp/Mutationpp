@@ -14,3 +14,5 @@ target_link_libraries(_mutationpp PRIVATE mutation++)
 install(DIRECTORY mutationpp DESTINATION .)
 
 install(TARGETS _mutationpp DESTINATION mutationpp)
+
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data" DESTINATION mutationpp)
