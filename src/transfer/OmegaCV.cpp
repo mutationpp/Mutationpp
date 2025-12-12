@@ -100,7 +100,8 @@ public:
 /**
  * Computes the density-based jacobian terms of the Vibration-Chemistry energy transfer.$
  *
- * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial \rho_{i}} = \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial \rho_{i}} \f]
+ * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial \rho_{i}} = 
+ *                \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial \rho_{i}} \f]
  *
  */
     void jacobianRho(double* const p_jacRho);
@@ -108,8 +109,9 @@ public:
 /**
  * Computes the temperature-based jacobian terms of the Vibration-Chemistry energy transfer.$
  *
- * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial T} = \sum c_1 \frac{\partial e^V_{mi}}{\partial T} \dot{\omega}_i 
- *                                                     + \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial T} \f]
+ * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial T} = 
+ *                \sum c_1 \frac{\partial e^V_{mi}}{\partial T} \dot{\omega}_i 
+ *                          + \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial T} \f]
  */
     void jacobianTTv(double* const p_jacTTv);
 

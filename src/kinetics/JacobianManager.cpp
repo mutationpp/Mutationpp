@@ -550,9 +550,14 @@ void JacobianManager::computeJacobianT(
         
         std::fill(mp_T, mp_T + nt, 0.);
         m_thermo.getTemperatures(mp_T);
-        
-        computeTReactionTDerivatives(reactions, mp_T, dTrxndT);
-        
+
+	if (nt == 2) {
+           computeTReactionTDerivatives(reactions, mp_T, dTrxndT);
+        } else {        
+	   for (int i = 0; i < reactions.size(); ++i)
+	       dTrxndT.push_back({1.0, 1.0});
+        }
+
         for (int i = 0; i < reactions.size(); ++i)
             p_dropT[i] = p_dropf[i]*dTrxndT[i].first - p_dropb[i]*dTrxndT[i].second;
     }
@@ -569,7 +574,12 @@ void JacobianManager::computeJacobianTv(
         std::fill(mp_T, mp_T + nt, 0.);
         m_thermo.getTemperatures(mp_T);
         
-        computeTReactionTvDerivatives(reactions, mp_T, dTrxndTv);
+	if (nt == 2) {
+           computeTReactionTvDerivatives(reactions, mp_T, dTrxndTv);
+        } else {        
+	   for (int i = 0; i < reactions.size(); ++i)
+	       dTrxndTv.push_back({0.0, 0.0});
+        }
         
         for (int i = 0; i < reactions.size(); ++i)
             p_dropTv[i] = p_dropf[i]*dTrxndTv[i].first - p_dropb[i]*dTrxndTv[i].second;

@@ -306,7 +306,7 @@ void Kinetics::forwardRateOfProgressDerivatives(double* const p_dropf)
        return;
 
     mp_rates->update(m_thermo);
-    ArrayXd dkfdT =
+    ArrayXd dkfdT = 
         Map<const ArrayXd>(mp_rates->dkfdT(), nReactions());
 
    forwardRatesOfProgress(mp_ropf);
@@ -498,6 +498,7 @@ void Kinetics::jacobianRho(double* const p_jac)
     
     // Compute the Jacobian matrix
     m_jacobian.computeJacobian(mp_ropf, mp_ropb, mp_rop, p_jac);
+
 }
 
 //==============================================================================
