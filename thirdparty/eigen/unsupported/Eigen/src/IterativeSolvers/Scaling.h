@@ -9,8 +9,11 @@
 
 #ifndef EIGEN_ITERSCALING_H
 #define EIGEN_ITERSCALING_H
+
+namespace Eigen {
+
 /**
-  * \ingroup IterativeSolvers_Module
+  * \ingroup IterativeLinearSolvers_Module
   * \brief iterative scaling algorithm to equilibrate rows and column norms in matrices
   * 
   * This class can be used as a preprocessing tool to accelerate the convergence of iterative methods 
@@ -41,8 +44,6 @@
   * 
   * \sa \ref IncompleteLUT 
   */
-namespace Eigen {
-using std::abs; 
 template<typename _MatrixType>
 class IterScaling
 {
@@ -71,6 +72,7 @@ class IterScaling
      */
     void compute (const MatrixType& mat)
     {
+      using std::abs;
       int m = mat.rows(); 
       int n = mat.cols();
       eigen_assert((m>0 && m == n) && "Please give a non - empty matrix");
@@ -102,12 +104,18 @@ class IterScaling
         for (int i = 0; i < m; ++i) 
         {
           Dr(i) = std::sqrt(Dr(i));
+        }
+        for (int i = 0; i < n; ++i) 
+        {
           Dc(i) = std::sqrt(Dc(i));
         }
         // Save the scaling factors 
         for (int i = 0; i < m; ++i) 
         {
           m_left(i) /= Dr(i);
+        }
+        for (int i = 0; i < n; ++i) 
+        {
           m_right(i) /= Dc(i);
         }
         // Scale the rows and the columns of the matrix

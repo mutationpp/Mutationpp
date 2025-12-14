@@ -47,7 +47,7 @@ if (BUILD_FORTRAN_WRAPPER)
 endif()
 
 #######################################################################
-# Python bindings built with scikit-build-core + pybind11             #
+# Python bindings built with scikit-build-core + nanobind             #
 #######################################################################
 
 if (SKBUILD)
