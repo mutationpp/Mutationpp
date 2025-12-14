@@ -9,14 +9,32 @@
 
 #include "main.h"
 
-void test_meta()
+template<typename From, typename To>
+bool check_is_convertible(const From&, const To&)
+{
+  return internal::is_convertible<From,To>::value;
+}
+
+struct FooReturnType {
+  typedef int ReturnType;
+};
+
+struct MyInterface {
+  virtual void func() = 0;
+  virtual ~MyInterface() {}
+};
+struct MyImpl : public MyInterface {
+  void func() {}
+};
+
+EIGEN_DECLARE_TEST(meta)
 {
   VERIFY((internal::conditional<(3<4),internal::true_type, internal::false_type>::type::value));
   VERIFY(( internal::is_same<float,float>::value));
   VERIFY((!internal::is_same<float,double>::value));
   VERIFY((!internal::is_same<float,float&>::value));
   VERIFY((!internal::is_same<float,const float&>::value));
-  
+
   VERIFY(( internal::is_same<float,internal::remove_all<const float&>::type >::value));
   VERIFY(( internal::is_same<float,internal::remove_all<const float*>::type >::value));
   VERIFY(( internal::is_same<float,internal::remove_all<const float*&>::type >::value));
@@ -45,13 +63,60 @@ void test_meta()
 
   VERIFY(( internal::is_same< internal::add_const_on_value_type<const float* const>::type, const float* const>::value));
   VERIFY(( internal::is_same< internal::add_const_on_value_type<float* const>::type, const float* const>::value));
-  
+
   VERIFY(( internal::is_same<float,internal::remove_reference<float&>::type >::value));
   VERIFY(( internal::is_same<const float,internal::remove_reference<const float&>::type >::value));
   VERIFY(( internal::is_same<float,internal::remove_pointer<float*>::type >::value));
   VERIFY(( internal::is_same<const float,internal::remove_pointer<const float*>::type >::value));
   VERIFY(( internal::is_same<float,internal::remove_pointer<float* const >::type >::value));
-  
+
+
+  // is_convertible
+  STATIC_CHECK(( internal::is_convertible<float,double>::value ));
+  STATIC_CHECK(( internal::is_convertible<int,double>::value ));
+  STATIC_CHECK(( internal::is_convertible<int, short>::value ));
+  STATIC_CHECK(( internal::is_convertible<short, int>::value ));
+  STATIC_CHECK(( internal::is_convertible<double,int>::value ));
+  STATIC_CHECK(( internal::is_convertible<double,std::complex<double> >::value ));
+  STATIC_CHECK((!internal::is_convertible<std::complex<double>,double>::value ));
+  STATIC_CHECK(( internal::is_convertible<Array33f,Matrix3f>::value ));
+  STATIC_CHECK(( internal::is_convertible<Matrix3f&,Matrix3f>::value ));
+  STATIC_CHECK(( internal::is_convertible<Matrix3f&,Matrix3f&>::value ));
+  STATIC_CHECK(( internal::is_convertible<Matrix3f&,const Matrix3f&>::value ));
+  STATIC_CHECK(( internal::is_convertible<const Matrix3f&,Matrix3f>::value ));
+  STATIC_CHECK(( internal::is_convertible<const Matrix3f&,const Matrix3f&>::value ));
+  STATIC_CHECK((!internal::is_convertible<const Matrix3f&,Matrix3f&>::value ));
+  STATIC_CHECK((!internal::is_convertible<const Matrix3f,Matrix3f&>::value ));
+  STATIC_CHECK(!( internal::is_convertible<Matrix3f,Matrix3f&>::value ));
+
+  STATIC_CHECK(!( internal::is_convertible<int,int&>::value ));
+  STATIC_CHECK(( internal::is_convertible<const int,const int& >::value ));
+
+  //STATIC_CHECK((!internal::is_convertible<Matrix3f,Matrix3d>::value )); //does not even compile because the conversion is prevented by a static assertion
+  STATIC_CHECK((!internal::is_convertible<Array33f,int>::value ));
+  STATIC_CHECK((!internal::is_convertible<MatrixXf,float>::value ));
+  {
+    float f = 0.0f;
+    MatrixXf A, B;
+    VectorXf a, b;
+    VERIFY(( check_is_convertible(a.dot(b), f) ));
+    VERIFY(( check_is_convertible(a.transpose()*b, f) ));
+    VERIFY((!check_is_convertible(A*B, f) ));
+    VERIFY(( check_is_convertible(A*B, A) ));
+  }
+
+  {
+    int i = 0;
+    VERIFY(( check_is_convertible(fix<3>(), i) ));
+    VERIFY((!check_is_convertible(i, fix<DynamicIndex>()) ));
+  }
+
+
+  VERIFY((  internal::has_ReturnType<FooReturnType>::value ));
+  VERIFY((  internal::has_ReturnType<ScalarBinaryOpTraits<int,int> >::value ));
+  VERIFY(( !internal::has_ReturnType<MatrixXf>::value ));
+  VERIFY(( !internal::has_ReturnType<int>::value ));
+
   VERIFY(internal::meta_sqrt<1>::ret == 1);
   #define VERIFY_META_SQRT(X) VERIFY(internal::meta_sqrt<X>::ret == int(std::sqrt(double(X))))
   VERIFY_META_SQRT(2);

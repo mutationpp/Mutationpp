@@ -4,8 +4,9 @@
 ; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/RLovelett/eigen.git
-	branch = 3.2.10
-	commit = c50d586b9a43395a83e51821ebd1759d1c4668e4
-	parent = 849bc10baa20b04cc360e81c8331da5c815f277f
-	cmdver = 0.3.1
+	remote = https://gitlab.com/libeigen/eigen.git
+	branch = 3.4
+	commit = 28ded8800c26864e537852658428ab44c8399e87
+	parent = 9d7a3ce9369d417147e791151a106706e289da72
+	cmdver = 0.4.9
+	method = merge
