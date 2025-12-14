@@ -9,7 +9,6 @@ If you don't have admin rights on your machine and you cannot get a module, we p
 
 The source code of third-party dependencies is located in the `thirdparty` directory. The code for the following dependencies is taken directly from a git repository using the [subrepo](https://github.com/ingydotnet/git-subrepo) utility:
 
-- Eigen ([GitHub mirror of the BitBucket Mercurial repository](https://github.com/RLovelett/eigen))
 - Catch ([original GitHub project page](https://github.com/philsquared/Catch))
 
 The installation process of the `subrepo` utility is detailed on the project page.
@@ -26,12 +25,6 @@ If a dependency is managed using `subrepo`, it can be updated by using it. From 
 
 ```bash
 git subrepo checkout <path_to_dependency> -b <tag_or_branch>
-```
-
-For instance, to upgrade Eigen to v3.3.2:
-
-```bash
-git subrepo checkout thirdparty/eigen -b 3.3.2
 ```
 
 Check on the hosting git repo the tag or branch name to use.
