@@ -27,7 +27,7 @@
 # License along with Mutation++.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-cmake_minimum_required(VERSION 3.10...4.0)
+cmake_minimum_required(VERSION 3.15...4.0)
 cmake_policy(SET CMP0048 NEW)
 set(CMAKE_CXX_STANDARD 14)
 
@@ -204,10 +204,18 @@ endif()
 ###############################################################################
 # ThirdParty Libraries
 ###############################################################################
+include(FetchContent)
 
 # Eigen
-find_package(Eigen3)
-
+FetchContent_Declare(
+  Eigen3
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        3.4.1
+  GIT_SHALLOW    TRUE
+  FIND_PACKAGE_ARGS
+)
+set(EIGEN_BUILD_CMAKE_PACKAGE YES)
+FetchContent_MakeAvailable(Eigen3)
 
 ###############################################################################
 # Source code
