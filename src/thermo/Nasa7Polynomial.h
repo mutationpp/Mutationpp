@@ -148,6 +148,12 @@ public:
     void gibbs(const double *const p_params, double &g) const;   
     
     /**
+     * Computes temperature-derivative Gibbs free energy G/Ru/T.
+     * @see computeParams()
+     */
+    void derivativeTgibbs(const double *const p_params, double &dg) const;   
+    
+    /**
      * Computes dimensionless specific heat, enthalpy, entropy, and gibbs free
      * energy - Cp/Ru, H/Ru/T, S/Ru, and G/Ru/T.
      * @see computeParams()
@@ -164,7 +170,8 @@ public:
         CP,
         ENTHALPY,
         ENTROPY,
-        GIBBS
+        GIBBS,
+        GIBBSPRIME
     };
     
     /**
@@ -177,7 +184,8 @@ public:
      *  CP       - params[4]    \n
      *  ENTHALPY - params[6]    \n
      *  ENTROPY  - params[5]    \n
-     *  GIBBS    - params[7]    
+     *  GIBBS    - params[7]    \n
+     *  GIBBSPRIME - params[7]
      *
      * Computing the parameters this way saves computation when they are reused
      * to compute thermodynamic properties for many species at once.

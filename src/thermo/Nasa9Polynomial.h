@@ -96,6 +96,12 @@ public:
     void gibbs(const double *const p_params, double &g) const;
     
     /**
+     * Computes temperature derivative of Gibbs free energy G/Ru/T.
+     * @see computeParams()
+     */
+    void derivativeTgibbs(const double *const p_params, double &g) const;
+    
+    /**
      * Enumerates functions that require a parameters list.
      * @see computeParams()
      */
@@ -105,7 +111,8 @@ public:
         ENTHALPY,
         ENTROPY,
         GIBBS,
-        THERMO
+        THERMO,
+        GIBBSPRIME
     };
     
     /**
@@ -119,7 +126,8 @@ public:
      *  ENTHALPY - params[8]    \n
      *  ENTROPY  - params[7]    \n
      *  GIBBS    - params[8]    \n
-     *  THERMO   - params[22]
+     *  THERMO   - params[22]   \n
+     *  GIBBSPRIME - params[8]
      *
      * Computing the parameters this way saves computation when they are reused
      * to compute thermodynamic properties for many species at once.
