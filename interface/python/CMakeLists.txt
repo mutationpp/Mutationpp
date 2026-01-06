@@ -1,8 +1,13 @@
-find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(Python COMPONENTS Interpreter Development.Module ${SKBUILD_SABI_COMPONENT} REQUIRED)
 
-find_package(pybind11 CONFIG REQUIRED)
+find_package(nanobind CONFIG REQUIRED)
 
-pybind11_add_module(_mutationpp
+if(NOT "${SKBUILD_SABI_VERSION}" STREQUAL "")
+  set(STABLE_ABI STABLE_ABI)
+endif()
+
+nanobind_add_module(_mutationpp
+    ${STABLE_ABI}
     src/mutationpp_python.cpp
     src/pyGlobalOptions.cpp
     src/pyMixtureOptions.cpp

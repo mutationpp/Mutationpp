@@ -1,30 +1,135 @@
-name: Test Python
-on: [push, pull_request]
+name: Python
+
+on:  # yamllint disable-line rule:truthy
+  push:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
-    test:
-      runs-on: ${{ matrix.runner }}
-      strategy:
-        fail-fast: false
-        matrix:
-          runner:
-            - ubuntu-latest
-            - macos-latest
-          python-version:
-            - "3.10"
-            - "3.x"
-      steps:
 
-        - uses: actions/checkout@v6
-          with:
-            submodules: recursive
+  sdist:
+    runs-on: ubuntu-latest
+    steps:
 
-        - uses: actions/setup-python@v6
-          with:
-            python-version: ${{ matrix.python-version }}
+    - uses: actions/checkout@v6
 
-        - name: Install package for testing
-          run: python -m pip install ".[test]"
+    - uses: actions/setup-python@v6
+      with:
+        python-version: 3
+        pip-install: build twine
 
-        - name: Run tests
-          run: pytest
+    - name: Build sdist
+      run:  python -m build --sdist
+
+    - name: Check sdist
+      run:  python -m twine check dist/*.tar.gz
+
+    - name: Upload sdist
+      uses: actions/upload-artifact@v5
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+        retention-days: 1
+
+  wheel:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-15-intel
+        python:
+          - "cp310"
+          - "cp311"
+          - "cp312"
+    env:
+      pysabi: ${{ matrix.python == 'cp312' && matrix.python || '' }}
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3
+        pip-install: abi3audit
+
+    - name: Setup environment
+      run: |
+        # Reproducible Builds
+        echo SOURCE_DATE_EPOCH=$(git log -1 --pretty=%at) >> $GITHUB_ENV
+        if [ ${{ runner.os }} = macOS ]; then
+        echo ZERO_AR_DATE=YES >> $GITHUB_ENV; fi
+        # macOS Deployment Target
+        if [ ${{ runner.os }}-${{ runner.arch }} = macOS-X64 ]; then
+        echo MACOSX_DEPLOYMENT_TARGET=10.13 >> $GITHUB_ENV; fi
+
+    - name: Build wheel
+      uses: pypa/cibuildwheel@v3.3.0
+      with:
+        extras: uv
+        output-dir: dist
+      env:
+        CIBW_BUILD: "${{ matrix.python }}-*"
+        CIBW_SKIP: "*musllinux*"
+        CIBW_BUILD_FRONTEND: "build[uv]"
+        CIBW_ENVIRONMENT: >-
+          SKBUILD_WHEEL_PY_API=${{ env.pysabi }}
+
+    - name: Check wheel
+      run:  python -m abi3audit -Ss dist/*.whl
+      if:   ${{ env.pysabi != '' }}
+
+    - name: Upload wheel
+      uses: actions/upload-artifact@v5
+      with:
+        name: wheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.python }}
+        path: dist/*.whl
+        retention-days: 1
+
+  test:
+    needs: [wheel]
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-15-intel
+        python:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+          - "3.x"
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python }}
+        pip-install: pytest
+
+    - name: Download wheel
+      uses: actions/download-artifact@v6
+      with:
+        path: dist
+        pattern: wheel-${{ runner.os }}-${{ runner.arch }}-*
+        merge-multiple: true
+
+    - name: Install wheel
+      run:  python -m pip install mutationpp --find-links=dist
+
+    - name: Test wheel
+      run:  pytest
