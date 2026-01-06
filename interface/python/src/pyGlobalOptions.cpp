@@ -1,7 +1,8 @@
 #include <GlobalOptions.h>
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
 
-namespace py = pybind11;
+namespace py = nanobind;
 
 /**
  * Python wrapper definition for the GlobalOptions class.
@@ -17,13 +18,13 @@ namespace {
 
 }
 
-void py_export_GlobalOptions(py::module &m) {
+void py_export_GlobalOptions(py::module_ &m) {
 
-  const py::object resources = py::module_::import("importlib.resources");
+  const py::object resources = py::module_::import_("importlib.resources");
   const py::object pkgname = m.attr("__spec__").attr("parent");
   const py::object rootdir = resources.attr("files")(pkgname);
   const py::object datadir = rootdir / py::str("data");
-  const std::string data_directory = py::str(datadir).cast<std::string>();
+  const std::string data_directory = py::cast<std::string>(py::str(datadir));
 
   setDefaultDataDirectory(data_directory);
 
