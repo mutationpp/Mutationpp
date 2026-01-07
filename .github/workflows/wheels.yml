@@ -1,157 +1,72 @@
 name: Python wheels
-on:
+
+on:  # yamllint disable-line rule:truthy
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      publish-pypi:
+        description: 'Publish to PyPI'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-    test_linux:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v6
-          with:
-            submodules: recursive
 
-        - uses: actions/setup-python@v6
-          with:
-            python-version: "3.x"
+  build:
+    uses: ./.github/workflows/test_python.yml
 
-        - name: Install package for testing
-          run: python -m pip install ".[test]"
+  publish-pypi:
+    # TODO: create GitHub environment
+    # environment:
+    #   name: pypi
+    #   url:  https://pypi.org/project/mutationpp
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
 
-        - name: Run tests
-          run: pytest
+    - name: Download sdist artifact
+      uses: actions/download-artifact@v6
+      with:
+        path: dist
+        pattern: sdist
+        merge-multiple: true
 
-    test_mac:
-      runs-on: macos-latest
-      steps:
-        - uses: actions/checkout@v6
-          with:
-            submodules: recursive
+    - name: Download wheel artifacts
+      uses: actions/download-artifact@v6
+      with:
+        path: dist
+        pattern: wheel-*
+        merge-multiple: true
 
-        - uses: actions/setup-python@v6
-          with:
-            python-version: "3.x"
+    - name: Checksum artifacts
+      run:  |
+        sha256sum -b *
+        echo '```'     >> "$GITHUB_STEP_SUMMARY"
+        sha256sum -b * >> "$GITHUB_STEP_SUMMARY"
+        echo '```'     >> "$GITHUB_STEP_SUMMARY"
+      working-directory: dist
 
-        - name: Install package for testing
-          run: python -m pip install ".[test]"
+    - if: |
+        inputs.publish-pypi ||
+        github.ref_type == 'tag'
+      name: Attest artifacts
+      uses: actions/attest-build-provenance@v3
+      with:
+        subject-path: dist/*
 
-        - name: Run tests
-          run: pytest
-
-    linux_wheels:
-        strategy:
-          matrix:
-            python-version:
-              - cp310-cp310
-              - cp311-cp311
-              - cp312-cp312
-              - cp313-cp313
-              - cp314-cp314
-
-        needs: test_linux
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v6
-            with:
-              submodules: recursive
-
-          - uses: actions/setup-python@v6
-            with:
-              python-version: 3.14
-
-          - name: Build manylinux Python wheels
-            uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2010_x86_64
-            with:
-              python-versions: ${{ matrix.python-version }}
-
-          - uses: actions/upload-artifact@v2
-            with:
-              name: linux_wheels
-              path: "dist/*-manylinux*.whl"
-              retention-days: 1
-
-    mac_wheels:
-        strategy:
-          matrix:
-            python-version:
-              - "3.10"
-              - "3.11"
-              - "3.12"
-              - "3.13"
-              - "3.14"
-        needs: test_mac
-        runs-on: macos-latest
-        steps:
-          - uses: actions/checkout@v6
-            with:
-              submodules: recursive
-
-          - uses: actions/setup-python@v6
-            with:
-              python-version: ${{ matrix.python-version }}
-
-          - name: Install build
-            run: python -m pip install build
-
-          - name: Build wheel
-            run: python -m build --whell
-
-          - uses: actions/upload-artifact@v2
-            with:
-              name: mac_wheels
-              path: "dist/*.whl"
-              retention-days: 1
-
-    sdist:
-      needs: test_linux
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v6
-          with:
-            submodules: recursive
-
-        - uses: actions/setup-python@v6
-          with:
-            python-version: "3.x"
-
-        - name: Install build
-          run: python -m pip install build
-
-        - name: Build sdist
-          run: python -m build --sdist
-
-        - uses: actions/upload-artifact@v2
-          with:
-            name: sdist
-            path: "dist/*.tar.gz"
-            retention-days: 1
-
-    upload_wheels:
-      runs-on: ubuntu-latest
-      needs: [linux_wheels, mac_wheels]
-      steps:
-          - uses: actions/download-artifact@v2
-            with:
-              name: linux_wheels
-              path: dist
-
-          - uses: actions/download-artifact@v2
-            with:
-              name: mac_wheels
-              path: dist
-
-          - uses: actions/download-artifact@v2
-            with:
-              name: sdist
-              path: dist
-
-          - uses: actions/setup-python@v6
-            with:
-              python-version: "3.x"
-
-          - name: Install twine
-            run: python -m pip install twine
-
-          - name: Upload wheels
-            run: twine upload -u __token__ -p "${{ secrets.TESTPYPI_TOKEN }}" --repository testpypi dist/*
+    - if: |
+        inputs.publish-pypi ||
+        github.ref_type == 'tag'
+      name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        # TODO: remove next line to use the main PyPI index
+        repository-url: https://test.pypi.org/legacy/
+        # TODO: setup Trusted Publising on PyPI, then remove next line
+        password: ${{ secrets.TESTPYPI_TOKEN }}

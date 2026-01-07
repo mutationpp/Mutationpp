@@ -1,7 +1,9 @@
 #include <MixtureOptions.h>
-#include <pybind11/pybind11.h>
 
-namespace py = pybind11;
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+
+namespace py = nanobind;
 
 /**
  * Python wrapper definition for the MixtureOptions class. All member
@@ -10,7 +12,7 @@ namespace py = pybind11;
  * ones which do not are kept unexposed.
  */
 
-void py_export_MixtureOptions(py::module &m) {
+void py_export_MixtureOptions(py::module_ &m) {
   /**
    * Overloaded member functions wrappers
    */
@@ -48,5 +50,6 @@ void py_export_MixtureOptions(py::module &m) {
       .def("setDefaultComposition",
            &Mutation::MixtureOptions::setDefaultComposition)
       .def("hasDefaultComposition",
-           &Mutation::MixtureOptions::hasDefaultComposition);
+           &Mutation::MixtureOptions::hasDefaultComposition)
+    ;
 }

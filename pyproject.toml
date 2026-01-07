@@ -29,12 +29,13 @@ Source = "https://github.com/mutationpp/Mutationpp.git"
 Issues = "https://github.com/mutationpp/Mutationpp/issues"
 Discussions = "https://github.com/mutationpp/Mutationpp/discussions"
 Downloads = "https://github.com/mutationpp/Mutationpp/releases"
-[project.optional-dependencies]
-test = ["pytest"]
 
 [build-system]
-requires = ["scikit-build-core>=0.11", "pybind11"]
+requires = ["scikit-build-core>=0.11", "nanobind"]
 build-backend = "scikit_build_core.build"
+
+[dependency-groups]
+test = ["pytest"]
 
 [tool.scikit-build]
 experimental = true

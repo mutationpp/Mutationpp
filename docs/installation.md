@@ -117,16 +117,17 @@ pip install .
 in the main folder of `mutation++`; if you get an error related to PEP517 update essential packages:
 
 ```
-pip install --upgrade pip setuptools wheel 
+pip install --upgrade pip
 ```
  
-The package will be installed in `lib/site-packages/` of your python version.
+The package will be installed in `site-packages` of your python version.
 You can test the newly installed package.
 
 ```
 python
 >>> import mutationpp
->>> mutationpp.Mixture
+>>> mix = mutationpp.Mixture("air_5")
+>>> mix.equilibrate(300, mix.ONEATM())
+>>> mix.density()
+1.1719566716031184
 ```
-
-
