@@ -28,7 +28,6 @@
 #ifndef THERMO_STATE_MODEL_H
 #define THERMO_STATE_MODEL_H
 
-
 #include "Kinetics.h"
 #include "TransferModel.h"
 
