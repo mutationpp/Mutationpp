@@ -26,7 +26,7 @@ jobs:
       run:  python -m twine check dist/*.tar.gz
 
     - name: Upload sdist
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: sdist
         path: dist/*.tar.gz
@@ -86,7 +86,7 @@ jobs:
       if:   ${{ env.pysabi != '' }}
 
     - name: Upload wheel
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: wheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.python }}
         path: dist/*.whl
