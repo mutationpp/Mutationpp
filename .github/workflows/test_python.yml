@@ -122,7 +122,7 @@ jobs:
         pip-install: pytest
 
     - name: Download wheel
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         path: dist
         pattern: wheel-${{ runner.os }}-${{ runner.arch }}-*

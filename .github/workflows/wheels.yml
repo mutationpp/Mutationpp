@@ -31,14 +31,14 @@ jobs:
     steps:
 
     - name: Download sdist artifact
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         path: dist
         pattern: sdist
         merge-multiple: true
 
     - name: Download wheel artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         path: dist
         pattern: wheel-*
