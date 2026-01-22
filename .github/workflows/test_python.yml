@@ -70,7 +70,7 @@ jobs:
         echo MACOSX_DEPLOYMENT_TARGET=10.13 >> $GITHUB_ENV; fi
 
     - name: Build wheel
-      uses: pypa/cibuildwheel@v3.3.0
+      uses: pypa/cibuildwheel@v3.3.1
       with:
         extras: uv
         output-dir: dist
