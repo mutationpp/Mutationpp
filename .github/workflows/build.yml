@@ -10,7 +10,7 @@ jobs:
         compiler: [gcc g++, clang clang++]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
       - name: Make build dir
         run: mkdir build
       - name: Make install dir
@@ -32,7 +32,7 @@ jobs:
   build_mac:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
       - name: Make build dir
         run: mkdir build
       - name: Make install dir
@@ -51,7 +51,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v6
       - name: Install Lcov, Gcov
         run: sudo apt install lcov
       - name: Make build dir
