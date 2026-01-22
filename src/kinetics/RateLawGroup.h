@@ -94,6 +94,12 @@ public:
         const Thermodynamics::StateModel* const p_state, double* const p_lnk) = 0;
         
     /**
+     * Evaluates all of the temperature derivative of rates in the group and stores in the given vector.
+     */
+    virtual void invkdkdT(
+        const Thermodynamics::StateModel* const p_state, double* const p_dkdT) = 0;
+  
+    /**
      * Computes \Delta G / RT for this rate law group and subtracts these values
      * for each of the reactions in this group.
      */
@@ -101,14 +107,23 @@ public:
     {        
         // Compute G_i/RT - ln(Patm/RT)
         const double val = std::log(ONEATM / (RU * m_t));
-        for (int i = 0; i < ns; ++i)
+        for (size_t i = 0; i < ns; ++i)
             p_g[i] -= val;
-        
+            
         // Now subtract \Delta[G_i/RT - ln(Patm/RT)]_j
         m_reacs.decrReactions(p_g, p_r);
         m_prods.incrReactions(p_g, p_r);
     }
     
+    /**
+     * Computes 1 / Keq \frac{\partial Keq}{\partial T} for this rate law group 
+     * and subtracts these values for each of the reactions in this group.
+     */
+    void derivativeKeq(double* const p_dKeqdT, double* const p_dkdT) const
+    {        
+        m_reacs.decrReactions(p_dKeqdT, p_dkdT);
+        m_prods.incrReactions(p_dKeqdT, p_dkdT);
+    }
 
 protected:
 
@@ -165,6 +180,29 @@ public:
             for (int i = 0; i < m_rates.size(); ++i) {
                 const std::pair<size_t, RateLawType>& rate = m_rates[i];
                 p_lnk[rate.first] = rate.second.getLnRate(lnT, invT);
+            }
+        //}
+
+        // Save this temperature
+        m_last_t = m_t;
+    }
+
+    /**
+     * Evaluates all of the temperature derivative rates in the group and stores in the given vector.
+     */
+    virtual void invkdkdT(
+        const Thermodynamics::StateModel* const p_state, double* const p_dkdT)
+    {
+        // Determine the reaction temperature for this group
+        m_t = TSelectorType().getT(p_state);
+
+        // Update only if the temperature has changed
+        //if (std::abs(m_t - m_last_t) > 1.0e-10) {
+            const double invT = 1.0 / m_t;
+
+            for (size_t i = 0; i < m_rates.size(); ++i) {
+                const std::pair<size_t, RateLawType>& rate = m_rates[i];
+                p_dkdT[rate.first] = rate.second.derivativebykf(invT);
             }
         //}
 
@@ -260,6 +298,21 @@ public:
     }
     
     /**
+     * Computes the derivative of rate coefficients 
+     * \f$ \frac{1}{k_{f,j}} \frac{dk_{f,j}}{dT_{reac}} \f$
+     * in this collection and stores them in the vector at the index corresponding 
+     * to their respective reaction.
+     */
+    void derivativeOfRateCoefficients(
+        const Thermodynamics::StateModel* const p_state, double* const p_dkdT)
+    {
+        // Compute the forward rate constants
+        GroupMap::iterator iter = m_group_map.begin();
+        for ( ; iter != m_group_map.end(); ++iter)
+            iter->second->invkdkdT(p_state, p_dkdT);
+    }
+
+    /**
      * Subtracts ln(keq) from the provided rate coefficients.
      */
     void subtractLnKeq(
@@ -275,6 +328,24 @@ public:
         }
     }
 
+    /**
+     * Computes the temperature derivative of keq as follows:
+     * \f$ \frac{1}{keq} \frac{\partial keq}{\partial T} \f$
+     */
+    void derivativeKeq(
+        const Thermodynamics::Thermodynamics& thermo, double* const p_dKeqdT, double* const p_dkdT)
+    {
+        const size_t ns = thermo.nSpecies();
+        GroupMap::iterator iter = m_group_map.begin();
+        for ( ; iter != m_group_map.end(); ++iter) {
+            const RateLawGroup* p_group = iter->second;
+            thermo.speciesSTdGOverRT(p_group->getT(), p_dKeqdT);
+	    for(size_t i = 0; i < ns; ++i)
+                p_dKeqdT[i] += 1./p_group->getT();
+            p_group->derivativeKeq(p_dKeqdT, p_dkdT);
+        }
+    }
+  
 private:
     
     /// Collection of RateLawGroup objects

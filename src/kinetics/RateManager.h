@@ -67,8 +67,8 @@ public:
     const double* const lnkf() { return mp_lnkf; }
     
     /**
-     * Returns a pointer to the forward rate coefficients evaluated at the 
-     * forward temperature.
+     * Returns a pointer to the backward rate coefficients evaluated at the 
+     * backward temperature.
      */
     const double* const lnkb() { return mp_lnkb; }
     
@@ -78,6 +78,18 @@ public:
     const std::vector<size_t>& irrReactions() const {
         return m_irr;
     }
+
+    /**
+     * Returns a pointer to the derivatives of forward rate coefficients  
+     * with respect to forward temperature. 
+     */
+   const double* const dkfdT() {return mp_dkfdT; }
+
+   /**
+     * Returns a pointer to the derivatives of backward rate coefficients 
+     * with respect to backward temperature. 
+     */
+   const double* const dkbdT() {return mp_dkbdT; }
 
 private:
 
@@ -122,6 +134,15 @@ private:
     /// Storage for species Gibbs free energies
     double* mp_gibbs;
     
+    /// Storage for forward rate coefficient derivative at forward temperature
+    double* mp_dkfdT;
+
+    /// Storage for forward rate coefficient derivative at backward temperature
+    double* mp_dkbdT;
+
+    /// Storage for equilibrium constant temperature derivatives
+    double* mp_dKeqdT;
+
     /// Stores the indices for which the forward and reverse temperature
     /// evaluations are equal
     std::vector<size_t> m_to_copy;

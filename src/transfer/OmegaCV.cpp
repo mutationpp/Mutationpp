@@ -56,44 +56,76 @@ class OmegaCV : public TransferModel
 */
 
 public:
-	OmegaCV(Mutation::Mixture& mix)
-		: TransferModel(mix)
-	{
-		m_ns = mixture().nSpecies();
-		mp_wrk1 = new double [m_ns];
-		mp_wrk2 = new double [m_ns];
+    OmegaCV(Mutation::Mixture& mix)
+        : TransferModel(mix)
+    {
+        m_ns = mixture().nSpecies();
+        m_nt = mixture().nEnergyEqns();
+        mp_wrk1 = new double [m_ns];
+        mp_wrk2 = new double [m_ns];
+        mp_wrk3 = new double [m_ns*m_ns];
+        mp_wrk4 = new double [m_ns];
+        mp_wrk5 = new double [m_ns];
+        mp_wrk6 = new double [m_ns];
 	};
 
-	~OmegaCV()
-	{
-		delete [] mp_wrk1;
-		delete [] mp_wrk2;
-	};
+    ~OmegaCV()
+    {
+        delete [] mp_wrk1;
+        delete [] mp_wrk2;
+        delete [] mp_wrk3;
+        delete [] mp_wrk4;
+        delete [] mp_wrk5;
+        delete [] mp_wrk6;
+    };
 /**
  * Computes the source terms of the Vibration-Chemistry energy transfer in \f$ [J/(m^3\cdot s)] \f$
  *
  * \f[ \Omega^{CV}_{mi} = \sum c_1 e^V_{mi} \dot{\omega}_i\f]
  *
  */
-	double source()
-	{
-		static int i_transfer_model = 0;
-		switch (i_transfer_model){
-		   case 0:
-			  return compute_source_Candler();
-		  break;
-		   default:
-			  std::cerr << "The selected Chemistry-Vibration-Chemistry model is not implemented yet";
-			  return 0.0;
-		}
-	}
+    double source()
+    {
+        static int i_transfer_model = 0;
+        switch (i_transfer_model){
+            case 0:
+              return compute_source_Candler();
+            break;
+            default:
+                std::cerr << "The selected Chemistry-Vibration-Chemistry model is not implemented yet";
+                return 0.0;
+        }
+    }
+
+/**
+ * Computes the density-based jacobian terms of the Vibration-Chemistry energy transfer.$
+ *
+ * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial \rho_{i}} = 
+ *                \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial \rho_{i}} \f]
+ *
+ */
+    void jacobianRho(double* const p_jacRho);
+
+/**
+ * Computes the temperature-based jacobian terms of the Vibration-Chemistry energy transfer.$
+ *
+ * \f[ \frac{\partial \Omega^{CV}_{mi}}{\partial T} = 
+ *                \sum c_1 \frac{\partial e^V_{mi}}{\partial T} \dot{\omega}_i 
+ *                          + \sum c_1 e^V_{mi} \frac{\partial \dot{\omega}_i}{\partial T} \f]
+ */
+    void jacobianTTv(double* const p_jacTTv);
 
 private:
-	int m_ns;
-	double* mp_wrk1;
-	double* mp_wrk2;
+    int m_ns;
+    int m_nt;
+    double* mp_wrk1;
+    double* mp_wrk2;
+    double* mp_wrk3;
+    double* mp_wrk4;
+    double* mp_wrk5;
+    double* mp_wrk6;
 
-	double const compute_source_Candler();
+    double const compute_source_Candler();
 };
 
  /**
@@ -106,25 +138,86 @@ private:
  *
  */
 
-double const OmegaCV::compute_source_Candler()
-{
+    double const OmegaCV::compute_source_Candler()
+    {
+        
+        
+        // Getting Vibrational Energy
+        mixture().speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+        
+        // Getting Production Rate
+        mixture().netProductionRates(mp_wrk2);
+        
+        // Inner Product
+        double c1 = 1.0E0;
+        double sum = 0.E0;
+        
+        for(int i = 0 ; i < m_ns; ++i)
+            sum += mp_wrk1[i]*mp_wrk2[i]/mixture().speciesMw(i);
+        
+        return(c1*sum*mixture().T()*RU);
+    }
 
+/**
+ * Assuming non-preferential model for now, density-based jacobians are computed.
+ *
+ */
 
-	 // Getting Vibrational Energy
-	 mixture().speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+    void OmegaCV::jacobianRho(double* const p_jacRho)
+    {
+        std::fill(p_jacRho, p_jacRho + m_ns, 0.);
+        
+        // Getting Vibrational Energy
+        mixture().speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+        
+        // Getting density based jacobian for production rates
+        mixture().jacobianRho(mp_wrk3);
+        
+        //Inner product
+        double c1 = 1.0E0;
+        double aux = c1*RU*mixture().T();
+        
+        for(int i = 0; i < m_ns; ++i)
+            for(int j = 0; j < m_ns; ++j)
+                p_jacRho[i] += aux*mp_wrk1[i]*mp_wrk3[j*m_ns+i]/mixture().speciesMw(i);
+    }
 
-	 // Getting Production Rate
-	 mixture().netProductionRates(mp_wrk2);
+/**
+ * Assuming non-preferential model for now, temperature-based jacobians are computed.
+ *
+ */
 
-	 // Inner Product
-	 double c1 = 1.0E0;
-	 double sum = 0.E0;
-
-	 for(int i = 0 ; i < m_ns; ++i)
-		 sum += mp_wrk1[i]*mp_wrk2[i]/mixture().speciesMw(i);
-
-	 return(c1*sum*mixture().T()*RU);
- }
+    void OmegaCV::jacobianTTv(double* const p_jacTTv)
+    {
+        std::fill(p_jacTTv, p_jacTTv + m_nt, 0.);
+        
+        double T=mixture().T();
+        double Tv=mixture().Tv();
+        
+        // Getting Vibrational Energy
+        mixture().speciesHOverRT(NULL, NULL, NULL, mp_wrk1, NULL, NULL);
+        
+        // Getting production rates
+        mixture().netProductionRates(mp_wrk2);
+        
+        // Getting vibrational energy derivative with respect to Tv
+        mixture().speciesCpOverR(T, Tv, T, Tv, Tv, NULL, NULL, NULL, mp_wrk4, NULL);
+        
+        // Getting temperature based jacobians for production rates
+        mixture().jacobianT(mp_wrk5);
+        mixture().jacobianTv(mp_wrk6);
+        
+        //Inner product
+        double c1 = 1.0E0;
+        double aux = c1*RU*T;
+        double aux1 = c1*RU;
+        
+        for(int i = 0; i < m_ns; ++i) {
+            p_jacTTv[0] += aux*mp_wrk1[i]*mp_wrk5[i]/mixture().speciesMw(i);
+            p_jacTTv[1] += aux*mp_wrk1[i]*mp_wrk6[i]/mixture().speciesMw(i);
+            p_jacTTv[1] += aux1*mp_wrk4[i]*mp_wrk2[i]/mixture().speciesMw(i);
+        }
+    }
 
 // Register the transfer model
 Mutation::Utilities::Config::ObjectProvider<
