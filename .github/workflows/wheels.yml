@@ -56,7 +56,7 @@ jobs:
         inputs.publish-pypi ||
         github.ref_type == 'tag'
       name: Attest artifacts
-      uses: actions/attest-build-provenance@v3
+      uses: actions/attest-build-provenance@v4
       with:
         subject-path: dist/*
 
