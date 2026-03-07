@@ -119,6 +119,7 @@ Attribute              | Possible Values                                     | D
 `thermal_conductivity` | `CG`, __LDLT__, `Wilke`                             | choice of heavy particle translational thermal conductivity algorithm
 `thermo_db`            | __RRHO__, `NASA-7`, `NASA-9`                        | choice of [thermodynamic database](#thermodynamic_databases)
 `state_model`          | __ChemNonEq1T__, `ChemNonEqTTv`, `Equil`, `EquilTP` | choice of [state model](#statemodels)
+`use_transport`        | `no`, __yes__                                       | whether or not to load transport data
 `viscosity`            | `CG`, `Gupta-Yos`, __LDLT__, `Wilke`                | choice of viscosity algorithm
 
 ### Species List Descriptor
