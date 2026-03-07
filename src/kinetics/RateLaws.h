@@ -78,6 +78,10 @@ public:
         return (k*invT*(m_n + m_temp*invT));
     }
 
+    inline double derivativebykf(const double invT) const {
+        return (invT*(m_n + m_temp*invT));
+    }
+ 
     double A() const { 
         return std::exp(m_lnA);
     }
@@ -89,7 +93,7 @@ public:
     double T() const {
         return m_temp;
     }
-    
+
 private:
 
     static std::vector<Mutation::Utilities::Units> sm_aunits;    

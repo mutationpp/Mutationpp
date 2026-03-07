@@ -84,6 +84,8 @@ public:
         mp_X = new double [m_thermo.nSpecies()];
         for (int i = 0; i < thermo.nSpecies(); ++i)
             mp_X[i] = 0.0;
+        mp_omegaRho = new double [m_thermo.nSpecies()];
+        mp_omegaTTv = new double [nenergy];
     }
     
     /**
@@ -93,6 +95,8 @@ public:
     {
         // Delete data pointers
         delete [] mp_X;
+        delete [] mp_omegaRho;
+        delete [] mp_omegaTTv;
 
         // Delete transfer models
         for (int i = 0; i < m_transfer_models.size(); ++i)
@@ -210,8 +214,8 @@ public:
 
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
-	 * energy per unit mass.  The first n_species values correspond to the total energy
-	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
+     * energy per unit mass.  The first n_species values correspond to the total energy
+     * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
     virtual void getEnergiesMass(double* const p_e) {
         throw NotImplementedError("StateModel::getEnergiesMass()");
@@ -219,8 +223,8 @@ public:
     
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
-	 * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
-	 * vector.  The remaining n_species vectors correspond to the additional energy modes.
+     * enthalpy per unit mass.  The first n_species values correspond to the total enthalpy
+     * vector.  The remaining n_species vectors correspond to the additional energy modes.
      */
     virtual void getEnthalpiesMass(double* const p_h) {
         throw NotImplementedError("StateModel::getEnthalpiesMass()");
@@ -228,8 +232,8 @@ public:
     
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
-	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
-     * model. The first one is associated with the heavy particle translational temperature. 
+     * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature.
      */
     
     virtual void getCpsMass(double* const p_Cp){
@@ -238,16 +242,16 @@ public:
 
     /**
      * Returns a vector of length n_species times n_energies with each corresponding
-	 * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
-     * model. The first one is associated with the heavy particle translational temperature. 
+     * cp per unit mass.  Each n_species vector corresponds to a temperature in the state
+     * model. The first one is associated with the heavy particle translational temperature.
      */
     
     virtual void getCvsMass(double* const p_Cp){
         throw NotImplementedError("StateModel::getCvsMass()");
     }
 
-	/**
-	 * Assigns a unique temperature to each energy mode.
+    /**
+     * Assigns a unique temperature to each energy mode.
      */
     virtual void getTagModes(int* const p_tag) {
         throw NotImplementedError("StateModel::getTagModes()");
@@ -280,7 +284,42 @@ public:
             p_omega[m_transfer_models[i].first] +=
                 m_transfer_models[i].second->source();
     }
-    
+
+    /**
+     * This function provides the density-based jacobians for energy 
+     * transfer source terms
+     */
+    virtual void energyTransferJacobiansRho(double* const p_omegaJRho)
+    {
+        const int ns = m_thermo.nSpecies();
+        std::fill(mp_omegaRho, mp_omegaRho + ns, 0.);
+        for (int i = 0; i < ns; ++i)
+            p_omegaJRho[i] = 0.0;
+        
+        for (int i = 0; i < m_transfer_models.size(); ++i) {
+            m_transfer_models[i].second->jacobianRho(mp_omegaRho);
+            for (int j = 0; j < ns; ++j)
+                p_omegaJRho[j] += mp_omegaRho[j];
+        }
+    }
+      
+    /**
+     * This function provides the temperature-based jacobians for energy 
+     * transfer source terms
+     */
+    virtual void energyTransferJacobiansTTv(double* const p_omegaJTTv)
+    {
+        std::fill(mp_omegaTTv, mp_omegaTTv + m_nenergy, 0.);
+        for (int i = 0; i < m_nenergy; ++i)
+            p_omegaJTTv[i] = 0.0;
+        
+        for (int i = 0; i < m_transfer_models.size(); ++i) {
+            m_transfer_models[i].second->jacobianTTv(mp_omegaTTv);
+            for (int j = 0; j < m_nenergy; ++j)
+                p_omegaJTTv[j] += mp_omegaTTv[j];
+        }
+    }
+      
 protected:
     /**
     * @todo add a removeTransferTerm for the case wehen the
@@ -402,7 +441,8 @@ protected:
     double m_B;
     
     double* mp_X;
-    
+    double* mp_omegaRho;
+    double* mp_omegaTTv;
 
     std::vector< std::pair<int, Mutation::Transfer::TransferModel*> >
         m_transfer_models;

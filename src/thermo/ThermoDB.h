@@ -251,6 +251,28 @@ public:
         double* const g, double* const gt, double* const gr, double* const gv,
         double* const gel) = 0;
     
+    /**
+     * Computes the temperature-derivative of Gibbs free energy of each species i, 
+     * \f$\frac{\partial G_i / R_u T_h}{\partial T_h}\f$ where \f$G_i\f$ is 
+     * non-dimensionalized by the heavy particle translational temperature.
+     *
+     * @param Th  - heavy particle translational temperature
+     * @param Te  - free electron temperature
+     * @param Tr  - mixture rotational temperature
+     * @param Tv  - mixture vibrational temperature
+     * @param Tel - mixture electronic temperature
+     * @param P   - mixture static pressure
+     * @param dg   - on return, the array of species energies derivatives
+     * @param dgt  - if not NULL, the array of species translational energies derivatives
+     * @param dgr  - if not NULL, the array of species rotational energies derivatives
+     * @param dgv  - if not NULL, the array of species vibrational energies derivatives
+     * @param dgel - if not NULL, the array of species electronic energies derivatives
+     */
+    virtual void derivativeTgibbs(
+        double Th, double Te, double Tr, double Tv, double Tel, double P,
+        double* const dg, double* const dgt, double* const dgr, double* const dgv,
+        double* const dgel) = 0;
+    
 protected:
 
     /**
