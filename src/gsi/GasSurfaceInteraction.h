@@ -163,8 +163,10 @@ public:
      * Function to be called in order to solve the mass and energy balances at
      * the surface according to the input model. The output state is stored in the
      * surface state and can be accessed by the getSurfaceState function.
+
+     * @returns Boolean flag indicating whether solver converged
      */
-    void solveSurfaceBalance();
+    bool solveSurfaceBalance();
 
     /**
      * Function which allows to change the number of iterations when solving

@@ -195,7 +195,7 @@ public:
 
 //=============================================================================
 
-    void solveSurfaceBalance()
+    bool solveSurfaceBalance()
     {
         // errorUninitializedDiffusionModel
         errorSurfaceStateNotSet();
@@ -224,6 +224,8 @@ public:
         // Setting the state again
         m_surf_state.setSurfaceState(
             mv_rhoi.data(), mv_X.tail(m_nT).data(), set_state_with_rhoi_T);
+
+        return converged;
     }
 
 //==============================================================================

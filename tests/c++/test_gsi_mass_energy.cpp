@@ -74,7 +74,8 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Solve balance and request solution
-        mix.solveSurfaceBalance();
+        bool converged = mix.solveSurfaceBalance();
+        CHECK(converged);
         mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Verifying the solution gives low residual in the balance equations
@@ -156,7 +157,8 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Solve balance and request solution
-        mix.solveSurfaceBalance();
+        bool converged = mix.solveSurfaceBalance();
+        CHECK(converged);
         mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Verifying the solution gives low residual in the balance equations
@@ -248,7 +250,8 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Solve balance and request solution
-        mix.solveSurfaceBalance();
+        bool converged = mix.solveSurfaceBalance();
+        CHECK(converged);
         mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
         double rho = rhoi_s.sum();
 
@@ -348,7 +351,8 @@ TEST_CASE("Solution of the MassEnergyBalanceSolver is converged.", "[gsi]")
         mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Solve balance and request solution
-        mix.solveSurfaceBalance();
+        bool converged = mix.solveSurfaceBalance();
+        CHECK(converged);
         mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
         double rho = rhoi_s.sum();
 
