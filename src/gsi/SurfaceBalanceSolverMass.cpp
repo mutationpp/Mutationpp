@@ -173,7 +173,7 @@ public:
         computeMoleFracfromPartialDens(mv_rhoi, mv_X);
 
         // Solving
-        mv_X = solve(mv_X);
+        const bool converged = solve(mv_X);
 
         applyTolerance(mv_X);
         computePartialDensfromMoleFrac(mv_X, mv_rhoi);

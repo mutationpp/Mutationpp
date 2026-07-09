@@ -215,7 +215,7 @@ public:
         applyTolerance(mv_X);
 
         // Solving
-        mv_X = solve(mv_X);
+        const bool converged = solve(mv_X);
 
         applyTolerance(mv_X);
         computePartialDensfromMoleFrac(

@@ -114,7 +114,9 @@ TEST_CASE("Newton solver returns the correct root",
     x(0) = 10.0;
     x(1) = 10.0;
     // Solve
-    test.solve(x);
+    bool converged = test.solve(x);
+    // Make sure it converged
+    CHECK(converged);
     // Make sure the roots are 1.0
     INFO("x:\n" << x);
     CHECK(x(0) == Catch::Detail::Approx(1.0).margin(tol));
