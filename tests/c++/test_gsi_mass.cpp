@@ -65,7 +65,8 @@ TEST_CASE("Solution of the MassBalanceSolver is converged.",
         mix.setSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
         mix.setDiffusionModel(xi_e.data(), dx);
 
-        mix.solveSurfaceBalance();
+        bool converged = mix.solveSurfaceBalance();
+        CHECK(converged);
         mix.getSurfaceState(rhoi_s.data(), T_s.data(), set_state_with_rhoi_T);
 
         // Verifying the solution gives low residual in the balance equations
