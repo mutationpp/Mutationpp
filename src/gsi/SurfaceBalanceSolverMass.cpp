@@ -158,7 +158,7 @@ public:
 
 //=============================================================================
 
-    void solveSurfaceBalance()
+    bool solveSurfaceBalance()
     {
         // errorUninitializedDiffusionModel
         errorSurfaceStateNotSet();
@@ -173,7 +173,7 @@ public:
         computeMoleFracfromPartialDens(mv_rhoi, mv_X);
 
         // Solving
-        mv_X = solve(mv_X);
+        const bool converged = solve(mv_X);
 
         applyTolerance(mv_X);
         computePartialDensfromMoleFrac(mv_X, mv_rhoi);
@@ -181,6 +181,8 @@ public:
         // Setting the state again
         m_surf_state.setSurfaceState(
             mv_rhoi.data(), mv_Tsurf.data(), set_state_with_rhoi_T);
+
+        return converged;
     }
 
 //==============================================================================
