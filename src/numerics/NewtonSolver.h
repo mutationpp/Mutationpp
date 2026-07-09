@@ -40,7 +40,7 @@ namespace Mutation {
 
 /**
  * Implements the skeleton framework for Newton's method for solving a nonlinear
- * system of equations.  Classes should extend this class and provide the 
+ * system of equations.  Classes should extend this class and provide the
  * methods for computing f(x), J(x) = df/dx, inv(J)*f, and norm(f).
  */
 template <typename T, typename Solver>
@@ -61,7 +61,7 @@ public:
     /**
      * Uses Newton's method to compute the zero of f(x) given an initial guess.
      */
-    T& solve(T& x);
+    bool solve(T& x);
 
     /**
      * Set the residual norm tolerance.
@@ -116,7 +116,7 @@ NewtonSolver<T, Solver>::NewtonSolver()
 //==============================================================================
 
 template <typename T, typename Solver>
-T& NewtonSolver<T, Solver>::solve(T& x)
+bool NewtonSolver<T, Solver>::solve(T& x)
 {
     using std::cout;
     using std::endl;
@@ -159,11 +159,14 @@ T& NewtonSolver<T, Solver>::solve(T& x)
             cout << ", relative residual = " << resnorm << endl;
     }
 
-    if (resnorm > m_epsilon && m_conv_hist) {
-        cout << "Newton failed to converge after " << m_max_iter
-             << " iterations with a relative residual of " << resnorm << endl;
+    if (resnorm > m_epsilon) {
+        if (m_conv_hist)
+            cout << "Newton failed to converge after " << m_max_iter
+                 << " iterations with a relative residual of " << resnorm << endl;
+        return false;
+    } else {
+        return true;
     }
-    return x;
 }
 
 //==============================================================================
