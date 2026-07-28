@@ -61,6 +61,10 @@ public:
     /// Value of source term in J/m^3-s.
     virtual double source() = 0;
 
+    /// Value of jacobians for source term
+    virtual void jacobianRho(double* const p_jacRho) = 0;
+    virtual void jacobianTTv(double* const p_jacTTv) = 0;
+
 protected:
     Mixture& mixture() { return m_mixture; }
 private:

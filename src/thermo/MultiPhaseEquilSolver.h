@@ -32,7 +32,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
-
+using namespace Eigen;
 
 namespace Mutation {
     namespace Thermodynamics {

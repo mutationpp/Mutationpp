@@ -77,6 +77,11 @@ public:
         double* const g, double* const gt, double* const gr, double* const gv, 
         double* const gel);
 
+    void derivativeTgibbs(
+        double Th, double Te, double Tr, double Tv, double Tel, double P,
+        double* const dg, double* const dgt, double* const dgr, double* const dgv, 
+        double* const dgel);
+
 protected:
     
     void loadAvailableSpecies(std::list<Species>& species_list);
@@ -171,6 +176,24 @@ void NasaDB<PolynomialType>::gibbs(
     if (gr != NULL) std::fill(gr, gr+m_ns, 0.0);
     if (gv != NULL) std::fill(gv, gv+m_ns, 0.0);
     if (gel != NULL) std::fill(gel, gel+m_ns, 0.0);
+}
+
+template <typename PolynomialType>
+void NasaDB<PolynomialType>::derivativeTgibbs(
+    double Th, double Te, double Tr, double Tv, double Tel, double P,
+    double* const dg, double* const dgt, double* const dgr, double* const dgv, 
+    double* const dgel)
+{
+    if (dg != NULL) {
+        PolynomialType::computeParams(Th, mp_params, PolynomialType::GIBBSPRIME);
+        for (size_t i = 0; i < m_ns; ++i)
+            m_polynomials[i].derivativeTgibbs(mp_params, dg[i]);
+    }
+    
+    if (dgt != NULL) std::fill(dgt, dgt+m_ns, 0.0);
+    if (dgr != NULL) std::fill(dgr, dgr+m_ns, 0.0);
+    if (dgv != NULL) std::fill(dgv, dgv+m_ns, 0.0);
+    if (dgel != NULL) std::fill(dgel, dgel+m_ns, 0.0);
 }
 
 template <typename PolynomialType>

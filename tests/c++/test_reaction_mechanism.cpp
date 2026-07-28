@@ -85,12 +85,20 @@ public:
     Eigen::ArrayXd& forwardRatesOfProgress() { return m_rf; }
     /// Returns the reverse rates of progress.
     Eigen::ArrayXd& reverseRatesOfProgress() { return m_rb; }
+    /// Returns the reaction temperature derivatives of forward rates of progress.
+    Eigen::ArrayXd& forwardRatesOfProgressDerivatives() { return m_drf; }
+    /// Returns the reaction temperature derivatives of reverse rates of progress.
+    Eigen::ArrayXd& reverseRatesOfProgressDerivatives() { return m_drb; }
     /// Returns the reaction rates.
     Eigen::ArrayXd& netRatesOfProgress() { return m_rr; }
     /// Returns the production rates.
     Eigen::ArrayXd& productionRates() { return m_wdot; }
     /// Returns the production rate jacobians w.r.t. species densities.
     Eigen::MatrixXd& densityJacobian() { return m_jac_rho; }
+    /// Returns the production rate jacobians w.r.t translational temperature.
+    Eigen::ArrayXd& temperatureTrJacobian() { return m_jac_Ttr; }
+    /// Returns the production rate jacobians w.r.t vibrational temperature.
+    Eigen::ArrayXd& temperatureVeJacobian() { return m_jac_Tve; }
 
 private:
 
@@ -102,11 +110,24 @@ private:
     Eigen::ArrayXd m_kf;
     Eigen::ArrayXd m_kb;
     Eigen::ArrayXd m_keq;
+    Eigen::ArrayXd m_dkf;
+    Eigen::ArrayXd m_dkb;
+    Eigen::ArrayXd m_dkeq;
+    Eigen::ArrayXd m_dTfdTh;
+    Eigen::ArrayXd m_dTfdTv;
+    Eigen::ArrayXd m_dTbdTh;
+    Eigen::ArrayXd m_dTbdTv;
     Eigen::ArrayXd m_rf;
     Eigen::ArrayXd m_rb;
+    Eigen::ArrayXd m_drf;
+    Eigen::ArrayXd m_drb;
+    Eigen::ArrayXd m_drdTh;
+    Eigen::ArrayXd m_drdTv;
     Eigen::ArrayXd m_rr;
     Eigen::ArrayXd m_wdot;
     Eigen::MatrixXd m_jac_rho;
+    Eigen::ArrayXd m_jac_Ttr;
+    Eigen::ArrayXd m_jac_Tve;
     SharedPtr<ThermoDB> m_thermo;
 
 }; // class TestMechanism
@@ -114,7 +135,9 @@ private:
 TestMechanism::TestMechanism(bool reversible) :
     m_reversible(reversible), m_species("e- N O NO NO+ N2 O2"),
     m_A(5), m_Mw(7), m_kf(5), m_kb(5), m_keq(5), m_rf(5), m_rb(5), m_rr(5),
-    m_wdot(7), m_jac_rho(7, 7)
+    m_dkf(5), m_dkb(5), m_dkeq(5), m_dTfdTh(5), m_dTfdTv(5), m_dTbdTh(5),
+    m_dTbdTv(5), m_drf(5), m_drb(5), m_drdTh(5), m_drdTv(5), m_wdot(7),
+    m_jac_rho(7, 7), m_jac_Ttr(7), m_jac_Tve(7)
 {
     // Reaction formulas
     m_formulas.push_back("N2 + M = 2N + M");
@@ -179,6 +202,24 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_kf(2) = m_A(2) * Tv;
     m_kf(3) = m_A(3) * Th;
     m_kf(4) = m_A(4) * Th;
+    
+    m_dkf(0) = m_A(0);
+    m_dkf(1) = m_A(1);
+    m_dkf(2) = m_A(2);
+    m_dkf(3) = m_A(3);
+    m_dkf(4) = m_A(4);
+    
+    m_dTfdTh(0) = 0.5*std::sqrt(Th * Tv)/Th;
+    m_dTfdTh(1) = 0.5*std::sqrt(Th * Tv)/Th;
+    m_dTfdTh(2) = 0.;
+    m_dTfdTh(3) = 1.;
+    m_dTfdTh(4) = 1.;
+
+    m_dTfdTv(0) = 0.5*std::sqrt(Th * Tv)/Tv;
+    m_dTfdTv(1) = 0.5*std::sqrt(Th * Tv)/Tv;
+    m_dTfdTv(2) = 1.;
+    m_dTfdTv(3) = 0.;
+    m_dTfdTv(4) = 0.;
 
     m_thermo->gibbs(
         Th, Th, Th, Th, Th, m_thermo->standardPressure(),
@@ -192,16 +233,51 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
         m_wdot.data(), NULL, NULL, NULL, NULL);
     m_keq(2) = ONEATM / (RU * Tv) * std::exp(-2.0*m_wdot(2) + m_wdot(6));
     m_keq(4) = std::exp(-m_wdot(4) - m_wdot(0) + m_wdot(1) + m_wdot(2));
+    
+    m_thermo->derivativeTgibbs(
+        Th, Th, Th, Th, Th, m_thermo->standardPressure(),
+        m_wdot.data(), NULL, NULL, NULL, NULL);
+    m_dkeq(0) = -1.0*m_keq(0)/Th - m_keq(0) * (2.0*m_wdot(1) - m_wdot(5));
+    m_dkeq(1) = -1.0*m_keq(1)/Th - m_keq(1) * (2.0*m_wdot(2) - m_wdot(6));
+    m_dkeq(3) = -m_keq(3) * (m_wdot(3) + m_wdot(2) - m_wdot(6) - m_wdot(1));
+    
+    m_thermo->derivativeTgibbs(
+        Tv, Tv, Tv, Tv, Tv, m_thermo->standardPressure(),
+        m_wdot.data(), NULL, NULL, NULL, NULL);
+    m_dkeq(2) = -1.0*m_keq(2)/Tv - m_keq(2) * (2.0*m_wdot(2) - m_wdot(6));
+    m_dkeq(4) = -m_keq(4) * (m_wdot(4) + m_wdot(0) - m_wdot(1) - m_wdot(2));
 
     m_kb.setZero();
+    m_dkb.setZero();
     if (m_reversible) {
         m_kb(0) = m_A(0) * Th / m_keq(0);
         m_kb(1) = m_A(1) * Th / m_keq(1);
         m_kb(2) = m_A(2) * Tv / m_keq(2);
         m_kb(3) = m_A(3) * Th / m_keq(3);
         m_kb(4) = m_A(4) * Tv / m_keq(4);
+        m_dkb(0) = (m_A(0)*m_keq(0)-m_A(0)*Th*m_dkeq(0))/(m_keq(0)*m_keq(0));
+        m_dkb(1) = (m_A(1)*m_keq(1)-m_A(1)*Th*m_dkeq(1))/(m_keq(1)*m_keq(1));
+        m_dkb(2) = (m_A(2)*m_keq(2)-m_A(2)*Tv*m_dkeq(2))/(m_keq(2)*m_keq(2));
+        m_dkb(3) = (m_A(3)*m_keq(3)-m_A(3)*Th*m_dkeq(3))/(m_keq(3)*m_keq(3));
+        m_dkb(4) = (m_A(4)*m_keq(4)-m_A(4)*Tv*m_dkeq(4))/(m_keq(4)*m_keq(4));
     }
 
+    m_dTbdTh.setZero();
+    m_dTbdTv.setZero();
+    if (m_reversible) {
+        m_dTbdTh(0) = 1.0;
+        m_dTbdTh(1) = 1.0;
+        m_dTbdTh(2) = 0.0;
+        m_dTbdTh(3) = 1.0;
+        m_dTbdTh(4) = 0.0;
+
+        m_dTbdTv(0) = 0.0;
+        m_dTbdTv(1) = 0.0;
+        m_dTbdTv(2) = 1.0;
+        m_dTbdTv(3) = 0.0;
+        m_dTbdTv(4) = 1.0;
+    }
+    
     for (int i = 0; i < 7; ++i)
         m_wdot[i] = densities[i] / m_Mw[i];
     double M = m_wdot.tail(6).sum();
@@ -212,6 +288,12 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_rf(3) = m_kf(3) * m_wdot(6) * m_wdot(1);
     m_rf(4) = m_kf(4) * m_wdot(1) * m_wdot(2);
     m_rr = m_rf;
+    
+    m_drf(0) = m_dkf(0) * m_wdot(5) * M;
+    m_drf(1) = m_dkf(1) * m_wdot(6) * m_wdot(1);
+    m_drf(2) = m_dkf(2) * m_wdot(6) * m_wdot(0);
+    m_drf(3) = m_dkf(3) * m_wdot(6) * m_wdot(1);
+    m_drf(4) = m_dkf(4) * m_wdot(1) * m_wdot(2);
 
     m_rb(0) = m_kb(0) * m_wdot(1) * m_wdot(1) * M;
     m_rb(1) = m_kb(1) * m_wdot(2) * m_wdot(2) * m_wdot(1);
@@ -220,6 +302,15 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     m_rb(4) = m_kb(4) * m_wdot(4) * m_wdot(0);
     if (m_reversible) m_rr -= m_rb;
 
+    m_drb(0) = m_dkb(0) * m_wdot(1) * m_wdot(1) * M;
+    m_drb(1) = m_dkb(1) * m_wdot(2) * m_wdot(2) * m_wdot(1);
+    m_drb(2) = m_dkb(2) * m_wdot(2) * m_wdot(2) * m_wdot(0);
+    m_drb(3) = m_dkb(3) * m_wdot(3) * m_wdot(2);
+    m_drb(4) = m_dkb(4) * m_wdot(4) * m_wdot(0);
+    
+    m_drdTh = m_drf*m_dTfdTh - m_drb*m_dTbdTh;
+    m_drdTv = m_drf*m_dTfdTv - m_drb*m_dTbdTv;
+    
     // Compute jacobian terms
     Eigen::VectorXd drr(7), stoich(7);
     m_jac_rho.setConstant(0.0);
@@ -280,6 +371,27 @@ void TestMechanism::setState(Array densities, double Th, double Tv)
     for (int i = 0; i < 7; ++i)
         for (int j = 0; j < 7; ++j)
             m_jac_rho(i,j) *= (m_Mw(i)/m_Mw(j));
+    
+    m_jac_Ttr(0) = m_drdTh(4);
+    m_jac_Ttr(1) = 2*m_drdTh(0) - m_drdTh(3) - m_drdTh(4);
+    m_jac_Ttr(2) = 2*m_drdTh(1) + 2*m_drdTh(2) + m_drdTh(3) - m_drdTh(4);
+    m_jac_Ttr(3) = m_drdTh(3);
+    m_jac_Ttr(4) = m_drdTh(4);
+    m_jac_Ttr(5) = -m_drdTh(0);
+    m_jac_Ttr(6) = -m_drdTh(1) - m_drdTh(2) - m_drdTh(3);
+    
+    m_jac_Ttr *= m_Mw;
+
+    m_jac_Tve(0) = m_drdTv(4);
+    m_jac_Tve(1) = 2*m_drdTv(0) - m_drdTv(3) - m_drdTv(4);
+    m_jac_Tve(2) = 2*m_drdTv(1) + 2*m_drdTv(2) + m_drdTv(3) - m_drdTv(4);
+    m_jac_Tve(3) = m_drdTv(3);
+    m_jac_Tve(4) = m_drdTv(4);
+    m_jac_Tve(5) = -m_drdTv(0);
+    m_jac_Tve(6) = -m_drdTv(1) - m_drdTv(2) - m_drdTv(3);
+    
+    m_jac_Tve *= m_Mw;
+
 }
 
 /// Jumps to another permutation of x.
@@ -328,6 +440,12 @@ void testMech(bool isRev)
 
                 mix->backwardRatesOfProgress(test_nr.data());
                 REQUIRE(test_nr.isApprox(mech.reverseRatesOfProgress()));
+                
+                mix->forwardRateOfProgressDerivatives(test_nr.data());
+                REQUIRE(test_nr.isApprox(mech.forwardRatesOfProgressDerivatives()));
+                
+                mix->backwardRateOfProgressDerivatives(test_nr.data());
+                REQUIRE(test_nr.isApprox(mech.reverseRatesOfProgressDerivatives()));
 
                 mix->netRatesOfProgress(test_nr.data());
                 REQUIRE(test_nr.isApprox(mech.netRatesOfProgress()));
@@ -337,6 +455,12 @@ void testMech(bool isRev)
 
                 mix->jacobianRho(test_jac.data());
                 REQUIRE(test_jac.isApprox(mech.densityJacobian()));
+                
+                mix->jacobianT(test_ns.data());
+                REQUIRE(test_ns.isApprox(mech.temperatureTrJacobian()));
+                
+                mix->jacobianTv(test_ns.data());
+                REQUIRE(test_ns.isApprox(mech.temperatureVeJacobian()));
             }
         }
     } while (stillPermuting(rho));

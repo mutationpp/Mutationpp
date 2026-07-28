@@ -80,6 +80,29 @@ void ReactionStoich<Reactants, Products>::contributeToJacobian(
 //==============================================================================
 
 template <typename Reactants, typename Products>
+void ReactionStoich<Reactants, Products>::contributeToNetProgressJacobian(
+    const double kf, const double kb, const double* const conc, 
+    double* const work, double* const p_dropRho, const size_t ns, const size_t r) const
+{
+    // Need to make sure that product species are zeroed out in the work
+    // array (don't need to zero out whole array)
+    for (int i = 0; i < ns; ++i)
+        work[i] = 0.0;
+
+    // Compute the derivative of reaction rate with respect to the reactants
+    // and products (all other terms are zero)
+    m_reacs.diffRR(kf, conc, work, Equals());
+    m_prods.diffRR(kb, conc, work, MinusEquals());
+
+    // Only loop over the necessary species
+    for (int i = 0; i < ns; ++i)
+            p_dropRho[i+r*ns] = work[i];
+
+}
+
+//==============================================================================
+
+template <typename Reactants, typename Products>
 void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
     const double kf, const double kb, const double* const conc, 
     double* const work, double* const sjac, const size_t ns) const
@@ -100,6 +123,34 @@ void ThirdbodyReactionStoich<Reactants, Products>::contributeToJacobian(
     for (auto& p : m_index_stoich)
         for (int j = 0; j < ns; ++j)
             sjac[p.first*ns+j] += p.second * work[j];
+}
+
+//==============================================================================
+
+template <typename Reactants, typename Products>
+void ThirdbodyReactionStoich<Reactants, Products>::contributeToNetProgressJacobian(
+    const double kf, const double kb, const double* const conc, 
+    double* const work, double* const p_dropRho, const size_t ns, const size_t r) const
+{
+    const double rrf = m_reacs.rr(kf, conc);
+    const double rrb = m_prods.rr(kb, conc);
+    const double rr = rrf - rrb;
+    double tb = 0.0;
+    
+    for (int i = 0; i < ns; ++i)
+        work[i] = 0.0;
+
+    for (int i = 0; i < ns; ++i) {
+        work[i] = mp_alpha[i] * rr;
+        tb += mp_alpha[i] * conc[i];
+    }
+
+    m_reacs.diffRR(kf, conc, work, PlusEqualsTimes(tb));
+    m_prods.diffRR(kb, conc, work, MinusEqualsTimes(tb));
+
+    for (int i = 0; i < ns; ++i)
+            p_dropRho[i+r*ns] = work[i];
+
 }
 
 //==============================================================================
@@ -293,6 +344,179 @@ void JacobianManager::addReaction(const Reaction& reaction)
 
 //==============================================================================
 
+void JacobianManager::computeTReactionTDerivatives(
+     const std::vector<Reaction>& reactions, const double* const p_t,
+     std::vector<std::pair<double, double> >& dTrxndT) const
+    {
+        
+        for(size_t i = 0; i < reactions.size(); ++i) {
+            const size_t type = reactions[i].type();
+            switch (type) {
+                case ASSOCIATIVE_IONIZATION:
+                    dTrxndT.push_back({1.0, 0.0});
+                    break;
+                case DISSOCIATIVE_RECOMBINATION:
+                    dTrxndT.push_back({0.0, 1.0});
+                    break;
+                case ASSOCIATIVE_DETACHMENT:
+                    dTrxndT.push_back({1.0, 0.0});
+                    break;
+                case DISSOCIATIVE_ATTACHMENT:
+                    dTrxndT.push_back({0.0, 1.0});
+                    break;
+                case DISSOCIATION_M:
+                    dTrxndT.push_back({0.5*sqrt(p_t[0]*p_t[1])/p_t[0], 1.0});
+                    break;
+                case DISSOCIATION_E:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+                case RECOMBINATION_M:
+                    dTrxndT.push_back({1.0, 0.5*sqrt(p_t[0]*p_t[1])/p_t[0]});
+                    break;
+                case RECOMBINATION_E:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+                case IONIZATION_M:
+                    dTrxndT.push_back({1.0, 1.0});
+                    break;
+                case IONIZATION_E:
+                    dTrxndT.push_back({0.0, 1.0});
+                    break;
+                case ION_RECOMBINATION_M:
+                    dTrxndT.push_back({1.0, 1.0});
+                    break;
+                case ION_RECOMBINATION_E:
+                    dTrxndT.push_back({1.0, 0.0});
+                    break;
+                case ELECTRONIC_ATTACHMENT_E:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+                case ELECTRONIC_DETACHMENT_E:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+                case ELECTRONIC_ATTACHMENT_M:
+                    dTrxndT.push_back({0.0, 1.0});
+                    break;
+                case ELECTRONIC_DETACHMENT_M:
+                    dTrxndT.push_back({1.0, 0.0});
+                    break;
+                case EXCHANGE:
+                    dTrxndT.push_back({1.0, 1.0});
+                    break;
+                case EXCITATION_E:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+                case EXCITATION_M:
+                    dTrxndT.push_back({1.0, 1.0});
+                    break;
+                default:
+                    dTrxndT.push_back({0.0, 0.0});
+                    break;
+            }
+        }
+    }
+
+//==============================================================================
+
+void JacobianManager::computeTReactionTvDerivatives(
+     const std::vector<Reaction>& reactions, const double* const p_t,
+     std::vector<std::pair<double, double> >& dTrxndTv) const
+    {
+        
+        for(size_t i = 0; i < reactions.size(); ++i) {
+            const size_t type = reactions[i].type();
+            switch (type) {
+                case ASSOCIATIVE_IONIZATION:
+                    dTrxndTv.push_back({0.0, 1.0});
+                    break;
+                case DISSOCIATIVE_RECOMBINATION:
+                    dTrxndTv.push_back({1.0, 0.0});
+                    break;
+                case ASSOCIATIVE_DETACHMENT:
+                    dTrxndTv.push_back({0.0, 1.0});
+                    break;
+                case DISSOCIATIVE_ATTACHMENT:
+                    dTrxndTv.push_back({1.0, 0.0});
+                    break;
+                case DISSOCIATION_M:
+                    dTrxndTv.push_back({0.5*sqrt(p_t[0]*p_t[1])/p_t[1], 0.0});
+                    break;
+                case DISSOCIATION_E:
+                    dTrxndTv.push_back({1.0, 1.0});
+                    break;
+                case RECOMBINATION_M:
+                    dTrxndTv.push_back({0.0, 0.5*sqrt(p_t[0]*p_t[1])/p_t[1]});
+                    break;
+                case RECOMBINATION_E:
+                    dTrxndTv.push_back({1.0, 1.0});
+                    break;
+                case IONIZATION_M:
+                    dTrxndTv.push_back({0.0, 0.0});
+                    break;
+                case IONIZATION_E:
+                    dTrxndTv.push_back({1.0, 0.0});
+                    break;
+                case ION_RECOMBINATION_M:
+                    dTrxndTv.push_back({0.0, 0.0});
+                    break;
+                case ION_RECOMBINATION_E:
+                    dTrxndTv.push_back({0.0, 1.0});
+                    break;
+                case ELECTRONIC_ATTACHMENT_E:
+                    dTrxndTv.push_back({1.0, 1.0});
+                    break;
+                case ELECTRONIC_DETACHMENT_E:
+                    dTrxndTv.push_back({1.0, 1.0});
+                    break;
+                case ELECTRONIC_ATTACHMENT_M:
+                    dTrxndTv.push_back({1.0, 0.0});
+                    break;
+                case ELECTRONIC_DETACHMENT_M:
+                    dTrxndTv.push_back({0.0, 1.0});
+                    break;
+                case EXCHANGE:
+                    dTrxndTv.push_back({0.0, 0.0});
+                    break;
+                case EXCITATION_E:
+                    dTrxndTv.push_back({1.0, 1.0});
+                    break;
+                case EXCITATION_M:
+                    dTrxndTv.push_back({0.0, 0.0});
+                    break;
+                default:
+                    dTrxndTv.push_back({0.0, 0.0});
+                    break;
+            }
+        }
+    }
+
+//==============================================================================
+
+void JacobianManager::computeNetRateProgressJacobian(
+    const double* const kf, const double* const kb, const double* const conc, 
+    double* const p_dropRho) const
+{
+    const size_t ns = m_thermo.nSpecies();
+    const size_t nr = m_reactions.size();
+    
+    // Make sure we are staring with a clean slate
+    std::fill(p_dropRho, p_dropRho + ns*nr, 0.0);
+
+    // Loop over each reaction and compute the dRR/dconc_k
+    for (int i = 0; i < nr; ++i) 
+        m_reactions[i]->contributeToNetProgressJacobian(
+            kf[i], kb[i], conc, mp_work1, p_dropRho, ns, i);
+    
+    
+    // Finally, multiply by the species molecular weight ratios
+    for (int i = 0, index = 0; i < nr; ++i) 
+        for (int j = 0; j < ns; ++j, ++index)
+            p_dropRho[index] /= m_thermo.speciesMw(j);
+    
+}
+
+//==============================================================================
+
 void JacobianManager::computeJacobian(
     const double* const kf, const double* const kb, const double* const conc, 
     double* const sjac) const
@@ -304,16 +528,62 @@ void JacobianManager::computeJacobian(
     std::fill(sjac, sjac+ns*ns, 0.0);
 
     // Loop over each reaction and compute the dRR/dconc_k
-    for (int i = 0; i < nr; ++i)
+    for (int i = 0; i < nr; ++i) 
         m_reactions[i]->contributeToJacobian(
             kf[i], kb[i], conc, mp_work, sjac, ns);
     
+    
     // Finally, multiply by the species molecular weight ratios
-    for (int i = 0, index = 0; i < ns; ++i) {
+    for (int i = 0, index = 0; i < ns; ++i) 
         for (int j = 0; j < ns; ++j, ++index)
             sjac[index] *= m_thermo.speciesMw(i) / m_thermo.speciesMw(j);
-    }
 }
+
+//==============================================================================
+
+void JacobianManager::computeJacobianT(
+    const double* const p_dropf, const double* const p_dropb, 
+    const std::vector<Reaction>& reactions, double* const p_dropT) const
+    {
+        const size_t nt = m_thermo.nEnergyEqns();
+        std::vector<std::pair<double, double> > dTrxndT;
+        
+        std::fill(mp_T, mp_T + nt, 0.);
+        m_thermo.getTemperatures(mp_T);
+
+	if (nt == 2) {
+           computeTReactionTDerivatives(reactions, mp_T, dTrxndT);
+        } else {        
+	   for (int i = 0; i < reactions.size(); ++i)
+	       dTrxndT.push_back({1.0, 1.0});
+        }
+
+        for (int i = 0; i < reactions.size(); ++i)
+            p_dropT[i] = p_dropf[i]*dTrxndT[i].first - p_dropb[i]*dTrxndT[i].second;
+    }
+
+//==============================================================================
+
+void JacobianManager::computeJacobianTv(
+    const double* const p_dropf, const double* const p_dropb, 
+    const std::vector<Reaction>& reactions, double* const p_dropTv) const
+    {
+        const size_t nt = m_thermo.nEnergyEqns();
+        std::vector<std::pair<double, double> > dTrxndTv;
+        
+        std::fill(mp_T, mp_T + nt, 0.);
+        m_thermo.getTemperatures(mp_T);
+        
+	if (nt == 2) {
+           computeTReactionTvDerivatives(reactions, mp_T, dTrxndTv);
+        } else {        
+	   for (int i = 0; i < reactions.size(); ++i)
+	       dTrxndTv.push_back({0.0, 0.0});
+        }
+        
+        for (int i = 0; i < reactions.size(); ++i)
+            p_dropTv[i] = p_dropf[i]*dTrxndTv[i].first - p_dropb[i]*dTrxndTv[i].second;
+    }
 
 //==============================================================================
 

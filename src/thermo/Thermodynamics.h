@@ -835,6 +835,13 @@ public:
     void speciesSTGOverRT(double T, double* const p_g) const;
     
     /**
+     * Returns the temperature-derivative of species Gibbs free energies
+     * \f$ \frac{\partial G_i / R_u T}{\partial T} = 
+     *     \frac{\partial H_i / R_u T}{\partial T} - \frac{\partial S_i / R_u}{\partial T} \f$.
+     */
+    void speciesSTdGOverRT(double T, double* const p_dg) const;
+
+    /**
      * Returns the number of moles of each element in a mixture with a given
      * set of species moles.
      */
