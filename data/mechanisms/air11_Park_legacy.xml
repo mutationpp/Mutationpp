@@ -83,7 +83,7 @@ Rates taken from:
 
     <!-- Park, 1993 -->
     <reaction formula="O2++O=O++O2">
-        <arrhenius A="4.0E12" n="0.09" T="18000.0" />
+        <arrhenius A="4.0E12" n="-0.09" T="18000.0" />
     </reaction>
 
     <!-- Park, 1993 -->
