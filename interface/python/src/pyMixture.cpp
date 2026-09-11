@@ -1,3 +1,5 @@
+#include <HarmonicOscillator.h>
+#include <MillikanWhite.h>
 #include <ParticleRRHO.h>
 #include <Utilities.h>
 #include <Mixture.h>
@@ -141,6 +143,21 @@ void py_export_Mixture(py::module &m) {
 	   },
 	   "Returns the rigid-rotor harmonic-oscillator parameters of the "
 	   "species with index idx.")
+
+      .def("millikan_white_data",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     Mutation::Transfer::MillikanWhiteModelDB database(self);
+	     Mutation::Thermodynamics::HarmonicOscillatorDB oscillators;
+	     const std::string name = self.speciesName(idx);
+	     // OmegaVT builds the 'a' constant from the first
+	     // characteristic temperature only, even for polyatomics.
+	     return database.create(
+	       name,
+	       oscillators.create(name).characteristicTemperatures()[0]
+	     ).data();
+	   },
+	   "Returns the Millikan-White relaxation data for the vibrator "
+	   "with index idx.")
 
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
