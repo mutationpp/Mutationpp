@@ -1,3 +1,5 @@
+#include <ParticleRRHO.h>
+#include <Utilities.h>
 #include <Mixture.h>
 #include <MixtureOptions.h>
 #include <pybind11/eigen.h>
@@ -127,6 +129,19 @@ void py_export_Mixture(py::module &m) {
 	   },
 	   "Returns the products for reaction index idx.")
     
+      .def("species_rrho",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     Mutation::Utilities::IO::XmlDocument species_doc(
+	       Mutation::Utilities::databaseFileName("species.xml", "thermo"));
+	     return Mutation::Thermodynamics::ParticleRRHO(
+	       *(species_doc.root().findTagWithAttribute(
+		   "species", "name",
+		   self.species()[idx].groundStateName())->
+		     findTagWithAttribute("thermodynamics", "type", "RRHO")));
+	   },
+	   "Returns the rigid-rotor harmonic-oscillator parameters of the "
+	   "species with index idx.")
+
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
            "the mixture."
