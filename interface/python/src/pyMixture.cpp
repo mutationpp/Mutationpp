@@ -115,17 +115,17 @@ void py_export_Mixture(py::module &m) {
 	   },
 	   "Returns reaction with index idx.")
 	   
-      .def_property_readonly("reactants",
+      .def("reactants",
 	   [](const Mutation::Mixture &self, size_t idx) {
 	     return self.reactions()[idx].reactants();
 	   },
 	   "Returns the reactants for reaction index idx.")
 
-      .def_property_readonly("products",
+      .def("products",
 	   [](const Mutation::Mixture &self, size_t idx) {
 	     return self.reactions()[idx].products();
 	   },
-	   "Returns the reactants for reaction index idx.")
+	   "Returns the products for reaction index idx.")
     
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
