@@ -204,11 +204,11 @@ public:
         return m_thirdbodies;
     }
 
-    const std::string fwdRateTemperature() {
+    const std::string fwdRateTemperature() const {
       return rateLawTemperatureString(getRateLawT(m_type).first);
     }
 
-    const std::string revRateTemperature() {
+    const std::string revRateTemperature() const {
       return rateLawTemperatureString(getRateLawT(m_type).second);
     }
   

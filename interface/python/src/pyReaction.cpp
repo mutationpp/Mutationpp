@@ -46,5 +46,34 @@ void py_export_Reaction(py::module &m) {
     .def_property_readonly("rev_rate_coeff_temperature",
 			   &Mutation::Kinetics::Reaction::revRateTemperature,
 			   "Returns the temperature at which the rev "
-			   "rate coeff. for this reaction is evaluated.");
+			   "rate coeff. for this reaction is evaluated.")
+
+    .def_property_readonly("formula",
+			   &Mutation::Kinetics::Reaction::formula,
+			   "Returns the formula for this reaction.")
+
+    .def_property_readonly("order",
+			   &Mutation::Kinetics::Reaction::order,
+			   "Returns the order of this reaction.")
+
+    .def_property_readonly("is_reversible",
+			   &Mutation::Kinetics::Reaction::isReversible,
+			   "Returns true if this reaction is reversible.")
+
+    .def_property_readonly("is_thirdbody",
+			   &Mutation::Kinetics::Reaction::isThirdbody,
+			   "Returns true if this reaction has a third body.")
+
+    .def_property_readonly("efficiencies",
+			   &Mutation::Kinetics::Reaction::efficiencies,
+			   "Returns the (species index, efficiency) pairs "
+			   "of the third bodies in this reaction.")
+
+    .def_property_readonly("reaction_type",
+			   [](const Mutation::Kinetics::Reaction &self) {
+			     return std::string(
+			       Mutation::Kinetics::reactionTypeString(
+				 self.type()));
+			   },
+			   "Returns the type of this reaction.");
 }
