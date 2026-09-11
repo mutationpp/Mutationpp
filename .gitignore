@@ -21,3 +21,6 @@ _skbuild/
 
 # OS specifics
 .DS_Store
+
+# Python build metadata
+*.egg-info/
