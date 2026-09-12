@@ -1,5 +1,8 @@
 #include <HarmonicOscillator.h>
 #include <MillikanWhite.h>
+#include <Nasa7Polynomial.h>
+#include <Nasa9Polynomial.h>
+#include <NasaDB.h>
 #include <ParticleRRHO.h>
 #include <Utilities.h>
 #include <Mixture.h>
@@ -10,6 +13,32 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+
+/**
+ * Returns the fitted coefficients and temperature bounds of one
+ * species' NASA polynomial, if the active thermodynamic database is
+ * the matching NASA flavour.
+ */
+template <typename PolynomialType>
+static bool try_nasa_polynomial(
+    const Mutation::Thermodynamics::ThermoDB* p_db, size_t idx,
+    std::map<std::string, std::vector<std::vector<double> > >& result)
+{
+    typedef Mutation::Thermodynamics::NasaDB<PolynomialType> Database;
+    const Database* p_nasa = dynamic_cast<const Database*>(p_db);
+    if (p_nasa == NULL)
+        return false;
+
+    const PolynomialType& polynomial = p_nasa->polynomials()[idx];
+    std::vector<std::vector<double> > coefficients;
+    for (int range = 0; range < polynomial.nRanges(); ++range)
+        coefficients.push_back(polynomial.coefficients(range));
+
+    result["coefficients"] = coefficients;
+    result["t_bounds"] = std::vector<std::vector<double> >(
+        1, polynomial.tBounds());
+    return true;
+}
 
 // Todo return the values with py::array_t<double> so it returns as numpy type
 
@@ -150,6 +179,27 @@ void py_export_Mixture(py::module &m) {
 	   },
 	   "Returns the unitless species enthalpies at the current state, "
 	   "split by energy mode.")
+
+      .def("species_nasa_polynomial",
+	   [](const Mutation::Mixture &self, size_t idx) {
+	     std::map<std::string, std::vector<std::vector<double> > > found;
+	     const Mutation::Thermodynamics::ThermoDB* p_db = self.thermoDB();
+	     if (!try_nasa_polynomial<
+		   Mutation::Thermodynamics::Nasa9Polynomial>(
+		     p_db, idx, found) &&
+		 !try_nasa_polynomial<
+		   Mutation::Thermodynamics::Nasa7Polynomial>(
+		     p_db, idx, found))
+	       throw std::runtime_error(
+		 "the active thermodynamic database is not NASA-7 or NASA-9");
+
+	     py::dict polynomial;
+	     polynomial["coefficients"] = found["coefficients"];
+	     polynomial["t_bounds"] = found["t_bounds"][0];
+	     return polynomial;
+	   },
+	   "Returns the fitted NASA polynomial coefficients and "
+	   "temperature bounds of the species with index idx.")
 
       .def("species_rrho",
 	   [](const Mutation::Mixture &self, size_t idx) {
