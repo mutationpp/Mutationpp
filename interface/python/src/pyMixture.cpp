@@ -131,6 +131,26 @@ void py_export_Mixture(py::module &m) {
 	   },
 	   "Returns the products for reaction index idx.")
     
+      .def("species_enthalpies_over_rt",
+	   [](const Mutation::Mixture &self) {
+	     const size_t ns = self.nSpecies();
+	     std::vector<double> total(ns), translational(ns), rotational(ns),
+	       vibrational(ns), electronic(ns), formation(ns);
+	     self.speciesHOverRT(
+	       total.data(), translational.data(), rotational.data(),
+	       vibrational.data(), electronic.data(), formation.data());
+	     std::map<std::string, std::vector<double> > enthalpies;
+	     enthalpies["total"] = total;
+	     enthalpies["translational"] = translational;
+	     enthalpies["rotational"] = rotational;
+	     enthalpies["vibrational"] = vibrational;
+	     enthalpies["electronic"] = electronic;
+	     enthalpies["formation"] = formation;
+	     return enthalpies;
+	   },
+	   "Returns the unitless species enthalpies at the current state, "
+	   "split by energy mode.")
+
       .def("species_rrho",
 	   [](const Mutation::Mixture &self, size_t idx) {
 	     Mutation::Utilities::IO::XmlDocument species_doc(
