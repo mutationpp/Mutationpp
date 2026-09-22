@@ -16,13 +16,13 @@ jobs:
       SHA: ${{ github.sha }}
     steps:
       - name: Wait for the mirror to carry this commit
-        # The pull mirror catches up on GitLab's own interval, which can be half an hour,
+        # The pull mirror catches up on GitLab's own interval, half an hour on gitlab.com,
         # and a pipeline triggered before it does would build the previous commit.
         run: |
-          for _ in $(seq 1 90); do
+          for _ in $(seq 1 60); do
             head=$(git ls-remote "$GITLAB.git" "refs/heads/$REF" | cut -f1)
             [ "$head" = "$SHA" ] && exit 0
-            sleep 15
+            sleep 30
           done
           echo "the mirror is at ${head:-nothing} for $REF, not $SHA" >&2
           exit 1
