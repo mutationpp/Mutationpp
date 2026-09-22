@@ -6,7 +6,8 @@ image: ubuntu:24.04
 build:
   needs: []
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+    - if: $CI_COMMIT_BRANCH
   script:
     - apt-get update --quiet
     - >-
