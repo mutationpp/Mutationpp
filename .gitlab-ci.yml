@@ -1,0 +1,16 @@
+default:
+  interruptible: true
+
+image: ubuntu:24.04
+
+build:
+  needs: []
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - apt-get update --quiet
+    - >-
+      apt-get install --quiet --yes --no-install-recommends
+      cmake g++ git make ca-certificates
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+    - cmake --build build --parallel "$(nproc)"
