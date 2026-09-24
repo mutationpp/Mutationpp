@@ -15,7 +15,8 @@ Pierre Schrooyen <br>
 Laurent Soucasse <br>
 Alessandro Turchi <br>
 [Ruben Di Battista](https://rdb.is) <br>
-Matthew Goodson - [Corvid Technologies](https://www.corvidtec.com)
+Matthew Goodson - [Corvid Technologies](https://www.corvidtec.com) <br>
+Michele Capriati
 
 Have you contributed but don't see your name?  Open a PR on Github and add
 yourself in this file, we will be happy to add you.
