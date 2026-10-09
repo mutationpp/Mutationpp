@@ -81,6 +81,22 @@ public:
     }
 
     /**
+     * Provides density-based energy transfer source jacobian terms based on 
+     * the current state of the mixture.
+     */
+    void energyTransferJacobiansRho(double* const p_jacobianRho) {
+         state()->energyTransferJacobiansRho(p_jacobianRho);
+    }
+
+    /**
+     * Provides temperature-based energy transfer source jacobian terms based on 
+     * the current state of the mixture.
+     */
+    void energyTransferJacobiansTTv(double* const p_jacobianTTv) {
+         state()->energyTransferJacobiansTTv(p_jacobianTTv);
+    }
+
+    /**
      * Add a named element composition to the mixture which may be retrieved
      * with getComposition().
      */

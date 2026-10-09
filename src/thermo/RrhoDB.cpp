@@ -447,6 +447,36 @@ public:
             g[0] -= std::log(2.0);
     }
 
+    /**
+     * Computes the derivative of unitless Gibbs free energy of each species i, 
+     * \f$\frac{\partial{G_i / R_u T_h}{\partial T_h}\f$ where \f$G_i\f$ is 
+     * non-dimensionalized by the heavy particle translational temperature.
+     *
+     */
+    void derivativeTgibbs(
+        double Th, double Te, double Tr, double Tv, double Tel, double P,
+        double* const dg, double* const dgt, double* const dgr, double* const dgv,
+        double* const dgel)
+    {        
+        double Th2 = Th*Th;
+
+        cpT(dg, EqDiv(Th));
+        cpR(dg, PlusEqDiv(Th));
+        cpV(Tv, dg, PlusEqDiv(Th));
+        cpE(Tel, dg, PlusEqDiv(Th));
+
+        dsT(Th, Te, P, dg, MinusEq());
+        dsR(Tr, dg, MinusEq());
+        dsV(Tv, dg, MinusEq());
+        dsE(Tel, dg, MinusEq());
+       
+        hT(Th, Te, dg, MinusEqDiv(Th2));
+        hR(Tr, dg, MinusEqDiv(Th2));
+        hV(Tv, dg, MinusEqDiv(Th2));
+        hE(Tel, dg, MinusEqDiv(Th2));
+
+    }
+
 private:
 
     typedef Equals<double> Eq;
@@ -454,6 +484,7 @@ private:
     typedef PlusEqualsYDivAlpha<double> PlusEqDiv;
     typedef PlusEquals<double> PlusEq;
     typedef MinusEquals<double> MinusEq;
+    typedef MinusEqualsYDivAlpha<double> MinusEqDiv;
 
     class ElecBFacsFunctor
     {
@@ -813,11 +844,11 @@ private:
     void sT(double Th, double Te, double P, double* const s, const OP& op) {
         double fac = 2.5 * (1.0 + std::log(Th)) - std::log(P);
         if (m_has_electron)
-            op(s[0], 2.5 * std::log(Te / Th) + fac + mp_lnqtmw[0]);        
+            op(s[0], 2.5 * std::log(Te / Th) + fac + mp_lnqtmw[0]);
         for (int i = (m_has_electron ? 1 : 0); i < m_ns; ++i)
             op(s[i], fac + mp_lnqtmw[i]);
     }
-    
+
     /**
      * Computes the unitless rotational entropy of each species.
      */
@@ -825,11 +856,11 @@ private:
     void sR(double T, double* const s, const OP& op) {
         const double onelnT = 1.0 + std::log(T);
         LOOP_MOLECULES(
-            op(s[j], mp_rot_data[i].linearity * (onelnT - 
+            op(s[j], mp_rot_data[i].linearity * (onelnT -
                 mp_rot_data[i].ln_omega_t));
         )
     }
-    
+
     /**
      * Computes the unitless vibrational entropy of each species.
      */
@@ -847,7 +878,7 @@ private:
             op(s[j], (sum1 / T - sum2));
         )
     }
-    
+
     /**
      * Computes the unitless electronic entropy of each species.
      */
@@ -863,6 +894,65 @@ private:
                     (facs[1]/(facs[0]*T) + std::log(facs[0])));
             else
                 op(p_s[i+m_elec_data.offset], 0.0);
+        }
+    }
+
+    /**
+     * Computes the temperature derivative of unitless translational entropy of each species.
+     */
+    template <typename OP>
+    void dsT(double Th, double Te, double P, double* const ds, const OP& op) {
+        double fac = 2.5/Th;
+        if (m_has_electron)
+            op(ds[0], 0.0);        
+        for (int i = (m_has_electron ? 1 : 0); i < m_ns; ++i)
+            op(ds[i], fac);
+    }
+    
+    /**
+     * Computes the temperature derivative of unitless rotational entropy of each species.
+     */
+    template <typename OP>
+    void dsR(double T, double* const ds, const OP& op) {
+        const double onebyT = 1.0/T;
+        LOOP_MOLECULES(
+            op(ds[j], mp_rot_data[i].linearity * onebyT);
+        )
+    }
+    
+    /**
+     * Computes the temperature derivative of unitless vibrational entropy of each species.
+     */
+    template <typename OP>
+    void dsV(double T, double* const ds, const OP& op) {
+        int ilevel = 0;
+        double fac1, fac2, sum;
+        LOOP_MOLECULES(
+            sum = 0.0;
+            for (int k = 0; k < mp_nvib[i]; ++k, ilevel++) {
+                fac1 = std::exp(mp_vib_temps[ilevel] / T);
+                fac2 = (fac1-1.)*(fac1-1.);
+                sum += mp_vib_temps[ilevel]*mp_vib_temps[ilevel]*fac1/fac2;
+            }
+            op(ds[j], (sum / (T*T*T)));
+        )
+    }
+    
+    /**
+     * Computes the temperature derivative of unitless electronic entropy of each species.
+     */
+    template <typename OP>
+    void dsE(double T, double* const p_ds, const OP& op) {
+        updateElecBoltzmannFactors(T);
+        op(p_ds[0], 0.0);
+
+        double* facs = mp_el_bfacs;
+        for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
+            if (facs[0] > 0)
+                op(p_ds[i+m_elec_data.offset],
+                    (facs[2]*facs[0]-facs[1]*facs[1])/(T*T*T*facs[0]*facs[0]));
+            else
+                op(p_ds[i+m_elec_data.offset], 0.0);
         }
     }
 

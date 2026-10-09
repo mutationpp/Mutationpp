@@ -150,6 +150,26 @@ public:
         const double* const p_conc, double* const p_ropb);
     
     /**
+     * Fills the vector dropf with the reaction temperature derivatives of 
+     * forward rates of progress variables for each reaction 
+     * \f$ \frac{dk_{f,j}}{dT_{reac}} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
+     * 
+     * @param p_dropf on return, the reaction temperature derivatives of the
+     * forward rates of progress in mol/m^3-s-K
+     */ 
+    void forwardRateOfProgressDerivatives(double* const p_dropf);
+
+    /**
+     * Fills the vector dropb with the reaction temperature derivatives of 
+     * backward rates of progress variables for each reaction 
+     * \f$ \frac{dk_{b,j}}{dT_{reac}} \prod_i C_i^{\nu_{ij}^{'}} \Theta_{TB} \f$.
+     * 
+     * @param p_dropb on return, the reaction temperature derivatives of the
+     * backward rates of progress in mol/m^3-s-K
+     */ 
+    void backwardRateOfProgressDerivatives(double* const p_dropb);
+
+    /**
      * Fills the vector rop with the net rates of progress for each reaction
      * \f$ \left[k_{f,j}\prod_i C_i^{\nu_{ij}^{'}}-k_{b,j}\prod_i 
      * C_i^{\nu_{ij}^"} \right] \Theta_{TB} \f$.
@@ -182,6 +202,42 @@ public:
     void netProductionRates(double* const p_wdot);
 
     /**
+     * Fills the matrix p_dropRho with the density-based net rate of progress jacobians.
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_r}{\partial \rho_i}
+     * \f]
+     * The size of the Jacobian matrix is equal to the product of the number of species (ns) 
+     * times the number of reactions (nr).
+     *
+     * @param p_dropRho - on return, the jacobian matrix \f$J_{i}\f$
+     */
+    void netRateProgressRhoJacobian(double* const p_dropRho);
+
+    /**
+     * Fills the matrix p_dropT with the temperature-based net rate of 
+     * progress jacobians.
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_r}{\partial T_{tr}}
+     * \f]
+     * The size of the Jacobian matrix is equal to number of reactions.
+     *
+     * @param p_dropT - on return, the jacobian matrix \f$J_{i}\f$
+     */
+    void netRateProgressTJacobian(double* const p_dropT);
+
+    /**
+     * Fills the matrix p_dropTv with the temperature-based net rate of 
+     * progress jacobians.
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_r}{\partial T_{ve}}
+     * \f]
+     * The size of the Jacobian matrix is equal to number of reactions.
+     *
+     * @param p_dropTv - on return, the jacobian matrix \f$J_{i}\f$
+     */
+    void netRateProgressTvJacobian(double* const p_dropTv);
+
+    /**
      * Fills the matrix p_jac with the species production rate jacobian matrix
      * \f[
      * J_{ij} = \frac{\partial \dot{\omega}_i}{\partial \rho_j}
@@ -193,6 +249,28 @@ public:
      * @param p_jac  - on return, the jacobian matrix \f$J_{ij}\f$
      */
     void jacobianRho(double* const p_jac);
+
+    /**
+     * Fills the matrix p_jacT with the temperature jacobians for chemistry source term
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_i}{\partial T_{tr}}
+     * \f]
+     * The Jacobian matrix size should be equal to number of species.
+     * 
+     * @param p_jacT - on return, the jacobian matrix \f$J_{i}\f$ 
+     */
+    void jacobianT(double* const p_jacT);
+
+    /**
+     * Fills the matrix p_jacTv with the temperature jacobians for chemistry source term
+     * \f[
+     * J_{i} = \frac{\partial \dot{\omega}_i}{\partial T_{ve}}
+     * \f]
+     * The Jacobian matrix size should be equal to number of species.
+     *
+     * @param p_jacTv - on return, the jacobian matrix \f$J_{i}\f$
+     */
+    void jacobianTv(double* const p_jacTv);
 
     /**
      * Returns the change in some species quantity across each reaction.
@@ -237,6 +315,11 @@ private:
     double* mp_ropb;
     double* mp_rop;
     double* mp_wdot;
+    double* mp_dropf;
+    double* mp_dropb;
+    double* mp_dropRho;
+    double* mp_dropT;
+    double* mp_dropTv;
 };
 
 
