@@ -41,6 +41,15 @@ namespace Mutation { namespace Thermodynamics { class Thermodynamics; } }
 namespace Mutation {
     namespace Transfer {
 
+class MillikanWhiteRelaxationTime;
+
+/// Set Millikan–White model
+void setMillikanWhiteModel(const std::string& model);
+
+/// Get current Millikan–White model
+const std::string& getMillikanWhiteModel();
+
+
 /**
  * Convenience class for building necessary data used in the Millikan-White
  * vibration-translation energy relaxation model.
@@ -102,6 +111,12 @@ public:
     /// Returns the array of B model parameters.
     const Eigen::ArrayXd& b() const;
 
+    /// Returns the array of reduced masses.
+    Eigen::ArrayXd& mu();
+
+    /// Returns the array of reduced masses.
+    const Eigen::ArrayXd& mu() const;
+
     /// Sets the reference cross section in m^2.
     MillikanWhiteModelData& setReferenceCrossSection(double omegav);
 
@@ -129,6 +144,9 @@ class MillikanWhiteModel
 public:
     /// Constructs a MillikanWhiteModel from data
     MillikanWhiteModel(const MillikanWhiteModelData&);
+    
+    /// Destructor
+    ~MillikanWhiteModel();
 
     /// Index of species in mixture.
     size_t speciesIndex() const { return m_data.speciesIndex(); }
@@ -143,6 +161,7 @@ public:
 
 private:
     MillikanWhiteModelData m_data;
+    std::shared_ptr<MillikanWhiteRelaxationTime> m_relaxationTime;
 };
 
 
@@ -167,7 +186,7 @@ private:
     std::shared_ptr<Data> m_data;
 };
 
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation
 
 #endif // MILLIKAN_WHITE_H

@@ -27,8 +27,10 @@
 
 
 #include "MillikanWhite.h"
+#include "MillikanWhiteRelaxationTime.h"
 #include "Thermodynamics.h"
 #include "Utilities.h"
+#include "AutoRegistration.h"
 
 #include <iostream>
 #include <fstream>
@@ -42,6 +44,18 @@ using namespace Mutation::Thermodynamics;
 namespace Mutation {
     namespace Transfer {
 
+static std::string name_model = "Original";
+
+void setMillikanWhiteModel(const std::string& model)
+{
+    name_model = model;
+}
+
+const std::string& getMillikanWhiteModel()
+{
+    return name_model;
+}
+
 
 struct MillikanWhiteModelData::Impl
 {
@@ -50,8 +64,9 @@ struct MillikanWhiteModelData::Impl
     double omegav = 1.0E-20; // m^2
     Eigen::ArrayXd a;
     Eigen::ArrayXd b;
+    Eigen::ArrayXd mu;
 
-    Impl(size_t size) : a(size), b(size) { }
+    Impl(size_t size) : a(size), b(size), mu(size) { }
 };
 
 
@@ -73,6 +88,7 @@ MillikanWhiteModelData::MillikanWhiteModelData(
         double mu = 1000.0*m_impl->mw*mwi/(m_impl->mw + mwi); // reduced mass in g/mol
         m_impl->a[i] = 1.16E-3*std::sqrt(mu)*theta_power;
         m_impl->b[i] = 0.015*std::pow(mu, 0.25);
+        m_impl->mu[i] = mu/1000.;
     }
 }
 
@@ -113,6 +129,10 @@ Eigen::ArrayXd& MillikanWhiteModelData::b() { return m_impl->b; }
 
 const Eigen::ArrayXd& MillikanWhiteModelData::b() const { return m_impl->b; }
 
+Eigen::ArrayXd& MillikanWhiteModelData::mu() { return m_impl->mu; }
+
+const Eigen::ArrayXd& MillikanWhiteModelData::mu() const { return m_impl->mu; }
+
 MillikanWhiteModelData& MillikanWhiteModelData::setReferenceCrossSection(double omegav)
 {
     assert(omegav >= 0.0);
@@ -130,28 +150,18 @@ double MillikanWhiteModelData::limitingCrossSection(const double& T) const
 
 MillikanWhiteModel::MillikanWhiteModel(const MillikanWhiteModelData& data) :
     m_data(data) 
-{ }
-
+{ 
+    m_relaxationTime = std::shared_ptr<MillikanWhiteRelaxationTime>(
+        Config::Factory<MillikanWhiteRelaxationTime>::create(name_model, m_data));
+}
 
 double MillikanWhiteModel::relaxationTime(
     const Mutation::Thermodynamics::Thermodynamics& thermo) const
 {
-    // Millikan-White model for average relaxation time
-    const Eigen::Map<const Eigen::ArrayXd> Xh(
-        thermo.X()+(thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
-    const double T_fac = std::pow(thermo.T(), -1.0/3.0);
-    const double p_atm = thermo.P() / ONEATM;
-    const double tau_mw = 
-        (Xh*(m_data.a()*(T_fac - m_data.b()) - 18.42).exp()).sum() / 
-        (Xh.sum()*p_atm);
-
-    // Park correction
-    const double ni = thermo.numberDensity() * thermo.X()[m_data.speciesIndex()];
-    const double ci = std::sqrt(8*RU*thermo.T()/(PI*m_data.molecularWeight()));
-    const double tau_park = 1.0/(ni * ci * m_data.limitingCrossSection(thermo.T()));
-
-    return tau_mw + tau_park;
+    return m_relaxationTime->relaxationTime(thermo, m_data);
 }
+
+MillikanWhiteModel::~MillikanWhiteModel() = default;
 
 
 struct MillikanWhiteModelDB::Data
