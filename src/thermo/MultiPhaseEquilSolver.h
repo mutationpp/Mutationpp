@@ -381,7 +381,7 @@ private:
         	for (int i = 0; i < m_ncr; ++i)
                 mp_lambda[i] += dx(i);
             for (int m = 0; m < m_npr; ++m)
-                mp_lnNbar[m] = std::min(300.0, mp_lnNbar[m]+dx(m+m_ncr));
+                mp_lnNbar[m] = std::min(300.0, mp_lnNbar[m] + dx.tail(m_npr)(m));
                 
             updateY(B);
         }
