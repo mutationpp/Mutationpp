@@ -2,9 +2,17 @@
 build/
 install/
 
+# C++ example cmake build files
+examples/c++/*/CMakeFiles/
+examples/c++/*/CMakeCache.txt
+examples/c++/*/cmake_install.cmake
+
 # Documentation
 docs/tests.h
 docs/html/
+doxygen_log.txt
+docs/bib*.aux
+docs/citelist.doc*
 
 # IDE
 .idea/
