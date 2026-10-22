@@ -364,7 +364,9 @@ public:
         double* const sel)
     {
         // Special case where we only want the total entropy
-        if (st == NULL && sr == NULL && sv == NULL && sel == NULL) {
+        if (st == NULL && sr == NULL && sv == NULL && sel == NULL &&
+            s != NULL)
+        {
             sT(Th, Te, P, s, Eq());
             sR(Tr, s, PlusEq());
             sV(Tv, s, PlusEq());
@@ -379,43 +381,52 @@ public:
         
         // Otherwise collect individual components
         // Translational entropy
-        if (st == NULL)
-            sT(Th, Te, P, s, Eq());
-        else {
+        if (st == NULL) {
+            if (s != NULL)
+                sT(Th, Te, P, s, Eq());
+        } else {
             sT(Th, Te, P, st, Eq());
-            LOOP(s[i] = st[i]);
+            if (s != NULL)
+                LOOP(s[i] = st[i]);
         }
         
         // Rotational entropy
-        if (sr == NULL)
-            sR(Tr, s, PlusEq());
-        else {
+        if (sr == NULL) {
+            if (s != NULL)
+                sR(Tr, s, PlusEq());
+        } else {
             LOOP(sr[i] = 0.0);
             sR(Tr, sr, Eq());
-            LOOP_MOLECULES(s[j] += sr[j]);
+            if (s != NULL)
+                LOOP_MOLECULES(s[j] += sr[j]);
         }
         
         // Vibrational entropy
-        if (sv == NULL)
-            sV(Tv, s, PlusEq());
-        else {
+        if (sv == NULL) {
+            if (s != NULL)
+                sV(Tv, s, PlusEq());
+        } else {
             LOOP(sv[i] = 0.0);
             sV(Tv, sv, Eq());
-            LOOP_MOLECULES(s[j] += sv[j]);
+            if (s != NULL)
+                LOOP_MOLECULES(s[j] += sv[j]);
         }
         
         // Electronic entropy
-        if (sel == NULL)
-            sE(Tel, s, PlusEq());
-        else {
+        if (sel == NULL) {
+            if (s != NULL)
+                sE(Tel, s, PlusEq());
+        } else {
             LOOP(sel[i] = 0.0);
             sE(Tel, sel, Eq());
-            LOOP(s[i] += sel[i]);
+            if (s != NULL)
+                LOOP(s[i] += sel[i]);
         }
         
         // Include spin contribution for free electron entropy
         if (m_has_electron)
-            s[0] += std::log(2.0);
+            if (s != NULL)
+                s[0] += std::log(2.0);
     }
     
     /**
@@ -903,5 +914,3 @@ Utilities::Config::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-
