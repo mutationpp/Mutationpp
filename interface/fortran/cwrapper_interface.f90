@@ -129,6 +129,21 @@ module mutationpp
         
         real(kind=8) function mpp_electron_thermal_diffusion_ratios()
         end function
+
+        logical function mpp_solve_surface_balance_func()
+        end function
     end interface
+
+    contains
+
+    subroutine mpp_solve_surface_balance(converged)
+        logical, intent(out), optional :: converged
+        logical :: status
+
+        status = mpp_solve_surface_balance_func()
+        if (present(converged)) then
+            converged = status
+        end if
+    end subroutine mpp_solve_surface_balance
 
 end module mutationpp

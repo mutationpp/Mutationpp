@@ -522,6 +522,15 @@ void NAME_MANGLE(set_cond_heat_flux)(double* T_edge, double* dx);
 void NAME_MANGLE(solve_surface_balance)();
 
 /**
+ * Requests the solution of the surface balances at a surface using the
+ * gas-surface interaction module of mutation++ and returns whether the
+ * solution converged.
+ *
+ * @return True if converged, false otherwise.
+ */
+bool NAME_MANGLE(solve_surface_balance_func)();
+
+/**
  * Returns the current surface state with respect to partial densities and
  * surface temperatures.
  */

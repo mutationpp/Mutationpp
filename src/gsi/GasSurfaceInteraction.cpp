@@ -196,9 +196,9 @@ void GasSurfaceInteraction::setGasRadHeatFlux(
 
 //==============================================================================
 
-void GasSurfaceInteraction::solveSurfaceBalance()
+bool GasSurfaceInteraction::solveSurfaceBalance()
 {
-    mp_surf->solveSurfaceBalance();
+    return mp_surf->solveSurfaceBalance();
 }
 
 //==============================================================================
