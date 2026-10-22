@@ -118,6 +118,7 @@ public:
     {
         delete [] mp_lnqtmw;
         delete [] mp_hform;
+        delete [] mp_part_sst;
         delete [] mp_indices;
         delete [] mp_rot_data;
         delete [] mp_nvib;
@@ -125,7 +126,6 @@ public:
         
         delete [] m_elec_data.p_nelec;
         delete [] m_elec_data.p_levels;
-        delete [] mp_part_sst;
         delete [] mp_el_bfacs;
         
         if (m_use_tables) {
@@ -170,7 +170,6 @@ public:
         // Translation
         if (cpt == NULL) {
             if (cp != NULL)
-                //cpT(cp, PlusEq());
                 cpT(cp, Eq());
         } else {
             cpT(cpt, Eq());
@@ -273,7 +272,6 @@ public:
         // Otherwise selectively choose what we want
         // Translational enthalpy
         if (ht == NULL) {
-            //hT(Th, Te, h, Eq());
             if (h != NULL)
                 hT(Th, Te, h, EqDiv(Th));
         } else {
@@ -730,9 +728,9 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_cp[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (unsigned int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
-            if (m_elec_data.p_nelec[i] > 1)
+            if (facs[0] > 0)
                 op(p_cp[i+m_elec_data.offset],
                     (facs[2]*facs[0]-facs[1]*facs[1])/(T*T*facs[0]*facs[0]));
             else
@@ -789,7 +787,7 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_h[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
             if (facs[0] > 0)
                 op(p_h[i+m_elec_data.offset], facs[1]/facs[0]);
@@ -856,7 +854,7 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_s[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
             if (facs[0] > 0)
                 op(p_s[i+m_elec_data.offset],
