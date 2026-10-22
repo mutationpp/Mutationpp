@@ -23,7 +23,7 @@
 
 **Miscellaneous**
 - Updated copyright year
-- Switched from Travis to Github Actions for CI
+- Switched from Travis to GitHub Actions for CI
 - Documentation updates
 
 ## 1.0.0
