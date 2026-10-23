@@ -72,7 +72,7 @@ public:
         double T = mixture().T();
         double Te = mixture().Te();
         
-        const double ns = mixture().nSpecies();
+        const int ns = mixture().nSpecies();
         Map<const ArrayXd> X(mixture().X(),ns);
         
         // CollisionDB data
@@ -96,7 +96,7 @@ public:
         double T = mixture().T();
         double Te = mixture().Te();
         
-        const double ns = mixture().nSpecies();
+        const int ns = mixture().nSpecies();
         Map<const ArrayXd> X(mixture().X(),ns);
         
         // CollisionDB data
@@ -126,7 +126,7 @@ public:
         double T = mixture().T();
         double Te = mixture().Te();
         
-        const double ns = mixture().nSpecies();
+        const int ns = mixture().nSpecies();
         Map<const ArrayXd> X(mixture().X(),ns);
         
         // CollisionDB data
@@ -136,7 +136,12 @@ public:
         // Electron velocity
         double ve = sqrt(KB*8.*Te/(PI*mass(0)));
         double tau = 1.0/(mass(0)*8./3.*ve*nd*(X*Q11ei/mass).tail(ns-1).sum());
-        
+
+        // Note: Q11ei is evaluated at Te (tabulated e-neutral integrals and
+        // Debye-Huckel e-ion integrals that depend on Te and n_e), but its
+        // derivative w.r.t. Te is neglected below; only the electron velocity
+        // ve ~ sqrt(Te) is differentiated. This is a small contribution to the
+        // total omega_ve Jacobian compared with finite differences.
         p_jacTTv[0] = 1.5*KB*nd*p_X[0]/tau;
         p_jacTTv[1] = -1.5*KB*nd*p_X[0]/tau;
         p_jacTTv[1] += (1.5*KB*nd*p_X[0]*(T-Te)/tau)*0.5/Te;
