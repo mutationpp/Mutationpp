@@ -78,11 +78,8 @@ int main()
     Mixture mix(opts);                        // Init. the mixture with opts
 
     // Setup arrays
-    double rhoi [mix.nSpecies()];
-    double wdot [mix.nSpecies()];
+    std::vector<double> rhoi(mix.nSpecies());
     double TToPass [2];
-    double evib;
-    double source;
     double EnergiesMass[2];
 
     // Set state of mixture to the initial conditions
@@ -91,7 +88,7 @@ int main()
 
     TToPass[0] = T_init;
     TToPass[1] = Tv_init;
-    mix.setState(rhoi, TToPass, 1); 
+    mix.setState(rhoi.data(), TToPass, 1); 
     mix.mixtureEnergies(EnergiesMass);
 
     EnergiesMass[0] = EnergiesMass[0]*mix.density();
@@ -105,41 +102,47 @@ int main()
     double dt   = 1.0e-10;
     double tol  = 1.0e-14;
     double time = 0.0;
-    double k1[mix.nSpecies()],k2[mix.nSpecies()],k3[mix.nSpecies()],k4[mix.nSpecies()], W[mix.nSpecies()], drhoi[mix.nSpecies()];
     double s1, s2, s3, s4, s[2], dEnergiesMass;
     double conv = 1.0;
+    std::vector<double> k1(mix.nSpecies());
+    std::vector<double> k2(mix.nSpecies());
+    std::vector<double> k3(mix.nSpecies());
+    std::vector<double> k4(mix.nSpecies());
+    std::vector<double> W(mix.nSpecies());
+    std::vector<double> drhoi(mix.nSpecies());
+    
     s[0] = EnergiesMass[0];
     s[1] = EnergiesMass[1];
     while (conv > tol) {
 
         dt = std::min(dt*1.0002, 1e-5);
         // Get the species production rates
-        mix.setState(rhoi, EnergiesMass);
-        mix.netProductionRates(k1);
+        mix.setState(rhoi.data(), EnergiesMass);
+        mix.netProductionRates(k1.data());
         mix.energyTransferSource(&s1);
 
        for (int i = 0; i < mix.nSpecies(); ++i)
             W[i] = rhoi[i] + 0.5*dt*k1[i];
 	s[1] = EnergiesMass[1] + 0.5*s1*dt;	
 
-        mix.setState(W, s);
-        mix.netProductionRates(k2);
+        mix.setState(W.data(), s);
+        mix.netProductionRates(k2.data());
         mix.energyTransferSource(&s2);
 
        for (int i = 0; i < mix.nSpecies(); ++i)
             W[i] = rhoi[i] + 0.5*dt*k2[i];
 	s[1] = EnergiesMass[1] + 0.5*s2*dt;	
 
-        mix.setState(W, s);
-        mix.netProductionRates(k3);
+        mix.setState(W.data(), s);
+        mix.netProductionRates(k3.data());
         mix.energyTransferSource(&s3);
 
        for (int i = 0; i < mix.nSpecies(); ++i)
             W[i] = rhoi[i] + dt*k3[i];
 	s[1] = EnergiesMass[1] + s3*dt;	
 
-        mix.setState(W, s);
-        mix.netProductionRates(k4);
+        mix.setState(W.data(), s);
+        mix.netProductionRates(k4.data());
         mix.energyTransferSource(&s4);
 
         conv = 0.0;
@@ -153,13 +156,13 @@ int main()
         time += dt;
 
         // Set the new state of the mixture (using conserved variables)
-        mix.setState(rhoi, EnergiesMass);
+        mix.setState(rhoi.data(), EnergiesMass);
         printResults(time, mix);
     }
 
     // Now get the equilibrium values
-    mix.equilibriumComposition(mix.T(), mix.P(), rhoi); // puts X_i in rhoi
-    mix.convert<X_TO_Y>(rhoi, rhoi);                    // converts X_i to Y_i
+    mix.equilibriumComposition(mix.T(), mix.P(), rhoi.data()); // puts X_i in rhoi
+    mix.convert<X_TO_Y>(rhoi.data(), rhoi.data());             // converts X_i to Y_i
 
     cout << "Equilibrium mass fractions at " << mix.T() << " K and "
          << mix.P() << " Pa:" << endl;
