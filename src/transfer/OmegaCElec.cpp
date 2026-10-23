@@ -90,7 +90,7 @@ public:
 
         for(int i = 0; i < m_ns; ++i)
             for(int j = 0; j < m_ns; ++j)
-                p_jacRho[i] += aux*mp_wrk1[i]*mp_wrk3[i+j*m_ns]/mixture().speciesMw(i);
+                p_jacRho[j] += aux*mp_wrk1[i]*mp_wrk3[i*m_ns+j]/mixture().speciesMw(i);
 
     }
 
