@@ -21,6 +21,8 @@
 
 add_sources(mutation++
     MillikanWhite.cpp
+    MillikanWhiteRelaxationTimeGnoffo.cpp
+    MillikanWhiteRelaxationTimeOriginal.cpp
     OmegaCE.cpp
     OmegaCElec.cpp
     OmegaCV.cpp
@@ -32,4 +34,5 @@ add_sources(mutation++
 add_headers(mutation++
     MillikanWhite.h
     TransferModel.h
+    MillikanWhiteRelaxationTime.h
 )
