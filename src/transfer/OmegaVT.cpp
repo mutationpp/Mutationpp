@@ -151,6 +151,7 @@ double OmegaVT::source()
     for (auto& vibrator: m_vibrators)
     {
         const auto iv = vibrator.speciesIndex();
+        if (!(Y[iv] > 0.0)) continue;
         const auto tau = vibrator.relaxationTime(mixture());
         const auto mw = vibrator.molecularWeight();
         src += Y[iv]*(vibrator.energy(T) - vibrator.energy(Tv))/(mw*tau);
