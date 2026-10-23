@@ -40,7 +40,7 @@ using namespace Mutation::Utilities::IO;
 using namespace Mutation::Thermodynamics;
 
 namespace Mutation {
-    namespace Transfer {
+namespace Transfer {
 
 
 struct MillikanWhiteModelData::Impl
@@ -56,9 +56,9 @@ struct MillikanWhiteModelData::Impl
 
 
 MillikanWhiteModelData::MillikanWhiteModelData(
-    const class Thermodynamics& thermo, size_t index, double thetav
-) :
-    m_impl(std::make_unique<Impl>(thermo.nHeavy()))
+                                               const class Thermodynamics& thermo, size_t index, double thetav
+                                               ) :
+m_impl(std::make_unique<Impl>(thermo.nHeavy()))
 {
     m_impl->index = index;
     m_impl->mw = thermo.speciesMw(index);
@@ -77,7 +77,7 @@ MillikanWhiteModelData::MillikanWhiteModelData(
 }
 
 MillikanWhiteModelData::MillikanWhiteModelData(const MillikanWhiteModelData& rhs)
-    : m_impl(nullptr)
+: m_impl(nullptr)
 {
     if (rhs.m_impl)
         m_impl = std::make_unique<Impl>(*rhs.m_impl);
@@ -91,7 +91,7 @@ MillikanWhiteModelData& MillikanWhiteModelData::operator=(MillikanWhiteModelData
         m_impl = std::make_unique<Impl>(*rhs.m_impl);
     else
         *m_impl = *rhs.m_impl;
-    
+
     return *this;
 }
 
@@ -129,7 +129,7 @@ double MillikanWhiteModelData::limitingCrossSection(const double& T) const
 }
 
 MillikanWhiteModel::MillikanWhiteModel(const MillikanWhiteModelData& data) :
-    m_data(data) 
+m_data(data)
 { }
 
 
@@ -138,12 +138,12 @@ double MillikanWhiteModel::relaxationTime(
 {
     // Millikan-White model for average relaxation time
     const Eigen::Map<const Eigen::ArrayXd> Xh(
-        thermo.X()+(thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
+                                              thermo.X()+(thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
     const double T_fac = std::pow(thermo.T(), -1.0/3.0);
     const double p_atm = thermo.P() / ONEATM;
-    const double tau_mw = 
-        (Xh*(m_data.a()*(T_fac - m_data.b()) - 18.42).exp()).sum() / 
-        (Xh.sum()*p_atm);
+    const double tau_mw =
+    (Xh*(m_data.a()*(T_fac - m_data.b()) - 18.42).exp()).sum() /
+    (Xh.sum()*p_atm);
 
     // Park correction
     const double ni = thermo.numberDensity() * thermo.X()[m_data.speciesIndex()];
@@ -153,6 +153,84 @@ double MillikanWhiteModel::relaxationTime(
     return tau_mw + tau_park;
 }
 
+void MillikanWhiteModel::relaxationTimeJacobianRho(
+    const Mutation::Thermodynamics::Thermodynamics& thermo,
+    double* const p_dtau_drho) const
+{
+    const int ns = thermo.nSpecies();
+    const int nh = thermo.nHeavy();
+    const int k  = (thermo.hasElectrons() ? 1 : 0);
+    const double T  = thermo.T();
+    const double Te = thermo.Te();
+    const double P  = thermo.P();
+    const Eigen::ArrayXd& mw = thermo.speciesMw();
+
+    // Species molar concentrations
+    const Eigen::ArrayXd conc = (thermo.numberDensity() / NA) *
+                                Eigen::Map<const Eigen::ArrayXd>(thermo.X(), ns);
+    const auto conc_h = conc.tail(nh);
+
+    // Millikan-White relaxation time related terms
+    const double T_fac = std::pow(T, -1.0/3.0);
+    const Eigen::ArrayXd E = (m_data.a()*(T_fac - m_data.b()) - 18.42).exp();
+    const double sum_cE = (conc_h*E).sum();
+    const double sum_c  = conc_h.sum();
+    const double tau_mw = (ONEATM / P) * (sum_cE / sum_c);
+
+    Eigen::Map<Eigen::ArrayXd> dtau_drho(p_dtau_drho, ns);
+
+    // Derivative of pressure term
+    dtau_drho = -(tau_mw*RU*T) / (P*mw);
+    if (k) dtau_drho(0) = -(tau_mw*RU*Te) / (P*mw(0));
+
+    // Derivative of mixing term (electrons excluded)
+    dtau_drho.tail(nh) += tau_mw*(E/sum_cE - 1.0/sum_c) / mw.tail(nh);
+
+    // Park correction term and its derivative
+    const auto iv = m_data.speciesIndex();
+    if (conc(iv) > 0.0) {
+        const double ci = std::sqrt(8*RU*T/(PI*m_data.molecularWeight()));
+        const double tau_park =
+            1.0/(NA*conc(iv) * ci * m_data.limitingCrossSection(T));
+        dtau_drho(iv) -= tau_park / (conc(iv)*mw(iv));
+    }
+}
+
+void MillikanWhiteModel::relaxationTimeJacobianTTv(
+    const Mutation::Thermodynamics::Thermodynamics& thermo,
+    double* const p_dtau_dTTv) const
+{
+    const int ns = thermo.nSpecies();
+    const int nh = thermo.nHeavy();
+    const int k  = (thermo.hasElectrons() ? 1 : 0);
+    const double T = thermo.T();
+    const double P = thermo.P();
+
+    // Species molar concentrations
+    const Eigen::ArrayXd conc = (thermo.numberDensity() / NA) *
+                                Eigen::Map<const Eigen::ArrayXd>(thermo.X(), ns);
+    const auto conc_h = conc.tail(nh);
+
+    // Millikan-White relaxation time related term
+    const double T_fac = std::pow(T, -1.0/3.0);
+    const Eigen::ArrayXd E = (m_data.a()*(T_fac - m_data.b()) - 18.42).exp();
+    const double sum_cE = (conc_h*E).sum();
+    const double sum_c  = conc_h.sum();
+    const double tau_mw = (ONEATM / P) * (sum_cE / sum_c);
+    const double dsum_cE_dT = (conc_h*E*m_data.a()).sum()*(-1.0/3.0)*T_fac/T;
+
+    // Derivative of pressure and mixing terms
+    p_dtau_dTTv[0] = tau_mw*(dsum_cE_dT/sum_cE - RU*sum_c/P);
+    p_dtau_dTTv[1] = (k ? -tau_mw*RU*conc(0)/P : 0.0);
+
+    // Park correction term and its derivative
+    const auto iv = m_data.speciesIndex();
+    if (conc(iv) > 0.0) {
+        const double ci = std::sqrt(8*RU*T/(PI*m_data.molecularWeight()));
+        const double tau_park = 1.0/(NA*conc(iv) * ci * m_data.limitingCrossSection(T));
+        p_dtau_dTTv[0] += (3.0/2.0)*tau_park/T;
+    }
+}
 
 struct MillikanWhiteModelDB::Data
 {
@@ -196,15 +274,15 @@ MillikanWhiteModel MillikanWhiteModelDB::create(
     // Find species in database
     auto species_iter = m_data->millikan_white_xml->findTagWithAttribute(
         "vibrator", "species", species_name);
-    
+
     // If species not in database, return default model
     if (species_iter == m_data->millikan_white_xml->end())
         return { data };
-    
+
     // Use reference cross section if provided
     if (species_iter->hasAttribute("omegav"))
         data.setReferenceCrossSection(species_iter->getAttribute<double>("omegav"));
-    
+
     // Loop over each heavy species in thermo
     size_t offset = (m_data->thermo.hasElectrons() ? 1 : 0);
 
@@ -212,7 +290,7 @@ MillikanWhiteModel MillikanWhiteModelDB::create(
     {
         auto partner_iter = species_iter->findTagWithAttribute(
             "partner", "species", m_data->thermo.speciesName(i+offset));
-        
+
         if (partner_iter != species_iter->end())
         {
             partner_iter->getAttribute("a", data.a()[i], "must provide constant a!");
