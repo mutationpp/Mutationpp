@@ -39,7 +39,7 @@ namespace Mutation {
     namespace Transfer {
 
 /**
- * Combines vibrator energy model with relaxation time model to form a 
+ * Combines vibrator energy model with relaxation time model to form a
  * vibration-translation energy relaxation model for a single vibrator.
  */
 class Vibrator
@@ -48,25 +48,42 @@ public:
     Vibrator(const Thermodynamics::HarmonicOscillator&, const MillikanWhiteModel&);
 
     /// Index of species in mixture.
-    size_t speciesIndex() const { 
-        return m_relaxation_model.speciesIndex(); 
+    size_t speciesIndex() const {
+        return m_relaxation_model.speciesIndex();
     }
 
     /// Molecular weight of the vibrator in kg/mol
-    double molecularWeight() const { 
-        return m_relaxation_model.molecularWeight(); 
+    double molecularWeight() const {
+        return m_relaxation_model.molecularWeight();
     }
-    
+
     /// Energy in K of the vibrator at the given temperature.
-    double energy(double T) const { 
-        return m_energy_model.energy(T); 
+    double energy(double T) const {
+        return m_energy_model.energy(T);
+    }
+
+    /// Temperature-derivative of energy of the vibrator at the given temperature.
+    double energyTderivative(double T) const {
+        return m_energy_model.energyTderivative(T);
     }
 
     /// Relaxation time of the vibrator.
     /// @todo Find better solution to limit dependency to just thermodynamic
     /// state information, not whole mixture.
-    double relaxationTime(const class Thermodynamics::Thermodynamics& thermo) const { 
+    double relaxationTime(const class Thermodynamics::Thermodynamics& thermo) const {
         return m_relaxation_model.relaxationTime(thermo);
+    }
+
+    /// Derivatives of relaxation time with respect to species densities.
+    void relaxationTimeJacobianRho(const class Thermodynamics::Thermodynamics& thermo,
+                                   double* const p_dtau_drho) const {
+        m_relaxation_model.relaxationTimeJacobianRho(thermo, p_dtau_drho);
+    }
+
+    /// Derivatives of relaxation time with respect to T and Tv.
+    void relaxationTimeJacobianTTv(const class Thermodynamics::Thermodynamics& thermo,
+                                   double* const p_dtau_dTTv) const {
+        m_relaxation_model.relaxationTimeJacobianTTv(thermo, p_dtau_dTTv);
     }
 
 private:
@@ -82,7 +99,7 @@ Vibrator::Vibrator(
 
 /**
  * @brief Vibration-translation energy relaxation model.
- * 
+ *
  * Implements the Millikan-White model with the Park correction based on
  * Eqs. (55-58) in NASA-TP-2867, Gnoffo et al. (1989).
  */
@@ -92,8 +109,11 @@ public:
     OmegaVT(Mixture&);
     virtual ~OmegaVT() = default;
     virtual double source() override;
+    virtual void jacobianRho(double* const p_jacRho) override;
+    virtual void jacobianTTv(double* const p_jacTTv) override;
 private:
     std::vector<Vibrator> m_vibrators;
+    std::vector<double> m_dtau_drho;
 };
 
 
@@ -101,7 +121,7 @@ private:
 Utilities::Config::ObjectProvider<OmegaVT, TransferModel> omegaVT("OmegaVT");
 
 
-OmegaVT::OmegaVT(Mixture& mix) : 
+OmegaVT::OmegaVT(Mixture& mix) :
     TransferModel(mix)
 {
     Thermodynamics::HarmonicOscillatorDB hodb;
@@ -114,8 +134,9 @@ OmegaVT::OmegaVT(Mixture& mix) :
             auto ho = hodb.create(species.name());
             auto mw = mwdb.create(species.name(), ho.characteristicTemperatures()[0]);
             m_vibrators.emplace_back(ho, mw);
-        }   
+        }
     }
+    m_dtau_drho.resize(mix.nSpecies());
 }
 
 
@@ -130,6 +151,7 @@ double OmegaVT::source()
     for (auto& vibrator: m_vibrators)
     {
         const auto iv = vibrator.speciesIndex();
+        if (!(Y[iv] > 0.0)) continue;
         const auto tau = vibrator.relaxationTime(mixture());
         const auto mw = vibrator.molecularWeight();
         src += Y[iv]*(vibrator.energy(T) - vibrator.energy(Tv))/(mw*tau);
@@ -138,9 +160,59 @@ double OmegaVT::source()
     return src * mixture().density() * RU;
 }
 
+void OmegaVT::jacobianRho(double* const p_jacRho)
+{
+    const size_t ns=mixture().nSpecies();
+    std::fill(p_jacRho, p_jacRho + ns, 0.);
 
+    auto Y = mixture().Y();
+    auto T = mixture().T();
+    auto Tv = mixture().Tv();
 
+    for (auto& vibrator: m_vibrators)
+    {
+        const auto iv = vibrator.speciesIndex();
+        if (!(Y[iv] > 0.0)) continue;
+        const auto tau = vibrator.relaxationTime(mixture());
+        const auto mw = vibrator.molecularWeight();
+        vibrator.relaxationTimeJacobianRho(mixture(), m_dtau_drho.data());
+        const auto deltaE = vibrator.energy(T) - vibrator.energy(Tv);
+        p_jacRho[iv] += RU*deltaE/(mw*tau);
+        const double factor = mixture().density()*Y[iv]*RU*deltaE/(mw*tau*tau);
+        for (size_t j = 0; j < ns; ++j)
+            p_jacRho[j] -= factor*m_dtau_drho[j];
+    }
 
+}
+
+void OmegaVT::jacobianTTv(double* const p_jacTTv)
+{
+    const size_t nt=mixture().nEnergyEqns();
+    std::fill(p_jacTTv, p_jacTTv + nt, 0.);
+
+    auto Y = mixture().Y();
+    auto T = mixture().T();
+    auto Tv = mixture().Tv();
+
+    double dtau_dTTv[2];
+    double auxT = 0.0;
+    double auxTv = 0.0;
+
+    for (auto& vibrator: m_vibrators)
+    {
+        const auto iv = vibrator.speciesIndex();
+        if (!(Y[iv] > 0.0)) continue;
+        const auto tau = vibrator.relaxationTime(mixture());
+        const auto mw = vibrator.molecularWeight();
+        vibrator.relaxationTimeJacobianTTv(mixture(), dtau_dTTv);
+        const auto deltaE = vibrator.energy(T) - vibrator.energy(Tv);
+        auxT += Y[iv]*(vibrator.energyTderivative(T)/tau - deltaE*dtau_dTTv[0]/(tau*tau))/mw;
+        auxTv += -Y[iv]*(vibrator.energyTderivative(Tv)/tau + deltaE*dtau_dTTv[1]/(tau*tau))/mw;
+    }
+
+    p_jacTTv[0] = auxT * mixture().density() * RU;
+    p_jacTTv[1] = auxTv * mixture().density() * RU;
+}
 
 /**
  * Represents a coupling between vibrational and translational energy modes.
@@ -256,9 +328,9 @@ double OmegaVT::source()
 
 //     double m_const_Park_correction;
 // };
-      
+
 // // Implementation of the Vibrational-Translational Energy Transfer.
-      
+
 // inline double const OmegaVT::compute_Park_correction_VT(int const i_vibrator, int const i_partner)
 // {
 //     // Limiting cross section for Park's Correction
@@ -271,11 +343,11 @@ double OmegaVT::source()
 //     } else {
 //       sigma = m_mw[i_vibrator].omega() *(2.5E9/(T*T));
 //     }
-    
+
 //     return(m_const_Park_correction * sqrt(m_mw[i_vibrator][i_partner].mu()*T)/(sigma*P));
 // }
 
- 
+
 // inline double const OmegaVT::compute_tau_VT_mj(int const i_vibrator, int const i_partner)
 // {
 // //    Enable in the future for multiple vibrational temperatures
@@ -284,21 +356,21 @@ double OmegaVT::source()
 
 //       return( exp( m_mw[i_vibrator][i_partner].a() * (pow(T,-1.0/3.0) - m_mw[i_vibrator][i_partner].b()) -18.421) * ONEATM / P );
 // }
-      
+
 // double OmegaVT::compute_tau_VT_m(int const i_vibrator)
 // {
 //     const double * p_Y = m_mixture.Y();
-    
+
 //     double sum1 = 0.0;
 //     double sum2 = 0.0;
-    
+
 //     // Partner offset
 //     for (int i_partner = m_transfer_offset; i_partner < m_ns; ++i_partner){
 //         double tau_j = compute_tau_VT_mj(i_vibrator, i_partner-m_transfer_offset) + compute_Park_correction_VT(i_vibrator, i_partner-m_transfer_offset);
 //         sum1 += p_Y[i_partner]/(mp_Mw[i_partner]);
 //         sum2 += p_Y[i_partner]/(mp_Mw[i_partner]*tau_j);
 //     }
-  
+
 //     return(sum1/sum2);
 // }
 
@@ -308,4 +380,4 @@ double OmegaVT::source()
 //     OmegaVT, TransferModel> omegaVT("OmegaVT");
 
     } // namespace Transfer
-} // namespace Mutation 
+} // namespace Mutation

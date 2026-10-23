@@ -53,15 +53,15 @@ public:
      * species index, and characteristic vibrational temperature.  Default
      * values for the A and B parameters in the Millikan-White model are taken
      * from the original formulas in the paper:
-     * 
+     *
      * \f{align*}{
      * &A_{ij} = 1.16e-3 \mu_{ij}^{1/2} \theta_{i}^{4/3} \\
      * &B_{ij} = 0.015 \mu_{ij}^{1/4}
      * \f}
-     * 
+     *
      * where \f$\mu_{ij}\f$ is the reduced mass of the vibrator and colliding
      * partner in g/mol, and \f$\theta_{i}\f$ is the characteristic vibrational
-     * temperature of the vibrator.  The default value for Park's reference 
+     * temperature of the vibrator.  The default value for Park's reference
      * cross section is taken as 10^-16 cm^2, based on recommendation in
      * @cite Gnoffo1989. The high-temperature limiting cross section is based
      * on @cite Park1993.
@@ -119,8 +119,8 @@ private:
 
 /**
  * @brief Millikan-White relaxation model with Park correction.
- * 
- * Implements the Millikan and White relaxation time model proposed in 
+ *
+ * Implements the Millikan and White relaxation time model proposed in
  * @cite Millikan1963 with the high temperature correction of Park @cite Park1993.
  * For an overview, see Eqs. (55-58) in @cite Gnoffo1989.
  */
@@ -138,6 +138,14 @@ public:
 
     /// Relaxation time of the vibrator.
     double relaxationTime(const Mutation::Thermodynamics::Thermodynamics&) const;
+
+    /// Derivatives of the relaxation time with respect to the species densities.
+    void relaxationTimeJacobianRho(const Mutation::Thermodynamics::Thermodynamics&,
+                                   double* const p_dtau_drho) const;
+
+    /// Derivatives of the relaxation time with respect to T and Tv.
+    void relaxationTimeJacobianTTv(const Mutation::Thermodynamics::Thermodynamics&,
+                                   double* const p_dtau_dTTv) const;
 
     const MillikanWhiteModelData& data() const { return m_data; }
 

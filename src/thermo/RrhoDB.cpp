@@ -447,6 +447,24 @@ public:
             g[0] -= std::log(2.0);
     }
 
+    /**
+     * Computes the derivative of unitless Gibbs free energy of each species i, 
+     * \f$\frac{\partial{G_i / R_u T_h}{\partial T_h}\f$ where \f$G_i\f$ is 
+     * non-dimensionalized by the heavy particle translational temperature.
+     *
+     */
+    void derivativeTgibbs(
+        double Th, double Te, double Tr, double Tv, double Tel, double P,
+        double* const dg, double* const dgt, double* const dgr, double* const dgv,
+        double* const dgel)
+    {        
+        // Gibbs-Helmholtz: d(G/RT)/dT = -H/(RT^2)
+        //Consistent for all species including electrons and the formation enthalpy.
+        enthalpy(Th, Te, Tr, Tv, Tel, dg, NULL, NULL, NULL, NULL, NULL);
+        LOOP(dg[i] /= -Th);
+
+    }
+
 private:
 
     typedef Equals<double> Eq;
@@ -454,6 +472,7 @@ private:
     typedef PlusEqualsYDivAlpha<double> PlusEqDiv;
     typedef PlusEquals<double> PlusEq;
     typedef MinusEquals<double> MinusEq;
+    typedef MinusEqualsYDivAlpha<double> MinusEqDiv;
 
     class ElecBFacsFunctor
     {
@@ -813,11 +832,11 @@ private:
     void sT(double Th, double Te, double P, double* const s, const OP& op) {
         double fac = 2.5 * (1.0 + std::log(Th)) - std::log(P);
         if (m_has_electron)
-            op(s[0], 2.5 * std::log(Te / Th) + fac + mp_lnqtmw[0]);        
+            op(s[0], 2.5 * std::log(Te / Th) + fac + mp_lnqtmw[0]);
         for (int i = (m_has_electron ? 1 : 0); i < m_ns; ++i)
             op(s[i], fac + mp_lnqtmw[i]);
     }
-    
+
     /**
      * Computes the unitless rotational entropy of each species.
      */
@@ -825,11 +844,11 @@ private:
     void sR(double T, double* const s, const OP& op) {
         const double onelnT = 1.0 + std::log(T);
         LOOP_MOLECULES(
-            op(s[j], mp_rot_data[i].linearity * (onelnT - 
+            op(s[j], mp_rot_data[i].linearity * (onelnT -
                 mp_rot_data[i].ln_omega_t));
         )
     }
-    
+
     /**
      * Computes the unitless vibrational entropy of each species.
      */
@@ -847,7 +866,7 @@ private:
             op(s[j], (sum1 / T - sum2));
         )
     }
-    
+
     /**
      * Computes the unitless electronic entropy of each species.
      */

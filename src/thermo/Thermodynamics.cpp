@@ -1045,6 +1045,13 @@ void Thermodynamics::speciesSTGOverRT(double T, double* const p_g) const {
 
 //==============================================================================
 
+void Thermodynamics::speciesSTdGOverRT(double T, double* const p_dg) const {
+    mp_thermodb->derivativeTgibbs(
+        T, T, T, T, T, standardStateP(), p_dg, NULL, NULL, NULL, NULL);
+}
+
+//==============================================================================
+
 void Thermodynamics::elementMoles(
     const double *const species_N, double *const element_N) const
 {

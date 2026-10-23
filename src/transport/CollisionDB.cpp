@@ -243,6 +243,9 @@ const ArrayXd& CollisionDB::Dim(bool include_one_minus_x)
     const int k  = ns - nh;
     const ArrayXd X = Map<const ArrayXd>(m_thermo.X(), ns).max(1.0e-12);
 
+    // Single species - no diffusion by definition
+    if (ns == 1) { m_Dim.setZero(); return (m_Dim /= m_thermo.numberDensity()); }
+
     // Electron
     if (k > 0) {
         nDei(); // update nDei
@@ -250,6 +253,7 @@ const ArrayXd& CollisionDB::Dim(bool include_one_minus_x)
         m_Dim.tail(nh) = X(0) / m_nDei.tail(nh);
     } else
         m_Dim.setZero();
+
 
     // Heavies
     nDij(); // update nDij

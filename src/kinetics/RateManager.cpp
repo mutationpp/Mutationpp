@@ -45,6 +45,9 @@ public:\
     inline double getT(const Thermodynamics::StateModel* const state) const {\
         return ( __T__ );\
     }\
+    inline const char* getName(const Thermodynamics::StateModel* const state) const {\
+        return  #__NAME__;\
+    }\
 };
 
 /// Temperature selector which returns the current translational temperature
@@ -114,19 +117,22 @@ SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
 
 RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     : m_ns(ns), m_nr(reactions.size()), mp_lnkf(NULL), mp_lnkb(NULL),
-      mp_gibbs(NULL)
+      mp_gibbs(NULL), mp_dkfdT(NULL), mp_dkbdT(NULL), mp_dKeqdT(NULL)
 {
     // Add all of the reactions' rate coefficients to the manager
     const size_t nr = reactions.size();
     for (size_t i = 0; i < m_nr; ++i)
         addReaction(i, reactions[i]);
-    
+
     // Allocate storage in one block for both rate coefficient arrays and
     // species gibbs free energies 
-    const size_t block_size = 2*m_nr + ns;
+    const size_t block_size = 4*m_nr + 2*ns;
     mp_lnkf  = new double [block_size];
     mp_lnkb  = mp_lnkf + m_nr;
     mp_gibbs = mp_lnkb + m_nr;
+    mp_dkfdT = mp_gibbs + ns;
+    mp_dkbdT = mp_dkfdT + m_nr;
+    mp_dKeqdT = mp_dkbdT + m_nr;
     
     // Initialize the arrays to zero
     std::fill(mp_lnkf, mp_lnkf+block_size, 0.0);
@@ -147,7 +153,7 @@ void RateManager::addReaction(const size_t rxn, const Reaction& reaction)
 {
     // Get the rate law which is being used in this reaction
     const RateLaw* p_rate = reaction.rateLaw();
-    
+
     // Arrhenius reactions
     if (typeid(*p_rate) == typeid(Arrhenius)) {
         selectRate<MAX_REACTION_TYPES-1>(rxn, reaction);
@@ -210,7 +216,7 @@ void RateManager::addRate(const size_t rxn, const Reaction& reaction)
             // note: mp_lnkff+(rxn+m_nr) = mp_lnkfb+rxn
             m_rate_groups.addRateCoefficient<ReverseGroup>(
                 rxn+m_nr, reaction.rateLaw());
-        
+
         m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
         
     } else {
@@ -225,16 +231,25 @@ void RateManager::update(const Thermodynamics::Thermodynamics& thermo)
     // Evaluate all of the different rate coefficients
     m_rate_groups.logOfRateCoefficients(thermo.state(), mp_lnkf);
     
+    // Evaluate all of the reaction temperature derivatives of 
+    // rate coefficients
+    m_rate_groups.derivativeOfRateCoefficients(thermo.state(), mp_dkfdT);
+    
     // Copy rate coefficients which are the same as one of the previously
     // calculated ones
     std::vector<size_t>::const_iterator iter = m_to_copy.begin();
     for ( ; iter != m_to_copy.end(); ++iter) {
         const size_t index = *iter;
         mp_lnkb[index] = mp_lnkf[index];
+        mp_dkbdT[index] = mp_dkfdT[index];
     }
     
     // Subtract lnkeq(Tb) rate constants from the lnkf(Tb) to get lnkb(Tb)
     m_rate_groups.subtractLnKeq(thermo, mp_gibbs, mp_lnkb);
+
+    // Evaluate the reaction temperature derivatives of equilibrium constants
+    m_rate_groups.derivativeKeq(thermo, mp_dKeqdT, mp_dkbdT);
+
 }
 
 //==============================================================================

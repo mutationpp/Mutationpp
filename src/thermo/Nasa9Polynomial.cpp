@@ -112,8 +112,17 @@ void Nasa9Polynomial::gibbs(const double *const p_params, double &g) const
     int tr = tRange(-2.0 * p_params[3]);
 
     g = -mp_coefficients[tr][8];
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < 8; ++i) 
         g += mp_coefficients[tr][i] * p_params[i];
+}
+
+void Nasa9Polynomial::derivativeTgibbs(const double *const p_params, double &dg) const
+{
+    int tr = tRange(-3.0 * p_params[4]);
+
+    dg = mp_coefficients[tr][0] * p_params[0];
+    for (int i = 1; i < 8; ++i) 
+        dg += mp_coefficients[tr][i] * p_params[i];
 }
 
 void Nasa9Polynomial::computeParams(const double &T, double *const params, 
@@ -172,6 +181,20 @@ void Nasa9Polynomial::computeParams(const double &T, double *const params,
         params[6] = -T4 / 20.0;
         params[7] = 1.0 / T;
     }
+
+    // d(G(T)/RT)/dT = a1/(T^3) - a2*ln(T)/T - a3/T - a4/2 - a5*T/3 - a6*T^2/4 -
+    //                 a7*T^3/5 - b1/T^2
+    if (func == GIBBSPRIME) {
+        params[0] = 1.0 / T3;
+        params[1] = -log(T) / T2;
+        params[2] = -1.0 / T;
+        params[3] = -0.5;
+        params[4] = -T / 3.0;
+        params[5] = -0.25 * T2;
+        params[6] = -T3 / 5.0;
+        params[7] = -1.0 / T2;
+    }
+    
 }
 
 int Nasa9Polynomial::tRange(double T) const
