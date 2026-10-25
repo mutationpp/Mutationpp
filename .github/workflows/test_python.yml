@@ -14,10 +14,11 @@ jobs:
 
     - uses: actions/checkout@v7
 
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
       with:
         python-version: 3
-        pip-install: build twine
+
+    - run: python -m pip install build twine
 
     - name: Build sdist
       run:  python -m build --sdist
@@ -54,10 +55,11 @@ jobs:
       uses: actions/checkout@v7
 
     - name: Setup Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: 3
-        pip-install: abi3audit
+
+    - run: python -m pip install abi3audit
 
     - name: Setup environment
       run: |
@@ -116,10 +118,11 @@ jobs:
       uses: actions/checkout@v7
 
     - name: Setup Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
-        pip-install: pytest
+
+    - run: python -m pip install pytest
 
     - name: Download wheel
       uses: actions/download-artifact@v8
