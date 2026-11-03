@@ -118,6 +118,7 @@ public:
     {
         delete [] mp_lnqtmw;
         delete [] mp_hform;
+        delete [] mp_part_sst;
         delete [] mp_indices;
         delete [] mp_rot_data;
         delete [] mp_nvib;
@@ -125,7 +126,6 @@ public:
         
         delete [] m_elec_data.p_nelec;
         delete [] m_elec_data.p_levels;
-        delete [] mp_part_sst;
         delete [] mp_el_bfacs;
         
         if (m_use_tables) {
@@ -170,7 +170,6 @@ public:
         // Translation
         if (cpt == NULL) {
             if (cp != NULL)
-                //cpT(cp, PlusEq());
                 cpT(cp, Eq());
         } else {
             cpT(cpt, Eq());
@@ -273,7 +272,6 @@ public:
         // Otherwise selectively choose what we want
         // Translational enthalpy
         if (ht == NULL) {
-            //hT(Th, Te, h, Eq());
             if (h != NULL)
                 hT(Th, Te, h, EqDiv(Th));
         } else {
@@ -366,7 +364,9 @@ public:
         double* const sel)
     {
         // Special case where we only want the total entropy
-        if (st == NULL && sr == NULL && sv == NULL && sel == NULL) {
+        if (st == NULL && sr == NULL && sv == NULL && sel == NULL &&
+            s != NULL)
+        {
             sT(Th, Te, P, s, Eq());
             sR(Tr, s, PlusEq());
             sV(Tv, s, PlusEq());
@@ -381,43 +381,52 @@ public:
         
         // Otherwise collect individual components
         // Translational entropy
-        if (st == NULL)
-            sT(Th, Te, P, s, Eq());
-        else {
+        if (st == NULL) {
+            if (s != NULL)
+                sT(Th, Te, P, s, Eq());
+        } else {
             sT(Th, Te, P, st, Eq());
-            LOOP(s[i] = st[i]);
+            if (s != NULL)
+                LOOP(s[i] = st[i]);
         }
         
         // Rotational entropy
-        if (sr == NULL)
-            sR(Tr, s, PlusEq());
-        else {
+        if (sr == NULL) {
+            if (s != NULL)
+                sR(Tr, s, PlusEq());
+        } else {
             LOOP(sr[i] = 0.0);
             sR(Tr, sr, Eq());
-            LOOP_MOLECULES(s[j] += sr[j]);
+            if (s != NULL)
+                LOOP_MOLECULES(s[j] += sr[j]);
         }
         
         // Vibrational entropy
-        if (sv == NULL)
-            sV(Tv, s, PlusEq());
-        else {
+        if (sv == NULL) {
+            if (s != NULL)
+                sV(Tv, s, PlusEq());
+        } else {
             LOOP(sv[i] = 0.0);
             sV(Tv, sv, Eq());
-            LOOP_MOLECULES(s[j] += sv[j]);
+            if (s != NULL)
+                LOOP_MOLECULES(s[j] += sv[j]);
         }
         
         // Electronic entropy
-        if (sel == NULL)
-            sE(Tel, s, PlusEq());
-        else {
+        if (sel == NULL) {
+            if (s != NULL)
+                sE(Tel, s, PlusEq());
+        } else {
             LOOP(sel[i] = 0.0);
             sE(Tel, sel, Eq());
-            LOOP(s[i] += sel[i]);
+            if (s != NULL)
+                LOOP(s[i] += sel[i]);
         }
         
         // Include spin contribution for free electron entropy
         if (m_has_electron)
-            s[0] += std::log(2.0);
+            if (s != NULL)
+                s[0] += std::log(2.0);
     }
     
     /**
@@ -730,9 +739,9 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_cp[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (unsigned int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
-            if (m_elec_data.p_nelec[i] > 1)
+            if (facs[0] > 0)
                 op(p_cp[i+m_elec_data.offset],
                     (facs[2]*facs[0]-facs[1]*facs[1])/(T*T*facs[0]*facs[0]));
             else
@@ -789,7 +798,7 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_h[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
             if (facs[0] > 0)
                 op(p_h[i+m_elec_data.offset], facs[1]/facs[0]);
@@ -856,7 +865,7 @@ private:
         updateElecBoltzmannFactors(T);
         op(p_s[0], 0.0);
 
-        double* facs = mp_el_bfacs;
+        const double* facs = mp_el_bfacs;
         for (int i = 0; i < m_elec_data.nheavy; ++i, facs += 3) {
             if (facs[0] > 0)
                 op(p_s[i+m_elec_data.offset],
@@ -905,5 +914,3 @@ Utilities::Config::ObjectProvider<RrhoDB, ThermoDB> rrhoDB("RRHO");
 
     } // namespace Thermodynamics
 } // namespace Mutation
-
-
