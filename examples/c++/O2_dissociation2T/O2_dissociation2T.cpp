@@ -88,7 +88,7 @@ int main()
 
     TToPass[0] = T_init;
     TToPass[1] = Tv_init;
-    mix.setState(rhoi.data(), TToPass, 1); 
+    mix.setState(rhoi.data(), TToPass, 1);
     mix.mixtureEnergies(EnergiesMass);
 
     EnergiesMass[0] = EnergiesMass[0]*mix.density();
@@ -110,7 +110,7 @@ int main()
     std::vector<double> k4(mix.nSpecies());
     std::vector<double> W(mix.nSpecies());
     std::vector<double> drhoi(mix.nSpecies());
-    
+
     s[0] = EnergiesMass[0];
     s[1] = EnergiesMass[1];
     while (conv > tol) {

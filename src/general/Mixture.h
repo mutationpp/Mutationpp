@@ -100,7 +100,7 @@ public:
 
     /**
      * Gets the Millikan-White model
-     */          
+     */
     const std::string& millikanWhiteModel() const
     {
         return m_millikan_white_model;
@@ -110,7 +110,6 @@ public:
 private:
 
     std::vector<Mutation::Thermodynamics::Composition> m_compositions;
-    
     std::string m_millikan_white_model;
 
 }; // class Mixture

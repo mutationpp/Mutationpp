@@ -51,7 +51,7 @@ public:
     double relaxationTime(
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         const MillikanWhiteModelData& data) const override
-    {    
+    {
         const double T_fac = std::pow(thermo.T(), -1.0/3.0);
         const double p_atm = thermo.P() / ONEATM;
 
