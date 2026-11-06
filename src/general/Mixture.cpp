@@ -54,7 +54,9 @@ Mixture::Mixture(const MixtureOptions& options)
       GasSurfaceInteraction(
         *this,
         *this,
-        options.getGSIMechanism())
+        options.getGSIMechanism()),
+      m_millikan_white_model(
+        options.getMillikanWhiteModel())
 {
     // Add all the compositions given in mixture options to the composition list
     for (int i = 0; i < options.compositions().size(); ++i)

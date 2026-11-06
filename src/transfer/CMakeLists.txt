@@ -22,7 +22,7 @@
 add_sources(mutation++
     MillikanWhite.cpp
     MillikanWhiteRelaxationTimeGnoffo.cpp
-    MillikanWhiteRelaxationTimeOriginal.cpp
+    MillikanWhiteRelaxationTimeLegacy.cpp
     OmegaCE.cpp
     OmegaCElec.cpp
     OmegaCV.cpp

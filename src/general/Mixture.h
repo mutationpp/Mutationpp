@@ -98,10 +98,20 @@ public:
         Mutation::Thermodynamics::Composition::Type type =
             Mutation::Thermodynamics::Composition::MOLE) const;
 
+    /**
+     * Gets the Millikan-White model
+     */          
+    const std::string& millikanWhiteModel() const
+    {
+        return m_millikan_white_model;
+    }
+
 
 private:
 
     std::vector<Mutation::Thermodynamics::Composition> m_compositions;
+    
+    std::string m_millikan_white_model;
 
 }; // class Mixture
 

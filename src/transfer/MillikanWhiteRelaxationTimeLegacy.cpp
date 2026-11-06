@@ -1,8 +1,8 @@
 /**
- * @file MillikanWhiteRelaxationTimeOriginal.cpp
+ * @file MillikanWhiteRelaxationTimeLegacy.cpp
  *
  * @brief Relaxation time for VT source term
- * according to original mixing rule
+ * legacy relaxation time
  */
 
 /*
@@ -41,34 +41,32 @@ namespace Mutation {
 namespace Transfer {
 
 /**
- * @brief Original Millikan-White mixing rule with Park high-temperature
- * correction.
+ * @brief Millikan-White mixing rule with Park high-temperature correction.
  */
-class MillikanWhiteRelaxationTimeOriginal : public MillikanWhiteRelaxationTime
+class MillikanWhiteRelaxationTimeLegacy : public MillikanWhiteRelaxationTime
 {
 public:
-    MillikanWhiteRelaxationTimeOriginal(ARGS) {}
+    MillikanWhiteRelaxationTimeLegacy(ARGS) {}
 
     double relaxationTime(
         const Mutation::Thermodynamics::Thermodynamics& thermo,
         const MillikanWhiteModelData& data) const override
-    {
+    {    
         const double T_fac = std::pow(thermo.T(), -1.0/3.0);
         const double p_atm = thermo.P() / ONEATM;
 
-        const Eigen::Map<const Eigen::ArrayXd> Yh(thermo.Y() + (thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
+        const Eigen::Map<const Eigen::ArrayXd> Xh(thermo.X() + (thermo.hasElectrons() ? 1 : 0), thermo.nHeavy());
         const Eigen::ArrayXd tau_tau_mw = (data.a()*(T_fac - data.b()) - 18.421).exp()/p_atm;
         const Eigen::ArrayXd tau_park = ((PI*data.mu()*KB*thermo.T()) /
                                         (8.0*NA)).sqrt()/thermo.P()/data.limitingCrossSection(thermo.T());
-
-        return (Yh/data.molecularWeight()).sum() / ((Yh/data.molecularWeight())/(tau_tau_mw+tau_park)).sum();
+        return Xh.sum() / (Xh/(tau_tau_mw+tau_park)).sum();
     }
 };
 
 // Register this algorithm
 Config::ObjectProvider<
-    MillikanWhiteRelaxationTimeOriginal, MillikanWhiteRelaxationTime>
-    mw_original("Original");
+    MillikanWhiteRelaxationTimeLegacy, MillikanWhiteRelaxationTime>
+    mw_Legacy("Legacy");
 
 } // namespace Transfer
 } // namespace Mutation

@@ -44,19 +44,6 @@ using namespace Mutation::Thermodynamics;
 namespace Mutation {
     namespace Transfer {
 
-static std::string name_model = "Original";
-
-void setMillikanWhiteModel(const std::string& model)
-{
-    name_model = model;
-}
-
-const std::string& getMillikanWhiteModel()
-{
-    return name_model;
-}
-
-
 struct MillikanWhiteModelData::Impl
 {
     size_t index = 0;
@@ -148,11 +135,15 @@ double MillikanWhiteModelData::limitingCrossSection(const double& T) const
     return m_impl->omegav * (2.5E9/(T*T)); // 2.5E9 = 50,000^2
 }
 
-MillikanWhiteModel::MillikanWhiteModel(const MillikanWhiteModelData& data) :
-    m_data(data) 
+MillikanWhiteModel::MillikanWhiteModel(
+    const MillikanWhiteModelData& data,
+    const std::string& model_name
+) :
+    m_data(data),
+    m_model_name(model_name)
 { 
     m_relaxationTime = std::shared_ptr<MillikanWhiteRelaxationTime>(
-        Config::Factory<MillikanWhiteRelaxationTime>::create(name_model, m_data));
+        Config::Factory<MillikanWhiteRelaxationTime>::create(m_model_name, m_data));
 }
 
 double MillikanWhiteModel::relaxationTime(
@@ -183,16 +174,21 @@ struct MillikanWhiteModelDB::Data
 
 
 MillikanWhiteModelDB::MillikanWhiteModelDB(
-    const class Thermodynamics& thermo
+    const class Thermodynamics& thermo,
+    const std::string& model_name
 ) :
-    MillikanWhiteModelDB(thermo, databaseFileName("VT.xml", "transfer"))
+    MillikanWhiteModelDB(thermo, databaseFileName("VT.xml", "transfer"),
+    model_name)
 { }
 
 
 MillikanWhiteModelDB::MillikanWhiteModelDB(
-    const class Thermodynamics& thermo, std::string file_path
+    const class Thermodynamics& thermo,
+    std::string file_path,
+    const std::string& model_name
 ) :
-    m_data(std::make_shared<Data>(thermo, file_path))
+    m_data(std::make_shared<Data>(thermo, file_path)),
+    m_model_name(model_name)
 { }
 
 
@@ -209,7 +205,7 @@ MillikanWhiteModel MillikanWhiteModelDB::create(
     
     // If species not in database, return default model
     if (species_iter == m_data->millikan_white_xml->end())
-        return { data };
+        return MillikanWhiteModel(data, m_model_name);
     
     // Use reference cross section if provided
     if (species_iter->hasAttribute("omegav"))
@@ -230,7 +226,7 @@ MillikanWhiteModel MillikanWhiteModelDB::create(
         }
     }
 
-    return { data };
+    return MillikanWhiteModel(data, m_model_name);
 }
 
     } // namespace Transfer

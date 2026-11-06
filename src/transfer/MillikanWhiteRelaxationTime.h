@@ -44,7 +44,7 @@ class MillikanWhiteModelData;
 /**
  * @brief Interface for Millikan-White vibrational relaxation time models.
  *
- * Concrete relaxation-time models (e.g. the original Millikan-White mixing
+ * Concrete relaxation-time models (e.g. the Millikan-White mixing
  * rule) derive from this class and are registered.
  */
 class MillikanWhiteRelaxationTime

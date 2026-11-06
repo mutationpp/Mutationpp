@@ -2,7 +2,7 @@
  * @file MillikanWhiteRelaxationTimeGnoffo.cpp
  *
  * @brief Relaxation time for VT source term 
- * according to Gnoffo mixing rule
+ * according to eq. 58 in Gnoffo, 1989
  */
 
 /*
