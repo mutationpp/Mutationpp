@@ -60,10 +60,8 @@ void checkDefaultRelaxationRate(bool with_electrons, const std::string& model_na
 
     const double thetav = 3408.464;
 
-
-    setMillikanWhiteModel(model_name);
-
-    MillikanWhiteModel model({mix, offset, thetav});
+    MillikanWhiteModelData data(mix, offset, thetav);
+    MillikanWhiteModel model(data, model_name);
 
     const int SET_Y_AND_PT = 2;
     
@@ -90,8 +88,8 @@ void checkDefaultRelaxationRate(bool with_electrons, const std::string& model_na
 
 TEST_CASE("MillikanWhiteModel provides correct default relaxation time", "[transfer]")
 {
-    checkDefaultRelaxationRate(false, "Original");
-    checkDefaultRelaxationRate(true, "Original");
+    checkDefaultRelaxationRate(false, "Legacy");
+    checkDefaultRelaxationRate(true, "Legacy");
     checkDefaultRelaxationRate(false, "Gnoffo");
     checkDefaultRelaxationRate(true, "Gnoffo");
 }
@@ -115,7 +113,7 @@ TEST_CASE("Can load MillikanWhiteModel from database", "[transfer]")
     opts.setSpeciesDescriptor("N2 N");
     Mixture mix(opts);
 
-    MillikanWhiteModelDB db(mix, file.filename());
+    MillikanWhiteModelDB db(mix, file.filename(), "Legacy");
 
     auto model = db.create("N2", 3408.464);
 
