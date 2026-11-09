@@ -41,6 +41,8 @@ namespace Mutation { namespace Thermodynamics { class Thermodynamics; } }
 namespace Mutation {
     namespace Transfer {
 
+class MillikanWhiteRelaxationTime;
+
 /**
  * Convenience class for building necessary data used in the Millikan-White
  * vibration-translation energy relaxation model.
@@ -102,6 +104,12 @@ public:
     /// Returns the array of B model parameters.
     const Eigen::ArrayXd& b() const;
 
+    /// Returns the array of reduced masses.
+    Eigen::ArrayXd& mu();
+
+    /// Returns the array of reduced masses.
+    const Eigen::ArrayXd& mu() const;
+
     /// Sets the reference cross section in m^2.
     MillikanWhiteModelData& setReferenceCrossSection(double omegav);
 
@@ -128,7 +136,12 @@ class MillikanWhiteModel
 {
 public:
     /// Constructs a MillikanWhiteModel from data
-    MillikanWhiteModel(const MillikanWhiteModelData&);
+    MillikanWhiteModel(
+        const MillikanWhiteModelData& data,
+        const std::string& model_name);
+    
+    /// Destructor
+    ~MillikanWhiteModel();
 
     /// Index of species in mixture.
     size_t speciesIndex() const { return m_data.speciesIndex(); }
@@ -143,6 +156,8 @@ public:
 
 private:
     MillikanWhiteModelData m_data;
+    std::string m_model_name;
+    std::shared_ptr<MillikanWhiteRelaxationTime> m_relaxationTime;
 };
 
 
@@ -152,11 +167,14 @@ class MillikanWhiteModelDB
 public:
     /// Constructs the builder using default file path for "VT.xml".
     MillikanWhiteModelDB(
-        const Mutation::Thermodynamics::Thermodynamics&);
+        const Mutation::Thermodynamics::Thermodynamics&,
+        const std::string& model_name);
 
     /// Constructs the builder using given file path for database.
     MillikanWhiteModelDB(
-        const Mutation::Thermodynamics::Thermodynamics&, std::string file_path);
+        const Mutation::Thermodynamics::Thermodynamics&,
+        std::string file_path,
+        const std::string& model_name);
 
     /// Creates a MillikanWhiteModel given the species name and characteristic
     /// vibrational temperature in K.
@@ -165,9 +183,10 @@ public:
 private:
     struct Data;
     std::shared_ptr<Data> m_data;
+    std::string m_model_name;
 };
 
-    } // namespace Kinetics
+    } // namespace Transfer
 } // namespace Mutation
 
 #endif // MILLIKAN_WHITE_H

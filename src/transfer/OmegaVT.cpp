@@ -105,7 +105,7 @@ OmegaVT::OmegaVT(Mixture& mix) :
     TransferModel(mix)
 {
     Thermodynamics::HarmonicOscillatorDB hodb;
-    MillikanWhiteModelDB mwdb(mix);
+    MillikanWhiteModelDB mwdb(mix, mix.millikanWhiteModel());
 
     for (const auto& species: mix.species())
     {

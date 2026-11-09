@@ -65,7 +65,8 @@ public:
           m_mechanism(options.m_mechanism),
           m_viscosity(options.m_viscosity),
           m_thermal_conductivity(options.m_thermal_conductivity),
-          m_gsi_mechanism(options.m_gsi_mechanism)
+          m_gsi_mechanism(options.m_gsi_mechanism),
+          m_millikan_white_model(options.m_millikan_white_model)
     { }
 
     /**
@@ -225,6 +226,20 @@ public:
         m_gsi_mechanism = gsi_mechanism;
     }
 
+    /**
+     * Gets the Millikan-White model to use.
+     */
+    const std::string& getMillikanWhiteModel() const {
+    return m_millikan_white_model;
+    }
+
+    /**
+     * Sets the Millikan-White model to use.
+     */
+    void setMillikanWhiteModel(const std::string& model) {
+        m_millikan_white_model = model;
+    }
+
 //    /**
 //     * Sets the default mixture composition in elemental mole fractions.
 //     */
@@ -353,6 +368,7 @@ private:
     std::string m_viscosity;
     std::string m_thermal_conductivity;
     std::string m_gsi_mechanism;
+    std::string m_millikan_white_model;
 
 }; // class MixtureOptions
 
