@@ -78,6 +78,14 @@ const char* const reactionTypeString(const ReactionType type)
     }
 }
 
+const std::string rateLawTemperatureString(const RateLawTemperature eval_temp){
+  switch (eval_temp){
+    case TTRANSLATIONAL: return "translational";
+    case TELECTRON: return "electron";
+    case TGEOMETRIC_TTv: return "geometric_ttv";
+  }
+}      
+      
 //==============================================================================
 
     } // namespace Kinetics

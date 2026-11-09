@@ -6,6 +6,8 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <vector>
+
 namespace py = nanobind;
 
 /**
@@ -103,6 +105,27 @@ void py_export_Mixture(py::module_ &m) {
 
       .def("hasElectrons", &Mutation::Mixture::hasElectrons,
            "Returns true if this mixture includes electrons, false otherwise.")
+
+      .def_prop_ro("reactions", &Mutation::Mixture::reactions,
+           "Returns all reactions in this mixture.")
+
+      .def("reaction",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx];
+           },
+           "Returns the reaction with index idx.")
+
+      .def("reactants",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx].reactants();
+           },
+           "Returns the reactants of the reaction with index idx.")
+
+      .def("products",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx].products();
+           },
+           "Returns the products of the reaction with index idx.")
 
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
