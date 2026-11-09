@@ -1,3 +1,4 @@
+#include <AutoRegistration.h>
 #include <HarmonicOscillator.h>
 #include <MillikanWhite.h>
 #include <Mixture.h>
@@ -6,6 +7,7 @@
 #include <Nasa9Polynomial.h>
 #include <NasaDB.h>
 #include <ParticleRRHO.h>
+#include <TransferModel.h>
 #include <Utilities.h>
 
 #include <nanobind/nanobind.h>
@@ -16,6 +18,7 @@
 #include <nanobind/stl/vector.h>
 
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -232,6 +235,20 @@ void py_export_Mixture(py::module_ &m) {
            },
            "Returns the Millikan-White relaxation data for the vibrator "
            "with index idx.")
+
+      .def("omega_vt",
+           [](Mutation::Mixture &self) {
+             // Built on each call, as the state model builds its own: the
+             // Landau-Teller term alone, without the chemistry and
+             // electron terms that energyTransferSource adds to it.
+             std::unique_ptr<Mutation::Transfer::TransferModel> model(
+                 Mutation::Utilities::Config::Factory<
+                     Mutation::Transfer::TransferModel>::create(
+                         "OmegaVT", self));
+             return model->source();
+           },
+           "Returns the Landau-Teller vibrational-translational energy "
+           "transfer source [W/m^3] at the current state.")
 
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "

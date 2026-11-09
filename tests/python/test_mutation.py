@@ -438,3 +438,18 @@ def test_species_specific_heats_hold_every_temperature(name):
 def test_single_temperature_species_thermo_holds_one_block(name):
     assert len(getattr(mixture, name)()) == mixture.nSpecies()
 
+
+# Landau-Teller vibrational-translational transfer, the OmegaVT term of
+# the two-temperature energy source.
+def vt_state(heavy, vibrational):
+    mixtureNonEq.setState([1e-3] * 5, [heavy, vibrational], 1)
+    return mixtureNonEq.omega_vt()
+
+
+def test_omega_vt_vanishes_at_thermal_equilibrium():
+    assert vt_state(8000.0, 8000.0) == 0.0
+
+
+def test_omega_vt_heats_cold_vibration():
+    assert vt_state(8000.0, 2000.0) > 0.0
+    assert vt_state(2000.0, 8000.0) < 0.0
