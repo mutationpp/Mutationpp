@@ -165,7 +165,7 @@ public:
      * Virtual function to be called in order to solve the
      * surface balance.
      */
-    virtual void solveSurfaceBalance()
+    virtual bool solveSurfaceBalance()
     {
         throw LogicError()
         << "solveSurfaceBalance can be called only when solving "

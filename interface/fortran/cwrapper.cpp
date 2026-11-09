@@ -548,6 +548,12 @@ void NAME_MANGLE(solve_surface_balance)()
 }
 
 //==============================================================================
+bool NAME_MANGLE(solve_surface_balance_func)()
+{
+     return p_mix->solveSurfaceBalance();
+}
+
+//==============================================================================
 void NAME_MANGLE(get_surface_state)(double* v1, double* v2, int* vars)
 {
      p_mix->getSurfaceState(v1, v2, *vars);
