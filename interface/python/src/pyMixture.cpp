@@ -956,7 +956,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getEnergiesMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd e_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd e_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getEnergiesMass(e_i.data());
             return e_i;
           },
@@ -966,7 +968,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getEnthalpiesMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd h_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd h_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getEnthalpiesMass(h_i.data());
             return h_i;
           },
@@ -976,7 +980,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getCpsMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd cp_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd cp_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getCpsMass(cp_i.data());
             return cp_i;
           },
@@ -986,7 +992,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getCvsMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd cv_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd cv_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getCvsMass(cv_i.data());
             return cv_i;
           },
