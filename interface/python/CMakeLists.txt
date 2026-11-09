@@ -11,6 +11,8 @@ nanobind_add_module(_mutationpp
     src/mutationpp_python.cpp
     src/pyGlobalOptions.cpp
     src/pyReaction.cpp
+    src/pyParticleRRHO.cpp
+    src/pyMillikanWhite.cpp
     src/pyMixtureOptions.cpp
     src/pyMixture.cpp
 )
