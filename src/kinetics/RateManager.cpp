@@ -35,82 +35,44 @@
 namespace Mutation {
     namespace Kinetics {
 
-//==============================================================================
-    
-// Simple macro to create a temperature selector type
-#define TEMPERATURE_SELECTOR(__NAME__,__T__)\
-class __NAME__\
-{\
-public:\
-    inline double getT(const Thermodynamics::StateModel* const state) const {\
-        return ( __T__ );\
-    }\
+// // Simple macro to create a temperature selector type
+// #define TEMPERATURE_SELECTOR(__NAME__,__T__,__Tname__)	\
+// class __NAME__\
+// {\
+// public:\
+//     inline double getT(const Thermodynamics::StateModel* const state) const {\
+//         return ( __T__ );\
+//     }\
+//     inline std::string getT_name() const {\
+//         return ( __Tname__ );\
+//     }\
+// };
+
+// /// Temperature selector which returns the current translational temperature
+// TEMPERATURE_SELECTOR(TSelector, state->T(), "translational")
+
+// /// Temperature selector which returns the current electron temperature
+// //TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
+// TEMPERATURE_SELECTOR(TeSelector, state->Te(), "electron")
+
+// /// Temperature selector which returns the current value of sqrt(T*Tv)
+// TEMPERATURE_SELECTOR(ParkSelector, std::sqrt(state->T()*state->Tv()), "geometric")
+
+// #undef TEMPERATURE_SELECTOR
+
+inline double TSelector::getT(const Thermodynamics::StateModel* const state) const
+{
+  return state->T();
+};
+inline double TeSelector::getT(const Thermodynamics::StateModel* const state) const
+{
+  return state->Te();
+};
+inline double ParkSelector::getT(const Thermodynamics::StateModel* const state) const
+{
+  return std::sqrt(state->T()*state->Tv());
 };
 
-/// Temperature selector which returns the current translational temperature
-TEMPERATURE_SELECTOR(TSelector, state->T())
-
-/// Temperature selector which returns the current electron temperature
-//TEMPERATURE_SELECTOR(TeSelector, std::min(state->Te(), 10000.0))
-TEMPERATURE_SELECTOR(TeSelector, state->Te())
-
-/// Temperature selector which returns the current value of sqrt(T*Tv)
-TEMPERATURE_SELECTOR(ParkSelector, std::sqrt(state->T()*state->Tv()))
-
-#undef TEMPERATURE_SELECTOR
-
-/// Arrhenius group evaluated at T
-typedef RateLawGroup1T<Arrhenius, TSelector> ArrheniusT;
-
-/// Arrhenius group evaluated at Te
-typedef RateLawGroup1T<Arrhenius, TeSelector> ArrheniusTe;
-
-/// Arrhenius group evaluated at sqrt(T*Tv)
-typedef RateLawGroup1T<Arrhenius, ParkSelector> ArrheniusPark; 
-
-//==============================================================================
-
-/**
- * Used to define which rate law groups the forward and reverse rate laws are
- * evaluated in for a given ReactionType value.  The default is an Arrhenius
- * rate law with Tf = Tb = T.
- */
-template <int Type>
-struct RateSelector {
-    typedef ArrheniusT ForwardGroup;
-    typedef ArrheniusT ReverseGroup;
-};
-
-#define SELECT_RATE_LAWS(__TYPE__,__FORWARD__,__REVERSE__)\
-template <> struct RateSelector<__TYPE__> {\
-    typedef __FORWARD__ ForwardGroup;\
-    typedef __REVERSE__ ReverseGroup;\
-};
-
-// Default rate law groups for non (kf(T), kb(T)) reaction types
-SELECT_RATE_LAWS(ASSOCIATIVE_IONIZATION,     ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATIVE_RECOMBINATION, ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(ASSOCIATIVE_DETACHMENT,     ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATIVE_ATTACHMENT,    ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(DISSOCIATION_E,             ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(RECOMBINATION_E,            ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(DISSOCIATION_M,             ArrheniusPark, ArrheniusT)
-SELECT_RATE_LAWS(RECOMBINATION_M,            ArrheniusT,    ArrheniusPark)
-SELECT_RATE_LAWS(IONIZATION_E,               ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(ION_RECOMBINATION_E,        ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(IONIZATION_M,               ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(ION_RECOMBINATION_M,        ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT_M,    ArrheniusTe,   ArrheniusT)
-SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT_M,    ArrheniusT,    ArrheniusTe)
-SELECT_RATE_LAWS(ELECTRONIC_ATTACHMENT_E,    ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(ELECTRONIC_DETACHMENT_E,    ArrheniusTe,   ArrheniusTe)
-SELECT_RATE_LAWS(EXCHANGE,                   ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(EXCITATION_M,               ArrheniusT,    ArrheniusT)
-SELECT_RATE_LAWS(EXCITATION_E,               ArrheniusTe,   ArrheniusTe)
-
-#undef SELECT_RATE_LAWS
-
-//==============================================================================
 
 RateManager::RateManager(size_t ns, const std::vector<Reaction>& reactions)
     : m_ns(ns), m_nr(reactions.size()), mp_lnkf(NULL), mp_lnkb(NULL),
@@ -197,11 +159,12 @@ struct is_same<T,T> {
 
 template <typename ForwardGroup, typename ReverseGroup>
 void RateManager::addRate(const size_t rxn, const Reaction& reaction)
-{    
+{
+
     m_rate_groups.addRateCoefficient<ForwardGroup>(rxn, reaction.rateLaw());
     
     if (reaction.isReversible()) {
-        
+
         // Make use of forward computation when possible
         if (is_same<ForwardGroup, ReverseGroup>::value)
             m_to_copy.push_back(rxn);
@@ -212,7 +175,7 @@ void RateManager::addRate(const size_t rxn, const Reaction& reaction)
                 rxn+m_nr, reaction.rateLaw());
         
         m_rate_groups.addReaction<ReverseGroup>(rxn, reaction);
-        
+
     } else {
         m_irr.push_back(rxn);
     }

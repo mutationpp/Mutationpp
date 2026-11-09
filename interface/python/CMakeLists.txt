@@ -10,6 +10,9 @@ nanobind_add_module(_mutationpp
     ${STABLE_ABI}
     src/mutationpp_python.cpp
     src/pyGlobalOptions.cpp
+    src/pyReaction.cpp
+    src/pyParticleRRHO.cpp
+    src/pyMillikanWhite.cpp
     src/pyMixtureOptions.cpp
     src/pyMixture.cpp
 )

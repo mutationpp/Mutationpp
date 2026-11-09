@@ -1,12 +1,50 @@
+#include <AutoRegistration.h>
+#include <HarmonicOscillator.h>
+#include <MillikanWhite.h>
 #include <Mixture.h>
 #include <MixtureOptions.h>
+#include <Nasa7Polynomial.h>
+#include <Nasa9Polynomial.h>
+#include <NasaDB.h>
+#include <ParticleRRHO.h>
+#include <TransferModel.h>
+#include <Utilities.h>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/eigen/dense.h>
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/pair.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <vector>
+
 namespace py = nanobind;
+
+/**
+ * Fills *coefficients* and *t_bounds* with one species' NASA polynomial
+ * if the active thermodynamic database is the matching NASA flavour.
+ */
+template <typename PolynomialType>
+static bool try_nasa_polynomial(
+    const Mutation::Thermodynamics::ThermoDB* p_db, size_t idx,
+    std::vector<std::vector<double> >& coefficients,
+    std::vector<double>& t_bounds)
+{
+    typedef Mutation::Thermodynamics::NasaDB<PolynomialType> Database;
+    const Database* p_nasa = dynamic_cast<const Database*>(p_db);
+    if (p_nasa == nullptr)
+        return false;
+
+    const PolynomialType& polynomial = p_nasa->polynomials()[idx];
+    for (int range = 0; range < polynomial.nRanges(); ++range)
+        coefficients.push_back(polynomial.coefficients(range));
+    t_bounds = polynomial.tBounds();
+    return true;
+}
 
 /**
  * Python wrapper definition for the Mixture class. All member
@@ -103,6 +141,114 @@ void py_export_Mixture(py::module_ &m) {
 
       .def("hasElectrons", &Mutation::Mixture::hasElectrons,
            "Returns true if this mixture includes electrons, false otherwise.")
+
+      .def_prop_ro("reactions", &Mutation::Mixture::reactions,
+           "Returns all reactions in this mixture.")
+
+      .def("reaction",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx];
+           },
+           "Returns the reaction with index idx.")
+
+      .def("reactants",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx].reactants();
+           },
+           "Returns the reactants of the reaction with index idx.")
+
+      .def("products",
+           [](const Mutation::Mixture &self, size_t idx) {
+             return self.reactions()[idx].products();
+           },
+           "Returns the products of the reaction with index idx.")
+
+      .def("species_enthalpies_over_rt",
+           [](const Mutation::Mixture &self) {
+             const size_t ns = self.nSpecies();
+             std::vector<double> total(ns), translational(ns),
+                 rotational(ns), vibrational(ns), electronic(ns),
+                 formation(ns);
+             self.speciesHOverRT(
+                 total.data(), translational.data(), rotational.data(),
+                 vibrational.data(), electronic.data(), formation.data());
+             return std::map<std::string, std::vector<double> >{
+                 {"total", total},
+                 {"translational", translational},
+                 {"rotational", rotational},
+                 {"vibrational", vibrational},
+                 {"electronic", electronic},
+                 {"formation", formation},
+             };
+           },
+           "Returns the unitless species enthalpies at the current state, "
+           "split by energy mode.")
+
+      .def("species_nasa_polynomial",
+           [](const Mutation::Mixture &self, size_t idx) {
+             std::vector<std::vector<double> > coefficients;
+             std::vector<double> t_bounds;
+             const Mutation::Thermodynamics::ThermoDB* p_db = self.thermoDB();
+             if (!try_nasa_polynomial<
+                     Mutation::Thermodynamics::Nasa9Polynomial>(
+                         p_db, idx, coefficients, t_bounds) &&
+                 !try_nasa_polynomial<
+                     Mutation::Thermodynamics::Nasa7Polynomial>(
+                         p_db, idx, coefficients, t_bounds))
+               throw std::runtime_error(
+                   "the active thermodynamic database is not NASA-7 or "
+                   "NASA-9");
+             py::dict polynomial;
+             polynomial["coefficients"] = py::cast(coefficients);
+             polynomial["t_bounds"] = py::cast(t_bounds);
+             return polynomial;
+           },
+           "Returns the fitted NASA polynomial coefficients and temperature "
+           "bounds of the species with index idx.")
+
+      .def("species_rrho",
+           [](const Mutation::Mixture &self, size_t idx) {
+             Mutation::Utilities::IO::XmlDocument species_doc(
+                 Mutation::Utilities::databaseFileName(
+                     "species.xml", "thermo"));
+             return Mutation::Thermodynamics::ParticleRRHO(
+                 *(species_doc.root().findTagWithAttribute(
+                       "species", "name",
+                       self.species()[idx].groundStateName())->
+                   findTagWithAttribute("thermodynamics", "type", "RRHO")));
+           },
+           "Returns the rigid-rotor harmonic-oscillator parameters of the "
+           "species with index idx.")
+
+      .def("millikan_white_data",
+           [](const Mutation::Mixture &self, size_t idx) {
+             Mutation::Transfer::MillikanWhiteModelDB database(self);
+             Mutation::Thermodynamics::HarmonicOscillatorDB oscillators;
+             const std::string name = self.speciesName(idx);
+             // OmegaVT builds the 'a' constant from the first
+             // characteristic temperature only, even for polyatomics.
+             return Mutation::Transfer::MillikanWhiteModelData(
+                 database.create(
+                     name,
+                     oscillators.create(name).characteristicTemperatures()[0]
+                 ).data());
+           },
+           "Returns the Millikan-White relaxation data for the vibrator "
+           "with index idx.")
+
+      .def("omega_vt",
+           [](Mutation::Mixture &self) {
+             // Built on each call, as the state model builds its own: the
+             // Landau-Teller term alone, without the chemistry and
+             // electron terms that energyTransferSource adds to it.
+             std::unique_ptr<Mutation::Transfer::TransferModel> model(
+                 Mutation::Utilities::Config::Factory<
+                     Mutation::Transfer::TransferModel>::create(
+                         "OmegaVT", self));
+             return model->source();
+           },
+           "Returns the Landau-Teller vibrational-translational energy "
+           "transfer source [W/m^3] at the current state.")
 
       .def("setState", &Mutation::Mixture::setState,
            "Sets the state of the mixture using the StateModel belonging to "
@@ -827,7 +973,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getEnergiesMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd e_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd e_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getEnergiesMass(e_i.data());
             return e_i;
           },
@@ -837,7 +985,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getEnthalpiesMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd h_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd h_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getEnthalpiesMass(h_i.data());
             return h_i;
           },
@@ -847,7 +997,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getCpsMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd cp_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd cp_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getCpsMass(cp_i.data());
             return cp_i;
           },
@@ -857,7 +1009,9 @@ void py_export_Mixture(py::module_ &m) {
      .def(
           "getCvsMass",
           [](const Mutation::Mixture &self) {
-            Eigen::ArrayXd cv_i(self.nSpecies());
+            // The state model writes one block of species per energy
+            // equation, the totals first.
+            Eigen::ArrayXd cv_i(self.nSpecies() * self.nEnergyEqns());
             self.Mutation::Mixture::getCvsMass(cv_i.data());
             return cv_i;
           },

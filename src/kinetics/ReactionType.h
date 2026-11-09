@@ -28,6 +28,7 @@
 #ifndef KINETICS_REACTION_TYPE_H
 #define KINETICS_REACTION_TYPE_H
 
+#include <string>
 
 namespace Mutation {
     namespace Kinetics {
@@ -59,13 +60,50 @@ enum ReactionType
     EXCITATION_M,
     MAX_REACTION_TYPES /// Number of ReactionType values (leave at end of list)
 };
-
+     
 /**
  * Simpy returns a string which represents the reaction type given by the 
  * ReactionType argument.
  */
 const char* const reactionTypeString(const ReactionType type);
 
+/**
+ * Enumerate possible temperatures at which
+ * rate laws are evaluated.
+ */
+enum RateLawTemperature{
+  TTRANSLATIONAL,
+  TELECTRON,
+  TGEOMETRIC_TTv
+};
+
+const std::string rateLawTemperatureString(const RateLawTemperature eval_temp);
+
+constexpr std::pair<RateLawTemperature, RateLawTemperature> getRateLawT(int rxn_type) {
+    switch (rxn_type) {
+        case ASSOCIATIVE_IONIZATION:     return {TTRANSLATIONAL, TELECTRON};
+        case DISSOCIATIVE_RECOMBINATION: return {TELECTRON, TTRANSLATIONAL};
+        case ASSOCIATIVE_DETACHMENT:     return {TTRANSLATIONAL, TELECTRON};
+        case DISSOCIATIVE_ATTACHMENT:    return {TELECTRON, TTRANSLATIONAL};
+        case DISSOCIATION_E:             return {TELECTRON, TELECTRON};
+        case RECOMBINATION_E:            return {TELECTRON, TELECTRON};
+        case DISSOCIATION_M:             return {TGEOMETRIC_TTv, TTRANSLATIONAL};
+        case RECOMBINATION_M:            return {TTRANSLATIONAL, TGEOMETRIC_TTv};
+        case IONIZATION_E:               return {TELECTRON, TTRANSLATIONAL};
+        case ION_RECOMBINATION_E:        return {TTRANSLATIONAL, TELECTRON};
+        case IONIZATION_M:               return {TTRANSLATIONAL, TTRANSLATIONAL};
+        case ION_RECOMBINATION_M:        return {TTRANSLATIONAL, TTRANSLATIONAL};
+        case ELECTRONIC_ATTACHMENT_M:    return {TELECTRON, TTRANSLATIONAL};
+        case ELECTRONIC_DETACHMENT_M:    return {TTRANSLATIONAL, TELECTRON};
+        case ELECTRONIC_ATTACHMENT_E:    return {TELECTRON, TELECTRON};
+        case ELECTRONIC_DETACHMENT_E:    return {TELECTRON, TELECTRON};
+        case EXCHANGE:                   return {TTRANSLATIONAL, TTRANSLATIONAL};
+        case EXCITATION_M:               return {TTRANSLATIONAL, TTRANSLATIONAL};
+        case EXCITATION_E:               return {TELECTRON, TELECTRON};
+        default:                         return {TTRANSLATIONAL, TTRANSLATIONAL};
+    }
+};
+      
     } // namespace Kinetics
 } // namespace Mutation
 
