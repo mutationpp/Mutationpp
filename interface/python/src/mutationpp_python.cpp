@@ -10,12 +10,20 @@ namespace py = nanobind;
  */
 
 void py_export_GlobalOptions(py::module_ &);
+void py_export_RateLaw(py::module_ &);
+void py_export_ParticleRRHO(py::module_ &);
+void py_export_MillikanWhite(py::module_ &);
+void py_export_Reaction(py::module_ &);
 void py_export_MixtureOptions(py::module_ &);
 void py_export_Mixture(py::module_ &);
 
 PY_MODULE(_mutationpp, m) {
     m.doc() = "Mutation++ Python bindings";
     py_export_GlobalOptions(m);
+    py_export_RateLaw(m);
+    py_export_ParticleRRHO(m);
+    py_export_MillikanWhite(m);
+    py_export_Reaction(m);
     py_export_MixtureOptions(m);
     py_export_Mixture(m);
 }

@@ -408,3 +408,48 @@ def test_C0():
     
 def test_ONEATM():
     assert mixture.ONEATM() == pytest.approx(101325.0)                               
+
+
+# Per-species thermo for a multi-temperature state model: one block of
+# n_species values per energy equation, the totals first.
+@pytest.mark.parametrize("name, mixture_total", [
+    ("getEnergiesMass", "mixtureEnergyMass"),
+    ("getEnthalpiesMass", "mixtureHMass"),
+])
+def test_species_energies_hold_every_energy_mode(name, mixture_total):
+    n_species = mixtureNonEq.nSpecies()
+    values = getattr(mixtureNonEq, name)()
+    assert len(values) == n_species * mixtureNonEq.nEnergyEqns()
+    mass_fractions = np.array(mixtureNonEq.Y())
+    assert mass_fractions @ values[:n_species] == pytest.approx(
+        getattr(mixtureNonEq, mixture_total)(), rel=1e-12
+    )
+
+
+@pytest.mark.parametrize("name", ["getCpsMass", "getCvsMass"])
+def test_species_specific_heats_hold_every_temperature(name):
+    values = getattr(mixtureNonEq, name)()
+    assert len(values) == mixtureNonEq.nSpecies() * mixtureNonEq.nEnergyEqns()
+
+
+@pytest.mark.parametrize("name", [
+    "getEnergiesMass", "getEnthalpiesMass", "getCpsMass", "getCvsMass",
+])
+def test_single_temperature_species_thermo_holds_one_block(name):
+    assert len(getattr(mixture, name)()) == mixture.nSpecies()
+
+
+# Landau-Teller vibrational-translational transfer, the OmegaVT term of
+# the two-temperature energy source.
+def vt_state(heavy, vibrational):
+    mixtureNonEq.setState([1e-3] * 5, [heavy, vibrational], 1)
+    return mixtureNonEq.omega_vt()
+
+
+def test_omega_vt_vanishes_at_thermal_equilibrium():
+    assert vt_state(8000.0, 8000.0) == 0.0
+
+
+def test_omega_vt_heats_cold_vibration():
+    assert vt_state(8000.0, 2000.0) > 0.0
+    assert vt_state(2000.0, 8000.0) < 0.0

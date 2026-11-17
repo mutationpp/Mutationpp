@@ -30,6 +30,7 @@
 #define NASA_7_POLYNOMIAL_H
 
 #include <iostream>
+#include <vector>
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -87,6 +88,28 @@ public:
     }
     
     static int nCoefficients() { return NC; }
+
+    /**
+     * Returns the number of temperature ranges this polynomial is fit
+     * over.
+     */
+    int nRanges() const { return NR; }
+
+    /**
+     * Returns the fitted coefficients for the given temperature range.
+     */
+    std::vector<double> coefficients(int range) const {
+        return std::vector<double>(
+            mp_coefficients[range], mp_coefficients[range] + NC);
+    }
+
+    /**
+     * Returns the temperature range boundaries, one more than the
+     * number of ranges.
+     */
+    std::vector<double> tBounds() const {
+        return std::vector<double>(mp_tbounds, mp_tbounds + NR + 1);
+    }
     
 protected:
     

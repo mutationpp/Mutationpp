@@ -29,6 +29,7 @@
 #define THERMO_NASA_9_POLYNOMIAL_H
 
 #include <iostream>
+#include <vector>
 
 namespace Mutation {
     namespace Thermodynamics {
@@ -62,6 +63,28 @@ public:
     Nasa9Polynomial& operator = (Nasa9Polynomial left);
     
     static int nCoefficients() { return 9; }
+
+    /**
+     * Returns the number of temperature ranges this polynomial is fit
+     * over, which varies from one species to the next.
+     */
+    int nRanges() const { return m_nr; }
+
+    /**
+     * Returns the fitted coefficients for the given temperature range.
+     */
+    std::vector<double> coefficients(int range) const {
+        return std::vector<double>(
+            mp_coefficients[range], mp_coefficients[range] + m_nc);
+    }
+
+    /**
+     * Returns the temperature range boundaries, one more than the
+     * number of ranges.
+     */
+    std::vector<double> tBounds() const {
+        return std::vector<double>(mp_tbounds, mp_tbounds + m_nr + 1);
+    }
     
     double minT() const {
         return mp_tbounds[0];

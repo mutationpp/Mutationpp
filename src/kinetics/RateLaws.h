@@ -33,6 +33,7 @@
 #include <cstdlib>
 
 #include "Utilities.h"
+#include "ReactionType.h"
 
 namespace Mutation {
     namespace Kinetics {
@@ -47,6 +48,7 @@ public:
 
     virtual ~RateLaw() { };
     virtual RateLaw* clone() const = 0;
+    virtual void set_evaluation_temperature(const RateLawTemperature eval_temp_id) {};
 };
 
 /**
@@ -61,7 +63,9 @@ public:
     Arrhenius(const Mutation::Utilities::IO::XmlElement& node, const int order);
     
     Arrhenius(const Arrhenius& to_copy)
-        : m_lnA(to_copy.m_lnA), m_n(to_copy.m_n), m_temp(to_copy.m_temp)
+      : m_lnA(to_copy.m_lnA),
+	m_n(to_copy.m_n),
+	m_temp(to_copy.m_temp)
     { }
     
     virtual ~Arrhenius() { };
@@ -78,6 +82,10 @@ public:
         return (k*invT*(m_n + m_temp*invT));
     }
 
+    double logA() const {
+      return m_lnA;
+    }
+  
     double A() const { 
         return std::exp(m_lnA);
     }

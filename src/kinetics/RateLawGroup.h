@@ -42,6 +42,7 @@
 #include "Reaction.h"
 //#include "StateModel.h"
 #include "StoichiometryManager.h"
+#include "ReactionType.h"
 
 class StateModel;
 
@@ -171,6 +172,10 @@ public:
         // Save this temperature
         m_last_t = m_t;
     }
+
+  const RateLawTemperature evaluationTemperature(){
+    return TSelectorType().getT_id();
+  }
 
 private:
 

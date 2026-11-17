@@ -31,9 +31,66 @@
 #include "RateLawGroup.h"
 #include "Reaction.h"
 
-namespace Mutation {
-    namespace Kinetics {
 
+namespace Mutation {
+  namespace Kinetics {
+
+      class TSelector
+      {
+      public:
+	inline double getT(const Thermodynamics::StateModel* const state) const;
+      };
+
+      class TeSelector
+      {
+      public:
+	inline double getT(const Thermodynamics::StateModel* const state) const;
+      };
+
+      class ParkSelector
+      {
+      public:
+	inline double getT(const Thermodynamics::StateModel* const state) const;
+      };
+
+/**
+ * Used to define which rate law groups the forward and reverse rate laws are
+ * evaluated in for a given ReactionType value.  The default is an Arrhenius
+ * rate law with Tf = Tb = T.
+ */
+/// Arrhenius group evaluated at T
+typedef RateLawGroup1T<Arrhenius, TSelector> ArrheniusT;
+
+/// Arrhenius group evaluated at Te
+typedef RateLawGroup1T<Arrhenius, TeSelector> ArrheniusTe;
+
+/// Arrhenius group evaluated at sqrt(T*Tv)
+typedef RateLawGroup1T<Arrhenius, ParkSelector> ArrheniusPark;
+
+// Map RateLawTemperature to RateLawGroup1T
+template<RateLawTemperature> struct RateLawGroupForTemp;
+template<> struct RateLawGroupForTemp<TTRANSLATIONAL> { using type = ArrheniusT; };
+template<> struct RateLawGroupForTemp<TELECTRON>      { using type = ArrheniusTe; };
+template<> struct RateLawGroupForTemp<TGEOMETRIC_TTv> { using type = ArrheniusPark; };
+
+// template <int Type>
+// struct RateSelector {
+//     typedef ArrheniusT ForwardGroup;
+//     typedef ArrheniusT ReverseGroup;
+// };
+
+// Rate selector    
+template<int T> struct RateSelector {
+private:
+    static constexpr auto temps = getRateLawT(T);
+
+public:
+    using ForwardGroup = typename RateLawGroupForTemp<temps.first>::type;
+    using ReverseGroup = typename RateLawGroupForTemp<temps.second>::type;
+};
+
+    
+	
 class Reaction;
 
 /**
@@ -78,7 +135,7 @@ public:
     const std::vector<size_t>& irrReactions() const {
         return m_irr;
     }
-
+    
 private:
 
     /**
@@ -128,6 +185,7 @@ private:
     
     /// Stores the indices of non-reversible reactions
     std::vector<size_t> m_irr;
+
 };
 
 

@@ -77,6 +77,13 @@ public:
         double* const g, double* const gt, double* const gr, double* const gv, 
         double* const gel);
 
+    /**
+     * Returns the loaded polynomials, one per species.
+     */
+    const std::vector<PolynomialType>& polynomials() const {
+        return m_polynomials;
+    }
+
 protected:
     
     void loadAvailableSpecies(std::list<Species>& species_list);
