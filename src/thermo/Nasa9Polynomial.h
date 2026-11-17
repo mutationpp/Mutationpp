@@ -29,6 +29,7 @@
 #define THERMO_NASA_9_POLYNOMIAL_H
 
 #include <iostream>
+#include <vector>
 
 namespace Mutation {
     namespace Thermodynamics {

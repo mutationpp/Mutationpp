@@ -30,6 +30,7 @@
 #define NASA_7_POLYNOMIAL_H
 
 #include <iostream>
+#include <vector>
 
 namespace Mutation {
     namespace Thermodynamics {
